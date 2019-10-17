@@ -6,7 +6,7 @@
 ;; Keywords: convenience
 ;; URL: http://sharad.github.io/melpa
 ;; Keywords: convenience, languages, tools
-;; Version: $Id:$
+;; Version: $Id$
 ;; Package-Requires: ((emacs "24.3"))
 
 ;; This program is free software; you can redistribute it and/or modify
