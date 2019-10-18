@@ -1,0 +1,17 @@
+(source gnu)
+(source melpa)
+
+;; (package-file "lotus-utils.el")
+(package "org-capture+" "0.2.1" "org-capture+.")
+
+(files "org-capture+-helm-dynamic.el"
+       "org-capture+-helm.el"
+       "org-capture+-lib.el"
+       "org-capture+-macros.el"
+       "org-capture+.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))
