@@ -132,10 +132,10 @@
   (safe-exit-recursive-edit-if-active)
   (safe-exit-recursive-edit))
 
-(global-set-key-warn-if-bind (kbd "C-H-k") 'reset-helm-input)
-(global-set-key-warn-if-bind (kbd "C-H-q") 'reset-helm-input)
-(global-set-key-warn-if-bind (kbd "C-H-g") 'reset-helm-input)
-(global-set-key-warn-if-bind (kbd "C-H-h") 'reset-helm-input)
+;; (global-set-key-warn-if-bind (kbd "C-H-k") 'reset-helm-input)
+;; (global-set-key-warn-if-bind (kbd "C-H-q") 'reset-helm-input)
+;; (global-set-key-warn-if-bind (kbd "C-H-g") 'reset-helm-input)
+;; (global-set-key-warn-if-bind (kbd "C-H-h") 'reset-helm-input)
 
 (require 's)
 (require 'dash)
