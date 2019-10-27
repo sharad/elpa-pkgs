@@ -1,0 +1,17 @@
+
+(source gnu)
+(source melpa)
+(source local \"~/.xemacs/elpa/upload\")
+
+
+(package "p4" "20191025.2044" "p4")
+
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock")(files 
+ "p4-lowlevel.el" "p4-pkg.el" "vc-p4.el")
+
+)
