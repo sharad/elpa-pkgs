@@ -1,0 +1,13 @@
+(source gnu)
+(source melpa)
+(source local "~/.xemacs/elpa/upload")
+
+(package "lotus-tree-manager" "0.2.1" "lotus tree manager")
+
+(files "lotus-tree-manager-lib.el" "lotus-tree-manager.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))
