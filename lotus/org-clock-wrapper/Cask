@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "org-clock-wrapper" "20180404.1240" "org-clock-wrapper")
+(package "org-clock-wrapper" "20191027.2325" "org-clock-wrapper")
 
 
 (files

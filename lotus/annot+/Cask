@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "annot+" "20190801.1346" "annot+")
+(package "annot+" "20191027.2325" "annot+")
 
 
 (files

@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "org-clock-resolve-advanced" "20171222.127" "org-clock-resolve-advanced")
+(package "org-clock-resolve-advanced" "20191027.2325" "org-clock-resolve-advanced")
 
 
 (files

@@ -1,2 +1,0 @@
-
-(lotus-utils . [(0 1 -4 1) ((emacs (24 3))) "copy config" tar nil])

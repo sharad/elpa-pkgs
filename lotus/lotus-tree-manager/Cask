@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "lotus-tree-manager" "20190804.2250" "lotus-tree-manager")
+(package "lotus-tree-manager" "20191027.2325" "lotus-tree-manager")
 
 
 (files

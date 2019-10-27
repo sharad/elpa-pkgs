@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "paths-mapper" "20181218.1807" "paths-mapper")
+(package "paths-mapper" "20191027.2325" "paths-mapper")
 
 
 (files

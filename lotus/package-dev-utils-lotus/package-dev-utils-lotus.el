@@ -30,7 +30,7 @@
 (require 'package-build "~/.emacs.d/core/libs/package-build.el")
 
 
-(defvar package-source-path "~/.xemacs/elpa/pkgs" "Source code path for packages.")
+(defvar package-source-path "~/../paradise/Projects/Emacs/elpa-pkgs/lotus" "Source code path for packages.")
 (defvar package-archive-upload-base "~/.xemacs/elpa/upload")
 (defvar package-local-dev-archive "local" "Local archive specified in package-archives")
 (defvar *package-install-packages-wait-secs-in-install* 7)
@@ -166,7 +166,7 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
   (message "loading file from %s" dir)
   (let ((default-directory dir))
     (add-to-list 'load-path dir)
-    (dolist (file (directory-files-recursively dir ".el$"))
+    (dolist (file (directory-files dir t ".el$"))
       (unless (or
                (string-match "^.*-pkg.el$" file)
                (string-match "^#.*-pkg.el$" file)
@@ -354,10 +354,10 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
       (package-install pkg-desc))
     (message "installed package %s" pkg-sym)))
 
-
 ;;;###autoload
 (defun package-build-packages-from-source-path (&optional base)
-  (interactive)
+  (interactive
+   (list (read-directory-name "pacakages dir: ")))
   (let ((base (or base package-source-path)))
     (dolist (f (directory-files base))
       (let ((pkgdir (expand-file-name f base)))
@@ -367,7 +367,8 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
           (package-build-package-from-dir pkgdir))))))
 ;;;###autoload
 (defun package-upload-packages-from-source-path (&optional base)
-  (interactive)
+  (interactive
+   (list (read-directory-name "pacakages dir: ")))
   (let ((base (or base package-source-path)))
     (dolist (f (directory-files base))
       (let ((pkgdir (expand-file-name f base)))
@@ -377,7 +378,8 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
           (package-upload-package-from-dir pkgdir))))))
 ;;;###autoload
 (defun package-install-packages-from-source-path (&optional base)
-  (interactive)
+  (interactive
+   (list (read-directory-name "pacakages dir: ")))
   (let ((base (or base package-source-path)))
     (dolist (f (directory-files base))
       (let ((pkgdir (expand-file-name f base)))
@@ -392,7 +394,8 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
 
 ;;;###autoload
 (defun package-install-packages-from-source-path-fast (&optional base)
-  (interactive)
+  (interactive
+   (list (read-directory-name "pacakages dir: ")))
   (let ((base (or base package-source-path)))
 
     ;; First build and upload all subdirs
@@ -441,11 +444,11 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
                 (dep-desc (cadr (assoc dep package-archive-contents))))
             (if (package-installed-p dep-sym)
                 (message "dependency package %s already installed." dep)
-                (progn
-                  (message "installing dep %s %s" dep (symbolp dep))
-                  (package-install dep-desc)
-                  (sleep-for *package-install-packages-wait-secs-in-install*)
-                  (message "Installed dependency package %s" dep)))))
+              (progn
+                (message "installing dep %s %s" dep (symbolp dep))
+                (package-install dep-desc)
+                (sleep-for *package-install-packages-wait-secs-in-install*)
+                (message "Installed dependency package %s" dep)))))
         (message "dependencies installed %s" dependencies-external))
 
       ;; now install all subdirs.

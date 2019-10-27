@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "org-clock-daysummary" "20171222.127" "Org clock day summary")
+(package "org-clock-daysummary" "20191027.2325" "Org clock day summary")
 
 
 (files

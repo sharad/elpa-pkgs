@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "lotus-spacemacs-utils" "20191020.1914" "lotus-spacemacs-utils")
+(package "lotus-spacemacs-utils" "20191027.2325" "lotus-spacemacs-utils")
 
 
 (files

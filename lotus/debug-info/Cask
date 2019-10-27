@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "debug-info" "20190709.2234" "debug-info")
+(package "debug-info" "20191027.2325" "debug-info")
 
 
 (files

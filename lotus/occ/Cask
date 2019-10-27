@@ -6,7 +6,7 @@
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "occ" "20191027.2322" "occ")
+(package "occ" "20191027.2325" "occ")
 
 
 (files

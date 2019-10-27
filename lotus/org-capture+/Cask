@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "org-capture+" "20190824.1955" "org-capture+")
+(package "org-capture+" "20191027.2325" "org-capture+")
 
 
 (files

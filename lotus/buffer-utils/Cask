@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "buffer-utils" "20171222.126" "buffer-utils")
+(package "buffer-utils" "20191027.2325" "buffer-utils")
 
 
 (files

@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "org-onchange" "20171222.128" "org-onchange")
+(package "org-onchange" "20191027.2325" "org-onchange")
 
 
 (files

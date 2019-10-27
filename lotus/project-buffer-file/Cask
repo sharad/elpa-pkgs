@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "project-buffer-file" "20171222.129" "project-buffer-file")
+(package "project-buffer-file" "20191027.2325" "project-buffer-file")
 
 
 (files

@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "rs-gnus-exts" "0.2.1" "rs-gnus-exts")
+(package "rs-gnus-exts" "20191027.2325" "rs-gnus-exts")
 
 
 (files

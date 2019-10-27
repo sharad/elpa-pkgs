@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "mindshare-contrib-mgr" "20180629.1819" "mindshare-contrib-mgr")
+(package "mindshare-contrib-mgr" "20191027.2325" "mindshare-contrib-mgr")
 
 
 (files

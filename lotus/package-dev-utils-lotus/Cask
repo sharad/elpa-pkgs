@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "package-dev-utils-lotus" "20171222.1508" "packahe dev utils")
+(package "package-dev-utils-lotus" "20191027.2325" "packahe dev utils")
 
 
 (files

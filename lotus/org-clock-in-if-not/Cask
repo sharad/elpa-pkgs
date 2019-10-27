@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "org-clock-in-if-not" "20180404.1239" "org-clock-in-if-not")
+(package "org-clock-in-if-not" "20191027.2325" "org-clock-in-if-not")
 
 
 (files

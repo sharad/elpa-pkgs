@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "org-clock-experimental" "20180404.1238" "org-clock-experimental")
+(package "org-clock-experimental" "20191027.2325" "org-clock-experimental")
 
 
 (files

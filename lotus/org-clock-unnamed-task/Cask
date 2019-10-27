@@ -6,7 +6,7 @@
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "org-clock-unnamed-task" "20191027.2320" "org-clock-unnamed-task")
+(package "org-clock-unnamed-task" "20191027.2325" "org-clock-unnamed-task")
 
 
 (files

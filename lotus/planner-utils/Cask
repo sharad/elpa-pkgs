@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "planner-utils" "20181012.2345" "planner-utils")
+(package "planner-utils" "20191027.2325" "planner-utils")
 
 
 (files

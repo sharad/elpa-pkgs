@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "lotus-note" "20190801.1353" "lotus-note")
+(package "lotus-note" "20191027.2325" "lotus-note")
 
 
 (files

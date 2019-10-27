@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "autoinsert+" "20171222.126" "auto insert+")
+(package "autoinsert+" "20191027.2325" "auto insert+")
 
 
 (files
