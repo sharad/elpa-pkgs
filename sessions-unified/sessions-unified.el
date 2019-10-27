@@ -58,26 +58,25 @@
 
 ;; (require 'dot-emacs-helper)
 
-(require 'general-testing)
+;; (require 'general-testing)
 ;; testing
 (require 'rcs-backup)
-
 (require 'cl)
 
 (eval-when-compile
   '(require 'cl))
 
-(require 'wrappers)
-(require 'basic-utils)
+;; (require 'wrappers)
+;; (require 'basic-utils)
 ;; run-at-time-or-now
-(require 'utils-custom)
+;; (require 'utils-custom)
 ;; lotus-read-sexp
-(require 'misc-utils)
+;; (require 'misc-utils)
 
 (require 'desktop)
 (require 'session)
 (require 'elscreen)
-(require 'emacs-panel)
+;; (require 'emacs-panel)
 
 ;; ;; BUG TODO
 ;; (require 'vc-config)
@@ -104,13 +103,23 @@
                    (apply 'message fmt args))))))
 
 (defvar sessions-unified-utils-notify nil)
+
 
 (unless (null 'sessions-unified-utils-notify)
   (setq sessions-unified-utils-notify
         (lambda (title fmt &rest args)
           (concat title ": "
                   (apply 'message fmt args)))))
+
 
+;;;###autoload
+(defun protable-display-graphic-p ()
+  (display-graphic-p))
+
+(when (< emacs-major-version 24)
+    (defun protable-display-graphic-p ()
+      (eq (frame-parameter (selected-frame) 'window-system) 'x)))
+
 ;;;###autoload
 (defun add-to-enable-desktop-restore-interrupting-feature-hook (fn &optional append local)
   (interactive)

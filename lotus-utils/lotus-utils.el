@@ -4,11 +4,6 @@
 
 ;; Author: Sharad Pratap <sh4r4d _at_ _G-mail_>
 ;; Keywords: convenience
-;; URL: http://sharad.github.io/melpa
-;; Keywords: convenience, languages, tools
-;; Version: 0.1-1
-;; Package-Requires: ((emacs "24.3"))
-;; Revision: $Id$
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -148,5 +143,15 @@
   (if (null strings)
       ""
     (-reduce-from #'s-shared-start (first strings) (rest strings))))
+
+
+;;;###autoload
+(defun forgive/them ()
+  (interactive)
+  (if (and
+       (featurep 'develock)
+       (assq major-mode develock-keywords-alist))
+      (develock-mode -1))
+  (highlight-changes-visible-mode -1))
 
 ;;; lotus-utils.el ends here
