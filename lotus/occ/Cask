@@ -1,10 +1,12 @@
 
 (source gnu)
 (source melpa)
+(source marmalade)
+(source org)
 (source local "~/.xemacs/elpa/upload")
 
 
-(package "occ" "20190310.2156" "occ")
+(package "occ" "20191027.2322" "occ")
 
 
 (files
@@ -57,7 +59,7 @@
  (depends-on "ecukes")
  (depends-on "ert-runner")
  (depends-on "el-mock")
- (depends-on "org-plus-contrib")
+ (depends-on "org")
  (depends-on "dash")
  (depends-on "lotus-utils")
  (depends-on "org-clock-unnamed-task")

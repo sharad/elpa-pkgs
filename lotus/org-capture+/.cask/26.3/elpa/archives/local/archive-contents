@@ -119,9 +119,6 @@
                  (s
                   (1)))
                 "org-onchange" tar nil])
- (lotus-utils .
-              [(20191025 2058)
-               nil "lotus-utils" tar nil])
  (reader-mode .
               [(20190922 2225)
                nil "reader mode" tar nil])
@@ -324,6 +321,7 @@
  (autoinsert+ .
               [(20191006 1528)
                nil "auto insert+" tar nil])
+(lotus-utils . [(20190821 2349) nil "lotus-utils" tar nil])
  (activity .
            [(20191003 2144)
             ((@
@@ -331,4 +329,3 @@
              (switch-buffer-functions
               (1)))
             "Activity." tar nil]))
-

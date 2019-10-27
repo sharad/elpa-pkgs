@@ -1,5 +1,5 @@
 (define-package "occ" "20190310.2156" "occ"
-  '((org-plus-contrib "1")
+  '((org "20191021")
     (dash "1")
     (lotus-utils "1")
     (org-clock-unnamed-task "1")
