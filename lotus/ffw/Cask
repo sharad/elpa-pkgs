@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "ffw" "20190106.1922" "ffw")
 
 
+(files
+ "ffw-pkg.el"
+ "ffw.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "ffw-pkg.el" "ffw.el")
-
-)
+ (depends-on "el-mock"))

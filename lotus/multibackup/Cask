@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "multibackup" "20171222.127" "multi backup")
 
 
+(files
+ "multibackup-pkg.el"
+ "multibackup.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "multibackup-pkg.el" "multibackup.el")
-
-)
+ (depends-on "el-mock"))

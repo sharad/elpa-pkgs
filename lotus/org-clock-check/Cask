@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "org-clock-check" "20180404.1237" "org-clock-check")
 
 
+(files
+ "org-clock-check-pkg.el"
+ "org-clock-check.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "org-clock-check-pkg.el" "org-clock-check.el")
-
-)
+ (depends-on "el-mock"))

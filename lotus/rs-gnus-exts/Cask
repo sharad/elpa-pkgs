@@ -1,17 +1,20 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "rs-gnus-exts" "0.2.1" "rs-gnus-exts")
 
 
+(files
+ "gnus-summary-stripe.el"
+ "rs-gnus-exts-pkg.el"
+ "rs-gnus-summary.el"
+ "stripe-buffer.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "gnus-summary-stripe.el" "rs-gnus-exts-pkg.el" "rs-gnus-summary.el" "stripe-buffer.el")
-
-)
+ (depends-on "el-mock"))

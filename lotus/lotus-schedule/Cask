@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "lotus-schedule" "20190801.1353" "lotus-schedule")
 
 
+(files
+ "lotus-schedule-pkg.el"
+ "lotus-schedule.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "lotus-schedule-pkg.el" "lotus-schedule.el")
-
-)
+ (depends-on "el-mock"))

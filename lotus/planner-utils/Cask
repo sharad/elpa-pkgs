@@ -1,17 +1,20 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "planner-utils" "20181012.2345" "planner-utils")
 
 
+(files
+ "planner-env.el"
+ "planner-interface.el"
+ "planner-utils-pkg.el"
+ "planner-utils.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "planner-env.el" "planner-interface.el" "planner-utils-pkg.el" "planner-utils.el")
-
-)
+ (depends-on "el-mock"))

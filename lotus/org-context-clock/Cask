@@ -1,20 +1,32 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "org-context-clock" "20171222.128" "org-context-clock")
 
 
+(files
+ "idle-debug.el"
+ "org-context-clock-api-common.el"
+ "org-context-clock-api-interaction.el"
+ "org-context-clock-api-list.el"
+ "org-context-clock-api-recursive.el"
+ "org-context-clock-api.el"
+ "org-context-clock-assoc-api.el"
+ "org-context-clock-assoc-common.el"
+ "org-context-clock-assoc-key.el"
+ "org-context-clock-assoc-predicate.el"
+ "org-context-clock-assoc-rank.el"
+ "org-context-clock-pkg.el"
+ "org-context-clock.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "idle-debug.el" "org-context-clock-api-common.el" "org-context-clock-api-interaction.el" "org-context-clock-api-list.el" "org-context-clock-api-recursive.el" "org-context-clock-api.el" "org-context-clock-assoc-api.el" "org-context-clock-assoc-common.el" "org-context-clock-assoc-key.el" "org-context-clock-assoc-predicate.el" "org-context-clock-assoc-rank.el" "org-context-clock-pkg.el" "org-context-clock.el")
-
-
+ (depends-on "el-mock")
  (depends-on "lotus-utils")
  (depends-on "org-clock-hooks")
  (depends-on "org-clock-wrapper")

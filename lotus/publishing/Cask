@@ -1,17 +1,21 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "publishing" "20171222.129" "publishing for org and muse.")
 
 
+(files
+ "misc-publishing.el"
+ "muse-publishing.el"
+ "org-publishing.el"
+ "publishing-pkg.el"
+ "publishing.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "misc-publishing.el" "muse-publishing.el" "org-publishing.el" "publishing-pkg.el" "publishing.el")
-
-)
+ (depends-on "el-mock"))

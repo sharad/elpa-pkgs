@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "test-session" "20171222.131" "test-session")
 
 
+(files
+ "test-session-pkg.el"
+ "test-session.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "test-session-pkg.el" "test-session.el")
-
-)
+ (depends-on "el-mock"))

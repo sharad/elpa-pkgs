@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "package-dev-utils-lotus" "20171222.1508" "packahe dev utils")
 
 
+(files
+ "package-dev-utils-lotus-pkg.el"
+ "package-dev-utils-lotus.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "package-dev-utils-lotus-pkg.el" "package-dev-utils-lotus.el")
-
-)
+ (depends-on "el-mock"))

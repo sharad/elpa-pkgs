@@ -1,17 +1,23 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "lotus-all" "20191025.2105" "lotus-all")
 
 
+(files
+ "basic-utils.el"
+ "file-utils.el"
+ "lotus-all-pkg.el"
+ "misc-utils.el"
+ "perforce-test.el"
+ "utils-custom.el"
+ "wrappers.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "basic-utils.el" "file-utils.el" "lotus-all-pkg.el" "misc-utils.el" "perforce-test.el" "utils-custom.el" "wrappers.el")
-
-)
+ (depends-on "el-mock"))

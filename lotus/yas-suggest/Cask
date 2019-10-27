@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "yas-suggest" "20190106.2010" "yas-suggest")
 
 
+(files
+ "yas-suggest-pkg.el"
+ "yas-suggest.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "yas-suggest-pkg.el" "yas-suggest.el")
-
-)
+ (depends-on "el-mock"))

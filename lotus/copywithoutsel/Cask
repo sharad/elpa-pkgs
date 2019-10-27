@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "copywithoutsel" "20190106.1919" "copywithoutsel")
 
 
+(files
+ "copywithoutsel-pkg.el"
+ "copywithoutsel.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "copywithoutsel-pkg.el" "copywithoutsel.el")
-
-)
+ (depends-on "el-mock"))

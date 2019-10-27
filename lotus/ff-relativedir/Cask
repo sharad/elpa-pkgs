@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "ff-relativedir" "20190106.1921" "ff-relativedir")
 
 
+(files
+ "ff-relativedir-pkg.el"
+ "ff-relativedir.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "ff-relativedir-pkg.el" "ff-relativedir.el")
-
-)
+ (depends-on "el-mock"))

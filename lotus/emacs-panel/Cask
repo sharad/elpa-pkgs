@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "emacs-panel" "20181227.321" "emacs-panel")
 
 
+(files
+ "emacs-panel-pkg.el"
+ "emacs-panel.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "emacs-panel-pkg.el" "emacs-panel.el")
-
-)
+ (depends-on "el-mock"))

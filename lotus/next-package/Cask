@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "next-package" "20171222.127" "next-package")
 
 
+(files
+ "next-package-pkg.el"
+ "next-package.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "next-package-pkg.el" "next-package.el")
-
-)
+ (depends-on "el-mock"))

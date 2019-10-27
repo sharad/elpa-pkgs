@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "lotus-crypt-utils" "20171222.127" "lotus-crypt-utils")
 
 
+(files
+ "lotus-crypt-utils-pkg.el"
+ "lotus-crypt-utils.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "lotus-crypt-utils-pkg.el" "lotus-crypt-utils.el")
-
-)
+ (depends-on "el-mock"))

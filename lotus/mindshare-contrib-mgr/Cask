@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "mindshare-contrib-mgr" "20180629.1819" "mindshare-contrib-mgr")
 
 
+(files
+ "mindshare-contrib-mgr-pkg.el"
+ "mindshare-contrib-mgr.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "mindshare-contrib-mgr-pkg.el" "mindshare-contrib-mgr.el")
-
-)
+ (depends-on "el-mock"))

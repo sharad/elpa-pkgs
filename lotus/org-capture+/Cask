@@ -1,20 +1,25 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "org-capture+" "20190824.1955" "org-capture+")
 
 
+(files
+ "org-capture+-helm-dynamic.el"
+ "org-capture+-helm.el"
+ "org-capture+-lib.el"
+ "org-capture+-macros.el"
+ "org-capture+-pkg.el"
+ "org-capture+.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "org-capture+-helm-dynamic.el" "org-capture+-helm.el" "org-capture+-lib.el" "org-capture+-macros.el" "org-capture+-pkg.el" "org-capture+.el")
-
-
+ (depends-on "el-mock")
  (depends-on "helm")
  (depends-on "lotus-tree-manager")
  (depends-on "lotus-utils"))

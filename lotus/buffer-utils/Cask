@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "buffer-utils" "20171222.126" "buffer-utils")
 
 
+(files
+ "buffer-utils-pkg.el"
+ "buffer-utils.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "buffer-utils-pkg.el" "buffer-utils.el")
-
-)
+ (depends-on "el-mock"))

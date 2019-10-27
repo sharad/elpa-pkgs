@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "lotus-annotate" "20190801.1349" "lotus-annotate")
 
 
+(files
+ "lotus-annotate-pkg.el"
+ "lotus-annotate.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "lotus-annotate-pkg.el" "lotus-annotate.el")
-
-)
+ (depends-on "el-mock"))

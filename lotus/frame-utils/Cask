@@ -1,18 +1,19 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "frame-utils" "20171222.126" "frame-utils")
 
 
+(files
+ "frame-utils-pkg.el"
+ "frame-utils.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "frame-utils-pkg.el" "frame-utils.el")
-
-
+ (depends-on "el-mock")
  (depends-on "elscreen"))

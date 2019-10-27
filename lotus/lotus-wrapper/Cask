@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "lotus-wrapper" "20180509.1" "lotus-wrapper")
 
 
+(files
+ "lotus-wrapper-pkg.el"
+ "lotus-wrapper.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "lotus-wrapper-pkg.el" "lotus-wrapper.el")
-
-)
+ (depends-on "el-mock"))

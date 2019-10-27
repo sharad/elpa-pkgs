@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "echoserver" "20190106.1920" "echoserver")
 
 
+(files
+ "echoserver-pkg.el"
+ "echoserver.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "echoserver-pkg.el" "echoserver.el")
-
-)
+ (depends-on "el-mock"))

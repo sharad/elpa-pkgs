@@ -1,18 +1,21 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "debug-info" "20190709.2234" "debug-info")
 
 
+(files
+ "backtrace-debug.el"
+ "debug-hang.el"
+ "debug-info-pkg.el"
+ "debug-info.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "backtrace-debug.el" "debug-hang.el" "debug-info-pkg.el" "debug-info.el")
-
-
+ (depends-on "el-mock")
  (depends-on "notify"))

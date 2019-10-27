@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "annot+" "20190801.1346" "annot+")
 
 
+(files
+ "annot+-pkg.el"
+ "annot+el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "annot+-pkg.el" "annot+el")
-
-)
+ (depends-on "el-mock"))

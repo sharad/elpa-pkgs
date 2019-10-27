@@ -1,17 +1,19 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "emacs-db-mode" "20181012.2332" "emacs-db-mode")
 
 
+(files
+ "db.el"
+ "emacs-db-mode-pkg.el"
+ "emacs-db-mode.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "db.el" "emacs-db-mode-pkg.el" "emacs-db-mode.el")
-
-)
+ (depends-on "el-mock"))

@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "reader-mode" "20171222.129" "reader mode")
 
 
+(files
+ "reader-mode-pkg.el"
+ "reader-mode.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "reader-mode-pkg.el" "reader-mode.el")
-
-)
+ (depends-on "el-mock"))

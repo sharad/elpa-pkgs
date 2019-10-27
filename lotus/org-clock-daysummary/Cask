@@ -1,19 +1,20 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "org-clock-daysummary" "20171222.127" "Org clock day summary")
 
 
+(files
+ "org-clock-daysummary-pkg.el"
+ "org-clock-daysummary.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "org-clock-daysummary-pkg.el" "org-clock-daysummary.el")
-
-
+ (depends-on "el-mock")
  (depends-on "spaceline")
  (depends-on "lotus-utils"))

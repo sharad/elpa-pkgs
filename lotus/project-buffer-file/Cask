@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "project-buffer-file" "20171222.129" "project-buffer-file")
 
 
+(files
+ "project-buffer-file-pkg.el"
+ "project-buffer-file.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "project-buffer-file-pkg.el" "project-buffer-file.el")
-
-)
+ (depends-on "el-mock"))

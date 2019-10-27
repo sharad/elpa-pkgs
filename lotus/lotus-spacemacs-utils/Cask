@@ -1,17 +1,18 @@
 
 (source gnu)
 (source melpa)
-(source local \"~/.xemacs/elpa/upload\")
+(source local "~/.xemacs/elpa/upload")
 
 
 (package "lotus-spacemacs-utils" "20191020.1914" "lotus-spacemacs-utils")
 
 
+(files
+ "lotus-spacemacs-utils-pkg.el"
+ "lotus-spacemacs-utils.el")
+
 (development
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
- (depends-on "el-mock")(files 
- "lotus-spacemacs-utils-pkg.el" "lotus-spacemacs-utils.el")
-
-)
+ (depends-on "el-mock"))
