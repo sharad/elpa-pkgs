@@ -4,7 +4,7 @@
 (source local \"~/.xemacs/elpa/upload\")
 
 
-(package "lotus-tree-manager" "20190804.2250" "lotus-tree-manager")
+(package "org-onchange" "20171222.128" "org-onchange")
 
 
 (development
@@ -12,6 +12,8 @@
  (depends-on "ecukes")
  (depends-on "ert-runner")
  (depends-on "el-mock")(files 
- "lotus-tree-lib.el" "lotus-tree-manager-pkg.el" "lotus-tree-manager.el")
+ "org-note-mail.el" "org-onchange-pkg.el" "org-onchange.el")
 
-)
+
+ (depends-on "lotus-utils")
+ (depends-on "s"))

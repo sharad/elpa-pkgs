@@ -1,0 +1,18 @@
+
+(source gnu)
+(source melpa)
+(source local \"~/.xemacs/elpa/upload\")
+
+
+(package "org-clock-table-misc-lotus" "20171222.128" "org clock table misc lotus.")
+
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock")(files 
+ "org-clock-table-misc-lotus-pkg.el" "org-clock-table-misc-lotus.el" "org-nagora-report.el" "org-timesheet.el")
+
+
+ (depends-on "lotus-utils"))

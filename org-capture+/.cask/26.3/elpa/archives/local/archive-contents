@@ -1,9 +1,27 @@
 (1
+ (gnus-namazu .
+              [(20191027 12)
+               nil "gnus-namazu" tar nil])
+ (gnus-pers .
+            [(20191027 10)
+             nil "gnus-pers" tar nil])
+ (lotus-all .
+            [(20191025 2105)
+             nil "lotus-all" tar nil])
+ (p4 .
+     [(20191025 2044)
+      nil "p4" tar nil])
+ (project-buffer-mode .
+                      [(20191025 2041)
+                       nil "project-buffer-mode" tar nil])
+ (rs-gnus-exts .
+               [(20191026 2350)
+                nil "rs-gnus-exts" tar nil])
  (lotus-spacemacs-utils .
                         [(20191021 143)
                          nil "lotus-spacemacs-utils" tar nil])
  (lotus-tree-manager .
-                     [(20191021 150)
+                     [(20191021 155)
                       nil "lotus-tree-manager" tar nil])
  (lotus-schedule .
                  [(20190922 2151)
@@ -102,14 +120,16 @@
                   (1)))
                 "org-onchange" tar nil])
  (lotus-utils .
-              [(20191003 1812)
+              [(20191025 2058)
                nil "lotus-utils" tar nil])
  (reader-mode .
               [(20190922 2225)
                nil "reader mode" tar nil])
  (occ .
-      [(20191009 137)
-       ((dash
+      [(20191027 1351)
+       ((org-plus-contrib
+         (1))
+        (dash
          (1))
         (lotus-utils
          (1))
@@ -155,7 +175,7 @@
                    (1)))
                  "startup-hooks" tar nil])
  (sessions-unified .
-                   [(20191021 57)
+                   [(20191021 2237)
                     ((rcs-backup
                       (1))
                      (elscreen
@@ -172,7 +192,7 @@
                 [(20180503 1520)
                  nil "remember-idle" tar nil])
  (rcs-backup .
-             [(20190922 2225)
+             [(20191022 1158)
               nil "rcs backup" tar nil])
  (publishing .
              [(20190922 2225)
@@ -181,7 +201,7 @@
                       [(20190922 2224)
                        nil "project-buffer-file" tar nil])
  (package-dev-utils-lotus .
-                          [(20191021 56)
+                          [(20191027 1336)
                            nil "packahe dev utils" tar nil])
  (org-scahachua .
                 [(20190922 2224)
@@ -213,8 +233,10 @@
                            (1)))
                          "org-clock-utils-lotus." tar nil])
  (org-clock-unnamed-task .
-                         [(20190922 2154)
+                         [(20191027 1336)
                           ((lotus-utils
+                            (1))
+                           (org-plus-contrib
                             (1)))
                           "org-clock-unnamed-task" tar nil])
  (org-clock-table-misc-lotus .

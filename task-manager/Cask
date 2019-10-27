@@ -1,0 +1,21 @@
+
+(source gnu)
+(source melpa)
+(source local \"~/.xemacs/elpa/upload\")
+
+
+(package "task-manager" "20171222.131" "task manager.")
+
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock")(files 
+ "task-manager-pkg.el" "task-manager.el")
+
+
+ (depends-on "publishing")
+ (depends-on "org")
+ (depends-on "rinari")
+ (depends-on "project-buffer-file"))

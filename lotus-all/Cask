@@ -4,7 +4,7 @@
 (source local \"~/.xemacs/elpa/upload\")
 
 
-(package "lotus-tree-manager" "20190804.2250" "lotus-tree-manager")
+(package "lotus-all" "20191025.2105" "lotus-all")
 
 
 (development
@@ -12,6 +12,6 @@
  (depends-on "ecukes")
  (depends-on "ert-runner")
  (depends-on "el-mock")(files 
- "lotus-tree-lib.el" "lotus-tree-manager-pkg.el" "lotus-tree-manager.el")
+ "basic-utils.el" "file-utils.el" "lotus-all-pkg.el" "misc-utils.el" "perforce-test.el" "utils-custom.el" "wrappers.el")
 
 )

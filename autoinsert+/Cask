@@ -4,7 +4,7 @@
 (source local \"~/.xemacs/elpa/upload\")
 
 
-(package "lotus-tree-manager" "20190804.2250" "lotus-tree-manager")
+(package "autoinsert+" "20171222.126" "auto insert+")
 
 
 (development
@@ -12,6 +12,6 @@
  (depends-on "ecukes")
  (depends-on "ert-runner")
  (depends-on "el-mock")(files 
- "lotus-tree-lib.el" "lotus-tree-manager-pkg.el" "lotus-tree-manager.el")
+ "autoinsert+-pkg.el" "autoinsert+.el")
 
 )

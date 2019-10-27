@@ -1,0 +1,19 @@
+
+(source gnu)
+(source melpa)
+(source local \"~/.xemacs/elpa/upload\")
+
+
+(package "org-clock-unnamed-task" "20180409.1137" "org-clock-unnamed-task")
+
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock")(files 
+ "org-clock-unnamed-task-pkg.el" "org-clock-unnamed-task.el")
+
+
+ (depends-on "lotus-utils")
+ (depends-on "org-plus-contrib"))

@@ -1,0 +1,18 @@
+
+(source gnu)
+(source melpa)
+(source local \"~/.xemacs/elpa/upload\")
+
+
+(package "org-agenda-refiletarget-files-filters" "20171228.2304" "org-agenda-refiletarget-files-filters")
+
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock")(files 
+ "org-agenda-refiletarget-files-filters-pkg.el" "org-agenda-refiletarget-files-filters.el")
+
+
+ (depends-on "lotus-utils"))
