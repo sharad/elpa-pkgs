@@ -50,15 +50,15 @@
 
 (defun activity~wipe-brackets (msgid)
   (interactive)
-  (remove-if (lambda (c)
-               (or (equal c ?>)
-                   (equal c ?<)))
+  (remove-if #'(lambda (c)
+                 (or (equal c ?>)
+                     (equal c ?<)))
              msgid))
 
 (defun lotus-plist-get-members (plist keys)
   (mapcar
-   '(lambda (k)
-     (plist-get plist k))
+   #'(lambda (k)
+       (plist-get plist k))
    keys))
 
 (defobjgen@ @event-dectector-class :gen-mail-read-event-detector ()

@@ -611,7 +611,7 @@ en all buffer were creaed idly."
 
 (defun lotus-construct-desktop-filename-regex-function-default ()
   (concat "^" (getenv "HOME") "/"
-          (file-name-nondirectory (directory-file-name session-unified-dir))
+          "." (file-name-nondirectory (directory-file-name session-unified-dir))
           "/"  "desktop" "/emacs-desktop-" server-name))
 
 ;; (debug)
