@@ -66,7 +66,13 @@ Return the modified ALIST."
 
 ;; deh-require-maybe elscreen
 ;; toggle-ibuffer-group
-(require 'buffer-utils)
+
+;;;###autoload
+(define-minor-mode sticky-buffer-mode
+  "Make the current window always display this buffer."
+  nil " sticky" nil
+  (set-window-dedicated-p (selected-window) sticky-buffer-mode))
+
 
 (defvar frame-utils-select-frame-fn #'select-frame-set-input-focus "startup-select-frame-fn alternate value is select-frame")
 

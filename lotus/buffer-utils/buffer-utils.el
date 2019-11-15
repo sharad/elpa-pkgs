@@ -105,6 +105,7 @@
 
 
 ;; http://lists.gnu.org/archive/html/help-gnu-emacs/2007-05/msg00978.html
+;;;###autoload
 (define-minor-mode sticky-buffer-mode
   "Make the current window always display this buffer."
   nil " sticky" nil
