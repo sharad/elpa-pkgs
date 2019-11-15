@@ -105,7 +105,14 @@ Return the modified ALIST."
   (let* ((buffer (or buffer (current-buffer)))
          (file-name (file-truename (buffer-file-name (get-buffer buffer)))))
     (when file-name
-      (setq epa-file-passphrase-alist (assq-delete-all-test file-name epa-file-passphrase-alist #'string-equal))
+      (setq epa-file-passphrase-alist
+            (remove-if #'(lambda (filename-pass)
+                           (let ((filename (car filename-pass)))
+                             (string-equal (file-truename filename)
+                                           (file-truename file-name))))
+                       epa-file-passphrase-alist)
+            ;; (assq-delete-all-test file-name epa-file-passphrase-alist #'string-equal)
+            )
       (kill-buffer buffer))))
 
 (defalias 'epa-forget-passphrase 'forget-passphrase)
@@ -117,23 +124,31 @@ Return the modified ALIST."
   (interactive)
   (when  epa-file-passphrase-alist
     (let* ((exceptitions-alist (mapcar
-                                '(lambda (p) (cons (file-truename (car p)) (cdr p)))
+                                #'(lambda (p)
+                                    (cons (file-truename (car p)) (cdr p)))
                                 epa-file-passphrase-cleanup-exceptitions-alist))
-           (exceptitions (mapcar 'car exceptitions-alist)))
+           (exceptitions (mapcar #'car exceptitions-alist)))
       (dolist (a epa-file-passphrase-alist)
         (let* ((file-name (file-truename (car a)))
                (buffer-of-file (find file-name (buffer-list) :key #'(lambda (f)
                                                                       (if (stringp f) (file-truename (buffer-file-name f))))
                                      :test #'string-equal)))
           (unless (member file-name exceptitions)
-            (setq epa-file-passphrase-alist (assq-delete-all-test file-name epa-file-passphrase-alist #'string-equal))
+            (setq epa-file-passphrase-alist
+                  (remove-if #'(lambda (filename-pass)
+                                 (let ((filename (car filename-pass)))
+                                   (string-equal (file-truename filename)
+                                                 (file-truename file-name))))
+                             epa-file-passphrase-alist)
+                  ;; (assq-delete-all-test file-name epa-file-passphrase-alist #'string-equal)
+                  )
             (if buffer-of-file
                 (kill-buffer buffer-of-file)))))
 
       (dolist (buff (remove-if-not '(lambda (b)
-                                     (let ((bn (buffer-file-name b)))
-                                       (if bn
-                                           (string-match ".gpg\$" bn))))
+                                      (let ((bn (buffer-file-name b)))
+                                        (if bn
+                                            (string-match ".gpg\$" bn))))
                                    (buffer-list)))
         (let ((buff-file (file-truename (buffer-file-name buff))))
           (unless (member buff-file exceptitions)
@@ -141,12 +156,18 @@ Return the modified ALIST."
             (kill-buffer buff)
             ;; (message "killed %s" buff)
             (setq epa-file-passphrase-alist
-                  (assq-delete-all-test buff-file epa-file-passphrase-alist #'string-equal))))))
+                  (remove-if #'(lambda (filename-pass)
+                                 (let ((filename (car filename-pass)))
+                                   (string-equal (file-truename filename)
+                                                 (file-truename buff-file))))
+                             epa-file-passphrase-alist)
+                  ;; (assq-delete-all-test buff-file epa-file-passphrase-alist #'string-equal)
+                  )))))
 
     (dolist (v epa-file-passphrase-cleanup-exceptitions-alist)
       (if (<= (cdr v) 0)
           (remove-alist 'epa-file-passphrase-cleanup-exceptitions-alist (car v))
-          (decf (cdr v))))
+        (decf (cdr v))))
     ;; (setq epa-file-passphrase-cleanup-exceptitions-alist exceptitions-alist)
     ))
 

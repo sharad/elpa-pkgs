@@ -14,6 +14,8 @@
  "frame-utils.el")
 
 (development
+ (depends-on "elscreen")
+ (depends-on "buffer-utils")
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")

@@ -552,6 +552,22 @@ will be deleted."
    package-archive-contents))
 
 ;;;###autoload
+(defun package-resolve-org-upgrade ()
+  (interactive)
+  (message "started package-resolve-org-upgrade")
+  (let ((pkgs '(timesheet
+                task-manager
+                ox-rfc
+                org)))
+
+    (dolist (p pkgs)
+      (lotus-package-delete p))
+
+    (dolist (p (reverse pkgs))
+      (package-install p)))
+  (message "finished package-resolve-org-upgrade"))
+
+;;;###autoload
 (defun package-resolve-org-plus-contrib-upgrade ()
   (interactive)
   (message "started package-resolve-org-plus-contrib-upgrade")
@@ -575,5 +591,11 @@ will be deleted."
     (dolist (p (reverse pkgs))
       (package-install p)))
   (message "finished package-resolve-org-plus-contrib-upgrade"))
+
+(defun package-resolve-upgrade ()
+  (interactive)
+  (ignore-errors
+    (package-resolve-org-upgrade))
+  (package-resolve-org-plus-contrib-upgrade))
 
 ;;; package-dev-utils-lotus.el ends here
