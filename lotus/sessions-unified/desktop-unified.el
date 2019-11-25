@@ -658,11 +658,12 @@ en all buffer were creaed idly."
                   (if (lotus-desktop-saved-session)
                       (progn
                         (funcall sessions-unified-utils-notify "lotus-desktop-session-restore" "lotus-desktop-session-restore")
-                        (progn            ;remove P4
+                        (when (memq 'P4 vc-handled-backends)            ;remove P4
                           (setq vc-handled-backends (remove 'P4 vc-handled-backends))
                           (add-hook 'lotus-enable-desktop-restore-interrupting-feature-hook
                                     #'(lambda ()
-                                        (add-to-list 'vc-handled-backends 'P4))))
+                                        (when nil
+                                          (add-to-list 'vc-handled-backends 'P4)))))
                         (if show-error
 
                             (if (desktop-vc-read *desktop-save-filename*)
