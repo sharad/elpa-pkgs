@@ -108,10 +108,10 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
                  :extras (and (> (length (cdr package)) 4)
                               ;; Older archive-contents files have only 4
                               ;; elements here.
-                              (package--ac-desc-extras (cdr package)))))
+                              (package--ac-desc-extras (cdr package))))))
                ;; (existing-packages (assq name package-archive-contents))
                ;; (pinned-to-archive (assoc name package-pinned-packages))
-               )
+               
           pkg-desc)
         (error "not able to find package for %s" pkg-name))))
 
@@ -209,7 +209,8 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
                              ('end-of-file nil))))
                       contents))))
               `(define-package ,pkg-name ,version ,(format "%s" pkg-name) nil))))
-         (tmp-dir (expand-file-name "elpa" (getenv "TMP")))
+         (tmp-dir (expand-file-name "elpa" (or (getenv "TMP")
+                                               "~/tmp/")))
          (pkg-dir
           (expand-file-name
            (format "%s-%s" pkg-name version)
@@ -234,17 +235,18 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
         (dolist (del-file (directory-files-recursively pkg-dir "'\*~$\\|'RCS$"))
           (delete-file del-file)))
 
-      (if (file-directory-p package-source-path)
-          (unless (string-match-p
-                   (concat "^"
-                           (regexp-quote
-                            (file-truename package-source-path)))
-                   (file-truename dir-of-current-file))
-            (copy-directory
-             dir-of-current-file
-             (expand-file-name pkg-name package-source-path)
-             nil t t))
-        (error "package-source-path do ot exists."))
+      (when nil
+        (if (file-directory-p package-source-path)
+            (unless (string-match-p
+                     (concat "^"
+                             (regexp-quote
+                              (file-truename package-source-path)))
+                     (file-truename dir-of-current-file))
+              (copy-directory
+               dir-of-current-file
+               (expand-file-name pkg-name package-source-path)
+               nil t t))
+          (error "package-source-path do ot exists.")))
       (setcar (nthcdr 2 pkg-def) version)
       (unless pkg-def-exists ;; version exist mean file -pkg.el was there presently, so need to ask any question.
         (progn
@@ -429,11 +431,11 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
              #'(lambda (d)
                  (file-directory-p
                   (expand-file-name (symbol-name d) base)))
-             dependencies-without-version))
+             dependencies-without-version)))
            ;; (dependencies-external
            ;;  (delete-dups
            ;;   dependencies-external))
-           )
+           
 
       ;; Than find all dependencies and install them
       ;; try to install dependencies first
@@ -552,22 +554,6 @@ will be deleted."
    package-archive-contents))
 
 ;;;###autoload
-(defun package-resolve-org-upgrade ()
-  (interactive)
-  (message "started package-resolve-org-upgrade")
-  (let ((pkgs '(timesheet
-                task-manager
-                ox-rfc
-                org)))
-
-    (dolist (p pkgs)
-      (lotus-package-delete p))
-
-    (dolist (p (reverse pkgs))
-      (package-install p)))
-  (message "finished package-resolve-org-upgrade"))
-
-;;;###autoload
 (defun package-resolve-org-plus-contrib-upgrade ()
   (interactive)
   (message "started package-resolve-org-plus-contrib-upgrade")
@@ -591,11 +577,5 @@ will be deleted."
     (dolist (p (reverse pkgs))
       (package-install p)))
   (message "finished package-resolve-org-plus-contrib-upgrade"))
-
-(defun package-resolve-upgrade ()
-  (interactive)
-  (ignore-errors
-    (package-resolve-org-upgrade))
-  (package-resolve-org-plus-contrib-upgrade))
 
 ;;; package-dev-utils-lotus.el ends here

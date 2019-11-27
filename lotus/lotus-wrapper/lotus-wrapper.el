@@ -25,6 +25,7 @@
 ;;; Code:
 
 (provide 'lotus-wrapper)
+
 
 (defvar replace-file-truename-link-cycle-counter 201)
 
