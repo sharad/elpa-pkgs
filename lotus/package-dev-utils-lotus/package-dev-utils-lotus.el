@@ -209,8 +209,7 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
                              ('end-of-file nil))))
                       contents))))
               `(define-package ,pkg-name ,version ,(format "%s" pkg-name) nil))))
-         (tmp-dir (expand-file-name "elpa" (or (getenv "TMP")
-                                               "~/tmp/")))
+         (tmp-dir (expand-file-name "elpa" (or (getenv "TMP") "~/tmp/")))
          (pkg-dir
           (expand-file-name
            (format "%s-%s" pkg-name version)

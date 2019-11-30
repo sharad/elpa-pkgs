@@ -178,12 +178,15 @@
   "If pid is the process ID of an emacs process, return t, else nil.
 so returns nil if pid is nil."
   (when pid
-    (let ((attributes (process-attributes pid)) (cmd))
-      (dolist (attr attributes)
-        (if (string= "comm" (car attr))
-            (setq cmd (cdr attr))))
-      (if (and cmd (or (string= "emacs" cmd) (string= "emacs.exe" cmd))) t))))
-
+    (let* ((attributes (process-attributes pid))
+           (cmd        (cdr (assoc "comm" attributes #'string=))))
+      ;; (dolist (attr attributes)
+      ;;   (if (string= "comm" (car attr))
+      ;;       (setq cmd (cdr attr))))
+      (and cmd
+           (or (string= "emacs"     cmd)
+               (string= "emacs.exe" cmd)
+               (string-match "^\.emacs\\(-\.+\\)$" cmd))))))
 ;; I think the original function contains an error. Should it not end something like:
 
 ;; (when (search-forward "emacs" nil t)
@@ -319,9 +322,10 @@ so returns nil if pid is nil."
 
 (defun desktop-vc-owner (&optional desktop-save-filename)
   (interactive "fdesktop file: ")
-  (let* ((desktop-save-filename (or desktop-save-filename *desktop-save-filename*))
-         (desktop-base-file-name (file-name-nondirectory desktop-save-filename))
-         (retval (desktop-owner (dirname-of-file desktop-save-filename))))
+  (let* ((desktop-save-filename  (or desktop-save-filename *desktop-save-filename*))
+         ;; (desktop-dirname        (file-name-directory desktop-save-filename))
+         ;; (desktop-base-file-name (file-name-nondirectory desktop-save-filename))
+         (retval                 (desktop-owner (dirname-of-file desktop-save-filename))))
     (when (emacs-process-p retval)
       retval)))
 
