@@ -868,25 +868,23 @@ which other peoples are also working."
             (run-with-timer
              7 nil
              #'(lambda (buff)
-                 (when (and
-                        (bufferp buff)
-                        (buffer-live-p buff))
-                   (with-current-buffer buff
-                     (forgive/them))))
+                 (when (and (bufferp buff)
+                            (buffer-live-p buff))
+                   (with-current-buffer buff (forgive/them))))
              (current-buffer))
             (message "called enable office mode"))
 
         (progn
           (message "calling disable office mode")
-          (when (or
-                 (eq major-mode 'c-mode)
-                 (eq major-mode 'c++-mode))
+          (when (or (eq major-mode 'c-mode)
+                    (eq major-mode 'c++-mode))
             (setq tab-width (custom-reevaluate-setting 'tab-width))
             (c-set-style "gnu" 1))
           (set (make-local-variable 'before-save-hook) before-save-hook)
           (add-hook 'before-save-hook 'delete-trailing-whitespace t)
           (message "called disable office mode")))
     (error (message "Error: %s" e))))
+
 
 (when nil
   (defun org-clock-select-task-from-clocks (clocks &optional prompt)
@@ -899,47 +897,47 @@ which other peoples are also working."
       (setq och (reverse och) chl (length och))
       (if (zerop chl)
           (user-error "No recent clock")
-          (save-window-excursion
-            (org-switch-to-buffer-other-window
-             (get-buffer-create "*Clock Task Select*"))
-            (erase-buffer)
-            ;; (when (marker-buffer org-clock-default-task)
-            ;;   (insert (org-add-props "Default Task\n" nil 'face 'bold))
-            ;;   (setq s (org-clock-insert-selection-line ?d org-clock-default-task))
-            ;;   (push s sel-list))
-            ;; (when (marker-buffer org-clock-interrupted-task)
-            ;;   (insert (org-add-props "The task interrupted by starting the last one\n" nil 'face 'bold))
-            ;;   (setq s (org-clock-insert-selection-line ?i org-clock-interrupted-task))
-            ;;   (push s sel-list))
-            ;; (when (org-clocking-p)
-            ;;   (insert (org-add-props "Current Clocking Task\n" nil 'face 'bold))
-            ;;   (setq s (org-clock-insert-selection-line ?c org-clock-marker))
-            ;;   (push s sel-list))
-            (insert (org-add-props "Recent Tasks\n" nil 'face 'bold))
-            (mapc
-             (lambda (m)
-               (when (marker-buffer m)
-                 (setq i (1+ i)
-                       s (org-clock-insert-selection-line
-                          (if (< i 10)
-                              (+ i ?0)
-                              (+ i (- ?A 10))) m))
-                 (if (fboundp 'int-to-char) (setf (car s) (int-to-char (car s))))
-                 (push s sel-list)))
-             och)
-            (run-hooks 'org-clock-before-select-task-hook)
-            (goto-char (point-min))
-            ;; Set min-height relatively to circumvent a possible but in
-            ;; `fit-window-to-buffer'
-            (fit-window-to-buffer nil nil (if (< chl 10) chl (+ 5 chl)))
-            (message (or prompt "Select task for clocking:"))
-            (setq cursor-type nil rpl (read-char-exclusive))
-            (kill-buffer)
-            (cond
-              ((eq rpl ?q) nil)
-              ((eq rpl ?x) nil)
-              ((assoc rpl sel-list) (cdr (assoc rpl sel-list)))
-              (t (user-error "Invalid task choice %c" rpl)))))))
+        (save-window-excursion
+          (org-switch-to-buffer-other-window
+           (get-buffer-create "*Clock Task Select*"))
+          (erase-buffer)
+          ;; (when (marker-buffer org-clock-default-task)
+          ;;   (insert (org-add-props "Default Task\n" nil 'face 'bold))
+          ;;   (setq s (org-clock-insert-selection-line ?d org-clock-default-task))
+          ;;   (push s sel-list))
+          ;; (when (marker-buffer org-clock-interrupted-task)
+          ;;   (insert (org-add-props "The task interrupted by starting the last one\n" nil 'face 'bold))
+          ;;   (setq s (org-clock-insert-selection-line ?i org-clock-interrupted-task))
+          ;;   (push s sel-list))
+          ;; (when (org-clocking-p)
+          ;;   (insert (org-add-props "Current Clocking Task\n" nil 'face 'bold))
+          ;;   (setq s (org-clock-insert-selection-line ?c org-clock-marker))
+          ;;   (push s sel-list))
+          (insert (org-add-props "Recent Tasks\n" nil 'face 'bold))
+          (mapc
+           (lambda (m)
+             (when (marker-buffer m)
+               (setq i (1+ i)
+                     s (org-clock-insert-selection-line
+                        (if (< i 10)
+                            (+ i ?0)
+                          (+ i (- ?A 10))) m))
+               (if (fboundp 'int-to-char) (setf (car s) (int-to-char (car s))))
+               (push s sel-list)))
+           och)
+          (run-hooks 'org-clock-before-select-task-hook)
+          (goto-char (point-min))
+          ;; Set min-height relatively to circumvent a possible but in
+          ;; `fit-window-to-buffer'
+          (fit-window-to-buffer nil nil (if (< chl 10) chl (+ 5 chl)))
+          (message (or prompt "Select task for clocking:"))
+          (setq cursor-type nil rpl (read-char-exclusive))
+          (kill-buffer)
+          (cond
+           ((eq rpl ?q) nil)
+           ((eq rpl ?x) nil)
+           ((assoc rpl sel-list) (cdr (assoc rpl sel-list)))
+           (t (user-error "Invalid task choice %c" rpl)))))))
 
   ;;     (defun org-clock-insert-selection-line (i marker)
   ;;       "Insert a line for the clock selection menu.
