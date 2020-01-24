@@ -81,6 +81,15 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
       files-list)))
 
 
+(defun package-dev-build--valid-version (str &optional regexp)
+  "Apply to STR the REGEXP if defined, \
+then pass the string to `version-to-list' and return the result, \
+or nil if the version cannot be parsed."
+  (when (and regexp (string-match regexp str))
+    (setq str (match-string 1 str)))
+  (ignore-errors (version-to-list str)))
+
+
 (defun package-install-local (pkg-desc)
   (let ((package-archives (list
                            (cons package-local-dev-archive package-archive-upload-base))))
@@ -124,7 +133,7 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
            "-[0-9\.]\*\$" "" pkg-name-version))
          (version
           (package-version-join
-           (package-build--valid-version
+           (package-dev-build--valid-version
             (format-time-string "%Y%m%d.%H%M")))))
     (package-make-package-desc pkg-name package-local-dev-archive)))
 
@@ -137,7 +146,7 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
            "-[0-9\.]\*\$" "" pkg-name-version))
          (version
           (package-version-join
-           (package-build--valid-version
+           (package-dev-build--valid-version
             (format-time-string "%Y%m%d.%H%M"))))
          (currdir-pkg-def-file
           (expand-file-name
@@ -188,7 +197,7 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
            "-[0-9\.]\*\$" "" pkg-name-version))
          (version
           (package-version-join
-           (package-build--valid-version
+           (package-dev-build--valid-version
             (format-time-string "%Y%m%d.%H%M"))))
          (currdir-pkg-def-file
           (expand-file-name

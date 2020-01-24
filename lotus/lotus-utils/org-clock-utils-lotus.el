@@ -291,5 +291,19 @@ he has to read scheme, guixsd details, than see similar module and try to implem
 ;; (eq (org-element-type (save-match-data (org-element-at-point))) 'clock)
 
 ;;; FOR WORKING FAST START CREATING TEMPLATE OR EMPTY FUNCTION BODY.
+
 
+;;;###autoload
+(defun kill-emacs-org-clock-out ()
+  (when (org-clock-is-active)
+    ;; (y-or-n-p-with-timeout (format "Do you want to clock out current task %s: " org-clock-heading) 7 nil)
+    (org-with-clock-writeable
+      (let (org-log-note-clock-out)
+        (if (org-clock-is-active)
+            (let* ((buff (marker-buffer org-clock-marker)))
+              (org-clock-out)
+              (when buff
+                (with-current-buffer buff
+                  (save-buffer)))))))))
+
 ;;; org-clock-utils-lotus.el ends here
