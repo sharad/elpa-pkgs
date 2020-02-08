@@ -27,6 +27,8 @@
 (provide 'pgm-utils)
 
 
+;; TODO: UNFINISHED
+
 (define-minor-mode office-mode
   "Prepare for working with collarative office project. This
 is the mode to be enabled when I am working in some files on
@@ -66,6 +68,7 @@ which other peoples are also working."
     (error (message "Error: %s" e))))
 
 
+;; TODO: UNFINISHED
 (defvar phased-features nil)
 
 (defun phased-feature-add (condition feature))

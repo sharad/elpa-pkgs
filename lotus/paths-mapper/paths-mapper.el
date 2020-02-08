@@ -40,6 +40,7 @@
 
 (add-to-list 'desktop-locals-to-save 'paths-mapper-map)
 (add-to-list 'session-locals-include 'paths-mapper-map)
+
 
 (defun paths-mapper-filter-path (path)
   (when path
@@ -105,5 +106,45 @@
 ;; test
 ;; (paths-mapper-read-add-replacement "/home/spratap/.opt/p/merunetworks.com/rcfun")
 ;; (paths-mapper-filter-path "/home/spratap/.opt/p/merunetworks.com/rcfun")
+
 
+
+;; TODO: UNFINISHED
+(define-minor-mode paths-mapper-mode
+  "Prepare for working with collarative paths-mapper project. This
+is the mode to be enabled when I am working in some files on
+which other peoples are also working."
+  :initial-value nil
+  :lighter " Paths-Mapper"
+  :global nil
+  (condition-case e
+      (if paths-mapper-mode
+          (progn
+            (message "calling enable paths-mapper mode")
+            (when (or
+                   (eq major-mode 'c-mode)
+                   (eq major-mode 'c++-mode))
+              (setq tab-width 8)
+              (c-set-style "stroustrup" 1))
+            (set (make-local-variable 'before-save-hook) before-save-hook)
+            (remove-hook 'before-save-hook 'delete-trailing-whitespace t)
+            (run-with-timer 7 nil
+                           #'(lambda (buff)
+                               (when (and (bufferp buff)
+                                          (buffer-live-p buff))
+                                 (with-current-buffer buff (forgive/them))))
+                           (current-buffer))
+            (message "called enable paths-mapper mode"))
+
+        (progn
+          (message "calling disable paths-mapper mode")
+          (when (or (eq major-mode 'c-mode)
+                    (eq major-mode 'c++-mode))
+            (setq tab-width (custom-reevaluate-setting 'tab-width))
+            (c-set-style "gnu" 1))
+          (set (make-local-variable 'before-save-hook) before-save-hook)
+          (add-hook 'before-save-hook 'delete-trailing-whitespace t)
+          (message "called disable paths-mapper mode")))
+    (error (message "Error: %s" e))))
+
 ;;; paths-mapper.el ends here
