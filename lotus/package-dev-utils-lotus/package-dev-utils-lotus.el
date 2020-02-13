@@ -567,6 +567,7 @@ will be deleted."
   (message "started package-resolve-org-plus-contrib-upgrade")
   (let ((pkgs '(ox-pandoc
                 orgit
+                org-ql
                 org-randomnote
                 org-present
                 org-category-capture
@@ -578,11 +579,11 @@ will be deleted."
                 org-password-manager
                 org-clock-unnamed-task
                 occ
-                org-plus-contrib
-                org)))
+                org
+                org-plus-contrib)))
 
     (dolist (p pkgs)
-      (lotus-package-delete p))
+      (ignore-errors (lotus-package-delete p)))
 
     (dolist (p (reverse pkgs))
       (package-install p)))
