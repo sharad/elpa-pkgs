@@ -705,25 +705,6 @@ return a new alist whose car is the new pair and cdr is ALIST."
   (dolist (f (frame-list))
     (frame-session-save f)))
 
-;; ;; (add-hook '*lotus-after-init-hook*
-;; (add-hook 'lotus-enable-startup-interrupting-feature-hook ;new
-;;           '(lambda ()
-;;             ;; (add-hook 'after-make-frame-functions 'frame-session-set-this-location t)
-;;             (add-hook
-;;              'after-make-frame-functions
-;;              '(lambda (nframe)
-;;                (run-at-time-or-now-arg 3
-;;                 (lambda (frm)
-;;                   (let ((*frame-session-restore* t))
-;;                       (frame-session-restore frm t)))
-;;                 nframe))
-;;               t)
-;;             (add-hook 'delete-frame-functions 'frame-session-save)
-;;             ;; (add-hook 'kill-emacs-hook 'save-all-frames-session)) ; done in save-all-sessions-auto-save
-;;             ;; t
-;;             )
-;;           t)
-
 (defun frame-session-restore-hook-func ()
   "Add to hook"
   ;; (add-hook 'after-make-frame-functions 'frame-session-set-this-location t)
@@ -742,7 +723,21 @@ return a new alist whose car is the new pair and cdr is ALIST."
                #'frame-session-restore-force)
   (remove-hook 'delete-frame-functions
                #'frame-session-save))
+
 
+(defun frame-session-restore-add-hooks ()
+  (interactive)
+  (frame-session-restore-hook-func))
+
+(defun frame-session-restore-remove-hooks ()
+  (interactive)
+  (frame-session-restore-unhook-func))
+
+(defun frame-session-name ()
+  (interactive)
+  (message "Session: %s"
+           (frame-parameter (selected-frame) 'frame-spec-id)))
+
 (when session-unified-debug
  (frame-parameter (selected-frame) 'frame-spec-id)
  after-make-frame-functions
