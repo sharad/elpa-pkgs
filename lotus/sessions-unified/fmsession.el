@@ -394,11 +394,11 @@ return a new alist whose car is the new pair and cdr is ALIST."
 
 (defun fmsession-migration ()
   (interactive)
-  (dolist (session (directory-files "~/.emacs.d/session/frames/" nil "[a-zA-Z]+"))
+  (dolist (session (directory-files "~/.emacs.d/.cache/session-unified/session/frames/" nil "[a-zA-Z]+"))
     (pushnew
      (cons session
            (lotus-read-sexp
-            (concat "~/.emacs.d/session/frames/" session "/elscreen")))
+            (concat "~/.emacs.d/.cache/session-unified/session/frames/" session "/elscreen")))
      *frames-elscreen-session*)))
 
 
@@ -727,6 +727,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
 (defun frame-session-restore-hook-func ()
   "Add to hook"
   ;; (add-hook 'after-make-frame-functions 'frame-session-set-this-location t)
+  (message "adding frame-session-restore-hook-func hooks")
   (when t
    (add-hook 'after-make-frame-functions
              #'frame-session-restore-force

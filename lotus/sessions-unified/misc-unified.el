@@ -56,7 +56,8 @@
 ;; (deh-require-maybe desktopaid
 (when session-unified-debug
   ;; see: http://desktopaid.sourceforge.net/
-  (dta-hook-up))
+  (when (fboundp 'dta-hook-up) (dta-hook-up)))
+
 
 ;; (deh-require-maybe frame-restore
 ;;   ;; check this library will know what to do.
