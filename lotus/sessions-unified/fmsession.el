@@ -443,6 +443,13 @@ return a new alist whose car is the new pair and cdr is ALIST."
         (append
          *frames-elscreen-session*
          (lotus-read-sexp file))))
+
+
+(defun fmsession-get-locations ()
+  (remove-if #'null
+             (mapcar (lambda (f) (frame-parameter f 'frame-spec-id))
+                     (frame-list))))
+
 
 (defun elscreen-session-store (elscreen-session &optional nframe)
   (interactive
@@ -473,10 +480,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
       (ido-completing-read "Session: "
                            (remove-if-not #'(lambda (dir)
                                               (not
-                                               (member
-                                                dir
-                                                (remove-if #'null
-                                                           (mapcar (lambda (f) (frame-parameter f 'frame-spec-id)) (frame-list))))))
+                                               (member dir (fmsession-get-locations))))
                                           (mapcar 'car *frames-elscreen-session*))
                            nil
                            nil
@@ -488,11 +492,8 @@ return a new alist whose car is the new pair and cdr is ALIST."
       (completing-read-timeout 7
                                "Session: "
                                (remove-if-not #'(lambda (dir)
-                                                  (not (member dir
-                                                               (remove-if #'null
-                                                                          (mapcar
-                                                                           #'(lambda (f) (frame-parameter f 'frame-spec-id))
-                                                                           (frame-list))))))
+                                                  (let ((specs (fmsession-get-locations)))
+                                                    (not (member dir specs))))
                                               (mapcar 'car *frames-elscreen-session*))
                                nil
                                nil
@@ -501,11 +502,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
 
 (defun fmsession-read-location (&optional initial-input)
   ;; keeps on reading name.
-  (let ((locations
-         (remove-if #'null
-                    (mapcar
-                     #'(lambda (f) (frame-parameter f 'frame-spec-id))
-                     (frame-list))))
+  (let ((locations (fmsession-get-locations))
         (used t)
         seletion)
     (while used
@@ -589,6 +586,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
 (defvar *desktop-vc-read-inprogress* nil "desktop-vc-read-inpgrogress")
 
 (defun frame-session-set-this-location (nframe &optional try-guessing)
+  "Possible value of TRY_GUESS is T or 'ONLY"
     ;; ask, guess-ask, guess-notask
     ;; nil ask
     ;; guess
@@ -607,26 +605,22 @@ return a new alist whose car is the new pair and cdr is ALIST."
             (if xwin-enabled
                 (ignore-errors (emacs-panel-wm-hints))))
            (desktop-name (if wm-hints
-                             (nth
-                              (cadr (assoc 'current-desktop wm-hints))
-                              (cdr (assoc 'desktop-names wm-hints)))))
-           (location (if (and
-                          try-guessing
-                          desktop-name
-                          (member desktop-name
-                                  (mapcar #'car *frames-elscreen-session*)))
+                             (nth (cadr (assoc 'current-desktop wm-hints))
+                                  (cdr  (assoc 'desktop-names wm-hints)))))
+           (location (if (and try-guessing
+                              desktop-name
+                              (member desktop-name
+                                      (mapcar #'car *frames-elscreen-session*)))
                          (progn
-                           (message
-                            "frame-session-set-this-location: NO need to call interactive (fmsession-read-location desktop-name[%s])"
-                            desktop-name)
+                           (message "frame-session-set-this-location: NO need to call interactive (fmsession-read-location desktop-name[%s])"
+                                    desktop-name)
                            desktop-name)
                        (progn
                          (if (eq try-guessing 'only)
-                             (message
-                              "frame-session-set-this-location: could not guess will return nil as try-guessing = %s set." try-guessing)
-                           (message
-                            "frame-session-set-this-location: NEED to call interactive (fmsession-read-location desktop-name[%s])"
-                            desktop-name))
+                             (message "frame-session-set-this-location: could not guess will return nil as try-guessing = %s set."
+                                      try-guessing)
+                           (message "frame-session-set-this-location: NEED to call interactive (fmsession-read-location desktop-name[%s])"
+                                    desktop-name))
                          ;; BUG: causing first emacsclient frame to be jammed which require pkill -USR2 emacs
                          (unless (eq try-guessing 'only)
                            (fmsession-read-location desktop-name))))))
@@ -684,7 +678,16 @@ return a new alist whose car is the new pair and cdr is ALIST."
                      *frame-session-restore*))))))
 
 (defun frame-session-restore-force (nframe)
-  (frame-session-restore nframe t))
+  (let ((location (frame-parameter (selected-frame) 'frame-spec-id)))
+    (if location
+        (message "already location %s set" location))
+    (frame-session-restore nframe t)))
+
+(defun frame-session-restore-uninteractive (nframe)
+  (let ((location (frame-parameter (selected-frame) 'frame-spec-id)))
+    (if location
+        (message "already location %s set" location))
+    (frame-session-restore nframe 'only)))
 
 (defun frame-session-apply (nframe)
   "Apply existing frame session to NFRAME."
@@ -710,14 +713,18 @@ return a new alist whose car is the new pair and cdr is ALIST."
   ;; (add-hook 'after-make-frame-functions 'frame-session-set-this-location t)
   (message "adding frame-session-restore-hook-func hooks")
   (when t
-   (add-hook 'after-make-frame-functions
-             #'frame-session-restore-force)
+    (add-hook 'after-make-frame-functions
+              #'frame-session-restore-uninteractive)
+    (add-hook 'after-make-frame-functions ; frame-session-restore-force need user input so putting at end of hook
+             #'frame-session-restore-force t)
    (add-hook 'delete-frame-functions
              #'frame-session-save)))
 
 (defun frame-session-restore-unhook-func ()
   "Add to hook"
   ;; (add-hook 'after-make-frame-functions 'frame-session-set-this-location t)
+  (remove-hook 'after-make-frame-functions
+               #'frame-session-restore-uninteractive)
   (remove-hook 'after-make-frame-functions
                #'frame-session-restore-force)
   (remove-hook 'delete-frame-functions
