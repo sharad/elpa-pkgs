@@ -711,8 +711,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
   (message "adding frame-session-restore-hook-func hooks")
   (when t
    (add-hook 'after-make-frame-functions
-             #'frame-session-restore-force
-             t)
+             #'frame-session-restore-force)
    (add-hook 'delete-frame-functions
              #'frame-session-save)))
 
