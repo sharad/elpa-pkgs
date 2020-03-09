@@ -55,7 +55,9 @@
      (car (memory-info))))
 
 
+(defvar process-monitor-memory-usage-period-seconds 60)
 
+
 (defvar process-monitor-mem-usage-alist nil)
 (defvar process-monitor-mem-usage-timer-alist nil)
 
@@ -119,7 +121,9 @@
    (list (process-pid-list)))
   (if (process-attributes pid)
       (unless (assoc pid process-monitor-mem-usage-timer-alist)
-        (let ((timer (run-with-timer 7 7 #'process-check-mem-usage-diff pid)))
+        (let ((timer (run-with-timer process-monitor-memory-usage-period-seconds
+                                     process-monitor-memory-usage-period-seconds
+                                     #'process-check-mem-usage-diff pid)))
           (push (cons pid timer) process-monitor-mem-usage-timer-alist)))
     (process-monitor-memory-usage-stop pid)))
 
