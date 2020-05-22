@@ -203,6 +203,7 @@ for the overlay."
     overlay))
 
 
+;;;###autoload
 (define-minor-mode yas-suggest-mode
   "Prepare for working with collarative office project."
   :init-value 1
@@ -216,6 +217,7 @@ for the overlay."
       (setq yas-overlays nil)
       (remove-hook 'post-command-hook (function yas-post-command-hook) t))))
 
+;;;###autoload
 (defun yas-suggest-activate ()
   (yas-suggest-mode 1))
 

@@ -37,6 +37,7 @@
 (defun lotus-utils-disable-debug ()
   (interactive)
   (setq lotus-utils-debug nil))
+;;;###autoload
 (defun lotus-utils-debug (type level &rest args)
   (when lotus-utils-debug
     (when (car args)
@@ -46,7 +47,7 @@
         (apply #'lwarn type level args))
       (unless (eq level :nodisplay)
         (apply #'message args)))))
-
+;;;###autoload
 (defun lotus-utils-message (&rest args)
   (apply #'message args)
   (apply #'lotus-utils-debug :debug args))

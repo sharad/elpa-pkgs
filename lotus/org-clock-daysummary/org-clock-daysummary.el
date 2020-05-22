@@ -35,7 +35,7 @@
 (eval-when-compile
   '(require 'spaceline))
 
-(require 'file-utils)
+;; (require 'file-utils)
 
 (require 'timer-utils-lotus)
 (eval-when-compile
@@ -256,6 +256,7 @@ If not, show simply the clocked time like 01:50."
     org-clock-monitor-files
     (directory-files-recursive monitor-dir "\\.org$" 2 "\\(rip\\|stage\\)"))))
 
+;;;###autoload
 (defun org-clock-monitor-files-add-files (&rest monitor-files)
   ;; (interactive "Dadd org clock monitor files: ")
   (dolist (f monitor-files)

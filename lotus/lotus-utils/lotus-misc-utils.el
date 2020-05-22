@@ -43,6 +43,7 @@
        (when (elscreen-goto screen)
          ,@body)))))
 
+;;;###autoload
 (defun lotus-current-window-configuration (&optional frame)
   (let* ((frame (or frame     (selected-frame)))
          (elscreen-entry      (when (featurep 'elscreen)
@@ -59,6 +60,7 @@
           :elscreen-win-config elscreen-win-config
           :win-config          win-config)))
 
+;;;###autoload
 (defun lotus-set-window-configuration (config)
   (let ((frame (plist-get config :frame))
         (elscreen-entry (plist-get config :elscreen-entry))
@@ -74,9 +76,9 @@
                        elscreen-win-config
                        (featurep 'elscreen))
                   (lotus-elscreen-with-screen elscreen-entry
-                    (elscreen-set-window-configuration elscreen-entry elscreen-win-config))
-                  (if win-config
-                      (set-window-configuration win-config))))
+                                              (elscreen-set-window-configuration elscreen-entry elscreen-win-config))
+                (if win-config
+                    (set-window-configuration win-config))))
           (error "Gievn frame %s is not live now" frame))
       (error "Frame is nil"))))
 
@@ -96,17 +98,21 @@
      ,@body))
 (put 'eval-with-focus 'lisp-indent-function 0)
 
+
+;;;###autoload
 (defun lotus-active-recursive-edit ()
   (or
    (active-minibuffer-window)
    (> (recursion-depth) 0)))
 
+;;;###autoload
 (defun safe-exit-recursive-edit ()
   (abort-recursive-edit)
   (exit-recursive-edit)
   (when (lotus-active-recursive-edit)
     (abort-recursive-edit)))
 
+;;;###autoload
 (defun safe-exit-recursive-edit-if-active ()
   (progn
     (put 'quit 'error-message "")
@@ -165,13 +171,14 @@
 (when nil
   (defun test-minibuffer-quiting ()
     (without-active-minibuffer
-      (message "Hello")))
+     (message "Hello")))
 
   (run-with-timer 3 nil 'test-minibuffer-quiting)
 
   (get 'quit 'error-message))
 
 
+;;;###autoload
 (defun lotus-new-lower-win-size ()
   ;; TODO: improve it.
   ;; If the mode line might interfere with the calculator
@@ -215,6 +222,7 @@
 
 ;; create smaller and proper sized window
 ;; TODO: org-fit-window-to-buffer
+;;;###autoload
 (defun lotus-make-new-win ()
   (let ((size (lotus-new-lower-win-size))
         (window-min-height 7))
@@ -947,6 +955,7 @@
 ;; https://stackoverflow.com/questions/3811448/can-call-with-current-continuation-be-implemented-only-with-lambdas-and-closures
 ;; CALL/CC
 
+;;;###autoload
 (defun lotus-has-focus-p ()
   )
 

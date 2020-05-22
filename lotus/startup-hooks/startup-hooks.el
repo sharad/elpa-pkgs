@@ -27,7 +27,9 @@
 
 
 (provide 'startup-hooks)
+
 
+(defvar startup-hooks-insinuate-done nil)
 
 ;;{{ Run after init
 
@@ -428,7 +430,7 @@ startup in daemon mode."
            (time-stamp-string)
            (pp-to-string fn))
   (add-to-hook
-   'lotus-disable-login-session-interrupting-feature-hook
+   #'lotus-disable-login-session-interrupting-feature-hook
    fn
    append
    local))
@@ -437,7 +439,7 @@ startup in daemon mode."
 (defun remove-from-disable-login-session-interrupting-feature-hook (fn &optional local)
   (interactive)
   (remove-hook
-   'lotus-disable-login-session-interrupting-feature-hook
+   #'lotus-disable-login-session-interrupting-feature-hook
    fn
    local))
 
@@ -447,13 +449,16 @@ startup in daemon mode."
 ;;;###autoload
 (defun startup-hooks-insinuate ()
   (interactive)
-  (add-hook 'after-make-frame-functions 'lotus-enable-startup-interrupting-feature-in-frame-once)
-  (add-hook 'after-make-frame-functions 'lotus-enable-login-session-interrupting-feature-in-frame-once t))
+  (setq startup-hooks-insinuate-done t)
+  (message "startup-hooks: startup-hooks-insinuate added.")
+  (add-hook 'after-make-frame-functions #'lotus-enable-startup-interrupting-feature-in-frame-once)
+  (add-hook 'after-make-frame-functions #'lotus-enable-login-session-interrupting-feature-in-frame-once t))
 
 (defun startup-hooks-uninsinuate ()
   (interactive)
-  (remove-hook 'after-make-frame-functions 'lotus-enable-startup-interrupting-feature-in-frame-once)
-  (remove-hook 'after-make-frame-functions 'lotus-enable-login-session-interrupting-feature-in-frame-once))
+  (message "startup-hooks: startup-hooks-insinuate removed.")
+  (remove-hook 'after-make-frame-functions #'lotus-enable-startup-interrupting-feature-in-frame-once)
+  (remove-hook 'after-make-frame-functions #'lotus-enable-login-session-interrupting-feature-in-frame-once))
 
 ;; (setq after-make-frame-functions '(persp-init-new-frame elscreen-make-frame-confs muse-make-faces eyebrowse-init evil-init-esc x-dnd-init-frame))
 ;; (setq after-make-frame-functions nil)

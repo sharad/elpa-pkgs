@@ -568,7 +568,7 @@
                                 (capitalize (file-name-sans-extension file)))))
         (concat description (format "\nend %s\n" task-type)))))))
 
-;;;#autoload
+;;;###autoload
 (defun task-create-plan-task (task-type name desc task-dir)
   (interactive (task-get-task-data t))
   (let* ((plan-page
@@ -585,12 +585,12 @@
      (task-status-of-sys 'planner 'inprogress))
     t))
 
-;;;#autoload
+;;;###autoload
 (defun task-delete-plan-task (task-type name desc task-dir)
   (interactive (task-get-task-data))
   (message "Not doing anything."))
 
-;;;#autoload
+;;;###autoload
 (defun task-create-org-task (task-type name desc task-dir project-main-file project-root-folder)
   (interactive
    (let* ((task-data (task-get-task-data t))
@@ -626,7 +626,7 @@
         (save-buffer)))
     t))
 
-;;;#autoload
+;;;###autoload
 (defun task-delete-org-task (task-type name desc task-dir)
   (interactive (task-get-task-data))
   (progn
@@ -637,7 +637,7 @@
    t))
 
 ;; Project-Buffer
-;;;#autoload
+;;;###autoload
 (defun task-create-pbm-task (task-type name desc task-dir project-type project-main-file project-root-folder project-file-filter doc-file-filter doc-base-virtual-folder)
   (interactive (task-get-task-data-all t))
   (let* ((project-name (concat task-type ":" name " - " desc)))
@@ -664,16 +664,16 @@
       (save-buffer))))
 
 ;; (defun task-delete-pbm-task (task name desc task-dir project-type project-main-file project-root-folder project-file-filter doc-file-filter doc-base-virtual-folder)
-;;;#autoload
+;;;###autoload
 (defun task-delete-pbm-task (task-type name desc task-dir)
   (interactive (task-get-task-data-all))
   (message "Not doing anything."))
 
-;;;#autoload
+;;;###autoload
 (defun task-create-task-dir (task-type name desc task-dir project-root-folder)
   (interactive (task-get-task-data t))
   ;; (dolist (dname '("logs" "programs" "patches" "deliverables"))
-  (let* ()
+  (progn
     (make-directory task-dir t)
     (lotus-write-file (expand-file-name *task-desc-file-name* task-dir) desc)
     (if (file-directory-p task-scratch-dir)
@@ -737,40 +737,33 @@
            t)
         (make-directory (concat task-dir "/" dname) t)))))
 
-;;;#autoload
+;;;###autoload
 (defun task-delete-task-dir (task-type name desc task-dir)
   (interactive (task-get-task-data))
   ;; (dolist (dname '("logs" "programs" "patches" "deliverables"))
   (delete-directory task-dir t))
 
-;;;#autoload
+;;;###autoload
 (defun task-create-task (task-type name desc task-dir project-type project-main-file project-root-folder project-file-filter doc-file-filter doc-base-virtual-folder)
   (interactive (task-get-task-data-all t))
-  (let* ()
+  (progn
     (if (file-directory-p task-dir)
         (find-task task-dir)
-        ;; (progn
-        ;;   (task-create-plan-task task-type name desc task-dir)
-        ;;   (task-create-org-task  task-type name desc task-dir project-main-file project-root-folder)
-        ;;   (task-create-task-dir  task-type name desc task-dir project-root-folder)
-        ;;   (task-create-pbm-task  task-type name desc task-dir project-type project-main-file project-root-folder project-file-filter doc-file-filter doc-base-virtual-folder)
-        ;;   (org-context-clock-task-update-tasks t))
-
-        (progn
-          (task-create-task-dir  task-type name desc task-dir project-root-folder)
-          (task-create-pbm-task  task-type name desc task-dir project-type project-main-file project-root-folder project-file-filter doc-file-filter doc-base-virtual-folder)
-          (task-create-plan-task task-type name desc task-dir)
-          (task-create-org-task  task-type name desc task-dir project-main-file project-root-folder)
-          (org-context-clock-task-update-tasks t)))
+      (progn
+        (task-create-task-dir  task-type name desc task-dir project-root-folder)
+        (task-create-pbm-task  task-type name desc task-dir project-type project-main-file project-root-folder project-file-filter doc-file-filter doc-base-virtual-folder)
+        (task-create-plan-task task-type name desc task-dir)
+        (task-create-org-task  task-type name desc task-dir project-main-file project-root-folder)
+        (org-context-clock-task-update-tasks t)))
 
     (when (y-or-n-p (format "Should set %s current task" task-dir))
       (setq *taskdir-current-task* task-dir)
       (find-file (expand-file-name (task-first-org-master-file task-type) task-dir)))))
 
-;;;#autoload
+;;;###autoload
 (defun task-delete-task (task-type name desc task-dir)
   (interactive (task-get-task-data))
-  (let* ()
+  (progn
     (progn
       (task-delete-plan-task task-type name desc task-dir)
       (task-delete-org-task  task-type name desc task-dir)
@@ -778,7 +771,7 @@
       ;; (task-delete-pbm-task  task-type name desc task-dir project-type project-main-file project-root-folder project-file-filter doc-file-filter doc-base-virtual-folder)
       (task-delete-pbm-task  task-type name desc task-dir))))
 
-;;;#autoload
+;;;###autoload
 (defun find-task (task)
   (interactive
    (let ((task (ido-read-directory-name "dir: " (task-party-dir) nil t)))
@@ -804,12 +797,6 @@
     (if (y-or-n-p (format "Should set %s current task" task))
         (setq *taskdir-current-task* task))))
 
-
-
-;;(progn ;; org file management
-
-(require 'file-utils)
-
 ;;;###autoload
 (defun task-org-task-files (&optional party)
   (let ((party (or party (task-current-party))))
@@ -830,7 +817,7 @@
                                         ;all files returned by `task-org-task-files'
     `((,task-files :maxlevel . 3))))
 
-;;;#autoload
+;;;###autoload
 (defun org-clock-in-refile-task (party)
   (interactive
    (list (ido-completing-read

@@ -339,20 +339,17 @@ pointing to it."
                                 &optional
                                 force)
   (unless (occ-tree-collection-tree collection)
-    (setf
-     (occ-tree-collection-tree collection)
-     (mapcar #'occ-tree-tsk-build
-             (occ-tree-collection-roots collection))))
+    (setf (occ-tree-collection-tree collection)
+          (remove nil (mapcar #'occ-tree-tsk-build
+                              (occ-tree-collection-roots collection)))))
   (occ-tree-collection-tree collection))
 
 (cl-defmethod occ-collect-tsks ((collection occ-list-collection)
                                 force)
   (unless (occ-list-collection-list collection)
-    (setf
-     (occ-list-collection-list collection)
-     (append
-      (mapcar #'occ-list-tsk-build
-              (occ-list-collection-roots collection)))))
+    (setf (occ-list-collection-list collection)
+          (append (remove nil (mapcar #'occ-list-tsk-build
+                                      (occ-list-collection-roots collection))))))
   (occ-list-collection-list collection))
 
 
@@ -367,7 +364,6 @@ pointing to it."
              (delete-dups
               (let ((tsks (occ-collection collection))
                     (files '()))
-
                 (mapc
                  #'(lambda (tsk)
                      (occ-mapc-tree-tsks

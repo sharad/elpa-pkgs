@@ -47,6 +47,7 @@
 (define-key occ-mode-keymap (kbd "v") 'occ-version)
 (define-key occ-mode-keymap (kbd "q") 'occ-keep-quiet-for)
 
+
 ;;;###autoload
 (define-minor-mode occ-mode
   "Toggle Occ mode.
