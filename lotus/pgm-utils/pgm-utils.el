@@ -45,6 +45,7 @@ which other peoples are also working."
                    (eq major-mode 'c++-mode))
               (setq tab-width 8)
               (c-set-style "stroustrup" 1))
+            (setq show-trailing-whitespace nil)
             (set (make-local-variable 'before-save-hook) before-save-hook)
             (remove-hook 'before-save-hook 'delete-trailing-whitespace t)
             (run-with-timer
@@ -62,6 +63,7 @@ which other peoples are also working."
                     (eq major-mode 'c++-mode))
             (setq tab-width (custom-reevaluate-setting 'tab-width))
             (c-set-style "gnu" 1))
+          (setq show-trailing-whitespace 1)
           (set (make-local-variable 'before-save-hook) before-save-hook)
           (add-hook 'before-save-hook 'delete-trailing-whitespace t)
           (message "called disable office mode")))
