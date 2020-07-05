@@ -178,7 +178,7 @@
 (defun task-scratch-dir (&optional scratch-dir)
   (interactive
    (list (read-directory-name "Select task-scratch-dir: ")))
-  (let ((scratch-dir (file-truename "~/Scratches/main")))
+  (let ((scratch-dir (file-truename "~/Scratch/main")))
     (when scratch-dir
       (unless (file-directory-p scratch-dir)
         (make-directory scratch-dir t))
