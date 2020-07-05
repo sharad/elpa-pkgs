@@ -25,8 +25,22 @@
 ;;; Code:
 
 (provide 'publishing)
+
 
-(defvar *doc-root*            (expand-file-name "Documents" "~"))
+(require 'f)
+
+
+(defun doc-root-find ()
+  (let ((env-publish-path (getenv "DOCUMENT_PUBLISH_PATH"))
+        (fallback-path    (expand-file-name "Documents" "~")))
+    (if env-publish-path
+        (if (f-absolute-p env-publish-path)
+            env-publish-path
+          (expand-file-name env-publish-path "~"))
+      fallback-path)))
+
+(defvar *doc-root* (doc-root-find))
+
 (defvar *created-content-dir* (expand-file-name "CreatedContent" *doc-root*))
 (defvar *website-address*     "http://emacs-publishing.org/")
 
