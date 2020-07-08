@@ -27,8 +27,18 @@
 (provide 'pgm-utils)
 
 
+;; (autoload 'magit-git-lines "magit")
+;; (autoload 'magit-process-file "magit")
+
+(require 'magit)
+
 ;; TODO: UNFINISHED
 
+;;;###autoload
+(defvar office-git-remote-regex "")
+
+
+;;;###autoload
 (define-minor-mode office-mode
   "Prepare for working with collarative office project. This
 is the mode to be enabled when I am working in some files on
@@ -68,6 +78,33 @@ which other peoples are also working."
           (add-hook 'before-save-hook 'delete-trailing-whitespace t)
           (message "called disable office mode")))
     (error (message "Error: %s" e))))
+
+;;;###autoload
+(defun office-file-p (file)
+  (let ((remote-repo (car (remove-if-not #'(lambda (s)
+                                             (when s
+                                               (string-match-p "^origin" s)))
+                                         (magit-git-lines "remote" "-v")))))
+    (when (and office-git-remote-regex
+               (functionp 'magit-git-lines)
+               remote-repo)
+      (string-match-p office-git-remote-regex
+                      remote-repo))))
+
+;;;###autoload
+(defun office-activate ()
+  (interactive)
+  (let ((file (buffer-file-name)))
+    (when (and file
+               (office-file-p file))
+      ;; if file is handled by perforce than assume it is
+      ;; related to office perforce repository.
+      (office-mode 1))))
+
+;;;###autoload
+(defun office-init ()
+  (add-hook 'prog-mode-hook 'office-activate)
+  (add-hook 'nxml-mode-hook 'office-activate))
 
 
 ;; TODO: UNFINISHED
@@ -87,16 +124,5 @@ which other peoples are also working."
     (if (eq curr (window-buffer (selected-window)))
         ()
       ())))
-
-(defun office-activate ()
-  (interactive)
-  (let ((file (buffer-file-name)))
-    (when (and file (office-file-p file))
-      ;; if file is handled by perforce than assume it is
-      ;; related to office perforce repository.
-      (office-mode 1))))
-
-(add-hook 'prog-mode-hook 'office-activate)
-(add-hook 'nxml-mode-hook 'office-activate)
 
 ;;; pgm-utils.el ends here
