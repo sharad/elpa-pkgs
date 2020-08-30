@@ -27,6 +27,8 @@
 (provide 'org-rl-intf)
 
 
+(require 'cl)
+
 ;;;###autoload
 (defvar org-rl-interfaces nil)
 

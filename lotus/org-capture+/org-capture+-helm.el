@@ -27,6 +27,7 @@
 (provide 'org-capture+-helm)
 
 
+(require 'cl)
 (require 'dash)
 (require 'helm)
 

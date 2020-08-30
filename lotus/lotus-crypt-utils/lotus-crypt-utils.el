@@ -27,12 +27,14 @@
 
 ;;; Code:
 
+(provide 'lotus-crypt-utils)
+
+
+(require 'cl)
 (require 'epg)
 (require 'epa)
 (require 'epa-file)
-
-;; (require 'utils-custom)
-;; (require 'common-info)
+
 
 (defvar epa-file-passphrase-cleanup-exceptitions-alist nil "Epa file passphrase cleanup exceptitions")
 
@@ -53,6 +55,7 @@ Return the modified ALIST."
   "Delete an element whose car equals KEY from the alist bound to SYMBOL."
   (and (boundp symbol)
        (set symbol (del-alist key (symbol-value symbol)))))
+
 
 ;;;###autoload
 (defun epa-set-file-regex (prefix)
@@ -67,6 +70,7 @@ Return the modified ALIST."
           ;; (epa-file-enable)
 
 (setq epa-file-cache-passphrase-for-symmetric-encryption t)
+
 
 ;; now I do not want to disable agent ....
 ;;{{ http://www.enigmacurry.com/2009/01/14/extending-emacs-with-advice/
@@ -93,7 +97,7 @@ Return the modified ALIST."
   (ad-activate 'epg--start)
   (message "EasyPG gpg-agent re-enabled"))
 ;;}}
-
+
 
 
 ;;;passphrase management
@@ -145,10 +149,10 @@ Return the modified ALIST."
             (if buffer-of-file
                 (kill-buffer buffer-of-file)))))
 
-      (dolist (buff (remove-if-not '(lambda (b)
-                                      (let ((bn (buffer-file-name b)))
-                                        (if bn
-                                            (string-match ".gpg\$" bn))))
+      (dolist (buff (remove-if-not #'(lambda (b)
+                                       (let ((bn (buffer-file-name b)))
+                                         (if bn
+                                             (string-match ".gpg\$" bn))))
                                    (buffer-list)))
         (let ((buff-file (file-truename (buffer-file-name buff))))
           (unless (member buff-file exceptitions)
@@ -170,6 +174,7 @@ Return the modified ALIST."
         (decf (cdr v))))
     ;; (setq epa-file-passphrase-cleanup-exceptitions-alist exceptitions-alist)
     ))
+
 
 ;;;###autoload
 (defun epa-passphrase-cleanup-suspend ()
@@ -200,8 +205,8 @@ Return the modified ALIST."
   (let ((tfile (file-truename file)))
     (if (member tfile
                 (mapcar
-                 '(lambda (f)
-                   (file-truename (car f)))
+                 #'(lambda (f)
+                     (file-truename (car f)))
                  epa-file-passphrase-cleanup-exceptitions-alist))
         (remove-alist 'epa-file-passphrase-cleanup-exceptitions-alist file))
     (pushnew (cons file times) epa-file-passphrase-cleanup-exceptitions-alist)))
@@ -212,8 +217,8 @@ Return the modified ALIST."
   (let ((tfile (file-truename file)))
     (if (member tfile
                 (mapcar
-                 '(lambda (f)
-                   (file-truename (car f)))
+                 #'(lambda (f)
+                     (file-truename (car f)))
                  epa-file-passphrase-cleanup-exceptitions-alist))
         (remove-alist 'epa-file-passphrase-cleanup-exceptitions-alist file))))
 
@@ -232,16 +237,31 @@ Return the modified ALIST."
      (list file count)))
   (if file
       (pushnew (cons (expand-file-name file) count) epa-file-passphrase-cleanup-exceptitions-alist)))
+
 
+(defun epa-find-file-secure ()
+  (interactive)
+  (let ((directory "~/.pi/"))
+    (find-file
+     (read-file-name "file: "
+                     directory
+                     (expand-file-name "i.org.gpg" directory)))))
 
+(defalias 'find-file-secure #'epa-file-find-secure)
 
+(defun epa-pop-last-passphrase ()
+  (interactive)
+  (when (y-or-n-p
+         (format "remove %s: " (caar epa-file-passphrase-alist)))
+    (pop epa-file-passphrase-alist)))
 
-
-
-
-
-
-
+(defun epa-delete-passphrase ()
+  (interactive)
+  (let ((epa-file
+         (completing-read "epa file: " (mapcar #'car epa-file-passphrase-alist))))
+    (setq epa-file-passphrase-alist
+          (delq (assoc epa-file epa-file-passphrase-alist) epa-file-passphrase-alist))))
+
 
 ;; http://www.emacswiki.org/emacs/PasswordGenerator
 ;;;###autoload
@@ -256,41 +276,37 @@ characters like \"l\" and \"1\", \"O\" and \"0\"."
         position password)
     (random t)
     (loop for i from 1 to length
-         do (setq position (random (length char-list))
-                  password (concat password (string (nth position char-list)))))
+          do (setq position (random (length char-list))
+                   password (concat password (string (nth position char-list)))))
     (if (called-interactively-p)
         (let* ((strength (make-password-strength length upper lower number symbol ambiguous))
                (bits (car strength))
                (number (cadr strength)))
           (message "The password \"%s\" is one of 10^%d possible and has a bit equivalence of %d"
                    password (round number) (round bits)))
-        password)))
+      password)))
 
 (defun make-password-char-list (upper lower number symbol ambiguous)
   (let* ((upper-chars-ambiguous '(?I ?O ?G))
          (upper-chars (loop for i from ?A to ?Z unless
-                           (member i upper-chars-ambiguous)
-                           collect i))
+                            (member i upper-chars-ambiguous)
+                            collect i))
          (lower-chars-ambiguous '(?l ?o))
          (lower-chars (loop for i from ?a to ?z unless
-                           (member i lower-chars-ambiguous)
-                           collect i))
+                            (member i lower-chars-ambiguous)
+                            collect i))
          (number-chars-ambiguous '(?0 ?1 ?6))
          (number-chars (loop for i from ?0 to ?9 unless
-                            (member i number-chars-ambiguous)
-                            collect i))
+                             (member i number-chars-ambiguous)
+                             collect i))
          (symbol-chars '(?! ?@ ?# ?$ ?% ?& ?* ?( ?) ?+ ?= ?/
-                         ?{ ?} ?[ ?] ?: ?\; ?< ?>))
+                            ?{ ?} ?[ ?] ?: ?\; ?< ?>))
          (symbol-chars-ambiguous '(?_ ?- ?| ?, ?. ?` ?' ?~ ?^ ?\"))
          char-list)
-    (if upper
-        (setq char-list (append char-list upper-chars)))
-    (if lower
-        (setq char-list (append char-list lower-chars)))
-    (if number
-        (setq char-list (append char-list number-chars)))
-    (if symbol
-        (setq char-list (append char-list symbol-chars)))
+    (if upper  (setq char-list (append char-list upper-chars)))
+    (if lower  (setq char-list (append char-list lower-chars)))
+    (if number (setq char-list (append char-list number-chars)))
+    (if symbol (setq char-list (append char-list symbol-chars)))
     (if ambiguous
         (setq char-list (append char-list
                                 upper-chars-ambiguous
@@ -321,33 +337,6 @@ and AMBIGUOUS characters"
          (number (/ (* bits (log 2)) (log 10))))
     (if (called-interactively-p)
         (message "number of combinations is 10^%d with a bit equivalence of %d" (round number) (round bits))
-        (list bits number))))
-
-(defun epa-find-file-secure ()
-  (interactive)
-  (let ((directory "~/.pi/"))
-    (find-file
-     (read-file-name "file: "
-                     directory
-                     (expand-file-name "i.org.gpg" directory)))))
-
-(defalias 'find-file-secure #'epa-file-find-secure)
-
-(defun epa-pop-last-passphrase ()
-  (interactive)
-  (when (y-or-n-p
-         (format "remove %s: " (caar epa-file-passphrase-alist)))
-    (pop epa-file-passphrase-alist)))
-
-(defun epa-delete-passphrase ()
-  (interactive)
-  (let ((epa-file
-         (completing-read "epa file: " (mapcar #'car epa-file-passphrase-alist))))
-    (setq epa-file-passphrase-alist
-          (delq (assoc epa-file epa-file-passphrase-alist) epa-file-passphrase-alist))))
-
-
-
-
-(provide 'lotus-crypt-utils)
+      (list bits number))))
+
 ;;; lotus-crypt-utils.el ends here

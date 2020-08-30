@@ -39,7 +39,7 @@
     (with-current-buffer (if file
                              (find-file-noselect file)
                            (current-buffer))
-      (when (and (buffer-livep-p (current-buffer))
+      (when (and (buffer-live-p (current-buffer))
                  (> (buffer-size (current-buffer)) 30))
         (occ-setup-buffer)
         (if file (goto-char (point-min)))

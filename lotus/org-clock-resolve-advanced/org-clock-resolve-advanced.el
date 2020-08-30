@@ -85,7 +85,10 @@ so long."
 
               (setq org-clock-last-idle-start-time org-clock-user-idle-start)
 
-              (cl-assert (nth 1 org-clock-user-idle-start))
+              ;; TODO:
+              ;; Debugger entered--Lisp error: (wrong-type-argument listp 68719476736000000)
+              ;; nth(1 (109869281350481122156953239 . 68719476736000000))
+              ;; (cl-assert (nth 1 org-clock-user-idle-start))
 
               (if (> org-clock-user-idle-seconds (* 60 org-clock-idle-time))
                   (funcall org-rl-clock-resolve-time
