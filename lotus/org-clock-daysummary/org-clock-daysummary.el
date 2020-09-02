@@ -28,6 +28,9 @@
 
 
 
+(provide 'org-clock-daysummary)
+
+
 ;; (require 'mode-line-config)
 
 (require 'spaceline)
@@ -46,7 +49,7 @@
 (require 'lotus-misc-utils)
 (eval-when-compile
   (require 'lotus-misc-utils))
-
+
 
 (defvar org-clock-work-day-hours 8 "work day hours")
 
@@ -70,9 +73,13 @@
 ;; (get 'org-mode-work-day-line-string 'risky-local-variable)
 ;; (get 'org-mode-line-string 'risky-local-variable)
 
+;;;###autoload
 (defvar org-clock-get-work-day-clock-string-separator nil)
+;;;###autoload
 (defvar org-mode-work-mode-line-timer nil)
+;;;###autoload
 (defvar org-mode-work-day-pause nil)
+;;;###autoload
 (defvar org-mode-work-day-display 'mode-line)
 
 (defvar org-clock-get-work-day-start-timer nil)
@@ -200,6 +207,7 @@ it omit prefixed 0s."
   "could be org-timer-secs-to-intelligent or org-timer-secs-to-hm or org-timer-secs-to-hms")
 
 ;; TODO: optimize it.
+;;;###autoload
 (defun org-clock-get-work-day-clock-string (&optional force)
   "Form a clock-string, that will be shown in the mode line.
 If an effort estimate was defined for the current item, use
@@ -346,7 +354,5 @@ If not, show simply the clocked time like 01:50."
       (when org-mode-work-mode-line-timer
         (cancel-timer org-mode-work-mode-line-timer)
         (setq org-mode-work-mode-line-timer nil)))
-
-
-(provide 'org-clock-daysummary)
+
 ;;; org-clock-daysummary.el ends here

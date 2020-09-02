@@ -29,6 +29,7 @@
 
 
 (require 'org-misc-utils-lotus)
+(provide 'org-clock-daysummary)
 
 
 (defvar org-clock-default-effort "1:00")
