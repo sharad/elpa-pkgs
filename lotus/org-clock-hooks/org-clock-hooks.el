@@ -33,6 +33,7 @@
 
 
 (defvar org-clock-default-effort "1:00")
+
 
 (defun lotus-org-mode-add-default-effort ()
   "Add a default effort estimation."
@@ -62,10 +63,8 @@
           (save-excursion
             (forward-line -2)
             (org-timer-set-timer))
-          (call-interactively 'org-timer-set-timer)))
-    (save-buffer)
-    ;; (org-save-all-org-buffers)
-    ))
+        (call-interactively 'org-timer-set-timer)))
+    (save-buffer)))
 
 (defun org-clock-add-schedule-on-clockin ()
   (let ((schedule (org-get-scheduled-time nil)))
@@ -97,9 +96,8 @@
        org-timer-countdown-timer)
       (org-timer-stop))
   (org-clock-get-work-day-clock-string t)
-  (save-buffer)
-  ;; (org-save-all-org-buffers)
-  )
+  (save-buffer))
+
 
 ;;;###autoload
 (defun lotus-org-clock-in/out-insinuate-hooks ()

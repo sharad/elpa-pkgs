@@ -83,6 +83,11 @@
 (defvar org-mode-work-day-display 'mode-line)
 
 (defvar org-clock-get-work-day-start-timer nil)
+
+(defvar org-work-day-face 'org-mode-line-clock)
+(defvar org-work-day-face-overrun 'org-mode-line-clock-overrun)
+
+
 (unless org-clock-get-work-day-start-timer
   (setq org-clock-get-work-day-start-timer
         (run-at-time "00:01am" (* 24 60 60) 'org-clock-get-work-day-clock-string t)))
@@ -98,13 +103,10 @@
   :group 'org-faces)
 
 (defface org-mode-line-wday-overrun
-    '((t (:inherit mode-line :background "red")))
+  '((t (:inherit mode-line :background "red")))
   "Face used for clock display for overrun tasks in mode line."
   :group 'org-faces)
-
-(defvar org-work-day-face 'org-mode-line-clock)
-(defvar org-work-day-face-overrun 'org-mode-line-clock-overrun)
-
+
 
 (setq
  org-work-day-face          'org-mode-line-wday
@@ -132,25 +134,21 @@
   "Get the clocked time for the current item in minutes.
 The time returned includes the time spent on this task in
 previous clocking intervals."
-  (if (org-clock-is-active)
-      (let ((currently-clocked-time
-             (floor (- (org-float-time)
-                       (org-float-time org-clock-start-time)))))
-        currently-clocked-time)
-      0))
+  (if (not (org-clock-is-active))
+      0
+    (let ((currently-clocked-time
+           (floor (- (org-float-time)
+                     (org-float-time org-clock-start-time)))))
+      currently-clocked-time)))
 
 (defun org-clock-files-secs (files &optional all)
-  (+
-   (org-clock-clocked-secs-today)
-   (*
-    60
-    (if (or
-         all
-         (null org-clock-monitor-files-mins-aggregate-internal))
-        (setq
-         org-clock-monitor-files-mins-aggregate-internal
-         (org-clock-unclocked-files-mins-today files))
-        org-clock-monitor-files-mins-aggregate-internal))))
+  (+ (org-clock-clocked-secs-today)
+     (* 60
+        (if (or all
+                (null org-clock-monitor-files-mins-aggregate-internal))
+            (setq org-clock-monitor-files-mins-aggregate-internal
+                  (org-clock-unclocked-files-mins-today files))
+          org-clock-monitor-files-mins-aggregate-internal))))
 
 (defun org-clock-files-min-today (&optional force)
   (interactive "P")
@@ -162,10 +160,9 @@ previous clocking intervals."
 
 
 (defun org-clock-work-day-start-secs ()
-  (floor
-   (org-float-time
-    (apply 'encode-time
-           (append '(0 0 0) (cdddr (decode-time)))))))
+  (floor (org-float-time
+            (apply 'encode-time
+                   (append '(0 0 0) (cdddr (decode-time)))))))
 ;; (org-float-time org-clock-work-day-end)
 
 (define-key org-clock-work-day-mode-line-map [mode-line mouse-2] 'org-clock-files-min-today)
@@ -253,16 +250,15 @@ If not, show simply the clocked time like 01:50."
 
 (defun org-clock-monitor-files-set-from-dir (monitor-dir)
   (interactive "Dset org clock monitor dir: ")
-  (setq
-   org-clock-monitor-files (directory-files-recursive monitor-dir "\\.org$" 2 "\\(rip\\|stage\\)")))
+  (setq org-clock-monitor-files
+        (directory-files-recursive monitor-dir "\\.org$" 2 "\\(rip\\|stage\\)")))
 
 (defun org-clock-monitor-files-add-from-dir (monitor-dir)
   (interactive "Dadd org clock monitor dir: ")
-  (setq
-   org-clock-monitor-files
-   (append
-    org-clock-monitor-files
-    (directory-files-recursive monitor-dir "\\.org$" 2 "\\(rip\\|stage\\)"))))
+  (setq org-clock-monitor-files
+        (append
+         org-clock-monitor-files
+         (directory-files-recursive monitor-dir "\\.org$" 2 "\\(rip\\|stage\\)"))))
 
 ;;;###autoload
 (defun org-clock-monitor-files-add-files (&rest monitor-files)
@@ -280,8 +276,7 @@ If not, show simply the clocked time like 01:50."
                (let ((clock-string (org-clock-get-work-day-clock-string force))
                      (help-text
                       ;; "Org-mode clock is running.\nmouse-1 shows a menu\nmouse-2 will jump to task"
-                      "Today's work clocks."
-                      ))
+                      "Today's work clocks."))
                  (if (and (> org-clock-string-limit 0)
                           (> (length clock-string) org-clock-string-limit))
                      (org-propertize
@@ -342,17 +337,16 @@ If not, show simply the clocked time like 01:50."
 ;;;###autoload
 (defun org-clock-work-day-mode-line-remove ()
   (interactive)
-  (if (and
-       (boundp 'global-mode-line-list)
-       global-mode-line-list)
+  (if (and (boundp 'global-mode-line-list)
+           global-mode-line-list)
       (progn
-       ;; (setq global-mode-string
-       ;;       (delq 'org-mode-work-day-mode-line-string global-mode-string))
-       (setq global-mode-line-list
-            (delq 'org-mode-work-day-mode-line-string global-mode-line-list))))
+        ;; (setq global-mode-string
+        ;;       (delq 'org-mode-work-day-mode-line-string global-mode-string))
+        (setq global-mode-line-list
+              (delq 'org-mode-work-day-mode-line-string global-mode-line-list))))
 
-      (when org-mode-work-mode-line-timer
-        (cancel-timer org-mode-work-mode-line-timer)
-        (setq org-mode-work-mode-line-timer nil)))
+  (when org-mode-work-mode-line-timer
+    (cancel-timer org-mode-work-mode-line-timer)
+    (setq org-mode-work-mode-line-timer nil)))
 
 ;;; org-clock-daysummary.el ends here
