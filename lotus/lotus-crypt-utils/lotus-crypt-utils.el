@@ -239,6 +239,7 @@ Return the modified ALIST."
       (pushnew (cons (expand-file-name file) count) epa-file-passphrase-cleanup-exceptitions-alist)))
 
 
+;;;###autoload
 (defun epa-find-file-secure ()
   (interactive)
   (let ((directory "~/.pi/"))
@@ -247,6 +248,7 @@ Return the modified ALIST."
                      directory
                      (expand-file-name "i.org.gpg" directory)))))
 
+;;;###autoload
 (defalias 'find-file-secure #'epa-file-find-secure)
 
 (defun epa-pop-last-passphrase ()
