@@ -109,8 +109,6 @@
 ;; (org-rl-make-clock (point-marker) (current-time) 1 t)
 ;; (org-rl-make-clock (point-marker) (make-org-rl-time :time (current-time)) (make-org-rl-time :time (current-time)))
 
-
-
 (defun org-rl-make-time (time)
   (assert-time time)
   (make-org-rl-time :time time))
@@ -383,9 +381,8 @@
         (if (time-p (org-rl-clock-stop-time clock))
             (if (org-rl-clock-half-p clock)
                 (progn
-                  (if (or
-                       (org-is-active-clock (org-rl-clock-for-clock-op clock))
-                       (org-rl-clock-current clock))                   ;TODO: check for current clock? find some other way to find active clock like matching with org-clock-marker
+                  (if (or (org-is-active-clock (org-rl-clock-for-clock-op clock))
+                          (org-rl-clock-current clock))                   ;TODO: check for current clock? find some other way to find active clock like matching with org-clock-marker
                       (progn
                         (org-rl-org-clock-out org-clock-out-switch-to-state
                                               fail-quietly
@@ -542,11 +539,8 @@
 
 (cl-defmethod org-rl-get-time-gap ((prev org-rl-clock)
                                    (next org-rl-clock))
-  (floor
-   (float-time
-    (time-subtract
-     (org-rl-clock-start-time next)
-     (org-rl-clock-stop-time prev)))))
+  (floor (float-time (time-subtract (org-rl-clock-start-time next)
+                                    (org-rl-clock-stop-time prev)))))
 
 (cl-defmethod org-rl-get-time-gap-secs ((prev org-rl-clock)
                                         (next org-rl-clock))
@@ -562,9 +556,8 @@
   (cl-assert (> (float-time (org-rl-get-time-gap prev next)) 0))
   (if (eq timelen-secs 'all)
       0
-    (-
-     (float-time (org-rl-get-time-gap prev next))
-     (abs timelen-secs))))
+    (- (float-time (org-rl-get-time-gap prev next))
+       (abs timelen-secs))))
 
 (cl-defmethod org-rl-compare-time-gap-secs ((prev org-rl-clock)
                                             (next org-rl-clock)
@@ -572,9 +565,8 @@
   (cl-assert (> (float-time (org-rl-get-time-gap prev next)) 0))
   (if (eq timelen-secs 'all)
       0
-    (-
-     (float-time (org-rl-get-time-gap prev next))
-     (abs timelen-secs))))
+    (- (float-time (org-rl-get-time-gap prev next))
+       (abs timelen-secs))))
 
 (cl-defmethod org-rl-compare-time-gap-mins ((prev org-rl-clock)
                                             (next org-rl-clock)
@@ -582,9 +574,8 @@
   (cl-assert (> (float-time (org-rl-get-time-gap prev next)) 0))
   (if (eq timelen-mins 'all)
       0
-    (-
-     (float-time (org-rl-get-time-gap-mins prev next))
-     (abs timelen-mins))))
+    (- (float-time (org-rl-get-time-gap-mins prev next))
+       (abs timelen-mins))))
 
 
 ;; TODO: BUG: put this in interface
@@ -641,22 +632,21 @@
                                                     fail-quietly
                                                     resume-clocks)
 
-  (mapcar
-   #'(lambda (list)
-       (cons
-        (car list)
-        (append
-         (list (list :helm :multiline t))
-         (mapcar #'(lambda (template)
-                      (list
-                       :option
-                       (format "%s" template)
-                       (cons 'include-in-new template)
-                       prev next maxtimelen-secs resume fail-quietly resume-clocks))
-                  (cdr list)))))
-   (org-rl-org-capture+-helm-templates-alist
-    (org-rl-marker (some #'org-rl-clock-real-p
-                         (list prev next))))))
+  (mapcar #'(lambda (list)
+              (cons
+               (car list)
+               (append
+                (list (list :helm :multiline t))
+                (mapcar #'(lambda (template)
+                            (list
+                             :option
+                             (format "%s" template)
+                             (cons 'include-in-new template)
+                             prev next maxtimelen-secs resume fail-quietly resume-clocks))
+                        (cdr list)))))
+
+          (org-rl-org-capture+-helm-templates-alist (org-rl-marker (some #'org-rl-clock-real-p
+                                                                         (list prev next))))))
 
 
 (cl-defmethod org-rl-clock-opts-common ((prev org-rl-clock)
@@ -680,10 +670,9 @@
          (list prev next maxtimelen-secs resume fail-quietly resume-clocks)))
     (append
      (apply #'org-rl-find-all-other-marker-options args)
-     (list
-      (list :option
-            "Include in other"
-            'include-in-other prev next maxtimelen-secs resume fail-quietly resume-clocks)))))
+     (list (list :option
+                 "Include in other"
+                 'include-in-other prev next maxtimelen-secs resume fail-quietly resume-clocks)))))
 
 (cl-defmethod org-rl-clock-opts-new-clock-with-time ((prev org-rl-clock)
                                                      (next org-rl-clock)
@@ -696,11 +685,9 @@
          (list prev next maxtimelen-secs resume fail-quietly resume-clocks)))
     (append
      (apply #'org-rl-find-all-new-template-options args)
-     (list
-      (list
-       :option
-       "Include in new"
-       'include-in-new prev next maxtimelen-secs resume fail-quietly resume-clocks)))))
+     (list (list :option
+                 "Include in new"
+                 'include-in-new prev next maxtimelen-secs resume fail-quietly resume-clocks)))))
 
 (cl-defmethod org-rl-clock-opts-prev ((prev org-rl-clock)
                                       (next org-rl-clock)
@@ -712,15 +699,12 @@
   (let ((prev-heading (org-rl-clock-heading prev))
         (next-heading (org-rl-clock-heading next)))
     (when (org-rl-clock-real-p prev)
-      (list
-       (list
-        :option
-        (format "Jump to prev %s" prev-heading)
-        'jump-prev prev next maxtimelen-secs resume fail-quietly resume-clocks)
-       (list
-        :option
-        (format "Cancel prev %s" prev-heading)
-        'cancel-prev prev next maxtimelen-secs resume fail-quietly resume-clocks)))))
+      (list (list :option
+                  (format "Jump to prev %s" prev-heading)
+                  'jump-prev prev next maxtimelen-secs resume fail-quietly resume-clocks)
+            (list :option
+                  (format "Cancel prev %s" prev-heading)
+                  'cancel-prev prev next maxtimelen-secs resume fail-quietly resume-clocks)))))
 
 (cl-defmethod org-rl-clock-opts-prev-with-time ((prev org-rl-clock)
                                                 (next org-rl-clock)
@@ -731,15 +715,13 @@
   (org-rl-debug nil "calling org-rl-clock-opts-prev-with-time")
   (let ((prev-heading (org-rl-clock-heading prev))
         (next-heading (org-rl-clock-heading next)))
-    (list
-     (list
-      :option
-      (if (org-rl-clock-real-p prev)
-          (format "Include in prev %s" prev-heading)
-        (if (org-rl-clock-real-p next)
-            (format "Subtract from next %s" next-heading)
-          "No idea include-in-prev"))
-      'include-in-prev prev next maxtimelen-secs resume fail-quietly resume-clocks))))
+    (list (list :option
+                (if (org-rl-clock-real-p prev)
+                    (format "Include in prev %s" prev-heading)
+                  (if (org-rl-clock-real-p next)
+                      (format "Subtract from next %s" next-heading)
+                    "No idea include-in-prev"))
+                'include-in-prev prev next maxtimelen-secs resume fail-quietly resume-clocks))))
 
 (cl-defmethod org-rl-clock-opts-next ((prev org-rl-clock)
                                       (next org-rl-clock)
@@ -751,15 +733,12 @@
   (let ((prev-heading (org-rl-clock-heading prev))
         (next-heading (org-rl-clock-heading next)))
     (when (org-rl-clock-real-p next)
-      (list
-       (list
-        :option
-        (format "Jump to next %s" next-heading)
-        'jump-next prev next maxtimelen-secs resume fail-quietly resume-clocks)
-       (list
-        :option
-        (format "Cancel next %s" prev-heading)
-        'cancel-next prev next maxtimelen-secs resume fail-quietly resume-clocks)))))
+      (list (list :option
+                  (format "Jump to next %s" next-heading)
+                  'jump-next prev next maxtimelen-secs resume fail-quietly resume-clocks)
+            (list :option
+                  (format "Cancel next %s" prev-heading)
+                  'cancel-next prev next maxtimelen-secs resume fail-quietly resume-clocks)))))
 
 (cl-defmethod org-rl-clock-opts-next-with-time ((prev org-rl-clock)
                                                 (next org-rl-clock)
@@ -770,15 +749,13 @@
   (org-rl-debug nil "calling org-rl-clock-opts-next-with-time")
   (let ((prev-heading (org-rl-clock-heading prev))
         (next-heading (org-rl-clock-heading next)))
-    (list
-     (list
-      :option
-      (if (org-rl-clock-real-p next)
-          (format "Include in next %s" next-heading)
-        (if (org-rl-clock-real-p prev)
-            (format "Subtract from prev %s" prev-heading)
-          "No idea include-in-next"))
-      'include-in-next prev next maxtimelen-secs resume fail-quietly resume-clocks))))
+    (list (list :option
+                (if (org-rl-clock-real-p next)
+                    (format "Include in next %s" next-heading)
+                  (if (org-rl-clock-real-p prev)
+                      (format "Subtract from prev %s" prev-heading)
+                    "No idea include-in-next"))
+                'include-in-next prev next maxtimelen-secs resume fail-quietly resume-clocks))))
 
 
 (cl-defmethod org-rl-clock-build-options ((prev org-rl-clock)
@@ -802,43 +779,37 @@
           (append
            (if (org-rl-clock-null next)
                (list
-                (cons
-                 "Usual"
-                 (append
-                  (apply #'org-rl-clock-opts-prev-with-time args)
-                  (apply #'org-rl-clock-opts-next-with-time args)))
+                (cons "Usual"
+                      (append
+                       (apply #'org-rl-clock-opts-prev-with-time args)
+                       (apply #'org-rl-clock-opts-next-with-time args)))
                 (unless (zerop maxtimelen-secs)
                   (cons "Other"
                         (apply #'org-rl-clock-opts-other-clock-with-time args)))
                 (unless (zerop maxtimelen-secs)
                   (cons "News"
                         (apply #'org-rl-clock-opts-new-clock-with-time args)))
-                (cons
-                 "Cancel"
-                 (append
-                  (apply #'org-rl-clock-opts-next args)
-                  (apply #'org-rl-clock-opts-prev args))))
+                (cons "Cancel"
+                      (append
+                       (apply #'org-rl-clock-opts-next args)
+                       (apply #'org-rl-clock-opts-prev args))))
              (list
-              (cons
-               "Usual"
-               (append
-                (apply #'org-rl-clock-opts-next-with-time args)
-                (apply #'org-rl-clock-opts-prev-with-time args)))
+              (cons "Usual"
+                    (append
+                     (apply #'org-rl-clock-opts-next-with-time args)
+                     (apply #'org-rl-clock-opts-prev-with-time args)))
               (unless (zerop maxtimelen-secs)
                 (cons "Other"
                       (apply #'org-rl-clock-opts-other-clock-with-time args)))
               (unless (zerop maxtimelen-secs)
                 (cons "News"
                       (apply #'org-rl-clock-opts-new-clock-with-time args)))
-              (cons
-               "Cancel"
-               (cons
-                (apply #'org-rl-clock-opts-prev args)
-                (apply #'org-rl-clock-opts-next args)))))
-           (list
-            (cons
-             "Common"
-             (apply #'org-rl-clock-opts-common args))))))
+              (cons "Cancel"
+                    (cons
+                     (apply #'org-rl-clock-opts-prev args)
+                     (apply #'org-rl-clock-opts-next args)))))
+           (list (cons "Common"
+                       (apply #'org-rl-clock-opts-common args))))))
     (org-rl-debug nil "org-rl-clock-build-options: options %s" options)
     (org-rl-debug nil "org-rl-clock-build-options: done")
     options))
@@ -859,17 +830,14 @@
   "read in mins return secs"
   (let ((option          (if (functionp option-fn)     (funcall option-fn) option-fn))
         (maxtimelen-mins (if (functionp maxtimelen-mins-fn) (funcall maxtimelen-mins-fn) maxtimelen-mins-fn)))
-    (if (or
-         (zerop maxtimelen-mins)
-         (memq option
-               '(done
-                 cancel-next
-                 cancel-prev)))
+    (if (or (zerop maxtimelen-mins)
+            (memq option
+                  '(done
+                    cancel-next
+                    cancel-prev)))
         maxtimelen-mins
-      (*
-       (*
-        (if org-rl-clock-time-direction-reverse -1 1)
-        (time-aware-read-number interval-secs prompt-fn maxtimelen-mins-fn))
-       60))))
+      (* 60
+         (* (if org-rl-clock-time-direction-reverse -1 1)
+            (time-aware-read-number interval-secs prompt-fn maxtimelen-mins-fn))))))
 
 ;;; org-rl-obj.el ends here
