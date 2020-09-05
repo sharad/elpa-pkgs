@@ -48,6 +48,11 @@
 (require 'org-rl-utils)
 
 
+(defun assert-time (time)
+  (cl-assert (listp (cdr time))))
+
+
+
 (cl-defstruct org-rl-time
   time)
 
@@ -62,6 +67,8 @@
                                  (stop org-rl-time)
                                  &optional
                                  current)
+  (assert-time (org-rl-time-time start))
+  (assert-time (org-rl-time-time stop))
   (make-org-rl-clock
    :marker marker
    :start start
@@ -74,6 +81,9 @@
                                  &optional
                                  current)
   ;; (org-rl-debug nil "calling 2")
+  (assert-time start-time)
+  (assert-time stop-time)
+
   (make-org-rl-clock
    :marker marker
    :start (make-org-rl-time :time start-time)
@@ -86,6 +96,9 @@
                                  &optional
                                  current)
   ;; (org-rl-debug nil "calling 2")
+  (assert-time start-time)
+  (assert-time stop-time)
+
   (make-org-rl-clock
    :marker marker
    :start (make-org-rl-time :time start-time)
@@ -99,6 +112,7 @@
 
 
 (defun org-rl-make-time (time)
+  (assert-time time)
   (make-org-rl-time :time time))
 
 (defun org-rl-make-current-time ()
@@ -143,6 +157,7 @@
 
 (cl-defmethod org-rl-time-get-time ((time org-rl-time))
   (let ((rl-time (org-rl-time-time time)))
+    (assert-time rl-time)
     (time-get-time rl-time)))
 
 (cl-defmethod org-rl-time-current-delta-secs ((time org-rl-time))
@@ -150,6 +165,7 @@
               (time-subtract
                (org-rl-time-get-time time)
                (current-time)))))
+    (assert-time gap)
     (org-rl-debug :warning "org-rl-time-current-delta-secs: time=<%s> from current time = %d"
                   (org-rl-format time) gap)
     gap))
