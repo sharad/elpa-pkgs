@@ -45,6 +45,16 @@
     (setq org-clock-last-idle-start-time nil)
     (message "%s" time-string)))
 
+(defun org-clock-resolve-get-idle-start-time ()
+  (let* ((org-clock-user-idle-seconds (if org-clock-last-idle-start-time
+                                          (time-to-seconds (time-subtract (current-time)
+                                                                          org-clock-last-idle-start-time))
+                                        (org-user-idle-seconds)))
+         (org-clock-user-idle-start   (time-subtract (current-time) org-clock-user-idle-seconds)))
+
+    org-clock-user-idle-start))
+
+
 (defun org-rl-resolve-clocks-if-idle ()
   "Resolve all currently open Org clock.
 This is performed after `org-clock-idle-time' minutes, to check
@@ -83,12 +93,20 @@ so long."
                    (org-clock-user-idle-start   (time-subtract (current-time) org-clock-user-idle-seconds))
                    (org-clock-resolving-clocks-due-to-idleness t))
 
-              (setq org-clock-last-idle-start-time org-clock-user-idle-start)
+              (progn
+                ;; TODO:
+                ;; Debugger entered--Lisp error: (wrong-type-argument listp 68719476736000000)
+                ;; nth(1 (109869281350481122156953239 . 68719476736000000))
+                ;; (cl-assert (nth 1 org-clock-user-idle-start))
+                (message "org-rl-resolve-clocks-if-idle: org-clock-user-idle-seconds    - %s" org-clock-user-idle-seconds)
+                (message "org-rl-resolve-clocks-if-idle: org-clock-last-idle-start-time - %s" org-clock-last-idle-start-time)
+                (message "org-rl-resolve-clocks-if-idle: org-clock-user-idle-start      - %s" org-clock-user-idle-start)
 
-              ;; TODO:
-              ;; Debugger entered--Lisp error: (wrong-type-argument listp 68719476736000000)
-              ;; nth(1 (109869281350481122156953239 . 68719476736000000))
-              ;; (cl-assert (nth 1 org-clock-user-idle-start))
+                (if org-clock-last-idle-start-time
+                    (cl-assert (listp (cdr org-clock-last-idle-start-time)))
+                  (cl-assert (listp (cdr org-clock-user-idle-start)))))
+
+              (setq org-clock-last-idle-start-time org-clock-user-idle-start)
 
               (if (> org-clock-user-idle-seconds (* 60 org-clock-idle-time))
                   (funcall org-rl-clock-resolve-time
@@ -100,11 +118,10 @@ so long."
                            'ask
                            nil
                            nil)
-                (org-rl-debug nil
-                 "org-rl-resolve-clocks-if-idle: pass3 not calling resolve time org-clock-last-idle-start-time: %s, (org-user-idle-seconds) %s"
-                 (if org-clock-last-idle-start-time
-                     (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
-                 (org-user-idle-seconds)))
+                (org-rl-debug nil "org-rl-resolve-clocks-if-idle: pass3 not calling resolve time org-clock-last-idle-start-time: %s, (org-user-idle-seconds) %s"
+                              (if org-clock-last-idle-start-time
+                                  (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
+                              (org-user-idle-seconds)))
               (org-rl-debug :warning "Resetting org-clock-last-idle-start-time [= %s] to nil" org-clock-last-idle-start-time)
               (setq org-clock-last-idle-start-time nil)
               (org-rl-debug :warning "Reset org-clock-last-idle-start-time to %s" org-clock-last-idle-start-time))))))
