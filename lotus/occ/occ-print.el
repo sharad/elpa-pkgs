@@ -74,10 +74,10 @@ pointing to it."
          (subtree-level (or (occ-get-property obj 'subtree-level) 0))
          ;; (filename (occ-get-property obj 'file))
          (filename (occ-format-file obj))
-         (filename-prefix (concat " " (make-string subtree-level occ-fontify-like-org-file-bullet) " "))
+         (filename-prefix (concat " " (make-string (1+ subtree-level) occ-fontify-like-org-file-bullet) " "))
          (heading  (occ-get-property obj 'heading-prop))
          (heading-prefix  " ")
-         (prefix  (concat (make-string (+ level subtree-level) ?\*) " ")))
+         (prefix  (concat (make-string (+ 1 level subtree-level) ?\*) " ")))
     ;; (occ-debug :debug "fontify: %s subtree-level=%s" heading subtree-level)
     (if nil ;; if test without else with prefix
         (substring
