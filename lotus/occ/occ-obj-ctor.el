@@ -210,10 +210,9 @@
                    (if (bufferp buff)
                        buff
                      (if (stringp buff)
-                         (or
-                          (get-buffer buff)
-                          (if (file-exists-p buff)
-                              (get-file-buffer buff)))))
+                         (or (get-buffer buff)
+                             (if (file-exists-p buff)
+                                 (get-file-buffer buff)))))
                  (window-buffer)))
          (buff (org-base-buffer buff))
          (file (buffer-file-name buff))

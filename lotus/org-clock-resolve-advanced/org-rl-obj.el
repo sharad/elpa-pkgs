@@ -49,8 +49,8 @@
 
 
 (defun assert-time (time)
-  (cl-assert (listp (cdr time))))
-
+  (cl-assert (or (eql time 'now)
+                 (listp (cdr time)))))
 
 
 (cl-defstruct org-rl-time

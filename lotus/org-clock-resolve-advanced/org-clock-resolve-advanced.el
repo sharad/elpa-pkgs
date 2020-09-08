@@ -86,11 +86,11 @@ so long."
                           (if org-clock-last-idle-start-time
                               (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
                           (org-user-idle-seconds))
-            (let* ((org-clock-user-idle-seconds (if org-clock-last-idle-start-time
-                                                    (time-to-seconds (time-subtract (current-time)
-                                                                                    org-clock-last-idle-start-time))
-                                                  (org-user-idle-seconds)))
-                   (org-clock-user-idle-start   (time-subtract (current-time) org-clock-user-idle-seconds))
+            (let* ((org-clock-user-idle-seconds                (floor (if org-clock-last-idle-start-time
+                                                                          (time-to-seconds (time-subtract (current-time)
+                                                                                                          org-clock-last-idle-start-time))
+                                                                        (org-user-idle-seconds))))
+                   (org-clock-user-idle-start                  (time-subtract (current-time) org-clock-user-idle-seconds))
                    (org-clock-resolving-clocks-due-to-idleness t))
 
               (progn
@@ -98,6 +98,38 @@ so long."
                 ;; Debugger entered--Lisp error: (wrong-type-argument listp 68719476736000000)
                 ;; nth(1 (109869281350481122156953239 . 68719476736000000))
                 ;; (cl-assert (nth 1 org-clock-user-idle-start))
+
+                ;; (time-subtract (current-time) 310.006370235)
+                ;; (time-subtract (current-time) 310.006)
+                ;; (time-subtract (current-time) 310.00)
+
+
+                ;; Busy user input (file-notify ((6 . 0) (isdir attrib) fonts 0) file-notify--callback-inotify)
+                ;; helm-timed: triggered timer for new-win #<window 43 on *helm occ select>
+                ;; org-rl-resolve-clocks-if-idle: org-clock-user-idle-seconds    - 310.001834371
+                ;; org-rl-resolve-clocks-if-idle: org-clock-last-idle-start-time - nil
+                ;; org-rl-resolve-clocks-if-idle: org-clock-user-idle-start      - (27478725457084412873264278651 . 17179869184000000000)
+                ;; Entering debugger...
+                ;; Office related work
+                ;; Cleanup and Refactoring lotus-utils library and depending package                                                                                                                                                                    :EMACS:
+                ;; occ-clock-in-curr-ctx-if-not-timer-function: (recursion-depth) [1] > 0
+                ;; Office related work
+                ;; Cleanup and Refactoring lotus-utils library and depending package                                                                                                                                                                    :EMACS:
+
+                ;; org-rl-resolve-clocks-if-idle: org-clock-user-idle-seconds    - 310.004256237
+                ;; org-rl-resolve-clocks-if-idle: org-clock-last-idle-start-time - nil
+                ;; org-rl-resolve-clocks-if-idle: org-clock-user-idle-start      - (54957462697594140219314260251 . 34359738368000000000)
+                ;; Entering debugger...
+                ;; occ-clock-in-curr-ctx-if-not-timer-function: (recursion-depth) [1] > 0 [10 times]
+                ;; Office related work
+                ;; Cleanup and Refactoring lotus-utils library and depending package                                                                                                                                                                    :EMACS:
+                ;; Warning: notification for "Cleanup and Refactoring lotus-utils library and depending package" behind schedule!
+
+                ;; org-rl-resolve-clocks-if-idle: org-clock-user-idle-seconds    - 310.006370235
+                ;; org-rl-resolve-clocks-if-idle: org-clock-last-idle-start-time - nil
+                ;; org-rl-resolve-clocks-if-idle: org-clock-user-idle-start      - (54957479593353698708253152369 . 34359738368000000000)
+                ;; Entering debugger...
+
                 (message "org-rl-resolve-clocks-if-idle: org-clock-user-idle-seconds    - %s" org-clock-user-idle-seconds)
                 (message "org-rl-resolve-clocks-if-idle: org-clock-last-idle-start-time - %s" org-clock-last-idle-start-time)
                 (message "org-rl-resolve-clocks-if-idle: org-clock-user-idle-start      - %s" org-clock-user-idle-start)
@@ -132,13 +164,14 @@ so long."
 (defun org-rl-clock-set-correct-idle-timer ()
   (interactive)
   (let* ((minor-offset 10)
-         (idle-time (+ (* org-clock-idle-time 60) minor-offset)))
+         (idle-time (+ (* org-clock-idle-time
+                          60)
+                       minor-offset)))
     (when org-clock-idle-timer
       (cancel-timer org-clock-idle-timer)
       (setq org-clock-idle-timer
-            (run-with-idle-timer
-             idle-time idle-time
-             'org-rl-resolve-clocks-if-idle)))))
+            (run-with-idle-timer idle-time idle-time
+                                 'org-rl-resolve-clocks-if-idle)))))
 
 
 (defun org-find-open-clocks (file)
