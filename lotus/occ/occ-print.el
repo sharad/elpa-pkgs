@@ -50,8 +50,8 @@
   "Insert a line for the clock selection menu.
 And return a cons cell with the selection character integer and the obj
 pointing to it."
-  (when (marker-buffer obj)
-    (with-current-buffer (org-base-buffer (marker-buffer obj))
+  (when (occ-obj-buffer obj)
+    (with-current-buffer (org-base-buffer (occ-obj-buffer obj))
       (org-with-wide-buffer
        (progn
          (goto-char obj)
@@ -70,14 +70,16 @@ pointing to it."
            org-heading))))))
 
 (cl-defmethod occ-fontify-like-in-org-mode ((obj occ-tsk))
-  (let* ((level    (or (occ-get-property obj 'level) 0))
-         (subtree-level (or (occ-get-property obj 'subtree-level) 0))
-         ;; (filename (occ-get-property obj 'file))
-         (filename (occ-format-file obj))
+  (let* ((level           (or (occ-get-property obj 'level) 0))
+         (subtree-level   (or (occ-get-property obj 'subtree-level) 1))
+         (filename        (occ-format-file obj))
          (filename-prefix (concat " " (make-string (+ level subtree-level) occ-fontify-like-org-file-bullet) " "))
-         (heading  (occ-get-property obj 'heading-prop))
+         (heading-prop    (occ-get-property obj 'heading-prop))
+         (heading         (if (eq heading-prop 'noheading)
+                              (concat (make-string 1 occ-fontify-like-org-file-bullet) " file: " filename)
+                            heading-prop))
          (heading-prefix  " ")
-         (prefix  (concat (make-string (+ subtree-level level) ?\*) " ")))
+         (prefix          (concat (make-string (+ subtree-level level) ?\*) " ")))
     ;; (occ-debug :debug "fontify: %s subtree-level=%s" heading subtree-level)
     (if nil ;; if test without else with prefix
         (substring
@@ -85,15 +87,11 @@ pointing to it."
           (concat prefix heading)
           org-odd-levels-only)
          (1+ level))
-
       (if (eq heading 'noheading)
           (concat filename-prefix "file: " filename)
-        (concat
-         heading-prefix
-         (org-fontify-like-in-org-mode
-          ;; (concat prefix heading (format " l=%d s=%d" level subtree-level))
-          (concat prefix heading)
-          org-odd-levels-only))))))
+        (concat heading-prefix
+               (org-fontify-like-in-org-mode (concat prefix heading)
+                                             org-odd-levels-only))))))
 
 (cl-defmethod occ-build-format-string ((obj occ-tsk))
   (occ-fontify-like-in-org-mode obj))

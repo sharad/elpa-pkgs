@@ -89,7 +89,7 @@
        (occ-setup-buffer)
        (if file (goto-char (point-min)))
        (let ((entry         (funcall tsk-builder))
-             (subtree-level (if subtree-level subtree-level 0)))
+             (subtree-level (if subtree-level subtree-level 1)))
          (when (numberp subtree-level)
            (occ-set-property entry 'subtree-level (1+ subtree-level)))
          (cl-assert (numberp subtree-level))

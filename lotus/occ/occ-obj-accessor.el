@@ -84,6 +84,16 @@
   (occ-tsk-marker (occ-obj-tsk obj)))
 
 
+(cl-defmethod occ-obj-buffer ((obj null))
+  nil)
+
+(cl-defmethod occ-obj-buffer ((obj marker))
+  (marker-buffer obj))
+
+(cl-defmethod occ-obj-buffer ((obj occ-obj-tsk))
+  (occ-obj-buffer (occ-tsk-marker (occ-obj-tsk obj))))
+
+
 (defun occ-case (case title)
   (if (fboundp case)
       (funcall case title)
