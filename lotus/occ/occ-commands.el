@@ -58,6 +58,14 @@
   (interactive
    (list (occ-make-ctx-at-point)))
   (occ-list-launch ctx))
+
+;;;###autoload
+(defun occ-proprty-edit ()
+  (interactive)
+  (let ((ctx (occ-make-ctx-at-point)))
+    (occ-props-window-edit ctx
+                           :action             (occ-get-helm-actions-tree ctx '(t actions edit))
+                           :action-transformer (occ-get-helm-actions-tree-genertator ctx '(t actions edit)))))
 
 
 ;;;###autoload
@@ -75,33 +83,8 @@
     (if ctxual-tsk
         (occ-procreate-child-clock-in ctxual-tsk)
       (occ-message "No current task clocking-in"))))
-
 
-;;;###autoload
-(defun occ-proprty-edit ()
-  (interactive)
-  (let ((ctx (occ-make-ctx-at-point)))
-    (occ-props-window-edit ctx
-                           :action             (occ-get-helm-actions-tree ctx '(t actions edit))
-                           :action-transformer (occ-get-helm-actions-tree-genertator ctx '(t actions edit)))))
-
-
-;;;###autoload
-(defun occ-run-timer ()
-  (interactive)
-  (occ-run-curr-ctx-timer))
-
-
-;;;###autoload
-(defun occ-reset-collection-object ()
-  (interactive)
-  (setq occ-global-tsk-collection nil)
-  occ-global-tsk-collection)
-
-
-;;;###autoload
-(defun occ-merge-unamed-task ()
-  (interactive)
+(defun occ-curr-tsk-continue-for (mins)
   (error "Implement it."))
 
 
@@ -133,18 +116,24 @@
   (error "Implement it."))
 
 
-(defun occ-curr-tsk-continue-for (mins)
-  (error "Implement it."))
-
-
 (defun occ-clock-in-force ()
   (error "Implement it, open context ctx if not present, then occ-clock-in-if-associable else show error."))
 
 (defun occ-interrupt-clock-in (mins)
   (error "Implement it."))
 
+(defun occ-clock-out (&optional switch-to-state
+                                fail-quietly
+                                at-time)
+  (interactive)
+  (org-clock-out switch-to-state
+                 fail-quietly
+                 at-time))
+
 (defun occ-continue-prev ()
   (error "Implement it."))
+
+(defun occ-make-anonymous ())
 
 ;; TODO: direct prop edit/add/replace/remove etc from helm menu
 
@@ -173,9 +162,6 @@
                             (occ-message "OCC noise ahead %s." (occ-config-value-quiet)))))
   (occ-config-enable-quiet)
   (occ-message "OCC Keeping quiet for %d mins" mins))
-
-
-(defun occ-make-anonymous ())
 
 
 ;;;###autoload
@@ -271,19 +257,27 @@
     (occ-message "files not in org-mode %s" files)))
 
 
-(defun occ-clock-out (&optional switch-to-state
-                                fail-quietly
-                                at-time)
+;;;###autoload
+(defun occ-merge-unamed-task ()
   (interactive)
-  (org-clock-out switch-to-state
-                 fail-quietly
-                 at-time))
+  (error "Implement it."))
 
+
+;;;###autoload
+(defun occ-reset-collection-object ()
+  (interactive)
+  (setq occ-global-tsk-collection nil)
+  occ-global-tsk-collection)
+
+
+;;;###autoload
+(defun occ-run-timer ()
+  (interactive)
+  (occ-run-curr-ctx-timer))
 
 (defun occ-reload (&optional uncompiled)
   (interactive "P")
   (occ-reload-lib uncompiled))
-
 
 (defun occ-version (&optional here full message)
   "Show the Occ version.
