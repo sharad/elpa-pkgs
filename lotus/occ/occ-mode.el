@@ -75,6 +75,7 @@
 (define-key occ-mode-keymap (kbd "sR") 'occ-reset-spec)
 (define-key occ-mode-keymap (kbd "sM") 'occ-make-spec)
 (define-key occ-mode-keymap (kbd "sA") 'occ-add-to-spec)
+(define-key occ-mode-keymap (kbd "sO") 'occ-add-org-file)
 (define-key occ-mode-keymap (kbd "sB") 'occ-build-spec)
 
 (define-key occ-mode-keymap (kbd "Tr") 'occ-files-with-null-regex)

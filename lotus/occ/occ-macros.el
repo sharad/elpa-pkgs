@@ -66,6 +66,14 @@
 (put 'occ-aggrigate-list-rank 'lisp-indent-function 3)
 
 
+;;;###autoload
+(defmacro occ-defcommand (name args &rest body)
+  `(progn
+     (defun ,name ,args
+       ,@body)))
+(put 'occ-defcommand 'lisp-indent-function 2)
+
+
 (defmacro occ-generate-plist-functions (prefix item)
   (let* ((plist  (intern (concat (symbol-name prefix) "-" (symbol-name item) "s-plist")))
          (clear  (intern (concat (symbol-name prefix) "-" (symbol-name item) "-clear")))
@@ -210,7 +218,7 @@
 
 
 (defun occ-get-location ())
-
+
 (when nil
   (let ((collection
          '("* TODO %? %^g\n %i\n [%a]\n"

@@ -362,25 +362,42 @@
   (occ-try-clock-schedule-next-timeout 'buffer-switch))
 
 
-(defun occ-add-org-file (buffer)
-  (when (eql buffer (current-buffer))
-    (let ((file (buffer-file-name buffer)))
-      (unless (cl-member file (occ-files) :key #'file-truename)
-        (when (and file
-                   (file-exists-p file)
-                   (eq major-mode 'org-mode))
-          (when (y-or-n-p-with-timeout (format "Do you want to add %s to occ: "
-                                               file)
+(defvar occ-add-inquery        0)
+(defvar occ-add-org-file-timer nil)
+
+(cl-defmethod occ-add-org-buffer ((buff buffer))
+  (if (eql buff (current-buffer))
+    (when (< occ-add-inquery 3)
+      (let ((file (buffer-file-name buff)))
+        (unless (cl-member file (occ-files) :key #'file-truename)
+          (when (and file
+                     (file-exists-p file)
+                     (eq major-mode 'org-mode))
+            (if (y-or-n-p-with-timeout (format "Do you want to add %s to occ: "
+                                               (file-name-nondirectory file))
                                        3
                                        nil)
-            (occ-add-to-spec file)))))))
-(defvar occ-add-org-file-timer nil)
-(defun occ-add-org-file-timer ()
-  (progn
-    (when occ-add-org-file-timer
-      (cancel-timer occ-add-org-file-timer)
-      (setq occ-add-org-file-timer nil))
-   (setq occ-add-org-file-timer
-        (run-with-idle-plus-timer 10 nil #'occ-add-org-file (current-buffer)))))
+
+                (progn
+                  (make-local-variable 'occ-add-inquery)
+                  (setq occ-add-inquery 3)
+                  (occ-add-to-spec file))
+
+              (incf occ-add-inquery))))))
+    (make-local-variable 'occ-add-org-file-timer)
+    (setq occ-add-org-file-timer nil)
+    (occ-add-org-file-timer buff)))
+
+(defun occ-add-org-file-timer (&optional buffer)
+  (let ((buffer (or buffer (current-buffer))))
+    (when (buffer-live-p buffer)
+      (make-local-variable 'occ-add-org-file-timer)
+      (when occ-add-org-file-timer
+        (cancel-timer occ-add-org-file-timer)
+        (setq occ-add-org-file-timer nil))
+      (setq occ-add-org-file-timer
+            (run-with-idle-plus-timer (* (1+ occ-add-inquery) 10)
+                                      nil
+                                      #'occ-add-org-buffer buffer)))))
 
 ;;; occ-obj-method.el ends here

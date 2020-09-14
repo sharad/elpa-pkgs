@@ -39,28 +39,28 @@
 ;; example of clos in cl-struct-js2-export-binding-node is a variable defined in ‘js2-mode.el’.
 
 ;;;###autoload
-(defun occ-helm-match-select (ctx)
+(occ-defcommand occ-helm-match-select (ctx)
   (interactive
    (list (occ-make-ctx-at-point)))
   (occ-match-select ctx))
 
-(defun occ-helm-list-select (ctx)
+(occ-defcommand occ-helm-list-select (ctx)
   (interactive
    (list (occ-make-ctx-at-point)))
   (occ-list-select ctx))
 
-(defun occ-helm-list-debug-select (ctx)
+(occ-defcommand occ-helm-list-debug-select (ctx)
   (interactive
    (list (occ-make-ctx-at-point)))
   (occ-list-debug-select ctx))
 
-(defun occ-helm-list-launch (ctx)
+(occ-defcommand occ-helm-list-launch (ctx)
   (interactive
    (list (occ-make-ctx-at-point)))
   (occ-list-launch ctx))
 
 ;;;###autoload
-(defun occ-proprty-edit ()
+(occ-defcommand occ-proprty-edit ()
   (interactive)
   (let ((ctx (occ-make-ctx-at-point)))
     (occ-props-window-edit ctx
@@ -69,7 +69,7 @@
 
 
 ;;;###autoload
-(defun occ-curr-procreate-child ()
+(occ-defcommand occ-curr-procreate-child ()
   (interactive)
   (let ((ctxual-tsk (occ-current-ctxual-tsk)))
     (if ctxual-tsk
@@ -77,33 +77,33 @@
       (occ-message "No current task clocking-in"))))
 
 ;;;###autoload
-(defun occ-curr-procreate-child-clock-in ()
+(occ-defcommand occ-curr-procreate-child-clock-in ()
   (interactive)
   (let ((ctxual-tsk (occ-current-ctxual-tsk)))
     (if ctxual-tsk
         (occ-procreate-child-clock-in ctxual-tsk)
       (occ-message "No current task clocking-in"))))
 
-(defun occ-curr-tsk-continue-for (mins)
+(occ-defcommand occ-curr-tsk-continue-for (mins)
   (error "Implement it."))
 
 
 ;;;###autoload
-(defun occ-start-day ()
+(occ-defcommand occ-start-day ()
   (interactive)
   ;; also detect if day is started.
   (error "Implement it."))
 
-(defun occ-show-up (mins)
+(occ-defcommand occ-show-up (mins)
   (interactive)
   ;; https://www.merriam-webster.com/thesaurus/pack%20(up%20or%20off)
   (error "Implement it."))
 
-(defun occ-stop-day ()
+(occ-defcommand occ-stop-day ()
   (interactive)
   (error "Implement it."))
 
-(defun occ-pack-up (mins)
+(occ-defcommand occ-pack-up (mins)
   (interactive)
   ;; https://www.merriam-webster.com/thesaurus/pack%20(up%20or%20off)
   (error "Implement it."))
@@ -116,13 +116,13 @@
   (error "Implement it."))
 
 
-(defun occ-clock-in-force ()
+(occ-defcommand occ-clock-in-force ()
   (error "Implement it, open context ctx if not present, then occ-clock-in-if-associable else show error."))
 
-(defun occ-interrupt-clock-in (mins)
+(occ-defcommand occ-interrupt-clock-in (mins)
   (error "Implement it."))
 
-(defun occ-clock-out (&optional switch-to-state
+(occ-defcommand occ-clock-out (&optional switch-to-state
                                 fail-quietly
                                 at-time)
   (interactive)
@@ -130,10 +130,10 @@
                  fail-quietly
                  at-time))
 
-(defun occ-continue-prev ()
+(occ-defcommand occ-continue-prev ()
   (error "Implement it."))
 
-(defun occ-make-anonymous ())
+(occ-defcommand occ-make-anonymous ())
 
 ;; TODO: direct prop edit/add/replace/remove etc from helm menu
 
@@ -145,11 +145,11 @@
 
 (defvar occ-keep-quiet-timer nil)
 
-(defun occ-keep-quiet ()
+(occ-defcommand occ-keep-quiet ()
   (interactive)
   (occ-keep-quiet-for 7))
 
-(defun occ-keep-quiet-for (mins)
+(occ-defcommand occ-keep-quiet-for (mins)
   (interactive "Nmins: ")
   (when occ-keep-quiet-timer
     (cancel-timer occ-keep-quiet-timer)
@@ -165,23 +165,23 @@
 
 
 ;;;###autoload
-(defun occ-register-resolve-clock ()
+(occ-defcommand occ-register-resolve-clock ()
   (interactive)
   (occ-rl-register-resolve-clock))
 
 ;;;###autoload
-(defun occ-unregister-resolve-clock ()
+(occ-defcommand occ-unregister-resolve-clock ()
   (interactive)
   (occ-rl-unregister-resolve-clock))
 
 
 ;;;###autoload
-(defun occ-reset-spec ()
+(occ-defcommand occ-reset-spec ()
   (interactive)
   (setq occ-global-tsk-collection-spec nil))
 
 ;;;###autoload
-(defun occ-make-spec ()
+(occ-defcommand occ-make-spec ()
   (interactive)
   (if occ-global-tsk-collection-spec
       (occ-message "spec: %s already present, first reset it with occ-reset-spec"
@@ -193,7 +193,7 @@
         (occ-reset-collection-object)))))
 
 ;;;###autoload
-(defun occ-add-to-spec (file)
+(occ-defcommand occ-add-to-spec (file)
   (interactive "FSpec file: ")
   ;; TODO: Improve to create direct tree from here rather than resetting whole occ-global-tsk-collection
   (unless (memq file (cdr occ-global-tsk-collection-spec))
@@ -209,7 +209,12 @@
       (occ-reset-collection-object))))
 
 ;;;###autoload
-(defun occ-build-spec ()
+(occ-defcommand occ-add-org-file (buffer)
+  (interactive (list (current-buffer)))
+  (occ-add-org-buffer buffer))
+
+;;;###autoload
+(occ-defcommand occ-build-spec ()
   (interactive)
   (occ-make-spec)
   (when (car occ-global-tsk-collection-spec)
@@ -220,7 +225,7 @@
 
 
 ;; testing verification
-(defun occ-files-with-null-regex ()
+(occ-defcommand occ-files-with-null-regex ()
   (interactive)
   (let ((files
          (remove-if
@@ -231,7 +236,7 @@
     (occ-message "files with null regex %s" files)))
 
 ;; testing verification
-(defun occ-files-not-in-org-mode ()
+(occ-defcommand occ-files-not-in-org-mode ()
   (interactive)
   (let ((files
          (remove-if
@@ -243,26 +248,26 @@
 
 
 ;;;###autoload
-(defun occ-merge-unamed-task ()
+(occ-defcommand occ-merge-unamed-task ()
   (interactive)
   (error "Implement it."))
 
 
 ;;;###autoload
-(defun occ-reset-collection-object ()
+(occ-defcommand occ-reset-collection-object ()
   (interactive)
   (setq occ-global-tsk-collection nil)
   occ-global-tsk-collection)
 
 ;;;###autoload
-(defun occ-insinuate (&optional spec)
+(occ-defcommand occ-insinuate (&optional spec)
   (interactive)
   (occ-message "occ-insinuate: begin")
   (occ-initialize spec)
   (occ-message "occ-insinuate: finish"))
 
 ;;;###autoload
-(defun occ-uninsinuate ()
+(occ-defcommand occ-uninsinuate ()
   (interactive)
   (occ-message "occ-uninsinuate: begin")
   (occ-uninitialize)
@@ -270,15 +275,15 @@
 
 
 ;;;###autoload
-(defun occ-run-timer ()
+(occ-defcommand occ-run-timer ()
   (interactive)
   (occ-run-curr-ctx-timer))
 
-(defun occ-reload (&optional uncompiled)
+(occ-defcommand occ-reload (&optional uncompiled)
   (interactive "P")
   (occ-reload-lib uncompiled))
 
-(defun occ-version (&optional here full message)
+(occ-defcommand occ-version (&optional here full message)
   "Show the Occ version.
 Interactively, or when MESSAGE is non-nil, show it in echo area.
 With prefix argument, or when HERE is non-nil, insert it at point.
