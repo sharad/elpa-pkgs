@@ -38,10 +38,10 @@
 (define-prefix-command 'occ-mode-keymap)
 
 (defun occ-enable-mode-map ()
-  (define-key occ-mode-main-keymap (kbd "M-n") 'occ-mode-keymap))
+  (define-key occ-mode-main-keymap (kbd occ-prefix-key) 'occ-mode-keymap))
 
 (defun occ-disable-mode-map ()
-  (define-key occ-mode-main-keymap (kbd "M-n") nil))
+  (define-key occ-mode-main-keymap (kbd occ-prefix-key) nil))
 
 
 (define-key occ-mode-keymap (kbd "ms") 'occ-helm-match-select)
@@ -60,8 +60,6 @@
 (define-key occ-mode-keymap (kbd "do") 'occ-stop-day)
 (define-key occ-mode-keymap (kbd "dp") 'occ-pack-up)
 
-
-
 (define-key occ-mode-keymap (kbd "tif") 'occ-clock-in-force)
 (define-key occ-mode-keymap (kbd "tii") 'occ-interrupt-clock-in)
 (define-key occ-mode-keymap (kbd "to")  'occ-clock-out)
@@ -71,8 +69,6 @@
 (define-key occ-mode-keymap (kbd "q") 'occ-keep-quiet)
 (define-key occ-mode-keymap (kbd "Q") 'occ-keep-quiet-for)
 
-
-
 (define-key occ-mode-keymap (kbd "rr") 'occ-register-resolve-clock)
 (define-key occ-mode-keymap (kbd "ru") 'occ-unregister-resolve-clock)
 
@@ -81,16 +77,14 @@
 (define-key occ-mode-keymap (kbd "sA") 'occ-add-to-spec)
 (define-key occ-mode-keymap (kbd "sB") 'occ-build-spec)
 
-;; (define-key occ-mode-keymap (kbd "v") 'occ-insinuate)
-;; (define-key occ-mode-keymap (kbd "v") 'occ-uninsinuate)
-
 (define-key occ-mode-keymap (kbd "Tr") 'occ-files-with-null-regex)
 (define-key occ-mode-keymap (kbd "To") 'occ-files-not-in-org-mode)
 
 (define-key occ-mode-keymap (kbd "Um") 'occ-merge-unamed-task)
 
 (define-key occ-mode-keymap (kbd "OR") 'occ-reset-collection-object)
-
+(define-key occ-mode-keymap (kbd "Oi") 'occ-insinuate)
+(define-key occ-mode-keymap (kbd "Ou") 'occ-uninsinuate)
 
 (define-key occ-mode-keymap (kbd "oT") 'occ-run-timer)
 (define-key occ-mode-keymap (kbd "oR") 'occ-reload)

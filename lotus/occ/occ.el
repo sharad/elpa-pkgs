@@ -62,6 +62,7 @@
   "occ-initialize"
   (setq *occ-tsk-previous-ctx* (occ-make-ctx-at-point))
   (progn
+    (setq occ-mode t)
     (occ-enable-mode-map)
     (occ-register-resolve-clock)
     (occ-cancel-timer)
@@ -93,6 +94,7 @@
 (defun occ-uninitialize ()
   "occ-uninitialize"
   (progn
+    (setq occ-mode nil)
     (occ-disable-mode-map)
     (occ-unregister-resolve-clock)
     (occ-cancel-timer)

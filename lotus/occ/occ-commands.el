@@ -219,21 +219,6 @@
     (occ-reset-collection-object)))
 
 
-;;;###autoload
-(defun occ-insinuate (&optional spec)
-  (interactive)
-  (occ-message "occ-insinuate: begin")
-  (occ-initialize spec)
-  (occ-message "occ-insinuate: finish"))
-
-;;;###autoload
-(defun occ-uninsinuate ()
-  (interactive)
-  (occ-message "occ-uninsinuate: begin")
-  (occ-uninitialize)
-  (occ-message "occ-uninsinuate: finish"))
-
-
 ;; testing verification
 (defun occ-files-with-null-regex ()
   (interactive)
@@ -268,6 +253,20 @@
   (interactive)
   (setq occ-global-tsk-collection nil)
   occ-global-tsk-collection)
+
+;;;###autoload
+(defun occ-insinuate (&optional spec)
+  (interactive)
+  (occ-message "occ-insinuate: begin")
+  (occ-initialize spec)
+  (occ-message "occ-insinuate: finish"))
+
+;;;###autoload
+(defun occ-uninsinuate ()
+  (interactive)
+  (occ-message "occ-uninsinuate: begin")
+  (occ-uninitialize)
+  (occ-message "occ-uninsinuate: finish"))
 
 
 ;;;###autoload

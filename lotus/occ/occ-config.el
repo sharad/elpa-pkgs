@@ -46,6 +46,9 @@
   :link '(info-link "(occ) Customization"))
 
 
+(defcustom occ-prefix-key "M-n"
+  "occ prefix key")
+
 (defcustom occ-unnamed t
   "occ-unnamed")
 
