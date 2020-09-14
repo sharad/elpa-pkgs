@@ -28,6 +28,7 @@
 
 
 (require 'occ)
+(require 'occ-macros)
 (require 'occ-util-common)
 (require 'occ-main)
 (require 'occ-cl-utils)
