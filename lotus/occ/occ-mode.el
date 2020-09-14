@@ -44,8 +44,40 @@
   (define-key occ-mode-main-keymap (kbd "M-n") nil))
 
 
+(define-key occ-mode-keymap (kbd "ms") 'occ-helm-match-select)
+(define-key occ-mode-keymap (kbd "ls") 'occ-helm-list-select)
+(define-key occ-mode-keymap (kbd "ld") 'occ-helm-list-debug-select)
+(define-key occ-mode-keymap (kbd "ll") 'occ-helm-list-launch)
+(define-key occ-mode-keymap (kbd "cc") 'occ-curr-procreate-child)
+(define-key occ-mode-keymap (kbd "cC") 'occ-curr-procreate-child-clock-in)
+(define-key occ-mode-keymap (kbd "e") 'occ-proprty-edit)
+(define-key occ-mode-keymap (kbd "ot") 'occ-run-timer)
+(define-key occ-mode-keymap (kbd "R") 'occ-reset-collection-object)
+(define-key occ-mode-keymap (kbd "M") 'occ-merge-unamed-task)
+(define-key occ-mode-keymap (kbd "ds") 'occ-start-day)
+(define-key occ-mode-keymap (kbd "us") 'occ-show-up)
+(define-key occ-mode-keymap (kbd "do") 'occ-stop-day)
+(define-key occ-mode-keymap (kbd "up") 'occ-pack-up)
+(define-key occ-mode-keymap (kbd "tC") 'occ-curr-tsk-continue-for)
+(define-key occ-mode-keymap (kbd "cif") 'occ-clock-in-force)
+(define-key occ-mode-keymap (kbd "cii") 'occ-interrupt-clock-in)
+(define-key occ-mode-keymap (kbd "op") 'occ-continue-prev)
+(define-key occ-mode-keymap (kbd "q") 'occ-keep-quiet)
+(define-key occ-mode-keymap (kbd "Q") 'occ-keep-quiet-for)
+(define-key occ-mode-keymap (kbd "ta") 'occ-make-anonymous)
+(define-key occ-mode-keymap (kbd "orr") 'occ-register-resolve-clock)
+(define-key occ-mode-keymap (kbd "oru") 'occ-unregister-resolve-clock)
+(define-key occ-mode-keymap (kbd "osR") 'occ-reset-spec)
+(define-key occ-mode-keymap (kbd "osM") 'occ-make-spec)
+(define-key occ-mode-keymap (kbd "osA") 'occ-add-to-spec)
+(define-key occ-mode-keymap (kbd "osB") 'occ-build-spec)
+;; (define-key occ-mode-keymap (kbd "v") 'occ-insinuate)
+;; (define-key occ-mode-keymap (kbd "v") 'occ-uninsinuate)
+(define-key occ-mode-keymap (kbd "Tr") 'occ-files-with-null-regex)
+(define-key occ-mode-keymap (kbd "To") 'occ-files-not-in-org-mode)
+(define-key occ-mode-keymap (kbd "cio") 'occ-clock-out)
+(define-key occ-mode-keymap (kbd "oR") 'occ-reload)
 (define-key occ-mode-keymap (kbd "v") 'occ-version)
-(define-key occ-mode-keymap (kbd "q") 'occ-keep-quiet-for)
 
 
 ;;;###autoload

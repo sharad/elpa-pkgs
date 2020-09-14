@@ -271,6 +271,15 @@
     (occ-message "files not in org-mode %s" files)))
 
 
+(defun occ-clock-out (&optional switch-to-state
+                                fail-quietly
+                                at-time)
+  (interactive)
+  (org-clock-out switch-to-state
+                 fail-quietly
+                 at-time))
+
+
 (defun occ-reload (&optional uncompiled)
   (interactive "P")
   (occ-reload-lib uncompiled))
