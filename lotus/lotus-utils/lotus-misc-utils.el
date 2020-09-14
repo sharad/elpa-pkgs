@@ -40,7 +40,7 @@
   `(save-current-buffer
      (elscreen-notify-screen-modification-suppress
       (elscreen-save-screen-excursion
-       (when (elscreen-goto screen)
+       (when (elscreen-goto ,screen)
          ,@body)))))
 
 ;;;###autoload
