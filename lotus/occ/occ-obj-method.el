@@ -373,31 +373,35 @@
           (when (and file
                      (file-exists-p file)
                      (eq major-mode 'org-mode))
+            (make-local-variable 'occ-add-inquery)
             (if (y-or-n-p-with-timeout (format "Do you want to add %s to occ: "
                                                (file-name-nondirectory file))
                                        3
                                        nil)
-
                 (progn
-                  (make-local-variable 'occ-add-inquery)
                   (setq occ-add-inquery 3)
                   (occ-add-to-spec file))
-
-              (incf occ-add-inquery))))))
-    (make-local-variable 'occ-add-org-file-timer)
-    (setq occ-add-org-file-timer nil)
-    (occ-add-org-file-timer buff)))
+              (incf occ-add-inquery)))))))
+  (make-local-variable 'occ-add-org-file-timer)
+  (occ-add-org-file-timer buff))
 
 (defun occ-add-org-file-timer (&optional buffer)
+  (occ-debug :nodisplay
+             "occ-add-org-file-timer: started for buff %s, occ-add-inquery %s, occ-add-org-file-timer %s"
+             buffer
+             occ-add-inquery
+             occ-add-org-file-timer)
   (let ((buffer (or buffer (current-buffer))))
     (when (buffer-live-p buffer)
-      (make-local-variable 'occ-add-org-file-timer)
-      (when occ-add-org-file-timer
-        (cancel-timer occ-add-org-file-timer)
-        (setq occ-add-org-file-timer nil))
-      (setq occ-add-org-file-timer
-            (run-with-idle-plus-timer (* (1+ occ-add-inquery) 10)
-                                      nil
-                                      #'occ-add-org-buffer buffer)))))
+      (with-current-buffer buffer
+        (make-local-variable 'occ-add-org-file-timer)
+        (when occ-add-org-file-timer
+          (cancel-timer occ-add-org-file-timer)
+          (setq occ-add-org-file-timer nil))
+        (when (< occ-add-inquery 3)
+          (setq occ-add-org-file-timer
+                (run-with-idle-plus-timer (* (1+ occ-add-inquery) 10)
+                                          nil
+                                          #'occ-add-org-buffer buffer)))))))
 
 ;;; occ-obj-method.el ends here

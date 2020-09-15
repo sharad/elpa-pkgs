@@ -168,7 +168,7 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
          (remove-re (format "\\`%s\\'"
                             (regexp-opt '("org" "org-loaddefs" "occ-version"))))
          (feats (delete-dups
-                 (mapcar 'file-name-sans-extension
+                 (mapcar #'file-name-sans-extension
                          (mapcar 'file-name-nondirectory
                                  (delq nil
                                        (mapcar 'feature-file
