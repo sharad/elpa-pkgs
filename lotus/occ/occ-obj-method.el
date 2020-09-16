@@ -382,7 +382,6 @@
                   (setq occ-add-inquery 3)
                   (occ-add-to-spec file))
               (incf occ-add-inquery)))))))
-  (make-local-variable 'occ-add-org-file-timer)
   (occ-add-org-file-timer buff))
 
 (defun occ-add-org-file-timer (&optional buffer)
