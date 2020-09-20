@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2019  Sharad
 
-;; Author: Sharad <spratap@merunetworks.com>
+;; Author: Sharad Pratap <sh4r4d _at_ _G-mail_>
 ;; Keywords: convenience
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -841,5 +841,27 @@
       (* 60
          (* (if org-rl-clock-time-direction-reverse -1 1)
             (time-aware-read-number interval-secs prompt-fn maxtimelen-mins-fn))))))
+
+
+(cl-defmethod org-rl-clock-resolve-internal ((prev org-rl-clock)
+                                             (next org-rl-clock)
+                                             &optional
+                                             resume
+                                             fail-quietly
+                                             resume-clocks)
+  (condition-case err
+      (prog1
+          (funcall org-rl-clock-resolve-time
+                   prev ;TODO: what important.
+                   next
+                   resume
+                   fail-quietly
+                   resume-clocks)
+        (org-clock-resolve-reset-last-idle-start-time))
+    ((error quit) (progn
+                    (org-rl-debug :warning "Resetting org-clock-last-idle-start-time [= %s] to nil" org-clock-last-idle-start-time)
+                    (org-clock-resolve-reset-last-idle-start-time)
+                    (setq org-clock-last-idle-start-time nil)
+                    (org-rl-debug :warning "Reset org-clock-last-idle-start-time to %s" org-clock-last-idle-start-time)))))
 
 ;;; org-rl-obj.el ends here

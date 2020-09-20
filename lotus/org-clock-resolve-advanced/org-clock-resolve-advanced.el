@@ -54,6 +54,9 @@
 
     org-clock-user-idle-start))
 
+(defun LM:roundto (n p)
+  ;; http://www.lee-mac.com/round.html
+  (LM:roundm n (expt 10.0 (- p))))
 
 (defun org-rl-resolve-clocks-if-idle ()
   "Resolve all currently open Org clock.
@@ -68,104 +71,53 @@ so long."
       (progn
         (org-rl-debug nil "org-rl-resolve-clocks-if-idle: [minibuffer-body] lotus-with-override-minibuffer-if active minibuffer found aborting it."))
     (lotus-with-other-frame-event-debug "org-rl-resolve-clocks-if-idle" :restart)
-    (condition-case err
-        (progn
-          (org-rl-debug nil "org-rl-resolve-clocks-if-idle: lotus-with-other-frame-event-debug")
-          (org-rl-debug nil
-           "org-rl-resolve-clocks-if-idle: pass1 org-clock-last-idle-start-time: %s, (org-user-idle-seconds) %s"
-           (if org-clock-last-idle-start-time
-               (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
-           (org-user-idle-seconds))
-          ;; (org-rl-debug nil "(org-user-idle-seconds) %s" (org-user-idle-seconds))
-          (when (and org-clock-idle-time
-                     (not org-clock-resolving-clocks)
-                     org-clock-marker
-                     (marker-buffer org-clock-marker))
-            (org-rl-debug nil
-                          "org-rl-resolve-clocks-if-idle: pass2 org-clock-last-idle-start-time: %s, (org-user-idle-seconds) %s"
-                          (if org-clock-last-idle-start-time
-                              (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
-                          (org-user-idle-seconds))
-            (let* ((org-clock-user-idle-seconds                (floor (if org-clock-last-idle-start-time
-                                                                          (time-to-seconds (time-subtract (current-time)
-                                                                                                          org-clock-last-idle-start-time))
-                                                                        (org-user-idle-seconds))))
-                   (org-clock-user-idle-start                  (time-subtract (current-time) org-clock-user-idle-seconds))
-                   (org-clock-resolving-clocks-due-to-idleness t))
-
-              (unwind-protect
-                  (progn
-                  
-                  
-                    (progn
-                    
-                      ;; TODO:
-                      ;; Debugger entered--Lisp error: (wrong-type-argument listp 68719476736000000)
-                      ;; nth(1 (109869281350481122156953239 . 68719476736000000))
-                      ;; (cl-assert (nth 1 org-clock-user-idle-start))
-                    
-                      ;; (time-subtract (current-time) 310.006370235)
-                      ;; (time-subtract (current-time) 310.006)
-                      ;; (time-subtract (current-time) 310.00)
-                    
-                    
-                      ;; Busy user input (file-notify ((6 . 0) (isdir attrib) fonts 0) file-notify--callback-inotify)
-                      ;; helm-timed: triggered timer for new-win #<window 43 on *helm occ select>
-                      ;; org-rl-resolve-clocks-if-idle: org-clock-user-idle-seconds    - 310.001834371
-                      ;; org-rl-resolve-clocks-if-idle: org-clock-last-idle-start-time - nil
-                      ;; org-rl-resolve-clocks-if-idle: org-clock-user-idle-start      - (27478725457084412873264278651 . 17179869184000000000)
-                      ;; Entering debugger...
-                      ;; Office related work
-                      ;; Cleanup and Refactoring lotus-utils library and depending package                                                                                                                                                                    :EMACS:
-                      ;; occ-clock-in-curr-ctx-if-not-timer-function: (recursion-depth) [1] > 0
-                      ;; Office related work
-                      ;; Cleanup and Refactoring lotus-utils library and depending package                                                                                                                                                                    :EMACS:
-                    
-                      ;; org-rl-resolve-clocks-if-idle: org-clock-user-idle-seconds    - 310.004256237
-                      ;; org-rl-resolve-clocks-if-idle: org-clock-last-idle-start-time - nil
-                      ;; org-rl-resolve-clocks-if-idle: org-clock-user-idle-start      - (54957462697594140219314260251 . 34359738368000000000)
-                      ;; Entering debugger...
-                      ;; occ-clock-in-curr-ctx-if-not-timer-function: (recursion-depth) [1] > 0 [10 times]
-                      ;; Office related work
-                      ;; Cleanup and Refactoring lotus-utils library and depending package                                                                                                                                                                    :EMACS:
-                      ;; Warning: notification for "Cleanup and Refactoring lotus-utils library and depending package" behind schedule!
-                    
-                      ;; org-rl-resolve-clocks-if-idle: org-clock-user-idle-seconds    - 310.006370235
-                      ;; org-rl-resolve-clocks-if-idle: org-clock-last-idle-start-time - nil
-                      ;; org-rl-resolve-clocks-if-idle: org-clock-user-idle-start      - (54957479593353698708253152369 . 34359738368000000000)
-                      ;; Entering debugger...
-                    
-                      (message "org-rl-resolve-clocks-if-idle: org-clock-start-time           - %s" org-clock-start-time)
-                      (message "org-rl-resolve-clocks-if-idle: org-clock-user-idle-seconds    - %s" org-clock-user-idle-seconds)
-                      (message "org-rl-resolve-clocks-if-idle: org-clock-last-idle-start-time - %s" org-clock-last-idle-start-time)
-                      (message "org-rl-resolve-clocks-if-idle: org-clock-user-idle-start      - %s" org-clock-user-idle-start)
-                    
+    (progn
+      (org-rl-debug nil "org-rl-resolve-clocks-if-idle: lotus-with-other-frame-event-debug")
+      (org-rl-debug nil "org-rl-resolve-clocks-if-idle: pass1 org-clock-last-idle-start-time: %s, (org-user-idle-seconds) %s"
+                    (if org-clock-last-idle-start-time
+                        (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
+                    (org-user-idle-seconds))
+      ;; (org-rl-debug nil "(org-user-idle-seconds) %s" (org-user-idle-seconds))
+      (when (and org-clock-idle-time
+                 (not org-clock-resolving-clocks)
+                 org-clock-marker
+                 (marker-buffer org-clock-marker))
+        (org-rl-debug nil
+                      "org-rl-resolve-clocks-if-idle: pass2 org-clock-last-idle-start-time: %s, (org-user-idle-seconds) %s"
                       (if org-clock-last-idle-start-time
-                          (cl-assert (listp (cdr org-clock-last-idle-start-time)))
-                        (cl-assert (listp (cdr org-clock-user-idle-start)))))
-                  
-                    (setq org-clock-last-idle-start-time org-clock-user-idle-start)
-                  
-                    (if (> org-clock-user-idle-seconds (* 60 org-clock-idle-time))
-                        (funcall org-rl-clock-resolve-time
-                                 (org-rl-make-clock org-clock-marker
-                                                    org-clock-start-time
-                                                    org-clock-user-idle-start
-                                                    t) ;TODO: what important.
-                                 (org-rl-make-clock nil 'now 'now)
-                                 'ask
-                                 nil
-                                 nil)
-                      (org-rl-debug nil "org-rl-resolve-clocks-if-idle: pass3 not calling resolve time org-clock-last-idle-start-time: %s, (org-user-idle-seconds) %s"
-                                    (if org-clock-last-idle-start-time
-                                        (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
-                                    (org-user-idle-seconds))))
-                  (progn
-                    (org-rl-debug :warning "Resetting org-clock-last-idle-start-time [= %s] to nil" org-clock-last-idle-start-time)
-                    (org-clock-resolve-reset-last-idle-start-time)
-                    (setq org-clock-last-idle-start-time nil)
-                    (org-rl-debug :warning "Reset org-clock-last-idle-start-time to %s" org-clock-last-idle-start-time))))))))
+                          (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
+                      (org-user-idle-seconds))
+        (let* ((org-clock-user-idle-seconds                (LM:roundto (if org-clock-last-idle-start-time
+                                                                           (time-to-seconds (time-subtract (current-time)
+                                                                                                           org-clock-last-idle-start-time))
+                                                                         (org-user-idle-seconds))
+                                                                       2))
+               (org-clock-user-idle-start                  (time-subtract (current-time) org-clock-user-idle-seconds))
+               (org-clock-resolving-clocks-due-to-idleness t))
 
+          (message "org-rl-resolve-clocks-if-idle: org-clock-start-time           - %s" org-clock-start-time)
+          (message "org-rl-resolve-clocks-if-idle: org-clock-user-idle-seconds    - %s" org-clock-user-idle-seconds)
+          (message "org-rl-resolve-clocks-if-idle: org-clock-last-idle-start-time - %s" org-clock-last-idle-start-time)
+          (message "org-rl-resolve-clocks-if-idle: org-clock-user-idle-start      - %s" org-clock-user-idle-start)
+
+          (if org-clock-last-idle-start-time
+                    (cl-assert (listp (cdr org-clock-last-idle-start-time)))
+                  (cl-assert (listp (cdr org-clock-user-idle-start)))
+                (setq org-clock-last-idle-start-time org-clock-user-idle-start)
+
+                (if (> org-clock-user-idle-seconds (* 60 org-clock-idle-time))
+                    (org-rl-clock-resolve-internal (org-rl-make-clock org-clock-marker
+                                                                      org-clock-start-time
+                                                                      org-clock-user-idle-start
+                                                                      t) ;TODO: what important.
+                                                   (org-rl-make-clock nil 'now 'now)
+                                                   'ask
+                                                   nil
+                                                   nil)
+                  (org-rl-debug nil "org-rl-resolve-clocks-if-idle: pass3 not calling resolve time org-clock-last-idle-start-time: %s, (org-user-idle-seconds) %s"
+                                (if org-clock-last-idle-start-time
+                                    (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
+                                (org-user-idle-seconds))))))))
   (org-rl-debug nil "%s: org-rl-resolve-clocks-if-idle: finished" (time-stamp-string)))
 
 (defalias 'org-resolve-clocks-if-idle 'org-rl-resolve-clocks-if-idle)
@@ -211,10 +163,11 @@ If `only-dangling-p' is non-nil, only ask to resolve dangling
             (let ((dangling (or (not (org-clock-is-active))
                                 (/= (car clock) org-clock-marker))))
               (when (or (not only-dangling-p) dangling)
-                (funcall org-rl-clock-resolve-time
-                 (org-rl-make-clock (car clock) (cdr clock) (cdr clock))
-                 (org-rl-make-clock 'imaginary 'now 'now)
-                 nil nil nil)))))))))
+                (org-rl-clock-resolve-internal (org-rl-make-clock (car clock) (cdr clock) (cdr clock))
+                                               (org-rl-make-clock 'imaginary 'now 'now)
+                                               nil
+                                               nil
+                                               nil)))))))))
 
 ;;;###autoload
 (defalias 'org-resolve-clocks 'org-rl-resolve-clocks)
@@ -223,7 +176,7 @@ If `only-dangling-p' is non-nil, only ask to resolve dangling
 (defun org-clock-resolve-clocks (clocks) ;TODO
   (let ((next (pop clocks))
         (prev (pop clocks)))
-    (funcall org-rl-clock-resolve-time next prev)))
+    (org-rl-clock-resolve-internal next prev)))
 
 
 (defun org-rl-first-clock-started-mins (marker)
@@ -245,44 +198,33 @@ This is performed after `org-clock-idle-time' minutes, to check
 if the user really wants to stay clocked in after being idle for
 so long."
   (interactive
-   (let* ((marker
-           (if current-prefix-arg
-               (point-marker)
-             org-clock-marker))
-          (mins-spent
-           (or
-            (org-rl-first-clock-started-mins marker)
-            0)))
-     (list (*
-            (read-number
-             (format "clock[ %s ] Resolve mins: " (org-get-heading-from-clock (list marker)))
-             (org-rl-first-clock-started-mins marker))
-            60))))
-  (let* ((marker
-          (if current-prefix-arg
-              (point-marker)
-            org-clock-marker))
+   (let* ((marker     (if current-prefix-arg
+                          (point-marker)
+                        org-clock-marker))
+          (mins-spent (or (org-rl-first-clock-started-mins marker)
+                          0)))
+     (list (* (read-number (format "clock[ %s ] Resolve mins: " (org-get-heading-from-clock (list marker)))
+                           (org-rl-first-clock-started-mins marker))
+              60))))
+  (let* ((marker     (if current-prefix-arg
+                         (point-marker)
+                       org-clock-marker))
          (start-time (org-clock-get-nth-half-clock-time marker 1))
-         (mins-spent
-          (or
-           (org-rl-first-clock-started-mins marker)
-           0)))
+         (mins-spent (or (org-rl-first-clock-started-mins marker)
+                         0)))
     (if (> mins-spent 1)
         (if (< 1 (/ (abs idle-sec) 60) (1- mins-spent))
-            (when (and
-                   org-clock-idle-time
-                   (not org-clock-resolving-clocks)
-                   marker
-                   (marker-buffer marker))
+            (when (and org-clock-idle-time
+                       (not org-clock-resolving-clocks)
+                       marker
+                       (marker-buffer marker))
               (let* ((org-clock-user-idle-seconds (abs idle-sec))
-                     (org-clock-user-idle-start
-                      (time-subtract (current-time)
-                                     (seconds-to-time org-clock-user-idle-seconds)))
+                     (org-clock-user-idle-start   (time-subtract (current-time)
+                                                                 (seconds-to-time org-clock-user-idle-seconds)))
                      (org-clock-resolving-clocks-due-to-idleness t))
                 (if (> org-clock-user-idle-seconds (* 60 org-clock-idle-time))
-                    (funcall org-rl-clock-resolve-time
-                     (org-rl-make-clock marker start-time org-clock-user-idle-start t)
-                     (org-rl-make-clock 'imaginary 'now 'now))
+                    (org-rl-clock-resolve-internal (org-rl-make-clock marker start-time org-clock-user-idle-start t)
+                                                   (org-rl-make-clock 'imaginary 'now 'now))
                   (when t
                     (org-rl-debug nil "Idle time now min[%d] sec[%d]"
                              (/ org-clock-user-idle-seconds 60)
@@ -303,5 +245,5 @@ so long."
 (defun org-clock-resolve-advanced-uninsinuate ()
   (remove-hook 'org-clock-in-hook
                #'org-rl-clock-set-correct-idle-timer))
-
+
 ;;; org-clock-utils-lotus.el ends here
