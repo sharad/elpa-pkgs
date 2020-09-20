@@ -54,6 +54,9 @@
 
     org-clock-user-idle-start))
 
+(defun LM:roundm (n m)
+  (* m (atoi (rtos (/ n (float m)) 2 0))))
+
 (defun LM:roundto (n p)
   ;; http://www.lee-mac.com/round.html
   (LM:roundm n (expt 10.0 (- p))))
