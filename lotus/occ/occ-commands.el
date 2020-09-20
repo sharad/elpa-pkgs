@@ -179,6 +179,7 @@
 ;;;###autoload
 (defun occ-reset-spec ()
   (interactive)
+  (occ-reset-collection-object)
   (setq occ-global-tsk-collection-spec nil))
 
 ;;;###autoload

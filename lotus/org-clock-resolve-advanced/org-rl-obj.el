@@ -58,6 +58,7 @@
 
 (cl-defstruct org-rl-clock
   marker
+  heading
   start
   stop
   current)
@@ -85,9 +86,10 @@
   (assert-time stop-time)
 
   (make-org-rl-clock
-   :marker marker
-   :start (make-org-rl-time :time start-time)
-   :stop  (make-org-rl-time :time stop-time)
+   :marker   marker
+   :heading (substring-no-properties (org-get-heading-from-marker marker))
+   :start   (make-org-rl-time :time start-time)
+   :stop    (make-org-rl-time :time stop-time)
    :current current))
 
 (cl-defmethod org-rl-make-clock ((marker symbol)
@@ -134,9 +136,9 @@
   (let ((fmt (cdr org-time-stamp-formats)))
     (format-time-string fmt (org-rl-time-get-time time))))
 
-(cl-defmethod org-rl-clock-heading ((clock org-rl-clock))
-  (let ((mrk (org-rl-clock-marker clock)))
-    (org-get-heading-from-marker mrk)))
+;; (cl-defmethod org-rl-clock-heading ((clock org-rl-clock))
+;;   (let ((mrk (org-rl-clock-marker clock)))
+;;     (org-get-heading-from-marker mrk)))
 
 (cl-defmethod org-rl-format ((clock null))
   (format "null"))

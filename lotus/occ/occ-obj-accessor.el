@@ -333,8 +333,9 @@ pointing to it."
           (occ-make-tsk-collection occ-global-tsk-collection-spec)
           (occ-collect-tsks occ-global-tsk-collection t))
       (progn
-        (occ-message "occ-global-tsk-collection-spec is nil, set it using M-x occ-build-spec or set occ-global-tsk-collection-spec")
-        (error "occ-global-tsk-collection-spec is nil, set it using M-x occ-build-spec or set occ-global-tsk-collection-spec"))))
+        (occ-uninsinuate)
+        (occ-message "occ-global-tsk-collection-spec is nil, set it using M-x occ-build-spec or set occ-global-tsk-collection-spec, disabled occ")
+        (error "occ-global-tsk-collection-spec is nil, set it using M-x occ-build-spec or set occ-global-tsk-collection-spec, disabled occ"))))
   occ-global-tsk-collection)
 
 
@@ -368,22 +369,18 @@ pointing to it."
                                  force)
   (unless (occ-tree-collection-files collection)
     (occ-collect-tsks collection nil)
-    (setf
-     (occ-tree-collection-files collection)
-     (remove nil
-             (delete-dups
-              (let ((tsks (occ-collection collection))
-                    (files '()))
-                (mapc
-                 #'(lambda (tsk)
-                     (occ-mapc-tree-tsks
-                      #'(lambda (tsk args)
-                          (push (occ-tsk-file tsk) files))
-                      tsk
-                      nil))
-                 tsks)
-
-                files)))))
+    (let ((occ-files (let ((tsks (occ-collection collection))
+                           (files '()))
+                       (mapc #'(lambda (tsk)
+                                 (occ-mapc-tree-tsks #'(lambda (tsk args)
+                                                         (push (occ-tsk-file tsk) files))
+                                                     tsk
+                                                     nil))
+                             tsks)
+                       files))))
+    (setf (occ-tree-collection-files collection)
+          (remove nil
+                  (delete-dups occ-files))))
   (occ-tree-collection-files collection))
 
 (cl-defmethod occ-collect-files ((collection occ-list-collection)
