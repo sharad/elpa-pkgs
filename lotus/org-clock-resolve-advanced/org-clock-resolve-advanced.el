@@ -54,12 +54,27 @@
 
     org-clock-user-idle-start))
 
+(defun LM:rtos (n mode precision)
+  (let* ((num-str (number-to-string n))
+         (pos     (seq-position num-str ?.))
+         (pos     (when pos (+ pos precision 1))))
+    (substring (number-to-string n)
+               0
+               pos)))
+
 (defun LM:roundm (n m)
-  (* m (atoi (rtos (/ n (float m)) 2 0))))
+  (* m (string-to-number (LM:rtos (/ n (float m)) 2 0))))
+
+;; (defun LM:roundm ( n m)
+;;   (* m (abs (funcall (if (minusp n) #'- #'+) (/ n (float m)) 0.5))))
+
 
 (defun LM:roundto (n p)
   ;; http://www.lee-mac.com/round.html
   (LM:roundm n (expt 10.0 (- p))))
+
+;; (LM:rtos 1.1111111 0 2)
+;; (LM:roundto 1.1111111 2)
 
 (defun org-rl-resolve-clocks-if-idle ()
   "Resolve all currently open Org clock.
@@ -90,6 +105,7 @@ so long."
                       (if org-clock-last-idle-start-time
                           (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
                       (org-user-idle-seconds))
+
         (let* ((org-clock-user-idle-seconds                (LM:roundto (if org-clock-last-idle-start-time
                                                                            (time-to-seconds (time-subtract (current-time)
                                                                                                            org-clock-last-idle-start-time))
@@ -104,11 +120,12 @@ so long."
           (message "org-rl-resolve-clocks-if-idle: org-clock-user-idle-start      - %s" org-clock-user-idle-start)
 
           (if org-clock-last-idle-start-time
-                    (cl-assert (listp (cdr org-clock-last-idle-start-time)))
-                  (cl-assert (listp (cdr org-clock-user-idle-start)))
-                (setq org-clock-last-idle-start-time org-clock-user-idle-start)
+              (cl-assert (listp (cdr org-clock-last-idle-start-time)))
+            (cl-assert (listp (cdr org-clock-user-idle-start))))
 
-                (if (> org-clock-user-idle-seconds (* 60 org-clock-idle-time))
+          (setq org-clock-last-idle-start-time org-clock-user-idle-start)
+
+          (if (> org-clock-user-idle-seconds (* 60 org-clock-idle-time)
                     (org-rl-clock-resolve-internal (org-rl-make-clock org-clock-marker
                                                                       org-clock-start-time
                                                                       org-clock-user-idle-start
@@ -121,6 +138,7 @@ so long."
                                 (if org-clock-last-idle-start-time
                                     (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
                                 (org-user-idle-seconds))))))))
+
   (org-rl-debug nil "%s: org-rl-resolve-clocks-if-idle: finished" (time-stamp-string)))
 
 (defalias 'org-resolve-clocks-if-idle 'org-rl-resolve-clocks-if-idle)
