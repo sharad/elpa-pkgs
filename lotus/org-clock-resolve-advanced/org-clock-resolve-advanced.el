@@ -106,11 +106,10 @@ so long."
                           (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
                       (org-user-idle-seconds))
 
-        (let* ((org-clock-user-idle-seconds                (LM:roundto (if org-clock-last-idle-start-time
-                                                                           (time-to-seconds (time-subtract (current-time)
-                                                                                                           org-clock-last-idle-start-time))
-                                                                         (org-user-idle-seconds))
-                                                                       2))
+        (let* ((org-clock-user-idle-seconds                (floor (if org-clock-last-idle-start-time
+                                                                      (time-to-seconds (time-subtract (current-time)
+                                                                                                      org-clock-last-idle-start-time))
+                                                                    (org-user-idle-seconds))))
                (org-clock-user-idle-start                  (time-subtract (current-time) org-clock-user-idle-seconds))
                (org-clock-resolving-clocks-due-to-idleness t))
 
@@ -125,19 +124,20 @@ so long."
 
           (setq org-clock-last-idle-start-time org-clock-user-idle-start)
 
-          (if (> org-clock-user-idle-seconds (* 60 org-clock-idle-time)
-                    (org-rl-clock-resolve-internal (org-rl-make-clock org-clock-marker
-                                                                      org-clock-start-time
-                                                                      org-clock-user-idle-start
-                                                                      t) ;TODO: what important.
-                                                   (org-rl-make-clock nil 'now 'now)
-                                                   'ask
-                                                   nil
-                                                   nil)
-                  (org-rl-debug nil "org-rl-resolve-clocks-if-idle: pass3 not calling resolve time org-clock-last-idle-start-time: %s, (org-user-idle-seconds) %s"
-                                (if org-clock-last-idle-start-time
-                                    (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
-                                (org-user-idle-seconds))))))))
+          (if (> org-clock-user-idle-seconds
+                 (* 60 org-clock-idle-time))
+            (org-rl-clock-resolve-internal (org-rl-make-clock org-clock-marker
+                                                              org-clock-start-time
+                                                              org-clock-user-idle-start
+                                                              t) ;TODO: what important.
+                                           (org-rl-make-clock nil 'now 'now)
+                                           'ask
+                                           nil
+                                           nil)
+            (org-rl-debug nil "org-rl-resolve-clocks-if-idle: pass3 not calling resolve time org-clock-last-idle-start-time: %s, (org-user-idle-seconds) %s"
+                          (if org-clock-last-idle-start-time
+                              (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
+                          (org-user-idle-seconds)))))))
 
   (org-rl-debug nil "%s: org-rl-resolve-clocks-if-idle: finished" (time-stamp-string)))
 

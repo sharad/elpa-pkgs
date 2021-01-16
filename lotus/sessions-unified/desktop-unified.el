@@ -590,8 +590,9 @@ so returns nil if pid is nil."
           (message "Desktop lazily opening Failed."))
         (setq repeat (sit-for 0.2))
         (unless desktop-buffer-args-list
-          (cancel-timer desktop-lazy-timer)
-          (setq desktop-lazy-timer nil)
+          (when desktop-lazy-timer
+            (cancel-timer desktop-lazy-timer)
+            (setq desktop-lazy-timer nil))
           (message "Lazy desktop load complete")
           (sit-for 3)
           (message nil))))))
