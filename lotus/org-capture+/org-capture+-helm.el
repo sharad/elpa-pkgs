@@ -28,6 +28,8 @@
 
 
 (require 'cl)
+(eval-when-compile
+  (require 'cl))
 (require 'dash)
 (require 'helm)
 

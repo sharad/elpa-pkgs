@@ -377,10 +377,8 @@ pointing to it."
                                                      tsk
                                                      nil))
                              tsks)
-                       files))))
-    (setf (occ-tree-collection-files collection)
-          (remove nil
-                  (delete-dups occ-files))))
+                       files)))
+       (setf (occ-tree-collection-files collection) (remove nil (delete-dups occ-files)))))
   (occ-tree-collection-files collection))
 
 (cl-defmethod occ-collect-files ((collection occ-list-collection)
