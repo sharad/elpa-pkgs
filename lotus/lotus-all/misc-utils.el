@@ -325,8 +325,8 @@ The indirect buffer can have another major mode."
 
 (put 'set-goal-column 'disabled nil)
 
-(progn ;; deh-require-maybe flymake               ;excellent
-  (add-hook 'find-file-hook 'flymake-find-file-hook))
+(when (featurep 'flymake)
+  (remove-hook 'find-file-hook 'flymake-find-file-hook))
 
 
 ;; from http://www.dotemacs.de/dotfiles/DavidJolley.emacs.html

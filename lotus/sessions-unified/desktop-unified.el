@@ -296,6 +296,7 @@ so returns nil if pid is nil."
 
 ;; (find-desktop-file "select desktop: " "~/tmp/" desktop-base-file-name)
 
+;;;###autoload
 (defun desktop-get-desktop-save-filename ()
   (interactive)
   (if *desktop-save-filename*
@@ -396,6 +397,7 @@ so returns nil if pid is nil."
 (defvar *my-desktop-save-max-error-count* 6 "")
 (defvar *my-desktop-save-error-count* 0 "")
 
+;;;###autoload
 (defun my-desktop-save ()
   (interactive)
   ;; Don't call desktop-save-in-desktop-dir, as it prints a message.
@@ -511,6 +513,7 @@ so returns nil if pid is nil."
      "*session-unified-desktop-enabled*: %s"
      *session-unified-desktop-enabled*)))
 
+;;;###autoload
 (defun lotus-disable-session-saving-immediately ()
   (interactive)
   (remove-hook 'auto-save-hook #'save-all-sessions-auto-save)
@@ -518,6 +521,7 @@ so returns nil if pid is nil."
   (frame-session-restore-unhook-func)
   (funcall sessions-unified-utils-notify "lotus-disable-session-saving"  "Removed save-all-sessions-auto-save from auto-save-hook and kill-emacs-hook"))
 
+;;;###autoload
 (defun lotus-enable-session-saving-immediately ()
   (interactive)
   (add-hook 'auto-save-hook #'save-all-sessions-auto-save)
@@ -555,6 +559,7 @@ so returns nil if pid is nil."
      "No %s is present in %s")
    fn hook))
 
+;;;###autoload
 (defun lotus-check-session-saving ()
   (interactive)
   (if (called-interactively-p 'interactive)

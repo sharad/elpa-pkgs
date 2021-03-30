@@ -25,7 +25,7 @@
 ;;; Code:
 
 
-(deh-require-maybe pabbrev
+(when (featurep 'pabbrev)
   (setq pabbrev-read-only-error nil)
   (defun pabbrev-activate ()
     (unless buffer-read-only
@@ -40,7 +40,7 @@
   )
 
 (when nil
-  (deh-require-maybe vc-p4
+  (when (featurep 'vc-p4)
     (when (executable-find "p4")
       (defvar enable-p4-login nil "test")
 
