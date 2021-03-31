@@ -177,25 +177,21 @@ return a new alist whose car is the new pair and cdr is ALIST."
                                         (elscreen-current-window-configuration))
      (let* ((screen-list (sort (elscreen-get-screen-list) '<))
             screen-name)
-       (let ((desktop-buffers
-              (elscreen-save-screen-excursion
-               (remove-duplicates
-                (mapcan
-                 (lambda (screen)
-                   ;; If nickname exists, use it.
-                   (setq screen-name (elscreen-get-screen-nickname screen))
-                   ;; Nickname does not exist, so examine major-mode and buffer-name.
-                   (when (null screen-name)
-                     (elscreen-goto-internal screen)
-                     (mapcar
-                      (lambda (window)
-                        (window-buffer window))
-                      (window-list))))
-                 screen-list)))))
-
-         (remove nil
-                 (mapcar 'desktop-make-create-buffer-list desktop-buffers)))))))
-
+       (let ((desktop-buffers (elscreen-save-screen-excursion
+                               (mapcan (lambda (screen)
+                                         ;; If nickname exists, use it.
+                                         (setq screen-name (elscreen-get-screen-nickname screen))
+                                         ;; Nickname does not exist, so examine major-mode and buffer-name.
+                                         (when (null screen-name)
+                                           (elscreen-goto-internal screen)
+                                           (mapcar (lambda (window)
+                                                     (window-buffer window))
+                                                   (window-list))))
+                                       screen-list))))
+         ;; (message "desktop-buffers: %s" desktop-buffers)
+         (when desktop-buffers
+           (remove nil
+                   (mapcar #'desktop-make-create-buffer-list desktop-buffers))))))))
 
 ;; with-eval-after-load "elscreen"
 
@@ -514,8 +510,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
 
 (defun fmsession-store (session-name &optional nframe)
   "Store the elscreen tab configuration."
-  (interactive
-   (list (fmsession-read-location)))
+  (interactive (list (fmsession-read-location)))
   (elscreen-session-store session-name nframe))
 
 (defun fmsession-restore (session-name &optional nframe)

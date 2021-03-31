@@ -53,9 +53,12 @@
                      (abort-recursive-edit))
                    initial))
     (read-file-name prompt dir default-filename mustmatch initial predicate)))
-
 
 
+(setq desktop-io-file-version 208)
+
+;; check function desktop-buffer-info
+
 (with-eval-after-load "desktop"
   (defun desktop-make-create-buffer (buffer)
     (let ((l (desktop-buffer-info buffer))
@@ -105,6 +108,7 @@
           (cons (string-to-number desktop-file-version)
                 l))))))
 
+;; (desktop-buffer-info (current-buffer))
 
 
 ;; (with-eval-after-load "desktop"
