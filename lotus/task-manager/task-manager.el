@@ -56,8 +56,8 @@
    (\"personal\"
     (org-master-file \"report.org\")
     (org-heading     \"Personal work\")
-    (bugz-url        \"https://bugzilla.merunetworks.com\")))"
-    )
+    (bugz-url        \"https://bugzilla.merunetworks.com\")))")
+    
 
 (defvar task-current-party nil "Task current party")
 (defvar task-current-party-change-hook nil "run hook when task-current-party chnage.")
@@ -71,9 +71,9 @@
     "#+STARTUP: overview"
     "#+STARTUP: hidestars"
     "#+TAGS: PERFORCE(4)  BUGZILLA(b) SVN(v) SCMBUG(m) PROJECT(j)"
-    "#+TAGS: CVS(i) PHONE(p) INTERNET(i)"
+    "#+TAGS: CVS(i) PHONE(p) INTERNET(i)")
     ;; "#+SEQ_TODO: TODO STARTED DONE"
-    )
+    
   "Desc")
 
 (defvar *task-projbuffs-base-dir* "~/Documents/org/tasks")
@@ -100,17 +100,19 @@
      (org-todo-file    "todo.org")
      (dirs            "logs" "programs" "patches" "deliverables")
      (links           ("notes.html" . "index.html"))
-     (project         "works.pb"))
-    ))
+     (project         "works.pb"))))
+    
 
 (defvar *taskdir-current-task* nil "Current task")
 
-(add-to-list
- 'desktop-globals-to-save
- '*taskdir-current-task*)
-(add-to-list
- 'session-globals-include
- '(*taskdir-current-task* 100))
+(when (boundp 'desktop-globals-to-save)
+  (add-to-list
+   'desktop-globals-to-save
+   '*taskdir-current-task*))
+(when (boundp 'session-globals-include)
+     (add-to-list
+      'session-globals-include
+      '(*taskdir-current-task* 100)))
 
 ;;;###autoload
 (defun add-to-task-current-party-change-hook (fn &optional append local)
@@ -139,9 +141,9 @@
               (task-create-org-file nfile
                 (insert "\n\n")
                 (insert (format "* %s: %s\n\n\n" "start" "tasks."))
-                (insert (format "* Reports\n\n\n"))
+                (insert (format "* Reports\n\n\n")))))
                 ;; (insert (format "* %s\n" (task-party-org-heading party)))
-                )))
+                
 
           org-master-file)
         (error "directory %s not exists" base-dir))))
@@ -321,9 +323,12 @@
         (cadr
          (assoc 'org-heading
                 (cdr (assoc party task-parties))))
-        (error "task-party-org-heading: party `%s' is not from task-parties" party))))
+      (error "task-party-org-heading: party `%s' is not from task-parties" party))))
 
-;;;###autoload
+(defmacro with-writable-buffer (&rest body)
+  `(let ((buffer-read-only nil))
+     ,@body))
+
 (defmacro task-create-org-file (file &rest body)
   `(progn
      (let ((find-file-not-found-functions nil))
@@ -613,14 +618,14 @@
                                              (format "%s/%s/%s"
                                                      (pluralize-string task-type)
                                                      name
-                                                     (task-first-org-master-file task-type))
+                                                     (task-first-org-master-file task-type)))))
 
                                              ;; (file-relative-name
                                              ;;  (concat task-dir "/" (task-first-org-master-file task-type))
                                              ;;  (file-name-directory file))
-                                             )
+                                             
                               ;; (org-entry-put nil "Root" project-root-folder)
-                              ))
+                              
     (with-current-buffer (find-file-noselect file)
       (let ((buffer-read-only nil))
         (save-buffer)))
@@ -645,8 +650,8 @@
                           (expand-file-name
                            (concat
                             (pluralize-string task-type) ".pb") ;; (task-projbuffs-dir)
-                           (task-party-projbuffs-dir)
-                           ))
+                           (task-party-projbuffs-dir)))
+                           
       (iproject-add-project
        project-type                 ;project-type
        project-main-file            ;project-main-file
