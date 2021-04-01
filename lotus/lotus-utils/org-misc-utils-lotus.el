@@ -41,14 +41,16 @@
 (eval-when-compile
   (require 'cl))
 
+(eval-when-compile
+  (require 'org-macs))
+
 (require 'cl)
 
 
 (defvar safe-org-refile-get-location-modes
   '(emacs-lisp-mode org-mode))
 
-(setq
- safe-org-refile-get-location-modes '(org-mode))
+(setq safe-org-refile-get-location-modes '(org-mode))
 
 ;; Misc Macros Starts
 

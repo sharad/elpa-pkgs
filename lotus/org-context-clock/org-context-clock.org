@@ -71,20 +71,22 @@ If not, show simply the clocked time like 01:50."
 ** Required libraries
 
  #+BEGIN_SRC  emacs-lisp
- (require 'org-clock)
+    (require 'org-clock)
 
- (require 'timer-utils-lotus)
- (eval-when-compile
-   (require 'timer-utils-lotus))
- (require 'org-misc-utils-lotus)
- (eval-when-compile
-   (require 'org-misc-utils-lotus))
- (require 'lotus-misc-utils)
- (eval-when-compile
-   (require 'lotus-misc-utils))
+    (require 'timer-utils-lotus)
+    (eval-when-compile
+      (require 'timer-utils-lotus))
+    (require 'org-misc-utils-lotus)
+    (eval-when-compile
+      (require 'org-misc-utils-lotus))
+    (require 'lotus-misc-utils)
+    (eval-when-compile
+      (require 'lotus-misc-utils))
 
-(require 'org-onchange)
+   (require 'org-onchange)
 
+   (eval-when-compile
+       (require 'org-macs))
  #+END_SRC
 
 ** It is divided into multiple files for different functionality

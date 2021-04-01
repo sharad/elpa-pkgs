@@ -29,6 +29,9 @@
   (require 'lotus-misc-utils))
 
 (provide 'org-clock-wrapper)
+(eval-when-compile
+  (require 'org-macs))
+
 
 ;; "correction org-timer.el"
 (defun replace-org-timer-set-timer (&optional opt)
@@ -212,12 +215,12 @@ using three `C-u' prefix arguments."
           :candidates (mapcar 'lotus-org-marker-selection-line clocks)
           :action (list ;; (cons "Select" 'identity)
                    (cons "Clock in and track" #'identity))
-          :history 'org-refile-history)
+          :history 'org-refile-history)))))
         ;; (helm-build-dummy-source "Create task"
         ;;   :action (helm-make-actions
         ;;            "Create task"
         ;;            'sacha/helm-org-create-task))
-        ))))
+        
   (progn
     (helm
      (list
@@ -225,13 +228,13 @@ using three `C-u' prefix arguments."
         :candidates (mapcar 'lotus-org-marker-selection-line clocks)
         :action (list ;; (cons "Select" 'identity)
                  (cons "Clock in and track" #'identity))
-        :history 'org-refile-history)
+        :history 'org-refile-history))))
 
       ;; (helm-build-dummy-source "Create task"
       ;;   :action (helm-make-actions
       ;;            "Create task"
       ;;            'sacha/helm-org-create-task))
-      )))
+      
 
   (progn
     ;; http://kitchingroup.cheme.cmu.edu/blog/2015/01/30/More-adventures-in-helm-more-than-one-action/
@@ -271,7 +274,7 @@ move point to the subject."
                                                   (helm-marked-candidates))))
                        ("send email" . open-email)))))
 
-    (helm :sources '(some-helm-source some-other-helm-source))
-    ))
+    (helm :sources '(some-helm-source some-other-helm-source))))
+    
 
 ;;; org-clock-wrapper.el ends here

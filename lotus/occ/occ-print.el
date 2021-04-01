@@ -29,6 +29,8 @@
 
 (require 'lotus-utils)
 (require 's)
+(eval-when-compile
+  (require 'org-macs))
 
 
 (cl-defmethod occ-uniquify-file ((tsk occ-tsk))

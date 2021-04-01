@@ -39,6 +39,8 @@
 (require 'lotus-misc-utils)
 (eval-when-compile
   (require 'lotus-misc-utils))
+(eval-when-compile
+  (require 'org-macs))
 ;; Libraries required:1 ends here
 
 ;; Clock out with NOTE

@@ -46,6 +46,8 @@
   (require 'lotus-misc-utils)
   (eval-when-compile
     (require 'lotus-misc-utils))
+  (eval-when-compile
+    (require 'org-macs))
 #+END_SRC
 
 ** Functions
