@@ -79,10 +79,10 @@
                          (action    (or  (cdr-safe action) action)))
                     (funcall action candidate))
                 (let ((in-occ-helm t))
-                  (run-with-timer 1 nil #'(lambda ()
-                                            (if in-occ-helm
-                                                (helm-refresh)
-                                              (occ-debug :debug "Running occ-list-select-internal helm is gone"))))
+                  (run-with-timer 0.1 nil #'(lambda ()
+                                              (if in-occ-helm
+                                                  (helm-refresh)
+                                                (occ-debug :debug "Running occ-list-select-internal helm is gone"))))
                   ;; :keymap occ-helm-map
                   (prog1
                    (helm :sources
