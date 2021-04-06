@@ -72,26 +72,31 @@
                                                     filters
                                                     candidates-unfiltered)))
             (when candidates-filtered
-              (if (and
-                   auto-select-if-only
-                   (= 1 (length candidates-filtered)))
+              (if (and auto-select-if-only
+                       (= 1 (length candidates-filtered)))
                   (let* ((candidate (car candidates-filtered))
                          (action    (car (funcall action-transformer action candidate)))
                          (action    (or  (cdr-safe action) action)))
                     (funcall action candidate))
-                (helm
-                 ;; :keymap occ-helm-map
-                 :sources
-                 (occ-helm-build-candidates-sources obj
-                                                    candidates-filtered
-                                                    :unfiltered-count   unfiltered-count
-                                                    :filters            filters
-                                                    :builder            builder
-                                                    :action             action
-                                                    :action-transformer action-transformer)
-                 :buffer (occ-helm-select-buffer)
-                 :resume 'noresume)))))
-      (occ-debug :debug "Running occ-list-select-internal"))))
+                (let ((in-occ-helm t))
+                  (run-with-timer 1 nil #'(lambda ()
+                                            (if in-occ-helm
+                                                (helm-refresh)
+                                              (occ-debug :debug "Running occ-list-select-internal helm is gone"))))
+                  ;; :keymap occ-helm-map
+                  (prog1
+                   (helm :sources
+                         (occ-helm-build-candidates-sources obj
+                                                            candidates-filtered
+                                                            :unfiltered-count   unfiltered-count
+                                                            :filters            filters
+                                                            :builder            builder
+                                                            :action             action
+                                                            :action-transformer action-transformer)
+                         :buffer             (occ-helm-select-buffer)
+                         :resume             'noresume)
+                   (setq in-occ-helm nil)))))))
+        (occ-debug :debug "Running occ-list-select-internal"))))
 
 (cl-defmethod occ-list-selection ((obj occ-ctx)
                                   &key

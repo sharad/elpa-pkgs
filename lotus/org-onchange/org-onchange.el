@@ -41,6 +41,8 @@
   (require 'lotus-misc-utils))
 (eval-when-compile
   (require 'org-macs))
+(eval-when-compile
+  (require 'org-clock))
 ;; Libraries required:1 ends here
 
 ;; Clock out with NOTE
