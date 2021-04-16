@@ -27,7 +27,7 @@
 (provide 'lotus-wrapper)
 
 
-(defvar replace-file-truename-link-cycle-counter 201)
+(defvar replace-file-truename-link-cycle-counter 300)
 
 (defvar file-truename-do-caching t)
 
