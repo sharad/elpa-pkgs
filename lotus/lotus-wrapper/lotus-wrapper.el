@@ -184,19 +184,48 @@ containing it, until no links are left at any level.
               (push (cons original-filename filename) file-truename-cache)))
           filename)))))
 
+
+;;;###autoload
+(defun replace-erc-identd-start (&optional port)
+  "Start an identd server listening to port 8113.
+Port 113 (auth) will need to be redirected to port 8113 on your
+machine -- using iptables, or a program like redir which can be
+run from inetd.  The idea is to provide a simple identd server
+when you need one, without having to install one globally on your
+system."
+  (interactive (list (read-string "Serve identd requests on port: " "8113")))
+  (unless port (setq port erc-identd-port))
+  (when (stringp port)
+    (setq port (string-to-number port)))
+  (when erc-identd-process
+    (delete-process erc-identd-process))
+  (setq erc-identd-process
+        (make-network-process :name "identd"
+                              :buffer nil
+                              :host 'local :service port
+                              :server t :noquery t :nowait nil
+                              :filter 'erc-identd-filter))
+  (set-process-query-on-exit-flag erc-identd-process nil))
+
 ;;;###autoload
 (defun lotus-wrapper-insinuate ()
   (interactive)
   (add-function
    :override (symbol-function 'file-truename)
-   #'replace-file-truename))
+   #'replace-file-truename)
+  (add-function
+   :override (symbol-function 'erc-identd-start)
+   #'replace-erc-identd-start))
 
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
   (interactive)
   (remove-function
    (symbol-function 'file-truename)
-   #'replace-file-truename))
+   #'replace-file-truename)
+  (remove-function
+   (symbol-function 'erc-identd-start)
+   #'replace-erc-identd-start))
 
 
 ;; (file-truename "~/.mailbox")

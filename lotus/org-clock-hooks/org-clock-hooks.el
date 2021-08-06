@@ -91,12 +91,12 @@
 ;; (org-update-all-dblocks) check about it
 
 (defun org-timer-cleanup-clockout-hook ()
-  (if (and
-       (boundp' org-timer-countdown-timer)
-       org-timer-countdown-timer)
-      (org-timer-stop))
-  (org-clock-get-work-day-clock-string t)
-  (save-buffer))
+  (when (and (boundp' org-timer-countdown-timer)
+             org-timer-countdown-timer)
+    (org-timer-stop))
+  (org-clock-get-work-day-clock-string t))
+  ;; Need some way here to run after org-lognote completed
+  ;; (save-buffer) ;; -- what to do ???
 
 
 ;;;###autoload
