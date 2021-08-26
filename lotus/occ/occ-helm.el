@@ -30,6 +30,7 @@
 (require 'lotus-tree-manager)
 (require 'org-capture+-helm)
 (require 'org-capture+-helm-dynamic)
+(require 'lotus-helm)
 
 
 (eval-when-compile

@@ -32,6 +32,7 @@
 
 
 (require 'lotus-tree-manager)
+(require 'lotus-helm)
 
 
 ;; * Dynamic Match based templates

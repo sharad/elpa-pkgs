@@ -2,6 +2,7 @@
   '((org "20191021")
     (dash "1")
     (lotus-utils "1")
+    (lotus-helm "1")
     (org-clock-unnamed-task "1")
     (org-clock-resolve-advanced "1")
     (org-clock-hooks "1")
