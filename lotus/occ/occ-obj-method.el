@@ -274,25 +274,27 @@
   ;; TODO: Add code to which check if only focus present than only trigger
   ;; else postpone it by calling run-with-idle-plus-timer
   (occ-debug :debug "begin occ-clock-in-curr-ctx-if-not")
-  (lotus-with-other-frame-event-debug "occ-clock-in-curr-ctx-if-not" :cancel
-    (occ-debug :debug "%s: occ-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug" (time-stamp-string))
-    (if force
-        (occ-clock-in-curr-ctx force)
-      (let ((ctx (occ-make-ctx-at-point)))
-        (let ((filters             (occ-match-filters))
-              (builder             #'occ-build-ctxual-tsk-with)
-              (action              (occ-get-helm-actions-tree ctx '(t actions general edit)))
-              (action-transformer  (occ-get-helm-actions-tree-genertator ctx '(t actions general edit)))
-              (auto-select-if-only occ-clock-in-ctx-auto-select-if-only)
-              (timeout             occ-idle-timeout))
-          (occ-clock-in-if-chg ctx
-                               :filters             filters
-                               :builder             builder
-                               :action              action
-                               :action-transformer  action-transformer
-                               :auto-select-if-only auto-select-if-only
-                               :timeout             timeout)))))
-  (occ-debug :nodisplay "%s: end occ-clock-in-curr-ctx-if-not" (time-stamp-string)))
+  ;;TODO: problem
+  ;; (lotus-with-other-frame-event-debug "occ-clock-in-curr-ctx-if-not" :cancel
+  (progn
+    (occ-debug :debug "%s: occ-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug" (time-stamp-string)
+        (if force
+            (occ-clock-in-curr-ctx force)
+          (let ((ctx (occ-make-ctx-at-point)))
+            (let ((filters             (occ-match-filters))
+                  (builder             #'occ-build-ctxual-tsk-with)
+                  (action              (occ-get-helm-actions-tree ctx '(t actions general edit)))
+                  (action-transformer  (occ-get-helm-actions-tree-genertator ctx '(t actions general edit)))
+                  (auto-select-if-only occ-clock-in-ctx-auto-select-if-only)
+                  (timeout             occ-idle-timeout))
+              (occ-clock-in-if-chg ctx
+                                   :filters             filters
+                                   :builder             builder
+                                   :action              action
+                                   :action-transformer  action-transformer
+                                   :auto-select-if-only auto-select-if-only
+                                   :timeout             timeout))))
+      (occ-debug :nodisplay "%s: end occ-clock-in-curr-ctx-if-not" (time-stamp-string)))))
 
 
 ;;; Timers
