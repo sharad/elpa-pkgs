@@ -114,6 +114,40 @@
       'session-globals-include
       '(*taskdir-current-task* 100)))
 
+
+;;; Macros
+;;;###autoload
+(defmacro with-writable-buffer (&rest body)
+  `(let ((buffer-read-only nil))
+     ,@body))
+
+;;;###autoload
+(defmacro task-create-org-file (file &rest body)
+  `(progn
+     (let ((find-file-not-found-functions nil))
+       (with-current-buffer (or (find-buffer-visiting ,file)
+                                (find-file-noselect ,file))
+         (with-writable-buffer
+             ;; (if (goto-char (point-min))
+             ;;     (insert "# -*-  -*-\n"))
+             (dolist (pv task-file-properties)
+               (add-file-local-variable-prop-line (car pv) (cdr pv)))
+           (goto-char (point-max))
+           (insert (reduce '(lambda (a b) (concat a "\n" b)) task-org-headers))
+           (goto-char (point-max))
+
+           ,@body
+
+           (set-buffer-file-coding-system
+            (if (coding-system-p 'utf-8-emacs)
+                'utf-8-emacs
+                'emacs-mule))
+           (write-file ,file)
+           (org-html-export-to-html))))
+     (kill-buffer (find-buffer-visiting ,file))))
+(put 'task-create-org-file 'lisp-indent-function 1)
+
+
 ;;;###autoload
 (defun add-to-task-current-party-change-hook (fn &optional append local)
   (add-to-hook
@@ -130,23 +164,49 @@
 
 ;; (progn ;; base-dir function
 ;;;{{{ task base
-(defun task-party-base-org-master-file (base-dir)
-  (let* ((base-dir              base-dir)
-         (org-master-file       *task-party-base-org-master-file*)
-         (org-master-file-path (expand-file-name org-master-file base-dir)))
-    (if (file-directory-p base-dir)
-        (progn
-          (unless (file-exists-p org-master-file-path)
-            (let ((nfile org-master-file-path)) ;find alternate of find-file-noselect to get non-existing file.
-              (task-create-org-file nfile
-                (insert "\n\n")
-                (insert (format "* %s: %s\n\n\n" "start" "tasks."))
-                (insert (format "* Reports\n\n\n")))))
-                ;; (insert (format "* %s\n" (task-party-org-heading party)))
-                
 
-          org-master-file)
-        (error "directory %s not exists" base-dir))))
+;; (defun task-party-base-org-master-file (base-dir)
+;;   (let* ((base-dir              base-dir)
+;;          (org-master-file       *task-party-base-org-master-file*)
+;;          (org-master-file-path  (expand-file-name org-master-file base-dir)))
+;;     (if (file-directory-p base-dir)
+;;         (progn
+;;           (unless (file-exists-p org-master-file-path)
+;;             (let ((nfile org-master-file-path)) ;find alternate of find-file-noselect to get non-existing file.
+;;               ;; Test
+;;               (task-create-org-file nfile
+;;                 (insert "\n\n")
+;;                 (insert (format "* %s: %s\n\n\n" "start" "tasks."))
+;;                 (insert (format "* Reports\n\n\n"))
+;;                 ;; (insert (format "* %s\n" (task-party-org-heading party)))
+;;                 org-master-file
+;;                 (error "directory %s not exists" base-dir))))))))
+
+;;;###autoload
+(defun task-party-base-org-master-file-ensure (party-dir)
+  (let* ((party-dir              party-dir)
+         (org-master-file       *task-party-base-org-master-file*)
+         (org-master-file-path  (expand-file-name org-master-file party-dir)))
+    (progn
+      (if (not (file-directory-p party-dir))
+          (error "directory %s not exists" party-dir)
+        (unless (file-exists-p org-master-file-path)
+          (let ((nfile org-master-file-path)) ;find alternate of find-file-noselect to get non-existing file.
+            (task-create-org-file nfile
+              (if (not (string-equal (buffer-file-name (current-buffer)) nfile))
+                  (error "task party base org master file: Current buffer %s file is not %s" (buffer-file-name (current-buffer)) nfile)
+                (progn
+                  (insert "\n\n")
+                  (insert (format "* %s - %s: %s\n\n\n" "root" "start" "tasks."))
+                  (insert (format "* Reports\n\n\n")))))))))))
+
+;;;###autoload
+(defun task-party-base-org-master-file (party-dir)
+  (let* ((party-dir              party-dir)
+         (org-master-file       *task-party-base-org-master-file*)
+         (org-master-file-path  (expand-file-name org-master-file party-dir)))
+    (task-party-base-org-master-file-ensure party-dir)
+    org-master-file))
 
 ;;;###autoload
 (defun task-make-party-base-dir (base-dir)
@@ -262,6 +322,28 @@
    (or prompt "select task type: ")
    (mapcar 'car *task-type-config*) nil t))
 
+(defun task-party-org-master-file-ensure (&optional party)
+  (let* ((party                 (or party (task-current-party)))
+         (party-dir             (expand-file-name party (task-party-base-dir)))
+         (org-master-file       (cadr
+                                 (assoc 'org-master-file
+                                        (cdr (assoc party task-parties)))))
+         (org-master-file-path (expand-file-name org-master-file party-dir)))
+    (if (not (member party (mapcar 'car task-parties)))
+        (error "task-party-org-master-file: party `%s' is not from task-parties" party)
+      (if (not (file-directory-p party-dir))
+          (error "directory %s not exists" party-dir)
+        (unless (file-exists-p org-master-file-path)
+          (let ((nfile org-master-file-path)) ;find alternate of find-file-noselect to get non-existing file.
+            (task-create-org-file nfile
+              (if (not (string-equal (buffer-file-name (current-buffer)) nfile))
+                  (error "task party org master file: Current buffer %s file is not %s" (buffer-file-name (current-buffer)) nfile)
+                (progn
+                  (insert "\n\n")
+                  (insert (format "* %s - %s: %s\n\n\n" (capitalize "party") (capitalize party) "tasks."))
+                  (insert (format "* Reports\n\n\n"))
+                  (insert (format "* %s\n" (task-party-org-heading party))))))))))))
+
 (defun task-party-org-master-file (&optional party)
   (let* ((party                 (or party (task-current-party)))
          (party-dir             (expand-file-name party (task-party-base-dir)))
@@ -269,19 +351,11 @@
                                  (assoc 'org-master-file
                                         (cdr (assoc party task-parties)))))
          (org-master-file-path (expand-file-name org-master-file party-dir)))
-    (if (member party (mapcar 'car task-parties))
-        (progn
-          (if (file-directory-p party-dir)
-              (unless (file-exists-p org-master-file-path)
-                (let ((nfile org-master-file-path)) ;find alternate of find-file-noselect to get non-existing file.
-                  (task-create-org-file nfile
-                    (insert "\n\n")
-                    (insert (format "* %s - %s: %s\n\n\n" (capitalize "party") (capitalize party) "tasks."))
-                    (insert (format "* Reports\n\n\n"))
-                    (insert (format "* %s\n" (task-party-org-heading party))))))
-              (error "directory %s not exists" party-dir))
-          org-master-file)
-        (error "task-party-org-master-file: party `%s' is not from task-parties" party))))
+    (if (not (member party (mapcar 'car task-parties)))
+        (error "task-party-org-master-file: party `%s' is not from task-parties" party)
+      (progn
+        (task-party-org-master-file-ensure)
+        org-master-file))))
 
 (defun task-make-party-dir (party)
   (let ((party party))
@@ -324,35 +398,6 @@
          (assoc 'org-heading
                 (cdr (assoc party task-parties))))
       (error "task-party-org-heading: party `%s' is not from task-parties" party))))
-
-(defmacro with-writable-buffer (&rest body)
-  `(let ((buffer-read-only nil))
-     ,@body))
-
-(defmacro task-create-org-file (file &rest body)
-  `(progn
-     (let ((find-file-not-found-functions nil))
-       (with-current-buffer (or (find-buffer-visiting ,file)
-                                (find-file-noselect ,file))
-         (with-writable-buffer
-             ;; (if (goto-char (point-min))
-             ;;     (insert "# -*-  -*-\n"))
-             (dolist (pv task-file-properties)
-               (add-file-local-variable-prop-line (car pv) (cdr pv)))
-           (goto-char (point-max))
-           (insert (reduce '(lambda (a b) (concat a "\n" b)) task-org-headers))
-           (goto-char (point-max))
-
-           ,@body
-
-           (set-buffer-file-coding-system
-            (if (coding-system-p 'utf-8-emacs)
-                'utf-8-emacs
-                'emacs-mule))
-           (write-file ,file)
-           (org-html-export-to-html))))
-     (kill-buffer (find-buffer-visiting ,file))))
-(put 'task-create-org-file 'lisp-indent-function 1)
 
 ;;;###autoload
 (defun task-party-bugz-url (&optional party)
