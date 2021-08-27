@@ -135,6 +135,11 @@
          (mapcar #'(lambda (action) (cons type action))
                  actions)))
 
+(occ-add-helm-actions-tree '(actions select)
+                           "Select"
+                           'normal
+                           :identity)
+
 (occ-add-helm-actions-tree '(actions general)
                            "Simple"
                            'normal
@@ -158,11 +163,6 @@
 (occ-helm-action-add :edits-gen          "Edit"       #'occ-gen-helm-edits)
 (occ-helm-action-add :misc-gen           "Misc"       #'occ-gen-helm-misc)
 (occ-helm-action-add :fast-checkouts-gen "Checkouts"  #'occ-gen-helm-checkouts)
-
-(occ-add-helm-actions-tree '(actions select)
-                           "Select"
-                           'generator
-                           :identity)
 
 (occ-add-helm-actions-tree '(actions general)
                            "General"
@@ -191,14 +191,12 @@
                      (occ-get-helm-actions-plist obj name-action-key))
                  (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))))
 
-;; (occ-get-helm-actions-tree nil '(t actions select)) -> nil
-
 (cl-defmethod occ-get-helm-actions-tree ((obj occ-obj) keys)
   ;; (occ-message "occ-get-helm-actions-tree: called with obj = %s, keys = %s" obj keys)
   (apply #'append
          (mapcar #'(lambda (name-action-key)
                      (occ-get-helm-actions-plist obj name-action-key))
-                 (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))))
+                 (collect-alist (tree-collect-items occ-helm-actions-tree obj keys 0)))))
 
 
 (cl-defmethod occ-get-helm-actions-tree-genertator ((obj null) keys)
@@ -208,5 +206,12 @@
 (cl-defmethod occ-get-helm-actions-tree-genertator ((obj occ-obj) keys)
   #'(lambda (action candidate)
       (occ-get-helm-actions-tree candidate keys)))
+
+(when nil
+  (collect-alist (tree-collect-items occ-helm-actions-tree nil '(t actions select) 0))
+  (occ-get-helm-actions-plist nil '(normal :identity))
+  (occ-helm-actions-get :identity)
+  (occ-helm-actions-get :clock-in)
+  (occ-get-helm-actions-tree nil '(t actions select)))
 
 ;;; occ-helm.el ends here

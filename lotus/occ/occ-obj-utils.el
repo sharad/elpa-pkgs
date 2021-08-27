@@ -51,28 +51,23 @@
 
 (defun occ-build-return-lambda (action &optional label)
   #'(lambda (candidate)
-      (let* ((value
-              (funcall action candidate))
-             (label
-              (or label
-                  (if value
-                      occ-return-true-label
-                    occ-return-false-label))))
+      (let* ((value (funcall action candidate))
+             (label (or label
+                        (if value occ-return-true-label occ-return-false-label))))
         (occ-make-return label value))))
 
 (defun occ-return-tranform (action)
   "Will make all action except first to return OCC-RETURN-SELECT-LABEL."
-  (cons
-   (cons                                ;add default select operation.
-    occ-return-select-name
-    (occ-build-return-lambda occ-return-select-function
-                             occ-return-select-label))
-   (mapcar #'(lambda (a)
-               (if (consp a)
-                   (cons (car a)
-                         (occ-build-return-lambda (cdr a)))
-                 (occ-build-return-lambda a)))
-           action)))
+  (let ((identity-selector (cons occ-return-select-name ;add default select operation.
+                                 (occ-build-return-lambda occ-return-select-function
+                                                          occ-return-select-label)))
+        (action-launcher   (mapcar #'(lambda (a)
+                                       (if (consp a)
+                                           (cons (car a)
+                                                 (occ-build-return-lambda (cdr a)))
+                                         (occ-build-return-lambda a)))
+                                   action)))
+    (cons identity-selector action-launcher)))
 
 (defun occ-return-tranformer-fun-transform (tranformer-fun)
   "Will make transformer fun to change action except first to return occ-return-label."
@@ -93,9 +88,8 @@
   retval)
 
 (cl-defmethod occ-return-in-labels-p ((retval occ-return) &rest label)
-  (memq
-   (occ-return-label retval)
-   label))
+  (memq (occ-return-label retval)
+        label))
 
 ;; (cl-defmethod occ-return-operate-p ((retval null))
 ;;   nil)

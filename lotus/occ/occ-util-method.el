@@ -55,13 +55,15 @@
         (action-transformer #'(lambda (action candidate)
                                 (occ-get-helm-actions-tree obj '(t actions general edit))))
         (timeout            occ-idle-timeout))
-   (occ-select obj
-               :filters            filters
-               :builder            builder
-               :action             action
-               :action-transformer action-transformer
-               :timeout            timeout
-               :obtrusive          obtrusive)))
+    (message "action: %s" action)
+    (occ-select obj
+                :filters            filters
+                :builder            builder
+                :action             action
+                :return-transform   t
+                :action-transformer action-transformer
+                :timeout            timeout
+                :obtrusive          obtrusive)))
 
 (cl-defmethod occ-list-debug-select ((obj occ-obj-ctx)
                                      &key
@@ -74,6 +76,7 @@
         (action-transformer #'(lambda (action candidate)
                                 (occ-get-helm-actions-tree obj '(t actions general edit))))
         (timeout            occ-idle-timeout))
+    (message "action: %s" action)
     (let ((retval-ctx-tsk (occ-select obj
                                       :filters            filters
                                       :builder            builder
