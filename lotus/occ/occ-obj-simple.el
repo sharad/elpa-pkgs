@@ -183,7 +183,7 @@
                          :action (occ-get-helm-actions-tree nil '(t actions select))
                          :obtrusive nil)
   (occ-list-select (occ-make-ctx-at-point)
-                   :action (occ-get-helm-actions-tree nil '(t actions general edit))
+                   :action (occ-get-helm-actions-tree nil '(t actions select))
                    :obtrusive nil))
 
 

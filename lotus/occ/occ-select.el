@@ -34,6 +34,8 @@
 (require 'occ-helm)
 
 
+(defvar occ-list-select-action-keys '(t actions general))
+(defvar occ-list-select-action-transformer-keys '(t actions general edit))
 
 ;; TODO:
 ;; (helm-resume-select-buffer)
@@ -66,7 +68,7 @@
     (occ-debug :debug "Running occ-list-select-internal")
     (prog1
         (let ((action-transformer  (or action-transformer
-                                       (occ-get-helm-actions-tree-genertator obj '(t actions general edit))))
+                                       (occ-get-helm-actions-tree-genertator obj occ-list-select-action-transformer-keys)))
               (timeout             (or timeout
                                        occ-idle-timeout)))
 
@@ -114,7 +116,7 @@
                                   obtrusive)
   (let ((action-transformer (or action-transformer
                                 (occ-get-helm-actions-tree-genertator obj
-                                                                      '(t actions general edit))))
+                                                                      occ-list-select-action-transformer-keys)))
         (timeout            (or timeout occ-idle-timeout)))
     (helm-timed timeout (occ-helm-select-buffer)
       (occ-debug :debug "running occ-list-select")
@@ -156,8 +158,8 @@
   "return interactively selected TSK or NIL"
   (unless builder (occ-error "Builder can not be nil"))
   (occ-debug :debug "occ-select((obj occ-ctx)): begin")
-  (let ((action             (or action (occ-get-helm-actions-tree obj '(t actions general))))
-        (action-transformer (or action-transformer (occ-get-helm-actions-tree-genertator obj '(t actions general edit))))
+  (let ((action             (or action (occ-get-helm-actions-tree obj occ-list-select-action-keys)))
+        (action-transformer (or action-transformer (occ-get-helm-actions-tree-genertator obj occ-list-select-action-transformer-keys)))
         (timeout            (or timeout occ-idle-timeout)))
     (let* ((unfiltered-count      (occ-length)))
       (if (> unfiltered-count 0)

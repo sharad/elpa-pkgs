@@ -28,14 +28,20 @@
 (provide 'occ-util-method)
 
 
+
+
+(defvar occ-list-select-keys occ-list-select-action-keys)
+;; (setq occ-list-select-keys '(t actions normal))
+;; (setq occ-list-select-keys occ-list-select-action-transformer-keys)
+
 (cl-defmethod occ-match-select ((obj occ-obj-ctx)
                                 &key
                                 obtrusive)
   (let ((filters            (occ-match-filters))
         (builder            #'occ-build-ctxual-tsk-with)
-        (action             (occ-get-helm-actions-tree obj '(t actions general edit)))
+        (action             (occ-get-helm-actions-tree obj occ-list-select-keys))
         (action-transformer #'(lambda (action candidate)
-                                (occ-get-helm-actions-tree obj '(t actions general edit))))
+                                (occ-get-helm-actions-tree obj occ-list-select-keys)))
         (timeout            occ-idle-timeout))
     (occ-select obj
                 :filters            filters
@@ -51,11 +57,11 @@
                                obtrusive)
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
-        (action             (or action (occ-get-helm-actions-tree obj '(t actions general edit))))
+        (action             (or action (occ-get-helm-actions-tree obj occ-list-select-keys)))
         (action-transformer #'(lambda (action candidate)
-                                (occ-get-helm-actions-tree obj '(t actions general edit))))
+                                (occ-get-helm-actions-tree obj occ-list-select-keys)))
         (timeout            occ-idle-timeout))
-    (message "action: %s" action)
+    (message "occ-list-select: action: %s" action)
     (occ-select obj
                 :filters            filters
                 :builder            builder
@@ -71,12 +77,12 @@
                                      obtrusive)
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
-        (action             (or action (occ-get-helm-actions-tree obj '(t actions general edit))))
+        (action             (or action (occ-get-helm-actions-tree obj occ-list-select-keys)))
         (return-transform   t)
         (action-transformer #'(lambda (action candidate)
-                                (occ-get-helm-actions-tree obj '(t actions general edit))))
+                                (occ-get-helm-actions-tree obj occ-list-select-keys)))
         (timeout            occ-idle-timeout))
-    (message "action: %s" action)
+    (message "occ-list-debug-select: action: %s" action)
     (let ((retval-ctx-tsk (occ-select obj
                                       :filters            filters
                                       :builder            builder
@@ -102,9 +108,10 @@
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
         (return-transform   t)
-        (action             (occ-get-helm-actions-tree obj '(t actions general edit)))
-        (action-transformer (occ-get-helm-actions-tree-genertator obj '(t actions general edit)))
+        (action             (occ-get-helm-actions-tree obj occ-list-select-keys))
+        (action-transformer (occ-get-helm-actions-tree-genertator obj occ-list-select-keys))
         (timeout            occ-idle-timeout))
+    (message "occ-list-launch: action: %s" action)
     (let ((retval-ctx-tsk (occ-select obj
                                       :filters            filters
                                       :builder            builder
@@ -120,7 +127,7 @@
        (if (and
             (occ-return-in-labels-p retval-ctx-tsk occ-return-select-label)
             (occ-return-get-value retval-ctx-tsk))
-           (let* ((action      (occ-get-helm-actions-tree obj '(t actions general edit)))
+           (let* ((action      (occ-get-helm-actions-tree obj occ-list-select-keys))
                   (ctx-tsk     (occ-return-get-value retval-ctx-tsk))
                   (launcher    (cdr (assoc (completing-read "Action: " action) action))))
              (funcall launcher ctx-tsk))

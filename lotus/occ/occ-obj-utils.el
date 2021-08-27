@@ -36,6 +36,7 @@
 (defvar occ-return-timeout-label    :occ-timeout     "should not be null") ;TODO: need to implement.
 (defvar occ-return-true-label       :occ-true        "should not be null")
 (defvar occ-return-false-label      :occ-false       "should not be null")
+
 (cl-assert occ-return-select-label)
 (cl-assert occ-return-quit-label)
 (cl-assert occ-return-nocndidate-label)
