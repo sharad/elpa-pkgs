@@ -108,11 +108,11 @@ If JUMP is non-nil or the function is called with the prefix argument, jump to t
             (my/org-clock-in-and-track)))))
     (bind-key "C-c q" 'my/org-quick-clock-in-task)
 
-    (require 'quantified nil t)
+    (require 'quantified nil t))
 
 
 
-    )
+    
 
 
   (progn
@@ -160,8 +160,8 @@ Captured %<%Y-%m-%d %H:%M>
             ("E" "Energy" table-line
              (file+headline "~/personal/organizer.org" "Track energy")
              "| %U | %^{Energy 5-awesome 3-fuzzy 1-zzz} | %^{Note} |"
-             :immediate-finish t
-             )
+             :immediate-finish t)
+             
             ("b" "Business task" entry
              (file+headline "~/personal/business.org" "Tasks")
              ,my/org-basic-task-template)
@@ -235,8 +235,8 @@ Captured %<%Y-%m-%d %H:%M>
              :immediate-finish t)
             ("r" "Notes" entry
              (file+datetree "~/personal/organizer.org")
-             "* %?\n\n%i\n%U\n"
-             )))
+             "* %?\n\n%i\n%U\n")))
+             
     (bind-key "C-M-r" 'org-capture)
 
     ;; Allow refiling in the middle(ish) of a capture
@@ -254,10 +254,10 @@ Captured %<%Y-%m-%d %H:%M>
         (call-interactively 'org-refile))
       (org-refile-goto-last-stored))
     (eval-after-load 'org-capture
-      '(bind-key "C-c C-r" 'my/org-refile-and-jump org-capture-mode-map))
+      '(bind-key "C-c C-r" 'my/org-refile-and-jump org-capture-mode-map)))
 
 
-    )
+    
 
   (progn
     ;;http://pages.sachachua.com/.emacs.d/Sacha.html
@@ -273,8 +273,8 @@ Captured %<%Y-%m-%d %H:%M>
           (my/org-capture-prefill-template
            "* TODO %^{Task}\nSCHEDULED: %^t\n:PROPERTIES:\n:Effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:END:\n%?\n"
            "Hello World")
-          "* TODO Hello World\nSCHEDULED: %^t\n:PROPERTIES:\n:Effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:END:\n%?\n"
-          ))
+          "* TODO Hello World\nSCHEDULED: %^t\n:PROPERTIES:\n:Effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:END:\n%?\n"))
+          
         (should
          (string=
           (my/org-capture-prefill-template
@@ -337,9 +337,9 @@ Captured %<%Y-%m-%d %H:%M>
                 (setq org-refile-target-table (org-refile-get-targets))
                 ;; Return the new location
                 (my/org-get-current-refile-location))
-            ((error quit)
+            ((occ-error quit)
              (if (get-buffer "*Capture*") (kill-buffer "*Capture*"))
-             (error "Capture abort: %s" error)))))
+             (occ-error "Capture abort: %s" error)))))
 
       ;; (my/org-refile-get-location-by-substring "Try again")
 
@@ -400,7 +400,7 @@ USAGE:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
                   "Enumerate date objects between BEGIN and END."
                   (when (> (calendar-absolute-from-gregorian begin)
                            (calendar-absolute-from-gregorian end))
-                    (error "Invalid period : %S - %S" begin end))
+                    (occ-error "Invalid period : %S - %S" begin end))
                   (let ((d begin) ret (cont t))
                     (while cont
                       (push (copy-sequence d) ret)
@@ -540,12 +540,12 @@ USAGE:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
 
       (fset 'org-refile-get-location-bkp 'org-refile-get-location)
 
-      (fset 'org-refile-get-location 'my/org-refile-get-location)
+      (fset 'org-refile-get-location 'my/org-refile-get-location)))
 
 
 
-      )
-    )
+      
+    
 
 
   (fset 'org-refile-get-location 'org-refile-get-location-bkp))

@@ -80,7 +80,7 @@
     (if (and (markerp mrk)
              (marker-buffer mrk))
         (occ-goto mrk)
-      (error "marker %s invalid." mrk))))
+      (occ-error "marker %s invalid." mrk))))
 
 
 (cl-defgeneric occ-set-to (obj)
@@ -102,7 +102,7 @@
     (if (and (markerp mrk)
              (marker-buffer mrk))
         (occ-set-to mrk)
-      (error "marker %s invalid." mrk))))
+      (occ-error "marker %s invalid." mrk))))
 
 
 (cl-defmethod occ-induct-child ((obj   occ-tree-tsk)
@@ -192,7 +192,7 @@
                    :clock-in clock-in ;; helm-current-prefix-arg
                    :template template)
     (let ((title (occ-title obj 'captilize)))
-     (error "%s is unnamed %s so can not create child "
+     (occ-error "%s is unnamed %s so can not create child "
            (occ-format obj 'captilize)
            title
            title))))
@@ -206,7 +206,7 @@
                    :clock-in clock-in ;; helm-current-prefix-arg
                    :template template)
     (let ((title (occ-title obj 'captilize)))
-      (error "%s is unnamed %s so can not create child "
+      (occ-error "%s is unnamed %s so can not create child "
              (occ-format obj 'captilize)
              title
              title))))
@@ -247,9 +247,9 @@
                                                 candidate)))
           (org-capture-place-template
            (equal (car (org-capture-get :target)) 'function)))
-      ((error quit)
+      ((occ-error quit)
        (if (get-buffer "*Capture*") (kill-buffer "*Capture*"))
-       (error "Capture abort: %s" error)))) t)
+       (occ-error "Capture abort: %s" error)))) t)
 
 
 (cl-defmethod occ-tsk-txt ((obj occ-obj-ctx)
@@ -291,6 +291,6 @@
 
 (defun occ-confirm (fn new)
   (occ-y-or-n-timeout)
-  (error "Implement it."))
+  (occ-error "Implement it."))
 
 ;;; occ-obj-simple.el ends here

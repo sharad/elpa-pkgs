@@ -102,8 +102,8 @@
                               key-val-collection)))
                         (occ-debug :debug "selected option %s" sel)
                         (cdr sel))
-                    (error "Not Keys Vals Collection %s for %s" key-val-collection (occ-format tsk 'capitalize))))
-              (error "Not Keys Vals for %s" (occ-format tsk 'capitalize))))
+                    (occ-error "Not Keys Vals Collection %s for %s" key-val-collection (occ-format tsk 'capitalize))))
+              (occ-error "Not Keys Vals for %s" (occ-format tsk 'capitalize))))
         (occ-debug :debug "Not Keys for %s" (occ-format tsk 'capitalize))))))
 
 
@@ -126,9 +126,8 @@
       (unless flag
         ;; https://lists.gnu.org/archive/html/emacs-orgmode/2015-02/msg00573.html
         (progn
-          (when (or
-                 (org-invisible-p)
-                 (org-invisible-p2))
+          (when (or (org-invisible-p)
+                    (org-invisible-p2))
             (org-show-context 'org-goto)))
         (progn                                        ; changed from org-show-tsk to org-show-entry
           (org-show-entry)
@@ -223,10 +222,10 @@
               (if (numberp prop-loc)
                   (goto-char prop-loc)
                 (if nil
-                    (error "occ-open-prop-block: no prop-loc % for buff %s marker %s"
+                    (occ-error "occ-open-prop-block: no prop-loc % for buff %s marker %s"
                            prop-loc buff mrk)
                   t))))
-        (error "occ-open-prop-block: no buff %s found for object %s"
+        (occ-error "occ-open-prop-block: no buff %s found for object %s"
                (occ-format obj 'capitalize))))))
 
 (cl-defmethod occ-open-prop-block ((obj null))
@@ -255,17 +254,16 @@
 ;; do both fast and interactive editing.
 ;; (occ-props-edit obj)
 (cl-defmethod occ-props-edit-combined ((obj occ-obj-ctx-tsk))
-  (let* ((sources (list
-                   (helm-build-sync-source "fast edit"
-                     :candidates (occ-gen-edits-if-required obj nil nil :param-only t)
-                     :action (list (cons "Edit" #'funcall)))
-                   (helm-build-sync-source "edit"
-                     :candidates (list
-                                  (cons "Edit" #'(lambda () (occ-props-edit obj))))
-                     :action (list (cons "Edit" #'funcall)))
-                   (helm-build-sync-source "other"
-                     :candidates '(("Continue" . t)
-                                   ("Checkout" . checkout)))))
+  (let* ((sources (list (helm-build-sync-source "fast edit"
+                          :candidates (occ-gen-edits-if-required obj nil nil :param-only t)
+                          :action (list (cons "Edit" #'funcall)))
+                        (helm-build-sync-source "edit"
+                          :candidates (list
+                                       (cons "Edit" #'(lambda () (occ-props-edit obj))))
+                          :action (list (cons "Edit" #'funcall)))
+                        (helm-build-sync-source "other"
+                          :candidates '(("Continue" . t)
+                                        ("Checkout" . checkout)))))
          (retval
           (helm-timed occ-idle-timeout nil
             (helm :sources sources))))
@@ -281,36 +279,34 @@
         (org-with-narrow-to-marker mrk
           (if (occ-open-prop-block cloned-mrk)
               (occ-props-edit obj)
-            (error "occ-props-edit-in-cloned-buffer: can not edit props for %s"
+            (occ-error "occ-props-edit-in-cloned-buffer: can not edit props for %s"
                    (occ-format obj 'capitalize))))))))
 
 
 (defun occ-props-edit-handle-response (prop timeout timer cleanup local-cleanup win)
-  (cond
-   ((eql 'done prop)
-    (funcall cleanup win local-cleanup)
-    (when timer (cancel-timer timer)))
-   ((eql 'edit prop)
-    ;; (funcall cleanup win local-cleanup)
-    (occ-debug :debug "occ-obj-prop-edit: debug editing")
-    (when timer (cancel-timer timer))
-    (when (and win (windowp win) (window-valid-p win))
-      (select-window win 'norecord)))
-   (t
-    (funcall cleanup win local-cleanup)
-    (when timer (cancel-timer timer)))))
+  (cond ((eql 'done prop)
+         (funcall cleanup win local-cleanup)
+         (when timer (cancel-timer timer)))
+        ((eql 'edit prop)
+         ;; (funcall cleanup win local-cleanup)
+         (occ-debug :debug "occ-obj-prop-edit: debug editing")
+         (when timer (cancel-timer timer))
+         (when (and win (windowp win) (window-valid-p win))
+           (select-window win 'norecord)))
+        (t
+         (funcall cleanup win local-cleanup)
+         (when timer (cancel-timer timer)))))
 
 (cl-defmethod occ-props-window-edit ((obj occ-obj-ctx-tsk)
                                      &key
                                      return-transform
                                      timeout)
   (let* ((timeout (or timeout occ-idle-timeout)))
-    (let* ((local-cleanup
-              #'(lambda ()
-                  (occ-debug :warning "occ-props-window-edit(obj occ-obj-ctx-tsk): local-cleanup called")
-                  (occ-debug :debug "occ-props-window-edit(obj occ-obj-ctx-tsk): local-cleanup called")
-                  (when (active-minibuffer-window) ;required here, this function itself using minibuffer via helm-refile and occ-select-propetry
-                    (abort-recursive-edit)))))
+    (let* ((local-cleanup #'(lambda ()
+                              (occ-debug :warning "occ-props-window-edit(obj occ-obj-ctx-tsk): local-cleanup called")
+                              (occ-debug :debug "occ-props-window-edit(obj occ-obj-ctx-tsk): local-cleanup called")
+                              (when (active-minibuffer-window) ;required here, this function itself using minibuffer via helm-refile and occ-select-propetry
+                                (abort-recursive-edit)))))
         (lotus-with-timed-new-win ;break it in two macro call to accommodate local-cleanup
             timeout timer cleanup local-cleanup win
             (condition-case-control err

@@ -86,42 +86,42 @@
       (occ-message "No current task clocking-in"))))
 
 (defun occ-curr-tsk-continue-for (mins)
-  (error "Implement it."))
+  (occ-error "Implement it."))
 
 
 ;;;###autoload
 (defun occ-start-day ()
   (interactive)
   ;; also detect if day is started.
-  (error "Implement it."))
+  (occ-error "Implement it."))
 
 (defun occ-show-up (mins)
   (interactive)
   ;; https://www.merriam-webster.com/thesaurus/pack%20(up%20or%20off)
-  (error "Implement it."))
+  (occ-error "Implement it."))
 
 (defun occ-stop-day ()
   (interactive)
-  (error "Implement it."))
+  (occ-error "Implement it."))
 
 (defun occ-pack-up (mins)
   (interactive)
   ;; https://www.merriam-webster.com/thesaurus/pack%20(up%20or%20off)
-  (error "Implement it."))
+  (occ-error "Implement it."))
 
 ;; action
 (cl-defmethod occ-log-not ()
-  (error "Implement it."))
+  (occ-error "Implement it."))
 
 (cl-defmethod occ-curr-tsk-log-not ()
-  (error "Implement it."))
+  (occ-error "Implement it."))
 
 
 (defun occ-clock-in-force ()
-  (error "Implement it, open context ctx if not present, then occ-clock-in-if-associable else show error."))
+  (occ-error "Implement it, open context ctx if not present, then occ-clock-in-if-associable else show error."))
 
 (defun occ-interrupt-clock-in (mins)
-  (error "Implement it."))
+  (occ-error "Implement it."))
 
 (defun occ-clock-out (&optional switch-to-state
                                 fail-quietly
@@ -132,7 +132,7 @@
                  at-time))
 
 (defun occ-continue-prev ()
-  (error "Implement it."))
+  (occ-error "Implement it."))
 
 (defun occ-make-anonymous ())
 
@@ -255,7 +255,7 @@
 ;;;###autoload
 (defun occ-merge-unamed-task ()
   (interactive)
-  (error "Implement it."))
+  (occ-error "Implement it."))
 
 
 ;;;###autoload

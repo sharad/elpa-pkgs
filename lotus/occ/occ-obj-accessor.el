@@ -316,7 +316,7 @@ pointing to it."
                              (occ-format clock 'captilize)))))
               (if occ-other-allowed
                   (occ-debug :warning msg)
-                (error msg))
+                (occ-error msg))
               (occ-build-ctxual-tsk-with (and clock (occ-make-tsk clock))
                                          (occ-make-ctx-at-point)))))))))
 
@@ -335,7 +335,7 @@ pointing to it."
       (progn
         (occ-uninsinuate)
         (occ-message "occ-global-tsk-collection-spec is nil, set it using M-x occ-build-spec or set occ-global-tsk-collection-spec, disabled occ")
-        (error "occ-global-tsk-collection-spec is nil, set it using M-x occ-build-spec or set occ-global-tsk-collection-spec, disabled occ"))))
+        (occ-error "occ-global-tsk-collection-spec is nil, set it using M-x occ-build-spec or set occ-global-tsk-collection-spec, disabled occ"))))
   occ-global-tsk-collection)
 
 
@@ -343,7 +343,7 @@ pointing to it."
 (cl-defmethod occ-collect-tsks (collection
                                 &optional
                                 force)
-  (error "first argument should be of type (or occ-tree-collection occ-list-collection)"))
+  (occ-error "first argument should be of type (or occ-tree-collection occ-list-collection)"))
 
 ;; FIND: what it mean by tsks collection-tree are same ?
 (cl-defmethod occ-collect-tsks ((collection occ-tree-collection)

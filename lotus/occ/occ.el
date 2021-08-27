@@ -117,8 +117,8 @@
 
 (defmacro occ-find-library-dir (library)
   `(progn
-     (delete* (concat "/home/s/hell/.xemacs/elpa/pkgs/lotus/" ,library) load-path)
-     (push (concat "/home/s/hell/.xemacs/elpa/pkgs/lotus/" ,library) load-path)
+     (delete* (concat occ-dev-dir ,library) load-path)
+     (push (concat occ-dev-dir ,library) load-path)
      (file-name-directory (or (locate-library ,library)
                               "~/.xemacs/elpa/pkgs/occ/occ.el"
                            ""))))
@@ -141,7 +141,7 @@ FULL is given."
     (let* ((load-suffixes save-load-suffixes)
            (release (occ-release))
            (git-version (occ-git-version))
-           (version (format "Org mode version %s (%s @ %s)"
+           (version (format "Occ mode version %s (%s @ %s)"
                             release
                             git-version
                             (if occ-install-dir
@@ -151,11 +151,25 @@ FULL is given."
                                           occ-install-dir
                                           " and "
                                           occ-dir))
-                              "org-loaddefs.el can not be found!")))
+                              "occ-loaddefs.el can not be found!")))
            (version1 (if full version release)))
       (when here (insert version1))
       ;; (when message (message "%s" version1))
       version1)))
+
+;;;###autoload
+(defun occ-set-dev-dir (dirpath)
+  (setq occ-dev-dir dirpath))
+
+;;;###autoload
+(defun occ-add-deps-libs (pkg)
+  (let ((deps (cons (symbol-name pkg) (mapcar #'(lambda (x) (symbol-name (car x))) (package-desc-reqs (cadr (assoc 'occ package-alist)))))))
+    (if occ-dev-dir
+        (dolist (lib deps)
+          (delete* (concat occ-dev-dir lib) load-path)
+          (push (concat occ-dev-dir   lib) load-path))
+      (occ-error "occ-dev-dir not defined"))))
+   
 
 ;;;###autoload
 (defun occ-reload-lib (uncompiled)
@@ -166,8 +180,10 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
          (occ-dir        (occ-find-library-dir (symbol-name pkg)))
          ;; (contrib-dir (or (occ-find-library-dir "org-contribdir") occ-dir))
          ;; (feature-re "^\\(org\\|ob\\|ox\\)\\(-.*\\)?")
-         (occ-pkg-regexp (regexp-opt (cons (symbol-name pkg) (mapcar #'(lambda (x) (symbol-name (car x))) (package-desc-reqs (cadr (assoc 'occ package-alist)))))))
-         ;; (feature-re "^\\(occ\\|okk\\)\\(-.*\\)?")
+         (occ-deps       (cons (symbol-name pkg)
+                               (mapcar #'(lambda (x) (symbol-name (car x)))
+                                       (package-desc-reqs (cadr (assoc 'occ package-alist))))))
+         (occ-pkg-regexp (regexp-opt occ-deps))
          (feature-re     (concat "^" occ-pkg-regexp "$"))
          (remove-re      (format "\\`%s\\'"
                                  (regexp-opt '("org" "org-loaddefs" "occ-version" "helm"))))
@@ -189,6 +205,7 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
          (load-suffixes  (if uncompiled (reverse load-suffixes) load-suffixes))
          (load-uncore    nil)
          (load-misses    nil))
+    (occ-add-deps-libs pkg)
     (message "working on %s" lfeat)
     (let ((load-missed-1 (mapcar (lambda (f)
                                    (message "trying to load %s %s %s"

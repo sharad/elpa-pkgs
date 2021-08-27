@@ -41,7 +41,7 @@
         (plist-get
          plist
          (sym2key prop))
-      (error "occ-plist-get: Can not make keyword for `'%s'" prop))))
+      (occ-error "occ-plist-get: Can not make keyword for `'%s'" prop))))
 
 (defmacro occ-plist-set (plist prop value)
   `(let ((key (sym2key ,prop)))
@@ -49,7 +49,7 @@
          (plist-put
           ,plist ;TODO ??? (cl-obj-plist-value obj)
           key ,value)
-       (error "occ-plist-set: Can not make keyword for `'%s'" ,prop))))
+       (occ-error "occ-plist-set: Can not make keyword for `'%s'" ,prop))))
 
 (defun occ-list-get-evens (lst)
   (cond

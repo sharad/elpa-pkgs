@@ -170,7 +170,7 @@
                         (occ-straight-org-clock-clock-in (list new-marker))
                         (setq retval t)
                         (push new-ctxask *occ-clocked-ctxual-tsk-ctx-history*))
-                      ((error)
+                      ((occ-error)
                        (progn
                          (setq retval nil)
                          (signal (car err) (cdr err)))))))
@@ -657,7 +657,7 @@
               (goto-char start))))
         (occ-debug :debug "occ-writeprop: adding prop: %s value: %s using (org-set-property)." prop value)
         (occ-org-set-property (symbol-name prop) value))
-    (error "occ-writeprop value is nil")))
+    (occ-error "occ-writeprop value is nil")))
 (cl-defmethod occ-editprop ((prop symbol) (ctx occ-ctx))
   (let ((value (occ-readprop prop ctx)))
     (occ-debug :debug "occ-editprop: prop: %s, value: %s" prop value)
@@ -718,7 +718,7 @@
         (occ-debug :debug
                    "occ-writeprop: adding prop: %s value: %s using (org-set-property)." prop value)
         (occ-org-set-property (symbol-name prop) value))
-    (error "occ-writeprop value is nil")))
+    (occ-error "occ-writeprop value is nil")))
 (cl-defmethod occ-readprop-with ((prop symbol)
                                  (obj occ-tsk)
                                  (ctx occ-ctx))
@@ -942,7 +942,7 @@
       (if (or
            closed
            (eql todo-type 'done)
-           (string-equal status "HOLD"))
+           (string= status "HOLD"))
           -30 0))))
 
 (cl-defmethod occ-rank ((tsk-pair (head key))

@@ -133,11 +133,11 @@
 
 ;; TODO: Not to run when frame is not open [visible.]
 ;; Getting targets...done
-;; Error running timer: (error "Window #<window 12> too small for splitting")
+;; Error running timer: (occ-error "Window #<window 12> too small for splitting")
 ;; task-projbuffs-base-dir: changing supplied base-dir nil and task-projbuffs-base-dir to /home/s/hell/Documents/CreatedContent/contents/virtual/org/default/tasks/
 ;; in occ-clock-in occ-ctx 1
 ;; Getting targets...done
-;; Error running timer ‘occ-clock-in-curr-ctx-if-not’: (error "Window #<window 12> too small for splitting")
+;; Error running timer ‘occ-clock-in-curr-ctx-if-not’: (occ-error "Window #<window 12> too small for splitting")
 
 (cl-defmethod occ-select ((obj occ-ctx)
                           &key
@@ -150,7 +150,7 @@
                           timeout
                           obtrusive)
   "return interactively selected TSK or NIL"
-  (unless builder (error "Builder can not be nil"))
+  (unless builder (occ-error "Builder can not be nil"))
   (occ-debug :debug "occ-select((obj occ-ctx)): begin")
   (let ((action             (or action (occ-get-helm-actions-tree obj '(t actions general))))
         (action-transformer (or action-transformer (occ-get-helm-actions-tree-genertator obj '(t actions general edit))))

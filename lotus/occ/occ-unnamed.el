@@ -122,6 +122,6 @@
                 (lotus-org-unnamed-task-clock-marker unnamed-marker)
                 (occ-message "clockin to unnnamed tsk.")
                 (occ-unassociate-ctx-start-time-reset))
-              (error "unnamed-marker is nil")))))))
+              (occ-error "unnamed-marker is nil")))))))
 
 ;;; occ-unnamed.el ends here

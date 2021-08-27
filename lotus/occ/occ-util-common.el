@@ -90,6 +90,11 @@
 (defun occ-debug-uncond (&rest args)
   (when occ-debug-uncond
     (apply #'occ-message args)))
+
+;;;###autoload
+(defun occ-error (&rest args)
+  (apply #'error args)
+  (apply #'occ-debug :debug args))
 
 
 (defvar occ-condition-case-control-debug nil)
@@ -149,7 +154,7 @@
       (let ((clock-duration
              (if (and
                   (stringp org-clock-start-time)
-                  (string-equal "" org-clock-start-time))
+                  (string= "" org-clock-start-time))
                  0
                (float-time (time-since org-clock-start-time)))))
         (or
@@ -193,7 +198,7 @@
             (cons node list) ;There's no way to be destructive in this case, so just cons.
 
           (let ((tail (nthcdr (1- pos) list)))
-            (if (null tail) (error "There is no position ~D in ~S." pos list))
+            (if (null tail) (occ-error "There is no position ~D in ~S." pos list))
             (push node (cdr tail))
             list)))))
 (defun occ-insert-node-after-element (node element list)
@@ -204,7 +209,7 @@
             (cons node list) ;There's no way to be destructive in this case, so just cons.
 
           (let ((tail (nthcdr pos list)))
-            (if (null tail) (error "There is no position ~D in ~S." pos list))
+            (if (null tail) (occ-error "There is no position ~D in ~S." pos list))
             (push node (cdr tail))
             list)))))
 
@@ -244,9 +249,8 @@
            file
            (occ-files)
            :test #'(lambda (f1 f2)
-                     (string-equal
-                      (file-truename f1)
-                      (file-truename f2))))
+                     (string= (file-truename f1)
+                              (file-truename f2))))
           ;; TODO workaround do complete nil, later change it to optimized.
           ;; TODO update existing occ-collection.tree or occ-collection.list
           (occ-reset-global-tsk-collection)

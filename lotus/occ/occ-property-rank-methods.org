@@ -248,8 +248,8 @@
                                    values)
         (let ((tsk    (occ-obj-tsk obj)))
           (if (occ-list-p prop)
-              (error "Implement it.")
-            (error "Implement it."))))
+              (occ-error "Implement it.")
+            (occ-error "Implement it."))))
 
       (cl-defmethod occ-org-operation ((obj occ-obj-tsk)
                                        (operation (eql increment))
@@ -257,8 +257,8 @@
                                        values)
         (let ((prop-string (symbol-name prop)))
           (if (occ-list-p prop)
-              (error "Implement it.")
-            (error "Implement it."))))
+              (occ-error "Implement it.")
+            (occ-error "Implement it."))))
 
       
     #+end_src
@@ -278,20 +278,16 @@
 
 *** STATUS property of task
     #+begin_src elisp
-
+      
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql status)))
         "Predicate funtion to check if ctx matches to tsk's status attribute."
-        (let ((todo-type
-               (occ-get-property obj 'todo-type))
-              (closed
-               (occ-get-property obj 'closed))
-              (status
-               (occ-get-property obj 'todo-keyword)))
-          (if (or
-               closed
-               (eql todo-type 'done)
-               (string-equal status "HOLD"))
+        (let ((todo-type (occ-get-property obj 'todo-type))
+              (closed    (occ-get-property obj 'closed))
+              (status    (occ-get-property obj 'todo-keyword)))
+          (if (or closed
+                  (eql todo-type 'done)
+                  (string= status "HOLD"))
               -30 0)))
       
     #+end_src

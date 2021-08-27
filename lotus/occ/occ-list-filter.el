@@ -104,7 +104,7 @@
          (functionp (symbol-value methods)))
     (occ-internal-get-filter-method (functionp (symbol-value methods))))
    ((listp methods) methods)
-   (t (error "Wrong %s methods" methods))))
+   (t (occ-error "Wrong %s methods" methods))))
 
 
 (cl-defmethod occ-apply-recursively ((obj occ-ctx)
@@ -152,7 +152,7 @@
          #'(lambda (obj)
              (>= (funcall rank obj) avgrank))
          sequence))
-    (error "(occ-collection-object) returned nil")))
+    (occ-error "(occ-collection-object) returned nil")))
 
 (occ-filter-add :mutual-deviation "Mutual Deviation" #'occ-filter-mutual-deviation)
 

@@ -63,8 +63,8 @@
          ((eq 'occ-tree-collection classname)
           #'make-occ-tree-tsk)
          (t
-          (error "occ-global-tsk-collection is not from occ-list-collection or occ-tree-collection class"))))
-    (error "occ-global-tsk-collection is NIL not from occ-list-collection or occ-tree-collection class")))
+          (occ-error "occ-global-tsk-collection is not from occ-list-collection or occ-tree-collection class"))))
+    (occ-error "occ-global-tsk-collection is NIL not from occ-list-collection or occ-tree-collection class")))
 
 
 (defun occ-heading-content-only ()

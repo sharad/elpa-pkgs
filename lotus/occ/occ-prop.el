@@ -205,7 +205,7 @@
 (cl-defmethod occ-prop-to-org ((prop symbol)
                                values)
   "Method convert value VALUE of property PROP from occ to org string representation."
-  ;; (error "Implement method occ-prop-to-org for prop %s" prop)
+  ;; (occ-error "Implement method occ-prop-to-org for prop %s" prop)
   (occ-debug :debug "occ-prop-to-org: no method for prop %s using default." prop)
   (mapcar #'(lambda (v)
               (occ-prop-elem-to-org prop v))
@@ -213,7 +213,7 @@
 (cl-defmethod occ-prop-from-org ((prop symbol)
                                  values)
   "Method convert value VALUE of property PROP from org string to occ representation."
-  ;; (error "Implement method occ-prop-from-org for prop %s" prop)
+  ;; (occ-error "Implement method occ-prop-from-org for prop %s" prop)
   (occ-debug :debug
              "occ-prop-from-org: no method for prop %s using default." prop)
   (mapcar #'(lambda (v)
@@ -300,7 +300,7 @@
   (let ((prop-string (symbol-name prop)))
     (if (occ-list-p prop)
         (occ-org-entry-remove-from-multivalued-property pom prop-string (car values))
-      (error "Implement it."))))
+      (occ-error "Implement it."))))
 
 (cl-defmethod occ-org-operation ((pom  marker)
                                  (operation (eql member))
@@ -334,7 +334,7 @@
                                        values)
   "Accept org compatible VALUES"
   ;; (unless (occ-valid-p prop operation)
-  ;;   (error "occ-org-update-property: operation %s is not allowed for prop %s" operation prop))
+  ;;   (occ-error "occ-org-update-property: operation %s is not allowed for prop %s" operation prop))
   (occ-org-operation pom
                      prop
                      operation
@@ -346,7 +346,7 @@
                                                 values)
   "Accept org compatible VALUES"
   (unless (occ-valid-p prop operation)
-    (error "occ-org-update-property: operation %s is not allowed for prop %s" operation prop))
+    (occ-error "occ-org-update-property: operation %s is not allowed for prop %s" operation prop))
   (lotus-with-marker mrk
     (unless (org-get-property-block)
       ;; create property drawer
@@ -357,7 +357,7 @@
         (if (and range start)
             (when (numberp start)
               (goto-char start))
-          (error "occ-org-update-property-at-point: not able to create property block to add property %s: %s"
+          (occ-error "occ-org-update-property-at-point: not able to create property block to add property %s: %s"
                  prop values))))
 
     (if (org-get-property-block)
@@ -371,7 +371,7 @@
                                                  values)))
             (occ-debug :debug "occ-org-update-property: (occ-org-update-property mrk) returned %s" retval)
             retval))
-        (error "occ-org-update-property-at-point: can not get property block to add property %s: %s"
+        (occ-error "occ-org-update-property-at-point: can not get property block to add property %s: %s"
                prop values))))
 
 
@@ -475,7 +475,7 @@
         (occ-set-property tsk prop (remove
                                     (car values)
                                     (occ-get-property tsk prop)))
-      (error "Implement it."))))
+      (occ-error "Implement it."))))
 
 (cl-defmethod occ-operation ((obj occ-obj-tsk)
                              (operation (eql member))

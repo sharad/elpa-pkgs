@@ -93,7 +93,7 @@
                                    action-transformer
                                    auto-select-if-only
                                    timeout)
-  (unless builder (error "Builder can not be nil"))
+  (unless builder (occ-error "Builder can not be nil"))
   (let ((filters            (or filters (occ-match-filters)))
         (builder            (or builder #'occ-build-ctxual-tsk-with))
         (return-transform   t) ;as return value is going to be used.)
