@@ -122,35 +122,30 @@
                                  (occ-tree-collection-list (occ-collection-object))))
 
 
-(cl-defgeneric occ-capture (obj
-                            &key
-                            template
-                            clock-in)
+(cl-defgeneric occ-capture (obj &key
+                                template
+                                clock-in)
   "occ-capture")
 
-(cl-defmethod occ-capture ((obj marker)
-                           &key
-                           template
-                           clock-in)
-  (org-capture-run
-   'entry
-   `(marker ,obj)
-   'occ-capture+-helm-select-template
-   :empty-lines 1))
+(cl-defmethod occ-capture ((obj marker) &key
+                                        template
+                                        clock-in)
+  (org-capture-run 'entry
+                   `(marker ,obj)
+                   'occ-capture+-helm-select-template
+                   :empty-lines 1))
 
-(cl-defmethod occ-capture ((obj occ-tsk)
-                           &key
-                           template
-                           clock-in)
+(cl-defmethod occ-capture ((obj occ-tsk) &key
+                                         template
+                                         clock-in)
   (let ((mrk (occ-tsk-marker obj)))
     (occ-capture mrk
                  :clock-in clock-in
                  :template template)))
 
-(cl-defmethod occ-capture ((obj occ-obj-ctx-tsk)
-                           &key
-                           template
-                           clock-in)
+(cl-defmethod occ-capture ((obj occ-obj-ctx-tsk) &key
+                                                 template
+                                                 clock-in)
   (let ((mrk      (occ-obj-marker obj))
         (tsk      (occ-obj-tsk    obj))
         (ctx      (occ-obj-ctx    obj))
@@ -169,10 +164,9 @@
             (when clock-in
               (occ-try-clock-in child-ctxual-tsk))))))))
 
-(cl-defmethod occ-capture ((obj null)
-                           &key
-                           template
-                           clock-in)
+(cl-defmethod occ-capture ((obj null) &key
+                                      template
+                                      clock-in)
   (let ((ctx-tsk (occ-list-select (occ-make-ctx-at-point)
                                   :obtrusive t)))
     (occ-capture ctx-tsk

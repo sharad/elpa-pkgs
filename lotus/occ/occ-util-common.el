@@ -39,16 +39,12 @@
 (defvar occ-debug-uncond nil "occ-debug-uncond")
 
 
-
 ;; DEPENDENCY remove it.
 (defun dirname-of-file (file &optional final-slash)
   ;; (ido-no-final-slash
   (if final-slash
-      (expand-file-name
-       (file-name-directory file))
-    (directory-file-name
-     (expand-file-name
-      (file-name-directory file)))))
+      (expand-file-name (file-name-directory file))
+    (directory-file-name (expand-file-name (file-name-directory file)))))
 
 
 ;;;###autoload
@@ -76,7 +72,6 @@
     (when (car args)
       (apply #'format args)
       (when (member level '(:emergency :error :warning :debug))
-        ;; (apply #'lwarn 'occ level args)
         (apply #'lwarn 'occ level args))
       (unless (eq level :nodisplay)
         (apply #'message args)))))
@@ -120,25 +115,21 @@
 
 (defun downcase-sym (sym)
   (let ((symname (downcase (symbol-name sym))))
-    (or
-     (intern-soft symname)
-     (intern symname))))
+    (or (intern-soft symname)
+        (intern symname))))
 (defun upcase-sym (sym)
   (let ((symname (upcase (symbol-name sym))))
-    (or
-     (intern-soft symname)
-     (intern symname))))
+    (or (intern-soft symname)
+        (intern symname))))
 (defun sym2key (sym)
   (if (keywordp sym)
       sym
-    (or
-     (intern-soft (concat ":" (symbol-name sym)))
-     (intern (concat ":" (symbol-name sym))))))
+    (or (intern-soft (concat ":" (symbol-name sym)))
+        (intern (concat ":" (symbol-name sym))))))
 (defun key2sym (sym)
   (if (keywordp sym)
-      (or
-       (intern-soft (substring (symbol-name sym) 1))
-       (intern (substring (symbol-name sym) 1)))
+      (or (intern-soft (substring (symbol-name sym) 1))
+          (intern (substring (symbol-name sym) 1)))
     sym))
 
 
@@ -152,14 +143,12 @@
   "Stay with a clock at least 2 mins."
   (if org-clock-start-time
       (let ((clock-duration
-             (if (and
-                  (stringp org-clock-start-time)
-                  (string= "" org-clock-start-time))
+             (if (and (stringp org-clock-start-time)
+                      (string= "" org-clock-start-time))
                  0
                (float-time (time-since org-clock-start-time)))))
-        (or
-         (< clock-duration 60)
-         (> clock-duration 120)))
+        (or (< clock-duration 60)
+            (> clock-duration 120)))
     t))
 
 ;;;###autoload
@@ -196,9 +185,9 @@
     (if pos
         (if (= pos 0)
             (cons node list) ;There's no way to be destructive in this case, so just cons.
-
           (let ((tail (nthcdr (1- pos) list)))
-            (if (null tail) (occ-error "There is no position ~D in ~S." pos list))
+            (when (null tail)
+              (occ-error "There is no position ~D in ~S." pos list))
             (push node (cdr tail))
             list)))))
 (defun occ-insert-node-after-element (node element list)
@@ -207,7 +196,6 @@
     (if pos
         (if (= pos 0)
             (cons node list) ;There's no way to be destructive in this case, so just cons.
-
           (let ((tail (nthcdr pos list)))
             (if (null tail) (occ-error "There is no position ~D in ~S." pos list))
             (push node (cdr tail))
@@ -242,12 +230,10 @@
 ;;;###autoload
 (defun occ-after-save-hook-fun ()
   (let ((file (buffer-file-name)))
-    (when (and
-           file
-           (eq major-mode 'org-mode))
-      (if (member*
-           file
-           (occ-files)
+    (when (and file
+               (eq major-mode 'org-mode))
+      (if (member* file
+                   (occ-files)
            :test #'(lambda (f1 f2)
                      (string= (file-truename f1)
                               (file-truename f2))))
@@ -275,8 +261,7 @@
 (defun occ-run-with-global-tsk-collection (fn)
   (if occ-global-tsk-collection
       (funcall fn)
-    (add-hook
-     'occ-global-tsk-collection-change-hook
-     fn)))
+    (add-hook 'occ-global-tsk-collection-change-hook
+              fn)))
 
 ;;; occ-util-common.el ends here

@@ -134,13 +134,12 @@ FULL is given."
         (load-suffixes (list ".el"))
         (occ-install-dir
          (ignore-errors (occ-find-library-dir "occ-loaddefs"))))
-    (unless (and
-             (fboundp 'occ-release)
-             (fboundp 'occ-git-version))
+    (unless (and (fboundp 'occ-release)
+                 (fboundp 'occ-git-version))
       (org-load-noerror-mustsuffix (concat occ-dir "occ-version")))
     (let* ((load-suffixes save-load-suffixes)
-           (release (occ-release))
-           (git-version (occ-git-version))
+           (release       (occ-release))
+           (git-version   (occ-git-version))
            (version (format "Occ mode version %s (%s @ %s)"
                             release
                             git-version
