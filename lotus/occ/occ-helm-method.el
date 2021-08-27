@@ -104,18 +104,18 @@
                                                  (length candidates-filtered))
                                            candidates-filtered))))))
        (when (> unfiltered-count 0)
-         (helm-build-sync-source
-             (format "Select matching %s(%d/%d)"
-                     (symbol-name (cl-inst-classname (car candidates)))
-                     unfiltered-count
-                     filtered-count)
-           ;; :header-name
-           :candidates                     #'(lambda ()
-                                               (funcall gen-candidates))
-           :action                         action
-           :filtered-candidate-transformer nil
-           :action-transformer             action-transformer
-           :history                        'org-refile-history)))))
+         (let ((gen-candidate-lambda   #'(lambda () (funcall gen-candidates)))
+               (source-name            (format "Select matching %s(%d/%d)"
+                                               (symbol-name (cl-inst-classname (car candidates)))
+                                               unfiltered-count
+                                               filtered-count)))
+           (message "occ-helm-build-candidates-source: action: %s" action)
+           (helm-build-sync-source source-name :candidates gen-candidate-lambda
+                                   ;; :header-name
+                                   :action                         action
+                                   :filtered-candidate-transformer nil
+                                   :action-transformer             action-transformer
+                                   :history                        'org-refile-history))))))
 
 (cl-defmethod occ-helm-build-candidates-sources ((obj        occ-ctx)
                                                  (candidates list)
@@ -127,6 +127,7 @@
                                                  action-transformer
                                                  auto-select-if-only
                                                  timeout)
+  (message "occ-helm-build-candidates-sources: action: %s" action)
   (list (occ-helm-build-candidates-source obj
                                           candidates
                                           :unfiltered-count   unfiltered-count

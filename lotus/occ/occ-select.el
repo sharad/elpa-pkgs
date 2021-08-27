@@ -46,15 +46,15 @@
 (defun occ-helm-select-buffer ()
   occ-helm-select-buffer-name)
 
-(cl-defmethod occ-list-select-internal ((obj occ-ctx)
-                                        &key
-                                        filters
-                                        builder
-                                        action
-                                        action-transformer
-                                        auto-select-if-only
-                                        timeout
-                                        obtrusive)
+(cl-defmethod occ-list-selection-internal ((obj occ-ctx)
+                                           &key
+                                           filters
+                                           builder
+                                           action
+                                           action-transformer
+                                           auto-select-if-only
+                                           timeout
+                                           obtrusive)
   ;; (occ-debug :debug "sacha marker %s" (car dyntskpls))
 
 
@@ -62,10 +62,10 @@
   ;;                                              as it may be creating problem of occ-capture
   (progn ;; lotus-with-no-active-minibuffer-if
       (progn
-        (occ-debug :debug "occ-list-select-internal: [minibuffer-body] lotus-with-no-active-minibuffer-if")
-        (occ-debug :debug "occ-list-select-internal: minibuffer already active quitting")
+        (occ-debug :debug "occ-list-selection-internal: [minibuffer-body] lotus-with-no-active-minibuffer-if")
+        (occ-debug :debug "occ-list-selection-internal: minibuffer already active quitting")
         (occ-debug :debug nil))
-    (occ-debug :debug "Running occ-list-select-internal")
+    (occ-debug :debug "Running occ-list-selection-internal")
     (prog1
         (let ((action-transformer  (or action-transformer
                                        (occ-get-helm-actions-tree-genertator obj occ-list-select-action-transformer-keys)))
@@ -89,9 +89,9 @@
                     (run-with-timer 0.08 nil #'(lambda ()
                                                  (if in-occ-helm
                                                      (helm-refresh)
-                                                   (occ-debug :debug "Running occ-list-select-internal helm is gone"))))
+                                                   (occ-debug :debug "Running occ-list-selection-internal helm is gone"))))
                     ;; :keymap occ-helm-map
-                    (message "occ-list-selection: action: %s" action)
+                    (message "occ-list-selection-internal: action: %s" action)
                     (let ((candidates-sources (occ-helm-build-candidates-sources obj
                                                                                  candidates-filtered
                                                                                  :unfiltered-count   unfiltered-count
@@ -104,7 +104,7 @@
                                 :buffer  (occ-helm-select-buffer)
                                 :resume  'noresume)
                         (setq in-occ-helm nil)))))))))
-        (occ-debug :debug "Running occ-list-select-internal"))))
+        (occ-debug :debug "Running occ-list-selection-internal"))))
 
 (cl-defmethod occ-list-selection ((obj occ-ctx)
                                   &key
@@ -125,14 +125,14 @@
       (let ((action             (if return-transform (occ-return-tranform action) action)) ;as return value is going to be used.
             (action-transformer (if return-transform (occ-return-tranformer-fun-transform action-transformer) action-transformer)))
         (message "occ-list-selection: action: %s" action)
-        (let ((selected (occ-list-select-internal obj
-                                                  :filters             filters
-                                                  :builder             builder
-                                                  :action              action
-                                                  :action-transformer  action-transformer
-                                                  :auto-select-if-only auto-select-if-only
-                                                  :timeout             timeout
-                                                  :obtrusive           obtrusive)))
+        (let ((selected (occ-list-selection-internal obj
+                                                     :filters             filters
+                                                     :builder             builder
+                                                     :action              action
+                                                     :action-transformer  action-transformer
+                                                     :auto-select-if-only auto-select-if-only
+                                                     :timeout             timeout
+                                                     :obtrusive           obtrusive)))
           (occ-debug :debug "occ-list-select: selected = %s" selected)
           (if return-transform
               (or selected ;as return value is going to be used.

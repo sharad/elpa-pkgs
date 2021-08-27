@@ -66,7 +66,7 @@
                 :filters            filters
                 :builder            builder
                 :action             action
-                :return-transform   t
+                :return-transform   nil ; t
                 :action-transformer action-transformer
                 :timeout            timeout
                 :obtrusive          obtrusive)))
