@@ -54,7 +54,11 @@
                                         timeout
                                         obtrusive)
   ;; (occ-debug :debug "sacha marker %s" (car dyntskpls))
-  (lotus-with-no-active-minibuffer-if
+
+
+  ;; (lotus-with-no-active-minibuffer-if <- TODO: This should be there only for first level command, not in internal function
+  ;;                                              as it may be creating problem of occ-capture
+  (progn ;; lotus-with-no-active-minibuffer-if
       (progn
         (occ-debug :debug "occ-list-select-internal: [minibuffer-body] lotus-with-no-active-minibuffer-if")
         (occ-debug :debug "occ-list-select-internal: minibuffer already active quitting")

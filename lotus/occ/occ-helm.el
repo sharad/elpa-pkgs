@@ -159,8 +159,13 @@
 (occ-helm-action-add :misc-gen           "Misc"       #'occ-gen-helm-misc)
 (occ-helm-action-add :fast-checkouts-gen "Checkouts"  #'occ-gen-helm-checkouts)
 
+(occ-add-helm-actions-tree '(actions select)
+                           "Select"
+                           'generator
+                           :identity)
+
 (occ-add-helm-actions-tree '(actions general)
-                           "Simple"
+                           "General"
                            'generator
                            :misc-gen)
 
@@ -185,6 +190,8 @@
          (mapcar #'(lambda (name-action-key)
                      (occ-get-helm-actions-plist obj name-action-key))
                  (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))))
+
+;; (occ-get-helm-actions-tree nil '(t actions select)) -> nil
 
 (cl-defmethod occ-get-helm-actions-tree ((obj occ-obj) keys)
   ;; (occ-message "occ-get-helm-actions-tree: called with obj = %s, keys = %s" obj keys)

@@ -167,11 +167,16 @@
 (cl-defmethod occ-capture ((obj null) &key
                                       template
                                       clock-in)
+  ;; BUG: occ-list-select is become an interactive function, here it is not returing desired object.
   (let ((ctx-tsk (occ-list-select (occ-make-ctx-at-point)
+                                  :action (occ-get-helm-actions-tree obj '(t actions select))
                                   :obtrusive t)))
-    (occ-capture ctx-tsk
-                 :template template
-                 :clock-in clock-in)))
+    (if ctx-tsk
+        (occ-capture ctx-tsk
+                   :template template
+                   :clock-in clock-in)
+      (occ-error "Not able to get ctx-tsk(%s) at point" ctx-tsk))))
+;; (occ-get-helm-actions-tree nil '(t actions select)) -> nil
 
 
 (cl-defgeneric occ-procreate-child (obj)

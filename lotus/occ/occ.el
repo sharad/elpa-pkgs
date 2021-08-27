@@ -129,11 +129,10 @@ Interactively, or when MESSAGE is non-nil, show it in echo area.
 With prefix argument, or when HERE is non-nil, insert it at point.
 In non-interactive uses, a reduced version string is output unless
 FULL is given."
-  (let ((occ-dir (ignore-errors (occ-find-library-dir "occ")))
+  (let ((occ-dir            (ignore-errors (occ-find-library-dir "occ")))
         (save-load-suffixes (when (boundp 'load-suffixes) load-suffixes))
-        (load-suffixes (list ".el"))
-        (occ-install-dir
-         (ignore-errors (occ-find-library-dir "occ-loaddefs"))))
+        (load-suffixes      (list ".el"))
+        (occ-install-dir    (ignore-errors (occ-find-library-dir "occ-loaddefs"))))
     (unless (and (fboundp 'occ-release)
                  (fboundp 'occ-git-version))
       (org-load-noerror-mustsuffix (concat occ-dir "occ-version")))

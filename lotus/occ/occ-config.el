@@ -109,4 +109,8 @@
 ;; option for keeping quiet
 (occ-gen-binary-option-commands occ-config- quiet -p nil)
 
+
+
+(defvar occ-dev-dir nil)
+
 ;;; occ-config.el ends here

@@ -47,10 +47,11 @@
 
 (cl-defmethod occ-list-select ((obj occ-obj-ctx)
                                &key
+                               action
                                obtrusive)
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
-        (action             (occ-get-helm-actions-tree obj '(t actions general edit)))
+        (action             (or action (occ-get-helm-actions-tree obj '(t actions general edit))))
         (action-transformer #'(lambda (action candidate)
                                 (occ-get-helm-actions-tree obj '(t actions general edit))))
         (timeout            occ-idle-timeout))
@@ -64,10 +65,11 @@
 
 (cl-defmethod occ-list-debug-select ((obj occ-obj-ctx)
                                      &key
+                                     action
                                      obtrusive)
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
-        (action             (occ-get-helm-actions-tree obj '(t actions general edit)))
+        (action             (or action (occ-get-helm-actions-tree obj '(t actions general edit))))
         (return-transform   t)
         (action-transformer #'(lambda (action candidate)
                                 (occ-get-helm-actions-tree obj '(t actions general edit))))
