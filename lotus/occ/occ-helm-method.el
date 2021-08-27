@@ -129,17 +129,16 @@
                                                  action-transformer
                                                  auto-select-if-only
                                                  timeout)
-  (list
-   (occ-helm-build-candidates-source obj
-                                     candidates
-                                     :unfiltered-count   unfiltered-count
-                                     :filters            filters
-                                     :builder            builder
-                                     :action             action
-                                     :action-transformer action-transformer)
-   (occ-helm-dummy-source "Create"             #'occ-fast-procreate-child)
-   (occ-helm-dummy-source "Create Anonymous"   #'occ-fast-procreate-anonymous-child)
-   (occ-helm-dummy-source "Create by Template" #'occ-procreate-child-clock-in)))
+  (list (occ-helm-build-candidates-source obj
+                                          candidates
+                                          :unfiltered-count   unfiltered-count
+                                          :filters            filters
+                                          :builder            builder
+                                          :action             action
+                                          :action-transformer action-transformer)
+        (occ-helm-dummy-source "Create (fast)"           #'occ-fast-procreate-child)
+        (occ-helm-dummy-source "Create Anonymous (fast)" #'occ-fast-procreate-anonymous-child)
+        (occ-helm-dummy-source "Create by Template"      #'occ-procreate-child-clock-in)))
 
 
 (defun occ-helm-select-XYZ (obj
