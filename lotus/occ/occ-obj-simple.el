@@ -246,14 +246,11 @@
     (org-capture-get-template)
     (org-capture-set-target-location)
     (condition-case error
-        (progn
-          (org-capture-put
-           :template
-           (org-capture-fill-template
-            (sacha/org-capture-prefill-template (org-capture-get :template)
-                                                candidate)))
-          (org-capture-place-template
-           (equal (car (org-capture-get :target)) 'function)))
+        (let* ((pre-fill-template (sacha/org-capture-prefill-template (org-capture-get :template)
+                                                                      candidate))
+               (cap-template (org-capture-fill-template pre-fill-template)))
+          (org-capture-put :template cap-template)
+          (org-capture-place-template (equal (car (org-capture-get :target)) 'function)))
       ((occ-error quit)
        (if (get-buffer "*Capture*") (kill-buffer "*Capture*"))
        (occ-error "Capture abort: %s" error)))) t)
