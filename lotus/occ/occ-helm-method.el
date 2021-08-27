@@ -68,15 +68,13 @@
 
 (defun occ-helm-dummy-source (prompt action)
   (helm-build-dummy-source prompt
-    :action (helm-make-actions
-             prompt
-             action)))
+    :action (helm-make-actions prompt
+                               action)))
 
 (cl-defmethod occ-helm-build-obj-source ((obj occ-obj-ctx) &optional actions)
-  (occ-helm-build-candidates
-   :source
-   (occ-list obj)
-   actions))
+  (occ-helm-build-candidates   :source
+                               (occ-list obj)
+                               actions))
 
 
 (cl-defmethod occ-helm-build-candidates-source ((obj        occ-ctx)
@@ -91,20 +89,20 @@
                                                 timeout)
   (let ((filtered-count (length candidates))
         (called-never   t))
-     (let ((gen-candidates   #'(lambda ()
-                                 (mapcar #'occ-candidate
-                                         (if called-never
-                                             (progn
-                                               (setq called-never nil)
-                                               candidates)
-                                           (let* ((candidates-unfiltered (occ-list obj
-                                                                                   :builder builder))
-                                                  (candidates-filtered   (occ-filter obj
-                                                                                     filters
-                                                                                     candidates-unfiltered)))
-                                             (setq filtered-count
-                                                   (length candidates-filtered))
-                                             candidates-filtered))))))
+     (let ((gen-candidates #'(lambda ()
+                               (mapcar #'occ-candidate
+                                       (if called-never
+                                           (progn
+                                             (setq called-never nil)
+                                             candidates)
+                                         (let* ((candidates-unfiltered (occ-list obj
+                                                                                 :builder builder))
+                                                (candidates-filtered   (occ-filter obj
+                                                                                   filters
+                                                                                   candidates-unfiltered)))
+                                           (setq filtered-count
+                                                 (length candidates-filtered))
+                                           candidates-filtered))))))
        (when (> unfiltered-count 0)
          (helm-build-sync-source
              (format "Select matching %s(%d/%d)"
@@ -136,9 +134,9 @@
                                           :builder            builder
                                           :action             action
                                           :action-transformer action-transformer)
-        (occ-helm-dummy-source "Create (fast)"           #'occ-fast-procreate-child)
-        (occ-helm-dummy-source "Create Anonymous (fast)" #'occ-fast-procreate-anonymous-child)
-        (occ-helm-dummy-source "Create by Template"      #'occ-procreate-child-clock-in)))
+        (occ-helm-dummy-source "Create (fast as child)"             #'occ-fast-procreate-child)
+        (occ-helm-dummy-source "Create Anonymous (fast as unnamed)" #'occ-fast-procreate-anonymous-child)
+        (occ-helm-dummy-source "Create by Template (use template)"  #'occ-procreate-child-clock-in)))
 
 
 (defun occ-helm-select-XYZ (obj
@@ -147,20 +145,17 @@
   ;; here
   ;; (occ-debug :debug "sacha marker %s" (car ctxasks))
   (let (helm-sources)
-    (push
-     (occ-helm-build-obj-source obj (list (cons "Clock in and track" selector)))
-     helm-sources)
+    (push (occ-helm-build-obj-source obj (list (cons "Clock in and track" selector)))
+          helm-sources)
 
-    (when (and
-           (org-clocking-p)
-           (marker-buffer org-clock-marker))
-      (push
-       (helm-build-sync-source "Current Clocking Tsk"
-         :candidates (list (occ-candidate
-                            (occ-build-obj-with (occ-current-tsk) obj)))
-         :action (list
-                  (cons "Clock in and track" selector)))
-       helm-sources))
+    (when (and (org-clocking-p)
+               (marker-buffer org-clock-marker))
+      (push (helm-build-sync-source "Current Clocking Tsk"
+              :candidates (list (occ-candidate (occ-build-obj-with (occ-current-tsk)
+                                                                   obj)))
+              :action (list (cons "Clock in and track"
+                                  selector)))
+            helm-sources))
     (funcall action (helm helm-sources))))
 
 
