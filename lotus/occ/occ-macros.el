@@ -193,11 +193,10 @@
          (toggle      (occ-symb prefix 'toggle-  name))
          (value       (occ-symb prefix 'value-   name)))
     `(let* ((,option ,default)
-            (impl
-              #'(lambda ()
-                  (if ,option
-                      (if (fboundp ',enable-fun)  (funcall #',enable-fun))
-                      (if (fboundp ',disable-fun) (funcall #',disable-fun))))))
+            (impl    #'(lambda ()
+                         (if ,option
+                             (if (fboundp ',enable-fun)  (funcall #',enable-fun))
+                           (if (fboundp ',disable-fun) (funcall #',disable-fun))))))
        (defun ,enable ()
          (interactive)
          (setf ,option t)
@@ -238,7 +237,7 @@
 
 
 
-(when nil
+(occ-testing
   (let ((collection
          '("* TODO %? %^g\n %i\n [%a]\n"
            "* TODO %? %^g\n %i\n Test [%a]\n")))
