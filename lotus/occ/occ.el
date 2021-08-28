@@ -167,7 +167,20 @@ FULL is given."
           (delete* (concat occ-dev-dir lib) load-path)
           (push (concat occ-dev-dir   lib) load-path))
       (occ-error "occ-dev-dir not defined"))))
-   
+
+;;;###autoload
+(defun occ-load-pkg (pkg-str)
+  ;; TODO: load all files in lib dir
+  (let ((pkg-dir (occ-find-library-dir pkg-str)))
+    (dolist (ef (directory-files pkg-dir nil ".el$"))
+      (unless (string-match "pkg.el$" ef)
+        (message "trying to load %s %s %s"
+                 pkg-str
+                 ef
+                 (concat pkg-dir ef))
+        (or (and (occ-load-noerror-mustsuffix (concat pkg-dir ef))
+                 't)
+            pkg-str)))))
 
 ;;;###autoload
 (defun occ-reload-lib (uncompiled)
@@ -184,7 +197,7 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
          (occ-pkg-regexp (regexp-opt occ-deps))
          (feature-re     (concat "^" occ-pkg-regexp "$"))
          (remove-re      (format "\\`%s\\'"
-                                 (regexp-opt '("org" "org-loaddefs" "occ-version" "helm"))))
+                                 (regexp-opt '("dash" "org" "org-loaddefs" "occ-version" "helm"))))
          (feats          (delete-dups (mapcar #'file-name-sans-extension
                                               (mapcar 'file-name-nondirectory
                                                       (delq nil (mapcar 'feature-file features))))))
@@ -205,21 +218,9 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
          (load-misses    nil))
     (occ-add-deps-libs pkg)
     (message "working on %s" lfeat)
-    (let ((load-missed-1 (mapcar (lambda (f)
-                                   (message "trying to load %s %s %s"
-                                            f
-                                            (concat occ-dir f)
-                                            (concat (occ-find-library-dir f) f))
-                                   ;; TODO: load all files in lib dir
-                                   (or (org-load-noerror-mustsuffix (concat occ-dir f))
-                                       ;; (and (string= occ-dir contrib-dir)
-                                       ;;      (org-load-noerror-mustsuffix (concat contrib-dir f)))
-                                       (and (org-load-noerror-mustsuffix (concat (occ-find-library-dir f) f))
-                                            (add-to-list 'load-uncore f 'append)
-                                            't)
-                                       f))
+    (let ((load-missed-1 (mapcar #'occ-load-pkg
                                  lfeat)))
-     (setq load-misses (delq 't load-misses-1)))
+     (setq load-misses (delq 't load-missed-1)))
     (message "starting")
     (when load-uncore
       (occ-message "The following feature%s found in load-path, please check if that's correct:\n%s"

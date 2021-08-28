@@ -219,6 +219,14 @@
 
 (defun occ-get-location ())
 
+
+;;;###autoload
+(defmacro occ-load-noerror-mustsuffix (file)
+  "Load FILE with optional arguments NOERROR and MUSTSUFFIX."
+  `(load ,file 'noerror nil nil 'mustsuffix))
+
+
+
 (when nil
   (let ((collection
          '("* TODO %? %^g\n %i\n [%a]\n"
