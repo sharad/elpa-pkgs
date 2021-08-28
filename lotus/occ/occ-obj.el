@@ -73,13 +73,16 @@
   stddev
   variance)
 
-(cl-defstruct (occ-action (:include occ-obj)))
+(cl-defstruct (occ-action (:include occ-obj))
+  obj
+  keys
+  transform)
 
-(cl-defstruct (occ-action-direct (:include occ-action))
-  action)
+;; (cl-defstruct (occ-action-direct (:include occ-action))
+;;   action)
 
-(cl-defstruct (occ-action-transformer (:include occ-action))
-  action)
+;; (cl-defstruct (occ-action-transformer (:include occ-action))
+;;   action)
 
 (cl-defstruct (occ-obj-ctx (:include occ-obj))
   "Will hold ctx"

@@ -97,8 +97,12 @@
   (let ((filters            (or filters (occ-match-filters)))
         (builder            (or builder #'occ-build-ctxual-tsk-with))
         (return-transform   t) ;as return value is going to be used.)
-        (action             (or action  (occ-get-helm-actions-tree obj '(t actions general))))
-        (action-transformer (or action-transformer (occ-get-helm-actions-tree-genertator obj '(t actions general edit))))
+        (action             (occ-build-helm-action-direct obj ;NOTE: Adding newly
+                                                          action
+                                                          occ-list-select-action-keys))
+        (action-transformer (occ-build-helm-action-transformer obj
+                                                               action-transformer
+                                                               occ-list-select-action-transformer-keys))
         (timeout            (or timeout occ-idle-timeout)))
     (occ-debug :debug "occ-clock-in-if-not((obj occ-ctx)): begin")
     (if (occ-edit-clock-if-unassociated obj) ;; (occ-clock-unassociated-p obj) ;; (occ-edit-clock-if-unassociated obj)
@@ -181,8 +185,12 @@
                                    timeout)
   (let* ((filters            (or filters (occ-match-filters)))
          (builder            (or builder #'occ-build-ctxual-tsk-with))
-         (action             (or action  (occ-get-helm-actions-tree obj '(t actions general))))
-         (action-transformer (or action-transformer (occ-get-helm-actions-tree-genertator obj '(t actions general edit))))
+         (action             (occ-build-helm-action-direct obj ;NOTE: Adding newly
+                                                           action
+                                                           occ-list-select-action-keys))
+         (action-transformer (occ-build-helm-action-transformer obj
+                                                                action-transformer
+                                                                occ-list-select-action-transformer-keys))
          (timeout            (or timeout occ-idle-timeout)))
     (occ-debug :debug "occ-clock-in-if-chg((obj occ-ctx)): begin")
     (if (occ-consider-for-clockin-in-p)
@@ -255,8 +263,12 @@
   (let ((ctx (occ-make-ctx-at-point)))
     (let ((filters             (occ-match-filters))
           (builder             #'occ-build-ctxual-tsk-with)
-          (action              (occ-get-helm-actions-tree ctx '(t actions general)))
-          (action-transformer  (occ-get-helm-actions-tree-genertator ctx '(t actions general edit)))
+          (action              (occ-build-helm-action-direct ctx ;NOTE: Adding newly
+                                                             nil
+                                                             occ-list-select-action-keys))
+          (action-transformer  (occ-build-helm-action-transformer ctx
+                                                                  nil
+                                                                  occ-list-select-action-transformer-keys))
           (auto-select-if-only nil) ; occ-clock-in-ctx-auto-select-if-only)
           (timeout             occ-idle-timeout))
       (occ-clock-in-if-not ctx
@@ -282,8 +294,12 @@
           (let ((ctx (occ-make-ctx-at-point)))
             (let ((filters             (occ-match-filters))
                   (builder             #'occ-build-ctxual-tsk-with)
-                  (action              (occ-get-helm-actions-tree ctx '(t actions general edit)))
-                  (action-transformer  (occ-get-helm-actions-tree-genertator ctx '(t actions general edit)))
+                  (action              (occ-build-helm-action-direct ctx ;NOTE: Adding newly
+                                                                     nil
+                                                                     '(t actions general edit)))
+                  (action-transformer  (occ-build-helm-action-transformer ctx
+                                                                          nil
+                                                                          '(t actions general edit)))
                   (auto-select-if-only occ-clock-in-ctx-auto-select-if-only)
                   (timeout             occ-idle-timeout))
               (occ-clock-in-if-chg ctx

@@ -213,7 +213,7 @@
   #'(lambda (action candidate)
       (occ-get-helm-actions-tree candidate keys)))
 
-(when nil
+(occ-testing
   (collect-alist (tree-collect-items occ-helm-actions-tree nil '(t actions select) 0))
   (occ-get-helm-actions-plist nil '(normal :identity))
   (occ-helm-actions-get :identity)

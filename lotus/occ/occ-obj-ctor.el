@@ -357,28 +357,42 @@
 
 
 (defun occ-make-return (label value)
-  (make-occ-return
-   :label label
-   :value value))
+  (make-occ-return :label label
+                   :value value))
 
 
-(defun occ-make-action-direct (action)
-  (make-occ-action-direct :action action))
+(defun occ-make-action (obj keys transform)
+  (make-occ-action :obj obj
+                   :keys keys))
 
-(defun occ-make-action-transformer (action)
-  (make-occ-action-transformer :action action))
+;; (defun occ-make-action-transformer (action)
+;;   (make-occ-action-transformer :action action))
+
+;; (defun occ-build-helm-action-direct (obj action &optional keys)
+;;   (if (occ-action-direct-p action)
+;;       action
+;;     (when t ;; (check if action is list of symbol or nil)
+;;      (occ-make-action-direct (occ-get-helm-actions-tree obj (or action keys))))))
+
+;; (defun occ-build-helm-action-transformer (obj action &optional keys)
+;;   (if (occ-action-transformer-p action)
+;;       action
+;;     (when t ;; (check if action is list of symbol or nil)
+;;       (occ-make-action-transformer (occ-get-helm-actions-tree-generator obj (or action keys))))))
 
 
-(defun occ-build-helm-action-direct (obj action &optional keys)
-  (if (occ-action-direct-p action)
-      action
+(defun occ-build-action (obj keys)
+  (if (occ-action-p keys)
+      keys
     (when t ;; (check if action is list of symbol or nil)
-     (occ-make-action-direct (occ-get-helm-actions-tree obj (or action keys))))))
+      (occ-make-action obj keys))))
 
-(defun occ-build-helm-action-transformer (obj action &optional keys)
-  (if (occ-action-transformer-p action)
-      action
-    (when t ;; (check if action is list of symbol or nil)
-     (occ-make-action-transformer (occ-get-helm-actions-tree-generator obj (or action keys))))))
+
+(defmethod occ-helm-action ((action occ-action) obj)
+  (occ-get-helm-actions-tree obj (occ-action-keys action)))
+
+(defmethod occ-helm-action-transform ((action occ-action) obj)
+  (occ-get-helm-actions-tree-generator obj (occ-action-keys action)))
+
 
 ;;; occ-obj-ctor.el ends here

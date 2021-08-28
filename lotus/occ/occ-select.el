@@ -83,8 +83,7 @@ ACTION "
               (action-transformer  (occ-build-helm-action-transformer obj
                                                                       action-transformer
                                                                       occ-list-select-action-transformer-keys))
-              (timeout             (or timeout
-                                       occ-idle-timeout)))
+              (timeout             (or timeout occ-idle-timeout)))
 
           (let* ((candidates-unfiltered (occ-list obj
                                                   :builder   builder
@@ -94,7 +93,7 @@ ACTION "
                                                     filters
                                                     candidates-unfiltered)))
             (when candidates-filtered
-              (let ((helm-action             (occ-action-direct-action    action))
+              (let ((helm-action             (occ-action-direct-action      action))
                     (helm-action-transformer (occ-action-transformer-action action)))
                 (if (and auto-select-if-only
                          (= 1 (length candidates-filtered)))
@@ -190,10 +189,12 @@ ACTION "
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
   (unless builder (occ-error "Builder can not be nil"))
   (occ-debug :debug "occ-select((obj occ-ctx)): begin")
-  (let ((action             (or action (occ-get-helm-actions-tree obj
-                                                                  occ-list-select-action-keys)))
-        (action-transformer (or action-transformer (occ-get-helm-actions-tree-genertator obj
-                                                                                         occ-list-select-action-transformer-keys)))
+  (let ((action              (occ-build-helm-action-direct obj ;NOTE: Adding newly
+                                                           action
+                                                           occ-list-select-action-keys))
+        (action-transformer  (occ-build-helm-action-transformer obj
+                                                                action-transformer
+                                                                occ-list-select-action-transformer-keys))
         (timeout            (or timeout occ-idle-timeout)))
     (let* ((unfiltered-count      (occ-length)))
       (if (> unfiltered-count 0)
