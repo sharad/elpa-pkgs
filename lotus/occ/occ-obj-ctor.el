@@ -376,10 +376,16 @@
       (setf (occ-action-helm-action-transform action) helm-action)))
   (occ-action-helm-action-transform action))
 
+(defmethod occ-helm-action-transform-return ((action occ-action) obj)
+  (unless (occ-action-helm-action-transform-return action)
+    (let ((helm-action (occ-get-helm-actions-tree-generator obj (occ-action-keys action))))
+      (setf (occ-action-helm-action-transform action) helm-action)))
+  (occ-action-helm-action-transform-return action))
+
 (defun occ-build-action (action-or-keys &optional keys)
   (if (occ-action-p action-or-keys)
       action-or-keys
     (when t ;; (check if action is list of symbol or nil)
       (occ-make-action (or action-or-keys keys)))))
-
+
 ;;; occ-obj-ctor.el ends here

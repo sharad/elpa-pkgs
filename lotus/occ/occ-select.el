@@ -77,10 +77,8 @@ ACTION "
         (occ-debug :debug nil))
     (occ-debug :debug "Running occ-list-selection-internal")
     (prog1
-        (let ((action              (occ-build-helm-action-direct obj ;NOTE: Adding newly
-                                                                 action
-                                                                 occ-list-select-action-keys))
-              (action-transformer  (occ-build-helm-action-transformer obj
+        (let ((action              (or action occ-list-select-action-keys))
+              (action-transformer  (or
                                                                       action-transformer
                                                                       occ-list-select-action-transformer-keys))
               (timeout             (or timeout occ-idle-timeout)))
@@ -93,8 +91,10 @@ ACTION "
                                                     filters
                                                     candidates-unfiltered)))
             (when candidates-filtered
-              (let ((helm-action             (occ-action-direct-action      action))
-                    (helm-action-transformer (occ-action-transformer-action action)))
+              (let (;; (helm-action             (occ-action-direct-action      action))
+                    ;; (helm-action-transformer (occ-action-transformer-action action))
+                    (helm-action             (occ-helm-action             action obj))
+                    (helm-action-transformer (occ-helm-transformer-action action obj)))
                 (if (and auto-select-if-only
                          (= 1 (length candidates-filtered)))
                     (let* ((candidate (car candidates-filtered))
@@ -136,10 +136,10 @@ ACTION "
                                   obtrusive)
   "TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
-  (let ((action              (occ-build-helm-action-direct obj ;NOTE: Adding newly
+  (let ((action              (or ;NOTE: Adding newly
                                                            action
                                                            occ-list-select-action-keys))
-        (action-transformer  (occ-build-helm-action-transformer obj
+        (action-transformer  (or
                                                                 action-transformer
                                                                 occ-list-select-action-transformer-keys))
         (timeout            (or timeout occ-idle-timeout)))
@@ -189,10 +189,10 @@ ACTION "
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
   (unless builder (occ-error "Builder can not be nil"))
   (occ-debug :debug "occ-select((obj occ-ctx)): begin")
-  (let ((action              (occ-build-helm-action-direct obj ;NOTE: Adding newly
+  (let ((action              (or ;NOTE: Adding newly
                                                            action
                                                            occ-list-select-action-keys))
-        (action-transformer  (occ-build-helm-action-transformer obj
+        (action-transformer  (or
                                                                 action-transformer
                                                                 occ-list-select-action-transformer-keys))
         (timeout            (or timeout occ-idle-timeout)))

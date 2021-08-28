@@ -47,9 +47,8 @@ be NIL, using (occ-match-filters) for FILTERS"
         (action             (occ-get-helm-actions-tree obj
                                                        occ-list-select-keys))
         (return-transform   nil)
-        (action-transformer #'(lambda (action candidate)
-                                (occ-get-helm-actions-tree obj
-                                                           occ-list-select-keys)))
+        (action-transformer (occ-get-helm-actions-tree-genertator obj
+                                                                  occ-list-select-keys))
         (timeout            occ-idle-timeout))
     (occ-select obj
                 :filters            filters
@@ -74,9 +73,8 @@ be NIL, using (occ-list-filters) for FILTERS"
         (action             (or action (occ-get-helm-actions-tree obj
                                                                   occ-list-select-keys)))
         (return-transform   nil)
-        (action-transformer #'(lambda (action candidate)
-                                (occ-get-helm-actions-tree obj
-                                                           occ-list-select-keys)))
+        (action-transformer (occ-get-helm-actions-tree-generator obj
+                                                                 occ-list-select-keys))
         (timeout            occ-idle-timeout))
       (occ-message "occ-list-select: action: %s" action)
       (occ-select obj                   ;; TODO: passing action has no affect it show its own debug it ?
@@ -101,9 +99,8 @@ be NIL, using (occ-list-filters) for FILTERS"
              :action             (occ-get-helm-actions-tree obj
                                                             occ-list-select-keys)
              :return-transform   nil
-             :action-transformer #'(lambda (action candidate)
-                                     (occ-get-helm-actions-tree obj
-                                                                occ-list-select-keys))
+             :action-transformer (occ-get-helm-actions-tree-genertator obj
+                                                                       occ-list-select-keys)
              :timeout            occ-idle-timeout
              :obtrusive         t)))
 
@@ -121,8 +118,7 @@ for testing given action on selected tsk."
         (builder            #'occ-build-ctsk-with)
         (action             (or action (occ-get-helm-actions-tree obj occ-list-select-keys)))
         (return-transform   t)
-        (action-transformer #'(lambda (action candidate)
-                                (occ-get-helm-actions-tree obj occ-list-select-keys)))
+        (action-transformer (occ-get-helm-actions-tree-genertator obj occ-list-select-keys))
         (timeout            occ-idle-timeout))
       (occ-message "occ-list-debug-select: action: %s" action)
       (let ((retval-ctx-tsk (occ-select obj
@@ -159,7 +155,7 @@ for testing given action on selected tsk."
 must be NIL, using (occ-list-filters) for FILTERS"
 
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
-  
+
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
         (return-transform   t)
@@ -192,4 +188,8 @@ must be NIL, using (occ-list-filters) for FILTERS"
              (funcall launcher ctx-tsk))
          (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection")))))
 
+
+(cl-defmethod occ-list-select-interactive ())
+(cl-defmethod occ-list-select-get-obj ())
+
 ;;; occ-util-method.el ends here
