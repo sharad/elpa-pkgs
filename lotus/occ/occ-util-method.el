@@ -37,6 +37,8 @@
 (cl-defmethod occ-match-select ((obj occ-obj-ctx)
                                 &key
                                 obtrusive)
+  "Will open helm selection for tsk, here return-transform must
+be NIL, using (occ-match-filters) for FILTERS"
   (let ((filters            (occ-match-filters))
         (builder            #'occ-build-ctxual-tsk-with)
         (action             (occ-get-helm-actions-tree obj
@@ -59,7 +61,8 @@
                                &key
                                action ;; TODO: -- newly added
                                obtrusive)
-  "Will open helm selection for tsk, here return-transform must be NIL."
+  "Will open helm selection for tsk, here return-transform must
+be NIL, using (occ-list-filters) for FILTERS"
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
         (action             (or action (occ-get-helm-actions-tree obj
@@ -143,7 +146,8 @@ for testing given action on selected tsk."
 (cl-defmethod occ-list-launch ((obj occ-obj-ctx)
                                &key
                                obtrusive)
-  "TODO?: Will open helm selection for tsk, here return-transform must be NIL."
+  "TODO?: Will open helm selection for tsk, here return-transform
+must be NIL, using (occ-list-filters) for FILTERS"
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
         (return-transform   t)
