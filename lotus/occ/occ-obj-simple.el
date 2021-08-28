@@ -177,7 +177,7 @@
                    :clock-in clock-in)
       (occ-error "Not able to get ctx-tsk(%s) at point" ctx-tsk))))
 
-(testing
+(occ-testing
   ;; (occ-get-helm-actions-tree nil '(t actions select)) -> nil
   (occ-list-debug-select (occ-make-ctx-at-point)
                          :action (occ-get-helm-actions-tree nil '(t actions select))

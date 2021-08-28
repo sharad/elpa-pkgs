@@ -152,7 +152,7 @@ FULL is given."
                               "occ-loaddefs.el can not be found!")))
            (version1 (if full version release)))
       (when here (insert version1))
-      ;; (when message (message "%s" version1))
+      ;; (when message (occ-message "%s" version1))
       version1)))
 
 ;;;###autoload
@@ -174,7 +174,7 @@ FULL is given."
   (let ((pkg-dir (occ-find-library-dir pkg-str)))
     (dolist (ef (directory-files pkg-dir nil ".el$"))
       (unless (string-match "pkg.el$" ef)
-        (message "trying to load %s %s %s"
+        (occ-message "trying to load %s %s %s"
                  pkg-str
                  ef
                  (concat pkg-dir ef))
@@ -206,7 +206,7 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
                                                                  (if (and (string-match feature-re f)
                                                                           (not (string-match remove-re f)))
                                                                      (progn
-                                                                       (message "%s matched." f)
+                                                                       (occ-message "%s matched." f)
                                                                        f)
                                                                    nil))
                                                                feats)))
@@ -217,11 +217,11 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
          (load-uncore    nil)
          (load-misses    nil))
     (occ-add-deps-libs pkg)
-    (message "working on %s" lfeat)
+    (occ-message "working on %s" lfeat)
     (let ((load-missed-1 (mapcar #'occ-load-pkg
                                  lfeat)))
      (setq load-misses (delq 't load-missed-1)))
-    (message "starting")
+    (occ-message "starting")
     (when load-uncore
       (occ-message "The following feature%s found in load-path, please check if that's correct:\n%s"
                (if (> (length load-uncore) 1) "s were" " was") load-uncore))

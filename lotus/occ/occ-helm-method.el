@@ -109,7 +109,7 @@
                                                (symbol-name (cl-inst-classname (car candidates)))
                                                unfiltered-count
                                                filtered-count)))
-           (message "occ-helm-build-candidates-source: action: %s" action)
+           (occ-message "occ-helm-build-candidates-source: action: %s" action)
            (helm-build-sync-source source-name
                                    :candidates                     gen-candidate-lambda
                                    ;; :header-name
@@ -128,7 +128,7 @@
                                                  action-transformer
                                                  auto-select-if-only
                                                  timeout)
-  (message "occ-helm-build-candidates-sources: action: %s" action)
+  (occ-message "occ-helm-build-candidates-sources: action: %s" action)
   (list (occ-helm-build-candidates-source obj
                                           candidates
                                           :unfiltered-count   unfiltered-count
@@ -165,7 +165,7 @@
 ;;   "occ-sacha-helm-action")
 
 ;; (cl-defmethod occ-sacha-helm-action ((ctxask occ-ctxual-tsk) clockin-fn)
-;;   ;; (message "sacha marker %s" (car dyntskpls))
+;;   ;; (occ-message "sacha marker %s" (car dyntskpls))
 ;;   ;; (setq sacha/helm-org-refile-locations tbl)
 ;;   (progn
 ;;     (helm

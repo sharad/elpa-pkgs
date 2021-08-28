@@ -79,10 +79,24 @@
                   :timeout            timeout
                   :obtrusive          obtrusive)))
 
-(testing
+(occ-testing
  (occ-list-debug-select (occ-make-ctx-at-point)
                         :action (occ-get-helm-actions-tree nil '(t actions select))
                         :obtrusive nil))
+
+(occ-testing
+ (let ((obj (occ-make-ctx-at-point)))
+   (occ-select obj
+             :filters            (occ-list-filters)
+             :builder            #'occ-build-ctsk-with
+             :action             (occ-get-helm-actions-tree obj
+                                                            occ-list-select-keys)
+             :return-transform   nil
+             :action-transformer #'(lambda (action candidate)
+                                     (occ-get-helm-actions-tree obj
+                                                                occ-list-select-keys))
+             :timeout            occ-idle-timeout
+             :obtrusive         t)))
 
 (cl-defmethod occ-list-debug-select ((obj occ-obj-ctx)
                                      &key
@@ -120,7 +134,7 @@ for testing given action on selected tsk."
               (funcall launcher ctsk))
           (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection")))))
 
-(testing
+(occ-testing
  ;; (occ-get-helm-actions-tree nil '(t actions select)) -> nil
  (occ-list-select (occ-make-ctx-at-point)
                   :action (occ-get-helm-actions-tree nil '(t actions select))

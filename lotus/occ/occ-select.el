@@ -20,7 +20,8 @@
 
 ;;; Commentary:
 
-;;
+;; Main machinery
+;; TODO: Document it well
 
 ;;; Code:
 
@@ -91,7 +92,7 @@
                                                      (helm-refresh)
                                                    (occ-debug :debug "Running occ-list-selection-internal helm is gone"))))
                     ;; :keymap occ-helm-map
-                    (message "occ-list-selection-internal: action: %s" action)
+                    (occ-message "occ-list-selection-internal: action: %s" action)
                     (let ((candidates-sources (occ-helm-build-candidates-sources obj
                                                                                  candidates-filtered
                                                                                  :unfiltered-count   unfiltered-count
@@ -125,7 +126,7 @@
       (occ-debug :debug "running occ-list-select")
       (let ((action             (if return-transform (occ-return-tranform action) action)) ;as return value is going to be used.
             (action-transformer (if return-transform (occ-return-tranformer-fun-transform action-transformer) action-transformer)))
-        (message "occ-list-selection: action: %s" action)
+        (occ-message "occ-list-selection: action: %s" action)
         (let ((selected (occ-list-selection-internal obj
                                                      :filters             filters
                                                      :builder             builder
@@ -162,8 +163,10 @@
   "return interactively selected TSK or NIL"
   (unless builder (occ-error "Builder can not be nil"))
   (occ-debug :debug "occ-select((obj occ-ctx)): begin")
-  (let ((action             (or action (occ-get-helm-actions-tree obj occ-list-select-action-keys)))
-        (action-transformer (or action-transformer (occ-get-helm-actions-tree-genertator obj occ-list-select-action-transformer-keys)))
+  (let ((action             (or action (occ-get-helm-actions-tree obj
+                                                                  occ-list-select-action-keys)))
+        (action-transformer (or action-transformer (occ-get-helm-actions-tree-genertator obj
+                                                                                         occ-list-select-action-transformer-keys)))
         (timeout            (or timeout occ-idle-timeout)))
     (let* ((unfiltered-count      (occ-length)))
       (if (> unfiltered-count 0)
