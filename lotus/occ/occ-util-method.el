@@ -66,7 +66,7 @@
                 :filters            filters
                 :builder            builder
                 :action             action
-                :return-transform   nil ; t
+                :return-transform   t
                 :action-transformer action-transformer
                 :timeout            timeout
                 :obtrusive          obtrusive)))
@@ -124,9 +124,8 @@
                          retval-ctx-tsk
                          (occ-format (occ-return-get-value retval-ctx-tsk) 'capitalize)
                          (occ-return-get-label retval-ctx-tsk))
-       (if (and
-            (occ-return-in-labels-p retval-ctx-tsk occ-return-select-label)
-            (occ-return-get-value retval-ctx-tsk))
+       (if (and (occ-return-in-labels-p retval-ctx-tsk occ-return-select-label)
+                (occ-return-get-value retval-ctx-tsk))
            (let* ((action      (occ-get-helm-actions-tree obj occ-list-select-keys))
                   (ctx-tsk     (occ-return-get-value retval-ctx-tsk))
                   (launcher    (cdr (assoc (completing-read "Action: " action) action))))
