@@ -58,7 +58,9 @@
                                            obtrusive)
 
 
-  "Main Machinery, TODO: Document it, NOTE: ACTION-TRANSFORMER is superseding ACTION"
+  "Main Machinery, TODO: Document it, NOTE: ACTION-TRANSFORMER is
+superseding ACTION, As in helm ACTION-TRANSFORMER are superseding
+ACTION "
   ;; (occ-debug :debug "sacha marker %s" (car dyntskpls))
 
 
@@ -75,43 +77,51 @@
         (occ-debug :debug nil))
     (occ-debug :debug "Running occ-list-selection-internal")
     (prog1
-        (let ((action-transformer  (or action-transformer
-                                       (occ-get-helm-actions-tree-genertator obj occ-list-select-action-transformer-keys)))
+        (let ((action              (occ-build-helm-action-direct obj ;NOTE: Adding newly
+                                                                 action
+                                                                 occ-list-select-action-keys))
+              (action-transformer  (occ-build-helm-action-transformer obj
+                                                                      action-transformer
+                                                                      occ-list-select-action-transformer-keys))
               (timeout             (or timeout
                                        occ-idle-timeout)))
 
-          (let* ((candidates-unfiltered (occ-list obj :builder builder :obtrusive obtrusive))
+          (let* ((candidates-unfiltered (occ-list obj
+                                                  :builder   builder
+                                                  :obtrusive obtrusive))
                  (unfiltered-count      (length candidates-unfiltered))
                  (candidates-filtered   (occ-filter obj
                                                     filters
                                                     candidates-unfiltered)))
             (when candidates-filtered
-              (if (and auto-select-if-only
-                       (= 1 (length candidates-filtered)))
-                  (let* ((candidate (car candidates-filtered))
-                         (action    (car (funcall action-transformer action candidate)))
-                         (action    (or  (cdr-safe action) action)))
-                    (funcall action candidate))
-                (let ((in-occ-helm t))
-                  (progn
-                    (run-with-timer 0.08 nil #'(lambda ()
-                                                 (if in-occ-helm
-                                                     (helm-refresh)
-                                                   (occ-debug :debug "Running occ-list-selection-internal helm is gone"))))
-                    ;; :keymap occ-helm-map
-                    (occ-message "occ-list-selection-internal: action: %s" action)
-                    (let ((candidates-sources (occ-helm-build-candidates-sources obj
-                                                                                 candidates-filtered
-                                                                                 :unfiltered-count   unfiltered-count
-                                                                                 :filters            filters
-                                                                                 :builder            builder
-                                                                                 :action             action
-                                                                                 :action-transformer action-transformer)))
-                      (prog1
-                          (helm :sources candidates-sources
-                                :buffer  (occ-helm-select-buffer)
-                                :resume  'noresume)
-                        (setq in-occ-helm nil)))))))))
+              (let ((helm-action             (occ-action-direct-action    action))
+                    (helm-action-transformer (occ-action-transformer-action action)))
+                (if (and auto-select-if-only
+                         (= 1 (length candidates-filtered)))
+                    (let* ((candidate (car candidates-filtered))
+                           (helm-action    (car (funcall helm-action-transformer helm-action candidate)))
+                           (helm-action    (or  (cdr-safe helm-action) helm-action)))
+                      (funcall helm-action candidate))
+                  (let ((in-occ-helm t))
+                    (progn
+                      (run-with-timer 0.08 nil #'(lambda ()
+                                                   (if in-occ-helm
+                                                       (helm-refresh)
+                                                     (occ-debug :debug "Running occ-list-selection-internal helm is gone"))))
+                      ;; :keymap occ-helm-map
+                      (occ-message "occ-list-selection-internal: helm-action: %s" helm-action)
+                      (let ((candidates-sources (occ-helm-build-candidates-sources obj
+                                                                                   candidates-filtered
+                                                                                   :unfiltered-count   unfiltered-count
+                                                                                   :filters            filters
+                                                                                   :builder            builder
+                                                                                   :action             helm-action
+                                                                                   :action-transformer helm-action-transformer)))
+                        (prog1
+                            (helm :sources candidates-sources
+                                  :buffer  (occ-helm-select-buffer)
+                                  :resume  'noresume)
+                          (setq in-occ-helm nil))))))))))
       (occ-debug :debug "Running occ-list-selection-internal"))))
 
 
@@ -127,12 +137,18 @@
                                   obtrusive)
   "TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
-  (let ((action-transformer (or action-transformer
-                                (occ-get-helm-actions-tree-genertator obj
-                                                                      occ-list-select-action-transformer-keys)))
+  (let ((action              (occ-build-helm-action-direct obj ;NOTE: Adding newly
+                                                           action
+                                                           occ-list-select-action-keys))
+        (action-transformer  (occ-build-helm-action-transformer obj
+                                                                action-transformer
+                                                                occ-list-select-action-transformer-keys))
         (timeout            (or timeout occ-idle-timeout)))
     (helm-timed timeout (occ-helm-select-buffer)
       (occ-debug :debug "running occ-list-select")
+
+      (error "Change code here for occ-return-tranform and occ-return-tranformer-fun-transform and apply everywhere occ-build-helm-action-transformer")
+
       (let ((action             (if return-transform (occ-return-tranform action) action)) ;as return value is going to be used.
             (action-transformer (if return-transform (occ-return-tranformer-fun-transform action-transformer) action-transformer)))
         (occ-message "occ-list-selection: action: %s" action)
