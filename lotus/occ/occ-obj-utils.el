@@ -59,26 +59,23 @@
 
 (defun occ-return-tranform (action)
   "Will make all action except first to return OCC-RETURN-SELECT-LABEL."
-  (let ((helm-action (occ-action-direct-action action)))
-    (let ((identity-selector (cons occ-return-select-name ;add default select operation.
-                                   (occ-build-return-lambda occ-return-select-function
-                                                            occ-return-select-label)))
-          (action-launcher   (mapcar #'(lambda (a)
-                                         (if (consp a)
-                                             (cons (car a)
-                                                   (occ-build-return-lambda (cdr a)))
-                                           (occ-build-return-lambda a)))
-                                     helm-action)))
-      (occ-make-action-direct (cons identity-selector action-launcher)))))
+  (let ((identity-selector (cons occ-return-select-name ;add default select operation.
+                                 (occ-build-return-lambda occ-return-select-function
+                                                          occ-return-select-label)))
+        (action-launcher   (mapcar #'(lambda (a)
+                                       (if (consp a)
+                                           (cons (car a)
+                                                 (occ-build-return-lambda (cdr a)))
+                                         (occ-build-return-lambda a)))
+                                   action)))
+    (cons identity-selector action-launcher)))
 
-(defun occ-return-tranformer-fun-transform (action-transformer)
+(defun occ-return-tranformer-fun-transform (tranformer-fun)
   "Will make transformer fun to change action except first to return occ-return-label."
-  (let ((helm-action-transformer (occ-action-transformer-action action-transformer)))
-    #'(lambda (action
-               candidate)
-        (let ((helm-action (occ-action-transformer-action action)))
-          (occ-return-tranform (funcall helm-action-transformer
-                                        helm-action candidate))))))
+  #'(lambda (action
+             candidate)
+      (occ-return-tranform (funcall tranformer-fun
+                                    action candidate))))
 
 ;; (cl-defmethod occ-return-operate-p (retval)
 ;;   retval)
