@@ -39,42 +39,58 @@
                                 obtrusive)
   (let ((filters            (occ-match-filters))
         (builder            #'occ-build-ctxual-tsk-with)
-        (action             (occ-get-helm-actions-tree obj occ-list-select-keys))
+        (action             (occ-get-helm-actions-tree obj
+                                                       occ-list-select-keys))
+        (return-transform   nil)
         (action-transformer #'(lambda (action candidate)
-                                (occ-get-helm-actions-tree obj occ-list-select-keys)))
+                                (occ-get-helm-actions-tree obj
+                                                           occ-list-select-keys)))
         (timeout            occ-idle-timeout))
     (occ-select obj
                 :filters            filters
                 :builder            builder
                 :action             action
+                :return-transform   return-transform
                 :action-transformer action-transformer
                 :timeout            timeout
                 :obtrusive          obtrusive)))
 
 (cl-defmethod occ-list-select ((obj occ-obj-ctx)
                                &key
-                               action
+                               action ;; TODO: -- newly added
                                obtrusive)
+  "Will open helm selection for tsk, here return-transform must be NIL."
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
-        (action             (or action (occ-get-helm-actions-tree obj occ-list-select-keys)))
+        (action             (or action (occ-get-helm-actions-tree obj
+                                                                  occ-list-select-keys)))
+        (return-transform   nil)
         (action-transformer #'(lambda (action candidate)
-                                (occ-get-helm-actions-tree obj occ-list-select-keys)))
+                                (occ-get-helm-actions-tree obj
+                                                           occ-list-select-keys)))
         (timeout            occ-idle-timeout))
-    (message "occ-list-select: action: %s" action)
-    (occ-select obj
-                :filters            filters
-                :builder            builder
-                :action             action
-                :return-transform   nil
-                :action-transformer action-transformer
-                :timeout            timeout
-                :obtrusive          obtrusive)))
+      (occ-message "occ-list-select: action: %s" action)
+      (occ-select obj                   ;; TODO: passing action has no affect it show its own debug it ?
+                  :filters            filters
+                  :builder            builder
+                  :action             action
+                  :return-transform   return-transform
+                  :action-transformer action-transformer
+                  :timeout            timeout
+                  :obtrusive          obtrusive)))
+
+(testing
+ (occ-list-debug-select (occ-make-ctx-at-point)
+                        :action (occ-get-helm-actions-tree nil '(t actions select))
+                        :obtrusive nil))
 
 (cl-defmethod occ-list-debug-select ((obj occ-obj-ctx)
                                      &key
                                      action
                                      obtrusive)
+  "Will open helm selection for tsk, which then again run helm
+selection for actions to run on selected tsk. It is mainly meant
+for testing given action on selected tsk."
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
         (action             (or action (occ-get-helm-actions-tree obj occ-list-select-keys)))
@@ -82,36 +98,47 @@
         (action-transformer #'(lambda (action candidate)
                                 (occ-get-helm-actions-tree obj occ-list-select-keys)))
         (timeout            occ-idle-timeout))
-    (message "occ-list-debug-select: action: %s" action)
-    (let ((retval-ctx-tsk (occ-select obj
-                                      :filters            filters
-                                      :builder            builder
-                                      :return-transform   return-transform
-                                      :action             action
-                                      :action-transformer action-transformer
-                                      :timeout            timeout
-                                      :obtrusive          obtrusive)))
-      (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): selected original: %s, retval: %s with label %s"
-                        retval-ctx-tsk
-                        (occ-format (occ-return-get-value retval-ctx-tsk) 'capitalize)
-                        (occ-return-get-label retval-ctx-tsk))
-      (if (and (occ-return-in-labels-p retval-ctx-tsk occ-return-select-label)
-               (occ-return-get-value retval-ctx-tsk))
-          (let ((ctsk     (occ-return-get-value retval-ctx-tsk))
-                (launcher (cdr (assoc (completing-read "Action: " action) action))))
-            (funcall launcher ctsk))
-        (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection")))))
+      (occ-message "occ-list-debug-select: action: %s" action)
+      (let ((retval-ctx-tsk (occ-select obj
+                                        :filters            filters
+                                        :builder            builder
+                                        :return-transform   return-transform
+                                        :action             action
+                                        :action-transformer action-transformer
+                                        :timeout            timeout
+                                        :obtrusive          obtrusive)))
+        (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): selected original: %s, retval: %s with label %s"
+                          retval-ctx-tsk
+                          (occ-format (occ-return-get-value retval-ctx-tsk)
+                                      'capitalize)
+                          (occ-return-get-label retval-ctx-tsk))
+        (if (and (occ-return-in-labels-p retval-ctx-tsk
+                                         occ-return-select-label)
+                 (occ-return-get-value retval-ctx-tsk))
+            (let ((ctsk     (occ-return-get-value retval-ctx-tsk))
+                  (launcher (cdr (assoc (completing-read "Action: " action) action))))
+              (funcall launcher ctsk))
+          (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection")))))
+
+(testing
+ ;; (occ-get-helm-actions-tree nil '(t actions select)) -> nil
+ (occ-list-select (occ-make-ctx-at-point)
+                  :action (occ-get-helm-actions-tree nil '(t actions select))
+                  :obtrusive nil))
 
 (cl-defmethod occ-list-launch ((obj occ-obj-ctx)
                                &key
                                obtrusive)
+  "TODO?: Will open helm selection for tsk, here return-transform must be NIL."
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
         (return-transform   t)
-        (action             (occ-get-helm-actions-tree obj occ-list-select-keys))
-        (action-transformer (occ-get-helm-actions-tree-genertator obj occ-list-select-keys))
+        (action             (occ-get-helm-actions-tree obj
+                                                       occ-list-select-keys))
+        (action-transformer (occ-get-helm-actions-tree-genertator obj
+                                                                  occ-list-select-keys))
         (timeout            occ-idle-timeout))
-    (message "occ-list-launch: action: %s" action)
+    (occ-message "occ-list-launch: action: %s" action)
     (let ((retval-ctx-tsk (occ-select obj
                                       :filters            filters
                                       :builder            builder
@@ -122,11 +149,14 @@
                                       :obtrusive          obtrusive)))
        (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                          retval-ctx-tsk
-                         (occ-format (occ-return-get-value retval-ctx-tsk) 'capitalize)
+                         (occ-format (occ-return-get-value retval-ctx-tsk)
+                                     'capitalize)
                          (occ-return-get-label retval-ctx-tsk))
-       (if (and (occ-return-in-labels-p retval-ctx-tsk occ-return-select-label)
+       (if (and (occ-return-in-labels-p retval-ctx-tsk
+                                        occ-return-select-label)
                 (occ-return-get-value retval-ctx-tsk))
-           (let* ((action      (occ-get-helm-actions-tree obj occ-list-select-keys))
+           (let* ((action      (occ-get-helm-actions-tree obj
+                                                          occ-list-select-keys))
                   (ctx-tsk     (occ-return-get-value retval-ctx-tsk))
                   (launcher    (cdr (assoc (completing-read "Action: " action) action))))
              (funcall launcher ctx-tsk))

@@ -103,7 +103,8 @@
   (cond
    ((eql (car name-action-key) 'normal)
     (apply #'occ-helm-actions-get (cdr name-action-key)))
-   ((eql (car name-action-key) 'generator) nil)))
+   ((eql (car name-action-key) 'generator)
+    nil)))
 
 (cl-defmethod occ-get-helm-actions-plist ((obj occ-obj)
                                           name-action-key)
@@ -135,10 +136,10 @@
          (mapcar #'(lambda (action) (cons type action))
                  actions)))
 
-;; (occ-add-helm-actions-tree '(actions select)
-;;                            "Select"
-;;                            'normal
-;;                            :identity)
+(occ-add-helm-actions-tree '(actions select)
+                           "Select"
+                           'normal
+                           :identity)
 
 (occ-add-helm-actions-tree '(actions general)
                            "Simple"

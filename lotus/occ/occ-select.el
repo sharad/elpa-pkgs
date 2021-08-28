@@ -34,7 +34,7 @@
 (require 'occ-helm)
 
 
-(defvar occ-list-select-action-keys '(t actions general))
+(defvar occ-list-select-action-keys             '(t actions general))
 (defvar occ-list-select-action-transformer-keys '(t actions general edit))
 
 ;; TODO:
@@ -104,7 +104,8 @@
                                 :buffer  (occ-helm-select-buffer)
                                 :resume  'noresume)
                         (setq in-occ-helm nil)))))))))
-        (occ-debug :debug "Running occ-list-selection-internal"))))
+      (occ-debug :debug "Running occ-list-selection-internal"))))
+
 
 (cl-defmethod occ-list-selection ((obj occ-ctx)
                                   &key
