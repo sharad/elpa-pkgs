@@ -125,7 +125,7 @@
                                   auto-select-if-only
                                   timeout
                                   obtrusive)
-  "TODO: Document it."
+  "TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
   (let ((action-transformer (or action-transformer
                                 (occ-get-helm-actions-tree-genertator obj
