@@ -27,6 +27,17 @@
 (provide 'occ-macros)
 
 
+(defvar occ-testing-status nil)
+(defun occ-enable-testing ()
+  (setq occ-testing-status t))
+(defun occ-disable-testing ()
+  (setq occ-testing-status nil))
+(defun occ-toggle-testing ()
+  (setq occ-testing-status (not occ-testing-status)))
+(defmacro occ-testing (&rest body)
+  `(when occ-testing-status ,@body))
+
+
 (defmacro occ-with-marker (marker &rest body)
   `(let ((marker ,marker))
      (progn
@@ -237,7 +248,7 @@
              (candidates ,@collection)
              (action . identity))))))
 
-(when nil
+(occ-testing
   ;; https://code.orgmode.org/bzg/org-mode/commit/e2bdc488ee071ea9743b00424db28fce3505fe5d
   ;; Refiling: Allow to create new nodes.
 

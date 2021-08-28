@@ -110,7 +110,8 @@
                                                unfiltered-count
                                                filtered-count)))
            (message "occ-helm-build-candidates-source: action: %s" action)
-           (helm-build-sync-source source-name :candidates gen-candidate-lambda
+           (helm-build-sync-source source-name
+                                   :candidates                     gen-candidate-lambda
                                    ;; :header-name
                                    :action                         action
                                    :filtered-candidate-transformer nil

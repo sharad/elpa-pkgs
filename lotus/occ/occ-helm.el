@@ -135,10 +135,10 @@
          (mapcar #'(lambda (action) (cons type action))
                  actions)))
 
-(occ-add-helm-actions-tree '(actions select)
-                           "Select"
-                           'normal
-                           :identity)
+;; (occ-add-helm-actions-tree '(actions select)
+;;                            "Select"
+;;                            'normal
+;;                            :identity)
 
 (occ-add-helm-actions-tree '(actions general)
                            "Simple"
@@ -196,7 +196,12 @@
   (apply #'append
          (mapcar #'(lambda (name-action-key)
                      (occ-get-helm-actions-plist obj name-action-key))
-                 (collect-alist (tree-collect-items occ-helm-actions-tree obj keys 0)))))
+                 (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))))
+
+(occ-testing
+  (tree-collect-items occ-helm-actions-tree nil '(t actions general edit) 0)
+  (tree-collect-items occ-helm-actions-tree (occ-make-ctx-at-point) '(t actions general edit) 0)
+  (occ-get-helm-actions-tree (occ-make-ctx-at-point) '(t actions general edit)))
 
 
 (cl-defmethod occ-get-helm-actions-tree-genertator ((obj null) keys)
