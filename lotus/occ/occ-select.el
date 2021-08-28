@@ -56,11 +56,18 @@
                                            auto-select-if-only
                                            timeout
                                            obtrusive)
+
+
+  "Main Machinery, TODO: Document it, NOTE: ACTION-TRANSFORMER is superseding ACTION"
   ;; (occ-debug :debug "sacha marker %s" (car dyntskpls))
 
 
   ;; (lotus-with-no-active-minibuffer-if <- TODO: This should be there only for first level command, not in internal function
   ;;                                              as it may be creating problem of occ-capture
+
+
+  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
+
   (progn ;; lotus-with-no-active-minibuffer-if
       (progn
         (occ-debug :debug "occ-list-selection-internal: [minibuffer-body] lotus-with-no-active-minibuffer-if")
@@ -118,6 +125,8 @@
                                   auto-select-if-only
                                   timeout
                                   obtrusive)
+  "TODO: Document it."
+  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
   (let ((action-transformer (or action-transformer
                                 (occ-get-helm-actions-tree-genertator obj
                                                                       occ-list-select-action-transformer-keys)))
@@ -160,7 +169,9 @@
                           auto-select-if-only
                           timeout
                           obtrusive)
-  "return interactively selected TSK or NIL"
+  "return interactively selected TSK or NIL,   TODO: Document it."
+
+  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
   (unless builder (occ-error "Builder can not be nil"))
   (occ-debug :debug "occ-select((obj occ-ctx)): begin")
   (let ((action             (or action (occ-get-helm-actions-tree obj
@@ -198,6 +209,11 @@
                           auto-select-if-only
                           timeout
                           obtrusive)
+
+  "TODO: Document it."
+
+  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
+
   (occ-debug :debug "occ-select((obj null)): begin")
   (let ((retval (occ-select (occ-make-ctx-at-point)
                             :filters             filters

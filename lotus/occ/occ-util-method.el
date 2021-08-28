@@ -39,6 +39,9 @@
                                 obtrusive)
   "Will open helm selection for tsk, here return-transform must
 be NIL, using (occ-match-filters) for FILTERS"
+
+  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
+
   (let ((filters            (occ-match-filters))
         (builder            #'occ-build-ctxual-tsk-with)
         (action             (occ-get-helm-actions-tree obj
@@ -63,6 +66,9 @@ be NIL, using (occ-match-filters) for FILTERS"
                                obtrusive)
   "Will open helm selection for tsk, here return-transform must
 be NIL, using (occ-list-filters) for FILTERS"
+
+  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
+
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
         (action             (or action (occ-get-helm-actions-tree obj
@@ -108,6 +114,9 @@ be NIL, using (occ-list-filters) for FILTERS"
   "Will open helm selection for tsk, which then again run helm
 selection for actions to run on selected tsk. It is mainly meant
 for testing given action on selected tsk."
+
+  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
+
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
         (action             (or action (occ-get-helm-actions-tree obj occ-list-select-keys)))
@@ -148,6 +157,9 @@ for testing given action on selected tsk."
                                obtrusive)
   "TODO?: Will open helm selection for tsk, here return-transform
 must be NIL, using (occ-list-filters) for FILTERS"
+
+  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
+  
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
         (return-transform   t)

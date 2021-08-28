@@ -168,6 +168,7 @@
                                       template
                                       clock-in)
   ;; BUG: occ-list-select is become an interactive function, here it is not returning desired object.
+  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION for OCC-LIST-SELECT
   (let ((ctx-tsk (occ-list-select (occ-make-ctx-at-point)
                                   :action (occ-get-helm-actions-tree obj '(t actions select))
                                   :obtrusive t)))
@@ -176,15 +177,65 @@
                    :template template
                    :clock-in clock-in)
       (occ-error "Not able to get ctx-tsk(%s) at point" ctx-tsk))))
-
+
+;; TODO: DEBUG
 (occ-testing
+  ;;; Group1
+
+  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION for OCC-LIST-SELECT
   ;; (occ-get-helm-actions-tree nil '(t actions select)) -> nil
   (occ-list-debug-select (occ-make-ctx-at-point)
                          :action (occ-get-helm-actions-tree nil '(t actions select))
                          :obtrusive nil)
   (occ-list-select (occ-make-ctx-at-point)
                    :action (occ-get-helm-actions-tree nil '(t actions select))
-                   :obtrusive nil))
+                   :obtrusive nil)
+
+
+  (occ-list-debug-select (occ-make-ctx-at-point)
+                         :action (occ-get-helm-actions-tree nil '(t actions select))
+                         :obtrusive nil)
+
+  ;;; Group2
+  (let ((obj (occ-make-ctx-at-point)))
+    (occ-select obj
+                :filters            (occ-list-filters)
+                :builder            #'occ-build-ctsk-with
+                :action             (occ-get-helm-actions-tree obj
+                                                               occ-list-select-keys)
+                :return-transform   nil
+                :action-transformer #'(lambda (action candidate)
+                                        (occ-get-helm-actions-tree obj
+                                                                   occ-list-select-keys))
+                :timeout            occ-idle-timeout
+                :obtrusive         t))
+
+
+  ;; (occ-get-helm-actions-tree nil '(t actions select)) -> nil
+  (occ-list-select (occ-make-ctx-at-point)
+                   :action (occ-get-helm-actions-tree nil '(t actions select))
+                   :obtrusive nil)
+
+
+  ;;; Group3
+  (let ((obj                    (occ-make-ctx-at-point))
+        (occ-list-select-keys-1 '(t actions select))
+        (occ-list-select-keys-2 '(t actions general)))
+    (occ-select obj
+                :filters            (occ-list-filters)
+                :builder            #'occ-build-ctsk-with
+                :action             (occ-get-helm-actions-tree obj
+                                                               occ-list-select-keys-1)
+                :return-transform   nil
+                :action-transformer #'(lambda (action candidate)
+                                        (occ-get-helm-actions-tree obj
+                                                                   occ-list-select-keys-2))
+                :timeout            occ-idle-timeout
+                :obtrusive         t))
+
+
+
+  ())
 
 
 (cl-defgeneric occ-procreate-child (obj)
