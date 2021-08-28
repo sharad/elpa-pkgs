@@ -74,9 +74,10 @@
   variance)
 
 (cl-defstruct (occ-action (:include occ-obj))
+  helm-action
+  helm-action-transform
   obj
-  keys
-  transform)
+  keys)
 
 ;; (cl-defstruct (occ-action-direct (:include occ-action))
 ;;   action)

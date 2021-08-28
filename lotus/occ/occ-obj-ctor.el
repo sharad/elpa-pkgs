@@ -361,38 +361,25 @@
                    :value value))
 
 
-(defun occ-make-action (obj keys transform)
-  (make-occ-action :obj obj
-                   :keys keys))
-
-;; (defun occ-make-action-transformer (action)
-;;   (make-occ-action-transformer :action action))
-
-;; (defun occ-build-helm-action-direct (obj action &optional keys)
-;;   (if (occ-action-direct-p action)
-;;       action
-;;     (when t ;; (check if action is list of symbol or nil)
-;;      (occ-make-action-direct (occ-get-helm-actions-tree obj (or action keys))))))
-
-;; (defun occ-build-helm-action-transformer (obj action &optional keys)
-;;   (if (occ-action-transformer-p action)
-;;       action
-;;     (when t ;; (check if action is list of symbol or nil)
-;;       (occ-make-action-transformer (occ-get-helm-actions-tree-generator obj (or action keys))))))
-
-
-(defun occ-build-action (obj keys)
-  (if (occ-action-p keys)
-      keys
-    (when t ;; (check if action is list of symbol or nil)
-      (occ-make-action obj keys))))
-
+(defun occ-make-action (keys)
+  (make-occ-action :keys keys))
 
 (defmethod occ-helm-action ((action occ-action) obj)
-  (occ-get-helm-actions-tree obj (occ-action-keys action)))
+  (unless (occ-action-helm-action action)
+    (let ((helm-action (occ-get-helm-actions-tree obj (occ-action-keys action))))
+      (setf (occ-action-helm-action action) helm-action)))
+  (occ-action-helm-action action))
 
 (defmethod occ-helm-action-transform ((action occ-action) obj)
-  (occ-get-helm-actions-tree-generator obj (occ-action-keys action)))
+  (unless (occ-action-helm-action-transform action)
+    (let ((helm-action (occ-get-helm-actions-tree-generator obj (occ-action-keys action))))
+      (setf (occ-action-helm-action-transform action) helm-action)))
+  (occ-action-helm-action-transform action))
 
+(defun occ-build-action (action-or-keys &optional keys)
+  (if (occ-action-p action-or-keys)
+      action-or-keys
+    (when t ;; (check if action is list of symbol or nil)
+      (occ-make-action (or action-or-keys keys)))))
 
 ;;; occ-obj-ctor.el ends here
