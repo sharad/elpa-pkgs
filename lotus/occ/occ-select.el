@@ -212,4 +212,21 @@
                       (occ-format retval 'capitalize))
     retval))
 
+
+(occ-testing
+ (let ((obj                    (occ-make-ctx-at-point))
+       (occ-list-select-keys-1 '(t actions general))
+       (occ-list-select-keys-2 '(t actions select)))
+   (occ-select obj
+               :filters            (occ-list-filters)
+               :builder            #'occ-build-ctsk-with
+               :action             (occ-get-helm-actions-tree obj
+                                                              occ-list-select-keys-1)
+               :return-transform   nil
+               :action-transformer #'(lambda (action candidate)
+                                       (occ-get-helm-actions-tree obj
+                                                                  occ-list-select-keys-2))
+               :timeout            occ-idle-timeout
+               :obtrusive         t)))
+
 ;;; occ-select.el ends here

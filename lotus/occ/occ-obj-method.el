@@ -157,9 +157,8 @@
 
 
 (cl-defmethod occ-consider-for-clockin-in-p ()
-  (>
-   (float-time (time-since *occ-last-buff-sel-time*))
-   *occ-tsk-current-ctx-time-interval*))
+  (> (float-time (time-since *occ-last-buff-sel-time*))
+     *occ-tsk-current-ctx-time-interval*))
 
 (cl-defmethod occ-try-to-clock-in-p ((curr occ-ctx)
                                      (prev occ-ctx))
