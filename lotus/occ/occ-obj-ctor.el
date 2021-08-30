@@ -371,13 +371,23 @@
                                :desc   desc
                                :fun    fun))
 
-(cl-defmethod occ-callable-method ((callable occ-callable-noraml)
-                                   (obj occ-obj))
-  (occ-callable-fun callable))
+(cl-defmethod occ-callable-helm-action ((callable occ-callable))
+  "Return pair or (DESC . FUN)"
+  (cons (occ-callable-desc callable)
+        (occ-callable-fun callable)))
+  
+(cl-defmethod occ-callable-methods ((callable occ-callable-noraml)
+                                    (obj occ-obj))
+  "Return list of ((DESC . FUN) ...)"
+  (list (occ-callable-helm-action callable)))
 
-(cl-defmethod occ-callable-method ((callable occ-callable-generator)
-                                   (obj occ-obj))
-  (funcall (occ-callable-fun callable) obj :param-only nil))
+(cl-defmethod occ-callable-methods ((callable occ-callable-generator)
+                                    (obj occ-obj))
+  "Return list of ((DESC . FUN) ...)"
+  (mapcar #'occ-callable-helm-action
+          (funcall (occ-callable-fun callable)
+                   obj
+                   :param-only nil)))
 
 
 (defun occ-make-action (keys)

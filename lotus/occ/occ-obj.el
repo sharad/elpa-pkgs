@@ -161,7 +161,7 @@
 
 
 (cl-defstruct (occ-callable (:include occ-obj))
-  symbol
+  keyword
   desc
   fun)
 
