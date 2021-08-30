@@ -93,12 +93,12 @@
   (occ-helm-action-add :tsk                      "Get Task"                 #'occ-print-tsk))
 
 
-(cl-defgeneric occ-get-helm-actions-plist (obj
-                                           name-action-key)
-  "occ-get-helm-actions-plist")
+(cl-defgeneric occ-helm-actions-plist (obj
+                                       name-action-key)
+  "occ-helm-actions-plist")
 
-(cl-defmethod occ-get-helm-actions-plist ((obj null)
-                                          name-action-key)
+(cl-defmethod occ-helm-actions-plist ((obj null)
+                                      name-action-key)
   "Return (list (NAME ACTION) ...) for (CAR NAME-ACTION-KEY) as
 NORMAL simple ACTION, while for (CAR NAME-ACTION-KEY) as
 GENERATOR a NIL as here OBJ is NIL supplied."
@@ -108,13 +108,13 @@ GENERATOR a NIL as here OBJ is NIL supplied."
    ((eql (car name-action-key) 'generator)
     nil)))
 
-(cl-defmethod occ-get-helm-actions-plist ((obj occ-obj)
-                                          name-action-key)
-  "occ-get-helm-actions-plist"
-  (occ-get-helm-actions-plist nil name-action-key))
+(cl-defmethod occ-helm-actions-plist ((obj occ-obj)
+                                      name-action-key)
+  "occ-helm-actions-plist"
+  (occ-helm-actions-plist nil name-action-key))
 
-(cl-defmethod occ-get-helm-actions-plist ((obj occ-obj-tsk)
-                                          name-action-key)
+(cl-defmethod occ-helm-actions-plist ((obj occ-obj-tsk)
+                                      name-action-key)
   "Return (list (NAME ACTION) ...) for (CAR NAME-ACTION-KEY) as
 NORMAL simple ACTION, while for (CAR NAME-ACTION-KEY) as
 GENERATOR a generated ACTION based on OBJ supplied."
@@ -193,14 +193,14 @@ GENERATOR a generated ACTION based on OBJ supplied."
   ;; (occ-message "occ-get-helm-actions: called with obj = %s, keys = %s" obj keys)
   (apply #'append
          (mapcar #'(lambda (name-action-key)
-                     (occ-get-helm-actions-plist obj name-action-key))
+                     (occ-helm-actions-plist obj name-action-key))
                  (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))))
 
 (cl-defmethod occ-get-helm-actions ((obj occ-obj) keys)
   ;; (occ-message "occ-get-helm-actions: called with obj = %s, keys = %s" obj keys)
   (apply #'append
          (mapcar #'(lambda (name-action-key)
-                     (occ-get-helm-actions-plist obj name-action-key))
+                     (occ-helm-actions-plist obj name-action-key))
                  (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))))
 
 (occ-testing
@@ -219,7 +219,7 @@ GENERATOR a generated ACTION based on OBJ supplied."
 
 (occ-testing
   (collect-alist (tree-collect-items occ-helm-actions-tree nil '(t actions select) 0))
-  (occ-get-helm-actions-plist nil '(normal :identity))
+  (occ-helm-actions-plist nil '(normal :identity))
   (occ-helm-actions-get :identity)
   (occ-helm-actions-get :clock-in)
   (occ-get-helm-actions nil '(t actions select)))
