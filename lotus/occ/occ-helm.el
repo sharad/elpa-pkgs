@@ -95,11 +95,13 @@
 
 (cl-defgeneric occ-get-helm-actions-plist (obj
                                            name-action-key)
-  "occ-get-helm-actions-plist")
+  "Main engine to generate normal and generated action, for
+generator it generate object contextual action.")
 
 (cl-defmethod occ-get-helm-actions-plist ((obj null)
                                           name-action-key)
-  "occ-get-helm-actions-plist"
+  "Main engine to generate normal and generated action, for
+generator it generate object contextual action."
   (cond
    ((eql (car name-action-key) 'normal)
     (apply #'occ-helm-actions-get (cdr name-action-key)))
@@ -108,12 +110,14 @@
 
 (cl-defmethod occ-get-helm-actions-plist ((obj occ-obj)
                                           name-action-key)
-  "occ-get-helm-actions-plist"
+  "Main engine to generate normal and generated action, for
+generator it generate object contextual action."
   (occ-get-helm-actions-plist nil name-action-key))
 
 (cl-defmethod occ-get-helm-actions-plist ((obj occ-obj-tsk)
                                           name-action-key)
-  "occ-get-helm-actions-plist"
+  "Main engine to generate normal and generated action, for
+generator it generate object contextual action."
   (cond
    ((eql (car name-action-key) 'normal)
     (apply #'occ-helm-actions-get (cdr name-action-key)))
@@ -182,6 +186,16 @@
                            :fast-checkouts-gen)
 
 
+(defun occ-actions-list-from-tree (keys &optional tree)
+  "Get actions list for keys"
+  (let ((tree (or tree occ-helm-actions-tree)))
+    (collect-alist (tree-collect-items tree
+                                       nil
+                                       keys
+                                       0))))
+
+
+;; BUG: tree name here is miss-leading as it return list from tree OCC-HELM-ACTIONS-TREE)
 (cl-defgeneric occ-get-helm-actions-tree (obj keys)
   "occ-get-helm-actions-tree")
 
@@ -190,14 +204,14 @@
   (apply #'append
          (mapcar #'(lambda (name-action-key)
                      (occ-get-helm-actions-plist obj name-action-key))
-                 (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))))
+                 (occ-actions-list-from-tree keys))))
 
 (cl-defmethod occ-get-helm-actions-tree ((obj occ-obj) keys)
   ;; (occ-message "occ-get-helm-actions-tree: called with obj = %s, keys = %s" obj keys)
   (apply #'append
          (mapcar #'(lambda (name-action-key)
                      (occ-get-helm-actions-plist obj name-action-key))
-                 (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))))
+                 (occ-actions-list-from-tree keys))))
 
 (occ-testing
   (tree-collect-items occ-helm-actions-tree nil '(t actions general edit) 0)
