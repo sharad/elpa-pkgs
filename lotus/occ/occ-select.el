@@ -47,15 +47,15 @@
 (defun occ-helm-select-buffer ()
   occ-helm-select-buffer-name)
 
-(cl-defmethod occ-list-selection-internal ((obj occ-ctx)
-                                           &key
-                                           filters
-                                           builder
-                                           action
-                                           action-transformer
-                                           auto-select-if-only
-                                           timeout
-                                           obtrusive)
+(cl-defmethod occ-list-select-internal ((obj occ-ctx)
+                                        &key
+                                        filters
+                                        builder
+                                        action
+                                        action-transformer
+                                        auto-select-if-only
+                                        timeout
+                                        obtrusive)
 
 
   "Main Machinery, TODO: Document it, NOTE: ACTION-TRANSFORMER is
@@ -72,15 +72,14 @@ ACTION "
 
   (progn ;; lotus-with-no-active-minibuffer-if
       (progn
-        (occ-debug :debug "occ-list-selection-internal: [minibuffer-body] lotus-with-no-active-minibuffer-if")
-        (occ-debug :debug "occ-list-selection-internal: minibuffer already active quitting")
+        (occ-debug :debug "occ-list-select-internal: [minibuffer-body] lotus-with-no-active-minibuffer-if")
+        (occ-debug :debug "occ-list-select-internal: minibuffer already active quitting")
         (occ-debug :debug nil))
-    (occ-debug :debug "Running occ-list-selection-internal")
+    (occ-debug :debug "Running occ-list-select-internal")
     (prog1
         (let ((action              (or action occ-list-select-action-keys))
-              (action-transformer  (or
-                                                                      action-transformer
-                                                                      occ-list-select-action-transformer-keys))
+              (action-transformer  (or action-transformer
+                                       occ-list-select-action-transformer-keys))
               (timeout             (or timeout occ-idle-timeout)))
 
           (let* ((candidates-unfiltered (occ-list obj
@@ -106,9 +105,9 @@ ACTION "
                       (run-with-timer 0.08 nil #'(lambda ()
                                                    (if in-occ-helm
                                                        (helm-refresh)
-                                                     (occ-debug :debug "Running occ-list-selection-internal helm is gone"))))
+                                                     (occ-debug :debug "Running occ-list-select-internal helm is gone"))))
                       ;; :keymap occ-helm-map
-                      (occ-message "occ-list-selection-internal: helm-action: %s" helm-action)
+                      (occ-message "occ-list-select-internal: helm-action: %s" helm-action)
                       (let ((candidates-sources (occ-helm-build-candidates-sources obj
                                                                                    candidates-filtered
                                                                                    :unfiltered-count   unfiltered-count
@@ -121,19 +120,19 @@ ACTION "
                                   :buffer  (occ-helm-select-buffer)
                                   :resume  'noresume)
                           (setq in-occ-helm nil))))))))))
-      (occ-debug :debug "Running occ-list-selection-internal"))))
+      (occ-debug :debug "Running occ-list-select-internal"))))
 
 
-(cl-defmethod occ-list-selection ((obj occ-ctx)
-                                  &key
-                                  filters
-                                  builder
-                                  return-transform
-                                  action
-                                  action-transformer
-                                  auto-select-if-only
-                                  timeout
-                                  obtrusive)
+(cl-defmethod occ-list-select ((obj occ-ctx)
+                               &key
+                               filters
+                               builder
+                               return-transform
+                               action
+                               action-transformer
+                               auto-select-if-only
+                               timeout
+                               obtrusive)
   "TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
   (let ((action              (or ;NOTE: Adding newly
@@ -150,15 +149,15 @@ ACTION "
 
       (let ((action             (if return-transform (occ-return-tranform action) action)) ;as return value is going to be used.
             (action-transformer (if return-transform (occ-return-tranformer-fun-transform action-transformer) action-transformer)))
-        (occ-message "occ-list-selection: action: %s" action)
-        (let ((selected (occ-list-selection-internal obj
-                                                     :filters             filters
-                                                     :builder             builder
-                                                     :action              action
-                                                     :action-transformer  action-transformer
-                                                     :auto-select-if-only auto-select-if-only
-                                                     :timeout             timeout
-                                                     :obtrusive           obtrusive)))
+        (occ-message "occ-list-select: action: %s" action)
+        (let ((selected (occ-list-select-internal obj
+                                                  :filters             filters
+                                                  :builder             builder
+                                                  :action              action
+                                                  :action-transformer  action-transformer
+                                                  :auto-select-if-only auto-select-if-only
+                                                  :timeout             timeout
+                                                  :obtrusive           obtrusive)))
           (occ-debug :debug "occ-list-select: selected = %s" selected)
           (if return-transform
               (or selected ;as return value is going to be used.
@@ -198,17 +197,17 @@ ACTION "
         (timeout            (or timeout occ-idle-timeout)))
     (let* ((unfiltered-count      (occ-length)))
       (if (> unfiltered-count 0)
-          (let ((retval (occ-list-selection obj
-                                            :filters             filters
-                                            :builder             builder
-                                            :return-transform    return-transform
-                                            :action              action
-                                            :action-transformer  action-transformer
-                                            :auto-select-if-only auto-select-if-only
-                                            :timeout             timeout
-                                            :obtrusive           obtrusive)))
+          (let ((retval (occ-list-select obj
+                                         :filters             filters
+                                         :builder             builder
+                                         :return-transform    return-transform
+                                         :action              action
+                                         :action-transformer  action-transformer
+                                         :auto-select-if-only auto-select-if-only
+                                         :timeout             timeout
+                                         :obtrusive           obtrusive)))
             (occ-debug :debug "occ-select((obj occ-ctx)): occ-list-select returned %s"
-                              (occ-format retval 'capitalize))
+                       (occ-format retval 'capitalize))
             retval)
         (prog1
             (when return-transform
