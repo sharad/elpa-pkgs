@@ -170,7 +170,7 @@ supplied."
          (mapcar #'(lambda (name-action-key)
                      (occ-get-helm-actions-plist nil name-action-key))
                  (occ-get-alist-from-tree '(t actions general)))))
- ())  
+ ())
 
 
 (defvar occ-helm-callables)
@@ -189,21 +189,21 @@ supplied."
 
 (progn
   (setq occ-helm-callables nil)
-  (occ-helm-callable-add (occ-make-callable-normal  :ignore                   "Ignore"                   #'ignore))
-  (occ-helm-callable-add (occ-make-callable-normal  :identity                 "Select"                   #'identity))
-  (occ-helm-callable-add (occ-make-callable-normal  :clock-in                 "Clock-in"                 #'occ-clock-in))
-  (occ-helm-callable-add (occ-make-callable-normal  :try-fast-clock-in        "Try Fast Clock-in"        #'occ-try-fast-clock-in))
-  (occ-helm-callable-add (occ-make-callable-normal  :try-clock-in             "Try Clock-in"             #'occ-try-clock-in))
-  (occ-helm-callable-add (occ-make-callable-normal  :procreate-child          "Procreate Child"          #'occ-procreate-child))
-  (occ-helm-callable-add (occ-make-callable-normal  :procreate-child-clock-in "Procreate Child Clock-in" #'occ-procreate-child-clock-in))
-  (occ-helm-callable-add (occ-make-callable-normal  :goto                     "Goto"                     #'occ-goto))
-  (occ-helm-callable-add (occ-make-callable-normal  :set-to                   "Set To"                   #'occ-set-to))
-  (occ-helm-callable-add (occ-make-callable-normal  :proprty-window-edit      "Proprtes Window Edit"     #'occ-props-window-edit)) ;TODO: implement it.
-  (occ-helm-callable-add (occ-make-callable-normal  :proprty-edit-combined    "Proprtes Edit Combined"   #'occ-props-edit-combined)) ;TODO: implement it.
-  (occ-helm-callable-add (occ-make-callable-normal  :call-with-obj            "Call with object"         #'occ-call-with-obj))
-  (occ-helm-callable-add (occ-make-callable-normal  :set-debug-obj            "Set debug obj"            #'occ-set-debug-obj))
-  (occ-helm-callable-add (occ-make-callable-normal  :rank                     "Get Rank"                 #'occ-print-rank))
-  (occ-helm-callable-add (occ-make-callable-normal  :tsk                      "Get Task"                 #'occ-print-tsk)))
+  (occ-helm-callable-add (occ-make-callable-normal :ignore                   "Ignore"                   #'ignore))
+  (occ-helm-callable-add (occ-make-callable-normal :identity                 "Select"                   #'identity))
+  (occ-helm-callable-add (occ-make-callable-normal :clock-in                 "Clock-in"                 #'occ-clock-in))
+  (occ-helm-callable-add (occ-make-callable-normal :try-fast-clock-in        "Try Fast Clock-in"        #'occ-try-fast-clock-in))
+  (occ-helm-callable-add (occ-make-callable-normal :try-clock-in             "Try Clock-in"             #'occ-try-clock-in))
+  (occ-helm-callable-add (occ-make-callable-normal :procreate-child          "Procreate Child"          #'occ-procreate-child))
+  (occ-helm-callable-add (occ-make-callable-normal :procreate-child-clock-in "Procreate Child Clock-in" #'occ-procreate-child-clock-in))
+  (occ-helm-callable-add (occ-make-callable-normal :goto                     "Goto"                     #'occ-goto))
+  (occ-helm-callable-add (occ-make-callable-normal :set-to                   "Set To"                   #'occ-set-to))
+  (occ-helm-callable-add (occ-make-callable-normal :proprty-window-edit      "Proprtes Window Edit"     #'occ-props-window-edit)) ;TODO: implement it.
+  (occ-helm-callable-add (occ-make-callable-normal :proprty-edit-combined    "Proprtes Edit Combined"   #'occ-props-edit-combined)) ;TODO: implement it.
+  (occ-helm-callable-add (occ-make-callable-normal :call-with-obj            "Call with object"         #'occ-call-with-obj))
+  (occ-helm-callable-add (occ-make-callable-normal :set-debug-obj            "Set debug obj"            #'occ-set-debug-obj))
+  (occ-helm-callable-add (occ-make-callable-normal :rank                     "Get Rank"                 #'occ-print-rank))
+  (occ-helm-callable-add (occ-make-callable-normal :tsk                      "Get Task"                 #'occ-print-tsk)))
 
 
 (defvar occ-helm-actions-tree '(t))
@@ -241,10 +241,10 @@ supplied."
                       :proprty-edit-combined)
 
 
-(occ-helm-callable-add (occ-make-callable-generator  :fast-edits-gen     "Fast Edits" #'occ-gen-helm-fast-edits))
-(occ-helm-callable-add (occ-make-callable-generator  :edits-gen          "Edit"       #'occ-gen-helm-edits))
-(occ-helm-callable-add (occ-make-callable-generator  :misc-gen           "Misc"       #'occ-gen-helm-misc))
-(occ-helm-callable-add (occ-make-callable-generator  :fast-checkouts-gen "Checkouts"  #'occ-gen-helm-checkouts))
+(occ-helm-callable-add (occ-make-callable-generator :fast-edits-gen     "Fast Edits" #'occ-gen-helm-fast-edits))
+(occ-helm-callable-add (occ-make-callable-generator :edits-gen          "Edit"       #'occ-gen-helm-edits))
+(occ-helm-callable-add (occ-make-callable-generator :misc-gen           "Misc"       #'occ-gen-helm-misc))
+(occ-helm-callable-add (occ-make-callable-generator :fast-checkouts-gen "Checkouts"  #'occ-gen-helm-checkouts))
 
 (occ-add-helm-actions '(actions general)
                       "General"
@@ -267,10 +267,10 @@ supplied."
 ;;   (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))
 
 (defun occ-get-alist-from-tree (keys-tree-branch)
-  (tree-collect-items occ-helm-actions-tree
-                      nil
-                      keys-tree-branch
-                      0))
+  (tree-collect-items occ-helm-actions-tree ;tree
+                      nil                   ;predicate
+                      keys-tree-branch      ;arg
+                      0))                   ;level
 
 
 (cl-defgeneric occ-get-helm-actions (obj keys-tree-branch)
@@ -280,7 +280,7 @@ supplied."
   ;; (occ-message "occ-get-helm-actions: called with obj = %s, keys-tree-branch = %s" obj keys-tree-branch)
   (append (occ-get-callables obj
                              (occ-get-alist-from-tree keys-tree-branch))))
-         
+
 (cl-defmethod occ-get-helm-actions ((obj occ-obj) keys-tree-branch)
   ;; (occ-message "occ-get-helm-actions: called with obj = %s, keys-tree-branch = %s" obj keys-tree-branch)
   (append (occ-get-callables obj
@@ -288,11 +288,11 @@ supplied."
 
 (cl-defmethod occ-get-helm-actions-genertator ((obj null) keys-tree-branch)
   #'(lambda (action candidate)
-      (occ-get-callables candidate keys-tree-branch)))
+      (occ-get-helm-actions candidate keys-tree-branch)))
 
 (cl-defmethod occ-get-helm-actions-genertator ((obj occ-obj) keys-tree-branch)
   #'(lambda (action candidate)
-      (occ-get-callables candidate keys-tree-branch)))
+      (occ-get-helm-actions candidate keys-tree-branch)))
 
 
 (occ-testing

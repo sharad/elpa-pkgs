@@ -375,7 +375,7 @@
   "Return pair or (DESC . FUN)"
   (cons (occ-callable-desc callable)
         (occ-callable-fun callable)))
-  
+
 (cl-defmethod occ-callable-methods ((callable occ-callable-noraml)
                                     (obj occ-obj))
   "Return list of ((DESC . FUN) ...)"
@@ -393,19 +393,19 @@
 (defun occ-make-action (keys)
   (make-occ-action :keys keys))
 
-(defmethod occ-helm-action ((action occ-action) obj)
+(cl-defmethod occ-helm-action ((action occ-action) obj)
   (unless (occ-action-helm-action action)
     (let ((helm-action (occ-get-helm-actions obj (occ-action-keys action))))
       (setf (occ-action-helm-action action) helm-action)))
   (occ-action-helm-action action))
 
-(defmethod occ-helm-action-transform ((action occ-action) obj)
+(cl-defmethod occ-helm-action-transform ((action occ-action) obj)
   (unless (occ-action-helm-action-transform action)
     (let ((helm-action (occ-get-helm-actions-generator obj (occ-action-keys action))))
       (setf (occ-action-helm-action-transform action) helm-action)))
   (occ-action-helm-action-transform action))
 
-(defmethod occ-helm-action-transform-return ((action occ-action) obj)
+(cl-defmethod occ-helm-action-transform-return ((action occ-action) obj)
   (unless (occ-action-helm-action-transform-return action)
     (let ((helm-action (occ-get-helm-actions-generator obj (occ-action-keys action))))
       (setf (occ-action-helm-action-transform action) helm-action)))
@@ -416,5 +416,18 @@
       action-or-keys
     (when t ;; (check if action is list of symbol or nil)
       (occ-make-action (or action-or-keys keys)))))
+
+
+(cl-defmethod occ-actions ((obj occ-obj)
+                           (keys-tree-branch list))
+  (append (occ-get-callables obj
+                             (occ-get-alist-from-tree keys-tree-branch))))
+
+(cl-defmethod occ-actions-transform ((obj occ-obj)
+                                     (keys-tree-branch list))
+  #'(lambda (action candidate)
+      (occ-actions candidate keys-tree-branch)))
+
+;; (defun occ-actions ())
 
 ;;; occ-obj-ctor.el ends here

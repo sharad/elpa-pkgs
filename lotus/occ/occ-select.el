@@ -136,11 +136,11 @@ ACTION "
   "TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
   (let ((action              (or ;NOTE: Adding newly
-                                                           action
-                                                           occ-list-select-action-keys))
+                              action
+                              occ-list-select-action-keys))
         (action-transformer  (or
-                                                                action-transformer
-                                                                occ-list-select-action-transformer-keys))
+                              action-transformer
+                              occ-list-select-action-transformer-keys))
         (timeout            (or timeout occ-idle-timeout)))
     (helm-timed timeout (occ-helm-select-buffer)
       (occ-debug :debug "running occ-list-select")
