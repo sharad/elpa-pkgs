@@ -366,19 +366,19 @@
 
 (defmethod occ-helm-action ((action occ-action) obj)
   (unless (occ-action-helm-action action)
-    (let ((helm-action (occ-get-helm-actions-tree obj (occ-action-keys action))))
+    (let ((helm-action (occ-get-helm-actions obj (occ-action-keys action))))
       (setf (occ-action-helm-action action) helm-action)))
   (occ-action-helm-action action))
 
 (defmethod occ-helm-action-transform ((action occ-action) obj)
   (unless (occ-action-helm-action-transform action)
-    (let ((helm-action (occ-get-helm-actions-tree-generator obj (occ-action-keys action))))
+    (let ((helm-action (occ-get-helm-actions-generator obj (occ-action-keys action))))
       (setf (occ-action-helm-action-transform action) helm-action)))
   (occ-action-helm-action-transform action))
 
 (defmethod occ-helm-action-transform-return ((action occ-action) obj)
   (unless (occ-action-helm-action-transform-return action)
-    (let ((helm-action (occ-get-helm-actions-tree-generator obj (occ-action-keys action))))
+    (let ((helm-action (occ-get-helm-actions-generator obj (occ-action-keys action))))
       (setf (occ-action-helm-action-transform action) helm-action)))
   (occ-action-helm-action-transform-return action))
 

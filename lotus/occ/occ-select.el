@@ -253,12 +253,12 @@ ACTION "
    (occ-select obj
                :filters            (occ-list-filters)
                :builder            #'occ-build-ctsk-with
-               :action             (occ-get-helm-actions-tree obj
-                                                              occ-list-select-keys-1)
+               :action             (occ-get-helm-actions obj
+                                                         occ-list-select-keys-1)
                :return-transform   nil
                :action-transformer #'(lambda (action candidate)
-                                       (occ-get-helm-actions-tree obj
-                                                                  occ-list-select-keys-2))
+                                       (occ-get-helm-actions obj
+                                                             occ-list-select-keys-2))
                :timeout            occ-idle-timeout
                :obtrusive         t)))
 

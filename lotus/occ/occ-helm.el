@@ -128,7 +128,7 @@
 
 (setq occ-helm-actions-tree '(t))
 
-(defun occ-add-helm-actions-tree (keys class type &rest actions)
+(defun occ-add-helm-actions (keys class type &rest actions)
   (apply #'tree-add-class-item
          occ-helm-actions-tree
          keys
@@ -136,28 +136,28 @@
          (mapcar #'(lambda (action) (cons type action))
                  actions)))
 
-(occ-add-helm-actions-tree '(actions select)
-                           "Select"
-                           'normal
-                           :identity)
+(occ-add-helm-actions '(actions select)
+                      "Select"
+                      'normal
+                      :identity)
 
-(occ-add-helm-actions-tree '(actions general)
-                           "Simple"
-                           'normal
-                           :procreate-child
-                           :procreate-child-clock-in
-                           :call-with-obj
-                           :set-debug-obj
-                           :try-clock-in
-                           :goto
-                           :rank
-                           :tsk)
+(occ-add-helm-actions '(actions general)
+                      "Simple"
+                      'normal
+                      :procreate-child
+                      :procreate-child-clock-in
+                      :call-with-obj
+                      :set-debug-obj
+                      :try-clock-in
+                      :goto
+                      :rank
+                      :tsk)
 
-(occ-add-helm-actions-tree '(actions edit)
-                           "Editing"
-                           'normal
-                           :proprty-window-edit
-                           :proprty-edit-combined)
+(occ-add-helm-actions '(actions edit)
+                      "Editing"
+                      'normal
+                      :proprty-window-edit
+                      :proprty-edit-combined)
 
 
 (occ-helm-action-add :fast-edits-gen     "Fast Edits" #'occ-gen-helm-fast-edits)
@@ -165,35 +165,35 @@
 (occ-helm-action-add :misc-gen           "Misc"       #'occ-gen-helm-misc)
 (occ-helm-action-add :fast-checkouts-gen "Checkouts"  #'occ-gen-helm-checkouts)
 
-(occ-add-helm-actions-tree '(actions general)
-                           "General"
-                           'generator
-                           :misc-gen)
+(occ-add-helm-actions '(actions general)
+                      "General"
+                      'generator
+                      :misc-gen)
 
-(occ-add-helm-actions-tree '(actions edit)
-                           "Editing"
-                           'generator
-                           :fast-edits-gen
-                           :edits-gen)
+(occ-add-helm-actions '(actions edit)
+                      "Editing"
+                      'generator
+                      :fast-edits-gen
+                      :edits-gen)
 
-(occ-add-helm-actions-tree '(actions checkout)
-                           "Editing"
-                           'generator
-                           :fast-checkouts-gen)
+(occ-add-helm-actions '(actions checkout)
+                      "Editing"
+                      'generator
+                      :fast-checkouts-gen)
 
 
-(cl-defgeneric occ-get-helm-actions-tree (obj keys)
-  "occ-get-helm-actions-tree")
+(cl-defgeneric occ-get-helm-actions (obj keys)
+  "occ-get-helm-actions")
 
-(cl-defmethod occ-get-helm-actions-tree ((obj null) keys)
-  ;; (occ-message "occ-get-helm-actions-tree: called with obj = %s, keys = %s" obj keys)
+(cl-defmethod occ-get-helm-actions ((obj null) keys)
+  ;; (occ-message "occ-get-helm-actions: called with obj = %s, keys = %s" obj keys)
   (apply #'append
          (mapcar #'(lambda (name-action-key)
                      (occ-get-helm-actions-plist obj name-action-key))
                  (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))))
 
-(cl-defmethod occ-get-helm-actions-tree ((obj occ-obj) keys)
-  ;; (occ-message "occ-get-helm-actions-tree: called with obj = %s, keys = %s" obj keys)
+(cl-defmethod occ-get-helm-actions ((obj occ-obj) keys)
+  ;; (occ-message "occ-get-helm-actions: called with obj = %s, keys = %s" obj keys)
   (apply #'append
          (mapcar #'(lambda (name-action-key)
                      (occ-get-helm-actions-plist obj name-action-key))
@@ -202,22 +202,22 @@
 (occ-testing
   (tree-collect-items occ-helm-actions-tree nil '(t actions general edit) 0)
   (tree-collect-items occ-helm-actions-tree (occ-make-ctx-at-point) '(t actions general edit) 0)
-  (occ-get-helm-actions-tree (occ-make-ctx-at-point) '(t actions general edit)))
+  (occ-get-helm-actions (occ-make-ctx-at-point) '(t actions general edit)))
 
 
-(cl-defmethod occ-get-helm-actions-tree-genertator ((obj null) keys)
+(cl-defmethod occ-get-helm-actions-genertator ((obj null) keys)
   #'(lambda (action candidate)
-      (occ-get-helm-actions-tree candidate keys)))
+      (occ-get-helm-actions candidate keys)))
 
-(cl-defmethod occ-get-helm-actions-tree-genertator ((obj occ-obj) keys)
+(cl-defmethod occ-get-helm-actions-genertator ((obj occ-obj) keys)
   #'(lambda (action candidate)
-      (occ-get-helm-actions-tree candidate keys)))
+      (occ-get-helm-actions candidate keys)))
 
 (occ-testing
   (collect-alist (tree-collect-items occ-helm-actions-tree nil '(t actions select) 0))
   (occ-get-helm-actions-plist nil '(normal :identity))
   (occ-helm-actions-get :identity)
   (occ-helm-actions-get :clock-in)
-  (occ-get-helm-actions-tree nil '(t actions select)))
+  (occ-get-helm-actions nil '(t actions select)))
 
 ;;; occ-helm.el ends here

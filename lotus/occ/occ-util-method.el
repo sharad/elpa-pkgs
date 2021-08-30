@@ -44,11 +44,11 @@ be NIL, using (occ-match-filters) for FILTERS"
 
   (let ((filters            (occ-match-filters))
         (builder            #'occ-build-ctxual-tsk-with)
-        (action             (occ-get-helm-actions-tree obj
-                                                       occ-list-select-keys))
+        (action             (occ-get-helm-actions obj
+                                                  occ-list-select-keys))
         (return-transform   nil)
-        (action-transformer (occ-get-helm-actions-tree-genertator obj
-                                                                  occ-list-select-keys))
+        (action-transformer (occ-get-helm-actions-genertator obj
+                                                             occ-list-select-keys))
         (timeout            occ-idle-timeout))
     (occ-select obj
                 :filters            filters
@@ -70,10 +70,10 @@ be NIL, using (occ-list-filters) for FILTERS"
 
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
-        (action             (or action (occ-get-helm-actions-tree obj
-                                                                  occ-list-select-keys)))
+        (action             (or action (occ-get-helm-actions obj
+                                                             occ-list-select-keys)))
         (return-transform   nil)
-        (action-transformer (occ-get-helm-actions-tree-generator obj
+        (action-transformer (occ-get-helm-actions-generator obj
                                                                  occ-list-select-keys))
         (timeout            occ-idle-timeout))
       (occ-message "occ-list-select: action: %s" action)
@@ -88,7 +88,7 @@ be NIL, using (occ-list-filters) for FILTERS"
 
 (occ-testing
  (occ-list-debug-select (occ-make-ctx-at-point)
-                        :action (occ-get-helm-actions-tree nil '(t actions select))
+                        :action (occ-get-helm-actions nil '(t actions select))
                         :obtrusive nil))
 
 (occ-testing
@@ -96,11 +96,11 @@ be NIL, using (occ-list-filters) for FILTERS"
    (occ-select obj
              :filters            (occ-list-filters)
              :builder            #'occ-build-ctsk-with
-             :action             (occ-get-helm-actions-tree obj
-                                                            occ-list-select-keys)
+             :action             (occ-get-helm-actions obj
+                                                       occ-list-select-keys)
              :return-transform   nil
-             :action-transformer (occ-get-helm-actions-tree-genertator obj
-                                                                       occ-list-select-keys)
+             :action-transformer (occ-get-helm-actions-genertator obj
+                                                                  occ-list-select-keys)
              :timeout            occ-idle-timeout
              :obtrusive         t)))
 
@@ -116,9 +116,9 @@ for testing given action on selected tsk."
 
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
-        (action             (or action (occ-get-helm-actions-tree obj occ-list-select-keys)))
+        (action             (or action (occ-get-helm-actions obj occ-list-select-keys)))
         (return-transform   t)
-        (action-transformer (occ-get-helm-actions-tree-genertator obj occ-list-select-keys))
+        (action-transformer (occ-get-helm-actions-genertator obj occ-list-select-keys))
         (timeout            occ-idle-timeout))
       (occ-message "occ-list-debug-select: action: %s" action)
       (let ((retval-ctx-tsk (occ-select obj
@@ -143,9 +143,9 @@ for testing given action on selected tsk."
           (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection")))))
 
 (occ-testing
- ;; (occ-get-helm-actions-tree nil '(t actions select)) -> nil
+ ;; (occ-get-helm-actions nil '(t actions select)) -> nil
  (occ-list-select (occ-make-ctx-at-point)
-                  :action (occ-get-helm-actions-tree nil '(t actions select))
+                  :action (occ-get-helm-actions nil '(t actions select))
                   :obtrusive nil))
 
 (cl-defmethod occ-list-launch ((obj occ-obj-ctx)
@@ -159,10 +159,10 @@ must be NIL, using (occ-list-filters) for FILTERS"
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
         (return-transform   t)
-        (action             (occ-get-helm-actions-tree obj
-                                                       occ-list-select-keys))
-        (action-transformer (occ-get-helm-actions-tree-genertator obj
-                                                                  occ-list-select-keys))
+        (action             (occ-get-helm-actions obj
+                                                  occ-list-select-keys))
+        (action-transformer (occ-get-helm-actions-genertator obj
+                                                             occ-list-select-keys))
         (timeout            occ-idle-timeout))
     (occ-message "occ-list-launch: action: %s" action)
     (let ((retval-ctx-tsk (occ-select obj
@@ -181,8 +181,8 @@ must be NIL, using (occ-list-filters) for FILTERS"
        (if (and (occ-return-in-labels-p retval-ctx-tsk
                                         occ-return-select-label)
                 (occ-return-get-value retval-ctx-tsk))
-           (let* ((action      (occ-get-helm-actions-tree obj
-                                                          occ-list-select-keys))
+           (let* ((action      (occ-get-helm-actions obj
+                                                     occ-list-select-keys))
                   (ctx-tsk     (occ-return-get-value retval-ctx-tsk))
                   (launcher    (cdr (assoc (completing-read "Action: " action) action))))
              (funcall launcher ctx-tsk))

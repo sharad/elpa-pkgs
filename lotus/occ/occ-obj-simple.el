@@ -185,7 +185,7 @@
   ;;; Group1
 
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION for OCC-LIST-SELECT
-  ;; (occ-get-helm-actions-tree nil '(t actions select)) -> nil
+  ;; (occ-get-helm-actions nil '(t actions select)) -> nil
   (occ-list-debug-select (occ-make-ctx-at-point)
                          :action (occ-build-helm-action-direct nil ;NOTE: Adding newly
                                                                nil
@@ -209,19 +209,19 @@
     (occ-select obj
                 :filters            (occ-list-filters)
                 :builder            #'occ-build-ctsk-with
-                :action             (occ-get-helm-actions-tree obj
-                                                               occ-list-select-keys)
+                :action             (occ-get-helm-actions obj
+                                                          occ-list-select-keys)
                 :return-transform   nil
                 :action-transformer #'(lambda (action candidate)
-                                        (occ-get-helm-actions-tree obj
-                                                                   occ-list-select-keys))
+                                        (occ-get-helm-actions obj
+                                                              occ-list-select-keys))
                 :timeout            occ-idle-timeout
                 :obtrusive         t))
 
 
-  ;; (occ-get-helm-actions-tree nil '(t actions select)) -> nil
+  ;; (occ-get-helm-actions nil '(t actions select)) -> nil
   (occ-list-select (occ-make-ctx-at-point)
-                   :action (occ-get-helm-actions-tree nil '(t actions select))
+                   :action (occ-get-helm-actions nil '(t actions select))
                    :obtrusive nil)
 
 
@@ -232,12 +232,12 @@
     (occ-select obj
                 :filters            (occ-list-filters)
                 :builder            #'occ-build-ctsk-with
-                :action             (occ-get-helm-actions-tree obj
-                                                               occ-list-select-keys-1)
+                :action             (occ-get-helm-actions obj
+                                                          occ-list-select-keys-1)
                 :return-transform   nil
                 :action-transformer #'(lambda (action candidate)
-                                        (occ-get-helm-actions-tree obj
-                                                                   occ-list-select-keys-2))
+                                        (occ-get-helm-actions obj
+                                                              occ-list-select-keys-2))
                 :timeout            occ-idle-timeout
                 :obtrusive         t))
 
