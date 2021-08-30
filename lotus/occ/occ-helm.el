@@ -182,9 +182,9 @@ supplied."
 
 ;; replacement of (occ-get-helm-actions-plist)
 (cl-defmethod occ-get-callables ((obj occ-obj-tsk) keylist)
-  (apply #'append
-         (mapcar (lambda (callable) (occ-callable-methods callable obj))
-                 (occ-helm-callables-get keylist))))
+  (append (mapcar #'(lambda (callable)
+                      (occ-callable-methods callable obj))
+                  (occ-helm-callables-get keylist))))
 
 
 (progn
@@ -266,28 +266,33 @@ supplied."
 ;; (defun occ-get-alist-from-tree (keys)
 ;;   (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))
 
-(defun occ-get-alist-from-tree (keys)
-  (tree-collect-items occ-helm-actions-tree nil keys 0))
+(defun occ-get-alist-from-tree (keys-tree-branch)
+  (tree-collect-items occ-helm-actions-tree
+                      nil
+                      keys-tree-branch
+                      0))
 
 
-(cl-defgeneric occ-get-helm-actions (obj keys)
+(cl-defgeneric occ-get-helm-actions (obj keys-tree-branch)
   "occ-get-helm-actions")
 
-(cl-defmethod occ-get-helm-actions ((obj null) keys)
-  ;; (occ-message "occ-get-helm-actions: called with obj = %s, keys = %s" obj keys)
-  (append (occ-get-callables obj (occ-get-alist-from-tree keys))))
+(cl-defmethod occ-get-helm-actions ((obj null) keys-tree-branch)
+  ;; (occ-message "occ-get-helm-actions: called with obj = %s, keys-tree-branch = %s" obj keys-tree-branch)
+  (append (occ-get-callables obj
+                             (occ-get-alist-from-tree keys-tree-branch))))
          
-(cl-defmethod occ-get-helm-actions ((obj occ-obj) keys)
-  ;; (occ-message "occ-get-helm-actions: called with obj = %s, keys = %s" obj keys)
-  (append (occ-get-callables obj (occ-get-alist-from-tree keys))))
+(cl-defmethod occ-get-helm-actions ((obj occ-obj) keys-tree-branch)
+  ;; (occ-message "occ-get-helm-actions: called with obj = %s, keys-tree-branch = %s" obj keys-tree-branch)
+  (append (occ-get-callables obj
+                             (occ-get-alist-from-tree keys-tree-branch))))
 
-(cl-defmethod occ-get-helm-actions-genertator ((obj null) keys)
+(cl-defmethod occ-get-helm-actions-genertator ((obj null) keys-tree-branch)
   #'(lambda (action candidate)
-      (occ-get-callables candidate keys)))
+      (occ-get-callables candidate keys-tree-branch)))
 
-(cl-defmethod occ-get-helm-actions-genertator ((obj occ-obj) keys)
+(cl-defmethod occ-get-helm-actions-genertator ((obj occ-obj) keys-tree-branch)
   #'(lambda (action candidate)
-      (occ-get-callables candidate keys)))
+      (occ-get-callables candidate keys-tree-branch)))
 
 
 (occ-testing
