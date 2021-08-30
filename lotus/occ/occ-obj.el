@@ -72,18 +72,7 @@
   average
   stddev
   variance)
-
-(cl-defstruct (occ-action (:include occ-obj))
-  helm-action
-  helm-action-transform
-  obj
-  keys)
-
-;; (cl-defstruct (occ-action-direct (:include occ-action))
-;;   action)
-
-;; (cl-defstruct (occ-action-transformer (:include occ-action))
-;;   action)
+
 
 (cl-defstruct (occ-obj-ctx (:include occ-obj))
   "Will hold ctx"
@@ -156,6 +145,30 @@
 (cl-defstruct occ-return
   label
   value)
+
+
+;; (cl-defstruct (occ-action (:include occ-obj))
+;;   helm-action
+;;   helm-action-transform
+;;   obj
+;;   keys)
+
+;; (cl-defstruct (occ-action-direct (:include occ-action))
+;;   action)
+
+;; (cl-defstruct (occ-action-transformer (:include occ-action))
+;;   action)
+
+
+(cl-defstruct (occ-callable (:include occ-obj))
+  symbol
+  desc
+  fun)
+
+(cl-defstruct (occ-callable-normal (:include occ-callable))
+  )
+(cl-defstruct (occ-callable-generator (:include occ-callable))
+  )
 
 
 ;;; occ-obj.el ends here

@@ -361,6 +361,25 @@
                    :value value))
 
 
+(defun occ-make-callable-normal (symbol desc fun)
+  (make-occ-callable-normal :symbol symbol
+                            :desc   desc
+                            :fun    fun))
+
+(defun occ-make-callable-generator (symbol desc fun)
+  (make-occ-callable-generator :symbol symbol
+                               :desc   desc
+                               :fun    fun))
+
+(cl-defmethod occ-callable-method ((callable occ-callable-noraml)
+                                   (obj occ-obj))
+  (occ-callable-fun callable))
+
+(cl-defmethod occ-callable-method ((callable occ-callable-generator)
+                                   (obj occ-obj))
+  (funcall (occ-callable-fun callable) obj :param-only nil))
+
+
 (defun occ-make-action (keys)
   (make-occ-action :keys keys))
 
