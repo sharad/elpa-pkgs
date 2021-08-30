@@ -99,7 +99,9 @@
 
 (cl-defmethod occ-get-helm-actions-plist ((obj null)
                                           name-action-key)
-  "occ-get-helm-actions-plist"
+  "Return (list (NAME ACTION) ...) for (CAR NAME-ACTION-KEY) as
+NORMAL simple ACTION, while for (CAR NAME-ACTION-KEY) as
+GENERATOR a NIL as here OBJ is NIL supplied."
   (cond
    ((eql (car name-action-key) 'normal)
     (apply #'occ-helm-actions-get (cdr name-action-key)))
@@ -113,7 +115,9 @@
 
 (cl-defmethod occ-get-helm-actions-plist ((obj occ-obj-tsk)
                                           name-action-key)
-  "occ-get-helm-actions-plist"
+  "Return (list (NAME ACTION) ...) for (CAR NAME-ACTION-KEY) as
+NORMAL simple ACTION, while for (CAR NAME-ACTION-KEY) as
+GENERATOR a generated ACTION based on OBJ supplied."
   (cond
    ((eql (car name-action-key) 'normal)
     (apply #'occ-helm-actions-get (cdr name-action-key)))
