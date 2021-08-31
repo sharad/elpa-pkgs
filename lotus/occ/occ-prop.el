@@ -699,8 +699,6 @@
                                                           :param-only param-only))
                            ops)))
     (apply #'append edit-ops)))
-  
-         
 
 
 (cl-defgeneric occ-checkout (obj)
