@@ -420,21 +420,22 @@
 
 (cl-defmethod occ-operations-for-prop ((class symbol)
                                        (prop symbol))
-  (progn
-   (delete-dups (append (cl-method-param-values 'occ-operation
-                                                (list '\` `(,class (eql ,'(\, val)) symbol t))
-                                                'val)
-                        (cl-method-param-values 'occ-operation
-                                                (list '\` `(,class (eql ,'(\, val)) (eql ,prop) t))
-                                                'val)))))
+  (let ((ops (append (cl-method-param-values 'occ-operation
+                                             (list '\` `(,class (eql ,'(\, val)) symbol t))
+                                             'val)
+                     (cl-method-param-values 'occ-operation
+                                             (list '\` `(,class (eql ,'(\, val)) (eql ,prop) t))
+                                             'val))))
+    (delete-dups ops)))
    
     
 
 (cl-defmethod occ-operations-for-prop ((obj  occ-obj-tsk)
                                        (prop symbol))
-  (delete-dups
-   (cl-collect-on-classes #'(lambda (class) (occ-operations-for-prop class prop))
-                          obj)))
+  (let ((ops (cl-collect-on-classes #'(lambda (class) (occ-operations-for-prop class prop))
+                                    obj)))
+   (delete-dups ops)))
+   
 
 
 (cl-defmethod occ-operation ((obj occ-obj-tsk)
@@ -655,18 +656,19 @@
                                          (prop      symbol)
                                          (operation null)
                                          &key param-only)
-  (remove nil
-          (mapcar #'(lambda (operation)
-                      (let ((value (occ-prop-default-value obj
-                                                           prop
-                                                           operation)))
-                        (when value
-                          (occ-gen-edit-if-required obj
-                                                    prop
-                                                    operation
-                                                    value
-                                                    :param-only param-only))))
-                  (occ-operations-for-prop obj prop))))
+  (let ((edit-ops (mapcar #'(lambda (operation)
+                              (let ((value (occ-prop-default-value obj
+                                                                   prop
+                                                                   operation)))
+                                (when value
+                                  (occ-gen-edit-if-required obj
+                                                            prop
+                                                            operation
+                                                            value
+                                                            :param-only param-only))))
+                          (occ-operations-for-prop obj prop)))))
+  (remove nil edit-ops))
+          
 
 (cl-defmethod occ-gen-edits-if-required ((obj occ-obj-tsk)
                                          (prop null)
