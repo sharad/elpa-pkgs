@@ -147,6 +147,17 @@
   value)
 
 
+(cl-defstruct (occ-callable (:include occ-obj))
+  keyword
+  desc
+  fun)
+
+(cl-defstruct (occ-callable-normal (:include occ-callable))
+  )
+(cl-defstruct (occ-callable-generator (:include occ-callable))
+  )
+
+
 ;; (cl-defstruct (occ-action (:include occ-obj))
 ;;   helm-action
 ;;   helm-action-transform
@@ -160,15 +171,8 @@
 ;;   action)
 
 
-(cl-defstruct (occ-callable (:include occ-obj))
-  keyword
-  desc
-  fun)
-
-(cl-defstruct (occ-callable-normal (:include occ-callable))
-  )
-(cl-defstruct (occ-callable-generator (:include occ-callable))
-  )
+(cl-defstruct (occ-act (:include occ-obj)))
+(cl-defstruct (occ-act-noraml    (:include occ-act)))
+(cl-defstruct (occ-act-transform (:include occ-act)))
 
-
 ;;; occ-obj.el ends here
