@@ -393,14 +393,33 @@
 
 
 (defun occ-make-callable-normal (symbol desc fun)
+  "Dynamic object"
   (make-occ-callable-normal :symbol symbol
                             :desc   desc
                             :fun    fun))
 
 (defun occ-make-callable-generator (symbol desc fun)
-  (make-occ-callable-generator :symbol symbol
-                               :desc   desc
-                               :fun    fun))
+  "Dynamic object"
+  (make-occ-callable-normal :symbol symbol
+                            :desc   desc
+                            :fun    fun))
+
+(defun occ-build-callable-normal (symbol desc fun)
+  "Callable creation and to be stored via (OCC-HELM-CALLABLE-ADD CALLABLE)"
+  (let ((callable (occ-make-callable-normal :symbol symbol
+                                            :desc   desc
+                                            :fun    fun)))
+    (occ-helm-callable-add callable)
+    callable))
+
+(defun occ-build-callable-generator (symbol desc fun)
+  "Callable creation and to be stored via (OCC-HELM-CALLABLE-ADD CALLABLE)"
+  (let ((callable (occ-make-callable-normal :symbol symbol
+                                            :desc   desc
+                                            :fun    fun)))
+    (occ-helm-callable-add callable)
+    callable))
+
 
 (cl-defmethod occ-callable-helm-action ((callable occ-callable))
   "Return pair or (DESC . FUN)"
@@ -451,11 +470,15 @@
 
 (cl-defmethod occ-actions ((obj occ-obj)
                            (keys-tree-branch list))
-  (append (occ-get-callables obj
-                             (occ-get-alist-from-tree keys-tree-branch))))
+  (let ((callables (occ-get-callables obj
+                                      (occ-get-alist-from-tree keys-tree-branch))))
+    (occ-make-act-pack callables)))
+(cl-defmethod occ-actions ((obj occ-obj)
+                           (action occ-act-normal))
+  action)
 
 (cl-defmethod occ-actions-transform ((obj occ-obj)
-                                     (keys-tree-branch list))
+                                     (action occ-act-normal))
   #'(lambda (action candidate)
       (occ-actions candidate keys-tree-branch)))
 

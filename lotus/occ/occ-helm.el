@@ -143,26 +143,26 @@
   (progn
     (progn
       (setq occ-helm-callables nil)
-      (occ-helm-callable-add (occ-make-callable-normal :ignore                   "Ignore"                   #'ignore))
-      (occ-helm-callable-add (occ-make-callable-normal :identity                 "Select"                   #'identity))
-      (occ-helm-callable-add (occ-make-callable-normal :clock-in                 "Clock-in"                 #'occ-clock-in))
-      (occ-helm-callable-add (occ-make-callable-normal :try-fast-clock-in        "Try Fast Clock-in"        #'occ-try-fast-clock-in))
-      (occ-helm-callable-add (occ-make-callable-normal :try-clock-in             "Try Clock-in"             #'occ-try-clock-in))
-      (occ-helm-callable-add (occ-make-callable-normal :procreate-child          "Procreate Child"          #'occ-procreate-child))
-      (occ-helm-callable-add (occ-make-callable-normal :procreate-child-clock-in "Procreate Child Clock-in" #'occ-procreate-child-clock-in))
-      (occ-helm-callable-add (occ-make-callable-normal :goto                     "Goto"                     #'occ-goto))
-      (occ-helm-callable-add (occ-make-callable-normal :set-to                   "Set To"                   #'occ-set-to))
-      (occ-helm-callable-add (occ-make-callable-normal :proprty-window-edit      "Proprtes Window Edit"     #'occ-props-window-edit)) ;TODO: implement it.
-      (occ-helm-callable-add (occ-make-callable-normal :proprty-edit-combined    "Proprtes Edit Combined"   #'occ-props-edit-combined)) ;TODO: implement it.
-      (occ-helm-callable-add (occ-make-callable-normal :call-with-obj            "Call with object"         #'occ-call-with-obj))
-      (occ-helm-callable-add (occ-make-callable-normal :set-debug-obj            "Set debug obj"            #'occ-set-debug-obj))
-      (occ-helm-callable-add (occ-make-callable-normal :rank                     "Get Rank"                 #'occ-print-rank))
-      (occ-helm-callable-add (occ-make-callable-normal :tsk                      "Get Task"                 #'occ-print-tsk)))
+      (occ-build-callable-normal :ignore                   "Ignore"                   #'ignore)
+      (occ-build-callable-normal :identity                 "Select"                   #'identity)
+      (occ-build-callable-normal :clock-in                 "Clock-in"                 #'occ-clock-in)
+      (occ-build-callable-normal :try-fast-clock-in        "Try Fast Clock-in"        #'occ-try-fast-clock-in)
+      (occ-build-callable-normal :try-clock-in             "Try Clock-in"             #'occ-try-clock-in)
+      (occ-build-callable-normal :procreate-child          "Procreate Child"          #'occ-procreate-child)
+      (occ-build-callable-normal :procreate-child-clock-in "Procreate Child Clock-in" #'occ-procreate-child-clock-in)
+      (occ-build-callable-normal :goto                     "Goto"                     #'occ-goto)
+      (occ-build-callable-normal :set-to                   "Set To"                   #'occ-set-to)
+      (occ-build-callable-normal :proprty-window-edit      "Proprtes Window Edit"     #'occ-props-window-edit) ;TODO: implement it.
+      (occ-build-callable-normal :proprty-edit-combined    "Proprtes Edit Combined"   #'occ-props-edit-combined) ;TODO: implement it.
+      (occ-build-callable-normal :call-with-obj            "Call with object"         #'occ-call-with-obj)
+      (occ-build-callable-normal :set-debug-obj            "Set debug obj"            #'occ-set-debug-obj)
+      (occ-build-callable-normal :rank                     "Get Rank"                 #'occ-print-rank)
+      (occ-build-callable-normal :tsk                      "Get Task"                 #'occ-print-tsk))
     (progn
-      (occ-helm-callable-add (occ-make-callable-generator :fast-edits-gen     "Fast Edits" #'occ-gen-helm-fast-edits))
-      (occ-helm-callable-add (occ-make-callable-generator :edits-gen          "Edit"       #'occ-gen-helm-edits))
-      (occ-helm-callable-add (occ-make-callable-generator :misc-gen           "Misc"       #'occ-gen-helm-misc))
-      (occ-helm-callable-add (occ-make-callable-generator :fast-checkouts-gen "Checkouts"  #'occ-gen-helm-checkouts))))
+      (occ-build-callable-generator :fast-edits-gen     "Fast Edits" #'occ-gen-helm-fast-edits)
+      (occ-build-callable-generator :edits-gen          "Edit"       #'occ-gen-helm-edits)
+      (occ-build-callable-generator :misc-gen           "Misc"       #'occ-gen-helm-misc)
+      (occ-build-callable-generator :fast-checkouts-gen "Checkouts"  #'occ-gen-helm-checkouts)))
 
   (progn
     (progn
