@@ -35,6 +35,16 @@
 ;; https://stackoverflow.com/questions/12262220/add-created-date-property-to-todos-in-org-mode
 ;;
 ;; https://stackoverflow.com/questions/40884764/lisp-get-all-slot-names-from-an-class-instance
+;;
+;; https://www.gnu.org/software/emacs/manual/html_node/eieio/Quick-Start.html#Quick-Start
+;;
+;; Static method
+;; https://www.gnu.org/software/emacs/manual/html_node/eieio/Static-Methods.html
+;;
+;; https://elpa.gnu.org/packages/cl-generic.html
+;;
+;; https://www.gnu.org/software/emacs/manual/html_node/eieio/Quick-Start.html#Quick-Start
+;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Generic-Functions.html
 
 
 (defvar occ-verbose 0)

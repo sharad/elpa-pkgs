@@ -20,7 +20,9 @@
 
 ;;; Commentary:
 
+;; https://www.gnu.org/software/emacs/manual/html_node/eieio/Quick-Start.html#Quick-Start
 ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Generic-Functions.html
+
 
 ;;; Code:
 
