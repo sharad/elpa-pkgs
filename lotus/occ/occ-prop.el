@@ -754,11 +754,11 @@
 
 (cl-defmethod occ-gen-helm-misc ((obj null) &param-only param-only)
   '(("Continue" . t)
-    ("Checkout" . checkout)))
+    ("Checkout" . occ-checkout)))
 
 (cl-defmethod occ-gen-helm-misc ((obj occ-obj-ctx-tsk) &param-only param-only)
   '(("Continue" . t)
-    ("Checkout" . checkout)))
+    ("Checkout" . occ-checkout)))
 
 
 (cl-defmethod occ-gen-helm-checkouts ((obj null) &param-only param-only)
