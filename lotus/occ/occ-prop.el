@@ -420,14 +420,15 @@
 
 (cl-defmethod occ-operations-for-prop ((class symbol)
                                        (prop symbol))
-  (delete-dups
-   (append
-    (cl-method-param-values 'occ-operation
-                            (list '\` `(,class (eql ,'(\, val)) symbol t))
-                            'val)
-    (cl-method-param-values 'occ-operation
-                            (list '\` `(,class (eql ,'(\, val)) (eql ,prop) t))
-                            'val))))
+  (progn
+   (delete-dups (append (cl-method-param-values 'occ-operation
+                                                (list '\` `(,class (eql ,'(\, val)) symbol t))
+                                                'val)
+                        (cl-method-param-values 'occ-operation
+                                                (list '\` `(,class (eql ,'(\, val)) (eql ,prop) t))
+                                                'val)))))
+   
+    
 
 (cl-defmethod occ-operations-for-prop ((obj  occ-obj-tsk)
                                        (prop symbol))
@@ -693,10 +694,10 @@
 
 
 (cl-defgeneric occ-checkout (obj)
-  "Checkout property in case of force clock-in.")
+  "Checkout property for forced clock-in.")
 
 (cl-defmethod occ-checkout ((obj occ-obj-tsk))
-  "Checkout property in case of force clock-in."
+  "Checkout property for forced clock-in."
   (dolist (prop (occ-properties-to-checkout obj))
     (occ-message "occ-checkout: checkout prop %s" prop)
     (occ-checkout-prop obj prop)))
