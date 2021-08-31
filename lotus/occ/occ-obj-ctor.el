@@ -420,6 +420,22 @@
     (occ-helm-callable-add callable)
     callable))
 
+
+;; methods
+(cl-defmethod occ-obj-callables ((callable occ-callable-noraml)
+                                 (obj occ-obj))
+  "Return list of ((DESC . FUN) ...)"
+  (list callable))
+
+(cl-defmethod occ-obj-callables ((callable occ-callable-generator)
+                                 (obj occ-obj))
+  "Return list of ((DESC . FUN) ...)"
+  (let ((fun (occ-callable-fun callable)))
+    (let ((callables (funcall fun obj :param-only nil)))
+      (cl-assert (cl-every #'occ-callable-p callables))
+      (cl-assert (cl-every #'occ-callable-normal-p callables))
+      callables)))
+
 ;; methods
 
 (cl-defmethod occ-obj-callable-helm-action ((callable occ-callable))
@@ -446,52 +462,56 @@
   "Return list of ((DESC . FUN) ...)"
   (mapcar #'occ-obj-callable-helm-action
           (cdr callables)))
-
 
-;; methods
-(cl-defmethod occ-obj-callables ((callable occ-callable-noraml)
-                                 (obj occ-obj))
+(cl-defmethod occ-obj-callable-helm-actions ((callables (head :keywords))
+                                             (obj occ-obj))
   "Return list of ((DESC . FUN) ...)"
-  (list callable))
-
-(cl-defmethod occ-obj-callables ((callable occ-callable-generator)
-                                 (obj occ-obj))
-  "Return list of ((DESC . FUN) ...)"
-  (let ((fun (occ-callable-fun callable)))
-    (let ((callables (funcall fun obj :param-only nil)))
-      (cl-assert (cl-every #'occ-callable-p callables))
-      (cl-assert (cl-every #'occ-callable-normal-p callables))
-      callables)))
+  (let ((callables (occ-helm-callables-get (cdr callables))))
+    (mapcar #'occ-obj-callable-helm-action
+            callables)))
 
 
 ;; ctors
-(cl-defmethod occ-make-ap-normal ((obj list))
-  (make-occ-ap-normal :keybranch obj))
+(cl-defmethod occ-make-ap-normal ((ap-obj list))
+  (make-occ-ap-normal :keybranch
+                      ap-obj))
 
 (cl-defmethod occ-make-ap-normal ((ap-obj occ-ap-normal))
   ap-obj)
 
+(cl-defmethod occ-make-ap-normal ((ap-obj (head :keybranch)))
+  (make-occ-ap-normal :keybranch
+                      (cdr ap-obj)))
+
 (cl-defmethod occ-make-ap-normal ((ap-obj (head :callables)))
-  (make-occ-ap-normal :callables (cdr ap-obj)))
+  (make-occ-ap-normal :callables
+                      (cdr ap-obj)))
+
+(cl-defmethod occ-make-ap-normal ((ap-obj (head :keywords)))
+  (make-occ-ap-normal :callables
+                      (occ-helm-callables-get (cdr ap-obj))))
 
 
-(cl-defmethod occ-make-ap-trans ((obj list))
-  (make-occ-ap-transform :keybranch obj))
+(cl-defmethod occ-make-ap-trans ((ap-obj list))
+  (make-occ-ap-transform :keybranch ap-obj))
 
 (cl-defmethod occ-make-ap-trans ((ap-obj occ-ap-normal))
-  (make-ap-transform :callables (occ-obj-ap-callables ap-obj)))
+  (make-ap-trans :callables (occ-obj-ap-callables ap-obj)))
 
 (cl-defmethod occ-make-ap-trans ((ap-obj occ-ap-trans))
   ap-obj)
 
 (cl-defmethod occ-make-ap-trans ((ap-obj (head :keybranch)))
-  (make-occ-ap-trans :keybranch (cdr ap-obj)))
+  (make-occ-ap-trans ap-obj))
 
 (cl-defmethod occ-make-ap-trans ((ap-obj (head :callables)))
-  (make-occ-ap-trans :callables (cdr ap-obj)))
+  (make-occ-ap-trans ap-obj))
+
+(cl-defmethod occ-make-ap-trans ((ap-obj (head :keywords)))
+  (make-occ-ap-trans ap-obj))
 
 (cl-defmethod occ-make-ap-trans ((ap-obj (head :transform)))
-  (make-occ-ap-trans :transform (cdr ap-obj)))
+  (make-occ-ap-trans ap-obj))
 
 
 ;; ctors
@@ -507,6 +527,9 @@
 (cl-defmethod occ-build-ap-normal ((ap-obj (head :callables)) &optional optional-obj)
   (occ-make-ap-normal ap-obj))
 
+(cl-defmethod occ-build-ap-normal ((ap-obj (head :keywords)) &optional optional-obj)
+  (occ-make-ap-normal ap-obj))
+
 (cl-defmethod occ-build-ap-normal ((ap-obj null) &optional optional-obj)
   (occ-make-ap-normal optional-obj))
 
@@ -515,22 +538,25 @@
   (make-occ-ap-transform ap-obj))
 
 (cl-defmethod occ-build-ap-trans ((ap-obj occ-ap-normal) &optional optional-obj)
-  (make-ap-transform :callables (occ-obj-ap-callables ap-obj)))
+  (make-ap-trans :callables (occ-obj-ap-callables ap-obj)))
 
 (cl-defmethod occ-build-ap-trans ((ap-obj occ-ap-trans) &optional optional-obj)
   ap-obj)
 
 (cl-defmethod occ-build-ap-trans ((ap-obj (head :keybranch)) &optional optional-obj)
-  (make-occ-ap-normal ap-obj))
+  (occ-make-ap-trans ap-obj))
 
 (cl-defmethod occ-build-ap-trans ((ap-obj (head :callables)) &optional optional-obj)
-  (make-occ-ap-normal ap-obj))
+  (occ-make-ap-trans ap-obj))
+
+(cl-defmethod occ-build-ap-trans ((ap-obj (head :keyword)) &optional optional-obj)
+  (occ-make-ap-trans ap-obj))
 
 (cl-defmethod occ-build-ap-trans ((ap-obj (head :transform)) &optional optional-obj)
-  (make-occ-ap-normal ap-obj))
+  (occ-make-ap-trans ap-obj))
 
 (cl-defmethod occ-build-ap-trans ((ap-obj null) &optional optional-obj)
-  (occ-make-ap-transform optional-obj))
+  (occ-make-ap-trans optional-obj))
 
 
 (cl-defmethod occ-obj-ap-keybranch ((ap-obj occ-ap)
