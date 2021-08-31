@@ -75,7 +75,6 @@
                   '(occ-get-property  (`(occ-ctx (eql ,val)) val))
                   (occ-make-ctx-at-point))
                  '(timebeing)))
-   
   ;; do this test in buffer of a temporary file.
   (should (equal (cl-method-sigs-matched-arg
                   '(occ-readprop-elem-from-user (`(occ-obj-ctx-tsk (eql ,val)) val))
@@ -757,7 +756,8 @@
 (cl-defmethod occ-gen-helm-edits ((obj occ-obj-ctx-tsk) &param-only param-only)
   (list (occ-make-callable-normal :edit
                                   "Edit"
-                                  #'(lambda () (occ-props-edit obj)))))
+                                  ;; #'(lambda () (occ-props-edit obj)) -- earlier
+                                  #'(lambda (obj) (occ-props-edit obj)))))
 
 
 (cl-defmethod occ-gen-helm-misc ((obj null) &param-only param-only)
@@ -776,7 +776,7 @@
   (occ-gen-checkouts obj))
 
 
-;; TODO: Implement Plist with title here
+;; TODO: Implement Plist with title here (??)
 
 
 ;;; occ-prop.el ends here
