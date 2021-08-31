@@ -445,32 +445,30 @@
 
 ;; methods
 
-(cl-defmethod occ-obj-callable-helm-actions ((callable occ-callable)
-                                             (obj occ-obj))
-  "Return list of ((DESC . FUN) ...)"
-  (mapcar #'occ-obj-callable-helm-action
-          (occ-obj-callables callable obj)))
-
 (cl-defmethod occ-obj-callable-helm-actions ((callables list)
                                              (obj occ-obj))
   "Return list of ((DESC . FUN) ...)"
   (mapcar #'occ-obj-callable-helm-action
           callables))
 
+(cl-defmethod occ-obj-callable-helm-actions ((callable occ-callable)
+                                             (obj occ-obj))
+  "Return list of ((DESC . FUN) ...)"
+  (let ((callables (occ-obj-callables callable obj)))
+    (occ-obj-callable-helm-actions callables)))
+
 (cl-defmethod occ-obj-callable-helm-actions ((callables (head :callables))
                                              (obj occ-obj))
   "Return list of ((DESC . FUN) ...)"
   (let ((callables (cdr callables)))
-    (mapcar #'occ-obj-callable-helm-action
-            callables)))
+    (occ-obj-callable-helm-actions callables)))
 
 (cl-defmethod occ-obj-callable-helm-actions ((callables (head :keywords))
                                              (obj occ-obj))
   "Return list of ((DESC . FUN) ...)"
   (let* ((keywords  (cdr callables))
          (callables (occ-helm-callables-get keywords)))
-    (mapcar #'occ-obj-callable-helm-action
-            callables)))
+    (occ-obj-callable-helm-actions callables)))
 
 
 ;; ctors
@@ -632,8 +630,9 @@
 
 (cl-defmethod occ-obj-ap-helm-actions ((ap-obj occ-ap-normal)
                                        (obj occ-obj))
-  (occ-obj-callable-helm-actions (occ-obj-ap-callables ap-obj obj)
-                                 obj))
+  (let ((callables (occ-obj-ap-callables ap-obj obj)))
+    (occ-obj-callable-helm-actions callables
+                                   obj)))
 
 (cl-defmethod occ-obj-ap-helm-transformation ((ap-obj occ-ap-trans))
   (let ((transform (occ-obj-ap-transform ap-obj)))
