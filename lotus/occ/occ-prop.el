@@ -70,22 +70,18 @@
   "Test"
   :expected-result :passed
   :tags '(occ)
-  (should
-   (equal
-    (cl-method-sigs-matched-arg
-     '(occ-readprop-elem-from-user (`(occ-obj-ctx-tsk (eql ,val)) val))
-     '(occ-get-property  (`(occ-ctx (eql ,val)) val))
-     (occ-make-ctx-at-point))
-    '(timebeing)))
-
+  (should (equal (cl-method-sigs-matched-arg
+                  '(occ-readprop-elem-from-user (`(occ-obj-ctx-tsk (eql ,val)) val))
+                  '(occ-get-property  (`(occ-ctx (eql ,val)) val))
+                  (occ-make-ctx-at-point))
+                 '(timebeing)))
+   
   ;; do this test in buffer of a temporary file.
-  (should
-   (equal
-    (cl-method-sigs-matched-arg
-     '(occ-readprop-elem-from-user (`(occ-obj-ctx-tsk (eql ,val)) val))
-     '(occ-get-property  (`(occ-ctx (eql ,val)) val))
-     (occ-make-ctx-at-point))
-    '(timebeing root currfile))))
+  (should (equal (cl-method-sigs-matched-arg
+                  '(occ-readprop-elem-from-user (`(occ-obj-ctx-tsk (eql ,val)) val))
+                  '(occ-get-property  (`(occ-ctx (eql ,val)) val))
+                  (occ-make-ctx-at-point))
+                 '(timebeing root currfile))))
 
 
 (cl-defgeneric occ-properties-to-edit (obj)
@@ -173,7 +169,9 @@
                                                values)
   (lotus-org-with-safe-modification
     (apply #'org-entry-put-multivalued-property
-           pom prop values)))
+           pom
+           prop
+           values)))
 
 (defun occ-org-entry-add-to-multivalued-property (pom
                                                   prop
@@ -551,10 +549,8 @@
       (let ((actions '(("add" . add)
                        ("del" . remove)
                        ("put" . put))))
-        (cdr
-         (assoc
-          (completing-read (format "%s action: " prop) actions)
-          actions)))
+        (cdr (assoc (completing-read (format "%s action: " prop) actions)
+                    actions)))
     'put))
 
 
