@@ -548,9 +548,7 @@
         (setf (occ-ap-callables ap-obj) callables))))
   (occ-ap-callables ap-obj))
 
-(cl-defmethod occ-obj-ap-transform ((ap-obj occ-ap-trans)
-                                    (obj occ-obj))
-  ;; OBJ is ignored
+(cl-defmethod occ-obj-ap-transform ((ap-obj occ-ap-trans))
   (unless (occ-ap-trans-transform ap-obj)
     (let ((transform #'(lambda (action candidate)
                          ;; BUG: ???
@@ -565,9 +563,8 @@
   (occ-obj-callable-helm-actions (occ-obj-ap-callables ap-obj obj)
                                  obj))
 
-(cl-defmethod occ-obj-ap-helm-transformation ((ap-obj occ-ap-trans)
-                                              (obj occ-obj))
-  (let ((transform (occ-obj-ap-transform ap-obj obj)))
+(cl-defmethod occ-obj-ap-helm-transformation ((ap-obj occ-ap-trans))
+  (let ((transform (occ-obj-ap-transform ap-obj)))
     #'(lambda (action candidate)
         (let ((callables (funcall transform action candidate)))
           (occ-obj-callable-helm-actions callables
