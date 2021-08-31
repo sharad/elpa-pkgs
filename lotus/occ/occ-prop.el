@@ -633,7 +633,9 @@
                                  operation
                                  value
                                  :param-only param-only))))
-  (cons prompt operation))
+  (occ-make-callable-normal :edit-1-generated
+                            prompt
+                            operation))
 
 
 (cl-defmethod occ-gen-edit-if-required ((obj occ-obj-tsk)
@@ -757,8 +759,9 @@
   nil)
 
 (cl-defmethod occ-gen-helm-edits ((obj occ-obj-ctx-tsk) &param-only param-only)
-  (list
-   (cons "Edit" #'(lambda () (occ-props-edit obj)))))
+  (list (occ-make-callable-normal :edit
+                                  "Edit"
+                                  #'(lambda () (occ-props-edit obj)))))
 
 
 (cl-defmethod occ-gen-helm-misc ((obj null) &param-only param-only)
