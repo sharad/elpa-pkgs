@@ -199,10 +199,13 @@
 
 
 (cl-defstruct (occ-ap (:include occ-obj))
-  key)
+  "AP stand for `actions pack'"
+  keybranch)
 (cl-defstruct (occ-ap-noraml    (:include occ-ap))
+  "AP stand for `actions pack'"
   callables)
 (cl-defstruct (occ-ap-trans (:include occ-ap-normal))
+  "AP stand for `actions pack'"
   transform)
 
 ;;; occ-obj.el ends here
