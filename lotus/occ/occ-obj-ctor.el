@@ -426,6 +426,8 @@
   "Return pair or (DESC . FUN)"
   (cons (occ-callable-desc callable)
         (occ-callable-fun callable)))
+
+;; methods
 
 (cl-defmethod occ-obj-callable-helm-actions ((callable occ-callable)
                                              (obj occ-obj))
@@ -433,11 +435,17 @@
   (mapcar #'occ-obj-callable-helm-action
           (occ-obj-callables callable obj)))
 
-(cl-defmethod occ-obj-callable-helm-actions ((callable (head :callables))
+(cl-defmethod occ-obj-callable-helm-actions ((callables list)
                                              (obj occ-obj))
   "Return list of ((DESC . FUN) ...)"
   (mapcar #'occ-obj-callable-helm-action
-          (cdr callable)))
+          callables))
+
+(cl-defmethod occ-obj-callable-helm-actions ((callables (head :callables))
+                                             (obj occ-obj))
+  "Return list of ((DESC . FUN) ...)"
+  (mapcar #'occ-obj-callable-helm-action
+          (cdr callables)))
 
 
 ;; methods
@@ -540,15 +548,29 @@
         (setf (occ-ap-callables ap-obj) callables))))
   (occ-ap-callables ap-obj))
 
-(cl-defmethod occ-obj-ap-transform ((ap-obj occ-ap-tranform)
+(cl-defmethod occ-obj-ap-transform ((ap-obj occ-ap-trans)
                                     (obj occ-obj))
+  ;; OBJ is ignored
   (unless (occ-ap-trans-transform ap-obj)
-    (let ((transform #'(lambda (act candidate)
+    (let ((transform #'(lambda (action candidate)
                          ;; BUG: ???
                          (occ-obj-ap-callables ap-obj
                                                candidate))))
       (setf (occ-ap-trans ap-obj) transform)))
   (occ-ap-trans-transform ap-obj))
 
+
+(cl-defmethod occ-obj-ap-helm-actions ((ap-obj occ-ap-normal)
+                                       (obj occ-obj))
+  (occ-obj-callable-helm-actions (occ-obj-ap-callables ap-obj obj)
+                                 obj))
+
+(cl-defmethod occ-obj-ap-helm-transformation ((ap-obj occ-ap-trans)
+                                              (obj occ-obj))
+  (let ((transform (occ-obj-ap-transform ap-obj obj)))
+    #'(lambda (action candidate)
+        (let ((callables (funcall transform action candidate)))
+          (occ-obj-callable-helm-actions callables
+                                         candidate)))))
 
 ;;; occ-obj-ctor.el ends here
