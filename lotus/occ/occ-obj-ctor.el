@@ -442,16 +442,17 @@
 
 ;; methods
 (cl-defmethod occ-callables ((callable occ-callable-noraml)
-                                    (obj occ-obj))
+                             (obj occ-obj))
   "Return list of ((DESC . FUN) ...)"
   (list callable))
 
 (cl-defmethod occ-callables ((callable occ-callable-generator)
-                                    (obj occ-obj))
+                             (obj occ-obj))
   "Return list of ((DESC . FUN) ...)"
-  (funcall (occ-callable-fun callable)
-           obj
-           :param-only nil))
+  (let ((fun (occ-callable-fun callable)))
+    (let ((callables (funcall fun obj :param-only nil)))
+      (cl-assert (cl-every #'occ-callable-normal-p callables))
+      callables)))
 
 
 ;; ctors
@@ -465,7 +466,7 @@
   (make-occ-ap-transform :key obj))
 
 (cl-defmethod occ-make-ap-trans ((ap-obj occ-ap-normal))
-  (make-ap-transform :ap ap-obj))
+  (make-ap-transform :callables (occ-obj-ap-callables ap-obj)))
 
 (cl-defmethod occ-make-ap-trans ((ap-obj occ-ap-trans))
   ap-obj)
@@ -477,22 +478,23 @@
     (occ-error "occ-ap obj %s missing key %s" ap-obj key))
   key)
 
-(cl-defmethod occ-obj-ap-action ((ap-obj occ-ap-normal)
-                                 (obj occ-obj))
-  (unless (occ-ap-action ap-obj)
+(cl-defmethod occ-obj-ap-callables ((ap-obj occ-ap-normal)
+                                    (obj occ-obj))
+  (unless (occ-ap-callables ap-obj)
     (let ((key-tree-branch (occ-obj-ap-key ap-obj)))
       (let ((callables (occ-get-callables obj
                                           (occ-get-alist-from-tree keys-tree-branch))))
-        (setf (occ-ap-action ap-obj) callables))))
-  (occ-ap-action ap-obj))
+        (setf (occ-ap-callables ap-obj) callables))))
+  (occ-ap-callables ap-obj))
 
 (cl-defmethod occ-obj-ap-transform ((ap-obj occ-ap-tranform)
                                     (obj occ-obj))
   (unless (occ-ap-trans-transform ap-obj)
-    (let ((action (occ-obj-ap-action ap-obj obj)))
-      (setf (occ-ap-trans ap-obj) #'(lambda (act candidate)
-                                      (occ-obj-ap-action ap-obj
-                                                         candidate)))))
+    (let ((transform #'(lambda (act candidate)
+                         ;; BUG: ???
+                         (occ-obj-ap-callables ap-obj
+                                               candidate))))
+      (setf (occ-ap-trans ap-obj) transform)))
   (occ-ap-trans-transform ap-obj))
 
 
