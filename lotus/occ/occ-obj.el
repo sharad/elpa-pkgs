@@ -214,7 +214,7 @@
 (cl-defstruct (occ-ap (:include occ-obj))
   key)
 (cl-defstruct (occ-ap-noraml    (:include occ-ap))
-  action)
+  callables)
 (cl-defstruct (occ-ap-trans (:include occ-ap-normal))
   transform)
 

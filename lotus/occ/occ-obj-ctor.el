@@ -391,7 +391,7 @@
   (make-occ-return :label label
                    :value value))
 
-
+;; ctors
 (defun occ-make-callable-normal (symbol desc fun)
   "Dynamic object"
   (make-occ-callable-normal :symbol symbol
@@ -421,87 +421,58 @@
     callable))
 
 
-(cl-defmethod occ-callable-helm-action ((callable occ-callable))
-  "Return pair or (DESC . FUN)"
-  (cons (occ-callable-desc callable)
-        (occ-callable-fun callable)))
+;; (cl-defmethod occ-callable-helm-action ((callable occ-callable))
+;;   "Return pair or (DESC . FUN)"
+;;   (cons (occ-callable-desc callable)
+;;         (occ-callable-fun callable)))
 
-(cl-defmethod occ-callable-methods ((callable occ-callable-noraml)
+;; (cl-defmethod occ-callable-methods ((callable occ-callable-noraml)
+;;                                     (obj occ-obj))
+;;   "Return list of ((DESC . FUN) ...)"
+;;   (list (occ-callable-helm-action callable)))
+
+;; (cl-defmethod occ-callable-methods ((callable occ-callable-generator)
+;;                                     (obj occ-obj))
+;;   "Return list of ((DESC . FUN) ...)"
+;;   (mapcar #'occ-callable-helm-action
+;;           (funcall (occ-callable-fun callable)
+;;                    obj
+;;                    :param-only nil)))
+
+
+;; methods
+(cl-defmethod occ-callables ((callable occ-callable-noraml)
                                     (obj occ-obj))
   "Return list of ((DESC . FUN) ...)"
-  (list (occ-callable-helm-action callable)))
+  (list callable))
 
-(cl-defmethod occ-callable-methods ((callable occ-callable-generator)
+(cl-defmethod occ-callables ((callable occ-callable-generator)
                                     (obj occ-obj))
   "Return list of ((DESC . FUN) ...)"
-  (mapcar #'occ-callable-helm-action
-          (funcall (occ-callable-fun callable)
-                   obj
-                   :param-only nil)))
+  (funcall (occ-callable-fun callable)
+           obj
+           :param-only nil))
 
 
-(defun occ-make-action (keys)
-  (make-occ-action :keys keys))
-
-(cl-defmethod occ-helm-action ((action occ-action) obj)
-  (unless (occ-action-helm-action action)
-    (let ((helm-action (occ-get-helm-actions obj (occ-action-keys action))))
-      (setf (occ-action-helm-action action) helm-action)))
-  (occ-action-helm-action action))
-
-(cl-defmethod occ-helm-action-transform ((action occ-action) obj)
-  (unless (occ-action-helm-action-transform action)
-    (let ((helm-action (occ-get-helm-actions-generator obj (occ-action-keys action))))
-      (setf (occ-action-helm-action-transform action) helm-action)))
-  (occ-action-helm-action-transform action))
-
-(cl-defmethod occ-helm-action-transform-return ((action occ-action) obj)
-  (unless (occ-action-helm-action-transform-return action)
-    (let ((helm-action (occ-get-helm-actions-generator obj (occ-action-keys action))))
-      (setf (occ-action-helm-action-transform action) helm-action)))
-  (occ-action-helm-action-transform-return action))
-
-(defun occ-build-action (action-or-keys &optional keys)
-  (if (occ-action-p action-or-keys)
-      action-or-keys
-    (when t ;; (check if action is list of symbol or nil)
-      (occ-make-action (or action-or-keys keys)))))
-
-
-(cl-defmethod occ-actions ((obj occ-obj)
-                           (keys-tree-branch list))
-  (let ((callables (occ-get-callables obj
-                                      (occ-get-alist-from-tree keys-tree-branch))))
-    (occ-make-act-pack callables)))
-(cl-defmethod occ-actions ((obj occ-obj)
-                           (action occ-act-normal))
-  action)
-
-(cl-defmethod occ-actions-transform ((obj occ-obj)
-                                     (action occ-act-normal))
-  #'(lambda (action candidate)
-      (occ-actions candidate keys-tree-branch)))
-
-;; (defun occ-actions ())
-
-
+;; ctors
 (cl-defmethod occ-make-ap-normal ((obj list))
   (make-occ-ap-normal :key obj))
 
-(cl-defmethod occ-make-ap-normal ((obj occ-ap-normal))
-  obj)
+(cl-defmethod occ-make-ap-normal ((ap-obj occ-ap-normal))
+  ap-obj)
 
 (cl-defmethod occ-make-ap-trans ((obj list))
   (make-occ-ap-transform :key obj))
 
-(cl-defmethod occ-make-ap-trans ((obj occ-ap-normal))
-  (make-ap-transform :ap obj))
+(cl-defmethod occ-make-ap-trans ((ap-obj occ-ap-normal))
+  (make-ap-transform :ap ap-obj))
 
-(cl-defmethod occ-make-ap-trans ((obj occ-ap-trans))
-  obj)
+(cl-defmethod occ-make-ap-trans ((ap-obj occ-ap-trans))
+  ap-obj)
 
 
-(cl-defmethod occ-obj-ap-key ((ap-obj occ-ap))
+(cl-defmethod occ-obj-ap-key ((ap-obj occ-ap)
+                              (obj    occ-obj))
   (unless (occ-ap-key ap-obj)
     (occ-error "occ-ap obj %s missing key %s" ap-obj key))
   key)
@@ -520,7 +491,8 @@
   (unless (occ-ap-trans-transform ap-obj)
     (let ((action (occ-obj-ap-action ap-obj obj)))
       (setf (occ-ap-trans ap-obj) #'(lambda (act candidate)
-                                      (occ-obj-ap-action candidate obj)))))
+                                      (occ-obj-ap-action ap-obj
+                                                         candidate)))))
   (occ-ap-trans-transform ap-obj))
 
 
