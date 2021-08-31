@@ -211,12 +211,11 @@
 ;;   action)
 
 
-(cl-defstruct (occ-act-pack (:include occ-obj)))
-(cl-defstruct (occ-act-pack-key       (:include occ-act-pack))
-  act-pack-key)
-(cl-defstruct (occ-act-pack-noraml    (:include occ-act-pack))
-  act-pack)
-(cl-defstruct (occ-act-pack-transform (:include occ-act-pack))
-  act-pack-transform)
+(cl-defstruct (occ-ap (:include occ-obj))
+  key)
+(cl-defstruct (occ-ap-noraml    (:include occ-ap))
+  action)
+(cl-defstruct (occ-ap-trans (:include occ-ap-normal))
+  transform)
 
 ;;; occ-obj.el ends here

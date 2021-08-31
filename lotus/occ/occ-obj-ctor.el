@@ -484,4 +484,44 @@
 
 ;; (defun occ-actions ())
 
+
+(cl-defmethod occ-make-ap-normal ((obj list))
+  (make-occ-ap-normal :key obj))
+
+(cl-defmethod occ-make-ap-normal ((obj occ-ap-normal))
+  obj)
+
+(cl-defmethod occ-make-ap-trans ((obj list))
+  (make-occ-ap-transform :key obj))
+
+(cl-defmethod occ-make-ap-trans ((obj occ-ap-normal))
+  (make-ap-transform :ap obj))
+
+(cl-defmethod occ-make-ap-trans ((obj occ-ap-trans))
+  obj)
+
+
+(cl-defmethod occ-obj-ap-key ((ap-obj occ-ap))
+  (unless (occ-ap-key ap-obj)
+    (occ-error "occ-ap obj %s missing key %s" ap-obj key))
+  key)
+
+(cl-defmethod occ-obj-ap-action ((ap-obj occ-ap-normal)
+                                 (obj occ-obj))
+  (unless (occ-ap-action ap-obj)
+    (let ((key-tree-branch (occ-obj-ap-key ap-obj)))
+      (let ((callables (occ-get-callables obj
+                                          (occ-get-alist-from-tree keys-tree-branch))))
+        (setf (occ-ap-action ap-obj) callables))))
+  (occ-ap-action ap-obj))
+
+(cl-defmethod occ-obj-ap-transform ((ap-obj occ-ap-tranform)
+                                    (obj occ-obj))
+  (unless (occ-ap-trans-transform ap-obj)
+    (let ((action (occ-obj-ap-action ap-obj obj)))
+      (setf (occ-ap-trans ap-obj) #'(lambda (act candidate)
+                                      (occ-obj-ap-action candidate obj)))))
+  (occ-ap-trans-transform ap-obj))
+
+
 ;;; occ-obj-ctor.el ends here
