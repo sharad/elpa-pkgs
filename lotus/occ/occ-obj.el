@@ -198,19 +198,6 @@
   )
 
 
-;; (cl-defstruct (occ-action (:include occ-obj))
-;;   helm-action
-;;   helm-action-transform
-;;   obj
-;;   keys)
-
-;; (cl-defstruct (occ-action-direct (:include occ-action))
-;;   action)
-
-;; (cl-defstruct (occ-action-transformer (:include occ-action))
-;;   action)
-
-
 (cl-defstruct (occ-ap (:include occ-obj))
   key)
 (cl-defstruct (occ-ap-noraml    (:include occ-ap))

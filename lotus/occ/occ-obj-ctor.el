@@ -421,36 +421,37 @@
     callable))
 
 
-;; (cl-defmethod occ-callable-helm-action ((callable occ-callable))
-;;   "Return pair or (DESC . FUN)"
-;;   (cons (occ-callable-desc callable)
-;;         (occ-callable-fun callable)))
+(cl-defmethod occ-obj-callable-helm-action ((callable occ-callable))
+  "Return pair or (DESC . FUN)"
+  (cons (occ-callable-desc callable)
+        (occ-callable-fun callable)))
 
-;; (cl-defmethod occ-callable-methods ((callable occ-callable-noraml)
-;;                                     (obj occ-obj))
-;;   "Return list of ((DESC . FUN) ...)"
-;;   (list (occ-callable-helm-action callable)))
+(cl-defmethod occ-obj-callable-helm-actions ((callable occ-callable-noraml)
+                                             (obj occ-obj))
+  "Return list of ((DESC . FUN) ...)"
+  (list (occ-callable-helm-action callable)))
 
-;; (cl-defmethod occ-callable-methods ((callable occ-callable-generator)
-;;                                     (obj occ-obj))
-;;   "Return list of ((DESC . FUN) ...)"
-;;   (mapcar #'occ-callable-helm-action
-;;           (funcall (occ-callable-fun callable)
-;;                    obj
-;;                    :param-only nil)))
+(cl-defmethod occ-obj-callable-helm-actions ((callable occ-callable-generator)
+                                             (obj occ-obj))
+  "Return list of ((DESC . FUN) ...)"
+  (mapcar #'occ-obj-callable-helm-action
+          (funcall (occ-callable-fun callable)
+                   obj
+                   :param-only nil)))
 
 
 ;; methods
-(cl-defmethod occ-callables ((callable occ-callable-noraml)
-                             (obj occ-obj))
+(cl-defmethod occ-obj-callables ((callable occ-callable-noraml)
+                                 (obj occ-obj))
   "Return list of ((DESC . FUN) ...)"
   (list callable))
 
-(cl-defmethod occ-callables ((callable occ-callable-generator)
-                             (obj occ-obj))
+(cl-defmethod occ-obj-callables ((callable occ-callable-generator)
+                                 (obj occ-obj))
   "Return list of ((DESC . FUN) ...)"
   (let ((fun (occ-callable-fun callable)))
     (let ((callables (funcall fun obj :param-only nil)))
+      (cl-assert (cl-every #'occ-callable-p callables))
       (cl-assert (cl-every #'occ-callable-normal-p callables))
       callables)))
 
@@ -462,6 +463,10 @@
 (cl-defmethod occ-make-ap-normal ((ap-obj occ-ap-normal))
   ap-obj)
 
+(cl-defmethod occ-make-ap-normal ((ap-obj (head :callables)) &optional optional-obj)
+  (make-occ-ap-normal :callables (cdr ap-obj)))
+
+
 (cl-defmethod occ-make-ap-trans ((obj list))
   (make-occ-ap-transform :key obj))
 
@@ -470,6 +475,45 @@
 
 (cl-defmethod occ-make-ap-trans ((ap-obj occ-ap-trans))
   ap-obj)
+
+(cl-defmethod occ-make-ap-trans ((ap-obj (head :callables)) &optional optional-obj)
+  (make-occ-ap-trans :callables (cdr ap-obj)))
+
+(cl-defmethod occ-make-ap-trans ((ap-obj (head :transform)) &optional optional-obj)
+  (make-occ-ap-trans :transform (cdr ap-obj)))
+
+
+;; ctors
+(cl-defmethod occ-build-ap-normal ((ap-obj list) &optional optional-obj)
+  (make-occ-ap-normal :key ap-obj))
+
+(cl-defmethod occ-build-ap-normal ((ap-obj occ-ap-normal) &optional optional-obj)
+  ap-obj)
+
+(cl-defmethod occ-build-ap-normal ((ap-obj (head :callables)) &optional optional-obj)
+  (occ-make-ap-normal ap-obj))
+
+(cl-defmethod occ-build-ap-normal ((ap-obj null) &optional optional-obj)
+  (occ-make-ap-normal optional-obj))
+
+
+(cl-defmethod occ-build-ap-trans ((ap-obj list) &optional optional-obj)
+  (make-occ-ap-transform ap-obj))
+
+(cl-defmethod occ-build-ap-trans ((ap-obj occ-ap-normal) &optional optional-obj)
+  (make-ap-transform :callables (occ-obj-ap-callables ap-obj)))
+
+(cl-defmethod occ-build-ap-trans ((ap-obj occ-ap-trans) &optional optional-obj)
+  ap-obj)
+
+(cl-defmethod occ-build-ap-trans ((ap-obj (head :callables)) &optional optional-obj)
+  (make-occ-ap-normal ap-obj))
+
+(cl-defmethod occ-build-ap-trans ((ap-obj (head :transform)) &optional optional-obj)
+  (make-occ-ap-normal ap-obj))
+
+(cl-defmethod occ-build-ap-trans ((ap-obj null) &optional optional-obj)
+  (occ-make-ap-transform optional-obj))
 
 
 (cl-defmethod occ-obj-ap-key ((ap-obj occ-ap)
@@ -482,7 +526,7 @@
                                     (obj occ-obj))
   (unless (occ-ap-callables ap-obj)
     (let ((key-tree-branch (occ-obj-ap-key ap-obj)))
-      (let ((callables (occ-get-callables obj
+      (let ((callables (occ-get-callables obj ;; ???
                                           (occ-get-alist-from-tree keys-tree-branch))))
         (setf (occ-ap-callables ap-obj) callables))))
   (occ-ap-callables ap-obj))
