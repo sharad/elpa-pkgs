@@ -45,6 +45,36 @@
 ;;
 ;; https://www.gnu.org/software/emacs/manual/html_node/eieio/Quick-Start.html#Quick-Start
 ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Generic-Functions.html
+;; The type specializer, (arg type), can specify one of the system types in the
+;; following list. When a parent type is specified, an argument whose type is
+;; any of its more specific child types, as well as grand-children,
+;; grand-grand-children, etc. will also be compatible.
+;;
+;; integer (Parent type: number.)
+;; number
+;; null (Parent type: symbol.)
+;; symbol
+;; string (Parent type: array.)
+;; array (Parent type: sequence.)
+;; cons (Parent type: list.)
+;; list (Parent type: sequence.)
+;; marker
+;; overlay
+;; float (Parent type: number.)
+;; window-configuration
+;; process
+;; window
+;; subr
+;; compiled-function
+;; buffer
+;; char-table (Parent type: array.)
+;; bool-vector (Parent type: array.)
+;; vector (Parent type: array.)
+;; frame
+;; hash-table
+;; font-spec
+;; font-entity
+;; font-object
 
 
 (defvar occ-verbose 0)
