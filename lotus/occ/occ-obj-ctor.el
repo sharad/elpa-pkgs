@@ -643,13 +643,14 @@
   (occ-ap-callables ap-obj))
 
 (cl-defmethod occ-obj-ap-transform ((ap-obj occ-ap-transf))
+  "This return callables"
   (unless (occ-ap-transf-transform ap-obj)
     (let ((transform #'(lambda (action
                                 candidate)
                          ;; BUG: ???
-                         (occ-obj-ap-callables ap-obj ;; TODO: BUG: find passing ap-obj is correct from old versions for transformation.
-                                               ;; in one way AP-OBJ is equivalent to KEY below 
-                                               candidate))))
+                         (occ-make-ap-normal  (cons :callables (occ-obj-ap-callables ap-obj ;; TODO: BUG: find passing ap-obj is correct from old versions for transformation.
+                                                                                     ;; in one way AP-OBJ is equivalent to KEY below 
+                                                                                     candidate))))))
       (setf (occ-ap-transf ap-obj) transform)))
   (occ-ap-transf-transform ap-obj))
 
@@ -694,11 +695,11 @@
   (let ((transform (occ-obj-ap-transform ap-obj)))
     #'(lambda (action
                candidate)
-        (let ((callables (funcall transform
+        (let ((ap-normal-boj (funcall transform
                                   action
                                   candidate)))
-          (occ-obj-callable-helm-actions callables
-                                         candidate)))))
+          (occ-obj-ap-helm-actions ap-normal-boj
+                                   candidate)))))
 
 (cl-defmethod occ-obj-ap-helm-actions ((ap-obj occ-ap-transf)
                                        (obj occ-obj))
