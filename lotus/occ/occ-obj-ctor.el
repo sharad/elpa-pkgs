@@ -648,6 +648,7 @@
                                 candidate)
                          ;; BUG: ???
                          (occ-obj-ap-callables ap-obj ;; TODO: BUG: find passing ap-obj is correct from old versions for transformation.
+                                               ;; in one way AP-OBJ is equivalent to KEY below 
                                                candidate))))
       (setf (occ-ap-transf ap-obj) transform)))
   (occ-ap-transf-transform ap-obj))
