@@ -70,11 +70,10 @@ ACTION "
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
 
   (progn ;; lotus-with-no-active-minibuffer-if
-      (progn
-        (occ-debug :debug "occ-list-select-internal: [minibuffer-body] lotus-with-no-active-minibuffer-if")
-        (occ-debug :debug "occ-list-select-internal: minibuffer already active quitting")
-        (occ-debug :debug nil))
     (occ-debug :debug "Running occ-list-select-internal")
+    (occ-debug :debug "occ-list-select-internal: [minibuffer-body] lotus-with-no-active-minibuffer-if")
+    (occ-debug :debug "occ-list-select-internal: minibuffer already active quitting")
+    (occ-debug :debug nil)
     (prog1
         (let ((ap-normal (occ-build-ap-normal ap-normal occ-list-select-ap-normal-keys))
               (ap-transf (occ-build-ap-transf ap-transf occ-list-select-ap-transf-keys))
