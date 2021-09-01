@@ -613,7 +613,8 @@
 (cl-defmethod occ-build-ap-transf ((ap-obj null)
                                   &optional
                                   optional-obj)
-  (occ-make-ap-transf optional-obj))
+  (if optional-obj
+    (occ-build-ap-transf optional-obj)))
 
 
 (cl-defmethod occ-obj-ap-tree-keybranch ((ap-obj occ-ap)
