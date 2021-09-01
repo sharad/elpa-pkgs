@@ -75,8 +75,8 @@ be NIL, using (occ-list-filters) for FILTERS"
         (ap-transf          (occ-build-ap-transf occ-list-select-keys))
         (return-transform   nil)
         (timeout            occ-idle-timeout))
-      (occ-message "occ-list-select: action: %s" action)
-      (occ-select obj                   ;; TODO: passing action has no affect it show its own debug it ?
+      (occ-message "occ-list-select: ap-normal: %s" ap-normal)
+      (occ-select obj                   ;; TODO: passing ap-normal has no affect it show its own debug it ?
                   :filters            filters
                   :builder            builder
                   :ap-normal          ap-normal
@@ -88,7 +88,7 @@ be NIL, using (occ-list-filters) for FILTERS"
 
 (occ-testing
  (occ-list-debug-select (occ-make-ctx-at-point)
-                        :action (occ-get-helm-actions nil '(t actions select))
+                        :ap-normal (occ-get-helm-actions nil '(t actions select))
                         :obtrusive nil))
 
 (occ-testing
@@ -104,12 +104,12 @@ be NIL, using (occ-list-filters) for FILTERS"
 
 (cl-defmethod occ-list-debug-select ((obj occ-obj-ctx)
                                      &key
-                                     action
+                                     ap-normal
                                      obtrusive
                                      prompt)
   "Will open helm selection for tsk, which then again run helm
-selection for actions to run on selected tsk. It is mainly meant
-for testing given action on selected tsk."
+selection for ap-normals to run on selected tsk. It is mainly meant
+for testing given ap-normal on selected tsk."
 
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
 
@@ -119,7 +119,7 @@ for testing given action on selected tsk."
         (ap-transf          (occ-build-ap-transf ap-transf occ-list-select-keys))
         (return-transform   t)
         (timeout            occ-idle-timeout))
-      (occ-message "occ-list-debug-select: action: %s" action)
+      (occ-message "occ-list-debug-select: ap-normal: %s" ap-normal)
       (let ((retval-ctx-tsk (occ-select obj
                                         :filters            filters
                                         :builder            builder
@@ -137,15 +137,18 @@ for testing given action on selected tsk."
         (if (and (occ-return-in-labels-p retval-ctx-tsk
                                          occ-return-select-label)
                  (occ-return-get-value retval-ctx-tsk))
-            (let ((ctsk     (occ-return-get-value retval-ctx-tsk))
-                  (launcher (cdr (assoc (completing-read "Action: " action) action))))
+            (let ((ctsk         (occ-return-get-value retval-ctx-tsk))
+                  (helm-actions (occ-obj-ap-helm-actions ap-normal obj))
+                  ;; TODO: BUG: Correct it
+                  (launcher (cdr (assoc (completing-read "Helm-Actions: " helm-actions)
+                                        helm-actions))))
               (funcall launcher ctsk))
           (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection")))))
 
 (occ-testing
- ;; (occ-get-helm-actions nil '(t actions select)) -> nil
+ ;; (occ-get-helm-ap-normals nil '(t actions select)) -> nil
  (occ-list-select (occ-make-ctx-at-point)
-                  :action (occ-get-helm-actions nil '(t actions select))
+                  :ap-normal (occ-get-helm-actions nil '(t actions select))
                   :obtrusive nil))
 
 (cl-defmethod occ-list-launch ((obj occ-obj-ctx)
@@ -163,7 +166,7 @@ must be NIL, using (occ-list-filters) for FILTERS"
         (ap-normal          (occ-build-ap-normal occ-list-select-keys))
         (ap-transf          (occ-build-ap-transf occ-list-select-keys))
         (timeout            occ-idle-timeout))
-    (occ-message "occ-list-launch: action: %s" action)
+    (occ-message "occ-list-launch: ap-normal: %s" ap-normal)
     (let ((retval-ctx-tsk (occ-select obj
                                       :filters            filters
                                       :builder            builder
@@ -181,11 +184,13 @@ must be NIL, using (occ-list-filters) for FILTERS"
        (if (and (occ-return-in-labels-p retval-ctx-tsk
                                         occ-return-select-label)
                 (occ-return-get-value retval-ctx-tsk))
-           (let* ((action      (occ-get-helm-actions obj
-                                                     occ-list-select-keys))
-                  (ctx-tsk     (occ-return-get-value retval-ctx-tsk))
-                  (launcher    (cdr (assoc (completing-read "Action: " action)
-                                           action))))
+           (let* ((ap-normal    (occ-build-ap-normal occ-list-select-keys))
+                  (helm-actions (occ-obj-ap-helm-actions ap-normal obj))
+                  ;; (action      (occ-get-helm-actions obj
+                  ;;                                    occ-list-select-keys))
+                  (ctx-tsk      (occ-return-get-value retval-ctx-tsk))
+                  (launcher     (cdr (assoc (completing-read "Action: " helm-actions)
+                                            helm-actions))))
              (funcall launcher ctx-tsk))
          (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection")))))
 
