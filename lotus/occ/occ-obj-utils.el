@@ -29,81 +29,7 @@
 
 (require 'occ-obj)
 
-
-(defvar occ-return-select-label     :occ-selected    "should not be null")
-(defvar occ-return-quit-label       :occ-nocandidate "should not be null")
-(defvar occ-return-nocndidate-label :occ-quitted     "should not be null")
-(defvar occ-return-timeout-label    :occ-timeout     "should not be null") ;TODO: need to implement.
-(defvar occ-return-true-label       :occ-true        "should not be null")
-(defvar occ-return-false-label      :occ-false       "should not be null")
-
-(cl-assert occ-return-select-label)
-(cl-assert occ-return-quit-label)
-(cl-assert occ-return-nocndidate-label)
-(cl-assert occ-return-true-label)
-(cl-assert occ-return-false-label)
-
-(defvar occ-return-select-function #'identity)
-(defvar occ-return-select-name     "Select")
-(cl-assert occ-return-select-function )
-(cl-assert occ-return-select-name     )
-
-
-(occ-testing                            ;BAckup
- 
- (defun occ-build-return-lambda (action &optional label)
-   #'(lambda (candidate)
-       (let* ((value (funcall action candidate))
-              (label (or label
-                         (if value occ-return-true-label occ-return-false-label))))
-         (occ-make-return label value))))
-
- (defun occ-return-tranform (action)
-   "Will make all action except first to return OCC-RETURN-SELECT-LABEL."
-   (let ((identity-selector (cons occ-return-select-name ;add default select operation.
-                                  (occ-build-return-lambda occ-return-select-function
-                                                           occ-return-select-label)))
-         (action-launcher   (mapcar #'(lambda (a)
-                                        (if (consp a)
-                                            (cons (car a)
-                                                  (occ-build-return-lambda (cdr a)))
-                                          (occ-build-return-lambda a)))
-                                    action)))
-     (cons identity-selector action-launcher)))
-
- (defun occ-return-tranformer-fun-transform (tranformer-fun)
-   "Will make transformer fun to change action except first to return occ-return-label."
-   #'(lambda (action
-              candidate)
-       (occ-return-tranform (funcall tranformer-fun
-                                     action candidate)))))
-
-
-
-
-
-
-
-
-
-
-(cl-defmethod occ-build-return-lambda ((callable occ-callable-normal)
-                                       &optional label)
-  (let ((newcallable #'(lambda (candidate)
-                         (let ((fun (occ-callable-fun callable))))
-                         (let* ((value (funcall fun candidate))
-                                (label (or label
-                                           (if value
-                                               occ-return-true-label
-                                             occ-return-false-label))))
-                           (occ-make-return label value)))))
-    (occ-make-callable-normal (occ-callable-keyword callable)
-                              (occ-callable-name callable)
-                              newcallable)))
-(cl-defmethod occ-build-return-lambda ((callable occ-callable-transf)
-                                       &optional label)
-  (occ-error "Can not use occ-callable-transf %s" callable))
-
+;; method
 (cl-defmethod occ-return-tranform ((ap-obj occ-ap-normal))
   "Will make all action except first to return OCC-RETURN-SELECT-LABEL."
   (let* ((identity-sel-callable            (occ-make-callable-normal :select
@@ -117,16 +43,16 @@
     (occ-build-ap-normal (cons :callables
                                new-callables))))
 
- (cl-defmethod occ-return-tranform ((ap-transf-obj occ-ap-transf))
-   "Will make transformer fun to change action except first to return occ-return-label."
-   (let ((fun #'(lambda (action
-                         candidate)
-                  (let* ((fun           (occ-ap-transf-transform ap-transf-obj))
-                         (ap-normal-obj (funcall fun
-                                                 action candidate)))
-                    (occ-return-tranform ap-normal-obj)))))
-     (occ-build-ap-transf (cons :transform
-                                fun))))
+(cl-defmethod occ-return-tranform ((ap-transf-obj occ-ap-transf))
+  "Will make transformer fun to change action except first to return occ-return-label."
+  (let ((fun #'(lambda (action
+                        candidate)
+                 (let* ((fun           (occ-ap-transf-transform ap-transf-obj))
+                        (ap-normal-obj (funcall fun
+                                                action candidate)))
+                   (occ-return-tranform ap-normal-obj)))))
+    (occ-build-ap-transf (cons :transform
+                               fun))))
 
 ;; (cl-defmethod occ-return-operate-p (retval)
 ;;   retval)

@@ -646,11 +646,11 @@
   "This return callables"
   (unless (occ-ap-transf-transform ap-obj)
     (let ((transform #'(lambda (action
-                                candidate)
+                                candidate-obj)
                          ;; BUG: ???
                          (occ-make-ap-normal  (cons :callables (occ-obj-ap-callables ap-obj ;; TODO: BUG: find passing ap-obj is correct from old versions for transformation.
                                                                                      ;; in one way AP-OBJ is equivalent to KEY below 
-                                                                                     candidate))))))
+                                                                                     candidate-obj))))))
       (setf (occ-ap-transf ap-obj) transform)))
   (occ-ap-transf-transform ap-obj))
 
@@ -676,12 +676,12 @@
                   (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))))
 
  (cl-defmethod occ-get-helm-actions-tree-genertator ((obj null) keys)
-   #'(lambda (action candidate)
-       (occ-get-helm-actions-tree candidate keys)))
+   #'(lambda (action candidate-obj)
+       (occ-get-helm-actions-tree candidate-obj keys)))
 
  (cl-defmethod occ-get-helm-actions-tree-genertator ((obj occ-obj) keys)
-   #'(lambda (action candidate)
-       (occ-get-helm-actions-tree candidate keys)))
+   #'(lambda (action candidate-obj)
+       (occ-get-helm-actions-tree candidate-obj keys)))
  )
 
 
@@ -694,12 +694,12 @@
 (cl-defmethod occ-obj-ap-helm-transformation ((ap-obj occ-ap-transf))
   (let ((transform (occ-obj-ap-transform ap-obj)))
     #'(lambda (action
-               candidate)
-        (let ((ap-normal-boj (funcall transform
-                                  action
-                                  candidate)))
-          (occ-obj-ap-helm-actions ap-normal-boj
-                                   candidate)))))
+               candidate-obj)
+        (let ((ap-normal-obj (funcall transform
+                                      action
+                                      candidate-obj)))
+          (occ-obj-ap-helm-actions ap-normal-obj
+                                   candidate-obj)))))
 
 (cl-defmethod occ-obj-ap-helm-actions ((ap-obj occ-ap-transf)
                                        (obj occ-obj))
@@ -728,4 +728,47 @@
   "Return lambda function which do transformation on actions and return actions"
   (occ-obj-ap-helm-transformation ap-obj))
 
+;; ctor
+
+(defvar occ-return-select-label     :occ-selected    "should not be null")
+(defvar occ-return-quit-label       :occ-nocandidate "should not be null")
+(defvar occ-return-nocndidate-label :occ-quitted     "should not be null")
+(defvar occ-return-timeout-label    :occ-timeout     "should not be null") ;TODO: need to implement.
+(defvar occ-return-true-label       :occ-true        "should not be null")
+(defvar occ-return-false-label      :occ-false       "should not be null")
+
+(cl-assert occ-return-select-label)
+(cl-assert occ-return-quit-label)
+(cl-assert occ-return-nocndidate-label)
+(cl-assert occ-return-true-label)
+(cl-assert occ-return-false-label)
+
+(defvar occ-return-select-function #'identity)
+(defvar occ-return-select-name     "Select")
+(cl-assert occ-return-select-function )
+(cl-assert occ-return-select-name     )
+
+(cl-defmethod occ-build-return-lambda ((callable occ-callable-normal)
+                                       &optional label)
+  (let ((newcallable #'(lambda (candidate)
+                         (let ((fun (occ-callable-fun callable)))
+                           (let* ((value (funcall fun candidate))
+                                  (label (or label
+                                             (if value
+                                                 occ-return-true-label
+                                               occ-return-false-label))))
+                             (occ-make-return label value)))))
+        (name        (occ-callable-name callable))
+        (keyword     (occ-callable-keyword callable)))
+    (occ-make-callable-normal keyword
+                              name
+                              newcallable)))
+
+(cl-defmethod occ-build-return-lambda ((callable occ-callable-transf)
+                                       &optional label)
+  (occ-error "Can not use occ-callable-transf %s" callable))
+
+
+
+
 ;;; occ-obj-ctor.el ends here
