@@ -40,7 +40,7 @@
                                                                     occ-return-select-label))
          (new-callables                    (cons identity-sel-ret-lambda-callable
                                                  (mapcar #'occ-build-return-lambda
-                                                         (occ-obj-ap-callables ap-obj nil)))))
+                                                         (occ-obj-ap-callables ap-obj nil))))) ;;BUG to fix
     (occ-build-ap-normal (cons :callables
                                new-callables))))
 
