@@ -590,7 +590,7 @@
                                   optional-obj)
   (occ-make-ap-trans ap-obj))
 
-(cl-defmethod occ-build-ap-trans ((ap-obj (head :keyword))
+(cl-defmethod occ-build-ap-trans ((ap-obj (head :keywords))
                                   &optional
                                   optional-obj)
   (occ-make-ap-trans ap-obj))
