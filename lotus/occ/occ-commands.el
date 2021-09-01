@@ -65,12 +65,8 @@
   (interactive)
   (let ((ctx (occ-make-ctx-at-point)))
     (occ-props-window-edit ctx
-                           :action             (occ-build-helm-action-direct ctx ;NOTE: Adding newly
-                                                                             nil
-                                                                             '(t actions edit))
-                           :action-transformer (occ-build-helm-action-transformer ctx
-                                                                                  nil
-                                                                                  '(t actions edit)))))
+                           :action             (occ-build-ap-normal '(t actions edit))
+                           :ap-transf (occ-build-ap-transf '(t actions edit)))))
 
 
 ;;;###autoload

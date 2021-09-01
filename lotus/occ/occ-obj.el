@@ -204,7 +204,7 @@
 (cl-defstruct (occ-ap-noraml    (:include occ-ap))
   "AP stand for `actions pack'"
   callables)
-(cl-defstruct (occ-ap-trans (:include occ-ap-normal))
+(cl-defstruct (occ-ap-transf (:include occ-ap-normal))
   "AP stand for `actions pack'"
   transform)
 

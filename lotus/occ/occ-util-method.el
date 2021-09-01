@@ -32,7 +32,7 @@
 
 (defvar occ-list-select-keys occ-list-select-action-keys)
 ;; (setq occ-list-select-keys '(t actions normal))
-;; (setq occ-list-select-keys occ-list-select-action-transformer-keys)
+;; (setq occ-list-select-keys occ-list-select-ap-transf-keys)
 
 (cl-defmethod occ-match-select ((obj occ-obj-ctx)
                                 &key
@@ -41,22 +41,20 @@
   "Will open helm selection for tsk, here return-transform must
 be NIL, using (occ-match-filters) for FILTERS"
 
-  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
+  ;; NOTE: AP-TRANSF is superseding ACTION
 
   (let ((filters            (occ-match-filters))
         (builder            #'occ-build-ctxual-tsk-with)
-        (action             (occ-get-helm-actions obj
-                                                  occ-list-select-keys))
+        (action             (occ-build-ap-normal occ-list-select-keys))
+        (ap-transf (occ-build-ap-transf occ-list-select-keys))
         (return-transform   nil)
-        (action-transformer (occ-get-helm-actions-genertator obj
-                                                             occ-list-select-keys))
         (timeout            occ-idle-timeout))
     (occ-select obj
                 :filters            filters
                 :builder            builder
                 :action             action
                 :return-transform   return-transform
-                :action-transformer action-transformer
+                :ap-transf ap-transf
                 :timeout            timeout
                 :obtrusive          obtrusive
                 :prompt             prompt)))
@@ -69,17 +67,13 @@ be NIL, using (occ-match-filters) for FILTERS"
   "Will open helm selection for tsk, here return-transform must
 be NIL, using (occ-list-filters) for FILTERS"
 
-  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
+  ;; NOTE: AP-TRANSF is superseding ACTION
 
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
-        (action             (occ-build-ap-normal action occ-list-select-keys))
-        ;; (action             (or action (occ-get-helm-actions obj
-        ;;                                                      occ-list-select-keys)))
+        (action             (occ-build-ap-normal occ-list-select-keys))
+        (ap-transf (occ-build-ap-transf occ-list-select-keys))
         (return-transform   nil)
-        ;; (action-transformer (occ-get-helm-actions-generator obj
-        ;;                                                     occ-list-select-keys))
-        (action-transformer (occ-build-ap-trans occ-list-select-keys))
         (timeout            occ-idle-timeout))
       (occ-message "occ-list-select: action: %s" action)
       (occ-select obj                   ;; TODO: passing action has no affect it show its own debug it ?
@@ -87,7 +81,7 @@ be NIL, using (occ-list-filters) for FILTERS"
                   :builder            builder
                   :action             action
                   :return-transform   return-transform
-                  :action-transformer action-transformer
+                  :ap-transf ap-transf
                   :timeout            timeout
                   :obtrusive          obtrusive
                   :prompt             prompt)))
@@ -102,11 +96,9 @@ be NIL, using (occ-list-filters) for FILTERS"
    (occ-select obj
              :filters            (occ-list-filters)
              :builder            #'occ-build-ctsk-with
-             :action             (occ-get-helm-actions obj
-                                                       occ-list-select-keys)
+             :action             (occ-build-ap-normal occ-list-select-keys)
+             :ap-transf (occ-build-ap-transf occ-list-select-keys)
              :return-transform   nil
-             :action-transformer (occ-get-helm-actions-genertator obj
-                                                                  occ-list-select-keys)
              :timeout            occ-idle-timeout
              :obtrusive         t)))
 
@@ -119,13 +111,13 @@ be NIL, using (occ-list-filters) for FILTERS"
 selection for actions to run on selected tsk. It is mainly meant
 for testing given action on selected tsk."
 
-  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
+  ;; NOTE: AP-TRANSF is superseding ACTION
 
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
-        (action             (or action (occ-get-helm-actions obj occ-list-select-keys)))
+        (action             (occ-build-ap-normal action occ-list-select-keys))
+        (ap-transf (occ-build-ap-transf ap-transf occ-list-select-keys))
         (return-transform   t)
-        (action-transformer (occ-get-helm-actions-genertator obj occ-list-select-keys))
         (timeout            occ-idle-timeout))
       (occ-message "occ-list-debug-select: action: %s" action)
       (let ((retval-ctx-tsk (occ-select obj
@@ -133,7 +125,7 @@ for testing given action on selected tsk."
                                         :builder            builder
                                         :return-transform   return-transform
                                         :action             action
-                                        :action-transformer action-transformer
+                                        :ap-transf ap-transf
                                         :timeout            timeout
                                         :obtrusive          obtrusive
                                         :prompt             prompt)))
@@ -163,15 +155,13 @@ for testing given action on selected tsk."
   "TODO?: Will open helm selection for tsk, here return-transform
 must be NIL, using (occ-list-filters) for FILTERS"
 
-  ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
+  ;; NOTE: AP-TRANSF is superseding ACTION
 
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
         (return-transform   t)
-        (action             (occ-get-helm-actions obj
-                                                  occ-list-select-keys))
-        (action-transformer (occ-get-helm-actions-genertator obj
-                                                             occ-list-select-keys))
+        (action             (occ-build-ap-normal occ-list-select-keys))
+        (ap-transf (occ-build-ap-transf occ-list-select-keys))
         (timeout            occ-idle-timeout))
     (occ-message "occ-list-launch: action: %s" action)
     (let ((retval-ctx-tsk (occ-select obj
@@ -179,7 +169,7 @@ must be NIL, using (occ-list-filters) for FILTERS"
                                       :builder            builder
                                       :return-transform   return-transform
                                       :action             action
-                                      :action-transformer action-transformer
+                                      :ap-transf ap-transf
                                       :timeout            timeout
                                       :obtrusive          obtrusive
                                       :prompt             prompt)))
