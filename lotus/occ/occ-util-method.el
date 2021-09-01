@@ -30,7 +30,7 @@
 
 
 
-(defvar occ-list-select-keys occ-list-select-action-keys)
+(defvar occ-list-select-keys occ-list-select-ap-normal-keys)
 ;; (setq occ-list-select-keys '(t actions normal))
 ;; (setq occ-list-select-keys occ-list-select-ap-transf-keys)
 
@@ -43,12 +43,12 @@ be NIL, using (occ-match-filters) for FILTERS"
 
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
 
-  (let ((filters            (occ-match-filters))
-        (builder            #'occ-build-ctxual-tsk-with)
-        (ap-normal             (occ-build-ap-normal occ-list-select-keys))
-        (ap-transf (occ-build-ap-transf occ-list-select-keys))
-        (return-transform   nil)
-        (timeout            occ-idle-timeout))
+  (let ((filters          (occ-match-filters))
+        (builder          #'occ-build-ctxual-tsk-with)
+        (ap-normal        (occ-build-ap-normal occ-list-select-keys))
+        (ap-transf        (occ-build-ap-transf occ-list-select-keys))
+        (return-transform nil)
+        (timeout          occ-idle-timeout))
     (occ-select obj
                 :filters            filters
                 :builder            builder
@@ -69,12 +69,12 @@ be NIL, using (occ-list-filters) for FILTERS"
 
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
 
-  (let ((filters            (occ-list-filters))
-        (builder            #'occ-build-ctsk-with)
-        (ap-normal          (occ-build-ap-normal occ-list-select-keys))
-        (ap-transf          (occ-build-ap-transf occ-list-select-keys))
-        (return-transform   nil)
-        (timeout            occ-idle-timeout))
+  (let ((filters          (occ-list-filters))
+        (builder          #'occ-build-ctsk-with)
+        (ap-normal        (occ-build-ap-normal occ-list-select-keys))
+        (ap-transf        (occ-build-ap-transf occ-list-select-keys))
+        (return-transform nil)
+        (timeout          occ-idle-timeout))
       (occ-message "occ-list-select: ap-normal: %s" ap-normal)
       (occ-select obj                   ;; TODO: passing ap-normal has no affect it show its own debug it ?
                   :filters            filters
@@ -94,12 +94,12 @@ be NIL, using (occ-list-filters) for FILTERS"
 (occ-testing
  (let ((obj (occ-make-ctx-at-point)))
    (occ-select obj
-             :filters            (occ-list-filters)
-             :builder            #'occ-build-ctsk-with
-             :ap-normal          (occ-build-ap-normal occ-list-select-keys)
-             :ap-transf          (occ-build-ap-transf occ-list-select-keys)
-             :return-transform   nil
-             :timeout            occ-idle-timeout
+             :filters           (occ-list-filters)
+             :builder           #'occ-build-ctsk-with
+             :ap-normal         (occ-build-ap-normal occ-list-select-keys)
+             :ap-transf         (occ-build-ap-transf occ-list-select-keys)
+             :return-transform  nil
+             :timeout           occ-idle-timeout
              :obtrusive         t)))
 
 (cl-defmethod occ-list-debug-select ((obj occ-obj-ctx)
@@ -113,22 +113,22 @@ for testing given ap-normal on selected tsk."
 
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
 
-  (let ((filters            (occ-list-filters))
-        (builder            #'occ-build-ctsk-with)
-        (ap-normal          (occ-build-ap-normal ap-normal occ-list-select-keys))
-        (ap-transf          (occ-build-ap-transf ap-transf occ-list-select-keys))
-        (return-transform   t)
-        (timeout            occ-idle-timeout))
+  (let ((filters          (occ-list-filters))
+        (builder          #'occ-build-ctsk-with)
+        (ap-normal        (occ-build-ap-normal ap-normal occ-list-select-keys))
+        (ap-transf        (occ-build-ap-transf ap-transf occ-list-select-keys))
+        (return-transform t)
+        (timeout          occ-idle-timeout))
       (occ-message "occ-list-debug-select: ap-normal: %s" ap-normal)
       (let ((retval-ctx-tsk (occ-select obj
-                                        :filters            filters
-                                        :builder            builder
-                                        :return-transform   return-transform
-                                        :ap-normal          ap-normal
-                                        :ap-transf          ap-transf
-                                        :timeout            timeout
-                                        :obtrusive          obtrusive
-                                        :prompt             prompt)))
+                                        :filters          filters
+                                        :builder          builder
+                                        :return-transform return-transform
+                                        :ap-normal        ap-normal
+                                        :ap-transf        ap-transf
+                                        :timeout          timeout
+                                        :obtrusive        obtrusive
+                                        :prompt           prompt)))
         (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                           retval-ctx-tsk
                           (occ-format (occ-return-get-value retval-ctx-tsk)
@@ -160,22 +160,22 @@ must be NIL, using (occ-list-filters) for FILTERS"
 
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
 
-  (let ((filters            (occ-list-filters))
-        (builder            #'occ-build-ctsk-with)
-        (return-transform   t)
-        (ap-normal          (occ-build-ap-normal occ-list-select-keys))
-        (ap-transf          (occ-build-ap-transf occ-list-select-keys))
-        (timeout            occ-idle-timeout))
+  (let ((filters          (occ-list-filters))
+        (builder          #'occ-build-ctsk-with)
+        (return-transform t)
+        (ap-normal        (occ-build-ap-normal occ-list-select-keys))
+        (ap-transf        (occ-build-ap-transf occ-list-select-keys))
+        (timeout          occ-idle-timeout))
     (occ-message "occ-list-launch: ap-normal: %s" ap-normal)
     (let ((retval-ctx-tsk (occ-select obj
-                                      :filters            filters
-                                      :builder            builder
-                                      :return-transform   return-transform
-                                      :ap-normal          ap-normal
-                                      :ap-transf          ap-transf
-                                      :timeout            timeout
-                                      :obtrusive          obtrusive
-                                      :prompt             prompt)))
+                                      :filters          filters
+                                      :builder          builder
+                                      :return-transform return-transform
+                                      :ap-normal        ap-normal
+                                      :ap-transf        ap-transf
+                                      :timeout          timeout
+                                      :obtrusive        obtrusive
+                                      :prompt           prompt)))
        (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                          retval-ctx-tsk
                          (occ-format (occ-return-get-value retval-ctx-tsk)
