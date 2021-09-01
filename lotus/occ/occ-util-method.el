@@ -41,47 +41,47 @@
   "Will open helm selection for tsk, here return-transform must
 be NIL, using (occ-match-filters) for FILTERS"
 
-  ;; NOTE: AP-TRANSF is superseding ACTION
+  ;; NOTE: AP-TRANSF is superseding AP-NORMAL
 
   (let ((filters            (occ-match-filters))
         (builder            #'occ-build-ctxual-tsk-with)
-        (action             (occ-build-ap-normal occ-list-select-keys))
+        (ap-normal             (occ-build-ap-normal occ-list-select-keys))
         (ap-transf (occ-build-ap-transf occ-list-select-keys))
         (return-transform   nil)
         (timeout            occ-idle-timeout))
     (occ-select obj
                 :filters            filters
                 :builder            builder
-                :action             action
+                :ap-normal          ap-normal
+                :ap-transf          ap-transf
                 :return-transform   return-transform
-                :ap-transf ap-transf
                 :timeout            timeout
                 :obtrusive          obtrusive
                 :prompt             prompt)))
 
 (cl-defmethod occ-list-select ((obj occ-obj-ctx)
                                &key
-                               action ;; TODO: -- newly added
+                               ap-normal ;; TODO: -- newly added
                                obtrusive
                                prompt)
   "Will open helm selection for tsk, here return-transform must
 be NIL, using (occ-list-filters) for FILTERS"
 
-  ;; NOTE: AP-TRANSF is superseding ACTION
+  ;; NOTE: AP-TRANSF is superseding AP-NORMAL
 
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
-        (action             (occ-build-ap-normal occ-list-select-keys))
-        (ap-transf (occ-build-ap-transf occ-list-select-keys))
+        (ap-normal          (occ-build-ap-normal occ-list-select-keys))
+        (ap-transf          (occ-build-ap-transf occ-list-select-keys))
         (return-transform   nil)
         (timeout            occ-idle-timeout))
       (occ-message "occ-list-select: action: %s" action)
       (occ-select obj                   ;; TODO: passing action has no affect it show its own debug it ?
                   :filters            filters
                   :builder            builder
-                  :action             action
+                  :ap-normal          ap-normal
+                  :ap-transf          ap-transf
                   :return-transform   return-transform
-                  :ap-transf ap-transf
                   :timeout            timeout
                   :obtrusive          obtrusive
                   :prompt             prompt)))
@@ -96,8 +96,8 @@ be NIL, using (occ-list-filters) for FILTERS"
    (occ-select obj
              :filters            (occ-list-filters)
              :builder            #'occ-build-ctsk-with
-             :action             (occ-build-ap-normal occ-list-select-keys)
-             :ap-transf (occ-build-ap-transf occ-list-select-keys)
+             :ap-normal          (occ-build-ap-normal occ-list-select-keys)
+             :ap-transf          (occ-build-ap-transf occ-list-select-keys)
              :return-transform   nil
              :timeout            occ-idle-timeout
              :obtrusive         t)))
@@ -111,12 +111,12 @@ be NIL, using (occ-list-filters) for FILTERS"
 selection for actions to run on selected tsk. It is mainly meant
 for testing given action on selected tsk."
 
-  ;; NOTE: AP-TRANSF is superseding ACTION
+  ;; NOTE: AP-TRANSF is superseding AP-NORMAL
 
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
-        (action             (occ-build-ap-normal action occ-list-select-keys))
-        (ap-transf (occ-build-ap-transf ap-transf occ-list-select-keys))
+        (ap-normal          (occ-build-ap-normal ap-normal occ-list-select-keys))
+        (ap-transf          (occ-build-ap-transf ap-transf occ-list-select-keys))
         (return-transform   t)
         (timeout            occ-idle-timeout))
       (occ-message "occ-list-debug-select: action: %s" action)
@@ -124,8 +124,8 @@ for testing given action on selected tsk."
                                         :filters            filters
                                         :builder            builder
                                         :return-transform   return-transform
-                                        :action             action
-                                        :ap-transf ap-transf
+                                        :ap-normal          ap-normal
+                                        :ap-transf          ap-transf
                                         :timeout            timeout
                                         :obtrusive          obtrusive
                                         :prompt             prompt)))
@@ -155,21 +155,21 @@ for testing given action on selected tsk."
   "TODO?: Will open helm selection for tsk, here return-transform
 must be NIL, using (occ-list-filters) for FILTERS"
 
-  ;; NOTE: AP-TRANSF is superseding ACTION
+  ;; NOTE: AP-TRANSF is superseding AP-NORMAL
 
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
         (return-transform   t)
-        (action             (occ-build-ap-normal occ-list-select-keys))
-        (ap-transf (occ-build-ap-transf occ-list-select-keys))
+        (ap-normal          (occ-build-ap-normal occ-list-select-keys))
+        (ap-transf          (occ-build-ap-transf occ-list-select-keys))
         (timeout            occ-idle-timeout))
     (occ-message "occ-list-launch: action: %s" action)
     (let ((retval-ctx-tsk (occ-select obj
                                       :filters            filters
                                       :builder            builder
                                       :return-transform   return-transform
-                                      :action             action
-                                      :ap-transf ap-transf
+                                      :ap-normal          ap-normal
+                                      :ap-transf          ap-transf
                                       :timeout            timeout
                                       :obtrusive          obtrusive
                                       :prompt             prompt)))
