@@ -333,29 +333,29 @@
                                      &key
                                      filters
                                      builder
+                                     ap-normal
+                                     ap-transf
                                      return-transform ;Here caller know if return value is going to be used.
-                                     action
-                                     action-transformer
                                      timeout)
-  (let* ((filters            (or filters nil))
-         (builder            (or builder #'occ-build-ctsk-with))
-         (action             (or action (occ-get-helm-actions obj '(t actions general))))
-         (action-transformer (or action-transformer (occ-get-helm-actions-genertator obj '(t actions general edit))))
-         (timeout            (or timeout occ-idle-timeout)))
+  (let* ((filters   (or filters nil))
+         (builder   (or builder #'occ-build-ctsk-with))
+         (ap-normal '(t actions general))
+         (ap-transf '(t actions general edit))
+         (timeout   (or timeout occ-idle-timeout)))
     (occ-debug :debug "occ-select-obj-prop-edit((obj occ-ctx)): begin")
     (let ((buff (occ-ctx-buffer obj)))
       (if (and
            (buffer-live-p buff)
            (not (occ-helm-buffer-p buff)))
         (let ((retval-ctx-tsk (occ-select obj
-                                          :filters            filters
-                                          :builder            builder
-                                          :return-transform   return-transform ;Here caller know if return value is going to be used.
-                                          :action             action
-                                          :action-transformer action-transformer
-                                          :timeout            timeout)))
-          ;; (occ-debug :debug "occ-props-window-edit((obj occ-ctx)): action-transformer: %s action %s"
-          ;;                   action-transformer action)
+                                          :filters          filters
+                                          :builder          builder
+                                          :ap-normal        ap-normal
+                                          :ap-transf        ap-transf
+                                          :return-transform return-transform ;Here caller know if return value is going to be used.
+                                          :timeout          timeout)))
+          ;; (occ-debug :debug "occ-props-window-edit((obj occ-ctx)): ap-transf: %s action %s"
+          ;;                   ap-transf action)
           (occ-debug :debug "occ-props-window-edit((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                             retval-ctx-tsk
                             (occ-format (occ-return-get-value retval-ctx-tsk) 'capitalize)
@@ -387,42 +387,42 @@
                                      &key
                                      filters
                                      builder
+                                     ap-normal
+                                     ap-transf
                                      return-transform
-                                     action
-                                     action-transformer
                                      timeout)
   (occ-debug :debug "occ-select-obj-prop-edit((obj null)):")
-  (let ((filters            (or filters nil))
-        (builder            (or builder #'occ-build-ctsk-with))
-        (action             (or action (occ-get-helm-actions obj '(t actions general))))
-        (action-transformer (or action-transformer (occ-get-helm-actions-genertator obj '(t actions general edit))))
-        (timeout            (or timeout occ-idle-timeout)))
+  (let ((filters   (or filters nil))
+        (builder   (or builder #'occ-build-ctsk-with))
+        (ap-normal '(t actions general))
+        (ap-transf '(t actions general edit))
+        (timeout   (or timeout occ-idle-timeout)))
       (occ-props-window-edit (occ-make-ctx-at-point)
-                             :filters            filters
-                             :builder            builder
-                             :return-transform   return-transform
-                             :action             action
-                             :action-transformer action-transformer
-                             :timeout            timeout)))
+                             :filters          filters
+                             :builder          builder
+                             :ap-normal        ap-normal
+                             :ap-transf        ap-transf
+                             :return-transform return-transform
+                             :timeout          timeout)))
 
 
 (cl-defmethod occ-safe-props-window-edit ((obj occ-ctx)
                                           &key
                                           filters
                                           builder
+                                          ap-normal
+                                          ap-transf
                                           return-transform
-                                          action
-                                          action-transformer
                                           timeout)
   "add-ctx-to-org-heading"
   ;; TODO: make helm conditional when it is used than only it should be handled.
   (interactive '((occ-make-ctx-at-point) occ-idle-timeout))
   (occ-debug :debug "occ-safe-props-window-edit((obj occ-ctx)): begin")
-  (let ((filters            (or filters nil))
-        (builder            (or builder #'occ-build-ctsk-with))
-        (action             (or action (occ-get-helm-actions obj '(t actions general))))
-        (action-transformer (or action-transformer (occ-get-helm-actions-genertator obj '(t actions general edit))))
-        (timeout            (or timeout occ-idle-timeout)))
+  (let ((filters   (or filters nil))
+        (builder   (or builder #'occ-build-ctsk-with))
+        (ap-normal '(t actions general))
+        (ap-transf '(t actions general edit))
+        (timeout   (or timeout occ-idle-timeout)))
     (occ-debug :debug "begin occ-safe-props-window-edit")
     (occ-debug-return "occ-safe-props-window-edit((obj occ-ctx)) no-active"
       (lotus-with-no-active-minibuffer-if
@@ -439,12 +439,12 @@
                   (if (eq (current-buffer) buff)
                       (occ-debug-return "occ-safe-props-window-edit((obj occ-ctx)) direct"
                         (occ-props-window-edit obj
-                                               :filters            filters
-                                               :builder            builder
-                                               :return-transform   return-transform
-                                               :action             action
-                                               :action-transformer action-transformer
-                                               :timeout            timeout))
+                                               :filters          filters
+                                               :builder          builder
+                                               :ap-normal        ap-normal
+                                               :ap-transf        ap-transf
+                                               :return-transform return-transform
+                                               :timeout          timeout))
                    (occ-debug :debug "context is not for current buffer.")))
               (occ-debug :debug "finished occ-safe-props-window-edit"))))))))
 
@@ -452,17 +452,17 @@
                                           &key
                                           filters
                                           builder
-                                          action
-                                          action-transformer
+                                          ap-normal
+                                          ap-transf
                                           timeout)
   (occ-debug :debug "occ-safe-props-window-edit((obj marker)): begin")
   (let ((selected (occ-safe-props-window-edit (occ-make-ctx marker)
-                                              :filters            filters
-                                              :builder            builder
-                                              :return-transform   return-transform
-                                              :action             action
-                                              :action-transformer action-transformer
-                                              :timeout            timeout)))
+                                              :filters          filters
+                                              :builder          builder
+                                              :return-transform return-transform
+                                              :ap-normal        ap-normal
+                                              :ap-transf        ap-transf
+                                              :timeout          timeout)))
     (occ-debug :debug "occ-safe-props-window-edit((obj marker)): returning %s" selected)
     selected))
 
@@ -471,8 +471,8 @@
                                                       filters
                                                       builder
                                                       return-transform
-                                                      action
-                                                      action-transformer
+                                                      ap-normal
+                                                      ap-transf
                                                       timeout)
 
   ;; either this should also be in occ-obj-method
@@ -484,11 +484,11 @@
 
   "Return value is important to decide next action to (create unnamed tsk.)"
   (occ-debug :debug "occ-safe-ignore-quit-props-window-edit((obj occ-ctx)): begin")
-  (let ((filters            (or filters nil))
-        (builder            (or builder #'occ-build-ctsk-with))
-        (action             (or action (occ-get-helm-actions obj '(t actions general))))
-        (action-transformer (or action-transformer (occ-get-helm-actions-genertator obj '(t actions general edit))))
-        (timeout            (or timeout occ-idle-timeout)))
+  (let ((filters   (or filters nil))
+        (builder   (or builder #'occ-build-ctsk-with))
+        (ap-normal '(t actions general))
+        (ap-transf '(t actions general edit))
+        (timeout   (or timeout occ-idle-timeout)))
     (occ-debug :debug "called occ-delayed-select-obj-prop-edit-when-idle")
     (occ-debug :debug "%s: begin: occ-delayed-select-obj-prop-edit-when-idle" (time-stamp-string))
     ;; timed-newwin of occ-delayed-select-obj-prop-edit pass quit
@@ -505,8 +505,8 @@
     ;;            "occ-delayed-select-obj-prop-edit-when-idle: calling occ-delayed-select-obj-prop-edit with this-command=%s" this-command)
     ;;     (occ-safe-props-window-edit obj
     ;;                                 :collector          collector
-    ;;                                 :action             action
-    ;;                                 :action-transformer action-transformer
+    ;;                                 :ap-normal          ap-normal
+    ;;                                 :ap-transf          ap-transf
     ;;                                 :timeout            timeout))
 
     ;;   ;; (lotus-with-other-frame-event-debug "occ-delayed-select-obj-prop-edit-when-idle" :cancel
@@ -519,12 +519,12 @@
       ;; TODO: Add code to which check if only focus present than only trigger
       ;; else postpone it by calling run-with-idle-plus-timer
       (occ-safe-props-window-edit obj
-                                  :filters            filters
-                                  :builder            builder
-                                  :return-transform   return-transform
-                                  :action             action
-                                  :action-transformer action-transformer
-                                  :timeout            timeout)
+                                  :filters          filters
+                                  :builder          builder
+                                  :ap-normal        ap-normal
+                                  :ap-transf        ap-transf
+                                  :return-transform return-transform
+                                  :timeout          timeout)
       ;; (lotus-with-other-frame-event-debug "occ-delayed-select-obj-prop-edit-when-idle" :cancel
       ;;   (occ-debug :debug "occ-delayed-select-obj-prop-edit-when-idle: lotus-with-other-frame-event-debug")
       ;;   (occ-delayed-select-obj-prop-edit ctx timeout))
