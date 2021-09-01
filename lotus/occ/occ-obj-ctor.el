@@ -617,7 +617,7 @@
 
 
 (cl-defmethod occ-obj-ap-tree-keybranch ((ap-obj occ-ap)
-                                    (obj    occ-obj))
+                                         (obj    occ-obj))
   (unless (occ-ap-tree-keybranch ap-obj)
     (occ-error "occ-ap obj %s missing tree-keybranch %s" ap-obj tree-keybranch))
   tree-keybranch)

@@ -73,11 +73,13 @@ be NIL, using (occ-list-filters) for FILTERS"
 
   (let ((filters            (occ-list-filters))
         (builder            #'occ-build-ctsk-with)
-        (action             (or action (occ-get-helm-actions obj
-                                                             occ-list-select-keys)))
+        (action             (occ-build-ap-normal action occ-list-select-keys))
+        ;; (action             (or action (occ-get-helm-actions obj
+        ;;                                                      occ-list-select-keys)))
         (return-transform   nil)
-        (action-transformer (occ-get-helm-actions-generator obj
-                                                                 occ-list-select-keys))
+        ;; (action-transformer (occ-get-helm-actions-generator obj
+        ;;                                                     occ-list-select-keys))
+        (action-transformer (occ-build-ap-trans occ-list-select-keys))
         (timeout            occ-idle-timeout))
       (occ-message "occ-list-select: action: %s" action)
       (occ-select obj                   ;; TODO: passing action has no affect it show its own debug it ?
