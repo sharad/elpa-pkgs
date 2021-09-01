@@ -86,16 +86,16 @@ ACTION "
                  (candidates-filtered   (occ-filter obj
                                                     filters
                                                     candidates-unfiltered)))
-            (occ-helm-action obj
-                             candidate-filtered
-                             :unfiltered-count unfiltered-count
-                             :filters filters
-                             :builder builder
-                             :ap-normal ap-normal
-                             :ap-transf ap-transf
-                             :auto-select-if-only auto-select-if-only
-                             :timeout timeout
-                             :prompt prompt)))
+            (occ-helm-act obj
+                          candidate-filtered
+                          :unfiltered-count unfiltered-count
+                          :filters filters
+                          :builder builder
+                          :ap-normal ap-normal
+                          :ap-transf ap-transf
+                          :auto-select-if-only auto-select-if-only
+                          :timeout timeout
+                          :prompt prompt)))
       (occ-debug :debug "Running occ-list-select-internal"))))
 
 (cl-defmethod occ-list-select ((obj occ-ctx)

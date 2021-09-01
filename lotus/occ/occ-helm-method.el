@@ -165,8 +165,36 @@
         (occ-helm-dummy-source "Create (fast as child)"             #'occ-fast-procreate-child)
         (occ-helm-dummy-source "Create Anonymous (fast as unnamed)" #'occ-fast-procreate-anonymous-child)
         (occ-helm-dummy-source "Create by Template (use template)"  #'occ-procreate-child-clock-in)))
+
 
+(cl-defmethod occ-helm-act-on-single ((obj                 occ-ctx)
+                                      (candidates-filtered list)
+                                      &key
+                                      unfiltered-count
+                                      filters
+                                      builder
+                                      ap-normal
+                                      ap-transf
+                                      auto-select-if-only
+                                      timeout
+                                      prompt)
+  ;; OBJ ignored
+  "OBJ ignored"
 
+  (let* ((candidate   (car candidates-filtered)))
+
+    (let* ((helm-actions                 (occ-obj-ap-helm-item ap-normal candidate))
+           (helm-transfm                 (occ-obj-ap-helm-item ap-transf candiate))
+           (helm-first-action-via-normal (first helm-actions)))
+
+      (let* ((helm-actions-via-transf      (funall helm-transfm helm-actions candidate))
+             (helm-first-action-via-transf (first helm-actions-via-transf)))
+
+        (let ((helm-action-to-call (or (cdr-safe helm-first-action-via-transf) helm-first-action-via-transf
+                                       (cdr-safe helm-first-action-via-normal) helm-first-action-via-normal)))
+
+          (funcall helm-action-to-call candidate))))))
+    
 (cl-defmethod occ-helm-act-on-multiple ((obj        occ-ctx)
                                         (candidates-filtered list)
                                         &key
@@ -200,33 +228,17 @@
                        :resume  'noresume)
                (setq in-occ-helm nil))))))
 
-(cl-defmethod occ-helm-act-on-single ((obj                 occ-ctx)
-                                      (candidates-filtered list)
-                                      &key
-                                      unfiltered-count
-                                      filters
-                                      builder
-                                      ap-normal
-                                      ap-transf
-                                      auto-select-if-only
-                                      timeout
-                                      prompt)
-  (let* ((candidate   (car candidates-filtered))
-         (helm-action (car (funcall helm-action-transformer helm-action candidate)))
-         (helm-action (or  (cdr-safe helm-action) helm-action)))
-    (funcall helm-action candidate)))
-
-(cl-defmethod occ-helm-action ((obj                 occ-ctx)
-                               (candidates-filtered list)
-                               &key
-                               unfiltered-count
-                               filters
-                               builder
-                               ap-normal
-                               ap-transf
-                               auto-select-if-only
-                               timeout
-                               prompt)
+(cl-defmethod occ-helm-act ((obj                 occ-ctx)
+                            (candidates-filtered list)
+                            &key
+                            unfiltered-count
+                            filters
+                            builder
+                            ap-normal
+                            ap-transf
+                            auto-select-if-only
+                            timeout
+                            prompt)
   (when candidates-filtered
     (let ((fun (if (and auto-select-if-only
                         (= 1 (length candidates-filtered)))
@@ -242,7 +254,6 @@
                :auto-select-if-only auto-select-if-only
                :timeout timeout
                :prompt prompt))))
-    
 
 
 (defun occ-helm-select-XYZ (obj

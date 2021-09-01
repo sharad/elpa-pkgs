@@ -394,51 +394,61 @@
 
 ;; ctors
 (defun occ-make-callable-normal (symbol
-                                 desc
+                                 name
                                  fun)
   "Dynamic object"
   (make-occ-callable-normal :symbol symbol
-                            :desc   desc
+                            :name   name
                             :fun    fun))
 
 (defun occ-make-callable-generator (symbol
-                                    desc
+                                    name
                                     fun)
   "Dynamic object"
   (make-occ-callable-normal :symbol symbol
-                            :desc   desc
+                            :name   name
                             :fun    fun))
 
 (defun occ-build-callable-normal (symbol
-                                  desc
+                                  name
                                   fun)
   "Callable creation and to be stored via (OCC-HELM-CALLABLE-ADD CALLABLE)"
   (let ((callable (occ-make-callable-normal :symbol symbol
-                                            :desc   desc
+                                            :name   name
                                             :fun    fun)))
     (occ-helm-callable-add callable)
     callable))
 
 (defun occ-build-callable-generator (symbol
-                                     desc
+                                     name
                                      fun)
   "Callable creation and to be stored via (OCC-HELM-CALLABLE-ADD CALLABLE)"
   (let ((callable (occ-make-callable-normal :symbol symbol
-                                            :desc   desc
+                                            :name   name
                                             :fun    fun)))
     (occ-helm-callable-add callable)
     callable))
 
 
+(cl-defmethod occ-callable-desc ((callable occ-callable))
+  (occ-callable-name callable))
+
+(cl-defmethod occ-obj-callable-desc ((callable occ-callable))
+  (occ-callable-desc callable))
+
+(cl-defmethod occ-obj-callable-name ((callable occ-callable))
+  (occ-callable-name callable))
+
+
 ;; methods
 (cl-defmethod occ-obj-callables ((callable occ-callable-noraml)
                                  (obj      occ-obj))
-  "Return list of ((DESC . FUN) ...)"
+  "Return list of ((NAME . FUN) ...)"
   (list callable))
 
 (cl-defmethod occ-obj-callables ((callable occ-callable-generator)
                                  (obj      occ-obj))
-  "Return list of ((DESC . FUN) ...)"
+  "Return list of ((NAME . FUN) ...)"
   (let ((fun (occ-callable-fun callable)))
     (let ((callables (funcall fun obj
                               :param-only nil)))
@@ -451,34 +461,34 @@
 ;; methods
 
 (cl-defmethod occ-obj-callable-helm-action ((callable occ-callable))
-  "Return pair or (DESC . FUN)"
-  (cons (occ-callable-desc callable)
+  "Return pair or (NAME . FUN)"
+  (cons (occ-callable-name callable)
         (occ-callable-fun  callable)))
 
 ;; methods
 
 (cl-defmethod occ-obj-callable-helm-actions ((callables list)
                                              (obj occ-obj))
-  "Return list of ((DESC . FUN) ...)"
+  "Return list of ((NAME . FUN) ...)"
   (mapcar #'occ-obj-callable-helm-action
           callables))
 
 (cl-defmethod occ-obj-callable-helm-actions ((callable occ-callable)
                                              (obj occ-obj))
-  "Return list of ((DESC . FUN) ...)"
+  "Return list of ((NAME . FUN) ...)"
   (let ((callables (occ-obj-callables callable
                                       obj)))
     (occ-obj-callable-helm-actions callables)))
 
 (cl-defmethod occ-obj-callable-helm-actions ((callables (head :callables))
                                              (obj occ-obj))
-  "Return list of ((DESC . FUN) ...)"
+  "Return list of ((NAME . FUN) ...)"
   (let ((callables (cdr callables)))
     (occ-obj-callable-helm-actions callables)))
 
 (cl-defmethod occ-obj-callable-helm-actions ((callables (head :keywords))
                                              (obj occ-obj))
-  "Return list of ((DESC . FUN) ...)"
+  "Return list of ((NAME . FUN) ...)"
   (let* ((keywords  (cdr callables))
          (callables (occ-helm-callables-get keywords)))
     (occ-obj-callable-helm-actions callables)))
@@ -637,7 +647,7 @@
     (let ((transform #'(lambda (action
                                 candidate)
                          ;; BUG: ???
-                         (occ-obj-ap-callables ap-obj
+                         (occ-obj-ap-callables ap-obj ;; TODO: BUG: find passing ap-obj is correct from old versions for transformation.
                                                candidate))))
       (setf (occ-ap-transf ap-obj) transform)))
   (occ-ap-transf-transform ap-obj))
