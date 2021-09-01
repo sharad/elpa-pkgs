@@ -53,6 +53,7 @@
                                         builder
                                         ap-normal
                                         ap-transf
+                                        return-transform
                                         auto-select-if-only
                                         timeout
                                         obtrusive
@@ -91,6 +92,7 @@ ACTION "
                           :builder builder
                           :ap-normal ap-normal
                           :ap-transf ap-transf
+                          :return-transform return-transform
                           :auto-select-if-only auto-select-if-only
                           :timeout timeout
                           :prompt prompt)))
@@ -112,14 +114,14 @@ ACTION "
   (let* ((timeout   (or timeout occ-idle-timeout)))
     (helm-timed timeout (occ-helm-select-buffer)
       (occ-debug :debug "running occ-list-select")
-      (let ((ap-normal (if return-transform (occ-return-tranform ap-normal) ap-normal)) ;as return value is going to be used.
-            (ap-transf (if return-transform (occ-return-tranform ap-transf) ap-transf)))
+      (progn
         (occ-message "occ-list-select: ap-normal: %s" ap-normal)
         (let ((selected (occ-list-select-internal obj
                                                   :filters             filters
                                                   :builder             builder
                                                   :ap-normal           ap-normal
                                                   :ap-transf           ap-transf
+                                                  :return-transform    return-transform
                                                   :auto-select-if-only auto-select-if-only
                                                   :timeout             timeout
                                                   :obtrusive           obtrusive

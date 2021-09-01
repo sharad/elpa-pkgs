@@ -272,24 +272,27 @@
                             builder
                             ap-normal
                             ap-transf
+                            return-transform
                             auto-select-if-only
                             timeout
                             prompt)
   (when candidates-filtered
-    (let ((fun (if (and auto-select-if-only
-                        (= 1 (length candidates-filtered)))
-                   #'occ-helm-act-on-single
-                 #'occ-helm-act-on-multiple)))
-      (funcall fun obj
-               candidate-filtered
-               :unfiltered-count unfiltered-count
-               :filters   filters
-               :builder   builder
-               :ap-normal ap-normal
-               :ap-transf ap-transf
-               :auto-select-if-only auto-select-if-only
-               :timeout timeout
-               :prompt prompt))))
+    (let* ((ap-normal (if return-transform (occ-return-tranform ap-normal) ap-normal)) ;as return value is going to be used.
+           (ap-transf (if return-transform (occ-return-tranform ap-transf) ap-transf)))
+      (let ((fun (if (and auto-select-if-only
+                          (= 1 (length candidates-filtered)))
+                     #'occ-helm-act-on-single
+                   #'occ-helm-act-on-multiple)))
+        (funcall fun obj
+                 candidate-filtered
+                 :unfiltered-count unfiltered-count
+                 :filters   filters
+                 :builder   builder
+                 :ap-normal ap-normal
+                 :ap-transf ap-transf
+                 :auto-select-if-only auto-select-if-only
+                 :timeout timeout
+                 :prompt prompt)))))
 
 
 (defun occ-helm-select-XYZ (obj
