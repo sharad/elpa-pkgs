@@ -284,7 +284,7 @@
                      #'occ-helm-act-on-single
                    #'occ-helm-act-on-multiple)))
         (funcall fun obj
-                 candidate-filtered
+                 candidates-filtered
                  :unfiltered-count unfiltered-count
                  :filters   filters
                  :builder   builder
