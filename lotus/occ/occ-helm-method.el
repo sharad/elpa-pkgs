@@ -121,7 +121,7 @@
                                                                    (length candidates-filtered))
                                                              candidates-filtered))))
                                  (mapcar #'occ-candidate candidates-visible)))))
-                                         
+
        (when (> unfiltered-count 0)
          (let ((gen-candidate-lambda   #'(lambda () (funcall gen-candidates)))
                (source-name            (occ-helm-build-candidate-source-prompt prompt
@@ -223,13 +223,11 @@
                                       prompt)
   ;; OBJ ignored
   "OBJ ignored"
-  (let* ((ap-normal (occ-build-ap-normal ap-normal))
-         (ap-transf (occ-build-ap-transf ap-transf ap-normal)))
-    (let* ((candidate   (car candidates-filtered))
-           (helm-action (occ-get-first-helm-actions-for-obj obj
-                                                            ap-normal
-                                                            ap-transf)))
-      (funcall helm-action candidate))))
+  (let* ((candidate   (car candidates-filtered))
+         (helm-action (occ-get-first-helm-actions-for-obj obj
+                                                          ap-normal
+                                                          ap-transf)))
+    (funcall helm-action candidate)))
 
 (cl-defmethod occ-helm-act-on-multiple ((obj        occ-ctx)
                                         (candidates-filtered list)
@@ -277,22 +275,24 @@
                             timeout
                             prompt)
   (when candidates-filtered
-    (let* ((ap-normal (if return-transform (occ-return-tranform ap-normal) ap-normal)) ;as return value is going to be used.
-           (ap-transf (if return-transform (occ-return-tranform ap-transf) ap-transf)))
-      (let ((fun (if (and auto-select-if-only
-                          (= 1 (length candidates-filtered)))
-                     #'occ-helm-act-on-single
-                   #'occ-helm-act-on-multiple)))
-        (funcall fun obj
-                 candidates-filtered
-                 :unfiltered-count unfiltered-count
-                 :filters   filters
-                 :builder   builder
-                 :ap-normal ap-normal
-                 :ap-transf ap-transf
-                 :auto-select-if-only auto-select-if-only
-                 :timeout timeout
-                 :prompt prompt)))))
+    (let* ((ap-normal (occ-build-ap-normal ap-normal))
+           (ap-transf (occ-build-ap-transf ap-transf ap-normal)))
+      (let* ((ap-normal (if return-transform (occ-return-tranform ap-normal) ap-normal)) ;as return value is going to be used.
+             (ap-transf (if return-transform (occ-return-tranform ap-transf) ap-transf)))
+        (let ((fun (if (and auto-select-if-only
+                            (= 1 (length candidates-filtered)))
+                       #'occ-helm-act-on-single
+                     #'occ-helm-act-on-multiple)))
+          (funcall fun obj
+                   candidates-filtered
+                   :unfiltered-count unfiltered-count
+                   :filters   filters
+                   :builder   builder
+                   :ap-normal ap-normal
+                   :ap-transf ap-transf
+                   :auto-select-if-only auto-select-if-only
+                   :timeout timeout
+                   :prompt prompt))))))
 
 
 (defun occ-helm-select-XYZ (obj

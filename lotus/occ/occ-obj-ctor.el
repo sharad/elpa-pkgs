@@ -525,8 +525,7 @@
 
 
 (cl-defmethod occ-make-ap-transf ((ap-obj list))
-  (make-occ-ap-transform :tree-keybranch
-                         ap-obj))
+  (make-occ-ap-transf :tree-keybranch ap-obj))
 
 (cl-defmethod occ-make-ap-transf ((ap-obj occ-ap-normal))
   (let ((callables (occ-obj-ap-callables ap-obj)))
@@ -593,7 +592,7 @@
 (cl-defmethod occ-build-ap-transf ((ap-obj list)
                                   &optional
                                   optional-obj)
-  (make-occ-ap-transform ap-obj))
+  (occ-make-ap-transf ap-obj))
 
 (cl-defmethod occ-build-ap-transf ((ap-obj (head :tree-keybranch))
                                   &optional

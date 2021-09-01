@@ -38,7 +38,7 @@
                                                                      occ-return-select-function))
          (identity-sel-ret-lambda-callable (occ-build-return-lambda identity-sel-callable
                                                                     occ-return-select-label))
-         (new-callables                    (cons identity-selector-ret-lambda-callable
+         (new-callables                    (cons identity-sel-ret-lambda-callable
                                                  (mapcar #'occ-build-return-lambda
                                                          (occ-obj-ap-callables ap-obj nil)))))
     (occ-build-ap-normal (cons :callables
