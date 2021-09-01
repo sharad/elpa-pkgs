@@ -658,5 +658,14 @@
                                   candidate)))
           (occ-obj-callable-helm-actions callables
                                          candidate)))))
+
+(cl-defmethod occ-obj-ap-helm-item ((ap-obj occ-ap-normal)
+                                    (obj occ-obj))
+  (occ-obj-ap-helm-actions ap-obj obj))
+
+
+(cl-defmethod occ-obj-ap-helm-item ((ap-obj occ-ap-transf)
+                                    (obj occ-obj))
+  (occ-obj-ap-helm-transformation ap-obj))
 
 ;;; occ-obj-ctor.el ends here
