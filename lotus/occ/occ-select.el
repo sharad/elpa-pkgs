@@ -55,9 +55,8 @@
                                         action-transformer
                                         auto-select-if-only
                                         timeout
-                                        obtrusive)
-
-
+                                        obtrusive
+                                        prompt)
   "Main Machinery, TODO: Document it, NOTE: ACTION-TRANSFORMER is
 superseding ACTION, As in helm ACTION-TRANSFORMER are superseding
 ACTION "
@@ -114,7 +113,8 @@ ACTION "
                                                                                    :filters            filters
                                                                                    :builder            builder
                                                                                    :action             helm-action
-                                                                                   :action-transformer helm-action-transformer)))
+                                                                                   :action-transformer helm-action-transformer
+                                                                                   :prompt             prompt)))
                         (prog1
                             (helm :sources candidates-sources
                                   :buffer  (occ-helm-select-buffer)
@@ -132,7 +132,8 @@ ACTION "
                                action-transformer
                                auto-select-if-only
                                timeout
-                               obtrusive)
+                               obtrusive
+                               prompt)
   "TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
   (let ((action              (or ;NOTE: Adding newly
@@ -157,7 +158,8 @@ ACTION "
                                                   :action-transformer  action-transformer
                                                   :auto-select-if-only auto-select-if-only
                                                   :timeout             timeout
-                                                  :obtrusive           obtrusive)))
+                                                  :obtrusive           obtrusive
+                                                  :prompt              prompt)))
           (occ-debug :debug "occ-list-select: selected = %s" selected)
           (if return-transform
               (or selected ;as return value is going to be used.
@@ -182,9 +184,9 @@ ACTION "
                           action-transformer
                           auto-select-if-only
                           timeout
-                          obtrusive)
+                          obtrusive
+                          prompt)
   "return interactively selected TSK or NIL,   TODO: Document it."
-
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
   (unless builder (occ-error "Builder can not be nil"))
   (occ-debug :debug "occ-select((obj occ-ctx)): begin")
@@ -205,7 +207,8 @@ ACTION "
                                          :action-transformer  action-transformer
                                          :auto-select-if-only auto-select-if-only
                                          :timeout             timeout
-                                         :obtrusive           obtrusive)))
+                                         :obtrusive           obtrusive
+                                         :prompt              prompt)))
             (occ-debug :debug "occ-select((obj occ-ctx)): occ-list-select returned %s"
                        (occ-format retval 'capitalize))
             retval)
@@ -224,12 +227,10 @@ ACTION "
                           action-transformer
                           auto-select-if-only
                           timeout
-                          obtrusive)
-
+                          obtrusive
+                          prompt)
   "TODO: Document it."
-
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
-
   (occ-debug :debug "occ-select((obj null)): begin")
   (let ((retval (occ-select (occ-make-ctx-at-point)
                             :filters             filters
@@ -239,7 +240,8 @@ ACTION "
                             :action-transformer  action-transformer
                             :auto-select-if-only auto-select-if-only
                             :timeout             timeout
-                            :obtrusive           obtrusive)))
+                            :obtrusive           obtrusive
+                            :prompt              prompt)))
     (occ-debug :debug "occ-select((obj null)): occ-select((obj occ-ctx)) returned %s"
                       (occ-format retval 'capitalize))
     retval))

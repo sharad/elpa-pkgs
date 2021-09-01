@@ -36,7 +36,8 @@
 
 (cl-defmethod occ-match-select ((obj occ-obj-ctx)
                                 &key
-                                obtrusive)
+                                obtrusive
+                                prompt)
   "Will open helm selection for tsk, here return-transform must
 be NIL, using (occ-match-filters) for FILTERS"
 
@@ -57,12 +58,14 @@ be NIL, using (occ-match-filters) for FILTERS"
                 :return-transform   return-transform
                 :action-transformer action-transformer
                 :timeout            timeout
-                :obtrusive          obtrusive)))
+                :obtrusive          obtrusive
+                :prompt             prompt)))
 
 (cl-defmethod occ-list-select ((obj occ-obj-ctx)
                                &key
                                action ;; TODO: -- newly added
-                               obtrusive)
+                               obtrusive
+                               prompt)
   "Will open helm selection for tsk, here return-transform must
 be NIL, using (occ-list-filters) for FILTERS"
 
@@ -84,7 +87,8 @@ be NIL, using (occ-list-filters) for FILTERS"
                   :return-transform   return-transform
                   :action-transformer action-transformer
                   :timeout            timeout
-                  :obtrusive          obtrusive)))
+                  :obtrusive          obtrusive
+                  :prompt             prompt)))
 
 (occ-testing
  (occ-list-debug-select (occ-make-ctx-at-point)
@@ -107,7 +111,8 @@ be NIL, using (occ-list-filters) for FILTERS"
 (cl-defmethod occ-list-debug-select ((obj occ-obj-ctx)
                                      &key
                                      action
-                                     obtrusive)
+                                     obtrusive
+                                     prompt)
   "Will open helm selection for tsk, which then again run helm
 selection for actions to run on selected tsk. It is mainly meant
 for testing given action on selected tsk."
@@ -128,7 +133,8 @@ for testing given action on selected tsk."
                                         :action             action
                                         :action-transformer action-transformer
                                         :timeout            timeout
-                                        :obtrusive          obtrusive)))
+                                        :obtrusive          obtrusive
+                                        :prompt             prompt)))
         (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                           retval-ctx-tsk
                           (occ-format (occ-return-get-value retval-ctx-tsk)
@@ -150,7 +156,8 @@ for testing given action on selected tsk."
 
 (cl-defmethod occ-list-launch ((obj occ-obj-ctx)
                                &key
-                               obtrusive)
+                               obtrusive
+                               prompt)
   "TODO?: Will open helm selection for tsk, here return-transform
 must be NIL, using (occ-list-filters) for FILTERS"
 
@@ -172,7 +179,8 @@ must be NIL, using (occ-list-filters) for FILTERS"
                                       :action             action
                                       :action-transformer action-transformer
                                       :timeout            timeout
-                                      :obtrusive          obtrusive)))
+                                      :obtrusive          obtrusive
+                                      :prompt             prompt)))
        (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                          retval-ctx-tsk
                          (occ-format (occ-return-get-value retval-ctx-tsk)
@@ -184,7 +192,8 @@ must be NIL, using (occ-list-filters) for FILTERS"
            (let* ((action      (occ-get-helm-actions obj
                                                      occ-list-select-keys))
                   (ctx-tsk     (occ-return-get-value retval-ctx-tsk))
-                  (launcher    (cdr (assoc (completing-read "Action: " action) action))))
+                  (launcher    (cdr (assoc (completing-read "Action: " action)
+                                           action))))
              (funcall launcher ctx-tsk))
          (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection")))))
 

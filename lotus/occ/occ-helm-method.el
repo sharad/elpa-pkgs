@@ -77,6 +77,26 @@
                                actions))
 
 
+(defun occ-helm-build-candidate-source-prompt (prompt
+                                               candidates
+                                               unfiltered-count)
+  (let ((override       (and prompt
+                             (consp prompt)
+                             (eq :overrride (first prompt))))
+        (prompt         (when (consp prompt)
+                          (if (consp (cdr prompt))
+                              (cadr prompt)
+                            (cdr prompt))))
+        (filtered-count (length candidates)))
+    (if (and override
+             prompt)
+        prompt
+      (format "Select matching %s(%d/%d)%s"
+              (symbol-name (cl-inst-classname (car candidates)))
+              unfiltered-count
+              filtered-count
+              (format " %s" prompt)))))
+
 (cl-defmethod occ-helm-build-candidates-source ((obj        occ-ctx)
                                                 (candidates list)
                                                 &key
@@ -86,7 +106,8 @@
                                                 action
                                                 action-transformer
                                                 auto-select-if-only
-                                                timeout)
+                                                timeout
+                                                prompt)
   (let ((filtered-count (length candidates))
         (called-never   t))
      (let ((gen-candidates #'(lambda ()
@@ -105,10 +126,9 @@
                                            candidates-filtered))))))
        (when (> unfiltered-count 0)
          (let ((gen-candidate-lambda   #'(lambda () (funcall gen-candidates)))
-               (source-name            (format "Select matching %s(%d/%d)"
-                                               (symbol-name (cl-inst-classname (car candidates)))
-                                               unfiltered-count
-                                               filtered-count)))
+               (source-name            (occ-helm-build-candidate-source-prompt prompt
+                                                                               candidates
+                                                                               unfiltered-count)))
            (occ-message "occ-helm-build-candidates-source: action: %s" action)
            (helm-build-sync-source source-name
                                    :candidates                     gen-candidate-lambda
@@ -127,7 +147,8 @@
                                                  action
                                                  action-transformer
                                                  auto-select-if-only
-                                                 timeout)
+                                                 timeout
+                                                 prompt)
   (occ-message "occ-helm-build-candidates-sources: action: %s" action)
   (list (occ-helm-build-candidates-source obj
                                           candidates
@@ -135,7 +156,8 @@
                                           :filters            filters
                                           :builder            builder
                                           :action             action
-                                          :action-transformer action-transformer)
+                                          :action-transformer action-transformer
+                                          :prompt             prompt)
         (occ-helm-dummy-source "Create (fast as child)"             #'occ-fast-procreate-child)
         (occ-helm-dummy-source "Create Anonymous (fast as unnamed)" #'occ-fast-procreate-anonymous-child)
         (occ-helm-dummy-source "Create by Template (use template)"  #'occ-procreate-child-clock-in)))
