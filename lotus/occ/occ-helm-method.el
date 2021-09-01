@@ -103,8 +103,8 @@
                                                 unfiltered-count
                                                 filters
                                                 builder
-                                                action
-                                                action-transformer
+                                                ap-normal
+                                                ap-transf
                                                 auto-select-if-only
                                                 timeout
                                                 prompt)
@@ -129,14 +129,18 @@
                (source-name            (occ-helm-build-candidate-source-prompt prompt
                                                                                candidates
                                                                                unfiltered-count)))
-           (occ-message "occ-helm-build-candidates-source: action: %s" action)
-           (helm-build-sync-source source-name
-                                   :candidates                     gen-candidate-lambda
-                                   ;; :header-name
-                                   :action                         action
-                                   :filtered-candidate-transformer nil
-                                   :action-transformer             action-transformer
-                                   :history                        'org-refile-history))))))
+           (occ-message "occ-helm-build-candidates-source: ap-normal: %s" ap-normal)
+           (let ((ap-normal (occ-build-ap-normal ap-normal occ-list-select-ap-normal-keys))
+                 (ap-transf (occ-build-ap-transf ap-transf occ-list-select-ap-transf-keys)))
+             (let ((helm-actions (occ-obj-ap-helm-actions        ap-normal obj))
+                   (helm-taranfm (occ-obj-ap-helm-transformation ap-transf obj)))
+              (helm-build-sync-source source-name
+                                  :candidates gen-candidate-lambda
+                                  ;; :header-name
+                                  :ap-normal helm-actions
+                                  :ap-transf helm-taranfm
+                                  :filtered-candidate-transformer nil
+                                  :history   'org-refile-history))))))))
 
 (cl-defmethod occ-helm-build-candidates-sources ((obj        occ-ctx)
                                                  (candidates list)
@@ -144,20 +148,20 @@
                                                  unfiltered-count
                                                  filters
                                                  builder
-                                                 action
-                                                 action-transformer
+                                                 ap-normal
+                                                 ap-transf
                                                  auto-select-if-only
                                                  timeout
                                                  prompt)
   (occ-message "occ-helm-build-candidates-sources: action: %s" action)
   (list (occ-helm-build-candidates-source obj
                                           candidates
-                                          :unfiltered-count   unfiltered-count
-                                          :filters            filters
-                                          :builder            builder
-                                          :action             action
-                                          :action-transformer action-transformer
-                                          :prompt             prompt)
+                                          :unfiltered-count unfiltered-count
+                                          :filters          filters
+                                          :builder          builder
+                                          :ap-normal        ap-normal
+                                          :ap-transf        ap-transf
+                                          :prompt           prompt)
         (occ-helm-dummy-source "Create (fast as child)"             #'occ-fast-procreate-child)
         (occ-helm-dummy-source "Create Anonymous (fast as unnamed)" #'occ-fast-procreate-anonymous-child)
         (occ-helm-dummy-source "Create by Template (use template)"  #'occ-procreate-child-clock-in)))

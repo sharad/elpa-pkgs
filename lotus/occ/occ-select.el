@@ -133,8 +133,8 @@ ACTION "
                                         &key
                                         filters
                                         builder
-                                        action
-                                        action-transformer
+                                        ap-normal
+                                        ap-transf
                                         auto-select-if-only
                                         timeout
                                         obtrusive
@@ -158,9 +158,9 @@ ACTION "
         (occ-debug :debug nil))
     (occ-debug :debug "Running occ-list-select-internal")
     (prog1
-        (let ((action              (occ-build-ap-normal action occ-list-select-action-keys))
-              (action-transformer  (occ-build-ap-transf action-transformer occ-list-select-action-transformer-keys))
-              (timeout             (or timeout occ-idle-timeout)))
+        (let ((ap-normal (occ-build-ap-normal ap-normal occ-list-select-ap-normal-keys))
+              (ap-transf (occ-build-ap-transf ap-transf occ-list-select-ap-transf-keys))
+              (timeout   (or timeout occ-idle-timeout)))
 
           (let* ((candidates-unfiltered (occ-list obj
                                                   :builder   builder
