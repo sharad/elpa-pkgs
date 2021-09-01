@@ -202,7 +202,7 @@
 (cl-defstruct (occ-ap (:include occ-obj))
   "AP stand for `actions pack'"
   tree-keybranch)
-(cl-defstruct (occ-ap-noraml    (:include occ-ap))
+(cl-defstruct (occ-ap-normal (:include occ-ap))
   "AP stand for `actions pack'"
   callables)
 (cl-defstruct (occ-ap-transf (:include occ-ap-normal))

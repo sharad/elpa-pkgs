@@ -75,9 +75,9 @@ ACTION "
     (occ-debug :debug "occ-list-select-internal: minibuffer already active quitting")
     (occ-debug :debug nil)
     (prog1
-        (let ((ap-normal (occ-build-ap-normal ap-normal occ-list-select-ap-normal-keys))
-              (ap-transf (occ-build-ap-transf ap-transf occ-list-select-ap-transf-keys))
-              (timeout   (or timeout occ-idle-timeout)))
+        (let* ((ap-normal (occ-build-ap-normal ap-normal))
+               (ap-transf (occ-build-ap-transf ap-transf ap-normal))
+               (timeout   (or timeout occ-idle-timeout)))
 
           (let* ((candidates-unfiltered (occ-list obj
                                                   :builder   builder
@@ -111,9 +111,9 @@ ACTION "
                                prompt)
   "TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
-  (let ((ap-normal (occ-build-ap-normal ap-normal occ-list-select-ap-normal-keys)) ;NOTE: Adding newly
-        (ap-transf (occ-build-ap-transf ap-transf occ-list-select-ap-transf-keys))
-        (timeout   (or timeout occ-idle-timeout)))
+  (let* ((ap-normal (occ-build-ap-normal ap-normal)) ;NOTE: Adding newly
+         (ap-transf (occ-build-ap-transf ap-transf ap-normal))
+         (timeout   (or timeout occ-idle-timeout)))
     (helm-timed timeout (occ-helm-select-buffer)
       (occ-debug :debug "running occ-list-select")
       (let ((ap-normal (if return-transform (occ-return-tranform ap-normal) ap-normal)) ;as return value is going to be used.
@@ -158,9 +158,9 @@ ACTION "
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
   (unless builder (occ-error "Builder can not be nil"))
   (occ-debug :debug "occ-select((obj occ-ctx)): begin")
-  (let ((ap-normal (occ-build-ap-normal ap-normal occ-list-select-ap-normal-keys)) ;NOTE: Adding newly
-        (ap-transf (occ-build-ap-transf ap-transf occ-list-select-ap-transf-keys))
-        (timeout            (or timeout occ-idle-timeout)))
+  (let* ((ap-normal (occ-build-ap-normal ap-normal)) ;NOTE: Adding newly
+         (ap-transf (occ-build-ap-transf ap-transf ap-normal))
+         (timeout            (or timeout occ-idle-timeout)))
     (let* ((unfiltered-count (occ-length)))
       (if (> unfiltered-count 0)
           (let ((retval (occ-list-select obj

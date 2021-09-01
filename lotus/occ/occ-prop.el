@@ -783,10 +783,12 @@
                              :param-only param-only))
 
 
-(cl-defmethod occ-gen-helm-edits ((obj null) &param-only param-only)
+(cl-defmethod occ-gen-helm-edits ((obj null)
+                                  &param-only param-only)
   nil)
 
-(cl-defmethod occ-gen-helm-edits ((obj occ-obj-ctx-tsk) &param-only param-only)
+(cl-defmethod occ-gen-helm-edits ((obj occ-obj-ctx-tsk)
+                                  &param-only param-only)
   (list (occ-make-callable-normal :edit
                                   "Edit"
                                   ;; #'(lambda () (occ-props-edit obj)) -- earlier

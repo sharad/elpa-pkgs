@@ -89,74 +89,70 @@
                                    &key
                                    filters
                                    builder
-                                   action
-                                   action-transformer
+                                   ap-normal
+                                   ap-transf
                                    auto-select-if-only
                                    timeout)
   (unless builder (occ-error "Builder can not be nil"))
   (let ((filters            (or filters (occ-match-filters)))
         (builder            (or builder #'occ-build-ctxual-tsk-with))
         (return-transform   t) ;as return value is going to be used.)
-        (action             (occ-build-helm-action-direct obj ;NOTE: Adding newly
-                                                          action
-                                                          occ-list-select-action-keys))
-        (action-transformer (occ-build-helm-action-transformer obj
-                                                               action-transformer
-                                                               occ-list-select-action-transformer-keys))
         (timeout            (or timeout occ-idle-timeout)))
-    (occ-debug :debug "occ-clock-in-if-not((obj occ-ctx)): begin")
-    (if (occ-edit-clock-if-unassociated obj) ;; (occ-clock-unassociated-p obj) ;; (occ-edit-clock-if-unassociated obj)
-        (prog1                ;current clock is not matching
-            t
+    (let* ((ap-normal (occ-build-ap-normal ap-normal occ-list-select-ap-transf-keys)) ;NOTE: Adding newly
+           (ap-transf (occ-build-ap-transf ap-transf ap-normal)))
+      (occ-debug :debug "occ-clock-in-if-not((obj occ-ctx)): begin")
+      (if (occ-edit-clock-if-unassociated obj) ;; (occ-clock-unassociated-p obj) ;; (occ-edit-clock-if-unassociated obj)
+          (prog1                ;current clock is not matching
+              t
+            (occ-debug :debug
+                       "occ-clock-in-if-not: Now really going to clock with this-command=%s"
+                       this-command)
+            ;; TODO: if (occ-current-tsk) is not unnamed than ask confirmation by :auto-select-if-only 'confirm
+            (occ-debug :debug
+                       "TODO: if (occ-current-tsk) is not unnamed than ask confirmation by :auto-select-if-only 'confirm")
+            (let ((retval (occ-clock-in obj
+                                        :filters             filters
+                                        :builder             builder
+                                        :return-transform    return-transform
+                                        :action              action
+                                        :action-transformer  action-transformer
+                                        :auto-select-if-only auto-select-if-only
+                                        :timeout             timeout)))
+              (occ-debug :debug "occ-clock-in-if-not: operate %s retval %s"
+                         (occ-return-in-labels-p retval
+                                                 occ-return-quit-label
+                                                 occ-return-timeout-label)
+                         (occ-return-get-value retval))
+              (if (occ-return-in-labels-p retval
+                                          occ-return-quit-label
+                                          occ-return-timeout-label)
+                  (unless (occ-return-get-value retval)
+                    ;; BUG Urgent TODO: SOLVE ASAP ???? at (occ-clock-in-if-not obj) and (occ-clock-in obj)
+                    ;; begin occ-clock-in-curr-ctx-if-not
+                    ;; 2019-03-06 22:55:31 s: occ-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug
+                    ;; occ-clock-in-if-not: Now really going to clock.
+                    ;; in occ-clock-in occ-ctx 1
+                    ;; user input 111 retval t
+                    ;; trying to create unnamed tsk.
+                    ;; occ-maybe-create-unnamed-tsk: Already clockin unnamed tsk
+                    ;; occ-clock-in-if-not: Now really clock done.
+                    ;; not able to find associated, or intentionally not selecting a clock
+                    (if (occ-clock-marker-unnamed-clock-p)
+                        (occ-debug :debug "occ-clock-in-if-not: already clock-in into unnamed task ")
+                      (if (occ-config-clock-in)
+                          (progn
+                            (occ-debug :debug "trying to create unnamed tsk.")
+                            (occ-message "trying to create unnamed tsk.")
+                            (occ-maybe-create-clockedin-unnamed-ctxual-tsk obj))
+                        (occ-message "occ-clock-in(obj occ-ctx): clock-in not allowed."))))
+                (occ-debug :debug "occ-clock-in-if-not: Can not operate on %s"
+                           (occ-format (occ-return-get-value retval)))))
+            (occ-debug :debug "occ-clock-in-if-not: Now really clock done."))
+        (prog1
+            nil
           (occ-debug :debug
-                     "occ-clock-in-if-not: Now really going to clock with this-command=%s"
-                     this-command)
-          ;; TODO: if (occ-current-tsk) is not unnamed than ask confirmation by :auto-select-if-only 'confirm
-          (occ-debug :debug
-             "TODO: if (occ-current-tsk) is not unnamed than ask confirmation by :auto-select-if-only 'confirm")
-          (let ((retval (occ-clock-in obj
-                                      :filters             filters
-                                      :builder             builder
-                                      :return-transform    return-transform
-                                      :action              action
-                                      :action-transformer  action-transformer
-                                      :auto-select-if-only auto-select-if-only
-                                      :timeout             timeout)))
-            (occ-debug :debug "occ-clock-in-if-not: operate %s retval %s"
-                              (occ-return-in-labels-p retval
-                                                      occ-return-quit-label
-                                                      occ-return-timeout-label)
-                              (occ-return-get-value retval))
-            (if (occ-return-in-labels-p retval
-                                        occ-return-quit-label
-                                        occ-return-timeout-label)
-                (unless (occ-return-get-value retval)
-                  ;; BUG Urgent TODO: SOLVE ASAP ???? at (occ-clock-in-if-not obj) and (occ-clock-in obj)
-                  ;; begin occ-clock-in-curr-ctx-if-not
-                  ;; 2019-03-06 22:55:31 s: occ-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug
-                  ;; occ-clock-in-if-not: Now really going to clock.
-                  ;; in occ-clock-in occ-ctx 1
-                  ;; user input 111 retval t
-                  ;; trying to create unnamed tsk.
-                  ;; occ-maybe-create-unnamed-tsk: Already clockin unnamed tsk
-                  ;; occ-clock-in-if-not: Now really clock done.
-                  ;; not able to find associated, or intentionally not selecting a clock
-                  (if (occ-clock-marker-unnamed-clock-p)
-                      (occ-debug :debug "occ-clock-in-if-not: already clock-in into unnamed task ")
-                    (if (occ-config-clock-in)
-                        (progn
-                          (occ-debug :debug "trying to create unnamed tsk.")
-                          (occ-message "trying to create unnamed tsk.")
-                          (occ-maybe-create-clockedin-unnamed-ctxual-tsk obj))
-                      (occ-message "occ-clock-in(obj occ-ctx): clock-in not allowed."))))
-              (occ-debug :debug "occ-clock-in-if-not: Can not operate on %s"
-                                (occ-format (occ-return-get-value retval)))))
-          (occ-debug :debug "occ-clock-in-if-not: Now really clock done."))
-      (prog1
-          nil
-        (occ-debug :debug
-                   "occ-clock-in-if-not: Current tsk already associate to %s"
-                   (occ-format obj 'captilize))))))
+                     "occ-clock-in-if-not: Current tsk already associate to %s"
+                     (occ-format obj 'captilize)))))))
 ;; occ-clock-in-if-not
 
 
@@ -179,42 +175,38 @@
                                    &key
                                    filters
                                    builder
-                                   action
-                                   action-transformer
+                                   ap-normal
+                                   ap-transf
                                    auto-select-if-only
                                    timeout)
-  (let* ((filters            (or filters (occ-match-filters)))
-         (builder            (or builder #'occ-build-ctxual-tsk-with))
-         (action             (occ-build-helm-action-direct obj ;NOTE: Adding newly
-                                                           action
-                                                           occ-list-select-action-keys))
-         (action-transformer (occ-build-helm-action-transformer obj
-                                                                action-transformer
-                                                                occ-list-select-action-transformer-keys))
-         (timeout            (or timeout occ-idle-timeout)))
-    (occ-debug :debug "occ-clock-in-if-chg((obj occ-ctx)): begin")
-    (if (occ-consider-for-clockin-in-p)
-        (progn
-          (setq *occ-tsk-current-ctx* obj)
+  (let ((filters            (or filters (occ-match-filters)))
+        (builder            (or builder #'occ-build-ctxual-tsk-with))
+        (timeout            (or timeout occ-idle-timeout)))
+    (let* ((ap-normal (occ-build-ap-normal ap-normal occ-list-select-ap-transf-keys)) ;NOTE: Adding newly
+           (ap-transf (occ-build-ap-transf ap-transf ap-normal)))
+      (occ-debug :debug "occ-clock-in-if-chg((obj occ-ctx)): begin")
+      (if (occ-consider-for-clockin-in-p)
+          (progn
+            (setq *occ-tsk-current-ctx* obj)
 
-          (if (occ-try-to-clock-in-p obj *occ-tsk-previous-ctx*)
-              (when (occ-clock-in-if-not obj
-                                         :filters             filters
-                                         :builder             builder
-                                         :action              action
-                                         :action-transformer  action-transformer
-                                         :auto-select-if-only auto-select-if-only
-                                         :timeout             timeout)
-                (occ-debug :debug "occ-clock-in-if-chg((obj occ-ctx)): calling occ-clock-in-if-not")
-                (setq *occ-tsk-previous-ctx* *occ-tsk-current-ctx*))
-            (prog1
-                nil
-              ;; BUG *occ-tsk-previous-ctx* *occ-tsk-current-ctx* not getting
-              ;; updated with simple buffer switch as idle tiem occur. IS IT CORRECT OR BUG
-              ;; TODO: here describe reason for not trying properly, need to print where necessary.
-              (occ-describe-try-to-clock-in-p *occ-tsk-current-ctx*
-                                              *occ-tsk-previous-ctx*))))
-      (occ-debug :nodisplay "occ-clock-in-if-chg: not enough time passed."))))
+            (if (occ-try-to-clock-in-p obj *occ-tsk-previous-ctx*)
+                (when (occ-clock-in-if-not obj
+                                           :filters             filters
+                                           :builder             builder
+                                           :ap-normal           ap-normal
+                                           :ap-transf           ap-transf
+                                           :auto-select-if-only auto-select-if-only
+                                           :timeout             timeout)
+                  (occ-debug :debug "occ-clock-in-if-chg((obj occ-ctx)): calling occ-clock-in-if-not")
+                  (setq *occ-tsk-previous-ctx* *occ-tsk-current-ctx*))
+              (prog1
+                  nil
+                ;; BUG *occ-tsk-previous-ctx* *occ-tsk-current-ctx* not getting
+                ;; updated with simple buffer switch as idle tiem occur. IS IT CORRECT OR BUG
+                ;; TODO: here describe reason for not trying properly, need to print where necessary.
+                (occ-describe-try-to-clock-in-p *occ-tsk-current-ctx*
+                                                *occ-tsk-previous-ctx*))))
+        (occ-debug :nodisplay "occ-clock-in-if-chg: not enough time passed.")))))
 ;; occ-clock-in-if-chg
 
 
@@ -263,21 +255,17 @@
   (let ((ctx (occ-make-ctx-at-point)))
     (let ((filters             (occ-match-filters))
           (builder             #'occ-build-ctxual-tsk-with)
-          (action              (occ-build-helm-action-direct ctx ;NOTE: Adding newly
-                                                             nil
-                                                             occ-list-select-action-keys))
-          (action-transformer  (occ-build-helm-action-transformer ctx
-                                                                  nil
-                                                                  occ-list-select-action-transformer-keys))
           (auto-select-if-only nil) ; occ-clock-in-ctx-auto-select-if-only)
           (timeout             occ-idle-timeout))
-      (occ-clock-in-if-not ctx
-                           :filters             filters
-                           :builder             builder
-                           :action              action
-                           :action-transformer  action-transformer
-                           :auto-select-if-only auto-select-if-only
-                           :timeout             timeout))))
+      (let* ((ap-normal (occ-build-ap-normal occ-list-select-action-transformer-keys)) ;NOTE: Adding newly
+             (ap-transf (occ-build-ap-transf ap-normal)))
+        (occ-clock-in-if-not ctx
+                             :filters             filters
+                             :builder             builder
+                             :ap-normal           ap-normal
+                             :ap-transf           ap-transf
+                             :auto-select-if-only auto-select-if-only
+                             :timeout             timeout)))))
 
 ;;;###autoload
 (defun occ-clock-in-curr-ctx-if-not (&optional force)
@@ -288,28 +276,24 @@
   ;;TODO: problem
   ;; (lotus-with-other-frame-event-debug "occ-clock-in-curr-ctx-if-not" :cancel
   (progn
-    (occ-debug :debug "%s: occ-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug" (time-stamp-string)
-        (if force
-            (occ-clock-in-curr-ctx force)
-          (let ((ctx (occ-make-ctx-at-point)))
-            (let ((filters             (occ-match-filters))
-                  (builder             #'occ-build-ctxual-tsk-with)
-                  (action              (occ-build-helm-action-direct ctx ;NOTE: Adding newly
-                                                                     nil
-                                                                     '(t actions general edit)))
-                  (action-transformer  (occ-build-helm-action-transformer ctx
-                                                                          nil
-                                                                          '(t actions general edit)))
-                  (auto-select-if-only occ-clock-in-ctx-auto-select-if-only)
-                  (timeout             occ-idle-timeout))
-              (occ-clock-in-if-chg ctx
-                                   :filters             filters
-                                   :builder             builder
-                                   :action              action
-                                   :action-transformer  action-transformer
-                                   :auto-select-if-only auto-select-if-only
-                                   :timeout             timeout))))
-      (occ-debug :nodisplay "%s: end occ-clock-in-curr-ctx-if-not" (time-stamp-string)))))
+    (occ-debug :debug "%s: occ-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug" (time-stamp-string))
+    (if force
+        (occ-clock-in-curr-ctx force)
+      (let ((ctx (occ-make-ctx-at-point)))
+        (let ((filters             (occ-match-filters))
+              (builder             #'occ-build-ctxual-tsk-with)
+              (auto-select-if-only occ-clock-in-ctx-auto-select-if-only)
+              (timeout             occ-idle-timeout))
+          (let* ((ap-normal (occ-build-ap-normal '(t actions general edit))) ;NOTE: Adding newly
+                 (ap-transf (occ-build-ap-transf ap-normal)))))
+        (occ-clock-in-if-chg ctx
+                          :filters             filters
+                          :builder             builder
+                          :ap-normal           ap-normal
+                          :ap-transf           ap-transf
+                          :auto-select-if-only auto-select-if-only
+                          :timeout             timeout)))
+    (occ-debug :nodisplay "%s: end occ-clock-in-curr-ctx-if-not" (time-stamp-string))))
 
 
 ;;; Timers

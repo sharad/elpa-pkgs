@@ -30,6 +30,7 @@
 (require 'occ-obj)
 
 ;; method
+(fmakunbound 'occ-return-tranform)
 (cl-defmethod occ-return-tranform ((ap-obj occ-ap-normal))
   "Will make all action except first to return OCC-RETURN-SELECT-LABEL."
   (let* ((identity-sel-callable            (occ-make-callable-normal :select
@@ -39,7 +40,7 @@
                                                                     occ-return-select-label))
          (new-callables                    (cons identity-selector-ret-lambda-callable
                                                  (mapcar #'occ-build-return-lambda
-                                                         (occ-obj-ap-callables ap-obj)))))
+                                                         (occ-obj-ap-callables ap-obj nil)))))
     (occ-build-ap-normal (cons :callables
                                new-callables))))
 

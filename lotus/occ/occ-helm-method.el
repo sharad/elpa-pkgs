@@ -111,27 +111,25 @@
   (let ((filtered-count (length candidates))
         (called-never   t))
      (let ((gen-candidates #'(lambda ()
-                               (mapcar #'occ-candidate
-                                       (if called-never
-                                           (progn
-                                             (setq called-never nil)
-                                             candidates)
-                                         (let* ((candidates-unfiltered (occ-list obj
-                                                                                 :builder builder))
-                                                (candidates-filtered   (occ-filter obj
-                                                                                   filters
-                                                                                   candidates-unfiltered)))
-                                           (setq filtered-count
-                                                 (length candidates-filtered))
-                                           candidates-filtered))))))
+                               (let ((candidates-visible (if called-never
+                                                             (progn
+                                                               (setq called-never nil)
+                                                               candidates)
+                                                           (let* ((candidates-unfiltered (occ-list obj :builder builder))
+                                                                  (candidates-filtered   (occ-filter obj filters candidates-unfiltered)))
+                                                             (setq filtered-count
+                                                                   (length candidates-filtered))
+                                                             candidates-filtered))))
+                                 (mapcar #'occ-candidate candidates-visible)))))
+                                         
        (when (> unfiltered-count 0)
          (let ((gen-candidate-lambda   #'(lambda () (funcall gen-candidates)))
                (source-name            (occ-helm-build-candidate-source-prompt prompt
                                                                                candidates
                                                                                unfiltered-count)))
            (occ-message "occ-helm-build-candidates-source: ap-normal: %s" ap-normal)
-           (let ((ap-normal (occ-build-ap-normal ap-normal occ-list-select-ap-normal-keys))
-                 (ap-transf (occ-build-ap-transf ap-transf occ-list-select-ap-transf-keys)))
+           (let* ((ap-normal (occ-build-ap-normal ap-normal))
+                  (ap-transf (occ-build-ap-transf ap-transf ap-normal)))
              (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
                    (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
               (helm-build-sync-source source-name
@@ -168,13 +166,49 @@
 
 
 
-(defun occ-get-helm-actions-for-obj (obj
-                                     ap-normal
-                                     ap-transf)
+(cl-defmethod occ-get-first-helm-actions-for-obj ((obj occ-obj)
+                                                  (apn occ-ap-normal)
+                                                  (apt null))
   (let ((act (first (occ-obj-ap-helm-get-actions obj
-                                                 ap-normal
-                                                 ap-transf))))
-    (occ-error "Implement it %s." act)))
+                                                 apn
+                                                 apt))))
+    act))
+
+(cl-defmethod occ-get-first-helm-actions-for-obj ((obj occ-obj)
+                                                  (apn occ-ap-normal)
+                                                  (apt occ-ap-transf))
+  (let ((act (first (occ-obj-ap-helm-get-actions obj
+                                                 apn
+                                                 apt))))
+    act))
+
+;; (cl-defmethod occ-helm-act-on-single ((obj                 occ-ctx)
+;;                                       (candidates-filtered list)
+;;                                       &key
+;;                                       unfiltered-count
+;;                                       filters
+;;                                       builder
+;;                                       ap-normal
+;;                                       ap-transf
+;;                                       auto-select-if-only
+;;                                       timeout
+;;                                       prompt)
+;;   ;; OBJ ignored
+;;   "OBJ ignored"
+
+;;   (let* ((candidate   (car candidates-filtered)))
+
+;;     (let* ((helm-actions                 (occ-obj-ap-helm-item ap-normal candidate))
+;;            (helm-transfm                 (occ-obj-ap-helm-item ap-transf candiate))
+;;            (helm-first-action-via-normal (first helm-actions)))
+
+;;       (let* ((helm-actions-via-transf      (funall helm-transfm helm-actions candidate))
+;;              (helm-first-action-via-transf (first helm-actions-via-transf)))
+
+;;         (let ((helm-action-to-call (or (cdr-safe helm-first-action-via-transf) helm-first-action-via-transf
+;;                                        (cdr-safe helm-first-action-via-normal) helm-first-action-via-normal)))
+
+;;           (funcall helm-action-to-call candidate))))))
 
 (cl-defmethod occ-helm-act-on-single ((obj                 occ-ctx)
                                       (candidates-filtered list)
@@ -189,21 +223,14 @@
                                       prompt)
   ;; OBJ ignored
   "OBJ ignored"
+  (let* ((ap-normal (occ-build-ap-normal ap-normal))
+         (ap-transf (occ-build-ap-transf ap-transf ap-normal)))
+    (let* ((candidate   (car candidates-filtered))
+           (helm-action (occ-get-first-helm-actions-for-obj obj
+                                                            ap-normal
+                                                            ap-transf)))
+      (funcall helm-action candidate))))
 
-  (let* ((candidate   (car candidates-filtered)))
-
-    (let* ((helm-actions                 (occ-obj-ap-helm-item ap-normal candidate))
-           (helm-transfm                 (occ-obj-ap-helm-item ap-transf candiate))
-           (helm-first-action-via-normal (first helm-actions)))
-
-      (let* ((helm-actions-via-transf      (funall helm-transfm helm-actions candidate))
-             (helm-first-action-via-transf (first helm-actions-via-transf)))
-
-        (let ((helm-action-to-call (or (cdr-safe helm-first-action-via-transf) helm-first-action-via-transf
-                                       (cdr-safe helm-first-action-via-normal) helm-first-action-via-normal)))
-
-          (funcall helm-action-to-call candidate))))))
-    
 (cl-defmethod occ-helm-act-on-multiple ((obj        occ-ctx)
                                         (candidates-filtered list)
                                         &key
@@ -256,8 +283,8 @@
       (funcall fun obj
                candidate-filtered
                :unfiltered-count unfiltered-count
-               :filters filters
-               :builder builder
+               :filters   filters
+               :builder   builder
                :ap-normal ap-normal
                :ap-transf ap-transf
                :auto-select-if-only auto-select-if-only

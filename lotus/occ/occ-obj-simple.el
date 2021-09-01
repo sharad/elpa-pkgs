@@ -170,9 +170,7 @@
   ;; BUG: occ-list-select is become an interactive function, here it is not returning desired object.
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION for OCC-LIST-SELECT
   (let ((ctx-tsk (occ-list-select (occ-make-ctx-at-point)
-                                  :action (occ-build-helm-action-direct obj ;NOTE: Adding newly
-                                                                        nil
-                                                                        '(t actions select))
+                                  :ap-normal (ap-normal (occ-build-ap-normal ap-normal '(t actions select)))
                                   :obtrusive t)))
     (if ctx-tsk
         (occ-capture ctx-tsk
@@ -187,21 +185,15 @@
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION for OCC-LIST-SELECT
   ;; (occ-get-helm-actions nil '(t actions select)) -> nil
   (occ-list-debug-select (occ-make-ctx-at-point)
-                         :action (occ-build-helm-action-direct nil ;NOTE: Adding newly
-                                                               nil
-                                                               '(t actions select))
+                         :ap-normal (ap-normal (occ-build-ap-normal ap-normal '(t actions select)))
                          :obtrusive nil)
   (occ-list-select (occ-make-ctx-at-point)
-                   :action (occ-build-helm-action-direct nil ;NOTE: Adding newly
-                                                         nil
-                                                         '(t actions select))
+                   :ap-normal (ap-normal (occ-build-ap-normal ap-normal '(t actions select)))
                    :obtrusive nil)
 
 
   (occ-list-debug-select (occ-make-ctx-at-point)
-                         :action (occ-build-helm-action-direct nil ;NOTE: Adding newly
-                                                               nil
-                                                               '(t actions select))
+                         :ap-normal (ap-normal (occ-build-ap-normal ap-normal '(t actions select)))
                          :obtrusive nil)
 
   ;;; Group2

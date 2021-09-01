@@ -393,42 +393,45 @@
                    :value value))
 
 ;; ctors
-(defun occ-make-callable-normal (symbol
+(defun occ-make-callable-normal (keyword
                                  name
                                  fun)
   "Dynamic object"
-  (make-occ-callable-normal :symbol symbol
+  (make-occ-callable-normal :keyword keyword
                             :name   name
                             :fun    fun))
 
-(defun occ-make-callable-generator (symbol
+(defun occ-make-callable-generator (keyword
                                     name
                                     fun)
   "Dynamic object"
-  (make-occ-callable-normal :symbol symbol
+  (make-occ-callable-normal :keyword keyword
                             :name   name
                             :fun    fun))
 
-(defun occ-build-callable-normal (symbol
+(defun occ-build-callable-normal (keyword
                                   name
                                   fun)
   "Callable creation and to be stored via (OCC-HELM-CALLABLE-ADD CALLABLE)"
-  (let ((callable (occ-make-callable-normal :symbol symbol
-                                            :name   name
-                                            :fun    fun)))
+  (let ((callable (occ-make-callable-normal keyword
+                                            name
+                                            fun)))
     (occ-helm-callable-add callable)
     callable))
 
-(defun occ-build-callable-generator (symbol
+(defun occ-build-callable-generator (keyword
                                      name
                                      fun)
   "Callable creation and to be stored via (OCC-HELM-CALLABLE-ADD CALLABLE)"
-  (let ((callable (occ-make-callable-normal :symbol symbol
-                                            :name   name
-                                            :fun    fun)))
+  (let ((callable (occ-make-callable-normal keyword
+                                            name
+                                            fun)))
     (occ-helm-callable-add callable)
     callable))
 
+
+(cl-defmethod occ-obj-callable ((callable occ-callable))
+  callable)
 
 (cl-defmethod occ-callable-desc ((callable occ-callable))
   (occ-callable-name callable))
@@ -441,7 +444,7 @@
 
 
 ;; methods
-(cl-defmethod occ-obj-callables ((callable occ-callable-noraml)
+(cl-defmethod occ-obj-callables ((callable occ-callable-normal)
                                  (obj      occ-obj))
   "Return list of ((NAME . FUN) ...)"
   (list callable))
@@ -510,7 +513,7 @@
 (cl-defmethod occ-make-ap-normal ((ap-obj (head :callables)))
   (let ((callables (cdr ap-obj)))
     (make-occ-ap-normal :callables
-                        callables)))
+                        (mapcar #'occ-obj-callable callables))))
 
 (cl-defmethod occ-make-ap-normal ((ap-obj (head :keywords)))
   (let* ((keywors   (cdr ap-obj))
@@ -526,7 +529,7 @@
 (cl-defmethod occ-make-ap-transf ((ap-obj occ-ap-normal))
   (let ((callables (occ-obj-ap-callables ap-obj)))
     (make-occ-ap-transf :callables
-                       callables)))
+                        (mapcar #'occ-obj-callable callables))))
 
 (cl-defmethod occ-make-ap-transf ((ap-obj occ-ap-transf))
   ap-obj)
@@ -703,19 +706,31 @@
 
 (cl-defmethod occ-obj-ap-helm-actions ((ap-obj occ-ap-transf)
                                        (obj occ-obj))
-  ;;  BUG: from where to arrange callables ???
-  (let ((callables (occ-obj-callable-helm-actions (occ-ap-transf-callables ap-obj)
+  (occ-error "OCC-OBJ-AP-HELM-ACTIONS can not work for OCC-AP-TRANSF as it requires OCC-AP-NORMAL to run TRANSFORMATION function"))
+
+(cl-defmethod occ-obj-ap-helm-transformed-actions ((apn occ-ap-normal)
+                                                   (apt occ-ap-transf)
+                                                   (obj occ-obj))
+  (let ((callables (occ-obj-callable-helm-actions (occ-obj-ap-callables apn obj)
                                                   obj))
-        (fun       (occ-obj-ap-helm-transformation ap-obj)))
+        (fun       (occ-obj-ap-helm-transformation apt)))
     (funcall fun callables obj)))
 
 
 (cl-defmethod occ-obj-ap-helm-get-actions ((obj occ-obj)
-                                           (apn ap-normal)
-                                           (apt ap-transf))
-  (if apt
-      (occ-obj-ap-helm-actions apt obj)
-    (occ-obj-ap-helm-actions apn obj)))
+                                           (apn occ-ap-normal)
+                                           (apt occ-ap-transf))
+  (occ-obj-ap-helm-transformed-actions apn apt obj))
+
+(cl-defmethod occ-obj-ap-helm-get-actions ((obj occ-obj)
+                                           (apn occ-ap-normal)
+                                           (apt null))
+  (occ-obj-ap-helm-actions apn obj))
+
+(cl-defmethod occ-obj-ap-helm-get-actions ((obj occ-obj)
+                                           (apn null)
+                                           (apt occ-ap-transf))
+  (occ-error "test"))
 
 
 (cl-defmethod occ-obj-ap-helm-item ((ap-obj occ-ap-normal)
@@ -748,6 +763,7 @@
 (cl-assert occ-return-select-function )
 (cl-assert occ-return-select-name     )
 
+(fmakunbound 'occ-build-return-lambda)
 (cl-defmethod occ-build-return-lambda ((callable occ-callable-normal)
                                        &optional label)
   (let ((newcallable #'(lambda (candidate)
@@ -764,7 +780,7 @@
                               name
                               newcallable)))
 
-(cl-defmethod occ-build-return-lambda ((callable occ-callable-transf)
+(cl-defmethod occ-build-return-lambda ((callable occ-callable-generator)
                                        &optional label)
   (occ-error "Can not use occ-callable-transf %s" callable))
 
