@@ -86,7 +86,7 @@ ACTION "
                                                     filters
                                                     candidates-unfiltered)))
             (occ-helm-act obj
-                          candidate-filtered
+                          candidates-filtered
                           :unfiltered-count unfiltered-count
                           :filters filters
                           :builder builder
