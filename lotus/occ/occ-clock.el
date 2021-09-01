@@ -87,11 +87,11 @@
        (occ-unnamed-p obj)
        (occ-associable-p obj))
       (occ-clock-in (occ-ctsk-tsk obj)
-                    :filters            filters
-                    :builder            builder
-                    :ap-normal          ap-normal
-                    :ap-transf          ap-transf
-                    :timeout            timeout)
+                    :filters   filters
+                    :builder   builder
+                    :ap-normal ap-normal
+                    :ap-transf ap-transf
+                    :timeout   timeout)
     (occ-debug :debug
                "occ-clock-in(occ-ctxual-tsk): not clocking in (occ-unnamed-p obj)=%s (occ-associable-p obj)=%s"
                (occ-unnamed-p obj)
