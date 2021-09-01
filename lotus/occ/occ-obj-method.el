@@ -260,7 +260,7 @@
                              :filters             filters
                              :builder             builder
                              :ap-normal           ap-normal
-                             :ap-transf           ap-transf
+                             ;; :ap-transf           ap-transf
                              :auto-select-if-only auto-select-if-only
                              :timeout             timeout)))))
 
@@ -281,14 +281,14 @@
               (builder             #'occ-build-ctxual-tsk-with)
               (auto-select-if-only occ-clock-in-ctx-auto-select-if-only)
               (timeout             occ-idle-timeout))
-          (let* ((ap-normal '(t actions general edit)))))
-        (occ-clock-in-if-chg ctx
-                          :filters             filters
-                          :builder             builder
-                          :ap-normal           ap-normal
-                          :ap-transf           ap-transf
-                          :auto-select-if-only auto-select-if-only
-                          :timeout             timeout)))
+          (let* ((ap-normal '(t actions general edit)))
+            (occ-clock-in-if-chg ctx
+                                 :filters             filters
+                                 :builder             builder
+                                 :ap-normal           ap-normal
+                                 ;; :ap-transf           ap-transf
+                                 :auto-select-if-only auto-select-if-only
+                                 :timeout             timeout)))))
     (occ-debug :nodisplay "%s: end occ-clock-in-curr-ctx-if-not" (time-stamp-string))))
 
 

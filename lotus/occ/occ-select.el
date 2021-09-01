@@ -111,7 +111,7 @@ ACTION "
                                prompt)
   "TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
-  (let* ((timeout   (or timeout occ-idle-timeout)))
+  (let* ((timeout (or timeout occ-idle-timeout)))
     (helm-timed timeout (occ-helm-select-buffer)
       (occ-debug :debug "running occ-list-select")
       (progn
