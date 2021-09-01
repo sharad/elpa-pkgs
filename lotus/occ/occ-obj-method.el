@@ -113,8 +113,8 @@
                                         :filters             filters
                                         :builder             builder
                                         :return-transform    return-transform
-                                        :action              action
-                                        :action-transformer  action-transformer
+                                        :ap-normal           ap-normal
+                                        :ap-transf           ap-transf
                                         :auto-select-if-only auto-select-if-only
                                         :timeout             timeout)))
               (occ-debug :debug "occ-clock-in-if-not: operate %s retval %s"
