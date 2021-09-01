@@ -486,16 +486,16 @@
 
 ;; ctors
 (cl-defmethod occ-make-ap-normal ((ap-obj list))
-  (make-occ-ap-normal :keybranch
+  (make-occ-ap-normal :tree-keybranch
                       ap-obj))
 
 (cl-defmethod occ-make-ap-normal ((ap-obj occ-ap-normal))
   ap-obj)
 
-(cl-defmethod occ-make-ap-normal ((ap-obj (head :keybranch)))
-  (let ((keybranch (cdr ap-obj)))
-    (make-occ-ap-normal :keybranch
-                        keybranch)))
+(cl-defmethod occ-make-ap-normal ((ap-obj (head :tree-keybranch)))
+  (let ((tree-keybranch (cdr ap-obj)))
+    (make-occ-ap-normal :tree-keybranch
+                        tree-keybranch)))
 
 (cl-defmethod occ-make-ap-normal ((ap-obj (head :callables)))
   (let ((callables (cdr ap-obj)))
@@ -510,7 +510,7 @@
 
 
 (cl-defmethod occ-make-ap-trans ((ap-obj list))
-  (make-occ-ap-transform :keybranch
+  (make-occ-ap-transform :tree-keybranch
                          ap-obj))
 
 (cl-defmethod occ-make-ap-trans ((ap-obj occ-ap-normal))
@@ -521,10 +521,10 @@
 (cl-defmethod occ-make-ap-trans ((ap-obj occ-ap-trans))
   ap-obj)
 
-(cl-defmethod occ-make-ap-trans ((ap-obj (head :keybranch)))
-  (let ((keybranch (cdr ap-obj)))
-    (make-occ-ap-trans :keybranch
-                        keybranch)))
+(cl-defmethod occ-make-ap-trans ((ap-obj (head :tree-keybranch)))
+  (let ((tree-keybranch (cdr ap-obj)))
+    (make-occ-ap-trans :tree-keybranch
+                        tree-keybranch)))
 
 (cl-defmethod occ-make-ap-trans ((ap-obj (head :callables)))
   (let ((callables (cdr ap-obj)))
@@ -547,9 +547,9 @@
 (cl-defmethod occ-build-ap-normal ((ap-obj list)
                                    &optional
                                    optional-obj)
-  (make-occ-ap-normal :keybranch ap-obj))
+  (make-occ-ap-normal :tree-keybranch ap-obj))
 
-(cl-defmethod occ-build-ap-normal ((ap-obj (head :keybranch))
+(cl-defmethod occ-build-ap-normal ((ap-obj (head :tree-keybranch))
                                    &optional
                                    optional-obj)
   (occ-make-ap-normal ap-obj))
@@ -580,7 +580,7 @@
                                   optional-obj)
   (make-occ-ap-transform ap-obj))
 
-(cl-defmethod occ-build-ap-trans ((ap-obj (head :keybranch))
+(cl-defmethod occ-build-ap-trans ((ap-obj (head :tree-keybranch))
                                   &optional
                                   optional-obj)
   (occ-make-ap-trans ap-obj))
@@ -616,18 +616,18 @@
   (occ-make-ap-trans optional-obj))
 
 
-(cl-defmethod occ-obj-ap-keybranch ((ap-obj occ-ap)
+(cl-defmethod occ-obj-ap-tree-keybranch ((ap-obj occ-ap)
                                     (obj    occ-obj))
-  (unless (occ-ap-keybranch ap-obj)
-    (occ-error "occ-ap obj %s missing keybranch %s" ap-obj keybranch))
-  keybranch)
+  (unless (occ-ap-tree-keybranch ap-obj)
+    (occ-error "occ-ap obj %s missing tree-keybranch %s" ap-obj tree-keybranch))
+  tree-keybranch)
 
 (cl-defmethod occ-obj-ap-callables ((ap-obj occ-ap-normal)
                                     (obj occ-obj))
   (unless (occ-ap-callables ap-obj)
-    (let ((keybranch (occ-obj-ap-keybranch ap-obj)))
+    (let ((tree-keybranch (occ-obj-ap-tree-keybranch ap-obj)))
       (let ((callables (occ-get-callables obj ;; ???
-                                          (occ-get-alist-from-tree keybranch))))
+                                          (occ-get-alist-from-tree tree-keybranch))))
         (setf (occ-ap-callables ap-obj) callables))))
   (occ-ap-callables ap-obj))
 
