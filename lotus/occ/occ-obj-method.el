@@ -98,8 +98,7 @@
         (builder            (or builder #'occ-build-ctxual-tsk-with))
         (return-transform   t) ;as return value is going to be used.)
         (timeout            (or timeout occ-idle-timeout)))
-    (let* ((ap-normal (occ-build-ap-normal ap-normal occ-list-select-ap-transf-keys)) ;NOTE: Adding newly
-           (ap-transf (occ-build-ap-transf ap-transf ap-normal)))
+    (let* ((ap-normal occ-list-select-ap-transf-keys))
       (occ-debug :debug "occ-clock-in-if-not((obj occ-ctx)): begin")
       (if (occ-edit-clock-if-unassociated obj) ;; (occ-clock-unassociated-p obj) ;; (occ-edit-clock-if-unassociated obj)
           (prog1                ;current clock is not matching
@@ -182,8 +181,7 @@
   (let ((filters            (or filters (occ-match-filters)))
         (builder            (or builder #'occ-build-ctxual-tsk-with))
         (timeout            (or timeout occ-idle-timeout)))
-    (let* ((ap-normal (occ-build-ap-normal ap-normal occ-list-select-ap-transf-keys)) ;NOTE: Adding newly
-           (ap-transf (occ-build-ap-transf ap-transf ap-normal)))
+    (let* ((ap-normal occ-list-select-ap-transf-keys))
       (occ-debug :debug "occ-clock-in-if-chg((obj occ-ctx)): begin")
       (if (occ-consider-for-clockin-in-p)
           (progn
@@ -257,8 +255,7 @@
           (builder             #'occ-build-ctxual-tsk-with)
           (auto-select-if-only nil) ; occ-clock-in-ctx-auto-select-if-only)
           (timeout             occ-idle-timeout))
-      (let* ((ap-normal (occ-build-ap-normal occ-list-select-action-transformer-keys)) ;NOTE: Adding newly
-             (ap-transf (occ-build-ap-transf ap-normal)))
+      (let* ((ap-normal occ-list-select-ap-transf-keys))
         (occ-clock-in-if-not ctx
                              :filters             filters
                              :builder             builder
@@ -284,8 +281,7 @@
               (builder             #'occ-build-ctxual-tsk-with)
               (auto-select-if-only occ-clock-in-ctx-auto-select-if-only)
               (timeout             occ-idle-timeout))
-          (let* ((ap-normal (occ-build-ap-normal '(t actions general edit))) ;NOTE: Adding newly
-                 (ap-transf (occ-build-ap-transf ap-normal)))))
+          (let* ((ap-normal '(t actions general edit)))))
         (occ-clock-in-if-chg ctx
                           :filters             filters
                           :builder             builder
