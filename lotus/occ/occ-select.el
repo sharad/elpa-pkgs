@@ -117,10 +117,10 @@ ACTION "
     (helm-timed timeout (occ-helm-select-buffer)
       (occ-debug :debug "running occ-list-select")
 
-      (error "Change code here for occ-return-tranform and occ-return-tranformer-fun-transform and apply everywhere occ-build-helm-ap-transf")
+      ;; (error "Change code here for occ-return-tranform and occ-return-tranform and apply everywhere occ-build-helm-ap-transf")
 
       (let ((ap-normal (if return-transform (occ-return-tranform ap-normal) ap-normal)) ;as return value is going to be used.
-            (ap-transf (if return-transform (occ-return-tranformer-fun-transform ap-transf) ap-transf)))
+            (ap-transf (if return-transform (occ-return-tranform ap-transf) ap-transf)))
         (occ-message "occ-list-select: ap-normal: %s" ap-normal)
         (let ((selected (occ-list-select-internal obj
                                                   :filters             filters

@@ -114,17 +114,19 @@
          (new-callables                    (cons identity-selector-ret-lambda-callable
                                                  (mapcar #'occ-build-return-lambda
                                                          (occ-obj-ap-callables ap-obj)))))
-    (occ-make-ap-normal (cons :callables
-                              new-callables))))
+    (occ-build-ap-normal (cons :callables
+                               new-callables))))
 
- (cl-defmethod occ-return-tranformer-fun-transform ((ap-transf-obj occ-ap-transf))
+ (cl-defmethod occ-return-tranform ((ap-transf-obj occ-ap-transf))
    "Will make transformer fun to change action except first to return occ-return-label."
-   #'(lambda (action
-              candidate)
-       (let* ((fun           (occ-ap-transf-transform ap-transf-obj))
-              (ap-normal-obj (funcall fun
-                                      action candidate)))
-         (occ-return-tranform ap-normal-obj))))
+   (let ((fun #'(lambda (action
+                         candidate)
+                  (let* ((fun           (occ-ap-transf-transform ap-transf-obj))
+                         (ap-normal-obj (funcall fun
+                                                 action candidate)))
+                    (occ-return-tranform ap-normal-obj)))))
+     (occ-build-ap-transf (cons :transform
+                                fun))))
 
 ;; (cl-defmethod occ-return-operate-p (retval)
 ;;   retval)
