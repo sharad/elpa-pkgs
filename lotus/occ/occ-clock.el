@@ -40,8 +40,8 @@
                             &key
                             filters
                             builder
-                            action
-                            action-transformer
+                            ap-normal
+                            ap-transf
                             timeout)
   (error "Can not clock in NIL"))
 
@@ -49,8 +49,8 @@
                             &key
                             filters
                             builder
-                            action
-                            action-transformer
+                            ap-normal
+                            ap-transf
                             timeout)
   (occ-debug :debug "occ-clock-in(marker=%s)" obj)
   (let ((org-log-note-clock-out nil))
@@ -67,8 +67,8 @@
                             &key
                             filters
                             builder
-                            action
-                            action-transformer
+                            ap-normal
+                            ap-transf
                             timeout)
   (occ-debug :debug "occ-clock-in(occ-tsk=%s)" obj)
   (if (occ-config-clock-in)
@@ -79,8 +79,8 @@
                             &key
                             filters
                             builder
-                            action
-                            action-transformer
+                            ap-normal
+                            ap-transf
                             timeout)
   (occ-debug :debug "occ-clock-in(occ-ctsk=%s)" obj)
   (if (or
@@ -89,8 +89,8 @@
       (occ-clock-in (occ-ctsk-tsk obj)
                     :filters            filters
                     :builder            builder
-                    :action             action
-                    :action-transformer action-transformer
+                    :ap-normal          ap-normal
+                    :ap-transf          ap-transf
                     :timeout            timeout)
     (occ-debug :debug
                "occ-clock-in(occ-ctxual-tsk): not clocking in (occ-unnamed-p obj)=%s (occ-associable-p obj)=%s"
@@ -101,8 +101,8 @@
                             &key
                             filters
                             builder
-                            action
-                            action-transformer
+                            ap-normal
+                            ap-transf
                             timeout)
   ;;TODO add org-insert-log-not
   "return "
@@ -152,11 +152,11 @@
                (occ-unnamed-p obj)
                (occ-associable-p obj))
               (occ-clock-in obj-tsk
-                            :filters            filters
-                            :builder            builder
-                            :action             action
-                            :action-transformer action-transformer
-                            :timeout            timeout)
+                            :filters   filters
+                            :builder   builder
+                            :ap-normal ap-normal
+                            :ap-transf ap-transf
+                            :timeout   timeout)
             (occ-debug :debug
                        "occ-clock-in(occ-ctxual-tsk): not clocking in (occ-unnamed-p obj)=%s (occ-associable-p obj)=%s"
                        (occ-unnamed-p obj)
@@ -199,27 +199,27 @@
                             filters
                             builder
                             return-transform
-                            action
-                            action-transformer
+                            ap-normal
+                            ap-transf
                             auto-select-if-only
                             timeout)
   "Clock-in selected CTXUAL-TSK for occ-ctx OBJ or open interface for adding properties to heading."
   (unless builder (error "Builder can not be nil"))
   (occ-debug :debug "occ-clock-in(occ-ctx=%s)" obj)
   (if (occ-clockable-p obj)
-    (let ((filters            (or filters (occ-match-filters)))
-          (builder            (or builder #'occ-build-ctxual-tsk-with))
-          (action             (or action (occ-get-helm-actions obj '(t actions general))))
-          (action-transformer (or action-transformer (occ-get-helm-actions-genertator obj '(t actions general edit))))
-          (timeout            (or timeout occ-idle-timeout)))
+    (let ((filters   (or filters (occ-match-filters)))
+          (builder   (or builder #'occ-build-ctxual-tsk-with))
+          (ap-normal '(t actions general))
+          (ap-transf '(t actions general edit))
+          (timeout   (or timeout occ-idle-timeout)))
       (occ-debug :debug "occ-clock-in((obj occ-ctx)): begin")
       (let ((returned-ctxual-tsk
                (occ-select obj ;TODO: if only one match then where it is selecting that.
-                           :filters             filters
-                           :builder             builder
-                           :return-transform    t ;Here I know return value is going to be used, so passing t
-                           :action              action ;as return value is going to be used.
-                           :action-transformer  action-transformer
+                           :filters          filters
+                           :builder          builder
+                           :return-transform t ;Here I know return value is going to be used, so passing t
+                           :ap-normal        ap-normal ;as return value is going to be used.
+                           :ap-transf        ap-transf
                            :auto-select-if-only auto-select-if-only
                            :timeout             timeout)))
         (occ-debug :debug "occ-clock-in((obj occ-ctx)): selected  returned-ctxual-tsk=%s ret-label=%s value=%s"
@@ -234,11 +234,11 @@
                        (occ-make-return occ-return-true-label nil))
                 (if (occ-ctxual-tsk-p ctxual-tsk)
                     (occ-clock-in ctxual-tsk
-                                  :filters            filters
-                                  :builder            builder
-                                  :action             action
-                                  :action-transformer action-transformer
-                                  :timeout            timeout)
+                                  :filters   filters
+                                  :builder   builder
+                                  :ap-normal ap-normal
+                                  :ap-transf ap-transf
+                                  :timeout   timeout)
                   (occ-message "%s is not ctxual-tsk" (occ-format ctxual-tsk 'capitalize)))))
           (progn
             ;; here create unnamed tsk, no need
@@ -252,12 +252,12 @@
             (occ-debug :debug "occ-clock-in((obj occ-ctx)): calling occ-safe-ignore-quit-props-window-edit")
             (occ-message "occ-clock-in: Edit properties of a tsk to make associable to current context.")
             (occ-safe-ignore-quit-props-window-edit obj
-                                                    :filters            (occ-list-filters)
-                                                    :builder            #'occ-build-ctsk-with
-                                                    :return-transform   return-transform ;Here caller know if return value is going to be used.
-                                                    :action             action
-                                                    :action-transformer action-transformer
-                                                    :timeout            timeout)))))
+                                                    :filters          (occ-list-filters)
+                                                    :builder          #'occ-build-ctsk-with
+                                                    :return-transform return-transform ;Here caller know if return value is going to be used.
+                                                    :ap-normal        ap-normal
+                                                    :ap-transf        ap-transf
+                                                    :timeout          timeout)))))
     (occ-debug :debug "ctx %s is not clockable." obj)))
 
 
@@ -265,16 +265,16 @@
                                           &key
                                           filters
                                           builder
-                                          action
-                                          action-transformer
+                                          ap-normal
+                                          ap-transf
                                           timeout)
   (let ((ctxtual-tsk (occ-build-ctxual-tsk obj)))
     (when ctxtual-tsk
       (occ-clock-in ctxtual-tsk
-                    :filters            filters
-                    :builder            builder
-                    :action             action
-                    :action-transformer action-transformer
+                    :filters   filters
+                    :builder   builder
+                    :ap-normal ap-normal
+                    :ap-transf ap-transf
                     :timeout            timeout))))
 
 
@@ -282,36 +282,36 @@
                                 &key
                                 filters
                                 builder
-                                action
-                                action-transformer
+                                ap-normal
+                                ap-transf
                                 timeout)
   (occ-clock-in obj
-                :filters            filters
-                :builder            builder
-                :action             action
-                :action-transformer action-transformer
-                :timeout            timeout))
+                :filters   filters
+                :builder   builder
+                :ap-normal ap-normal
+                :ap-transf ap-transf
+                :timeout   timeout))
 
 (cl-defmethod occ-try-clock-in ((obj occ-obj-tsk)
                                 &key
                                 filters
                                 builder
-                                action
-                                action-transformer
+                                ap-normal
+                                ap-transf
                                 timeout)
   (occ-clock-in obj
-                :filters            filters
-                :builder            builder
-                :action             action
-                :action-transformer action-transformer
-                :timeout            timeout))
+                :filters   filters
+                :builder   builder
+                :ap-normal ap-normal
+                :ap-transf ap-transf
+                :timeout   timeout))
 
 (cl-defmethod occ-try-clock-in ((obj occ-ctsk)
                                 &key
                                 filters
                                 builder
-                                action
-                                action-transformer
+                                ap-normal
+                                ap-transf
                                 timeout)
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj))
@@ -323,11 +323,11 @@
                    (- total-tries try))
       (occ-props-edit ctxtual-tsk))
     (unless (occ-clock-in-if-associable ctxtual-tsk
-                                        :filters            filters
-                                        :builder            builder
-                                        :action             action
-                                        :action-transformer action-transformer
-                                        :timeout            timeout)
+                                        :filters   filters
+                                        :builder   builder
+                                        :ap-normal ap-normal
+                                        :ap-transf ap-transf
+                                        :timeout   timeout)
       (occ-message "%s is not associable with %s not clocking-in."
                    (occ-format tsk 'capitalize)
                    (occ-format ctx 'capitalize)))))
@@ -336,38 +336,38 @@
                                 &key
                                 filters
                                 builder
-                                action
-                                action-transformer
+                                ap-normal
+                                ap-transf
                                 timeout)
   (occ-clock-in obj
-                :filters            filters
-                :builder            builder
-                :action             action
-                :action-transformer action-transformer
-                :timeout            timeout))
+                :filters   filters
+                :builder   builder
+                :ap-normal ap-normal
+                :ap-transf ap-transf
+                :timeout   timeout))
 
 
 (cl-defmethod occ-try-fast-clock-in ((obj marker)
                                      &key
                                      filters
                                      builder
-                                     action
-                                     action-transformer
+                                     ap-normal
+                                     ap-transf
                                      timeout)
   (occ-clock-in obj
-                :filters            filters
-                :builder            builder
-                :action             action
-                :action-transformer action-transformer
-                :timeout            timeout))
+                :filters   filters
+                :builder   builder
+                :ap-normal ap-normal
+                :ap-transf ap-transf
+                :timeout   timeout))
 
 
 (cl-defmethod occ-try-fast-clock-in ((obj occ-ctsk)
                                      &key
                                      filters
                                      builder
-                                     action
-                                     action-transformer
+                                     ap-normal
+                                     ap-transf
                                      timeout)
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj))
@@ -378,11 +378,11 @@
       (setq retval
             (occ-edit-properties obj '(timebeing add 10))))
     (unless (occ-clock-in-if-associable ctxtual-tsk
-                                        :filters            filters
-                                        :builder            builder
-                                        :action             action
-                                        :action-transformer action-transformer
-                                        :timeout            timeout)
+                                        :filters   filters
+                                        :builder   builder
+                                        :ap-normal ap-normal
+                                        :ap-transf ap-transf
+                                        :timeout   timeout)
       (occ-message "%s is not associable with %s not clocking-in."
                    (occ-format tsk 'capitalize)
                    (occ-format ctx 'capitalize)))))
@@ -403,12 +403,12 @@
 
 
 
-  ;; #f(compiled-function (arg1 &rest rest) "Clock-in selected CTXUAL-TSK for occ-ctx OBJ or open interface for adding properties to heading." #<bytecode 0x409975d>)(#s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) :filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :return-transform t :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :action-transformer #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7)
-  ;; apply(#f(compiled-function (arg1 &rest rest) "Clock-in selected CTXUAL-TSK for occ-ctx OBJ or open interface for adding properties to heading." #<bytecode 0x409975d>) #s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) (:filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :return-transform t :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :action-transformer #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7))
-  ;; occ-clock-in(#s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) :filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :return-transform t :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :action-transformer #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7)
-  ;; #f(compiled-function (arg1 &rest rest) #<bytecode 0x57a9181>)(#s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) :filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :action-transformer #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7)
-  ;; apply(#f(compiled-function (arg1 &rest rest) #<bytecode 0x57a9181>) #s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) (:filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :action-transformer #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7))
-  ;; occ-clock-in-if-not(#s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) :filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :action-transformer #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7)
+  ;; #f(compiled-function (arg1 &rest rest) "Clock-in selected CTXUAL-TSK for occ-ctx OBJ or open interface for adding properties to heading." #<bytecode 0x409975d>)(#s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) :filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :return-transform t :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :ap-transf #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7)
+  ;; apply(#f(compiled-function (arg1 &rest rest) "Clock-in selected CTXUAL-TSK for occ-ctx OBJ or open interface for adding properties to heading." #<bytecode 0x409975d>) #s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) (:filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :return-transform t :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :ap-transf #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7))
+  ;; occ-clock-in(#s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) :filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :return-transform t :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :ap-transf #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7)
+  ;; #f(compiled-function (arg1 &rest rest) #<bytecode 0x57a9181>)(#s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) :filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :ap-transf #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7)
+  ;; apply(#f(compiled-function (arg1 &rest rest) #<bytecode 0x57a9181>) #s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) (:filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :ap-transf #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7))
+  ;; occ-clock-in-if-not(#s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) :filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :ap-transf #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7)
   ;; occ-clock-in-curr-ctx(nil)
   ;; occ-run-curr-ctx-timer()
   ;; occ-clock-in-curr-ctx-if-not-timer-function(nil)
