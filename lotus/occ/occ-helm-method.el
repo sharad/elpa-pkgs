@@ -167,6 +167,15 @@
         (occ-helm-dummy-source "Create by Template (use template)"  #'occ-procreate-child-clock-in)))
 
 
+
+(defun occ-get-helm-actions-for-obj (obj
+                                     ap-normal
+                                     ap-transf)
+  (let ((act (first (occ-obj-ap-helm-get-actions obj
+                                                 ap-normal
+                                                 ap-transf))))
+    (occ-error "Implement it %s." act)))
+
 (cl-defmethod occ-helm-act-on-single ((obj                 occ-ctx)
                                       (candidates-filtered list)
                                       &key

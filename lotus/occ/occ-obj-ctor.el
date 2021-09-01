@@ -669,13 +669,31 @@
           (occ-obj-callable-helm-actions callables
                                          candidate)))))
 
+(cl-defmethod occ-obj-ap-helm-actions ((ap-obj occ-ap-transf)
+                                       (obj occ-obj))
+  ;;  BUG: from where to arrange callables ???
+  (let ((callables (occ-obj-callable-helm-actions (occ-ap-transf-callables ap-obj)
+                                                  obj))
+        (fun       (occ-obj-ap-helm-transformation ap-obj)))
+    (funcall fun callables obj)))
+
+
+(cl-defmethod occ-obj-ap-helm-get-actions ((obj occ-obj)
+                                           (apn ap-normal)
+                                           (apt ap-transf))
+  (if apt
+      (occ-obj-ap-helm-actions apt obj)
+    (occ-obj-ap-helm-actions apn obj)))
+
+
 (cl-defmethod occ-obj-ap-helm-item ((ap-obj occ-ap-normal)
                                     (obj occ-obj))
+  "Return actions"
   (occ-obj-ap-helm-actions ap-obj obj))
-
 
 (cl-defmethod occ-obj-ap-helm-item ((ap-obj occ-ap-transf)
                                     (obj occ-obj))
+  "Return lambda function which do transformation on actions and return actions"
   (occ-obj-ap-helm-transformation ap-obj))
 
 ;;; occ-obj-ctor.el ends here
