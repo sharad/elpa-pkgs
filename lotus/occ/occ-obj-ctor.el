@@ -434,6 +434,14 @@
 (cl-defmethod occ-obj-callable ((callable occ-callable))
   callable)
 
+(cl-defmethod occ-obj-callable-internal ((callable list))
+  (let ((keyword (nth 0 (callable)))
+        (name    (nth 0 (callable)))
+        (fun     (nth 0 (callable))))
+    (occ-make-callable-normal keyword
+                              name
+                              fun)))
+
 (cl-defmethod occ-obj-callable-normal ((callable list))
   (let ((keyword (nth 0 (callable)))
         (name    (nth 0 (callable)))
@@ -446,9 +454,9 @@
   (let ((keyword (nth 0 (callable)))
         (name    (nth 0 (callable)))
         (fun     (nth 0 (callable))))
-    (occ-make-callable-normal keyword
-                              name
-                              fun)))
+    (occ-make-callable-generator keyword
+                                 name
+                                 fun)))
 
 (cl-defmethod occ-obj-callable ((callable list))
   (occ-obj-callable-normal callable))

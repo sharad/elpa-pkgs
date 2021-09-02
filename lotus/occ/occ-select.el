@@ -166,7 +166,7 @@ ACTION "
                                          :timeout             timeout
                                          :obtrusive           obtrusive
                                          :prompt              prompt)))
-            (occ-debug :debug "occ-select((obj occ-ctx)): occ-list-select returned %s"
+            (occ-message "occ-select((obj occ-ctx)): occ-list-select returned %s"
                        (occ-format retval 'capitalize))
             retval)
         (prog1
@@ -209,15 +209,12 @@ ACTION "
        (occ-list-select-keys-1 '(t actions general))
        (occ-list-select-keys-2 '(t actions select)))
    (occ-select obj
-               :filters            (occ-list-filters)
-               :builder            #'occ-build-ctsk-with
-               :action             (occ-get-helm-actions obj
-                                                         occ-list-select-keys-1)
-               :action-transformer #'(lambda (action candidate)
-                                       (occ-get-helm-actions obj
-                                                             occ-list-select-keys-2))
-               :return-transform   nil
-               :timeout            occ-idle-timeout
-               :obtrusive         t)))
+               :filters          (occ-list-filters)
+               :builder          #'occ-build-ctsk-with
+               :ap-normal        occ-list-select-keys-1
+               :ap-transf        occ-list-select-keys-2
+               :return-transform nil
+               :timeout          occ-idle-timeout
+               :obtrusive        t)))
 
 ;;; occ-select.el ends here
