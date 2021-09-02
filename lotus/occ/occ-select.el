@@ -35,9 +35,6 @@
 (require 'occ-helm)
 
 
-(defvar occ-list-select-ap-normal-keys '(t ap-normals general))
-(defvar occ-list-select-ap-transf-keys '(t actions general edit))
-
 ;; TODO:
 ;; (helm-resume-select-buffer)
 ;; helm-buffers

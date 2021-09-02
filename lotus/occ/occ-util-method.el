@@ -28,7 +28,7 @@
 (provide 'occ-util-method)
 
 
-
+(require 'occ-util-common)
 
 (defvar occ-list-select-keys occ-list-select-ap-normal-keys)
 ;; (setq occ-list-select-keys '(t actions normal))

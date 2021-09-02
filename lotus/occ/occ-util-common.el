@@ -39,6 +39,10 @@
 (defvar occ-debug-uncond nil "occ-debug-uncond")
 
 
+(defvar occ-list-select-ap-normal-keys '(t ap-normals general))
+(defvar occ-list-select-ap-transf-keys '(t actions general edit))
+
+
 ;; DEPENDENCY remove it.
 (defun dirname-of-file (file &optional final-slash)
   ;; (ido-no-final-slash
