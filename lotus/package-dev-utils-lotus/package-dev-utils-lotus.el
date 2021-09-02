@@ -176,12 +176,12 @@ or nil if the version cannot be parsed."
   (let ((default-directory dir))
     (add-to-list 'load-path dir)
     (dolist (file (directory-files dir t ".el$"))
-      (unless (or
-               (string-match "^.*-pkg.el$" file)
-               (string-match "^#.*-pkg.el$" file)
-               (string-match "^\..*-pkg.el$" file))
+      (unless (or (string-match "^.*-pkg.el$" file)
+                  (string-match "^#.*-pkg.el$" file)
+                  (string-match "^\..*-pkg.el$" file))
         (message "loading file %s" file)
         (load-file file)))))
+        
 
 ;;;###autoload
 (defun package-build-package-from-dir (dir &optional update-source-pkg-desc)
@@ -224,7 +224,7 @@ or nil if the version cannot be parsed."
            (format "%s-%s" pkg-name version)
            tmp-dir)))
 
-    (package-load-package-from-dir dir)
+    ;; (package-load-package-from-dir dir)
     (message "building package %s" pkg-name)
     (when (or (file-exists-p currdir-pkg-def-file)
               (y-or-n-p
@@ -292,16 +292,19 @@ or nil if the version cannot be parsed."
         (let ((pkgdir-def-file-buff (find-buffer-visiting pkgdir-def-file)))
           (when pkgdir-def-file-buff (kill-buffer pkgdir-def-file-buff))))
 
-      (let ((default-directory tmp-dir))
-        (prog1
-            (if (shell-command
-                 (format "tar cf %s/%s-%s.tar -C %s %s-%s"
-                         tmp-dir pkg-name version
-                         tmp-dir
-                         pkg-name version))
-                (format "%s/%s-%s.tar"
-                        tmp-dir pkg-name version))
-          (message "built package %s" pkg-name))))))
+      (let ((default-directory tmp-dir)
+            (pkg-tar-file-name (if (shell-command
+                                    (format "tar cf %s/%s-%s.tar -C %s %s-%s"
+                                            tmp-dir pkg-name version
+                                            tmp-dir
+                                            pkg-name version))
+                                   (format "%s/%s-%s.tar"
+                                           tmp-dir pkg-name version))))
+        (progn
+          (message "built package %s" pkg-name)
+          (package-load-package-from-dir dir)
+          pkg-tar-file-name)))))
+    
 
 ;;;###autoload
 (defun package-upload-package-from-dir (dir &optional archive)

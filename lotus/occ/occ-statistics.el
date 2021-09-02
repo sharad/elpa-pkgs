@@ -27,6 +27,12 @@
 (provide 'occ-statistics)
 
 
+(require 'ert)
+(require 'ert-x)
+
+
+
+
 ;; https://www.khanacademy.org/math/statistics-probability/summarizing-quantitative-data/mean-median-basics/a/mean-median-and-mode-review
 ;; https://www150.statcan.gc.ca/n1/edu/power-pouvoir/ch12/5214891-eng.htm
 

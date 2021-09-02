@@ -57,14 +57,15 @@
 (provide 'occ-obj-ctor)
 
 
+(eval-when-compile
+  (require 'occ-macros))
+(require 'occ-macros)
 (require 'occ-obj-common)
 (require 'occ-tree)
 (require 'occ-obj)
-(require 'occ-prop)
+;; (require 'occ-prop)
 (require 'occ-rank)
 (require 'occ-property-rank-methods)
-(eval-when-compile
-  (require 'occ-macros))
 
 
 (defvar occ-global-tsk-collection-spec        nil)

@@ -37,6 +37,7 @@
   (require 'occ-macros))
 (require 'occ-macros)
 (require 'occ-obj)
+(require 'occ-obj-ctor)
 (require 'occ-debug-method)
 (require 'occ-obj-method)
 (require 'occ-helm-method)
