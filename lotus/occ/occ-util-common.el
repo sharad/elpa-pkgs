@@ -39,7 +39,7 @@
 (defvar occ-debug-uncond nil "occ-debug-uncond")
 
 
-(defvar occ-list-select-ap-normal-keys '(t ap-normals general))
+(defvar occ-list-select-ap-normal-keys '(t actions general))
 (defvar occ-list-select-ap-transf-keys '(t actions general edit))
 
 

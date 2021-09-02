@@ -62,11 +62,33 @@
                      (remove-if-not #'(lambda (callable) (eq (occ-callable-keyword callable) key))
                                     occ-helm-callables))
                  keylist)))
+;; ;; replacement of (occ-get-helm-actions-plist)
+;; (cl-defmethod occ-get-callables ((obj occ-obj-tsk) keylist)
+;;   ;; TODO: do we require (apply #'append ...)
+;;   (append (mapcar #'(lambda (callable)
+;;                       (occ-callable-methods callable obj))
+;;                   (occ-helm-callables-get keylist))))
+
+;; (cl-defmethod occ-get-callables ((obj occ-obj) keylist)
+;;   ;; TODO: do we require (apply #'append ...)
+;;   (append (mapcar #'(lambda (callable)
+;;                       (occ-callable-methods callable obj))
+;;                   (occ-helm-callables-get keylist))))
+
+
 ;; replacement of (occ-get-helm-actions-plist)
-(cl-defmethod occ-get-callables ((obj occ-obj-tsk) keylist)
+(cl-defmethod occ-get-callables ((obj occ-obj-tsk)
+                                 keylist)
   ;; TODO: do we require (apply #'append ...)
   (append (mapcar #'(lambda (callable)
-                      (occ-callable-methods callable obj))
+                      (occ-obj-callables callable obj))
+                  (occ-helm-callables-get keylist))))
+
+(cl-defmethod occ-get-callables ((obj occ-obj)
+                                 keylist)
+  ;; TODO: do we require (apply #'append ...)
+  (append (mapcar #'(lambda (callable)
+                      (occ-obj-callables callable obj))
                   (occ-helm-callables-get keylist))))
 
 
@@ -82,10 +104,10 @@
          actions))
 
 
-;; (defun occ-get-alist-from-tree (keys)
+;; (defun occ-get-keywords-list-from-tree (keys)
 ;;   (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))
 
-(defun occ-get-alist-from-tree (tree-keybranch)
+(defun occ-get-keywords-list-from-tree (tree-keybranch)
   (tree-collect-items occ-helm-actions-tree ;tree
                       nil                   ;predicate
                       tree-keybranch      ;arg
@@ -98,12 +120,12 @@
 (cl-defmethod occ-get-helm-actions ((obj null) tree-keybranch)
   ;; (occ-message "occ-get-helm-actions: called with obj = %s, tree-keybranch = %s" obj tree-keybranch)
   (append (occ-get-callables obj
-                             (occ-get-alist-from-tree tree-keybranch))))
+                             (occ-get-keywords-list-from-tree tree-keybranch))))
 
 (cl-defmethod occ-get-helm-actions ((obj occ-obj) tree-keybranch)
   ;; (occ-message "occ-get-helm-actions: called with obj = %s, tree-keybranch = %s" obj tree-keybranch)
   (append (occ-get-callables obj
-                             (occ-get-alist-from-tree tree-keybranch))))
+                             (occ-get-keywords-list-from-tree tree-keybranch))))
 
 (cl-defmethod occ-get-helm-actions-genertator ((obj null) tree-keybranch)
   #'(lambda (action candidate)
@@ -235,19 +257,22 @@
   (occ-get-helm-actions nil '(t actions select)))
 
 (occ-testing
- (occ-get-alist-from-tree '(t actions select))
- (occ-get-alist-from-tree '(t actions general))
- (occ-get-alist-from-tree '(t actions general edit))
- (occ-get-alist-from-tree '(t actions select general edit))
+ (occ-get-keywords-list-from-tree '(t actions select))
+ (occ-get-keywords-list-from-tree '(t actions general))
+ (occ-get-keywords-list-from-tree '(t actions general edit))
+ (occ-get-keywords-list-from-tree '(t actions select general edit))
+ (occ-helm-callables-get (occ-get-keywords-list-from-tree '(t actions select general edit)))
+ (occ-get-callables (occ-make-ctx-at-point)
+                    (occ-get-keywords-list-from-tree '(t actions select general edit)))
 
  (tree-collect-items occ-helm-actions-tree nil '(t actions general) 0)
 
  (occ-get-helm-actions-plist nil
-                             (car (occ-get-alist-from-tree '(t actions general))))
+                             (car (occ-get-keywords-list-from-tree '(t actions general))))
 
  (apply #'append
         (mapcar #'(lambda (name-action-key)
                     (occ-get-helm-actions-plist nil name-action-key))
-                (occ-get-alist-from-tree '(t actions general)))))
+                (occ-get-keywords-list-from-tree '(t actions general)))))
 
 ;;; occ-helm.el ends here

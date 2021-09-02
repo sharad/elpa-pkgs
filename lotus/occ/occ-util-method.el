@@ -108,7 +108,7 @@ be NIL, using (occ-list-filters) for FILTERS"
                                      obtrusive
                                      prompt)
   "Will open helm selection for tsk, which then again run helm
-selection for ap-normals to run on selected tsk. It is mainly meant
+selection for ap-normal to run on selected tsk. It is mainly meant
 for testing given ap-normal on selected tsk."
 
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL

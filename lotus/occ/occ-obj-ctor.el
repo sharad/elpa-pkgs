@@ -517,7 +517,7 @@
                         (mapcar #'occ-obj-callable callables))))
 
 (cl-defmethod occ-make-ap-normal ((ap-obj (head :keywords)))
-  (let* ((keywors   (cdr ap-obj))
+  (let* ((keywords  (cdr ap-obj))
          (callables (occ-helm-callables-get keywords)))
    (make-occ-ap-normal :callables
                        callables)))
@@ -640,15 +640,22 @@
                                          (obj    occ-obj))
   (unless (occ-ap-tree-keybranch ap-obj)
     (occ-error "occ-ap obj %s missing tree-keybranch %s" ap-obj tree-keybranch))
-  tree-keybranch)
+  (occ-ap-tree-keybranch ap-obj))
 
 (cl-defmethod occ-obj-ap-callables ((ap-obj occ-ap-normal)
                                     (obj occ-obj))
   (unless (occ-ap-normal-callables ap-obj)
-    (let ((tree-keybranch (occ-obj-ap-tree-keybranch ap-obj)))
-      (let ((callables (occ-get-callables obj ;; ???
-                                          (occ-get-alist-from-tree tree-keybranch))))
-        (setf (occ-ap-normal-callables ap-obj) caollables))))
+    (let ((tree-keybranch (occ-obj-ap-tree-keybranch ap-obj obj)))
+      (let* ((keywords-list (occ-get-keywords-list-from-tree tree-keybranch))
+             (callables     (occ-get-callables obj ;; ???
+                                               keywords-list)))
+        (unless keywords-list
+          (occ-error "keywords-list %s should be a keywords list for tree-keybranch %s"
+                     keywords-list tree-keybranch))
+        (when tree-keybranch
+          (cl-assert callables)
+          (cl-assert keywords-list))
+        (setf (occ-ap-normal-callables ap-obj) callables))))
   (occ-ap-normal-callables ap-obj))
 
 (cl-defmethod occ-obj-ap-transform ((ap-obj occ-ap-transf))

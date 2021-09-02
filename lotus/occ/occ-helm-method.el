@@ -250,8 +250,8 @@
     (let* ((ap-normal (occ-build-ap-normal ap-normal))
            (ap-transf (occ-build-ap-transf ap-transf
                                            (cons :callables (occ-obj-ap-callables ap-normal obj)))))
-      (let* ((ap-normal (if return-transform (occ-return-tranform ap-normal) ap-normal)) ;as return value is going to be used.
-             (ap-transf (if return-transform (occ-return-tranform ap-transf) ap-transf)))
+      (let* ((ap-normal (if return-transform (occ-return-tranform ap-normal obj) ap-normal)) ;as return value is going to be used.
+             (ap-transf (if return-transform (occ-return-tranform ap-transf obj) ap-transf)))
         (let ((fun (if (and auto-select-if-only
                             (= 1 (length candidates-filtered)))
                        #'occ-helm-act-on-single
