@@ -130,7 +130,7 @@
                (source-name            (occ-helm-build-candidate-source-prompt prompt
                                                                                candidates
                                                                                unfiltered-count)))
-           (occ-message "occ-helm-build-candidates-source: ap-normal: %s" ap-normal)
+           (occ-debug "occ-helm-build-candidates-source: ap-normal: %s" ap-normal)
            (let* ((ap-normal (occ-build-ap-normal ap-normal))
                   (ap-transf (occ-build-ap-transf ap-transf ap-normal)))
              (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
