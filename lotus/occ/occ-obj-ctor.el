@@ -682,7 +682,7 @@
 
 (cl-defmethod occ-obj-ap-callables ((ap-obj occ-ap-normal)
                                     (obj occ-obj))
-  (occ-message "occ-obj-ap-callables: ap-obj = %s" ap-obj)
+  (occ-debug "occ-obj-ap-callables: ap-obj = %s" ap-obj)
   (unless (occ-ap-normal-callables ap-obj)
     (let ((tree-keybranch (occ-obj-ap-tree-keybranch ap-obj obj)))
       (let* ((keywords-list (occ-get-keywords-list-from-tree tree-keybranch))
@@ -702,41 +702,13 @@
   (unless (occ-ap-transf-transform ap-obj)
     (let ((transform #'(lambda (action
                                 candidate-obj)
-                         (occ-message "occ-obj-ap-transform: lambda: ap-obj = %s" ap-obj)
+                         (occ-debug "occ-obj-ap-transform: lambda: ap-obj = %s" ap-obj)
                          (let ((callables (occ-obj-ap-callables ap-obj candidate-obj)))
-                           (occ-message "occ-obj-ap-transform: lambda: transform: callables = %s" callables)
+                           (occ-debug "occ-obj-ap-transform: lambda: transform: callables = %s" callables)
                            (occ-make-ap-normal (cons :callables callables))))))
-      (occ-message "occ-obj-ap-transform: setting transform tp %s" transform)
+      (occ-debug "occ-obj-ap-transform: setting transform tp %s" transform)
       (setf (occ-ap-transf-transform ap-obj) transform)))
   (occ-ap-transf-transform ap-obj))
-
-
-(occ-testing ;; old code
-
- (cl-defgeneric occ-get-helm-actions-tree (obj keys)
-   "occ-get-helm-actions-tree")
-
- (cl-defmethod occ-get-helm-actions-tree ((obj null) keys)
-   ;; (occ-message "occ-get-helm-actions-tree: called with obj = %s, keys = %s" obj keys)
-   (apply #'append
-          (mapcar #'(lambda (name-action-key)
-                      (occ-get-helm-actions-plist obj name-action-key))
-                  (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))))
-
- (cl-defmethod occ-get-helm-actions-tree ((obj occ-obj) keys)
-   ;; (occ-message "occ-get-helm-actions-tree: called with obj = %s, keys = %s" obj keys)
-   (apply #'append
-          (mapcar #'(lambda (name-action-key)
-                      (occ-get-helm-actions-plist obj name-action-key))
-                  (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))))
-
- (cl-defmethod occ-get-helm-actions-tree-genertator ((obj null) keys)
-   #'(lambda (action candidate-obj)
-       (occ-get-helm-actions-tree candidate-obj keys)))
-
- (cl-defmethod occ-get-helm-actions-tree-genertator ((obj occ-obj) keys)
-   #'(lambda (action candidate-obj)
-       (occ-get-helm-actions-tree candidate-obj keys))))
 
 
 (cl-defmethod occ-obj-ap-helm-actions ((ap-obj list)
@@ -762,16 +734,16 @@
     (cl-assert transform)
     #'(lambda (action
                candidate-obj)
-        (occ-message "occ-obj-ap-helm-transformation: lambda: transform %s" transform)
+        (occ-debug "occ-obj-ap-helm-transformation: lambda: transform %s" transform)
         (cl-assert transform)
         (let ((ap-normal-obj (funcall transform
                                       action
                                       candidate-obj)))
-          (occ-message "helm-transformation: got ap-normal-obj = %s" ap-normal-obj)
+          (occ-debug "helm-transformation: got ap-normal-obj = %s" ap-normal-obj)
           (let ((helm-actions (occ-obj-ap-helm-actions ap-normal-obj
                                                        candidate-obj)))
             (cl-assert helm-actions)
-            (occ-message "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
+            (occ-debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
             helm-actions)))))
 
 
