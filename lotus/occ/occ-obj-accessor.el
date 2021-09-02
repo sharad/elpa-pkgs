@@ -100,6 +100,226 @@
 (cl-defmethod occ-obj-buffer ((obj occ-obj-tsk))
   (occ-obj-buffer (occ-tsk-marker (occ-obj-tsk obj))))
 
+;; move to assessor
+(cl-defmethod occ-obj-callable ((callable occ-callable))
+  callable)
+
+(cl-defmethod occ-obj-callable-internal ((callable list) (type symbol))
+  (let ((callable-ctor (if (eq type :normal)
+                           #'occ-make-callable-normal
+                         (if (eq type :generator)
+                             #'occ-make-callable-generator
+                           (occ-error "occ-obj-callable-internal: type is not one of (:normal :generator)")))))
+    (let ((keyword (nth 0 (callable)))
+          (name    (nth 0 (callable)))
+          (fun     (nth 0 (callable))))
+      (funcall callable-ctor keyword name fun))))
+
+(cl-defmethod occ-obj-callable-normal ((callable list))
+  (occ-obj-callable-internal callable :normal))
+
+(cl-defmethod occ-obj-callable-generator ((callable list))
+  (occ-obj-callable-internal callable :generator))
+
+(cl-defmethod occ-obj-callable ((callable list))
+  (occ-obj-callable-normal callable))
+
+;; TODO: Consider preparing
+;; (cl-defmethod occ-obj-callable-normal (xyz)
+;;   (occ-error "Implement it"))
+
+;; (cl-defmethod occ-obj-callable-generator (xyz)
+;;   (occ-error "Implement it"))
+
+
+(cl-defmethod occ-callable-desc ((callable occ-callable))
+  (occ-callable-name callable))
+
+(cl-defmethod occ-obj-callable-desc ((callable occ-callable))
+  (occ-callable-desc callable))
+
+(cl-defmethod occ-obj-callable-name ((callable occ-callable))
+  (occ-callable-name callable))
+
+;; methods
+(cl-defmethod occ-obj-callables ((callable occ-callable-normal)
+                                 (obj      occ-obj))
+  "Return list of ((NAME . FUN) ...)"
+  (list callable))
+
+(cl-defmethod occ-obj-callables ((callable occ-callable-generator)
+                                 (obj      occ-obj))
+  "Return list of ((NAME . FUN) ...)"
+  (let ((fun (occ-callable-fun callable)))
+    (let ((callables (funcall fun obj
+                              :param-only nil)))
+      (cl-assert (cl-every #'occ-callable-p
+                           callables))
+      (cl-assert (cl-every #'occ-callable-normal-p
+                           callables))
+      callables)))
+
+;; methods
+
+(cl-defmethod occ-obj-callable-helm-action ((callable occ-callable))
+  "Return pair or (NAME . FUN)"
+  (cons (occ-callable-name callable)
+        (occ-callable-fun  callable)))
+
+;; methods
+
+(cl-defmethod occ-obj-callable-helm-actions ((callables list)
+                                             (obj occ-obj))
+  "Return list of ((NAME . FUN) ...)"
+  (mapcar #'occ-obj-callable-helm-action
+          callables))
+
+(cl-defmethod occ-obj-callable-helm-actions ((callable occ-callable)
+                                             (obj occ-obj))
+  "Return list of ((NAME . FUN) ...)"
+  (let ((callables (occ-obj-callables callable
+                                      obj)))
+    (occ-obj-callable-helm-actions callables)))
+
+(cl-defmethod occ-obj-callable-helm-actions ((callables (head :callables))
+                                             (obj occ-obj))
+  "Return list of ((NAME . FUN) ...)"
+  (let ((callables (cdr callables)))
+    (occ-obj-callable-helm-actions callables)))
+
+(cl-defmethod occ-obj-callable-helm-actions ((callables (head :keywords))
+                                             (obj occ-obj))
+  "Return list of ((NAME . FUN) ...)"
+  (let* ((keywords  (cdr callables))
+         (callables (occ-helm-callables-get keywords)))
+    (occ-obj-callable-helm-actions callables)))
+
+
+;; TODO: Consider preparing
+(cl-defmethod occ-obj-ap (xyz)
+  (occ-error "Implement it"))
+
+(cl-defmethod occ-obj-ap-normal (xyz)
+  (occ-error "Implement it"))
+
+(cl-defmethod occ-obj-ap-transf (xyz)
+  (occ-error "Implement it"))
+
+
+(cl-defmethod occ-obj-ap-tree-keybranch ((ap-obj occ-ap)
+                                         (obj    occ-obj))
+  (unless (occ-ap-tree-keybranch ap-obj)
+    (occ-error "occ-ap obj %s missing tree-keybranch %s" ap-obj tree-keybranch))
+  (occ-ap-tree-keybranch ap-obj))
+
+(cl-defmethod occ-obj-ap-callables ((ap-obj occ-ap-normal)
+                                    (obj occ-obj))
+  (occ-debug :debug "occ-obj-ap-callables: ap-obj = %s" ap-obj)
+  (unless (occ-ap-normal-callables ap-obj)
+    (let ((tree-keybranch (occ-obj-ap-tree-keybranch ap-obj obj)))
+      (let* ((keywords-list (occ-get-keywords-list-from-tree tree-keybranch))
+             (callables     (occ-get-callables obj ;; ???
+                                               keywords-list)))
+        (unless keywords-list
+          (occ-error "keywords-list %s should be a keywords list for tree-keybranch %s"
+                     keywords-list tree-keybranch))
+        (when tree-keybranch
+          (cl-assert callables)
+          (cl-assert keywords-list))
+        (setf (occ-ap-normal-callables ap-obj) callables))))
+  (occ-ap-normal-callables ap-obj))
+
+(cl-defmethod occ-obj-ap-transform ((ap-obj occ-ap-transf))
+  "This return callables"
+  (unless (occ-ap-transf-transform ap-obj)
+    (let ((transform #'(lambda (action
+                                candidate-obj)
+                         (occ-debug :debug "occ-obj-ap-transform: lambda: ap-obj = %s" ap-obj)
+                         (let ((callables (occ-obj-ap-callables ap-obj candidate-obj)))
+                           (occ-debug :debug "occ-obj-ap-transform: lambda: transform: callables = %s" callables)
+                           (occ-make-ap-normal (cons :callables callables))))))
+      (occ-debug :debug "occ-obj-ap-transform: setting transform tp %s" transform)
+      (setf (occ-ap-transf-transform ap-obj) transform)))
+  (occ-ap-transf-transform ap-obj))
+
+
+(cl-defmethod occ-obj-ap-helm-actions ((ap-obj list)
+                                       (obj occ-obj))
+  (let* ((ap-obj    (occ-build-ap-normal ap-obj obj))
+         (callables (occ-obj-ap-callables ap-obj obj)))
+    (occ-obj-callable-helm-actions callables
+                                   obj)))
+
+(cl-defmethod occ-obj-ap-helm-actions ((ap-obj occ-ap-normal)
+                                       (obj occ-obj))
+  (let ((callables (occ-obj-ap-callables ap-obj obj)))
+    (occ-obj-callable-helm-actions callables
+                                   obj)))
+
+(cl-defmethod occ-obj-ap-helm-actions ((ap-obj occ-ap-transf)
+                                       (obj occ-obj))
+  (occ-error "OCC-OBJ-AP-HELM-ACTIONS can not work for OCC-AP-TRANSF as it requires OCC-AP-NORMAL to run TRANSFORMATION function"))
+
+
+(cl-defmethod occ-obj-ap-helm-transformation ((ap-obj occ-ap-transf))
+  (let ((transform (occ-obj-ap-transform ap-obj)))
+    (cl-assert transform)
+    #'(lambda (action
+               candidate-obj)
+        (occ-debug :debug "occ-obj-ap-helm-transformation: lambda: transform = %s" transform)
+        (cl-assert transform)
+        (let ((ap-normal-obj (funcall transform
+                                      action
+                                      candidate-obj)))
+          (occ-debug :debug "helm-transformation: got ap-normal-obj = %s" ap-normal-obj)
+          (let ((helm-actions (occ-obj-ap-helm-actions ap-normal-obj
+                                                       candidate-obj)))
+            (cl-assert helm-actions)
+            (occ-debug :debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
+            helm-actions)))))
+
+
+(cl-defmethod occ-obj-ap-helm-transformed-actions ((apn occ-ap-normal)
+                                                   (apt occ-ap-transf)
+                                                   (obj occ-obj))
+  (let ((callables (occ-obj-callable-helm-actions (occ-obj-ap-callables apn obj)
+                                                  obj))
+        (fun       (occ-obj-ap-helm-transformation apt)))
+    (funcall fun callables obj)))
+
+
+(cl-defmethod occ-obj-ap-helm-get-actions ((obj occ-obj)
+                                           (apn occ-ap-normal)
+                                           (apt occ-ap-transf))
+  (occ-obj-ap-helm-transformed-actions apn apt obj))
+
+(cl-defmethod occ-obj-ap-helm-get-actions ((obj occ-obj)
+                                           (apn occ-ap-normal)
+                                           (apt null))
+  (occ-obj-ap-helm-actions apn obj))
+
+(cl-defmethod occ-obj-ap-helm-get-actions ((obj occ-obj)
+                                           (apn null)
+                                           (apt occ-ap-transf))
+  (occ-error "test"))
+
+
+(cl-defmethod occ-obj-ap-helm-item ((ap-obj occ-ap-normal)
+                                    (obj occ-obj))
+  "Return actions"
+  (occ-obj-ap-helm-actions ap-obj obj))
+
+(cl-defmethod occ-obj-ap-helm-item ((ap-obj occ-ap-transf)
+                                    (obj occ-obj))
+  "Return lambda function which do transformation on actions and return actions"
+  (occ-obj-ap-helm-transformation ap-obj))
+
+
+
+
+
+
+
 
 (defun occ-case (case title)
   (if (fboundp case)
