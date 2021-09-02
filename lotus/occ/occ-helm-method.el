@@ -248,7 +248,8 @@
                             prompt)
   (when candidates-filtered
     (let* ((ap-normal (occ-build-ap-normal ap-normal))
-           (ap-transf (occ-build-ap-transf ap-transf ap-normal)))
+           (ap-transf (occ-build-ap-transf ap-transf
+                                           (cons :callables (occ-obj-ap-callables ap-normal obj)))))
       (let* ((ap-normal (if return-transform (occ-return-tranform ap-normal) ap-normal)) ;as return value is going to be used.
              (ap-transf (if return-transform (occ-return-tranform ap-transf) ap-transf)))
         (let ((fun (if (and auto-select-if-only

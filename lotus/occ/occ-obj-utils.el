@@ -44,27 +44,31 @@
 ;;     (occ-build-ap-normal (cons :callables
 ;;                                new-callables))))
 
-(cl-defmethod occ-return-tranform ((ap-obj occ-ap-normal))
+(cl-defmethod occ-return-tranform ((ap-obj occ-ap-normal)
+                                   (obj occ-obj))
   "Will make all action except first to return OCC-RETURN-SELECT-LABEL."
   (let* ((identity-sel-callable            (occ-make-callable-normal :select
                                                                      occ-return-select-name
                                                                      occ-return-select-function))
          (identity-sel-ret-lambda-callable (occ-build-return-lambda identity-sel-callable
                                                                     occ-return-select-label))
+         (callables                        (occ-obj-ap-callables ap-obj obj))
          (new-callables                    (cons identity-sel-ret-lambda-callable
                                                  (mapcar #'occ-build-return-lambda
-                                                         (occ-ap-normal-callables ap-obj))))) ;;BUG to fix
+                                                         callables)))) ;;BUG to fix
+    (cl-assert callables)
     (occ-build-ap-normal (cons :callables
                                new-callables))))
 
-(cl-defmethod occ-return-tranform ((ap-transf-obj occ-ap-transf))
+(cl-defmethod occ-return-tranform ((ap-transf-obj occ-ap-transf)
+                                   (obj occ-obj))
   "Will make transformer fun to change action except first to return occ-return-label."
   (let ((fun #'(lambda (action
                         candidate)
                  (let* ((fun           (occ-ap-transf-transform ap-transf-obj))
                         (ap-normal-obj (funcall fun
                                                 action candidate)))
-                   (occ-return-tranform ap-normal-obj)))))
+                   (occ-return-tranform ap-normal-obj obj)))))
     (occ-build-ap-transf (cons :transform
                                fun))))
 

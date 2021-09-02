@@ -533,6 +533,7 @@
 
 (cl-defmethod occ-make-ap-transf ((ap-obj occ-ap-normal))
   (let ((callables (occ-ap-normal-callables ap-obj)))
+    (cl-assert callables t "ap-obj should have callable")
     (make-occ-ap-transf :callables
                         (mapcar #'occ-obj-callable callables))))
 
