@@ -447,7 +447,7 @@
 (cl-defmethod occ-make-ap-normal ((ap-obj (head :callables)))
   (let ((callables (cdr ap-obj)))
     (make-occ-ap-normal :callables
-                        (occ-obj-callables callables))))
+                        (occ-obj-callables callables nil))))
 
 (cl-defmethod occ-make-ap-normal ((ap-obj (head :keywords)))
   (let* ((keywords  (cdr ap-obj))
@@ -463,7 +463,7 @@
   (let ((callables (occ-ap-normal-callables ap-obj)))
     (cl-assert callables t "ap-obj should have callable")
     (make-occ-ap-transf :callables
-                        (occ-obj-callables callables))))
+                        (occ-obj-callables callables nil))))
 
 (cl-defmethod occ-make-ap-transf ((ap-obj occ-ap-transf))
   ap-obj)

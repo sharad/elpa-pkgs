@@ -180,7 +180,7 @@
                                              (obj occ-obj))
   "Return list of ((NAME . FUN) ...)"
   (mapcar #'occ-obj-callable-helm-action
-          (occ-obj-callables callables)))
+          (occ-obj-callables callables nil)))
 
 (cl-defmethod occ-obj-callable-helm-actions ((callable occ-callable)
                                              (obj occ-obj))
