@@ -154,7 +154,7 @@
                                                  auto-select-if-only
                                                  timeout
                                                  prompt)
-  (occ-message "occ-helm-build-candidates-sources: ap-normal: %s" ap-normal)
+  (occ-debug "occ-helm-build-candidates-sources: ap-normal: %s" ap-normal)
   (list (occ-helm-build-candidates-source obj
                                           candidates
                                           :unfiltered-count unfiltered-count
@@ -222,7 +222,7 @@
                                             (helm-refresh)
                                           (occ-debug :debug "Running occ-list-select-internal helm is gone"))))
            ;; :keymap occ-helm-map
-           (occ-message "occ-list-select-internal: ap-normal: %s" ap-normal)
+           (occ-debug "occ-helm-act-on-multiple: ap-normal: %s" ap-normal)
            (let ((candidates-sources (occ-helm-build-candidates-sources obj
                                                                         candidates-filtered
                                                                         :unfiltered-count unfiltered-count
