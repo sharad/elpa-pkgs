@@ -148,21 +148,17 @@
                (source-name            (occ-helm-build-candidate-source-prompt prompt
                                                                                candidates
                                                                                unfiltered-count)))
-           (occ-message "occ-helm-build-candidates-source: ap-normal: %s" ap-normal)
-           (occ-message "occ-helm-build-candidates-source: ap-transf: %s" ap-transf)
-           (let* ((ap-normal (occ-build-ap-normal ap-normal))
-                  (ap-transf (occ-build-ap-transf ap-transf ap-normal)))
-             (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
-                   (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
-               (occ-message "occ-helm-build-candidates-source: helm-actions: %s" helm-actions)
-               (occ-message "occ-helm-build-candidates-source: helm-transfm: %s" helm-transfm)
-              (helm-build-sync-source source-name
-                                  :candidates gen-candidate-lambda
-                                  ;; :header-name
-                                  :action helm-actions
-                                  :action-transformer helm-transfm
-                                  :filtered-candidate-transformer nil
-                                  :history   'org-refile-history))))))))
+           (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
+                 (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
+             (occ-message "occ-helm-build-candidates-source: helm-actions: %s" helm-actions)
+             (occ-message "occ-helm-build-candidates-source: helm-transfm: %s" helm-transfm)
+             (helm-build-sync-source source-name
+               :candidates gen-candidate-lambda
+               ;; :header-name
+               :action helm-actions
+               :action-transformer helm-transfm
+               :filtered-candidate-transformer nil
+               :history   'org-refile-history)))))))
 
 (cl-defmethod occ-helm-build-candidates-sources ((obj        occ-ctx)
                                                  (candidates list)
@@ -274,6 +270,8 @@
     (let* ((ap-normal (occ-build-ap-normal ap-normal))
            (ap-transf (occ-build-ap-transf ap-transf
                                            (cons :callables (occ-obj-ap-callables ap-normal obj)))))
+      (occ-message "occ-helm-act: ap-normal: %s" ap-normal)
+      (occ-message "occ-helm-act: ap-transf: %s" ap-transf)
       (let* ((ap-normal (if return-transform (occ-return-tranform ap-normal obj) ap-normal)) ;as return value is going to be used.
              (ap-transf (if return-transform (occ-return-tranform ap-transf obj) ap-transf)))
         (let ((fun (if (and auto-select-if-only
