@@ -377,16 +377,14 @@
 
 (cl-defmethod occ-make-tsk-collection ((file-spec (head :tree)))
   (unless occ-global-tsk-collection
-    (let ((collection (make-occ-tree-collection
-                       :name "tsk collection tree"
-                       :roots (cdr file-spec))))
+    (let ((collection (make-occ-tree-collection :name  "tsk collection tree"
+                                                :roots (cdr file-spec))))
       (setf occ-global-tsk-collection collection))))
 
 (cl-defmethod occ-make-tsk-collection ((file-spec (head :list)))
   (unless occ-global-tsk-collection
-    (let ((collection (make-occ-list-collection
-                       :name "tsk collection list"
-                       :roots (cdr dir-spec))))
+    (let ((collection (make-occ-list-collection :name  "tsk collection list"
+                                                :roots (cdr dir-spec))))
       (setf occ-global-tsk-collection collection))))
 
 
@@ -401,16 +399,16 @@
                                  fun)
   "Dynamic object"
   (make-occ-callable-normal :keyword keyword
-                            :name   name
-                            :fun    fun))
+                            :name    name
+                            :fun     fun))
 
 (defun occ-make-callable-generator (keyword
                                     name
                                     fun)
   "Dynamic object"
   (make-occ-callable-normal :keyword keyword
-                            :name   name
-                            :fun    fun))
+                            :name    name
+                            :fun     fun))
 
 (defun occ-build-callable-normal (keyword
                                   name
