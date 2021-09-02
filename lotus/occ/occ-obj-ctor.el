@@ -435,15 +435,15 @@
   callable)
 
 (cl-defmethod occ-obj-callable-internal ((callable list) (type symbol))
-  (let ((keyword (nth 0 (callable)))
-        (name    (nth 0 (callable)))
-        (fun     (nth 0 (callable))))
-    (let ((callable-ctor (if (eq type :normal)
-                             #'occ-make-callable-normal
-                           (if (eq type :generator)
-                               #'occ-make-callable-generator
-                             (occ-error "occ-obj-callable-internal: type is not one of (:normal :generator)"))))))
-    (funcall callable-ctor keyword name fun)))
+  (let ((callable-ctor (if (eq type :normal)
+                           #'occ-make-callable-normal
+                         (if (eq type :generator)
+                             #'occ-make-callable-generator
+                           (occ-error "occ-obj-callable-internal: type is not one of (:normal :generator)")))))
+    (let ((keyword (nth 0 (callable)))
+          (name    (nth 0 (callable)))
+          (fun     (nth 0 (callable))))
+      (funcall callable-ctor keyword name fun))))
 
 (cl-defmethod occ-obj-callable-normal ((callable list))
   (occ-obj-callable-internal callable :normal))
