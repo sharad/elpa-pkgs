@@ -697,7 +697,6 @@
  (cl-defmethod occ-get-helm-actions-tree-genertator ((obj occ-obj) keys)
    #'(lambda (action candidate-obj)
        (occ-get-helm-actions-tree candidate-obj keys))))
- 
 
 
 (cl-defmethod occ-obj-ap-helm-actions ((ap-obj occ-ap-normal)
