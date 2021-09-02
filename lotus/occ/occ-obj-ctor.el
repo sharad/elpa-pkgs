@@ -644,6 +644,7 @@
 
 (cl-defmethod occ-obj-ap-callables ((ap-obj occ-ap-normal)
                                     (obj occ-obj))
+  (occ-message "occ-obj-ap-callables: ap-obj = %s" ap-obj)
   (unless (occ-ap-normal-callables ap-obj)
     (let ((tree-keybranch (occ-obj-ap-tree-keybranch ap-obj obj)))
       (let* ((keywords-list (occ-get-keywords-list-from-tree tree-keybranch))
@@ -663,9 +664,12 @@
   (unless (occ-ap-transf-transform ap-obj)
     (let ((transform #'(lambda (action
                                 candidate-obj)
-                         (occ-make-ap-normal (cons :callables
-                                                   (occ-obj-ap-callables ap-obj candidate-obj))))))
-      (setf (occ-ap-transf ap-obj) transform)))
+                         (occ-message "occ-obj-ap-transform: lambda: ap-obj = %s" ap-obj)
+                         (let ((callables (occ-obj-ap-callables ap-obj candidate-obj)))
+                           (occ-message "occ-obj-ap-transform: lambda: transform: callables = %s" callables)
+                           (occ-make-ap-normal (cons :callables callables))))))
+      (occ-message "occ-obj-ap-transform: setting transform tp %s" transform)
+      (setf (occ-ap-transf-transform ap-obj) transform)))
   (occ-ap-transf-transform ap-obj))
 
 
@@ -703,19 +707,28 @@
     (occ-obj-callable-helm-actions callables
                                    obj)))
 
-(cl-defmethod occ-obj-ap-helm-transformation ((ap-obj occ-ap-transf))
-  (let ((transform (occ-obj-ap-transform ap-obj)))
-    #'(lambda (action
-               candidate-obj)
-        (let ((ap-normal-obj (funcall transform
-                                      action
-                                      candidate-obj)))
-          (occ-obj-ap-helm-actions ap-normal-obj
-                                   candidate-obj)))))
-
 (cl-defmethod occ-obj-ap-helm-actions ((ap-obj occ-ap-transf)
                                        (obj occ-obj))
   (occ-error "OCC-OBJ-AP-HELM-ACTIONS can not work for OCC-AP-TRANSF as it requires OCC-AP-NORMAL to run TRANSFORMATION function"))
+
+
+(cl-defmethod occ-obj-ap-helm-transformation ((ap-obj occ-ap-transf))
+  (let ((transform (occ-obj-ap-transform ap-obj)))
+    (cl-assert transform)
+    #'(lambda (action
+               candidate-obj)
+        (occ-message "occ-obj-ap-helm-transformation: lambda: transform %s" transform)
+        (cl-assert transform)
+        (let ((ap-normal-obj (funcall transform
+                                      action
+                                      candidate-obj)))
+          (occ-message "helm-transformation: got ap-normal-obj = %s" ap-normal-obj)
+          (let ((helm-actions (occ-obj-ap-helm-actions ap-normal-obj
+                                                       candidate-obj)))
+            (cl-assert helm-actions)
+            (occ-message "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
+            helm-actions)))))
+
 
 (cl-defmethod occ-obj-ap-helm-transformed-actions ((apn occ-ap-normal)
                                                    (apt occ-ap-transf)
@@ -799,4 +812,12 @@
   (occ-error "Can not use occ-callable-transf %s" callable))
 
 
+(occ-testing
+ (let* ((obj       (occ-make-ctx-at-point))
+        (ap-obj    (occ-make-ap-transf '(t actions general)))
+        (transform (occ-obj-ap-helm-item ap-obj obj)))
+   transform)
+
+ ())
+
 ;;; occ-obj-ctor.el ends here

@@ -144,21 +144,24 @@
                                  (mapcar #'occ-candidate candidates-visible)))))
 
        (when (> unfiltered-count 0)
-         (let ((gen-candidate-lambda   #'(lambda () (funcall gen-candidates)))
-               (source-name            (occ-helm-build-candidate-source-prompt prompt
-                                                                               candidates
-                                                                               unfiltered-count)))
+         (let ((gen-candidate-lambda #'(lambda () (funcall gen-candidates)))
+               (source-name          (occ-helm-build-candidate-source-prompt prompt
+                                                                             candidates
+                                                                             unfiltered-count)))
            (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
                  (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
-             (occ-message "occ-helm-build-candidates-source: helm-actions: %s" helm-actions)
-             (occ-message "occ-helm-build-candidates-source: helm-transfm: %s" helm-transfm)
+             (progn
+               (occ-message "occ-helm-build-candidates-source: helm-actions:")
+               (dolist (a helm-actions)
+                 (occ-message " occ-helm-build-candidates-source: helm-action: %s" a))
+               (occ-message "occ-helm-build-candidates-source: helm-transfm: %s" helm-transfm))
              (helm-build-sync-source source-name
-               :candidates gen-candidate-lambda
-               ;; :header-name
-               :action helm-actions
-               :action-transformer helm-transfm
-               :filtered-candidate-transformer nil
-               :history   'org-refile-history)))))))
+                                     :candidates                     gen-candidate-lambda
+                                     ;; :header-name
+                                     :action                         helm-actions
+                                     :action-transformer             helm-transfm
+                                     :filtered-candidate-transformer nil
+                                     :history                        'org-refile-history)))))))
 
 (cl-defmethod occ-helm-build-candidates-sources ((obj        occ-ctx)
                                                  (candidates list)

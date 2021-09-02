@@ -68,9 +68,11 @@
   "Will make transformer fun to change action except first to return occ-return-label."
   (let ((fun #'(lambda (action
                         candidate)
-                 (let* ((fun           (occ-ap-transf-transform ap-transf-obj))
-                        (ap-normal-obj (funcall fun
-                                                action candidate)))
+                 (let* ((fun           (occ-obj-ap-transform ap-transf-obj))
+                        (ap-normal-obj (progn
+                                         (cl-assert fun)
+                                        (funcall fun
+                                                action candidate))))
                    (occ-return-tranform ap-normal-obj obj)))))
     (occ-build-ap-transf (cons :transform
                                fun))))
