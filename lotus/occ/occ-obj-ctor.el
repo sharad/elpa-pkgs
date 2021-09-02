@@ -434,6 +434,14 @@
 (cl-defmethod occ-obj-callable ((callable occ-callable))
   callable)
 
+;; TODO: Consider preparing
+(cl-defmethod occ-obj-callable-normal ()
+  (occ-error "Implement it"))
+
+(cl-defmethod occ-obj-callable-generator ()
+  (occ-error "Implement it"))
+
+
 (cl-defmethod occ-callable-desc ((callable occ-callable))
   (occ-callable-name callable))
 
@@ -633,7 +641,18 @@
                                    &optional
                                    optional-obj)
   (if optional-obj
-    (occ-build-ap-transf optional-obj)))
+      (occ-build-ap-transf optional-obj)))
+
+
+;; TODO: Consider preparing
+(cl-defmethod occ-obj-ap ()
+  (occ-error "Implement it"))
+
+(cl-defmethod occ-obj-ap-normal ()
+  (occ-error "Implement it"))
+
+(cl-defmethod occ-obj-ap-transf ()
+  (occ-error "Implement it"))
 
 
 (cl-defmethod occ-obj-ap-tree-keybranch ((ap-obj occ-ap)
@@ -700,6 +719,13 @@
    #'(lambda (action candidate-obj)
        (occ-get-helm-actions-tree candidate-obj keys))))
 
+
+(cl-defmethod occ-obj-ap-helm-actions ((ap-obj list)
+                                       (obj occ-obj))
+  (let* ((ap-obj    (occ-build-ap-normal ap-obj obj))
+         (callables (occ-obj-ap-callables ap-obj obj)))
+    (occ-obj-callable-helm-actions callables
+                                   obj)))
 
 (cl-defmethod occ-obj-ap-helm-actions ((ap-obj occ-ap-normal)
                                        (obj occ-obj))

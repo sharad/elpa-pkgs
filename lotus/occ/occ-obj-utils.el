@@ -72,6 +72,7 @@
                              (cl-assert transform)
                              (let ((ap-normal-obj (funcall transform
                                                            action candidate)))
+                               (occ-message "occ-return-tranform: lambda: ap-normal-obj = %s" ap-normal-obj)
                                (occ-return-tranform ap-normal-obj obj))))))
     (occ-build-ap-transf (cons :transform
                                new-transform))))
