@@ -100,6 +100,24 @@
               filtered-count
               (format " %s" prompt)))))
 
+(defun occ-gen-candidates-fun (obj
+                               candidates
+                               filters
+                               builder
+                               called-never)
+  ;; TODO: should it be macro or function
+  #'(lambda ()
+      (let ((candidates-visible (if called-never
+                                    (progn
+                                      (setq called-never nil)
+                                      candidates)
+                                  (let* ((candidates-unfiltered (occ-list obj :builder builder))
+                                         (candidates-filtered   (occ-filter obj filters candidates-unfiltered)))
+                                    (setq filtered-count
+                                          (length candidates-filtered))
+                                    candidates-filtered))))
+        (mapcar #'occ-candidate candidates-visible))))
+
 (cl-defmethod occ-helm-build-candidates-source ((obj        occ-ctx)
                                                 (candidates list)
                                                 &key
@@ -130,11 +148,14 @@
                (source-name            (occ-helm-build-candidate-source-prompt prompt
                                                                                candidates
                                                                                unfiltered-count)))
-           (occ-debug "occ-helm-build-candidates-source: ap-normal: %s" ap-normal)
+           (occ-message "occ-helm-build-candidates-source: ap-normal: %s" ap-normal)
+           (occ-message "occ-helm-build-candidates-source: ap-transf: %s" ap-transf)
            (let* ((ap-normal (occ-build-ap-normal ap-normal))
                   (ap-transf (occ-build-ap-transf ap-transf ap-normal)))
              (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
                    (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
+               (occ-message "occ-helm-build-candidates-source: helm-actions: %s" helm-actions)
+               (occ-message "occ-helm-build-candidates-source: helm-transfm: %s" helm-transfm)
               (helm-build-sync-source source-name
                                   :candidates gen-candidate-lambda
                                   ;; :header-name
