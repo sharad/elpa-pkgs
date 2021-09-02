@@ -151,7 +151,7 @@
                                                  auto-select-if-only
                                                  timeout
                                                  prompt)
-  (occ-message "occ-helm-build-candidates-sources: action: %s" action)
+  (occ-message "occ-helm-build-candidates-sources: ap-normal: %s" ap-normal)
   (list (occ-helm-build-candidates-source obj
                                           candidates
                                           :unfiltered-count unfiltered-count
@@ -181,34 +181,6 @@
                                                  apn
                                                  apt))))
     act))
-
-;; (cl-defmethod occ-helm-act-on-single ((obj                 occ-ctx)
-;;                                       (candidates-filtered list)
-;;                                       &key
-;;                                       unfiltered-count
-;;                                       filters
-;;                                       builder
-;;                                       ap-normal
-;;                                       ap-transf
-;;                                       auto-select-if-only
-;;                                       timeout
-;;                                       prompt)
-;;   ;; OBJ ignored
-;;   "OBJ ignored"
-
-;;   (let* ((candidate   (car candidates-filtered)))
-
-;;     (let* ((helm-actions                 (occ-obj-ap-helm-item ap-normal candidate))
-;;            (helm-transfm                 (occ-obj-ap-helm-item ap-transf candiate))
-;;            (helm-first-action-via-normal (first helm-actions)))
-
-;;       (let* ((helm-actions-via-transf      (funall helm-transfm helm-actions candidate))
-;;              (helm-first-action-via-transf (first helm-actions-via-transf)))
-
-;;         (let ((helm-action-to-call (or (cdr-safe helm-first-action-via-transf) helm-first-action-via-transf
-;;                                        (cdr-safe helm-first-action-via-normal) helm-first-action-via-normal)))
-
-;;           (funcall helm-action-to-call candidate))))))
 
 (cl-defmethod occ-helm-act-on-single ((obj                 occ-ctx)
                                       (candidates-filtered list)
@@ -247,7 +219,7 @@
                                             (helm-refresh)
                                           (occ-debug :debug "Running occ-list-select-internal helm is gone"))))
            ;; :keymap occ-helm-map
-           (occ-message "occ-list-select-internal: helm-action: %s" helm-action)
+           (occ-message "occ-list-select-internal: ap-normal: %s" ap-normal)
            (let ((candidates-sources (occ-helm-build-candidates-sources obj
                                                                         candidates-filtered
                                                                         :unfiltered-count unfiltered-count

@@ -528,8 +528,13 @@
 (cl-defmethod occ-make-ap-transf ((ap-obj list))
   (make-occ-ap-transf :tree-keybranch ap-obj))
 
+;; (cl-defmethod occ-make-ap-transf ((ap-obj occ-ap-normal))
+;;   (let ((callables (occ-obj-ap-callables ap-obj)))
+;;     (make-occ-ap-transf :callables
+;;                         (mapcar #'occ-obj-callable callables))))
+
 (cl-defmethod occ-make-ap-transf ((ap-obj occ-ap-normal))
-  (let ((callables (occ-obj-ap-callables ap-obj)))
+  (let ((callables (occ-ap-normal-callables ap-obj)))
     (make-occ-ap-transf :callables
                         (mapcar #'occ-obj-callable callables))))
 
@@ -658,8 +663,7 @@
                                                                                      candidate-obj))))))
       (setf (occ-ap-transf ap-obj) transform)))
   (occ-ap-transf-transform ap-obj))
-
-
+
 
 (occ-testing ;; old code
 

@@ -65,8 +65,8 @@
   (interactive)
   (let ((ctx (occ-make-ctx-at-point)))
     (occ-props-window-edit ctx
-                           :action             (occ-build-ap-normal '(t actions edit))
-                           :ap-transf (occ-build-ap-transf '(t actions edit)))))
+                           :ap-normal '(t actions edit)
+                           :ap-transf '(t actions edit))))
 
 
 ;;;###autoload

@@ -3,7 +3,7 @@
 ;; Copyright (C) 2019  s
 
 
-;; Author: s <sh4r4d@gmail.com>
+;; Author: s
 ;; Keywords: convenience
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -115,8 +115,6 @@ for testing given ap-normal on selected tsk."
 
   (let ((filters          (occ-list-filters))
         (builder          #'occ-build-ctsk-with)
-        (ap-normal        (occ-build-ap-normal ap-normal occ-list-select-keys))
-        (ap-transf        (occ-build-ap-transf ap-transf occ-list-select-keys))
         (return-transform t)
         (timeout          occ-idle-timeout))
       (occ-message "occ-list-debug-select: ap-normal: %s" ap-normal)
