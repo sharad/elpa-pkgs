@@ -148,7 +148,13 @@
 (cl-defmethod occ-obj-callables ((callable list)
                                  (obj      null))
   "Return list of ((NAME . FUN) ...)"
-  (mapcar #'occ-obj-callable callable))
+  (mapcar #'occ-obj-callable
+          callable))
+
+(cl-defmethod occ-obj-callables ((callable list)
+                                 (obj      occ-obj))
+  "Return list of ((NAME . FUN) ...)"
+  (occ-obj-callables callable nil))
 
 (cl-defmethod occ-obj-callables ((callable occ-callable-normal)
                                  (obj      occ-obj))
@@ -180,7 +186,7 @@
                                              (obj occ-obj))
   "Return list of ((NAME . FUN) ...)"
   (mapcar #'occ-obj-callable-helm-action
-          (occ-obj-callables callables nil)))
+          (occ-obj-callables callables obj)))
 
 (cl-defmethod occ-obj-callable-helm-actions ((callable occ-callable)
                                              (obj occ-obj))
