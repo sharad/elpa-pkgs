@@ -111,15 +111,17 @@
                              #'occ-make-callable-generator
                            (occ-error "occ-obj-callable-internal: type is not one of (:normal :generator)")))))
     (let ((keyword (nth 0 (callable)))
-          (name    (nth 0 (callable)))
-          (fun     (nth 0 (callable))))
+          (name    (nth 1 (callable)))
+          (fun     (nth 2 (callable))))
       (funcall callable-ctor keyword name fun))))
 
 (cl-defmethod occ-obj-callable-normal ((callable list))
-  (occ-obj-callable-internal callable :normal))
+  (occ-obj-callable-internal callable
+                             :normal))
 
 (cl-defmethod occ-obj-callable-generator ((callable list))
-  (occ-obj-callable-internal callable :generator))
+  (occ-obj-callable-internal callable
+                             :generator))
 
 (cl-defmethod occ-obj-callable ((callable list))
   (occ-obj-callable-normal callable))
@@ -132,7 +134,7 @@
 ;;   (occ-error "Implement it"))
 
 
-(cl-defmethod occ-callable-desc ((callable occ-callable))
+(cl-defmethod occ-callable-desc     ((callable occ-callable))
   (occ-callable-name callable))
 
 (cl-defmethod occ-obj-callable-desc ((callable occ-callable))
