@@ -430,16 +430,35 @@
     (occ-helm-callable-add callable)
     callable))
 
-
+;; move to assessor
 (cl-defmethod occ-obj-callable ((callable occ-callable))
   callable)
 
-;; TODO: Consider preparing
-(cl-defmethod occ-obj-callable-normal ()
-  (occ-error "Implement it"))
+(cl-defmethod occ-obj-callable-normal ((callable list))
+  (let ((keyword (nth 0 (callable)))
+        (name    (nth 0 (callable)))
+        (fun     (nth 0 (callable))))
+    (occ-make-callable-normal keyword
+                              name
+                              fun)))
 
-(cl-defmethod occ-obj-callable-generator ()
-  (occ-error "Implement it"))
+(cl-defmethod occ-obj-callable-generator ((callable list))
+  (let ((keyword (nth 0 (callable)))
+        (name    (nth 0 (callable)))
+        (fun     (nth 0 (callable))))
+    (occ-make-callable-normal keyword
+                              name
+                              fun)))
+
+(cl-defmethod occ-obj-callable ((callable list))
+  (occ-obj-callable-normal callable))
+
+;; TODO: Consider preparing
+;; (cl-defmethod occ-obj-callable-normal (xyz)
+;;   (occ-error "Implement it"))
+
+;; (cl-defmethod occ-obj-callable-generator (xyz)
+;;   (occ-error "Implement it"))
 
 
 (cl-defmethod occ-callable-desc ((callable occ-callable))
@@ -645,13 +664,13 @@
 
 
 ;; TODO: Consider preparing
-(cl-defmethod occ-obj-ap ()
+(cl-defmethod occ-obj-ap (xyz)
   (occ-error "Implement it"))
 
-(cl-defmethod occ-obj-ap-normal ()
+(cl-defmethod occ-obj-ap-normal (xyz)
   (occ-error "Implement it"))
 
-(cl-defmethod occ-obj-ap-transf ()
+(cl-defmethod occ-obj-ap-transf (xyz)
   (occ-error "Implement it"))
 
 
