@@ -145,7 +145,7 @@ for testing given ap-normal on selected tsk."
           (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection")))))
 
 (occ-testing
- ;; (occ-get-helm-ap-normals nil '(t actions select)) -> nil
+ ;; (occ-get-helm-actions nil '(t actions select)) -> nil
  (occ-list-select (occ-make-ctx-at-point)
                   :ap-normal (occ-get-helm-actions nil '(t actions select))
                   :obtrusive nil))
