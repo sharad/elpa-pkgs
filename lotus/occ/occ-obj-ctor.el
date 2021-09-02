@@ -778,11 +778,13 @@
 
 (fmakunbound 'occ-build-return-lambda)
 (cl-defmethod occ-build-return-lambda ((callable occ-callable-normal)
+                                       &optional
                                        label)
   (let ((newcallable #'(lambda (candidate)
                          (let ((fun (occ-callable-fun callable)))
                            (let* ((value (funcall fun candidate))
-                                  (label (if (eq label occ-return-evaluate)
+                                  (label (if (or (null label)
+                                                 (eq label occ-return-evaluate))
                                              (if value
                                                  occ-return-true-label
                                                occ-return-false-label)
@@ -797,20 +799,6 @@
 (cl-defmethod occ-build-return-lambda ((callable occ-callable-generator)
                                        label)
   (occ-error "Can not use occ-callable-transf %s" callable))
-
-
-(occ-build-return-lambda (occ-make-callable-normal  :procreate-child
-                                                    "Procreate Child"
-                                                    #'occ-procreate-child)
-                         'occ-eval)
-(let* ((identity-sel-callable            (occ-make-callable-normal :select
-                                                                   occ-return-select-name
-                                                                   occ-return-select-function))
-       (identity-sel-ret-lambda-callable (occ-build-return-lambda identity-sel-callable
-                                                                  occ-return-select-label)))
-  identity-sel-ret-lambda-callable)
-
-
 
 
 ;;; occ-obj-ctor.el ends here

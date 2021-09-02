@@ -55,8 +55,9 @@
                                                                     occ-return-select-label))
          (callables                        (occ-obj-ap-callables ap-obj obj))
          (new-callables                    (cons identity-sel-ret-lambda-callable
-                                                 (mapcar #'(lambda (c)
-                                                             (occ-build-return-lambda c occ-return-evaluate))
+                                                 (mapcar #'occ-build-return-lambda
+                                                         ;; #'(lambda (c)
+                                                         ;;     (occ-build-return-lambda c occ-return-evaluate))
                                                          callables)))) ;;BUG to fix
     (cl-assert callables)
     (occ-build-ap-normal (cons :callables
