@@ -27,6 +27,9 @@
 (provide 'occ-helm-method)
 
 
+(eval-when-compile
+  (require 'helm-source))
+
 ;; (defvar occ-helm-map
 ;;   (let ((map (make-sparse-keymap)))
 ;;     (set-keymap-parent map helm-map)

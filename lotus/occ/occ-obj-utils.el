@@ -47,6 +47,7 @@
 (cl-defmethod occ-return-tranform ((ap-obj occ-ap-normal)
                                    (obj occ-obj))
   "Will make all action except first to return OCC-RETURN-SELECT-LABEL."
+  ;; (occ-message "(occ-obj-ap-callables ap-obj obj) = %s" (car (occ-obj-ap-callables ap-obj obj)))
   (let* ((identity-sel-callable            (occ-make-callable-normal :select
                                                                      occ-return-select-name
                                                                      occ-return-select-function))
@@ -54,7 +55,8 @@
                                                                     occ-return-select-label))
          (callables                        (occ-obj-ap-callables ap-obj obj))
          (new-callables                    (cons identity-sel-ret-lambda-callable
-                                                 (mapcar #'occ-build-return-lambda
+                                                 (mapcar #'(lambda (c)
+                                                             (occ-build-return-lambda c occ-return-evaluate))
                                                          callables)))) ;;BUG to fix
     (cl-assert callables)
     (occ-build-ap-normal (cons :callables

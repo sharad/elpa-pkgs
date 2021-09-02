@@ -80,16 +80,18 @@
 (cl-defmethod occ-get-callables ((obj occ-obj-tsk)
                                  keylist)
   ;; TODO: do we require (apply #'append ...)
-  (append (mapcar #'(lambda (callable)
-                      (occ-obj-callables callable obj))
-                  (occ-helm-callables-get keylist))))
+  (apply #'append
+         (mapcar #'(lambda (callable)
+                     (occ-obj-callables callable obj))
+                 (occ-helm-callables-get keylist))))
 
 (cl-defmethod occ-get-callables ((obj occ-obj)
                                  keylist)
   ;; TODO: do we require (apply #'append ...)
-  (append (mapcar #'(lambda (callable)
-                      (occ-obj-callables callable obj))
-                  (occ-helm-callables-get keylist))))
+  (apply #'append
+         (mapcar #'(lambda (callable)
+                     (occ-obj-callables callable obj))
+                 (occ-helm-callables-get keylist))))
 
 
 (defvar occ-helm-actions-tree '(t))
@@ -119,13 +121,13 @@
 
 (cl-defmethod occ-get-helm-actions ((obj null) tree-keybranch)
   ;; (occ-message "occ-get-helm-actions: called with obj = %s, tree-keybranch = %s" obj tree-keybranch)
-  (append (occ-get-callables obj
-                             (occ-get-keywords-list-from-tree tree-keybranch))))
+  (apply #'append (occ-get-callables obj
+                                     (occ-get-keywords-list-from-tree tree-keybranch))))
 
 (cl-defmethod occ-get-helm-actions ((obj occ-obj) tree-keybranch)
   ;; (occ-message "occ-get-helm-actions: called with obj = %s, tree-keybranch = %s" obj tree-keybranch)
-  (append (occ-get-callables obj
-                             (occ-get-keywords-list-from-tree tree-keybranch))))
+  (apply #'append (occ-get-callables obj
+                                     (occ-get-keywords-list-from-tree tree-keybranch))))
 
 (cl-defmethod occ-get-helm-actions-genertator ((obj null) tree-keybranch)
   #'(lambda (action candidate)
@@ -264,6 +266,9 @@
  (occ-helm-callables-get (occ-get-keywords-list-from-tree '(t actions select general edit)))
  (occ-get-callables (occ-make-ctx-at-point)
                     (occ-get-keywords-list-from-tree '(t actions select general edit)))
+
+ (car (occ-get-callables (occ-make-ctx-at-point)
+                          (occ-get-keywords-list-from-tree '(t actions select general edit))))
 
  (tree-collect-items occ-helm-actions-tree nil '(t actions general) 0)
 

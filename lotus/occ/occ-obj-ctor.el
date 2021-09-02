@@ -595,43 +595,43 @@
 
 
 (cl-defmethod occ-build-ap-transf ((ap-obj list)
-                                  &optional
-                                  optional-obj)
+                                   &optional
+                                   optional-obj)
   (occ-make-ap-transf ap-obj))
 
 (cl-defmethod occ-build-ap-transf ((ap-obj (head :tree-keybranch))
-                                  &optional
-                                  optional-obj)
+                                   &optional
+                                   optional-obj)
   (occ-make-ap-transf ap-obj))
 
 (cl-defmethod occ-build-ap-transf ((ap-obj (head :callables))
-                                  &optional
-                                  optional-obj)
+                                   &optional
+                                   optional-obj)
   (occ-make-ap-transf ap-obj))
 
 (cl-defmethod occ-build-ap-transf ((ap-obj (head :keywords))
-                                  &optional
-                                  optional-obj)
+                                   &optional
+                                   optional-obj)
   (occ-make-ap-transf ap-obj))
 
 (cl-defmethod occ-build-ap-transf ((ap-obj (head :transform))
-                                  &optional
-                                  optional-obj)
+                                   &optional
+                                   optional-obj)
   (occ-make-ap-transf ap-obj))
 
 (cl-defmethod occ-build-ap-transf ((ap-obj occ-ap-normal)
-                                  &optional
-                                  optional-obj)
+                                   &optional
+                                   optional-obj)
   (occ-make-ap-transf ap-obj))
 
 (cl-defmethod occ-build-ap-transf ((ap-obj occ-ap-transf)
-                                  &optional
-                                  optional-obj)
+                                   &optional
+                                   optional-obj)
   ap-obj)
 
 (cl-defmethod occ-build-ap-transf ((ap-obj null)
-                                  &optional
-                                  optional-obj)
+                                   &optional
+                                   optional-obj)
   (if optional-obj
     (occ-build-ap-transf optional-obj)))
 
@@ -696,8 +696,8 @@
 
  (cl-defmethod occ-get-helm-actions-tree-genertator ((obj occ-obj) keys)
    #'(lambda (action candidate-obj)
-       (occ-get-helm-actions-tree candidate-obj keys)))
- )
+       (occ-get-helm-actions-tree candidate-obj keys))))
+ 
 
 
 (cl-defmethod occ-obj-ap-helm-actions ((ap-obj occ-ap-normal)
@@ -757,12 +757,13 @@
 
 ;; ctor
 
-(defvar occ-return-select-label     :occ-selected    "should not be null")
-(defvar occ-return-quit-label       :occ-nocandidate "should not be null")
-(defvar occ-return-nocndidate-label :occ-quitted     "should not be null")
-(defvar occ-return-timeout-label    :occ-timeout     "should not be null") ;TODO: need to implement.
-(defvar occ-return-true-label       :occ-true        "should not be null")
-(defvar occ-return-false-label      :occ-false       "should not be null")
+(defvar occ-return-select-label     'occ-selected    "should not be null")
+(defvar occ-return-quit-label       'occ-nocandidate "should not be null")
+(defvar occ-return-nocndidate-label 'occ-quitted     "should not be null")
+(defvar occ-return-timeout-label    'occ-timeout     "should not be null") ;TODO: need to implement.
+(defvar occ-return-true-label       'occ-true        "should not be null")
+(defvar occ-return-false-label      'occ-false       "should not be null")
+(defvar occ-return-evaluate         'occ-eval        "should not be null")
 
 (cl-assert occ-return-select-label)
 (cl-assert occ-return-quit-label)
@@ -772,19 +773,20 @@
 
 (defvar occ-return-select-function #'identity)
 (defvar occ-return-select-name     "Select")
-(cl-assert occ-return-select-function )
-(cl-assert occ-return-select-name     )
+(cl-assert occ-return-select-function)
+(cl-assert occ-return-select-name)
 
 (fmakunbound 'occ-build-return-lambda)
 (cl-defmethod occ-build-return-lambda ((callable occ-callable-normal)
-                                       &optional label)
+                                       label)
   (let ((newcallable #'(lambda (candidate)
                          (let ((fun (occ-callable-fun callable)))
                            (let* ((value (funcall fun candidate))
-                                  (label (or label
+                                  (label (if (eq label occ-return-evaluate)
                                              (if value
                                                  occ-return-true-label
-                                               occ-return-false-label))))
+                                               occ-return-false-label)
+                                           label)))
                              (occ-make-return label value)))))
         (name        (occ-callable-name callable))
         (keyword     (occ-callable-keyword callable)))
@@ -793,8 +795,20 @@
                               newcallable)))
 
 (cl-defmethod occ-build-return-lambda ((callable occ-callable-generator)
-                                       &optional label)
+                                       label)
   (occ-error "Can not use occ-callable-transf %s" callable))
+
+
+(occ-build-return-lambda (occ-make-callable-normal  :procreate-child
+                                                    "Procreate Child"
+                                                    #'occ-procreate-child)
+                         'occ-eval)
+(let* ((identity-sel-callable            (occ-make-callable-normal :select
+                                                                   occ-return-select-name
+                                                                   occ-return-select-function))
+       (identity-sel-ret-lambda-callable (occ-build-return-lambda identity-sel-callable
+                                                                  occ-return-select-label)))
+  identity-sel-ret-lambda-callable)
 
 
 
