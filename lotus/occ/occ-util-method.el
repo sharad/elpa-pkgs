@@ -45,8 +45,8 @@ be NIL, using (occ-match-filters) for FILTERS"
 
   (let ((filters          (occ-match-filters))
         (builder          #'occ-build-ctxual-tsk-with)
-        (ap-normal        (occ-build-ap-normal occ-list-select-keys))
-        (ap-transf        (occ-build-ap-transf occ-list-select-keys))
+        (ap-normal        occ-list-select-keys)
+        (ap-transf        occ-list-select-keys)
         (return-transform nil)
         (timeout          occ-idle-timeout))
     (occ-select obj
@@ -71,8 +71,8 @@ be NIL, using (occ-list-filters) for FILTERS"
 
   (let ((filters          (occ-list-filters))
         (builder          #'occ-build-ctsk-with)
-        (ap-normal        (occ-build-ap-normal occ-list-select-keys))
-        (ap-transf        (occ-build-ap-transf occ-list-select-keys))
+        (ap-normal        occ-list-select-keys)
+        (ap-transf        occ-list-select-keys)
         (return-transform nil)
         (timeout          occ-idle-timeout))
       (occ-message "occ-list-select: ap-normal: %s" ap-normal)
@@ -96,8 +96,8 @@ be NIL, using (occ-list-filters) for FILTERS"
    (occ-select obj
              :filters           (occ-list-filters)
              :builder           #'occ-build-ctsk-with
-             :ap-normal         (occ-build-ap-normal occ-list-select-keys)
-             :ap-transf         (occ-build-ap-transf occ-list-select-keys)
+             :ap-normal         occ-list-select-keys
+             :ap-transf         occ-list-select-keys
              :return-transform  nil
              :timeout           occ-idle-timeout
              :obtrusive         t)))
@@ -164,8 +164,8 @@ must be NIL, using (occ-list-filters) for FILTERS"
   (let ((filters          (occ-list-filters))
         (builder          #'occ-build-ctsk-with)
         (return-transform t)
-        (ap-normal        (occ-build-ap-normal occ-list-select-keys))
-        (ap-transf        (occ-build-ap-transf occ-list-select-keys))
+        (ap-normal        occ-list-select-keys)
+        (ap-transf        occ-list-select-keys)
         (timeout          occ-idle-timeout))
     (occ-message "occ-list-launch: ap-normal: %s" ap-normal)
     (let ((retval-ctx-tsk (occ-select obj
