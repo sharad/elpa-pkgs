@@ -267,11 +267,13 @@
                             timeout
                             prompt)
   (when candidates-filtered
+    (occ-message "occ-helm-act1: ap-normal: %s" ap-normal)
+    (occ-message "occ-helm-act1: ap-transf: %s" ap-transf)
     (let* ((ap-normal (occ-build-ap-normal ap-normal))
            (ap-transf (occ-build-ap-transf ap-transf
                                            (cons :callables (occ-obj-ap-callables ap-normal obj)))))
-      (occ-message "occ-helm-act: ap-normal: %s" ap-normal)
-      (occ-message "occ-helm-act: ap-transf: %s" ap-transf)
+      (occ-message "occ-helm-act2: ap-normal: %s" ap-normal)
+      (occ-message "occ-helm-act2: ap-transf: %s" ap-transf)
       (let* ((ap-normal (if return-transform (occ-return-tranform ap-normal obj) ap-normal)) ;as return value is going to be used.
              (ap-transf (if return-transform (occ-return-tranform ap-transf obj) ap-transf)))
         (let ((fun (if (and auto-select-if-only
@@ -280,14 +282,14 @@
                      #'occ-helm-act-on-multiple)))
           (funcall fun obj
                    candidates-filtered
-                   :unfiltered-count unfiltered-count
-                   :filters   filters
-                   :builder   builder
-                   :ap-normal ap-normal
-                   :ap-transf ap-transf
+                   :unfiltered-count   unfiltered-count
+                   :filters             filters
+                   :builder             builder
+                   :ap-normal           ap-normal
+                   :ap-transf           ap-transf
                    :auto-select-if-only auto-select-if-only
-                   :timeout timeout
-                   :prompt prompt))))))
+                   :timeout             timeout
+                   :prompt              prompt))))))
 
 
 (defun occ-helm-select-XYZ (obj
