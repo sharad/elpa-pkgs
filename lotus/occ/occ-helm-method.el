@@ -151,10 +151,10 @@
            (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
                  (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
              (progn
-               (occ-message "occ-helm-build-candidates-source: helm-actions:")
+               (occ-debug :debug "occ-helm-build-candidates-source: helm-actions:")
                (dolist (a helm-actions)
-                 (occ-message " occ-helm-build-candidates-source: helm-action: %s" a))
-               (occ-message "occ-helm-build-candidates-source: helm-transfm: %s" helm-transfm))
+                 (occ-debug :debug " occ-helm-build-candidates-source: helm-action: %s" a))
+               (occ-debug :debug "occ-helm-build-candidates-source: helm-transfm: %s" helm-transfm))
              (helm-build-sync-source source-name
                                      :candidates                     gen-candidate-lambda
                                      ;; :header-name
@@ -270,13 +270,13 @@
                             timeout
                             prompt)
   (when candidates-filtered
-    (occ-message "occ-helm-act1: ap-normal: %s" ap-normal)
-    (occ-message "occ-helm-act1: ap-transf: %s" ap-transf)
+    (occ-debug :debug "occ-helm-act1: ap-normal: %s" ap-normal)
+    (occ-debug :debug "occ-helm-act1: ap-transf: %s" ap-transf)
     (let* ((ap-normal (occ-build-ap-normal ap-normal))
            (ap-transf (occ-build-ap-transf ap-transf
                                            (cons :callables (occ-obj-ap-callables ap-normal obj)))))
-      (occ-message "occ-helm-act2: ap-normal: %s" ap-normal)
-      (occ-message "occ-helm-act2: ap-transf: %s" ap-transf)
+      (occ-debug :debug "occ-helm-act2: ap-normal: %s" ap-normal)
+      (occ-debug :debug "occ-helm-act2: ap-transf: %s" ap-transf)
       (let* ((ap-normal (if return-transform (occ-return-tranform ap-normal obj) ap-normal)) ;as return value is going to be used.
              (ap-transf (if return-transform (occ-return-tranform ap-transf obj) ap-transf)))
         (let ((fun (if (and auto-select-if-only
@@ -319,7 +319,7 @@
 ;;   "occ-sacha-helm-action")
 
 ;; (cl-defmethod occ-sacha-helm-action ((ctxask occ-ctxual-tsk) clockin-fn)
-;;   ;; (occ-message "sacha marker %s" (car dyntskpls))
+;;   ;; (occ-debug :debug "sacha marker %s" (car dyntskpls))
 ;;   ;; (setq sacha/helm-org-refile-locations tbl)
 ;;   (progn
 ;;     (helm

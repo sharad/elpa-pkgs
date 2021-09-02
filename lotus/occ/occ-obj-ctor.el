@@ -682,7 +682,7 @@
 
 (cl-defmethod occ-obj-ap-callables ((ap-obj occ-ap-normal)
                                     (obj occ-obj))
-  (occ-debug "occ-obj-ap-callables: ap-obj = %s" ap-obj)
+  (occ-debug :debug "occ-obj-ap-callables: ap-obj = %s" ap-obj)
   (unless (occ-ap-normal-callables ap-obj)
     (let ((tree-keybranch (occ-obj-ap-tree-keybranch ap-obj obj)))
       (let* ((keywords-list (occ-get-keywords-list-from-tree tree-keybranch))
@@ -702,11 +702,11 @@
   (unless (occ-ap-transf-transform ap-obj)
     (let ((transform #'(lambda (action
                                 candidate-obj)
-                         (occ-debug "occ-obj-ap-transform: lambda: ap-obj = %s" ap-obj)
+                         (occ-debug :debug "occ-obj-ap-transform: lambda: ap-obj = %s" ap-obj)
                          (let ((callables (occ-obj-ap-callables ap-obj candidate-obj)))
-                           (occ-debug "occ-obj-ap-transform: lambda: transform: callables = %s" callables)
+                           (occ-debug :debug "occ-obj-ap-transform: lambda: transform: callables = %s" callables)
                            (occ-make-ap-normal (cons :callables callables))))))
-      (occ-debug "occ-obj-ap-transform: setting transform tp %s" transform)
+      (occ-debug :debug "occ-obj-ap-transform: setting transform tp %s" transform)
       (setf (occ-ap-transf-transform ap-obj) transform)))
   (occ-ap-transf-transform ap-obj))
 
@@ -734,16 +734,16 @@
     (cl-assert transform)
     #'(lambda (action
                candidate-obj)
-        (occ-debug "occ-obj-ap-helm-transformation: lambda: transform %s" transform)
+        (occ-debug :debug "occ-obj-ap-helm-transformation: lambda: transform = %s" transform)
         (cl-assert transform)
         (let ((ap-normal-obj (funcall transform
                                       action
                                       candidate-obj)))
-          (occ-debug "helm-transformation: got ap-normal-obj = %s" ap-normal-obj)
+          (occ-debug :debug "helm-transformation: got ap-normal-obj = %s" ap-normal-obj)
           (let ((helm-actions (occ-obj-ap-helm-actions ap-normal-obj
                                                        candidate-obj)))
             (cl-assert helm-actions)
-            (occ-debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
+            (occ-debug :debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
             helm-actions)))))
 
 
