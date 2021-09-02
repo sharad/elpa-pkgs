@@ -189,8 +189,6 @@
 
 (cl-defstruct (occ-callable (:include occ-obj))
   keyword
-  ;; desc
-  ;; name
   fun)
 
 (cl-defstruct (occ-callable-normal (:include occ-callable))

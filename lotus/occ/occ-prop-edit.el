@@ -358,19 +358,19 @@
           ;;                   ap-transf action)
           (occ-debug :debug "occ-props-window-edit((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                             retval-ctx-tsk
-                            (occ-format (occ-return-get-value retval-ctx-tsk) 'capitalize)
+                            (occ-format (occ-obj-obj retval-ctx-tsk) 'capitalize)
                             (occ-return-get-label retval-ctx-tsk))
           ;; BUG: will do run recursively as another method with (obj null) is define below.
           (when (and
                  (occ-return-in-labels-p retval-ctx-tsk occ-return-select-label)
-                 (occ-return-get-value retval-ctx-tsk))
-              (occ-props-window-edit (occ-return-get-value retval-ctx-tsk)
+                 (occ-obj-obj retval-ctx-tsk))
+              (occ-props-window-edit (occ-obj-obj retval-ctx-tsk)
                                      :return-transform   return-transform
                                      :timeout timeout)
               (occ-debug :debug "occ-props-window-edit((obj occ-ctx)): No selection"))
           (occ-debug :debug "occ-props-window-edit((obj occ-ctx)): returning original: %s, retval: %s with label %s operate: %s"
                             retval-ctx-tsk
-                            (occ-format (occ-return-get-value retval-ctx-tsk) 'capitalize)
+                            (occ-format (occ-obj-obj retval-ctx-tsk) 'capitalize)
                             (occ-return-get-label retval-ctx-tsk)
                             (occ-return-in-labels-p retval-ctx-tsk occ-return-select-label))
           retval-ctx-tsk)

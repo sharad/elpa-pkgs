@@ -225,10 +225,10 @@
         (occ-debug :debug "occ-clock-in((obj occ-ctx)): selected  returned-ctxual-tsk=%s ret-label=%s value=%s"
                           returned-ctxual-tsk
                           (occ-return-in-labels-p returned-ctxual-tsk occ-return-select-label)
-                          (occ-format (occ-return-get-value returned-ctxual-tsk)))
+                          (occ-format (occ-obj-obj returned-ctxual-tsk)))
         (if (occ-return-in-labels-p returned-ctxual-tsk ;TODO: should return t if action were done than select[=identity] ;; occ-return-label
                                     occ-return-select-label)
-            (let ((ctxual-tsk (occ-return-get-value returned-ctxual-tsk)))
+            (let ((ctxual-tsk (occ-obj-obj returned-ctxual-tsk)))
               (prog1
                   (when return-transform ;Here caller know if return value is going to be used.
                        (occ-make-return occ-return-true-label nil))

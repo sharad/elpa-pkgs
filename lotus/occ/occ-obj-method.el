@@ -121,11 +121,11 @@
                          (occ-return-in-labels-p retval
                                                  occ-return-quit-label
                                                  occ-return-timeout-label)
-                         (occ-return-get-value retval))
+                         (occ-obj-obj retval))
               (if (occ-return-in-labels-p retval
                                           occ-return-quit-label
                                           occ-return-timeout-label)
-                  (unless (occ-return-get-value retval)
+                  (unless (occ-obj-obj retval)
                     ;; BUG Urgent TODO: SOLVE ASAP ???? at (occ-clock-in-if-not obj) and (occ-clock-in obj)
                     ;; begin occ-clock-in-curr-ctx-if-not
                     ;; 2019-03-06 22:55:31 s: occ-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug
@@ -145,7 +145,7 @@
                             (occ-maybe-create-clockedin-unnamed-ctxual-tsk obj))
                         (occ-message "occ-clock-in(obj occ-ctx): clock-in not allowed."))))
                 (occ-debug :debug "occ-clock-in-if-not: Can not operate on %s"
-                           (occ-format (occ-return-get-value retval)))))
+                           (occ-format (occ-obj-obj retval)))))
             (occ-debug :debug "occ-clock-in-if-not: Now really clock done."))
         (prog1
             nil
@@ -281,7 +281,7 @@
               (builder             #'occ-build-ctxual-tsk-with)
               (auto-select-if-only occ-clock-in-ctx-auto-select-if-only)
               (timeout             occ-idle-timeout))
-          (let* ((ap-normal '(t actions general edit)))
+          (let ((ap-normal '(t actions general edit)))
             (occ-clock-in-if-chg ctx
                                  :filters             filters
                                  :builder             builder

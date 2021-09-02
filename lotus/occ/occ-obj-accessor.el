@@ -54,6 +54,13 @@
   "contextual task")
 
 
+(cl-defmethod occ-obj-obj ((obj occ-obj))
+  (occ-return-get-value obj))
+
+(cl-defmethod occ-obj-obj ((obj occ-return))
+  (occ-return-get-value obj))
+
+
 (cl-defmethod occ-obj-tsk ((obj null))
   nil)
 

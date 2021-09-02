@@ -129,13 +129,13 @@ for testing given ap-normal on selected tsk."
                                         :prompt           prompt)))
         (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                           retval-ctx-tsk
-                          (occ-format (occ-return-get-value retval-ctx-tsk)
+                          (occ-format (occ-obj-obj retval-ctx-tsk)
                                       'capitalize)
                           (occ-return-get-label retval-ctx-tsk))
         (if (and (occ-return-in-labels-p retval-ctx-tsk
                                          occ-return-select-label)
-                 (occ-return-get-value retval-ctx-tsk))
-            (let* ((ctsk         (occ-return-get-value retval-ctx-tsk))
+                 (occ-obj-obj retval-ctx-tsk))
+            (let* ((ctsk         (occ-obj-obj retval-ctx-tsk))
                    ;; (helm-actions (occ-obj-ap-helm-actions ap-normal obj)) -- TODO: VERIFY: here in place of OBJ CTSK should be present
                    (helm-actions (occ-obj-ap-helm-actions ap-normal ctsk))
                    ;; TODO: BUG: Correct it
@@ -177,13 +177,13 @@ must be NIL, using (occ-list-filters) for FILTERS"
                                       :prompt           prompt)))
        (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                          retval-ctx-tsk
-                         (occ-format (occ-return-get-value retval-ctx-tsk)
+                         (occ-format (occ-obj-obj retval-ctx-tsk)
                                      'capitalize)
                          (occ-return-get-label retval-ctx-tsk))
        (if (and (occ-return-in-labels-p retval-ctx-tsk
                                         occ-return-select-label)
-                (occ-return-get-value retval-ctx-tsk))
-           (let* ((ctx-tsk      (occ-return-get-value retval-ctx-tsk))
+                (occ-obj-obj retval-ctx-tsk))
+           (let* ((ctx-tsk      (occ-obj-obj retval-ctx-tsk))
                   ;; (helm-actions (occ-obj-ap-helm-actions ap-normal obj)) -- TODO: VERIFY: here in place of OBJ CTX-TSK should be present
                   (helm-actions (occ-obj-ap-helm-actions ap-normal ctx-tsk))
                   (launcher     (cdr (assoc (completing-read "Action: " helm-actions)
