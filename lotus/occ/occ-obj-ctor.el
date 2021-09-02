@@ -645,12 +645,12 @@
 
 (cl-defmethod occ-obj-ap-callables ((ap-obj occ-ap-normal)
                                     (obj occ-obj))
-  (unless (occ-ap-callables ap-obj)
+  (unless (occ-ap-normal-callables ap-obj)
     (let ((tree-keybranch (occ-obj-ap-tree-keybranch ap-obj)))
       (let ((callables (occ-get-callables obj ;; ???
                                           (occ-get-alist-from-tree tree-keybranch))))
-        (setf (occ-ap-callables ap-obj) callables))))
-  (occ-ap-callables ap-obj))
+        (setf (occ-ap-normal-callables ap-obj) caollables))))
+  (occ-ap-normal-callables ap-obj))
 
 (cl-defmethod occ-obj-ap-transform ((ap-obj occ-ap-transf))
   "This return callables"

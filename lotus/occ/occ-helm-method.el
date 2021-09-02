@@ -135,8 +135,8 @@
               (helm-build-sync-source source-name
                                   :candidates gen-candidate-lambda
                                   ;; :header-name
-                                  :ap-normal helm-actions
-                                  :ap-transf helm-transfm
+                                  :action helm-actions
+                                  :action-transformer helm-transfm
                                   :filtered-candidate-transformer nil
                                   :history   'org-refile-history))))))))
 
