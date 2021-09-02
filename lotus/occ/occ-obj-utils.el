@@ -66,16 +66,15 @@
 (cl-defmethod occ-return-tranform ((ap-transf-obj occ-ap-transf)
                                    (obj occ-obj))
   "Will make transformer fun to change action except first to return occ-return-label."
-  (let ((fun #'(lambda (action
-                        candidate)
-                 (let* ((fun           (occ-obj-ap-transform ap-transf-obj))
-                        (ap-normal-obj (progn
-                                         (cl-assert fun)
-                                        (funcall fun
-                                                action candidate))))
-                   (occ-return-tranform ap-normal-obj obj)))))
+  (let ((new-transform #'(lambda (action
+                                  candidate)
+                           (let ((transform (occ-obj-ap-transform ap-transf-obj)))
+                             (cl-assert transform)
+                             (let ((ap-normal-obj (funcall transform
+                                                           action candidate)))
+                               (occ-return-tranform ap-normal-obj obj))))))
     (occ-build-ap-transf (cons :transform
-                               fun))))
+                               new-transform))))
 
 ;; (cl-defmethod occ-return-operate-p (retval)
 ;;   retval)
