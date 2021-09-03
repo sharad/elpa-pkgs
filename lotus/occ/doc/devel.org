@@ -19,6 +19,6 @@
   This is reducing code size by reducing number of parameters to functions like #'OR
 
 
-  Yes this requires number of accessors methods
+  Yes this requires number of accessors methods.
   
   
