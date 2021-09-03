@@ -1,0 +1,24 @@
+
+
+* Code here may be the hell of [[https://en.wikipedia.org/wiki/Indirection][indirection]], but still helping in one way
+  
+* To reduce number of params like (or this that elsethat)
+
+  using
+
+  #+begin_src elisp
+    (cl-defmethod OCC-OBJ-MARKER ((mrk marker))
+      mrk)
+    (cl-defmethod OCC-OBJ-MARKER ((obj OCC-TSK))
+      (OCC-TSK-MARKER obj)
+  #+end_src  
+
+
+  This will cover MARKER and OCC-TSK and its subclassed.
+
+  This is reducing code size by reducing number of parameters to functions like #'OR
+
+
+  Yes this requires number of accessors methods
+  
+  
