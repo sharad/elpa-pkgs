@@ -125,6 +125,7 @@ ACTION "
                                                   :prompt              prompt)))
           (occ-debug :debug "occ-list-select: selected = %s" selected)
           (if return-transform
+              ;; TODO: add cl-defmethod magic here
               (or selected ;as return value is going to be used.
                   (occ-make-return occ-return-quit-label selected))
             selected))))))
@@ -179,9 +180,9 @@ ACTION "
                           &key
                           filters
                           builder
-                          return-transform
                           ap-normal
                           ap-transf
+                          return-transform
                           auto-select-if-only
                           timeout
                           obtrusive
@@ -192,9 +193,9 @@ ACTION "
   (let ((retval (occ-select (occ-make-ctx-at-point)
                             :filters             filters
                             :builder             builder
-                            :return-transform    return-transform
                             :ap-normal           ap-normal
                             :ap-transf           ap-transf
+                            :return-transform    return-transform
                             :auto-select-if-only auto-select-if-only
                             :timeout             timeout
                             :obtrusive           obtrusive
