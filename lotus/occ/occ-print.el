@@ -104,7 +104,10 @@ pointing to it."
 
 (cl-defmethod occ-format (obj
                           &optional case rank)
-  (concat (when case (concat (occ-title obj case) ": "))
+  (concat (when case
+            (concat (occ-title obj
+                               case)
+                    ": "))
           (format "%s" obj)))
 
 (cl-defmethod occ-format ((obj marker)

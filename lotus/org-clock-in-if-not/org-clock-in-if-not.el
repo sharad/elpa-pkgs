@@ -49,12 +49,15 @@
 (defun org-ci-if-not-debug (level &rest args)
   (when org-ci-if-not-debug
     (when (car args)
-      (apply #'format args)
-      (when (member level '(:emergency :error :warning :debug))
-        ;; (apply #'lwarn 'org-ci-if-not level args)
-        (apply #'lwarn 'org-ci-if-not level args))
-      (unless (eq level :nodisplay)
-        (apply #'message args)))))
+      (let* ((fmt (car args))
+             (fmt (format "%s: %s" (time-stamp-string) fmt))
+             (args (cons fmt (cdr args))))
+        (apply #'format args)
+        (when (member level '(:emergency :error :warning :debug))
+          ;; (apply #'lwarn 'org-ci-if-not level args)
+          (apply #'lwarn 'org-ci-if-not level args))
+        (unless (eq level :nodisplay)
+          (apply #'message args))))))
 
 (defun org-ci-if-not-message (&rest args)
   (apply #'message args)
@@ -76,33 +79,28 @@
 ;;;###autoload
 (defun org-clock-in-if-not ()
   (interactive)
-  (org-ci-if-not-debug :debug "%s: org-clock-in-if-not: begin" (time-stamp-string))
-  (org-ci-if-not-debug :debug "%s: org-clock-in-if-not: begin" (time-stamp-string))
+  (org-ci-if-not-debug :debug "org-clock-in-if-not: begin")
+  (org-ci-if-not-debug :debug "org-clock-in-if-not: begin")
   (lotus-run-unobtrusively                    ;heavy task
     (lotus-with-no-active-minibuffer-if
         (lotus-with-other-frame-event-debug "org-clock-in-if-not" :restart
           (progn
-            (org-ci-if-not-debug :debug "%s: org-clock-in-if-not: [minibuff body] lotus-with-no-active-minibuffer-if" (time-stamp-string))
-            (org-ci-if-not-debug :debug
-             "%s: org-clock-in-if-not: not running as minibuffer is already active."
-             (time-stamp-string))
-            (message
-             "%s: org-clock-in-if-not: not running as minibuffer is already active."
-             (time-stamp-string)))
+            (org-ci-if-not-debug :debug "org-clock-in-if-not: [minibuff body] lotus-with-no-active-minibuffer-if")
+            (org-ci-if-not-debug :debug "org-clock-in-if-not: not running as minibuffer is already active.")
+            (message "org-clock-in-if-not: not running as minibuffer is already active."))
 
-        (org-ci-if-not-debug :debug "%S: org-clock-in-if-not: [body] lotus-with-no-active-minibuffer-if" (time-stamp-string))
-        (unless (or
-                 org-donot-try-to-clock-in
-                 (org-clock-is-active))
+        (org-ci-if-not-debug :debug "org-clock-in-if-not: [body] lotus-with-no-active-minibuffer-if")
+        (unless (or org-donot-try-to-clock-in
+                    (org-clock-is-active))
           ;; (org-clock-goto t)
-          (org-ci-if-not-debug :debug "%s: org-clock-in-if-not: really calling" (time-stamp-string))
+          (org-ci-if-not-debug :debug "org-clock-in-if-not: really calling")
           (if org-clock-history
               (let (buffer-read-only)
                 (org-clock-in '(4)))
             ;; with-current-buffer should be some real file
             (org-clock-in-refile nil))))))
-  (org-ci-if-not-debug :debug "%s: org-clock-in-if-not: finished" (time-stamp-string))
-  (org-ci-if-not-debug :debug "%s: org-clock-in-if-not: finished" (time-stamp-string)))
+  (org-ci-if-not-debug :debug "org-clock-in-if-not: finished")
+  (org-ci-if-not-debug :debug "org-clock-in-if-not: finished"))
 
 
 (defvar org-clock-in-if-not-at-time-timer nil)
@@ -115,24 +113,21 @@
                                 #'(lambda ()
                                     (if (any-frame-opened-p)
                                         (org-clock-in-if-not)))))
-    (message
-     "%s: org-clock-in-if-not-at-time: begin timer=%s after %d secs"
-     (time-stamp-string)
-     org-clock-in-if-not-at-time-timer
-     delay)))
+    (message "%s: org-clock-in-if-not-at-time: begin timer=%s after %d secs"
+             (time-stamp-string)
+             org-clock-in-if-not-at-time-timer
+             delay)))
 
 ;;;###autoload
 (defun org-clock-in-if-not-at-time-delay ()
-  (org-ci-if-not-debug :debug "%s: org-clock-in-if-not-at-time-delay: begin after %d secs"
-           (time-stamp-string)
-           org-clock-in-if-not-delay)
+  (org-ci-if-not-debug :debug "org-clock-in-if-not-at-time-delay: begin after %d secs"
+                       org-clock-in-if-not-delay)
   (org-clock-in-if-not-at-time org-clock-in-if-not-delay))
 
 ;;;###autoload
 (defun org-clock-in-if-not-at-time-delay-fn ()
-  (message
-   "%s: org-clock-in-if-not-at-time-delay-fn begin"
-   (time-stamp-string))
+  (message "%s: org-clock-in-if-not-at-time-delay-fn begin"
+           (time-stamp-string))
   (org-clock-in-if-not-at-time-delay))
 
 (defun org-clock-out-if-active ()

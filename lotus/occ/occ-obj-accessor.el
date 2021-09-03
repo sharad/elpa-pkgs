@@ -329,12 +329,6 @@
   (occ-obj-ap-helm-transformation ap-obj))
 
 
-
-
-
-
-
-
 (defun occ-case (case title)
   (if (fboundp case)
       (funcall case title)
@@ -342,19 +336,19 @@
 
 (cl-defgeneric occ-title (obj
                           case)
-  "occ-format")
+  "occ-title")
 
 (cl-defmethod occ-title (obj
                          case)
   (occ-case case
             (occ-class-name obj)))
 
-(cl-defmethod occ-title ((obj marker)
+(cl-defmethod occ-title ((obj  marker)
                          (case symbol))
   (occ-case case
             (occ-class-name obj)))
 
-(cl-defmethod occ-title ((obj occ-obj)
+(cl-defmethod occ-title ((obj  occ-obj)
                          (case symbol))
   (occ-case case
             (occ-class-name obj)))
@@ -551,8 +545,8 @@ pointing to it."
             (let ((msg
                    (if ctxual-tsk
                        (format "occ-current-ctxual-tsk: %s from head of *occ-clocked-ctxual-tsk-ctx-history* is not equal to current clocking clock %s"
-                               (occ-format ctxual-tsk   'captilize)
-                               (occ-format clock 'captilize))
+                               (occ-format ctxual-tsk 'captilize)
+                               (occ-format clock      'captilize))
                      (format "occ-current-ctxual-tsk: %s is outside of occ"
                              (occ-format clock 'captilize)))))
               (if occ-other-allowed
@@ -610,7 +604,7 @@ pointing to it."
                                  force)
   (unless (occ-tree-collection-files collection)
     (occ-collect-tsks collection nil)
-    (let ((occ-files (let ((tsks (occ-collection collection))
+    (let ((occ-files (let ((tsks  (occ-collection collection))
                            (files '()))
                        (mapc #'(lambda (tsk)
                                  (occ-mapc-tree-tsks #'(lambda (tsk args)
