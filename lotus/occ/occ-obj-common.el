@@ -38,24 +38,22 @@
 (defun occ-plist-get (plist prop)
   (let ((key (sym2key prop)))
     (if key
-        (plist-get
-         plist
-         (sym2key prop))
+        (plist-get plist
+                   (sym2key prop))
       (occ-error "occ-plist-get: Can not make keyword for `'%s'" prop))))
 
 (defmacro occ-plist-set (plist prop value)
   `(let ((key (sym2key ,prop)))
      (if key
-         (plist-put
-          ,plist ;TODO ??? (cl-obj-plist-value obj)
-          key ,value)
+         (plist-put ,plist ;TODO ??? (cl-obj-plist-value obj)
+                    key ,value)
        (occ-error "occ-plist-set: Can not make keyword for `'%s'" ,prop))))
 
 (defun occ-list-get-evens (lst)
   (cond
    ((null lst) nil)
    (t (cons (car lst)
-            (occ-list-get-evens (cdr (cdr lst)))))))
+            (occ-list-get-evens (cddr lst))))))
 
 ;; (defun list-get-odds (lst)
 ;;   (cond
@@ -69,23 +67,25 @@
 (cl-defmethod occ-get-property ((obj occ-obj)
                                 (prop symbol))
   ;; mainly used by occ-tsk only.
-  (if (memq prop (cl-class-slots (cl-inst-classname obj)))
+  (if (memq prop
+            (cl-class-slots (cl-inst-classname obj)))
       (cl-get-field obj prop)
-    (or
-     (occ-plist-get (cl-obj-plist-value obj) prop)
-     (occ-plist-get (cl-obj-plist-value obj) (upcase-sym prop)))))
+    (or (occ-plist-get (cl-obj-plist-value obj)
+                       prop)
+        (occ-plist-get (cl-obj-plist-value obj)
+                       (upcase-sym prop)))))
 
 (cl-defmethod occ-set-property ((obj occ-obj)
                                 prop
                                 value
                                 &key not-recursive)
   ;; mainly used by occ-tsk only
-  (if (memq prop (cl-class-slots (cl-inst-classname obj)))
+  (if (memq prop
+            (cl-class-slots (cl-inst-classname obj)))
       (setf (cl-struct-slot-value (cl-inst-classname obj) prop obj) value)
-    (let ((plist-prop
-           (if (occ-plist-get (cl-obj-plist-value obj) prop)
-               prop
-             (upcase-sym prop))))
+    (let ((plist-prop (if (occ-plist-get (cl-obj-plist-value obj) prop)
+                          prop
+                        (upcase-sym prop))))
       (occ-debug :debug "occ-set-property: got %s using %s" prop plist-prop)
       (occ-plist-set
        ;; NOTE: as Property block keys return by (org-element-at-point) are in
@@ -112,31 +112,27 @@
 (cl-defmethod occ-get-properties ((obj occ-obj)
                                   (props list))
   ;; mainly used by occ-tsk only.
-  (mapcar
-   #'(lambda (prop)
-       (cons prop (occ-get-property obj prop)))
+  (mapcar #'(lambda (prop)
+              (cons prop (occ-get-property obj prop)))
    props))
 
 
 (cl-defmethod occ-class-slots ((obj occ-obj))
-  (let* ((plist (cl-obj-plist-value obj))
+  (let* ((plist      (cl-obj-plist-value obj))
          (plist-keys (occ-plist-get-keys plist))
-         (slots (cl-class-slots (cl-inst-classname obj))))
+         (slots      (cl-class-slots (cl-inst-classname obj))))
     (append slots
             (mapcar #'key2sym plist-keys))))
 (cl-defmethod occ-obj-defined-slots ((obj occ-obj))
-  (let* ((plist (cl-obj-plist-value obj))
+  (let* ((plist      (cl-obj-plist-value obj))
          (plist-keys (occ-plist-get-keys plist))
-         (slots
-          (append
-           (cl-class-slots (cl-inst-classname obj))
-           (mapcar #'key2sym plist-keys))))
+         (slots      (append (cl-class-slots (cl-inst-classname obj))
+                             (mapcar #'key2sym plist-keys))))
     slots))
 (cl-defmethod occ-obj-defined-slots-with-value ((obj occ-obj))
   (let* ((slots (occ-obj-defined-slots obj)))
-    (remove-if-not
-     #'(lambda (slot)
-         (occ-get-property obj slot))
+    (remove-if-not #'(lambda (slot)
+                       (occ-get-property obj slot))
      slots)))
 (cl-defmethod cl-method-matched-arg ((method symbol)
                                      (ctx symbol))
@@ -144,15 +140,13 @@
 (cl-defmethod cl-method-matched-arg ((method symbol)
                                      (ctx occ-ctx))
   (let ((slots (occ-obj-defined-slots-with-value ctx)))
-    (remove-if-not
-     #'(lambda (arg) (memq arg slots))
+    (remove-if-not #'(lambda (arg) (memq arg slots))
      (cl-method-first-arg method))))
 (cl-defmethod cl-method-matched-arg ((method1 symbol)
                                      (method2 symbol)
                                      (ctx occ-ctx))
   (let ((slots (cl-method-first-arg-with-value method2 ctx)))
-    (remove-if-not
-     #'(lambda (arg) (memq arg slots))
+    (remove-if-not #'(lambda (arg) (memq arg slots))
      (cl-method-first-arg method1))))
 
 
@@ -165,16 +159,13 @@
 (cl-defmethod cl-method-sig-matched-arg ((method-sig cons)
                                          (ctx occ-ctx))
   (let ((slots (occ-obj-defined-slots-with-value-new ctx)))
-    (remove-if-not
-     #'(lambda (arg) (memq arg slots))
-     (cl-method-param-case method-sig))))
+    (remove-if-not #'(lambda (arg) (memq arg slots))
+                   (cl-method-param-case method-sig))))
 (cl-defmethod cl-method-sigs-matched-arg ((method-sig1 cons)
                                           (method-sig2 cons)
                                           (ctx occ-ctx))
   (let ((slots (cl-method-param-case-with-value-new method-sig2 ctx)))
-    (remove-if-not
-     #'(lambda (arg) (memq arg slots))
+    (remove-if-not #'(lambda (arg) (memq arg slots))
      (cl-method-param-case method-sig1))))
-
 
 ;;; occ-obj-common.el ends here

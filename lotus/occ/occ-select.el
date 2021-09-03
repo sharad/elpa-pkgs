@@ -153,7 +153,7 @@ ACTION "
   "return interactively selected TSK or NIL,   TODO: Document it."
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
   (unless builder (occ-error "Builder can not be nil"))
-  (occ-debug :debug "occ-select((obj occ-ctx)): begin")
+  (occ-debug :debug "OCC-SELECT((OBJ OCC-CTX)): begin")
   (let* ((timeout (or timeout occ-idle-timeout)))
     (let* ((unfiltered-count (occ-length)))
       (if (> unfiltered-count 0)
@@ -167,13 +167,13 @@ ACTION "
                                          :timeout             timeout
                                          :obtrusive           obtrusive
                                          :prompt              prompt)))
-            (occ-message "occ-select((obj occ-ctx)): occ-list-select returned %s"
+            (occ-message "OCC-SELECT((OBJ OCC-CTX)): occ-list-select returned %s"
                        (occ-Format retval))
             retval)
         (prog1
             (when return-transform
               (occ-make-return occ-return-nocndidate-label nil))
-          (occ-message "occ-select((obj occ-ctx)): no candidates available from %d."
+          (occ-message "OCC-SELECT((OBJ OCC-CTX)): no candidates available from %d."
                        unfiltered-count))))))
 
 (cl-defmethod occ-select ((obj null)
@@ -200,7 +200,7 @@ ACTION "
                             :timeout             timeout
                             :obtrusive           obtrusive
                             :prompt              prompt)))
-    (occ-debug :debug "occ-select((obj null)): occ-select((obj occ-ctx)) returned %s"
+    (occ-debug :debug "OCC-SELECT((OBJ NULL)): OCC-SELECT((OBJ OCC-CTX)) returned %s"
                       (occ-Format retval))
     retval))
 
