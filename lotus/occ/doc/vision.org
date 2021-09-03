@@ -2,3 +2,18 @@
 #+PROPERTY: header-args :tangle no
 
 Yes Vision of GPL GNU FSF inherited here
+
+
+* (TAPP) Task or TODO application should be more proactive
+
+* Task has their CONTEXT information with them (as property)
+  
+* clocking task and CONTEXT should be in sync.
+  
+* Based on CONTEXT TAPP should do
+
+** offer to clockin/clocking matching task
+
+** or offer to change CONTEXT to match to current clocking task
+   
+** or checkout CONTEXT to current clocking task

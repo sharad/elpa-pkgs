@@ -98,17 +98,14 @@
 
 (cl-defstruct occ-obj
   name)
-
 (cl-defstruct (occ-obj-tsk (:include occ-obj))
-  "Will hold tsk ctx obj-ctx-tsk")
-
+  "Object to hold tsk ctx obj-ctx-tsk")
 (cl-defstruct (occ-obj-ctx-tsk (:include occ-obj-tsk))
-  "Will hold ctsk occ-ctxual-tsk")
-
+  "Object to hold ctsk occ-ctxual-tsk")
 ;; (cl-defstruct (occ-obj-prop (:include occ-obj))
 ;;   "Will hold prop")
-
 (cl-defstruct (occ-filter (:include occ-obj))
+  "occ-filter"
   average
   stddev
   variance)
@@ -117,7 +114,6 @@
 (cl-defstruct (occ-obj-ctx (:include occ-obj))
   "Will hold ctx"
   filter-plist)
-
 (cl-defstruct (occ-obj-collection (:include occ-obj-ctx))
   "Will hold collection")
 
@@ -127,6 +123,7 @@
 
 ;; NOTE: Remember when adding new attributes, nned to destroy existing object, else it will cause miss-match.
 (cl-defstruct (occ-tsk (:include occ-obj-tsk))
+  "occ-tsk"
   ;; [[file:~/.repos/git/main/resource/info/doc/orgs/private/doc/contents/org/tasks/personal/works/emacs/todo.org::*Each%20task%20should%20have%20different%20types%20of%20actions%20associated%20to%20it,%20default%20is%20to%20clock-in%20to%20it][Each task should have different types of actions associated to it, default is to clock-in to it]]
   action
   ;; *** Each task should have different types of actions associated to it, default is to clock-in to it
@@ -147,54 +144,56 @@
   format-string
   ;; rank
   rank)
-
 (cl-defstruct (occ-tree-tsk (:include occ-tsk))
+  "occ-tree-tsk"
   subtree)
-
 (cl-defstruct (occ-list-tsk (:include occ-tsk))
-  )
+  "occ-list-tsk")
 
 
 (cl-defstruct (occ-ctx (:include occ-obj-ctx))
+  "occ-ctx"
   buffer
   file)
 
 
 (cl-defstruct (occ-ctsk (:include occ-obj-ctx-tsk))
+  "occ-ctsk"
   ;; Reason to have one more occ-ctsk along with occ-ctxual-tsk to avoid calculating rank.
   ctx
   tsk)
-
 (cl-defstruct (occ-ctxual-tsk (:include occ-ctsk))
   rank)
 
 
 (cl-defstruct (occ-collection (:include occ-obj-collection))
+  "occ-collection"
   roots
   files
   ;; TODO: implement it
   file-lcp)
-
 (cl-defstruct (occ-list-collection (:include occ-collection))
+  "occ-list-collection"
   list)
-
 (cl-defstruct (occ-tree-collection (:include occ-list-collection))
+  "occ-tree-collection"
   tree)
 
 
 (cl-defstruct occ-return
+  "occ-return"
   label
   value)
 
 
 (cl-defstruct (occ-callable (:include occ-obj))
+  "occ-callable"
   keyword
   fun)
-
 (cl-defstruct (occ-callable-normal (:include occ-callable))
-  )
+  "occ-callable-normal")
 (cl-defstruct (occ-callable-generator (:include occ-callable))
-  )
+  "occ-callable-generator")
 
 
 (cl-defstruct (occ-ap (:include occ-obj))
