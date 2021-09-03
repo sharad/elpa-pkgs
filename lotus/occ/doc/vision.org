@@ -6,9 +6,15 @@ Yes Vision of GPL GNU FSF inherited here
 
 * (TAPP) Task or TODO application should be more proactive
 
+  
+* TASK has their properties
+
 * Task has their CONTEXT information with them (as property)
   
-* clocking task and CONTEXT should be in sync.
+* clocking TASK and CONTEXT should be in SYNC.
+
+** TASK and CONTEXT being SYNC
+  
   
 * Based on CONTEXT TAPP should do
 
