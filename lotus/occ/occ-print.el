@@ -98,6 +98,40 @@ pointing to it."
     (s-chop-prefix lcp filename)))
 
 
+(defun occ-case (case title)
+  (if (fboundp case)
+      (funcall case title)
+    title))
+
+(cl-defgeneric occ-title (obj
+                          case)
+  "occ-title")
+
+(cl-defmethod occ-title (obj
+                         case)
+  (occ-case case
+            (occ-class-name obj)))
+
+(cl-defmethod occ-title ((obj  marker)
+                         (case symbol))
+  (occ-case case
+            (occ-class-name obj)))
+
+(cl-defmethod occ-title ((obj  occ-obj)
+                         (case symbol))
+  (occ-case case
+            (occ-class-name obj)))
+
+(defun occ-Title ((obj occ-obj))
+  (occ-case 'capitalize
+            (occ-class-name obj)))
+
+
+(defun occ-TITLE ((obj occ-obj))
+  (occ-case 'upcase
+            (occ-class-name obj)))
+
+
 (cl-defgeneric occ-format (obj
                            &optional case rank)
   "occ-format")
@@ -151,6 +185,15 @@ pointing to it."
     (concat (when case (concat (occ-title obj case) ": "))
             (when rank (format "[%4d] " (or (occ-rank obj) -128)))
             (format "%s" (occ-format tsk case rank)))))
+
+
+(defun occ-Format (obj &optional
+                       rank)
+  (occ-format obj 'capitalize rank))
+
+(defun occ-FORMAT (obj &optional
+                       rank)
+  (occ-format obj 'upcase rank))
 
 
 ;; (cl-defmethod occ-print-rank ((obj occ-tsk))

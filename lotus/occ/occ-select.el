@@ -167,7 +167,7 @@ ACTION "
                                          :obtrusive           obtrusive
                                          :prompt              prompt)))
             (occ-message "occ-select((obj occ-ctx)): occ-list-select returned %s"
-                       (occ-format retval 'capitalize))
+                       (occ-Format retval))
             retval)
         (prog1
             (when return-transform
@@ -200,7 +200,7 @@ ACTION "
                             :obtrusive           obtrusive
                             :prompt              prompt)))
     (occ-debug :debug "occ-select((obj null)): occ-select((obj occ-ctx)) returned %s"
-                      (occ-format retval 'capitalize))
+                      (occ-Format retval))
     retval))
 
 

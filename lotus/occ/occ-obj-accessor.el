@@ -329,31 +329,6 @@
   (occ-obj-ap-helm-transformation ap-obj))
 
 
-(defun occ-case (case title)
-  (if (fboundp case)
-      (funcall case title)
-    title))
-
-(cl-defgeneric occ-title (obj
-                          case)
-  "occ-title")
-
-(cl-defmethod occ-title (obj
-                         case)
-  (occ-case case
-            (occ-class-name obj)))
-
-(cl-defmethod occ-title ((obj  marker)
-                         (case symbol))
-  (occ-case case
-            (occ-class-name obj)))
-
-(cl-defmethod occ-title ((obj  occ-obj)
-                         (case symbol))
-  (occ-case case
-            (occ-class-name obj)))
-
-
 (cl-defmethod occ-heading-marker ((obj null))
   (make-marker))
 
