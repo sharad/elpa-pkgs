@@ -227,7 +227,8 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
                (if (> (length load-uncore) 1) "s were" " was") load-uncore))
     (if load-misses
         (occ-message "Some error occurred while reloading Org feature%s\n%s\nPlease check *Messages*!\n%s"
-                 (if (> (length load-misses) 1) "s" "") load-misses (occ-version nil 'full))
+                     (if (> (length load-misses) 1) "s" "")
+                     load-misses (occ-version nil 'full))
       (occ-message "Successfully reloaded Org\n%s" (occ-version nil 'full)))))
 
 (when nil
