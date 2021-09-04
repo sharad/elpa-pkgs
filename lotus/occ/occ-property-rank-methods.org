@@ -135,6 +135,88 @@
 
      #+end_src
 
+*** Template property of task
+    #+begin_src elisp
+      
+      (cl-defmethod occ-rankprop ((obj occ-tsk)
+                                  (prop (eql _template_)))
+        "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE_"
+        (let ((tsk (occ-obj-tsk obj)))
+          (let ((_template_ (occ-get-property tsk
+                                              '_template_)))
+            (let ((_template_-time (if _template_
+                                       (org-duration-string-to-minutes _template_)
+                                     0))
+                  (clocked-time   (occ-get-property tsk
+                                                    'clock-sum)))
+              (if (and (numberp clocked-time)
+                       (numberp _template_-time)
+                       (> _template_-time clocked-time))
+                  (- _template_-time
+                     clocked-time)
+                0)))))
+      
+      (cl-defmethod occ-list-p ((prop (eql _template_)))
+        "Is the property _TEMPLATE_ has VALUES in list."
+         nil)
+      
+      (cl-defmethod occ-prop-elem-to-org   ((prop (eql _template_))
+                                            value)
+        "Return string representation for property _TEMPLATE_."
+        nil)
+      
+      (cl-defmethod occ-prop-elem-from-org ((prop (eql _template_))
+                                            value)
+        "Return the Actual Object representation for property _TEMPLATE_."
+        nil)
+      
+      (cl-defmethod occ-readprop-elem-from-user ((obj occ-tsk)
+                                                 (prop (eql _template_)))
+        "READ the value for property _TEMPLATE_."
+        (let ((tsk (occ-obj-tsk obj)))
+          (let* ((prompt     (concat (symbol-name prop)
+                                     ": ")))
+            (read-number (format "%s: " prompt)))))
+      
+      (cl-defmethod occ-require-p ((obj occ-obj-tsk)
+                                   (operation (eql _operation_))
+                                   (prop (eql _template_))
+                                   values)
+        "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
+      _TEMPLATE_ if CALLABLE (helm method) should be generated."
+        (occ-current-p obj))
+      
+      (cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
+                                            (prop (eql _template_))
+                                            (operation (eql _operation_)))
+        "Return a default VALUE of property _TEMPLATE_."
+        (if (occ-current-p obj)
+            10
+          0))
+      
+      (cl-defmethod occ-operation ((obj occ-obj-tsk)
+                                   (operation (eql _operation_))
+                                   (prop (eql _template_))
+                                   values)
+        "Do the actual _OPERATION_."
+        (let ((tsk (occ-obj-tsk obj)))
+            (if (occ-list-p prop)
+                (occ-error "Implement it.")
+              (occ-error "Implement it."))))
+      
+      (cl-defmethod occ-org-operation ((obj occ-obj-tsk)
+                                       (operation (eql _operation_))
+                                       (prop (eql _template_))
+                                       values)
+        "Do the actual _OPERATION_."
+        (let ((prop-string (symbol-name prop)))
+            (if (occ-list-p prop)
+                (occ-error "Implement it.")
+              (occ-error "Implement it."))))
+      
+      
+      
+    #+end_src
 *** Root dir property of task
     #+begin_src elisp
 
