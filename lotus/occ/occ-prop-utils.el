@@ -1,0 +1,78 @@
+;;; occ-prop-utils.el --- occ property utils         -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2021  sharad
+
+;; Author: sharad <spratap@merunetworks.com>
+;; Keywords: convenience, abbrev
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; 
+
+;;; Code:
+
+(provide 'occ-prop-utils)
+
+
+(require 'occ=prop-intf)
+
+
+(defvar occ-property-rank-hierarchy '(t))
+
+(cl-defmethod occ-set-rank-hierarchy ((property symbol)
+                                      &key
+                                      pos)
+
+  (cond))
+
+;; (cl-defmethod)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(cl-defmethod occ-get-property ((obj occ-ctx)
+                                (property symbol))
+  "must return occ compatible value."
+  (occ-error "must return occ compatible value."))
+
+(cl-defmethod occ-format-prop ((obj occ-obj-tsk)
+                               (property symbol)
+                               value)
+  "Should return format printable value"
+  value)
+
+
+(cl-defgeneric occ-has-p (obj
+                          property
+                          value)
+  "occ-has-p")
+
+;;; occ-prop-utils.el ends here

@@ -20,7 +20,8 @@
 
 ;;; Commentary:
 
-;;
+;; This file should only has interface and default interface methods which is
+;; implemented by occ-property-methods.org
 
 ;;; Code:
 
@@ -75,16 +76,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
  )
 
 
-(defvar occ-property-rank-hierarchy '(t))
-
-(cl-defmethod occ-set-rank-hierarchy ((property symbol)
-                                      &key
-                                      pos)
-
-  (cond))
-
-;; (cl-defmethod)
-
 (cl-defgeneric occ-rankprop (obj
                              property)
   "Return the RANK (number) for OBJ based on the property PROPERTY")
@@ -170,7 +161,20 @@ return ORG compatible value.")
 of list for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value."
   (occ-error "Implement method occ-readprop-elem-from-user for property %s " property))
+(cl-defmethod occ-readprop-elem-from-user :around ((obj occ-obj-tsk)
+                                                   (prop symbol))
+  "Read value of element of list for property PROP from user for
+OCC-TSK OBJ."
+  (if (cl-next-method-p)
+      (occ-prop-elem-from-org prop
+                              (cl-call-next-method))
+    (occ-error "No
+(cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk) (prop (eql %s)))
+  ...)
 
+method provided."
+               prop)))
+
 
 ;; NOTE: Solve it BUG
 ;; BUG: is it user a prop method
@@ -179,6 +183,19 @@ return ORG compatible value."
   "Read value of element of list for property PROPERTY from user for
 OCC-TSK OBJ, must return ORG compatible value."
   (occ-error "Implement method occ-readprop-from-user for property %s" property))
+(cl-defmethod occ-readprop-from-user :around ((obj occ-obj-tsk)
+                                              (prop symbol))
+  "Read value of element of list for property PROP from user for
+OCC-TSK OBJ."
+  (if (cl-next-method-p)
+      (occ-prop-from-org prop
+                         (cl-call-next-method))
+    (occ-error "No
+(cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk) (prop (eql %s)))
+   ...)
+
+method provided."
+               prop)))
 
 
 (cl-defgeneric occ-require-p (obj
@@ -238,39 +255,4 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   "Checkout property in case of force clock-in."
   (occ-error "Implement it for %s: Checkout property in case of force clock-in." property))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-(cl-defmethod occ-get-property ((obj occ-ctx)
-                                (property symbol))
-  "must return occ compatible value."
-  (occ-error "must return occ compatible value."))
-
-(cl-defmethod occ-format-prop ((obj occ-obj-tsk)
-                               (property symbol)
-                               value)
-  "Should return format printable value"
-  value)
-
-
-(cl-defgeneric occ-has-p (obj
-                          property
-                          value)
-  "occ-has-p")
-
 ;;; occ-prop-intf.el ends here

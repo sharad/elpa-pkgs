@@ -86,19 +86,6 @@
 ;; TODO: multi-value property https://orgmode.org/manual/Using-the-property-API.html
 
 
-;; (cl-defgeneric occ-match-prop-method-args (obj)
-;;   "occ-match-prop-method-args")
-
-;; (cl-defmethod occ-match-prop-method-args ((obj occ-tsk))
-;;   (cl-method-param-case '(occ-readprop-elem-from-user (`(occ-tsk (eql ,val)) val))))
-
-;; (cl-defmethod occ-match-prop-method-args ((obj occ-obj-ctx-tsk))
-;;   (cl-method-sigs-matched-arg
-;;    ;; '(occ-readprop-with (`(occ-tsk occ-ctx (eql ,val)) val))
-;;    '(occ-readprop-elem-from-user (`(occ-obj-ctx-tsk (eql ,val)) val))
-;;    '(occ-get-property  (`(occ-ctx (eql ,val)) val))
-;;    (occ-obj-ctx obj)))
-
 (ert-deftest ert-occ-test-match-prop-method-args ()
   "Test"
   :expected-result :passed
@@ -197,22 +184,38 @@
   "return PROPERTIES list that can be edited."
   (if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
-    (occ-error "No (cl-defmethod occ-properties-to-edit (obj) ...) method provided. ")))
+    (occ-error "No
+(cl-defmethod occ-properties-to-edit (obj)
+  ...)
+
+method provided.")))
 (cl-defmethod occ-properties-to-inherit :around (obj)
   "return PROPERTIES list that can be inherited."
   (if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
-    (occ-error "No (cl-defmethod occ-properties-to-inherit (obj) ...) method provided. ")))
+    (occ-error "No
+(cl-defmethod occ-properties-to-inherit (obj)
+   ...)
+
+method provided.")))
 (cl-defmethod occ-properties-to-calculate-rank :around (obj)
   "return PROPERTIES list that can be used in calculating rank."
   (if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
-    (occ-error "No (cl-defmethod occ-properties-to-calculate-rank (obj) ...) method provided. ")))
+    (occ-error "No
+(cl-defmethod occ-properties-to-calculate-rank (obj)
+  ...)
+
+method provided.")))
 (cl-defmethod occ-properties-to-checkout :around (obj)
   "return PROPERTIES list that can be checked-out."
   (if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
-    (occ-error "No (cl-defmethod occ-properties-to-checkout (obj) ...) method provided. ")))
+    (occ-error "No
+(cl-defmethod occ-properties-to-checkout (obj)
+  ...)
+
+method provided.")))
 
 
 
@@ -301,27 +304,6 @@
           values))
 
 
-(cl-defmethod occ-readprop-elem-from-user :around ((obj occ-obj-tsk)
-                                                   (prop symbol))
-  "Read value of element of list for property PROP from user for
-OCC-TSK OBJ."
-  (if (cl-next-method-p)
-      (occ-prop-elem-from-org prop
-                              (cl-call-next-method))
-    (occ-error "No (cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk) (prop (eql %s))) ...) method provided. "
-               prop)))
-
-(cl-defmethod occ-readprop-from-user :around ((obj occ-obj-tsk)
-                                              (prop symbol))
-  "Read value of element of list for property PROP from user for
-OCC-TSK OBJ."
-  (if (cl-next-method-p)
-      (occ-prop-from-org prop
-                         (cl-call-next-method))
-    (occ-error "No (cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk) (prop (eql %s))) ...) method provided. "
-               prop)))
-
-
 (cl-defmethod occ-rereadprop-value ((prop symbol)
                                     value)
   "Read org string property PROP to occ representation."
@@ -359,8 +341,7 @@ OCC-TSK OBJ."
                                   operation
                                   prop
                                   values)
-  "Org operation implementation of OPERATION on POINT-OF-MARKER for PROP and VALUES"
-  )
+  "Org operation implementation of OPERATION on POINT-OF-MARKER for PROP and VALUES")
 
 (cl-defmethod occ-org-operation ((pom  marker)
                                  (operation (eql get))

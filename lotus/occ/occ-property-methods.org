@@ -4,7 +4,7 @@
 * Property Rank methods for task
 ** Preamble
 #+begin_src emacs-lisp :padline no :comments no :noweb no
-;;; occ-property-rank-methods.el --- org capture plus         -*- lexical-binding: t; -*-
+;;; occ-property-methods.el --- org capture plus         -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2012  Sharad Pratap
 
@@ -32,7 +32,7 @@
 
 ** Provide this file
 #+begin_src emacs-lisp
-(provide 'occ-property-rank-methods)
+(provide 'occ-property-methods)
 
 #+end_src
 
@@ -478,5 +478,5 @@
 
 ** File Ends Here
    #+begin_src emacs-lisp
-;;; occ-property-rank-methods.el ends here
+;;; occ-property-methods.el ends here
    #+end_src

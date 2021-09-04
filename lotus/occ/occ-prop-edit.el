@@ -52,7 +52,6 @@
 (require 'occ-obj-method)
 (require 'occ-obj-utils)
 (require 'occ-prop)
-;; (require 'occ-property-rank-methods)
 
 
 (cl-defgeneric occ-select-propetry (obj

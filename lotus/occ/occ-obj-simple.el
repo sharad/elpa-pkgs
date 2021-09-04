@@ -45,7 +45,7 @@
 (require 'occ-predicate)
 (require 'occ-rank)
 (require 'occ-prop)
-(require 'occ-property-rank-methods)
+(require 'occ-property-methods)
 (require 'occ-list-filter)
 (require 'occ-select)
 (require 'occ-helm)
