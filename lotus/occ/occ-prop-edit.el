@@ -62,9 +62,10 @@
                                    &optional prompt)
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (occ-debug :debug "occ-select-propetry: %s" (occ-format tsk 'capitalize))
+    (occ-debug :debug "occ-select-propetry: %s" (occ-Format tsk))
     (let ((prompt     (or prompt
-                          "proptery: "))
+                          (format "%s proptery: "
+                                  (occ-Format tsk))))
           (fixed-keys '(edit
                         done))
           (keys       (occ-properties-to-edit obj)))
@@ -75,7 +76,7 @@
                                           (append keys fixed-keys))))
                 (key-vals  (occ-get-properties tsk keys)))
             (occ-debug :debug "occ-select-propetry: for %s with keys =%s got key-vals = %s"
-                              (occ-format tsk 'capitalize)
+                              (occ-Format tsk)
                               keys
                               key-vals)
             (if key-vals
@@ -100,11 +101,11 @@
                         (cdr sel))
                     (occ-error "Not Keys Vals Collection %s for %s"
                                key-val-collection
-                               (occ-format tsk 'capitalize))))
+                               (occ-Format tsk))))
               (occ-error "Not Keys Vals for %s"
-                         (occ-format tsk 'capitalize))))
+                         (occ-Format tsk))))
         (occ-debug :debug "Not Keys for %s"
-                   (occ-format tsk 'capitalize))))))
+                   (occ-Format tsk))))))
 
 
 (defun org-get-flag-proprty-drawer (&optional force)
@@ -234,7 +235,7 @@
                            prop-loc buff mrk)
                   t))))
         (occ-error "occ-open-prop-block: no buff %s found for object %s"
-               (occ-format obj 'capitalize))))))
+               (occ-Format obj))))))
 
 (cl-defmethod occ-open-prop-block ((obj null))
   (occ-open-prop-block (point-marker)))
@@ -242,7 +243,7 @@
 
 (cl-defmethod occ-props-edit ((obj occ-obj-ctx-tsk))
   (occ-debug :debug "occ-props-edit: begin %s"
-             (occ-format obj 'capitalize))
+             (occ-Format obj))
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (let ((prop nil))
@@ -260,24 +261,25 @@
 ;; do both fast and interactive editing.
 ;; (occ-props-edit obj)
 (cl-defmethod occ-props-edit-combined ((obj occ-obj-ctx-tsk))
-  (let* ((sources (list (helm-build-sync-source "fast edit"
-                          :candidates (occ-gen-edits-if-required obj ;;BUG: occ-ap-transform related changes will be required.
-                                                                 nil
-                                                                 nil
-                                                                 :param-only t)
-                          :action (list (cons "Edit" #'funcall)))
-                        (helm-build-sync-source "edit"
-                          :candidates (list
-                                       (cons "Edit" #'(lambda () (occ-props-edit obj))))
-                          :action (list (cons "Edit" #'funcall)))
-                        (helm-build-sync-source "other"
-                          :candidates '(("Continue" . t)
-                                        ("Checkout" . #'(lambda () (occ-checkout obj)))))))
-         (retval
-          (helm-timed occ-idle-timeout nil
-            (helm :sources sources))))
-    (if (eq retval t)
-        t)))
+  (let ((prompt (format "%s fast edit" (occ-Format obj))))
+    (let* ((sources (list (helm-build-sync-source prompt
+                            :candidates (occ-gen-edits-if-required obj ;;BUG: occ-ap-transform related changes will be required.
+                                                                   nil
+                                                                   nil
+                                                                   :param-only t)
+                            :action (list (cons "Edit" #'funcall)))
+                          (helm-build-sync-source "edit"
+                            :candidates (list
+                                         (cons "Edit" #'(lambda () (occ-props-edit obj))))
+                            :action (list (cons "Edit" #'funcall)))
+                          (helm-build-sync-source "other"
+                            :candidates '(("Continue" . t)
+                                          ("Checkout" . #'(lambda () (occ-checkout obj)))))))
+           (retval
+            (helm-timed occ-idle-timeout nil
+              (helm :sources sources))))
+      (if (eq retval t)
+          t))))
 
 
 (cl-defmethod occ-props-edit-in-cloned-buffer ((obj occ-obj-ctx-tsk))
@@ -289,7 +291,7 @@
           (if (occ-open-prop-block cloned-mrk)
               (occ-props-edit obj)
             (occ-error "occ-props-edit-in-cloned-buffer: can not edit props for %s"
-                       (occ-format obj 'capitalize))))))))
+                       (occ-Format obj))))))))
 
 
 (defun occ-props-edit-handle-response (prop timeout timer cleanup local-cleanup win)
