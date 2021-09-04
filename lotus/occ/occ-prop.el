@@ -117,26 +117,29 @@
 
 
 (cl-defgeneric occ-properties-to-edit (obj)
-  "occ-properties-to-edit")
-
+  "return PROPERTIES list that can be edited.")
 (cl-defgeneric occ-properties-to-inherit (obj)
-  "occ-properties-to-inherit")
-
+  "return PROPERTIES list that can be inherited.")
 (cl-defgeneric occ-properties-to-calculate-rank (obj)
-  "occ-properties-to-calculate-rank")
-
+  "return PROPERTIES list that can be used in calculating rank.")
+(cl-defmethod occ-properties-to-checkout (obj)
+  "return PROPERTIES list that can be checked-out.")
+ 
 
 (cl-defmethod occ-properties-to-edit ((class symbol))
+  "return PROPERTIES list that can be edited."
   (cl-method-param-values 'occ-readprop-elem-from-user
                           (list '\` `(,class (eql ,'(\, val))))
                           'val))
 
 (cl-defmethod occ-properties-to-edit ((obj occ-tsk))
+  "return PROPERTIES list that can be edited."
   (cl-collect-on-classes #'occ-properties-to-edit
                          obj))
 
 ;; TODO: improve
 (cl-defmethod occ-properties-to-edit ((obj occ-obj-ctx-tsk))
+  "return PROPERTIES list that can be edited."
   (cl-method-sigs-matched-arg
    '(occ-readprop-elem-from-user (`(occ-obj-ctx-tsk (eql ,val)) val))
    '(occ-get-property            (`(occ-ctx (eql ,val)) val))
@@ -144,38 +147,79 @@
 
 
 (cl-defmethod occ-properties-to-inherit ((class symbol))
+  "return PROPERTIES list that can be inherited."
   (cl-method-param-values 'occ-readprop-elem-from-user
                           (list '\` `(,class (eql ,'(\, val))))
                           'val))
 
 (cl-defmethod occ-properties-to-inherit ((obj occ-obj-tsk))
+  "return PROPERTIES list that can be inherited."
   (cl-collect-on-classes #'occ-properties-to-inherit
                          obj))
 
 
 (defun occ-readprop-props () ;;TODO: check about them
+  "return PROPERTIES list that can be inherited."
   (occ-properties-to-inherit 'occ-obj-ctx-tsk))
 
 
-(cl-defmethod occ-properties-to-calcuate-rank ((class symbol))
+(cl-defmethod occ-properties-to-calculate-rank ((class symbol))
+  "return PROPERTIES list that can be used in calculating rank."
   (cl-method-param-values 'occ-rankprop
                           (list '\` `(,class (eql ,'(\, val))))
                           'val))
 
 (cl-defmethod occ-properties-to-calculate-rank ((obj occ-obj-tsk))
+  "return PROPERTIES list that can be used in calculating rank."
   (cl-collect-on-classes #'occ-properties-to-calcuate-rank
                          obj))
 
 
 (cl-defmethod occ-properties-to-checkout ((class symbol))
+  "return PROPERTIES list that can be checked-out."
   (cl-method-param-values 'occ-checkoutprop
                           (list '\` `(,class (eql ,'(\, val))))
                           'val))
 
 (cl-defmethod occ-properties-to-checkout ((obj occ-obj-tsk))
+  "return PROPERTIES list that can be checked-out."
   (cl-collect-on-classes #'occ-properties-to-checkout
                          obj))
 
+
+(defun occ-internal-remove-template-symbol (prop-list)
+  (remove-if #'(lambda (prop)
+                 (string-match "^_.+_$" (symbol-name prop)))
+             prop-list))
+
+
+(cl-defmethod occ-properties-to-edit :around (obj)
+  "return PROPERTIES list that can be edited."
+  (if (cl-next-method-p)
+      (occ-internal-remove-template-symbol (cl-call-next-method))
+    (occ-error "No (cl-defmethod occ-properties-to-edit (obj) ...) method provided. ")))
+(cl-defmethod occ-properties-to-inherit :around (obj)
+  "return PROPERTIES list that can be inherited."
+  (if (cl-next-method-p)
+      (occ-internal-remove-template-symbol (cl-call-next-method))
+    (occ-error "No (cl-defmethod occ-properties-to-inherit (obj) ...) method provided. ")))
+(cl-defmethod occ-properties-to-calculate-rank :around (obj)
+  "return PROPERTIES list that can be used in calculating rank."
+  (if (cl-next-method-p)
+      (occ-internal-remove-template-symbol (cl-call-next-method))
+    (occ-error "No (cl-defmethod occ-properties-to-calculate-rank (obj) ...) method provided. ")))
+(cl-defmethod occ-properties-to-checkout :around (obj)
+  "return PROPERTIES list that can be checked-out."
+  (if (cl-next-method-p)
+      (occ-internal-remove-template-symbol (cl-call-next-method))
+    (occ-error "No (cl-defmethod occ-properties-to-checkout (obj) ...) method provided. ")))
+
+
+
+
+
+
+
 
 (defun occ-org-entry-get (pom
                           prop)
