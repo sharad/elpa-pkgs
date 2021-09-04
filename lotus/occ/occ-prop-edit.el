@@ -468,7 +468,8 @@
             (occ-debug :debug "occ-safe-props-window-edit: lotus-with-other-frame-event-debug")
             (prog1
                 (let ((buff (occ-ctx-buffer obj)))
-                  (if (eq (current-buffer) buff)
+                  (if (eq (current-buffer)
+                          buff)
                       (occ-debug-return "occ-safe-props-window-edit((obj occ-ctx)) direct"
                         (occ-props-window-edit obj
                                                :filters          filters
