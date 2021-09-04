@@ -63,47 +63,48 @@
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (occ-debug :debug "occ-select-propetry: %s" (occ-format tsk 'capitalize))
-    (let ((prompt (or prompt "proptery: "))
-          (fixed-keys '(edit done))
+    (let ((prompt     (or prompt
+                          "proptery: "))
+          (fixed-keys '(edit
+                        done))
           (keys       (occ-properties-to-edit obj)))
       (if keys
-          (let ((maxkeylen (apply
-                            #'max
-                            (mapcar #'(lambda (sym) ;https://www.gnu.org/software/emacs/manual/html_node/elisp/Formatting-Strings.html
-                                        (length (symbol-name sym)))
-                                    (append keys fixed-keys))))
+          (let ((maxkeylen (apply #'max
+                                  (mapcar #'(lambda (sym) ;https://www.gnu.org/software/emacs/manual/html_node/elisp/Formatting-Strings.html
+                                              (length (symbol-name sym)))
+                                          (append keys fixed-keys))))
                 (key-vals  (occ-get-properties tsk keys)))
             (occ-debug :debug "occ-select-propetry: for %s with keys =%s got key-vals = %s"
                               (occ-format tsk 'capitalize)
                               keys
                               key-vals)
             (if key-vals
-                (let* ((key-val-collection
-                        (mapcar
-                         #'(lambda (key-val)
-                             (cons
-                              (if (cdr key-val)
-                                  (format "%s: %s" (car key-val) (cdr key-val))
-                                (symbol-name (car key-val)))
-                              (car key-val)))
-                         key-vals))
-                       (key-val-collection (append
-                                            key-val-collection
-                                            (mapcar #'(lambda (fk) (cons (symbol-name fk) fk))
-                                                    fixed-keys))))
+                (let* ((key-val-collection (mapcar #'(lambda (key-val)
+                                                       (cons
+                                                        (if (cdr key-val)
+                                                            (format "%s: %s" (car key-val) (cdr key-val))
+                                                          (symbol-name (car key-val)))
+                                                        (car key-val)))
+                                                   key-vals))
+                       (key-val-collection (append key-val-collection
+                                                   (mapcar #'(lambda (fk) (cons (symbol-name fk) fk))
+                                                           fixed-keys))))
                   (if key-val-collection
-                      (let ((sel
-                             (assoc
-                              (occ-completing-read prompt
-                                                   key-val-collection
-                                                   nil
-                                                   t)
-                              key-val-collection)))
+                      (let* ((key-sel (occ-completing-read prompt
+                                                           key-val-collection
+                                                           nil
+                                                           t))
+                             (sel (assoc key-sel
+                                         key-val-collection)))
                         (occ-debug :debug "selected option %s" sel)
                         (cdr sel))
-                    (occ-error "Not Keys Vals Collection %s for %s" key-val-collection (occ-format tsk 'capitalize))))
-              (occ-error "Not Keys Vals for %s" (occ-format tsk 'capitalize))))
-        (occ-debug :debug "Not Keys for %s" (occ-format tsk 'capitalize))))))
+                    (occ-error "Not Keys Vals Collection %s for %s"
+                               key-val-collection
+                               (occ-format tsk 'capitalize))))
+              (occ-error "Not Keys Vals for %s"
+                         (occ-format tsk 'capitalize))))
+        (occ-debug :debug "Not Keys for %s"
+                   (occ-format tsk 'capitalize))))))
 
 
 (defun org-get-flag-proprty-drawer (&optional force)
@@ -119,7 +120,8 @@
   ;; (recenter-top-bottom 2)
   ;; (unless flag                  ;; creating issue in cleanupfn error as display buffer and current buffer is not same.
   ;;   (recenter-top-bottom 2))
-  (let ((prop-range (org-get-property-block (point) force)))
+  (let ((prop-range (org-get-property-block (point)
+                                            force)))
     ;; first show heading
     (when (eq org-cycle-subtree-status 'folded)
       (unless flag
@@ -130,31 +132,35 @@
             (org-show-context 'org-goto)))
         (progn                                        ; changed from org-show-tsk to org-show-entry
           (org-show-entry)
-          (occ-debug :debug
-                     "did %s entry `%s'" (if flag "close" "open") heading)
+          (occ-debug :debug "did %s entry `%s'"
+                     (if flag "close" "open")
+                     heading)
           (org-unlogged-message "CHILDREN")
           (setq org-cycle-subtree-status 'children))))
     ;; show expand property if flag is nil, else hide
-    (let* ((prop-range (org-get-property-block (point) force))
-           (prop-loc   (when (consp prop-range) (1- (car prop-range)))))
+    (let* ((prop-range (org-get-property-block (point)
+                                               force))
+           (prop-loc   (when (consp prop-range)
+                         (1- (car prop-range)))))
       (when prop-range
         (occ-debug :debug "pos %d before jumping to %s drawer, will jump to pos %d"
                    (point)
                    (if flag "close" "open")
                    prop-loc)
         (goto-char prop-loc)
-        (occ-debug :debug "reached to %s drawer" (if flag "close" "open"))
+        (occ-debug :debug "reached to %s drawer"
+                   (if flag "close" "open"))
         (if (org-at-drawer-p)
             ;; show drawer
             (let ((drawer (org-element-at-point)))
               (when (memq (org-element-type drawer)
                           '(node-property drawer property-drawer))
-                (occ-debug :debug
-                           "trying to %s drawer %s current pos %d"
+                (occ-debug :debug "trying to %s drawer %s current pos %d"
                            (if flag "close" "open")
                            drawer
                            (point))
-                (org-flag-drawer flag drawer)
+                (org-flag-drawer flag
+                                 drawer)
                 ;; Make sure to skip drawer entirely or we might flag
                 ;; it another time when matching its ending line with
                 ;; `org-drawer-regexp'.
@@ -174,7 +180,8 @@
                                               &optional force)
   (let ((buff (marker-buffer marker))
         (loc  (marker-position marker)))
-    (when (and buff loc)
+    (when (and buff
+               loc)
       (with-current-buffer buff
         (when (goto-char loc)
           (org-get-flag-proprty-drawer force))))))
@@ -185,10 +192,11 @@
   "NIL to open drawer T to close drawer"
   ;; https://orgmode.org/worg/org-hacks.html
   ;; https://orgmode.org/worg/org-hacks.html#org6d4906f
-  (let ((buff (marker-buffer marker))
-        (loc (marker-position marker))
+  (let ((buff    (marker-buffer marker))
+        (loc     (marker-position marker))
         (heading (org-get-heading 'notags)))
-    (when (and buff loc)
+    (when (and buff
+               loc)
       (with-current-buffer buff
         (let ((currloc (point)))
           (goto-char loc)
@@ -198,7 +206,8 @@
                      heading
                      (buffer-file-name buff)
                      loc)
-          (org-flag-proprty-drawer flag force))))))
+          (org-flag-proprty-drawer flag
+                                   force))))))
 
 
 (cl-defmethod occ-open-prop-block ((obj marker))
@@ -237,10 +246,8 @@
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (let ((prop nil))
-      (while (not
-              (member
-               (setq prop (occ-select-propetry obj))
-               '(edit done)))
+      (while (not (member (setq prop (occ-select-propetry obj))
+                          '(edit done)))
         ;; TODO: handle (occ-select-propetry obj ctx) return NIL
         (let ((retval (occ-editprop obj
                                     prop)))
@@ -254,7 +261,10 @@
 ;; (occ-props-edit obj)
 (cl-defmethod occ-props-edit-combined ((obj occ-obj-ctx-tsk))
   (let* ((sources (list (helm-build-sync-source "fast edit"
-                          :candidates (occ-gen-edits-if-required obj nil nil :param-only t)
+                          :candidates (occ-gen-edits-if-required obj ;;BUG: occ-ap-transform related changes will be required.
+                                                                 nil
+                                                                 nil
+                                                                 :param-only t)
                           :action (list (cons "Edit" #'funcall)))
                         (helm-build-sync-source "edit"
                           :candidates (list
@@ -262,7 +272,7 @@
                           :action (list (cons "Edit" #'funcall)))
                         (helm-build-sync-source "other"
                           :candidates '(("Continue" . t)
-                                        ("Checkout" . checkout)))))
+                                        ("Checkout" . #'(lambda () (occ-checkout obj)))))))
          (retval
           (helm-timed occ-idle-timeout nil
             (helm :sources sources))))
@@ -279,28 +289,38 @@
           (if (occ-open-prop-block cloned-mrk)
               (occ-props-edit obj)
             (occ-error "occ-props-edit-in-cloned-buffer: can not edit props for %s"
-                   (occ-format obj 'capitalize))))))))
+                       (occ-format obj 'capitalize))))))))
 
 
 (defun occ-props-edit-handle-response (prop timeout timer cleanup local-cleanup win)
   (cond ((eql 'done prop)
-         (funcall cleanup win local-cleanup)
-         (when timer (cancel-timer timer)))
+         (funcall cleanup
+                  win
+                  local-cleanup)
+         (when timer
+           (cancel-timer timer)))
         ((eql 'edit prop)
          ;; (funcall cleanup win local-cleanup)
          (occ-debug :debug "occ-obj-prop-edit: debug editing")
-         (when timer (cancel-timer timer))
-         (when (and win (windowp win) (window-valid-p win))
+         (when timer
+           (cancel-timer timer))
+         (when (and win
+                    (windowp win)
+                    (window-valid-p win))
            (select-window win 'norecord)))
         (t
-         (funcall cleanup win local-cleanup)
-         (when timer (cancel-timer timer)))))
+         (funcall cleanup
+                  win
+                  local-cleanup)
+         (when timer
+           (cancel-timer timer)))))
 
 (cl-defmethod occ-props-window-edit ((obj occ-obj-ctx-tsk)
                                      &key
                                      return-transform
                                      timeout)
-  (let* ((timeout (or timeout occ-idle-timeout)))
+  (let* ((timeout (or timeout
+                      occ-idle-timeout)))
     (let* ((local-cleanup #'(lambda ()
                               (occ-debug :warning "occ-props-window-edit(obj occ-obj-ctx-tsk): local-cleanup called")
                               (occ-debug :debug "occ-props-window-edit(obj occ-obj-ctx-tsk): local-cleanup called")
@@ -310,23 +330,35 @@
             timeout timer cleanup local-cleanup win
             (condition-case-control err
               (let ((prop (occ-props-edit-in-cloned-buffer obj)))
-                (occ-props-edit-handle-response prop timeout timer cleanup local-cleanup win)
+                (occ-props-edit-handle-response prop
+                                                timeout
+                                                timer
+                                                cleanup
+                                                local-cleanup
+                                                win)
                 (occ-debug :debug "occ-props-window-edit(obj occ-obj-ctx-tsk) noquit: label %s value %s"
-                                  occ-return-true-label obj)
+                           occ-return-true-label obj)
                 (if return-transform ;Here caller know if return value is going to be used.
-                    (occ-make-return occ-return-true-label obj)
+                    (occ-make-return occ-return-true-label
+                                     obj)
                   obj))
               ((quit)
                (progn
                  (occ-debug :warning "occ-props-window-edit(obj occ-obj-ctx-tsk): canceling timer")
                  (occ-debug :debug "occ-props-window-edit(obj occ-obj-ctx-tsk): canceling timer")
-                 (funcall cleanup win local-cleanup)
-                 (if timer (cancel-timer timer))
-                 (signal (car err) (cdr err))
+                 (funcall cleanup
+                          win
+                          local-cleanup)
+                 (if timer
+                     (cancel-timer timer))
+                 (signal (car err)
+                         (cdr err))
                  (occ-debug :debug "occ-props-window-edit(obj occ-obj-ctx-tsk) quit: label %s value %s"
-                                   occ-return-quit-label nil)
+                            occ-return-quit-label
+                            nil)
                  (when return-transform ;Here caller know if return value is going to be used.
-                   (occ-make-return occ-return-quit-label nil)))))))))
+                   (occ-make-return occ-return-quit-label
+                                    nil)))))))))
 
 (cl-defmethod occ-props-window-edit ((obj occ-ctx)
                                      &key
@@ -343,9 +375,8 @@
          (timeout   (or timeout occ-idle-timeout)))
     (occ-debug :debug "occ-select-obj-prop-edit((obj occ-ctx)): begin")
     (let ((buff (occ-ctx-buffer obj)))
-      (if (and
-           (buffer-live-p buff)
-           (not (occ-helm-buffer-p buff)))
+      (if (and (buffer-live-p buff)
+               (not (occ-helm-buffer-p buff)))
         (let ((retval-ctx-tsk (occ-select obj
                                           :filters          filters
                                           :builder          builder
@@ -356,31 +387,33 @@
           ;; (occ-debug :debug "occ-props-window-edit((obj occ-ctx)): ap-transf: %s action %s"
           ;;                   ap-transf action)
           (occ-debug :debug "occ-props-window-edit((obj occ-ctx)): selected original: %s, retval: %s with label %s"
-                            retval-ctx-tsk
-                            (occ-format (occ-obj-obj retval-ctx-tsk) 'capitalize)
-                            (occ-return-get-label retval-ctx-tsk))
+                     retval-ctx-tsk
+                     (occ-format (occ-obj-obj retval-ctx-tsk) 'capitalize)
+                     (occ-return-get-label retval-ctx-tsk))
           ;; BUG: will do run recursively as another method with (obj null) is define below.
-          (when (and
-                 (occ-return-in-labels-p retval-ctx-tsk occ-return-select-label)
-                 (occ-obj-obj retval-ctx-tsk))
+          (when (and (occ-return-in-labels-p retval-ctx-tsk
+                                             occ-return-select-label)
+                     (occ-obj-obj retval-ctx-tsk))
               (occ-props-window-edit (occ-obj-obj retval-ctx-tsk)
-                                     :return-transform   return-transform
-                                     :timeout timeout)
+                                     :return-transform return-transform
+                                     :timeout          timeout)
               (occ-debug :debug "occ-props-window-edit((obj occ-ctx)): No selection"))
           (occ-debug :debug "occ-props-window-edit((obj occ-ctx)): returning original: %s, retval: %s with label %s operate: %s"
                             retval-ctx-tsk
-                            (occ-format (occ-obj-obj retval-ctx-tsk) 'capitalize)
+                            (occ-Format (occ-obj-obj retval-ctx-tsk))
                             (occ-return-get-label retval-ctx-tsk)
-                            (occ-return-in-labels-p retval-ctx-tsk occ-return-select-label))
+                            (occ-return-in-labels-p retval-ctx-tsk
+                                                    occ-return-select-label))
           retval-ctx-tsk)
         (occ-debug :debug "occ-props-window-edit((obj occ-ctx)): not running  as context buff is deleted or not live 1 %s, 2 %s"
-                     (buffer-live-p buff)
-                     (not (occ-helm-buffer-p buff)))
+                   (buffer-live-p buff)
+                   (not (occ-helm-buffer-p buff)))
         (occ-debug :debug "occ-props-window-edit((obj occ-ctx)): not running  as context buff is deleted or not live 1 %s, 2 %s"
-                          (buffer-live-p buff)
-                          (not (occ-helm-buffer-p buff)))
+                   (buffer-live-p buff)
+                   (not (occ-helm-buffer-p buff)))
         (when return-transform ;Here caller know if return value is going to be used.
-          (occ-make-return occ-return-false-label nil))))))
+          (occ-make-return occ-return-false-label
+                           nil))))))
 
 (cl-defmethod occ-props-window-edit ((obj null)
                                      &key
