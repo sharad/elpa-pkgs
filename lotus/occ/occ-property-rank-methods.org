@@ -158,19 +158,22 @@
       
       (cl-defmethod occ-list-p ((prop (eql _template_)))
         "Is the property _TEMPLATE_ has VALUES in list, Method tell
-         property represent list or not." nil)
+         property represent list or not."
+        nil)
       
       (cl-defmethod occ-prop-elem-to-org   ((prop (eql _template_))
                                             value)
         "Return string representation for property _TEMPLATE_, Method
       convert value VALUE of property PROPERTY from occ to org string
-      representation." nil)
+      representation."
+        nil)
       
       (cl-defmethod occ-prop-elem-from-org ((prop (eql _template_))
                                             value)
         "Return the Actual Object representation for property
       _TEMPLATE_, Method convert value VALUE of property PROPERTY from
-      org string to occ representation." nil)
+      org string to occ representation."
+        nil)
       
       (cl-defmethod occ-readprop-elem-from-user ((obj occ-tsk)
                                                  (prop (eql _template_)))
@@ -207,17 +210,6 @@
             (if (occ-list-p prop)
                 (occ-error "Implement it.")
               (occ-error "Implement it."))))
-      
-      (cl-defmethod occ-org-operation ((obj occ-obj-tsk)
-                                       (operation (eql _operation_))
-                                       (prop (eql _template_))
-                                       values)
-        "Do the actual _OPERATION_."
-        (let ((prop-string (symbol-name prop)))
-            (if (occ-list-p prop)
-                (occ-error "Implement it.")
-              (occ-error "Implement it."))))
-      
       
       
     #+end_src
