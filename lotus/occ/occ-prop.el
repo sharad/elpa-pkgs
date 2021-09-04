@@ -257,13 +257,17 @@
 
 (cl-defmethod occ-readprop-elem-from-user :around ((obj occ-obj-tsk)
                                                    (prop symbol))
-              "Read value of element of list for property PROP from user for OCC-TSK OBJ."
-              (occ-prop-elem-from-org (cl-call-next-method)))
+  "Read value of element of list for property PROP from user for
+OCC-TSK OBJ."
+  (if (next-method-p)
+      (occ-prop-elem-from-org prop (cl-call-next-method))))
 
 (cl-defmethod occ-readprop-from-user :around ((obj occ-obj-tsk)
                                               (prop symbol))
-              "Read value of element of list for property PROP from user for OCC-TSK OBJ."
-              (occ-prop-from-org (cl-call-next-method)))
+  "Read value of element of list for property PROP from user for
+OCC-TSK OBJ."
+  (if (next-method-p)
+      (occ-prop-from-org prop (cl-call-next-method))))
 
 
 (cl-defmethod occ-rereadprop-value ((prop symbol)
