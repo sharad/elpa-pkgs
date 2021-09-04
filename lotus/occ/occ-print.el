@@ -122,12 +122,12 @@ pointing to it."
   (occ-case case
             (occ-class-name obj)))
 
-(defun occ-Title ((obj occ-obj))
+(defun occ-Title (obj)
   (occ-case 'capitalize
             (occ-class-name obj)))
 
 
-(defun occ-TITLE ((obj occ-obj))
+(defun occ-TITLE (obj)
   (occ-case 'upcase
             (occ-class-name obj)))
 

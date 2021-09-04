@@ -237,6 +237,8 @@
   "Method convert value VALUE of property PROP from occ to org string representation."
   ;; (occ-error "Implement method occ-prop-to-org for prop %s" prop)
   (occ-debug :debug "occ-prop-to-org: no method for prop %s using default." prop)
+  (occ-message "occ-prop-from-org: no method for prop %s using default." prop)
+  (occ-message "occ-prop-from-org: no method for values %s." values)
   (mapcar #'(lambda (v)
               (occ-prop-elem-to-org prop v))
           values))
@@ -246,6 +248,8 @@
   ;; (occ-error "Implement method occ-prop-from-org for prop %s" prop)
   (occ-debug :debug
              "occ-prop-from-org: no method for prop %s using default." prop)
+  (occ-message "occ-prop-from-org: no method for prop %s using default." prop)
+  (occ-message "occ-prop-from-org: no method for values %s." values)
   (mapcar #'(lambda (v)
               (occ-prop-elem-from-org prop v))
           values))
@@ -254,12 +258,12 @@
 (cl-defmethod occ-readprop-elem-from-user :around ((obj occ-obj-tsk)
                                                    (prop symbol))
               "Read value of element of list for property PROP from user for OCC-TSK OBJ."
-              (occ-prop-elem-from-org (call-next-method)))
+              (occ-prop-elem-from-org (cl-call-next-method)))
 
 (cl-defmethod occ-readprop-from-user :around ((obj occ-obj-tsk)
                                               (prop symbol))
               "Read value of element of list for property PROP from user for OCC-TSK OBJ."
-              (occ-prop-from-org (call-next-method)))
+              (occ-prop-from-org (cl-call-next-method)))
 
 
 (cl-defmethod occ-rereadprop-value ((prop symbol)

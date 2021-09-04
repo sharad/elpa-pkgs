@@ -91,13 +91,15 @@
 
 (cl-defmethod occ-prop-elem-to-org ((prop symbol)
                                     value)
-  "Method convert value VALUE of property PROP from occ to org string representation."
+  "Method convert value VALUE of property PROP from occ to org
+string representation."
   ;; (occ-error "Implement method occ-prop-elem-to-org for prop %s" prop)
   (occ-debug :debug "occ-prop-elem-to-org: no method for prop %s using default." prop)
   value)
 (cl-defmethod occ-prop-elem-from-org ((prop symbol)
                                       (value string))
-  "Method convert value VALUE of property PROP from org string to occ representation."
+  "Method convert value VALUE of property PROP from org string to
+occ representation."
   ;; (occ-error "Implement method occ-prop-elem-from-org for prop %s" prop)
   (occ-debug :debug
              "occ-prop-elem-from-org: no method for prop %s using default." prop)
@@ -107,12 +109,14 @@
 ;; TODO: should not we make them to be converted to OCC value here.
 (cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk)
                                            (prop symbol))
-  "Read value of element of list for property PROP from user for OCC-TSK OBJ, must return ORG compatible value."
+  "Read value of element of list for property PROP from user for
+OCC-TSK OBJ, must return ORG compatible value."
   (occ-error "Implement method occ-readprop-elem-from-user for prop %s " prop))
 
 (cl-defmethod occ-readprop-from-user ((obj occ-obj-tsk)
                                       (prop symbol))
-  "Read value of element of list for property PROP from user for OCC-TSK OBJ, must return ORG compatible value."
+  "Read value of element of list for property PROP from user for
+OCC-TSK OBJ, must return ORG compatible value."
   (occ-error "Implement method occ-readprop-from-user for prop %s" prop))
 
 ;; (cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-ctx-tsk)
