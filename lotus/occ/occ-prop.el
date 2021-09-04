@@ -315,12 +315,14 @@ OCC-TSK OBJ."
                                   operation
                                   prop
                                   values)
-  "occ-org-operation")
+  "Org operation implementation of OPERATION on POINT-OF-MARKER for PROP and VALUES"
+  )
 
 (cl-defmethod occ-org-operation ((pom  marker)
                                  (operation (eql get))
                                  (prop symbol)
                                  values)
+  "Org operation implementation of OPERATION on POINT-OF-MARKER for prop GET and VALUES"
   (let ((prop-string (symbol-name prop)))
     (if (occ-list-p prop)
         (occ-org-entry-get-multivalued-property pom
@@ -332,6 +334,7 @@ OCC-TSK OBJ."
                                  (operation (eql add))
                                  (prop symbol)
                                  values)
+  "Org operation implementation of OPERATION on POINT-OF-MARKER for prop ADD and VALUES"
   (let ((prop-string (symbol-name prop)))
     (if (occ-list-p prop)
         (occ-org-entry-add-to-multivalued-property pom
@@ -345,6 +348,7 @@ OCC-TSK OBJ."
                                  (operation (eql put))
                                  (prop symbol)
                                  values)
+  "Org operation implementation of OPERATION on POINT-OF-MARKER for prop PUT and VALUES"
   (let ((prop-string (symbol-name prop)))
     (if (occ-list-p prop)
         (occ-org-entry-put-multivalued-property pom
@@ -358,6 +362,7 @@ OCC-TSK OBJ."
                                  (operation (eql remove))
                                  (prop symbol)
                                  values)
+  "Org operation implementation of OPERATION on POINT-OF-MARKER for prop REMOVE and VALUES"
   (let ((prop-string (symbol-name prop)))
     (if (occ-list-p prop)
         (occ-org-entry-remove-from-multivalued-property pom
@@ -369,6 +374,7 @@ OCC-TSK OBJ."
                                  (operation (eql member))
                                  (prop symbol)
                                  values)
+  "Org operation implementation of OPERATION on POINT-OF-MARKER for prop MEMBER and VALUES"
   (let ((prop-string (symbol-name prop)))
     (if (occ-list-p prop)
         (occ-org-entry-member-in-from-multivalued-property pom
@@ -383,6 +389,7 @@ OCC-TSK OBJ."
                                  (operation symbol)
                                  (prop symbol)
                                  values)
+  "Org operation implementation of OPERATION on POINT-OF-MARKER for PROP and VALUES"
   (occ-org-operation (occ-obj-marker obj)
                      operation
                      prop
