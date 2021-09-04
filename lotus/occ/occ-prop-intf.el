@@ -27,8 +27,49 @@
 (provide 'occ-prop-intf)
 
 
+(require 'occ-macros)
 (require 'occ-util-common)
 (require 'occ-obj)
+
+
+(occ-testing
+ (cl-defmethod occ-rankprop ((obj occ-tsk)
+                             (prop (eql _template_)))
+   "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE_")
+ (cl-defmethod occ-list-p ((prop (eql _template_)))
+   "Is the property _TEMPLATE_ has VALUES in list, Method tell
+   property represent list or not.")
+ (cl-defmethod occ-prop-elem-to-org   ((prop (eql _template_))
+                                       value)
+   "Return string representation for property _TEMPLATE_, Method
+convert value VALUE of property PROPERTY from occ to org string
+representation.")
+ (cl-defmethod occ-prop-elem-from-org ((prop (eql _template_))
+                                       value)
+   "Return the Actual Object representation for property
+_TEMPLATE_, Method convert value VALUE of property PROPERTY from
+org string to occ representation.")
+ (cl-defmethod occ-readprop-elem-from-user ((obj occ-tsk)
+                                            (prop (eql _template_)))
+   "READ the value for property _TEMPLATE_, Read value of element
+of list for property PROPERTY from user for OCC-TSK OBJ, must
+return ORG compatible value.")
+ (cl-defmethod occ-require-p ((obj occ-obj-tsk)
+                              (operation (eql _operation_))
+                              (prop (eql _template_))
+                              values)
+   "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
+_TEMPLATE_ if CALLABLE (helm method) should be generated.")
+ (cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
+                                       (prop (eql _template_))
+                                       (operation (eql _operation_)))
+   "Return a default VALUE of property _TEMPLATE_.")
+ (cl-defmethod occ-operation ((obj occ-obj-tsk)
+                              (operation (eql _operation_))
+                              (prop (eql _template_))
+                              values)
+   "Do the actual _OPERATION_.")
+ )
 
 
 (defvar occ-property-rank-hierarchy '(t))
