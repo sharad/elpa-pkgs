@@ -183,7 +183,8 @@ OCC-TSK OBJ, must return ORG compatible value."
 (cl-defmethod occ-prop-default-value ((obj occ-obj-ctx-tsk)
                                       (prop symbol)
                                       (operation symbol))
-  (occ-get-property (occ-obj-ctx obj) prop))
+  (occ-get-property (occ-obj-ctx obj)
+                    prop))
 
 
 (cl-defgeneric occ-checkout-prop (obj

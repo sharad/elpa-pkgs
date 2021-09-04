@@ -39,8 +39,8 @@
 ** Required libraries
 #+begin_src emacs-lisp
 
-  (require 'occ-prop-intf)
-  
+(require 'occ-prop-intf)
+
 #+end_src
 
 
@@ -48,7 +48,7 @@
 ** Read Write properties of task
 *** Current File property of task
 **** Incorrect Method getting confused with `file' org buffer than current-file property of task
-     #+begin_src elisp
+     #+begin_src emacs-lisp
 
        ;;{{ file
        (when nil                               ;rank calculation for org file name in which tsk aka entry not much useful
@@ -78,7 +78,7 @@
 
 **** Correct Method
 
-     #+begin_src elisp
+     #+begin_src emacs-lisp
 
        ;;{{ currfile
        (cl-defmethod occ-rankprop ((obj occ-obj-ctx-tsk)
@@ -136,7 +136,7 @@
      #+end_src
 
 *** Template property of task
-    #+begin_src elisp
+    #+begin_src emacs-lisp
       
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql _template_)))
@@ -218,7 +218,7 @@
       
     #+end_src
 *** Root dir property of task
-    #+begin_src elisp
+    #+begin_src emacs-lisp
 
       ;;{{ root
       (cl-defmethod occ-rankprop ((obj occ-obj-ctx-tsk)
@@ -277,7 +277,7 @@
     #+end_src
 
 *** Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time
-    #+begin_src elisp
+    #+begin_src emacs-lisp
       
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql timebeing)))
@@ -355,7 +355,7 @@
 
 ** Read only properties
 *** Git branch property of task
-    #+begin_src elisp
+    #+begin_src emacs-lisp
 
       ;;{{ git-branch
       (cl-defmethod occ-get-property ((ctx occ-ctx)
@@ -367,7 +367,7 @@
     #+end_src
 
 *** STATUS property of task
-    #+begin_src elisp
+    #+begin_src emacs-lisp
       
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql status)))
@@ -383,7 +383,7 @@
     #+end_src
 
 *** Key property of task for setting arbitrary rank
-    #+begin_src elisp
+    #+begin_src emacs-lisp
 
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql key)))
@@ -394,7 +394,7 @@
     #+end_src
 
 *** Heading level property of task
-    #+begin_src elisp
+    #+begin_src emacs-lisp
 
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql heading-level)))
@@ -405,7 +405,7 @@
     #+end_src
 
 *** Current clock status proprty of task (will rank based on task is currently clocking-in or not
-    #+begin_src elisp
+    #+begin_src emacs-lisp
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql current-clock)))
         (let* ((tsk-marker (occ-get-property obj 'marker)))
@@ -417,7 +417,7 @@
 
 ** Special properties
 *** SubtreeFile property of task
-    #+begin_src elisp
+    #+begin_src emacs-lisp
 
       ;;{{ sub-tree
       (cl-defmethod occ-readprop ((obj occ-obj-ctx-tsk)
@@ -445,6 +445,6 @@
 
 
 ** File Ends Here
-   #+begin_src elisp
+   #+begin_src emacs-lisp
 ;;; occ-property-rank-methods.el ends here
    #+end_src
