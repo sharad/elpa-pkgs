@@ -27,7 +27,7 @@
 (provide 'occ-prop-utils)
 
 
-(require 'occ=prop-intf)
+(require 'occ-prop-intf)
 
 
 (defvar occ-property-rank-hierarchy '(t))
