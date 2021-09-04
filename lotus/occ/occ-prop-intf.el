@@ -117,22 +117,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
   nil)
 
 
-;; (cl-defmethod occ-increase-p ((property symbol))
-;;   "Method tell property represent list or not."
-;;   ;; 'list
-;;   ;; (occ-error "Implement method occ-list-p for property %s" property)
-;;   (occ-debug :debug "occ-list-p: no method for property %s using default." property)
-;;   nil)
-
-;; (cl-defmethod occ-list-p ((property symbol))
-;;   "Method tell property represent list or not."
-;;   ;; 'list
-;;   ;; (occ-error "Implement method occ-list-p for property %s" property)
-;;   (occ-debug :debug "occ-list-p: no method for property %s using default." property)
-;;   nil)
-
-
-
 (cl-defmethod occ-prop-elem-to-org ((property symbol)
                                     value)
   "Method convert value VALUE of property PROPERTY from occ to org
@@ -140,6 +124,8 @@ string representation."
   ;; (occ-error "Implement method occ-prop-elem-to-org for property %s" property)
   (occ-debug :debug "occ-prop-elem-to-org: no method for property %s using default." property)
   value)
+
+
 (cl-defmethod occ-prop-elem-from-org ((property symbol)
                                       (value string))
   "Method convert value VALUE of property PROPERTY from org string to
@@ -157,47 +143,19 @@ occ representation."
 OCC-TSK OBJ, must return ORG compatible value."
   (occ-error "Implement method occ-readprop-elem-from-user for property %s " property))
 
+;; BUG: is it user a prop method
 (cl-defmethod occ-readprop-from-user ((obj occ-obj-tsk)
                                       (property symbol))
   "Read value of element of list for property PROPERTY from user for
 OCC-TSK OBJ, must return ORG compatible value."
   (occ-error "Implement method occ-readprop-from-user for property %s" property))
-
-(cl-defmethod occ-get-property ((obj occ-ctx)
-                                (property symbol))
-  "must return occ compatible value."
-  (occ-error "must return occ compatible value."))
-
-(cl-defmethod occ-format-prop ((obj occ-obj-tsk)
-                               (property symbol)
-                               value)
-  "Should return format printable value"
-  value)
 
-
-(cl-defgeneric occ-has-p (obj
-                          property
-                          value)
-  "occ-has-p")
-
-(cl-defgeneric occ-operation (obj
-                              operation
-                              property
-                              values)
-  "occ-operation")
 
 (cl-defgeneric occ-require-p (obj
                               operation
                               property
                               values)
   "occ-require-p")
-
-
-;; (cl-defmethod occ-operation ((obj occ-obj-tsk)
-;;                              (operation (eql XYZ))
-;;                              (property      (eql x))
-;;                              values)
-;;   ())
 
 
 (cl-defgeneric occ-prop-default-value (obj
@@ -217,6 +175,19 @@ OCC-TSK OBJ, must return ORG compatible value."
                     property))
 
 
+(cl-defgeneric occ-operation (obj
+                              operation
+                              property
+                              values)
+  "occ-operation")
+
+;; (cl-defmethod occ-operation ((obj occ-obj-tsk)
+;;                              (operation (eql XYZ))
+;;                              (property      (eql x))
+;;                              values)
+;;   ())
+
+
 (cl-defgeneric occ-checkout-prop (obj
                                   property)
   "Checkout property in case of force clock-in.")
@@ -226,5 +197,39 @@ OCC-TSK OBJ, must return ORG compatible value."
   "Checkout property in case of force clock-in."
   (occ-error "Implement it for %s: Checkout property in case of force clock-in." property))
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(cl-defmethod occ-get-property ((obj occ-ctx)
+                                (property symbol))
+  "must return occ compatible value."
+  (occ-error "must return occ compatible value."))
+
+(cl-defmethod occ-format-prop ((obj occ-obj-tsk)
+                               (property symbol)
+                               value)
+  "Should return format printable value"
+  value)
+
+
+(cl-defgeneric occ-has-p (obj
+                          property
+                          value)
+  "occ-has-p")
 
 ;;; occ-prop-intf.el ends here
