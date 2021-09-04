@@ -43,7 +43,7 @@
 
 (defun occ-readprop-list-from-user (obj
                                     property)
-  (occ-error "Implement it."))
+  (occ-error "Implement it, try with (occ-readprop-elem-from-user obj property)"))
 
 
 

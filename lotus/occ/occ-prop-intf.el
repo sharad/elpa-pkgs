@@ -136,20 +136,35 @@ representation."
   value)
 
 
-;; (cl-defgeneric occ-prop-to-org (property
-;;                                 value)
-;;   "Return string representation for list of elements
-;; if (occ-list-p PROPERTY) else element, Method convert value VALUE
-;; of property PROPERTY from occ to org string representation.")
+(cl-defgeneric occ-prop-to-org (property
+                                value)
+  "Return string representation for list of elements
+if (occ-list-p PROPERTY) else element, Method convert value VALUE
+of property PROPERTY from occ to org string representation.")
 
-;; (cl-defmethod occ-prop-to-org ((property symbol)
-;;                                value)
-;;   "Return string representation for list of elements
-;; if (occ-list-p PROPERTY) else element, Method convert value VALUE
-;; of property PROPERTY from occ to org string representation."
-;;   (occ-debug :debug "occ-prop-to-org: no method for property %s using default."
-;;              property)
-;;   value)
+(cl-defmethod occ-prop-to-org ((property symbol)
+                               value)
+  "Return string representation for list of elements concatenated with ','
+if (occ-list-p PROPERTY) else element, Method convert value VALUE
+of property PROPERTY from occ to org string representation."
+  (occ-debug :debug "occ-prop-to-org: no method for property %s using default."
+             property)
+  (occ-debug :debug "occ-prop-to-org: no method for prop %s using default." prop)
+  (occ-message "occ-prop-from-org: no method for prop %s using default." prop)
+  (occ-message "occ-prop-from-org: no method for values %s." values)
+  (if (cl-next-method-p)
+      (cl-call-next-method)
+    (if (occ-list-p property)
+        (let ((value-list (mapcar #'(lambda (v)
+                                       (occ-prop-elem-to-org prop
+                                                             v))
+                                   value))))
+      (string-join value-list ",")
+      (let ((retval (ignore-error (occ-prop-elem-to-org property
+                                                        value))))
+        (if retval
+            retval
+          value)))))
 
 
 (cl-defgeneric occ-prop-elem-from-org (property
@@ -168,22 +183,34 @@ org string to occ representation."
   value)
 
 
-;; (cl-defgeneric occ-prop-from-org (property
-;;                                   value)
-;;   "Return the Actual Object representation for list of elements
-;; if (occ-list-p PROPERTY) else element PROPERTY, Method convert
-;; value VALUE of property PROPERTY from org string to occ
-;; representation.")
-;; (cl-defmethod occ-prop-from-org ((property symbol)
-;;                                  (value string))
-;;   "Return the Actual Object representation for list of elements
-;; if (occ-list-p PROPERTY) else element PROPERTY, Method convert
-;; value VALUE of property PROPERTY from org string to occ
-;; representation."
-;;   ;; (occ-error "Implement method occ-prop-elem-from-org for property %s" property)
-;;   (occ-debug :debug
-;;              "occ-prop-elem-from-org: no method for property %s using default." property)
-;;   value)
+(cl-defgeneric occ-prop-from-org (property
+                                  value)
+  "Return the Actual Object representation for list of elements
+if (occ-list-p PROPERTY) else element PROPERTY, Method convert
+value VALUE of property PROPERTY from org string to occ
+representation.")
+
+(cl-defmethod occ-prop-from-org ((property symbol)
+                                 (value string))
+  "Return the Actual Object representation for list of elements
+if (occ-list-p PROPERTY) else element PROPERTY, Method convert
+value VALUE of property PROPERTY from org string to occ
+representation."
+  ;; (occ-error "Implement method occ-prop-elem-from-org for property %s" property)
+  (occ-debug :debug
+             "occ-prop-elem-from-org: no method for property %s using default." property)
+  (if (cl-next-method-p)
+      (cl-call-next-method)
+    (if (occ-list-p property)
+        (mapcar #'(lambda (v)
+                    (occ-prop-elem-from-org prop
+                                         v))
+                value)
+      (let ((retval (ignore-error (occ-prop-elem-from-org property
+                                                          value))))
+        (if retval
+            retval
+          value)))))
 
 
 (cl-defgeneric occ-readprop-elem-from-user (obj
@@ -200,8 +227,6 @@ return ORG compatible value."
   (occ-error "Implement method occ-readprop-elem-from-user for property %s " property))
 
 
-;; NOTE: Solve it BUG
-;; BUG: is it user a prop method
 (cl-defmethod occ-readprop-from-user ((obj occ-obj-tsk)
                                       (property symbol))
   "Read value of list of elements if (occ-list-p PROPERTY) else
@@ -210,7 +235,7 @@ return ORG compatible value."
   (if (cl-next-method-p)
       (cl-call-next-method)
     (if (occ-list-p property)
-        ;;try with occ-readprop-elem-from-user
+        ;;try with occ-readprop-elem-from-user in below method
         (occ-readprop-list-from-user obj property)
       ;; if occ-readprop-elem-from-user define then try it
       (let ((retval (ignore-error (occ-readprop-elem-from-user obj property))))
