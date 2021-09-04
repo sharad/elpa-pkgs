@@ -87,10 +87,11 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
 
 (cl-defgeneric occ-rankprop (obj
                              property)
-  "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE_")
+  "Return the RANK (number) for OBJ based on the property PROPERTY")
 
 (cl-defmethod occ-rankprop (obj
                             property)
+  "Return the RANK (number) for OBJ based on the property PROPERTY"
   ;; too much output
   ;; (occ-debug :debug "occ-rank(tsk-pair=%s ctx=%s)" tsk-pair ctx)
   (occ-debug :debug "occ-rankprop(obj=%s symbol=%s)" obj property)
@@ -98,6 +99,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
 
 (cl-defmethod occ-rankprop ((obj  occ-tsk)
                             (property symbol))
+  "Return the RANK (number) for OBJ based on the property PROPERTY"
   (occ-debug :debug "occ-rankprop(obj=%s symbol=%s)"
              obj
              property)
@@ -105,44 +107,72 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
 
 (cl-defmethod occ-rankprop ((obj  occ-obj-ctx-tsk)
                             (property symbol))
+  "Return the RANK (number) for OBJ based on the property PROPERTY"
   (occ-debug :debug "occ-rankprop(obj=%s symbol=%s)" obj property)
   (occ-rankprop obj property))
 
 
+(cl-defgeneric occ-list-p (property)
+  "Is the property PROPERTY has VALUES in list, Method tell
+   property represent list or not."
+  )
+
 (cl-defmethod occ-list-p ((property symbol))
-  "Method tell property represent list or not."
+  "Is the property PROPERTY has VALUES in list, Method tell
+   property represent list or not."
   ;; 'list
   ;; (occ-error "Implement method occ-list-p for property %s" property)
   (occ-debug :debug "occ-list-p: no method for property %s using default." property)
   nil)
 
 
+(cl-defgeneric occ-prop-elem-to-org (property
+                                     value)
+  "Return string representation for property PROPERTY, Method
+convert value VALUE of property PROPERTY from occ to org string
+representation.")
+
 (cl-defmethod occ-prop-elem-to-org ((property symbol)
                                     value)
-  "Method convert value VALUE of property PROPERTY from occ to org
-string representation."
+  "Return string representation for property PROPERTY, Method
+convert value VALUE of property PROPERTY from occ to org string
+representation."
   ;; (occ-error "Implement method occ-prop-elem-to-org for property %s" property)
   (occ-debug :debug "occ-prop-elem-to-org: no method for property %s using default." property)
   value)
 
 
+(cl-defgeneric occ-prop-elem-from-org (property
+                                       value)
+  "Return the Actual Object representation for property
+PROPERTY, Method convert value VALUE of property PROPERTY from
+org string to occ representation.")
 (cl-defmethod occ-prop-elem-from-org ((property symbol)
                                       (value string))
-  "Method convert value VALUE of property PROPERTY from org string to
-occ representation."
+  "Return the Actual Object representation for property
+PROPERTY, Method convert value VALUE of property PROPERTY from
+org string to occ representation."
   ;; (occ-error "Implement method occ-prop-elem-from-org for property %s" property)
   (occ-debug :debug
              "occ-prop-elem-from-org: no method for property %s using default." property)
   value)
 
 
+(cl-defgeneric occ-readprop-elem-from-user (obj
+                                            property)
+  "READ the value for property PROPERTY, Read value of element
+of list for property PROPERTY from user for OCC-TSK OBJ, must
+return ORG compatible value.")
 ;; TODO: should not we make them to be converted to OCC value here.
 (cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk)
                                            (property symbol))
-  "Read value of element of list for property PROPERTY from user for
-OCC-TSK OBJ, must return ORG compatible value."
+  "READ the value for property PROPERTY, Read value of element
+of list for property PROPERTY from user for OCC-TSK OBJ, must
+return ORG compatible value."
   (occ-error "Implement method occ-readprop-elem-from-user for property %s " property))
 
+
+;; NOTE: Solve it BUG
 ;; BUG: is it user a prop method
 (cl-defmethod occ-readprop-from-user ((obj occ-obj-tsk)
                                       (property symbol))
@@ -155,22 +185,33 @@ OCC-TSK OBJ, must return ORG compatible value."
                               operation
                               property
                               values)
-  "occ-require-p")
+  "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
+_TEMPLATE_ if CALLABLE (helm method) should be generated.")
+
+(cl-defmethod occ-require-p ((obj occ-obj-tsk)
+                             (operation (eql _operation_))
+                             (property  symbol)
+                             values)
+  "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
+_TEMPLATE_ if CALLABLE (helm method) should be generated."
+  t)
 
 
 (cl-defgeneric occ-prop-default-value (obj
                                        property
                                        operation)
-  "occ-prop-default-value")
+  "Return a default VALUE of property _TEMPLATE_.")
 
 (cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
                                       (property symbol)
                                       (operation symbol))
+  "Return a default VALUE of property _TEMPLATE_."
   nil)
 
 (cl-defmethod occ-prop-default-value ((obj occ-obj-ctx-tsk)
                                       (property symbol)
                                       (operation symbol))
+  "Return a default VALUE of property _TEMPLATE_."
   (occ-get-property (occ-obj-ctx obj)
                     property))
 
@@ -179,7 +220,7 @@ OCC-TSK OBJ, must return ORG compatible value."
                               operation
                               property
                               values)
-  "occ-operation")
+  "Do the actual OPERATION.")
 
 ;; (cl-defmethod occ-operation ((obj occ-obj-tsk)
 ;;                              (operation (eql XYZ))
@@ -190,7 +231,7 @@ OCC-TSK OBJ, must return ORG compatible value."
 
 (cl-defgeneric occ-checkout-prop (obj
                                   property)
-  "Checkout property in case of force clock-in.")
+  "Checkout property PROPERTY in case of force clock-in.")
 
 (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
                                  (property symbol))
