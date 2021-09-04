@@ -69,6 +69,9 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
                               (prop (eql _template_))
                               values)
    "Do the actual _OPERATION_.")
+ (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
+                                  (prop (eql _template_)))
+   "Checkout property _TEMPLATE_ in case of force clock-in.")
  )
 
 
@@ -159,20 +162,6 @@ OCC-TSK OBJ, must return ORG compatible value."
   "Read value of element of list for property PROPERTY from user for
 OCC-TSK OBJ, must return ORG compatible value."
   (occ-error "Implement method occ-readprop-from-user for property %s" property))
-
-;; (cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-ctx-tsk)
-;;                                            (property symbol))
-;;   "Read value of element of list for property PROPERTY from user for OCC-OBJ-CTX-TSK OBJ."
-;;   (let ((tsk (occ-obj-tsk obj))
-;;         (ctx (occ-obj-ctx obj)))
-;;     (occ-readprop-elem-from-user tsk property)))
-
-;; (cl-defmethod occ-readprop-from-user ((obj occ-obj-ctx-tsk)
-;;                                       (property symbol))
-;;   "Read complete values list for property PROPERTY from user for OCC-OBJ-CTX-TSK OBJ."
-;;   (let ((tsk (occ-obj-tsk obj))
-;;         (ctx (occ-obj-ctx obj)))
-;;     (occ-readprop-from-user tsk property)))
 
 (cl-defmethod occ-get-property ((obj occ-ctx)
                                 (property symbol))
