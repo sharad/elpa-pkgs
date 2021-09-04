@@ -346,7 +346,9 @@ OCC-TSK OBJ."
         (occ-org-entry-put-multivalued-property pom
                                                 prop-string
                                                 values)
-      (occ-org-entry-put pom prop-string (car values)))))
+      (occ-org-entry-put pom
+                         prop-string
+                         (car values)))))
 
 (cl-defmethod occ-org-operation ((pom  marker)
                                  (operation (eql remove))
