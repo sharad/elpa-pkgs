@@ -31,9 +31,9 @@
 (require 'occ-obj)
 
 
-(defvar occ-prop-rank-hierarchy '(t))
+(defvar occ-property-rank-hierarchy '(t))
 
-(cl-defmethod occ-set-rank-hierarchy ((prop symbol)
+(cl-defmethod occ-set-rank-hierarchy ((property symbol)
                                       &key
                                       pos)
 
@@ -42,159 +42,159 @@
 ;; (cl-defmethod)
 
 (cl-defgeneric occ-rankprop (obj
-                             prop)
-  "occ-rankprop")
+                             property)
+  "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE_")
 
 (cl-defmethod occ-rankprop (obj
-                            prop)
+                            property)
   ;; too much output
   ;; (occ-debug :debug "occ-rank(tsk-pair=%s ctx=%s)" tsk-pair ctx)
-  (occ-debug :debug "occ-rankprop(obj=%s symbol=%s)" obj prop)
+  (occ-debug :debug "occ-rankprop(obj=%s symbol=%s)" obj property)
   0)
 
 (cl-defmethod occ-rankprop ((obj  occ-tsk)
-                            (prop symbol))
+                            (property symbol))
   (occ-debug :debug "occ-rankprop(obj=%s symbol=%s)"
              obj
-             prop)
+             property)
   0)
 
 (cl-defmethod occ-rankprop ((obj  occ-obj-ctx-tsk)
-                            (prop symbol))
-  (occ-debug :debug "occ-rankprop(obj=%s symbol=%s)" obj prop)
-  (occ-rankprop obj prop))
+                            (property symbol))
+  (occ-debug :debug "occ-rankprop(obj=%s symbol=%s)" obj property)
+  (occ-rankprop obj property))
 
 
-(cl-defmethod occ-list-p ((prop symbol))
+(cl-defmethod occ-list-p ((property symbol))
   "Method tell property represent list or not."
   ;; 'list
-  ;; (occ-error "Implement method occ-list-p for prop %s" prop)
-  (occ-debug :debug "occ-list-p: no method for prop %s using default." prop)
+  ;; (occ-error "Implement method occ-list-p for property %s" property)
+  (occ-debug :debug "occ-list-p: no method for property %s using default." property)
   nil)
 
 
-;; (cl-defmethod occ-increase-p ((prop symbol))
+;; (cl-defmethod occ-increase-p ((property symbol))
 ;;   "Method tell property represent list or not."
 ;;   ;; 'list
-;;   ;; (occ-error "Implement method occ-list-p for prop %s" prop)
-;;   (occ-debug :debug "occ-list-p: no method for prop %s using default." prop)
+;;   ;; (occ-error "Implement method occ-list-p for property %s" property)
+;;   (occ-debug :debug "occ-list-p: no method for property %s using default." property)
 ;;   nil)
 
-;; (cl-defmethod occ-list-p ((prop symbol))
+;; (cl-defmethod occ-list-p ((property symbol))
 ;;   "Method tell property represent list or not."
 ;;   ;; 'list
-;;   ;; (occ-error "Implement method occ-list-p for prop %s" prop)
-;;   (occ-debug :debug "occ-list-p: no method for prop %s using default." prop)
+;;   ;; (occ-error "Implement method occ-list-p for property %s" property)
+;;   (occ-debug :debug "occ-list-p: no method for property %s using default." property)
 ;;   nil)
 
 
 
-(cl-defmethod occ-prop-elem-to-org ((prop symbol)
+(cl-defmethod occ-prop-elem-to-org ((property symbol)
                                     value)
-  "Method convert value VALUE of property PROP from occ to org
+  "Method convert value VALUE of property PROPERTY from occ to org
 string representation."
-  ;; (occ-error "Implement method occ-prop-elem-to-org for prop %s" prop)
-  (occ-debug :debug "occ-prop-elem-to-org: no method for prop %s using default." prop)
+  ;; (occ-error "Implement method occ-prop-elem-to-org for property %s" property)
+  (occ-debug :debug "occ-prop-elem-to-org: no method for property %s using default." property)
   value)
-(cl-defmethod occ-prop-elem-from-org ((prop symbol)
+(cl-defmethod occ-prop-elem-from-org ((property symbol)
                                       (value string))
-  "Method convert value VALUE of property PROP from org string to
+  "Method convert value VALUE of property PROPERTY from org string to
 occ representation."
-  ;; (occ-error "Implement method occ-prop-elem-from-org for prop %s" prop)
+  ;; (occ-error "Implement method occ-prop-elem-from-org for property %s" property)
   (occ-debug :debug
-             "occ-prop-elem-from-org: no method for prop %s using default." prop)
+             "occ-prop-elem-from-org: no method for property %s using default." property)
   value)
 
 
 ;; TODO: should not we make them to be converted to OCC value here.
 (cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk)
-                                           (prop symbol))
-  "Read value of element of list for property PROP from user for
+                                           (property symbol))
+  "Read value of element of list for property PROPERTY from user for
 OCC-TSK OBJ, must return ORG compatible value."
-  (occ-error "Implement method occ-readprop-elem-from-user for prop %s " prop))
+  (occ-error "Implement method occ-readprop-elem-from-user for property %s " property))
 
 (cl-defmethod occ-readprop-from-user ((obj occ-obj-tsk)
-                                      (prop symbol))
-  "Read value of element of list for property PROP from user for
+                                      (property symbol))
+  "Read value of element of list for property PROPERTY from user for
 OCC-TSK OBJ, must return ORG compatible value."
-  (occ-error "Implement method occ-readprop-from-user for prop %s" prop))
+  (occ-error "Implement method occ-readprop-from-user for property %s" property))
 
 ;; (cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-ctx-tsk)
-;;                                            (prop symbol))
-;;   "Read value of element of list for property PROP from user for OCC-OBJ-CTX-TSK OBJ."
+;;                                            (property symbol))
+;;   "Read value of element of list for property PROPERTY from user for OCC-OBJ-CTX-TSK OBJ."
 ;;   (let ((tsk (occ-obj-tsk obj))
 ;;         (ctx (occ-obj-ctx obj)))
-;;     (occ-readprop-elem-from-user tsk prop)))
+;;     (occ-readprop-elem-from-user tsk property)))
 
 ;; (cl-defmethod occ-readprop-from-user ((obj occ-obj-ctx-tsk)
-;;                                       (prop symbol))
-;;   "Read complete values list for property PROP from user for OCC-OBJ-CTX-TSK OBJ."
+;;                                       (property symbol))
+;;   "Read complete values list for property PROPERTY from user for OCC-OBJ-CTX-TSK OBJ."
 ;;   (let ((tsk (occ-obj-tsk obj))
 ;;         (ctx (occ-obj-ctx obj)))
-;;     (occ-readprop-from-user tsk prop)))
+;;     (occ-readprop-from-user tsk property)))
 
 (cl-defmethod occ-get-property ((obj occ-ctx)
-                                (prop symbol))
+                                (property symbol))
   "must return occ compatible value."
   (occ-error "must return occ compatible value."))
 
 (cl-defmethod occ-format-prop ((obj occ-obj-tsk)
-                               (prop symbol)
+                               (property symbol)
                                value)
   "Should return format printable value"
   value)
 
 
 (cl-defgeneric occ-has-p (obj
-                          prop
+                          property
                           value)
   "occ-has-p")
 
 (cl-defgeneric occ-operation (obj
                               operation
-                              prop
+                              property
                               values)
   "occ-operation")
 
 (cl-defgeneric occ-require-p (obj
                               operation
-                              prop
+                              property
                               values)
   "occ-require-p")
 
 
 ;; (cl-defmethod occ-operation ((obj occ-obj-tsk)
 ;;                              (operation (eql XYZ))
-;;                              (prop      (eql x))
+;;                              (property      (eql x))
 ;;                              values)
 ;;   ())
 
 
 (cl-defgeneric occ-prop-default-value (obj
-                                       prop
+                                       property
                                        operation)
   "occ-prop-default-value")
 
 (cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
-                                      (prop symbol)
+                                      (property symbol)
                                       (operation symbol))
   nil)
 
 (cl-defmethod occ-prop-default-value ((obj occ-obj-ctx-tsk)
-                                      (prop symbol)
+                                      (property symbol)
                                       (operation symbol))
   (occ-get-property (occ-obj-ctx obj)
-                    prop))
+                    property))
 
 
 (cl-defgeneric occ-checkout-prop (obj
-                                  prop)
+                                  property)
   "Checkout property in case of force clock-in.")
 
 (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
-                                 (prop symbol))
+                                 (property symbol))
   "Checkout property in case of force clock-in."
-  (occ-error "Implement it for %s: Checkout property in case of force clock-in." prop))
+  (occ-error "Implement it for %s: Checkout property in case of force clock-in." property))
 
 
 ;;; occ-prop-intf.el ends here
