@@ -713,8 +713,8 @@ method provided."
   (let ((operation  (or operation
                         (occ-select-operation prop)))
         (prop-value (or value
-                        (occ-readprop-elem-from-user obj
-                                                     prop))))
+                        (occ-readprop-from-user obj
+                                                prop))))
     (occ-update-property obj
                          prop
                          operation
