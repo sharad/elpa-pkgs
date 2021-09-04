@@ -304,6 +304,37 @@ method provided.")))
           values))
 
 
+;; NOTE: These two around methods not belongs to occ-prop-intf.el
+;;       they belongs here only.
+(cl-defmethod occ-readprop-elem-from-user :around ((obj occ-obj-tsk)
+                                                   (prop symbol))
+  "Read value of element of list for property PROP from user for
+OCC-TSK OBJ."
+  (if (cl-next-method-p)
+      (occ-prop-elem-from-org prop
+                              (cl-call-next-method))
+    (occ-error "No
+(cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk) (prop (eql %s)))
+  ...)
+
+method provided."
+               prop)))
+
+(cl-defmethod occ-readprop-from-user :around ((obj occ-obj-tsk)
+                                              (prop symbol))
+  "Read value of element of list for property PROP from user for
+OCC-TSK OBJ."
+  (if (cl-next-method-p)
+      (occ-prop-from-org prop
+                         (cl-call-next-method))
+    (occ-error "No
+(cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk) (prop (eql %s)))
+   ...)
+
+method provided."
+               prop)))
+
+
 (cl-defmethod occ-rereadprop-value ((prop symbol)
                                     value)
   "Read org string property PROP to occ representation."

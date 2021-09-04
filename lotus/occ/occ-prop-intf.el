@@ -113,7 +113,8 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
    property represent list or not."
   ;; 'list
   ;; (occ-error "Implement method occ-list-p for property %s" property)
-  (occ-debug :debug "occ-list-p: no method for property %s using default." property)
+  (occ-debug :debug "occ-list-p: no method for property %s using default."
+             property)
   nil)
 
 
@@ -129,7 +130,24 @@ representation.")
 convert value VALUE of property PROPERTY from occ to org string
 representation."
   ;; (occ-error "Implement method occ-prop-elem-to-org for property %s" property)
-  (occ-debug :debug "occ-prop-elem-to-org: no method for property %s using default." property)
+  (occ-debug :debug "occ-prop-elem-to-org: no method for property %s using default."
+             property)
+  value)
+
+
+(cl-defgeneric occ-prop-to-org (property
+                                value)
+  "Return string representation for property PROPERTY, Method
+convert value VALUE of property PROPERTY from occ to org string
+representation.")
+
+(cl-defmethod occ-prop-to-org ((property symbol)
+                               value)
+  "Return string representation for property PROPERTY, Method
+convert value VALUE of property PROPERTY from occ to org string
+representation."
+  (occ-debug :debug "occ-prop-to-org: no method for property %s using default."
+             property)
   value)
 
 
@@ -161,41 +179,20 @@ return ORG compatible value.")
 of list for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value."
   (occ-error "Implement method occ-readprop-elem-from-user for property %s " property))
-(cl-defmethod occ-readprop-elem-from-user :around ((obj occ-obj-tsk)
-                                                   (prop symbol))
-  "Read value of element of list for property PROP from user for
-OCC-TSK OBJ."
-  (if (cl-next-method-p)
-      (occ-prop-elem-from-org prop
-                              (cl-call-next-method))
-    (occ-error "No
-(cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk) (prop (eql %s)))
-  ...)
-
-method provided."
-               prop)))
 
 
 ;; NOTE: Solve it BUG
 ;; BUG: is it user a prop method
 (cl-defmethod occ-readprop-from-user ((obj occ-obj-tsk)
                                       (property symbol))
-  "Read value of element of list for property PROPERTY from user for
-OCC-TSK OBJ, must return ORG compatible value."
+  "Read value of list of elements if (occ-list-p PROPERTY) else
+element for property PROPERTY from user for OCC-TSK OBJ, must
+return ORG compatible value."
+  (if (occ-list-p property)
+      (if (cl-next-method-p)
+          (cl-call-next-method))
+    ())
   (occ-error "Implement method occ-readprop-from-user for property %s" property))
-(cl-defmethod occ-readprop-from-user :around ((obj occ-obj-tsk)
-                                              (prop symbol))
-  "Read value of element of list for property PROP from user for
-OCC-TSK OBJ."
-  (if (cl-next-method-p)
-      (occ-prop-from-org prop
-                         (cl-call-next-method))
-    (occ-error "No
-(cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk) (prop (eql %s)))
-   ...)
-
-method provided."
-               prop)))
 
 
 (cl-defgeneric occ-require-p (obj
