@@ -649,16 +649,16 @@ method provided."
   nil)
 
 
-(cl-defgeneric occ-call-operation (obj
-                                   prop
-                                   operation
-                                   values)
+(cl-defgeneric occ-operation (obj
+                              prop
+                              operation
+                              values)
   "Accept occ compatible VALUES")
 
-(cl-defmethod occ-call-operation ((obj occ-obj-tsk)
-                                  (prop symbol)
-                                  operation
-                                  values)
+(cl-defmethod occ-operation ((obj occ-obj-tsk)
+                             (prop symbol)
+                             operation
+                             values)
   "Accept occ compatible VALUES"
   (let ((mrk (occ-obj-marker obj)))
     (let ((retval (occ-org-call-operation-at-point mrk
@@ -673,12 +673,30 @@ method provided."
                        values)))))
 
 
+(cl-defgeneric occ-call-operation (obj
+                                   prop
+                                   operation
+                                   values)
+  "Accept occ compatible VALUES")
+
+(cl-defmethod occ-call-operation ((obj occ-obj-tsk)
+                                  (prop symbol)
+                                  operation
+                                  values)
+  "Accept occ compatible VALUES"
+  (occ-operation obj
+                 prop
+                 operation
+                 values))
+
+
 (cl-defgeneric occ-select-operation (prop)
   "occ-select-operation")
 
 ;; TODO: Add log not on property editing.
 (cl-defmethod occ-select-operation ((prop symbol))
   (if (occ-list-p prop)
+      ;; TODO: where are generated actions??
       (let* ((actions '(("add" . add)
                         ("del" . remove)
                         ("put" . put)))
