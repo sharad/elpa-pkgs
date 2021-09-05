@@ -97,7 +97,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
 (cl-defgeneric occ-rankprop (obj
                              property)
   "Return the RANK (number) for OBJ based on the property PROPERTY")
-
 (cl-defmethod occ-rankprop (obj
                             property)
   "Return the RANK (number) for OBJ based on the property PROPERTY"
@@ -105,7 +104,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
   ;; (occ-debug :debug "occ-rank(tsk-pair=%s ctx=%s)" tsk-pair ctx)
   (occ-debug :debug "occ-rankprop(obj=%s symbol=%s)" obj property)
   0)
-
 (cl-defmethod occ-rankprop ((obj  occ-tsk)
                             (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
@@ -113,7 +111,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
              obj
              property)
   0)
-
 (cl-defmethod occ-rankprop ((obj  occ-obj-ctx-tsk)
                             (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
@@ -140,10 +137,10 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
 
 (cl-defgeneric occ-get-property-value-from-ctx (obj
                                                 property)
-  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
-  (occ-error "must return occ compatible value."))
-
+  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
+  ;; (occ-error "must return occ compatible value.")
 
+
 (cl-defgeneric occ-format-prop (obj
                                 property
                                 value)
@@ -170,7 +167,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
   "Return string representation for property PROPERTY, Method
 convert value VALUE of property PROPERTY from occ to org string
 representation.")
-
 (cl-defmethod occ-prop-elem-to-org ((property symbol)
                                     value)
   "Return string representation for property PROPERTY, Method
@@ -187,7 +183,6 @@ representation."
   "Return string representation for list of elements
 if (occ-list-p PROPERTY) else element, Method convert value VALUE
 of property PROPERTY from occ to org string representation.")
-
 (cl-defmethod occ-prop-to-org ((property symbol)
                                value)
   "Return string representation for list of elements concatenated with ','
@@ -234,7 +229,6 @@ if (occ-list-p PROPERTY) else element PROPERTY, Method convert
 value VALUE of property PROPERTY from org string to occ
 representation. Property specific method not required to be
 define by user.")
-
 (cl-defmethod occ-prop-from-org ((property symbol)
                                  (value string))
   "Return the Actual Object representation for list of elements
@@ -293,7 +287,6 @@ return ORG compatible value."
                               values)
   "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
 _TEMPLATE_ if CALLABLE (helm method) should be generated.")
-
 (cl-defmethod occ-require-p ((obj occ-obj-tsk)
                              (operation (eql _operation_))
                              (property  symbol)
@@ -307,13 +300,11 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                        property
                                        operation)
   "Return a default VALUE of property _TEMPLATE_.")
-
 (cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
                                       (property symbol)
                                       (operation symbol))
   "Return a default VALUE of property _TEMPLATE_."
   nil)
-
 (cl-defmethod occ-prop-default-value ((obj occ-obj-ctx-tsk)
                                       (property symbol)
                                       (operation symbol))
@@ -327,7 +318,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                               property
                               values)
   "Do the actual OPERATION.")
-
 ;; (cl-defmethod occ-operation ((obj occ-obj-tsk)
 ;;                              (operation (eql XYZ))
 ;;                              (property      (eql x))
@@ -338,7 +328,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
 (cl-defgeneric occ-checkout-prop (obj
                                   property)
   "Checkout property PROPERTY in case of force clock-in.")
-
 (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
                                  (property symbol))
   "Checkout property in case of force clock-in."
