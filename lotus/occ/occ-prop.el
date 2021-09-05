@@ -328,6 +328,39 @@ method provided."
 method provided.")))
 
 
+(cl-defmethod occ-require-p ((obj occ-obj-tsk)
+                             (operation (eql get))
+                             (prop      symbol)
+                             values)
+  nil)
+
+(cl-defmethod occ-require-p ((obj occ-obj-tsk)
+                             (operation (eql add))
+                             (prop      symbol)
+                             values)
+  (not (occ-has-p obj prop
+                  values)))
+
+(cl-defmethod occ-require-p ((obj occ-obj-tsk)
+                             (operation (eql put))
+                             (prop      symbol)
+                             values)
+  nil)
+
+(cl-defmethod occ-require-p ((obj occ-obj-tsk)
+                             (operation (eql remove))
+                             (prop      symbol)
+                             values)
+  (occ-has-p obj prop
+             values))
+
+(cl-defmethod occ-require-p ((obj occ-obj-tsk)
+                             (operation (eql member))
+                             (prop      symbol)
+                             values)
+  nil)
+
+
 (cl-defmethod occ-valid-p ((prop symbol)
                            operation)
   (memq operation
@@ -354,6 +387,25 @@ method provided.")))
 
 (occ-testing
  (occ-operations-for-prop 'occ-obj-tsk 'root))
+
+
+;; defined in occ-prop-intf.el
+(cl-defmethod occ-operation ((obj occ-obj-tsk)
+                             (prop symbol)
+                             operation
+                             values)
+  "Accept occ compatible VALUES"
+  (let ((mrk (occ-obj-marker obj)))
+    (let ((retval (occ-org-call-operation-at-point mrk
+                                                   prop
+                                                   operation
+                                                   (occ-prop-to-org prop values))))
+      (occ-debug :debug "occ-editprop: (occ-org-call-operation-at-point mrk) returnd %s" retval)
+      (when retval
+        (occ-operation obj
+                       prop
+                       operation
+                       values)))))
 
 
 (cl-defmethod occ-operation ((obj occ-obj-tsk)
@@ -408,63 +460,6 @@ method provided.")))
   (let ((tsk (occ-obj-tsk obj)))
     (occ-has-p tsk prop
                (car values))))
-
-
-(cl-defmethod occ-require-p ((obj occ-obj-tsk)
-                             (operation (eql get))
-                             (prop      symbol)
-                             values)
-  nil)
-
-(cl-defmethod occ-require-p ((obj occ-obj-tsk)
-                             (operation (eql add))
-                             (prop      symbol)
-                             values)
-  (not (occ-has-p obj prop
-                  values)))
-
-(cl-defmethod occ-require-p ((obj occ-obj-tsk)
-                             (operation (eql put))
-                             (prop      symbol)
-                             values)
-  nil)
-
-(cl-defmethod occ-require-p ((obj occ-obj-tsk)
-                             (operation (eql remove))
-                             (prop      symbol)
-                             values)
-  (occ-has-p obj prop
-             values))
-
-(cl-defmethod occ-require-p ((obj occ-obj-tsk)
-                             (operation (eql member))
-                             (prop      symbol)
-                             values)
-  nil)
-
-
-(cl-defgeneric occ-operation (obj
-                              prop
-                              operation
-                              values)
-  "Accept occ compatible VALUES")
-
-(cl-defmethod occ-operation ((obj occ-obj-tsk)
-                             (prop symbol)
-                             operation
-                             values)
-  "Accept occ compatible VALUES"
-  (let ((mrk (occ-obj-marker obj)))
-    (let ((retval (occ-org-call-operation-at-point mrk
-                                                   prop
-                                                   operation
-                                                   (occ-prop-to-org prop values))))
-      (occ-debug :debug "occ-editprop: (occ-org-call-operation-at-point mrk) returnd %s" retval)
-      (when retval
-        (occ-operation obj
-                       prop
-                       operation
-                       values)))))
 
 
 (cl-defgeneric occ-call-operation (obj
