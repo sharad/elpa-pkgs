@@ -453,9 +453,9 @@
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql status)))
         "Predicate funtion to check if ctx matches to tsk's status attribute."
-        (let ((todo-type (occ-get-property-value-from-ctx obj 'todo-type))
-              (closed    (occ-get-property-value-from-ctx obj 'closed))
-              (status    (occ-get-property-value-from-ctx obj 'todo-keyword)))
+        (let ((todo-type (occ-get-property obj 'todo-type))
+              (closed    (occ-get-property obj 'closed))
+              (status    (occ-get-property obj 'todo-keyword)))
           (if (or closed
                   (eql todo-type 'done)
                   (string= status "HOLD"))
@@ -469,7 +469,7 @@
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql key)))
         "Predicate funtion to check if ctx matches to tsk's file attribute."
-        (let* ((key (occ-get-property-value-from-ctx obj 'KEY)))
+        (let* ((key (occ-get-property obj 'KEY)))
           (if key (string-to-number key) 0)))
       
     #+end_src
@@ -480,7 +480,7 @@
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql heading-level)))
         "Predicate funtion to check if ctx matches to tsk's file attribute."
-        (let* ((level (occ-get-property-value-from-ctx obj 'level)))
+        (let* ((level (occ-get-property obj 'level)))
           (if level level 0)))
       
     #+end_src
@@ -489,7 +489,7 @@
     #+begin_src emacs-lisp
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql current-clock)))
-        (let* ((tsk-marker (occ-get-property-value-from-ctx obj 'marker)))
+        (let* ((tsk-marker (occ-get-property obj 'marker)))
           (if (occ-marker= obj org-clock-marker)
               100
             0)))

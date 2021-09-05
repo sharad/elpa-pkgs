@@ -92,14 +92,14 @@
   :expected-result :passed
   :tags '(occ)
   (should (equal (cl-method-sigs-matched-arg
-                  '(occ-readprop-elem-from-user (`(occ-obj-ctx-tsk (eql ,val)) val))
-                  '(occ-get-property  (`(occ-ctx (eql ,val)) val))
+                  '(occ-readprop-elem-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
+                  '(occ-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
                   (occ-make-ctx-at-point))
                  '(timebeing)))
   ;; do this test in buffer of a temporary file.
   (should (equal (cl-method-sigs-matched-arg
-                  '(occ-readprop-elem-from-user (`(occ-obj-ctx-tsk (eql ,val)) val))
-                  '(occ-get-property  (`(occ-ctx (eql ,val)) val))
+                  '(occ-readprop-elem-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
+                  '(occ-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
                   (occ-make-ctx-at-point))
                  '(timebeing root currfile))))
 
@@ -116,9 +116,14 @@
 
 (cl-defmethod occ-properties-to-edit ((class symbol))
   "return PROPERTIES list that can be edited."
-  (cl-method-param-values 'occ-readprop-elem-from-user
-                          (list '\` `(,class (eql ,'(\, val))))
-                          'val))
+  (let ((prop-list1 (cl-method-param-values 'occ-readprop-elem-from-user
+                                            (list '\` `(,class (eql ,'(\, val))))
+                                            'val))
+        (prop-list12 (cl-method-param-values 'occ-readprop-from-user
+                                            (list '\` `(,class (eql ,'(\, val))))
+                                            'val)))
+    (append prop-list1
+            prop-list2)))
 
 (cl-defmethod occ-properties-to-edit ((obj occ-tsk))
   "return PROPERTIES list that can be edited."
@@ -129,8 +134,8 @@
 (cl-defmethod occ-properties-to-edit ((obj occ-obj-ctx-tsk))
   "return PROPERTIES list that can be edited."
   (cl-method-sigs-matched-arg
-   '(occ-readprop-elem-from-user (`(occ-obj-ctx-tsk (eql ,val)) val))
-   '(occ-get-property            (`(occ-ctx (eql ,val)) val))
+   '(occ-readprop-elem-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
+   '(occ-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
    (occ-obj-ctx obj)))
 
 
@@ -465,18 +470,22 @@ method provided."
 ;; TODO: Add log not on property editing.
 (cl-defmethod occ-select-operation ((obj occ-obj-tsk)
                                     (prop symbol))
+  (cl-assert prop)
   (if (occ-list-p prop)
       ;; TODO: where are generated actions?? (occ-operations-for-prop 'occ-obj-tsk 'root)
       (let* ((operations (occ-operations-for-prop obj prop))
-             (actions    (mapcar #'(lambda (op)
-                                     (cons (symbol-name op) op))
-                                 operations))
-             ;; (actions '(("add" . add)
-             ;;            ("del" . remove)
-             ;;            ("put" . put)))
-             (action  (completing-read (format "%s action: " prop) actions)))
-        (cdr (assoc action
-                    actions)))
+             ;; (actions    (mapcar #'(lambda (op)
+             ;;                         (cons (symbol-name op) op))
+             ;;                     operations))
+             (actions '(("add" . add)
+                        ("del" . remove)
+                        ("put" . put)))
+             )
+        (cl-assert actions)
+        (let ((action  (completing-read (format "%s action: " prop) actions)))
+          (cl-assert action)
+          (cdr (assoc action
+                      actions))))
     'put))
 
 
@@ -496,11 +505,13 @@ method provided."
   "Accept occ compatible VALUES"
   (occ-debug :debug
              "occ-editprop: prop: %s, value: %s" prop value)
+  (cl-assert prop)
   (let ((operation  (or operation
                         (occ-select-operation obj prop)))
         (prop-value (or value
                         (occ-readprop-from-user obj
                                                 prop))))
+    (cl-assert operation)
     (occ-call-operation obj
                         prop
                         operation

@@ -442,9 +442,9 @@ _TEMPLATE2_ if CALLABLE (helm method) should be generated."
 (cl-defmethod occ-rankprop ((obj occ-tsk)
                             (prop (eql status)))
   "Predicate funtion to check if ctx matches to tsk's status attribute."
-  (let ((todo-type (occ-get-property-value-from-ctx obj 'todo-type))
-        (closed    (occ-get-property-value-from-ctx obj 'closed))
-        (status    (occ-get-property-value-from-ctx obj 'todo-keyword)))
+  (let ((todo-type (occ-get-property obj 'todo-type))
+        (closed    (occ-get-property obj 'closed))
+        (status    (occ-get-property obj 'todo-keyword)))
     (if (or closed
             (eql todo-type 'done)
             (string= status "HOLD"))
@@ -458,7 +458,53 @@ _TEMPLATE2_ if CALLABLE (helm method) should be generated."
 (cl-defmethod occ-rankprop ((obj occ-tsk)
                             (prop (eql key)))
   "Predicate funtion to check if ctx matches to tsk's file attribute."
-  (let* ((key (occ-get-property-value-from-ctx obj 'KEY)))
+  (let* ((key (occ-get-property obj 'KEY)))
     (if key (string-to-number key) 0)))
 
 ;; Key property of task for setting arbitrary rank:1 ends here
+
+;; Heading level property of task
+
+;; [[file:occ-property-methods.org::*Heading level property of task][Heading level property of task:1]]
+(cl-defmethod occ-rankprop ((obj occ-tsk)
+                            (prop (eql heading-level)))
+  "Predicate funtion to check if ctx matches to tsk's file attribute."
+  (let* ((level (occ-get-property obj 'level)))
+    (if level level 0)))
+
+;; Heading level property of task:1 ends here
+
+;; Current clock status proprty of task (will rank based on task is currently clocking-in or not
+
+;; [[file:occ-property-methods.org::*Current clock status proprty of task (will rank based on task is currently clocking-in or not][Current clock status proprty of task (will rank based on task is currently clocking-in or not:1]]
+(cl-defmethod occ-rankprop ((obj occ-tsk)
+                            (prop (eql current-clock)))
+  (let* ((tsk-marker (occ-get-property obj 'marker)))
+    (if (occ-marker= obj org-clock-marker)
+        100
+      0)))
+
+;; Current clock status proprty of task (will rank based on task is currently clocking-in or not:1 ends here
+
+;; SubtreeFile property of task
+
+;; [[file:occ-property-methods.org::*SubtreeFile property of task][SubtreeFile property of task:1]]
+;;{{ sub-tree
+(cl-defmethod occ-readprop ((obj occ-obj-ctx-tsk)
+                            (prop (eql subtree)))
+  (let ((tsk (occ-obj-tsk obj))
+        (ctx (occ-obj-ctx obj)))
+    (let ((prompt (concat (symbol-name prop) ": ")))
+      (file-relative-name
+       (ido-read-file-name ;; org-iread-file-name
+        prompt
+        default-directory default-directory)))))
+;;}}
+
+;; SubtreeFile property of task:1 ends here
+
+;; File Ends Here
+
+;; [[file:occ-property-methods.org::*File Ends Here][File Ends Here:1]]
+;;; occ-property-methods.el ends here
+;; File Ends Here:1 ends here

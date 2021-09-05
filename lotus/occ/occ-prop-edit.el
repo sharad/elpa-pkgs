@@ -90,6 +90,7 @@
                        (key-val-collection (append key-val-collection
                                                    (mapcar #'(lambda (fk) (cons (symbol-name fk) fk))
                                                            fixed-keys))))
+                  (cl-assert key-val-collection)
                   (if key-val-collection
                       (let* ((key-sel (occ-completing-read prompt
                                                            key-val-collection
@@ -250,6 +251,7 @@
       (while (not (member (setq prop (occ-select-propetry obj))
                           '(edit done)))
         ;; TODO: handle (occ-select-propetry obj ctx) return NIL
+        (cl-assert prop)
         (let ((retval (occ-editprop obj
                                     prop)))
           (when retval
