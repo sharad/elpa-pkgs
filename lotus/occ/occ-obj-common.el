@@ -53,8 +53,8 @@
 (defun occ-list-get-evens (lst)
   (cond
    ((null lst) nil)
-   (t (cons (car lst)
-            (occ-list-get-evens (cddr lst))))))
+   (t          (cons (car lst)
+                     (occ-list-get-evens (cddr lst))))))
 
 ;; (defun list-get-odds (lst)
 ;;   (cond
@@ -76,14 +76,14 @@
         (occ-plist-get (cl-obj-plist-value obj)
                        (upcase-sym prop)))))
 
-(cl-defmethod occ-get-properties ((obj occ-obj)
+(cl-defmethod occ-get-properties ((obj   occ-obj)
                                   (props list))
   ;; mainly used by occ-tsk only.
   (mapcar #'(lambda (prop)
               (cons prop (occ-get-property obj prop)))
           props))
 
-(cl-defmethod occ-get-property ((obj occ-ctx)
+(cl-defmethod occ-get-property ((obj      occ-ctx)
                                 (property symbol))
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
   (occ-get-property-value-from-ctx obj
@@ -98,17 +98,22 @@
   ;; mainly used by occ-tsk only
   (if (memq prop
             (cl-class-slots (cl-inst-classname obj)))
-      (setf (cl-struct-slot-value (cl-inst-classname obj) prop obj) value)
-    (let ((plist-prop (if (occ-plist-get (cl-obj-plist-value obj) prop)
+      (setf (cl-struct-slot-value (cl-inst-classname obj) prop obj)
+            value)
+    (let ((plist-prop (if (occ-plist-get (cl-obj-plist-value obj)
+                                         prop)
                           prop
                         (upcase-sym prop))))
-      (occ-debug :debug "occ-set-property: got %s using %s" prop plist-prop)
+      (occ-debug :debug "occ-set-property: got %s using %s"
+                 prop plist-prop)
       (occ-plist-set
        ;; NOTE: as Property block keys return by (org-element-at-point) are in
        ;; UPCASE even in actual org file it is lower or camel case. so our obj
        ;; (tsk) also must have to be in line of it as it also got created with
        ;; same function (org-element-at-point).
-       (cl-struct-slot-value (cl-inst-classname obj) 'plist obj)
+       (cl-struct-slot-value (cl-inst-classname obj)
+                             'plist
+                             obj)
        plist-prop value))))
 
 (cl-defmethod occ-set-property ((obj occ-tree-tsk)
@@ -135,13 +140,14 @@
   (let* ((plist      (cl-obj-plist-value obj))
          (plist-keys (occ-plist-get-keys plist))
          (slots      (append (cl-class-slots (cl-inst-classname obj))
-                             (mapcar #'key2sym plist-keys))))
+                             (mapcar #'key2sym
+                                     plist-keys))))
     slots))
 (cl-defmethod occ-obj-defined-slots-with-value ((obj occ-obj))
   (let* ((slots (occ-obj-defined-slots obj)))
     (remove-if-not #'(lambda (slot)
                        (occ-get-property obj slot))
-     slots)))
+                   slots)))
 (cl-defmethod cl-method-matched-arg ((method symbol)
                                      (ctx symbol))
   (cl-method-first-arg method))
@@ -149,13 +155,14 @@
                                      (ctx occ-ctx))
   (let ((slots (occ-obj-defined-slots-with-value ctx)))
     (remove-if-not #'(lambda (arg) (memq arg slots))
-     (cl-method-first-arg method))))
+                   (cl-method-first-arg method))))
 (cl-defmethod cl-method-matched-arg ((method1 symbol)
                                      (method2 symbol)
                                      (ctx occ-ctx))
-  (let ((slots (cl-method-first-arg-with-value method2 ctx)))
+  (let ((slots (cl-method-first-arg-with-value method2
+                                               ctx)))
     (remove-if-not #'(lambda (arg) (memq arg slots))
-     (cl-method-first-arg method1))))
+                   (cl-method-first-arg method1))))
 
 
 (cl-defgeneric cl-method-sig-matched-arg (method-sig
@@ -174,6 +181,6 @@
                                           (ctx occ-ctx))
   (let ((slots (cl-method-param-case-with-value-new method-sig2 ctx)))
     (remove-if-not #'(lambda (arg) (memq arg slots))
-     (cl-method-param-case method-sig1))))
+                   (cl-method-param-case method-sig1))))
 
 ;;; occ-obj-common.el ends here
