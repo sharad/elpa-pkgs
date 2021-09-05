@@ -58,7 +58,7 @@
            "Predicate funtion to check if ctx matches to tsk's file attribute."
            (let ((tsk (occ-obj-tsk obj))
                  (ctx (occ-obj-ctx obj)))
-             (let* ((tsk-currfile (occ-get-property-value-from-ctx tsk 'currfile))
+             (let* ((tsk-currfile (occ-get-property tsk 'currfile))
                     (tsk-currfile (if tsk-currfile (file-truename tsk-currfile))))
                (let* ((ctx-file (occ-ctx-file ctx))
                       (ctx-file (when ctx-file (file-truename ctx-file))))
@@ -88,7 +88,7 @@
          (let ((tsk (occ-obj-tsk obj))
                (ctx (occ-obj-ctx obj)))
            (occ-debug :debug "occ-rankprop-with: currfile begin")
-           (occ-aggrigate-list-rank tsk-currfile (occ-get-property-value-from-ctx tsk prop) #'+
+           (occ-aggrigate-list-rank tsk-currfile (occ-get-property tsk prop) #'+
              (let* ((tsk-currfile (if tsk-currfile (file-truename tsk-currfile)))
                     (ctx-file     (occ-ctx-file ctx))
                     (ctx-file     (if ctx-file (file-truename ctx-file))))
@@ -203,8 +203,8 @@
                                   (prop (eql _template2_)))
         "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE2_"
         (let ((tsk (occ-obj-tsk obj)))
-          (let ((_template2_ (occ-get-property-value-from-ctx tsk
-                                                              '_template2_)))
+          (let ((_template2_ (occ-get-property tsk
+                                               '_template2_)))
             0)))
       (cl-defmethod occ-has-p ((obj occ-obj-tsk)
                                (property symbol)
@@ -300,8 +300,8 @@
                      (occ-format tsk 'capitalize)
                      (occ-format ctx 'capitalize)
                      prop)
-          (occ-aggrigate-list-rank tsk-root (occ-get-property-value-from-ctx tsk prop) #'+
-            (let* ((tsk-root (car (occ-get-property-value-from-ctx tsk prop)))
+          (occ-aggrigate-list-rank tsk-root (occ-get-property tsk prop) #'+
+            (let* ((tsk-root (car (occ-get-property tsk prop)))
                    (tsk-root (when tsk-root (file-truename tsk-root)))
                    (ctx-file (occ-ctx-file ctx))
                    ;; (ctx-file (when ctx-file (file-truename ctx-file)))
@@ -363,13 +363,13 @@
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql timebeing)))
         (let ((tsk (occ-obj-tsk obj)))
-          (let ((timebeing (occ-get-property-value-from-ctx tsk
-                                                            'timebeing)))
+          (let ((timebeing (occ-get-property tsk
+                                             'timebeing)))
             (let ((timebeing-time (if timebeing
                                       (org-duration-string-to-minutes timebeing)
                                     0))
-                  (clocked-time   (occ-get-property-value-from-ctx tsk
-                                                                   'clock-sum)))
+                  (clocked-time   (occ-get-property tsk
+                                                    'clock-sum)))
               (if (and (numberp clocked-time)
                        (numberp timebeing-time)
                        (> timebeing-time clocked-time))

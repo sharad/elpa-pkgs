@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2012  Sharad Pratap
 
-;; Author: Sharad Pratap <sh4r4d _at_ _G-mail_>
+;; Author:
 ;; Keywords: convenience
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@
     "Predicate funtion to check if ctx matches to tsk's file attribute."
     (let ((tsk (occ-obj-tsk obj))
           (ctx (occ-obj-ctx obj)))
-      (let* ((tsk-currfile (occ-get-property-value-from-ctx tsk 'currfile))
+      (let* ((tsk-currfile (occ-get-property tsk 'currfile))
              (tsk-currfile (if tsk-currfile (file-truename tsk-currfile))))
         (let* ((ctx-file (occ-ctx-file ctx))
                (ctx-file (when ctx-file (file-truename ctx-file))))
@@ -77,7 +77,7 @@
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (occ-debug :debug "occ-rankprop-with: currfile begin")
-    (occ-aggrigate-list-rank tsk-currfile (occ-get-property-value-from-ctx tsk prop) #'+
+    (occ-aggrigate-list-rank tsk-currfile (occ-get-property tsk prop) #'+
       (let* ((tsk-currfile (if tsk-currfile (file-truename tsk-currfile)))
              (ctx-file     (occ-ctx-file ctx))
              (ctx-file     (if ctx-file (file-truename ctx-file))))
@@ -193,8 +193,8 @@ _TEMPLATE1_ if CALLABLE (helm method) should be generated.")
                             (prop (eql _template2_)))
   "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE2_"
   (let ((tsk (occ-obj-tsk obj)))
-    (let ((_template2_ (occ-get-property-value-from-ctx tsk
-                                                        '_template2_)))
+    (let ((_template2_ (occ-get-property tsk
+                                         '_template2_)))
       0)))
 (cl-defmethod occ-has-p ((obj occ-obj-tsk)
                          (property symbol)
@@ -290,8 +290,8 @@ _TEMPLATE2_ if CALLABLE (helm method) should be generated."
                (occ-format tsk 'capitalize)
                (occ-format ctx 'capitalize)
                prop)
-    (occ-aggrigate-list-rank tsk-root (occ-get-property-value-from-ctx tsk prop) #'+
-      (let* ((tsk-root (car (occ-get-property-value-from-ctx tsk prop)))
+    (occ-aggrigate-list-rank tsk-root (occ-get-property tsk prop) #'+
+      (let* ((tsk-root (car (occ-get-property tsk prop)))
              (tsk-root (when tsk-root (file-truename tsk-root)))
              (ctx-file (occ-ctx-file ctx))
              ;; (ctx-file (when ctx-file (file-truename ctx-file)))
@@ -353,13 +353,13 @@ _TEMPLATE2_ if CALLABLE (helm method) should be generated."
 (cl-defmethod occ-rankprop ((obj occ-tsk)
                             (prop (eql timebeing)))
   (let ((tsk (occ-obj-tsk obj)))
-    (let ((timebeing (occ-get-property-value-from-ctx tsk
-                                                      'timebeing)))
+    (let ((timebeing (occ-get-property tsk
+                                       'timebeing)))
       (let ((timebeing-time (if timebeing
                                 (org-duration-string-to-minutes timebeing)
                               0))
-            (clocked-time   (occ-get-property-value-from-ctx tsk
-                                                             'clock-sum)))
+            (clocked-time   (occ-get-property tsk
+                                              'clock-sum)))
         (if (and (numberp clocked-time)
                  (numberp timebeing-time)
                  (> timebeing-time clocked-time))
@@ -462,49 +462,3 @@ _TEMPLATE2_ if CALLABLE (helm method) should be generated."
     (if key (string-to-number key) 0)))
 
 ;; Key property of task for setting arbitrary rank:1 ends here
-
-;; Heading level property of task
-
-;; [[file:occ-property-methods.org::*Heading level property of task][Heading level property of task:1]]
-(cl-defmethod occ-rankprop ((obj occ-tsk)
-                            (prop (eql heading-level)))
-  "Predicate funtion to check if ctx matches to tsk's file attribute."
-  (let* ((level (occ-get-property-value-from-ctx obj 'level)))
-    (if level level 0)))
-
-;; Heading level property of task:1 ends here
-
-;; Current clock status proprty of task (will rank based on task is currently clocking-in or not
-
-;; [[file:occ-property-methods.org::*Current clock status proprty of task (will rank based on task is currently clocking-in or not][Current clock status proprty of task (will rank based on task is currently clocking-in or not:1]]
-(cl-defmethod occ-rankprop ((obj occ-tsk)
-                            (prop (eql current-clock)))
-  (let* ((tsk-marker (occ-get-property-value-from-ctx obj 'marker)))
-    (if (occ-marker= obj org-clock-marker)
-        100
-      0)))
-
-;; Current clock status proprty of task (will rank based on task is currently clocking-in or not:1 ends here
-
-;; SubtreeFile property of task
-
-;; [[file:occ-property-methods.org::*SubtreeFile property of task][SubtreeFile property of task:1]]
-;;{{ sub-tree
-(cl-defmethod occ-readprop ((obj occ-obj-ctx-tsk)
-                            (prop (eql subtree)))
-  (let ((tsk (occ-obj-tsk obj))
-        (ctx (occ-obj-ctx obj)))
-    (let ((prompt (concat (symbol-name prop) ": ")))
-      (file-relative-name
-       (ido-read-file-name ;; org-iread-file-name
-        prompt
-        default-directory default-directory)))))
-;;}}
-
-;; SubtreeFile property of task:1 ends here
-
-;; File Ends Here
-
-;; [[file:occ-property-methods.org::*File Ends Here][File Ends Here:1]]
-;;; occ-property-methods.el ends here
-;; File Ends Here:1 ends here
