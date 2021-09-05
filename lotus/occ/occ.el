@@ -115,13 +115,17 @@
         (delete propstr org-use-property-inheritance)))))
 
 
-(defmacro occ-find-library-dir (library)
-  `(progn
-     (delete* (concat occ-dev-dir ,library) load-path)
-     (push (concat occ-dev-dir ,library) load-path)
-     (file-name-directory (or (locate-library ,library)
-                              "~/.xemacs/elpa/pkgs/occ/occ.el"
-                           ""))))
+(defun occ-find-library-dir (library)
+  (progn
+     (delete* (expand-file-name occ-dev-dir library) load-path)
+     (push (concat occ-dev-dir library) load-path)
+     (let ((libpath (expand-file-name (concat library ".el")
+                                      occ-dev-dir)))
+       (if (file-exists-p libpath)
+           occ-dev-dir
+         (file-name-directory (or (locate-library library)
+                                  "~/.xemacs/elpa/pkgs/occ/occ.el"
+                                  ""))))))
 
 (defun occ-get-version (here full message)
   "Show the Occ version.
@@ -173,14 +177,15 @@ FULL is given."
   ;; TODO: load all files in lib dir
   (let ((pkg-dir (occ-find-library-dir pkg-str)))
     (dolist (ef (directory-files pkg-dir nil ".el$"))
-      (unless (string-match "pkg.el$" ef)
-        (occ-message "trying to load %s %s %s"
-                 pkg-str
-                 ef
-                 (concat pkg-dir ef))
-        (or (and (occ-load-noerror-mustsuffix (concat pkg-dir ef))
-                 't)
-            pkg-str)))))
+      (let ((efile (expand-file-name ef pkg-dir)))
+        (unless (string-match "pkg.el$" efile)
+          (occ-message "trying to load %s %s %s"
+                       pkg-str
+                       ef
+                       efile)
+          (or (and (occ-load-noerror-mustsuffix efile)
+                   't)
+              pkg-str))))))
 
 ;;;###autoload
 (defun occ-reload-lib (uncompiled)

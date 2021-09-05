@@ -158,7 +158,7 @@
 
 (cl-defmethod occ-properties-to-calculate-rank ((obj occ-obj-tsk))
   "return PROPERTIES list that can be used in calculating rank."
-  (cl-collect-on-classes #'occ-properties-to-calcuate-rank
+  (cl-collect-on-classes #'occ-properties-to-calculate-rank ;; occ-properties-to-calcuate-rank
                          obj))
 
 
