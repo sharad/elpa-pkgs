@@ -73,8 +73,8 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
    "Do the actual _OPERATION_.")
  (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
                                   (prop (eql _template_)))
-   "Checkout property _TEMPLATE_ in case of force clock-in.")
- )
+   "Checkout property _TEMPLATE_ in case of force clock-in."))
+ 
 
 
 (cl-defgeneric occ-rankprop (obj
@@ -106,8 +106,8 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
 
 (cl-defgeneric occ-list-p (property)
   "Is the property PROPERTY has VALUES in list, Method tell
-   property represent list or not."
-  )
+   property represent list or not.")
+  
 
 (cl-defmethod occ-list-p ((property symbol))
   "Is the property PROPERTY has VALUES in list, Method tell
@@ -152,19 +152,17 @@ of property PROPERTY from occ to org string representation."
   (occ-debug :debug "occ-prop-to-org: no method for prop %s using default." prop)
   (occ-message "occ-prop-from-org: no method for prop %s using default." prop)
   (occ-message "occ-prop-from-org: no method for values %s." values)
-  (if (cl-next-method-p)
-      (cl-call-next-method)
-    (if (occ-list-p property)
-        (let ((value-list (mapcar #'(lambda (v)
-                                       (occ-prop-elem-to-org prop
-                                                             v))
-                                   value))))
-      (string-join value-list ",")
-      (let ((retval (ignore-error (occ-prop-elem-to-org property
-                                                        value))))
-        (if retval
-            retval
-          value)))))
+  (if (occ-list-p property)
+      (let ((value-list (mapcar #'(lambda (v)
+                                    (occ-prop-elem-to-org prop
+                                                          v))
+                                value)))
+        (string-join value-list ","))
+    (let ((retval (ignore-error (occ-prop-elem-to-org property
+                                                      value))))
+      (if retval
+          retval
+        value))))
 
 
 (cl-defgeneric occ-prop-elem-from-org (property
@@ -199,18 +197,16 @@ representation."
   ;; (occ-error "Implement method occ-prop-elem-from-org for property %s" property)
   (occ-debug :debug
              "occ-prop-elem-from-org: no method for property %s using default." property)
-  (if (cl-next-method-p)
-      (cl-call-next-method)
-    (if (occ-list-p property)
-        (mapcar #'(lambda (v)
-                    (occ-prop-elem-from-org prop
-                                         v))
-                value)
-      (let ((retval (ignore-error (occ-prop-elem-from-org property
-                                                          value))))
-        (if retval
-            retval
-          value)))))
+  (if (occ-list-p property)
+      (mapcar #'(lambda (v)
+                  (occ-prop-elem-from-org prop
+                                          v))
+              value)
+    (let ((retval (ignore-error (occ-prop-elem-from-org property
+                                                        value))))
+      (if retval
+          retval
+        value))))
 
 
 (cl-defgeneric occ-readprop-elem-from-user (obj
