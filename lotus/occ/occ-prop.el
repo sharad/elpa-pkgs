@@ -119,10 +119,10 @@
   (let ((prop-list1 (cl-method-param-values 'occ-readprop-elem-from-user
                                             (list '\` `(,class (eql ,'(\, val))))
                                             'val))
-        (prop-list12 (cl-method-param-values 'occ-readprop-from-user
+        (prop-list2 (cl-method-param-values 'occ-readprop-from-user
                                             (list '\` `(,class (eql ,'(\, val))))
                                             'val)))
-    (append prop-list1
+    (-union prop-list1
             prop-list2)))
 
 (cl-defmethod occ-properties-to-edit ((obj occ-tsk))
@@ -301,11 +301,22 @@ method provided."
                            '(occ-list-p (`((eql ,val)) val))))
         (props-by-converter (cl-method-param-case
                              '(occ-prop-elem-from-org (`((eql ,val) t) val)))))
-    (let ((props (-union props-by-is-list props-by-converter))) ;dash
+    (let ((props (-union props-by-is-list
+                         props-by-converter))) ;dash
       (dolist (p props)
         (occ-set-property obj p
                           (occ-rereadprop-value p (occ-get-property obj
                                                                     p)))))))
+
+(cl-defmethod occ-reread-props :around (obj)
+  "return PROPERTIES list that can be checked-out."
+  (if (cl-next-method-p)
+      (occ-internal-remove-template-symbol (cl-call-next-method))
+    (occ-error "No
+(cl-defmethod occ-reread-props (obj)
+  ...)
+
+method provided.")))
 
 
 (cl-defmethod occ-valid-p ((prop symbol)

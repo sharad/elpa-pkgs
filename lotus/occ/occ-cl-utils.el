@@ -177,18 +177,16 @@
     (mapcar #'(lambda (x) (aref x 1))
             (if method-instances
                 (aref method-instances 3)))))
-    
 
 (cl-defun cl-method-param-case (signature-val-spec)
   "signature-val-spec = (METHOD (PARAMS VAL))"
   (cl-destructuring-bind (method (param-spec val)) signature-val-spec
     (remove nil
             (mapcar #'(lambda (fspec)
-                        (funcall
-                         `(lambda ()
-                            (pcase ',fspec
-                              (,param-spec ,val)
-                              (_ nil)))))
+                        (funcall `(lambda ()
+                                    (pcase ',fspec
+                                      (,param-spec ,val)
+                                      (_ nil)))))
                     (cl-method-param-signs method)))))
 
 (cl-defun cl-method-param-case-with-value (signature-val-spec obj)
@@ -196,31 +194,28 @@
   (cl-destructuring-bind (method (param-spec val)) signature-val-spec
     (remove nil
             (mapcar #'(lambda (fspec)
-                        (let ((first-arg (funcall
-                                          `(lambda ()
-                                             (pcase ',fspec
-                                               (,param-spec ,val)
-                                               (_ nil))))))
+                        (let ((first-arg (funcall `(lambda ()
+                                                     (pcase ',fspec
+                                                       (,param-spec ,val)
+                                                       (_ nil))))))
                           (when (and first-arg
-                                     (funcall method (cons first-arg obj)))
+                                     (funcall method (cons first-arg
+                                                           obj)))
                             first-arg)))
                     (cl-method-param-signs method)))))
-      
 
 (defun cl-method-param-case-with-value-new (signature-val-spec obj)
   "signature-val-spec = (METHOD PARAMS VAL)"
   (cl-destructuring-bind (method (param-spec val)) signature-val-spec
     (remove nil
             (mapcar #'(lambda (fspec)
-                        (let ((first-arg (funcall
-                                          `(lambda ()
-                                             (pcase ',fspec
-                                               (,param-spec ,val)
-                                               (_ nil))))))
-                          (when (and 
-                                 first-arg
-                                 ;; (funcall method (cons first-arg obj))) -- TODO BUG make it general
-                                 (funcall method obj first-arg))
+                        (let ((first-arg (funcall `(lambda ()
+                                                     (pcase ',fspec
+                                                       (,param-spec ,val)
+                                                       (_ nil))))))
+                          (when (and first-arg
+                                     ;; (funcall method (cons first-arg obj))) -- TODO BUG make it general
+                                     (funcall method obj first-arg))
                             first-arg)))
                     (cl-method-param-signs method)))))
 
