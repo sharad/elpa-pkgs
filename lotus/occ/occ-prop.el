@@ -133,17 +133,26 @@
 ;; TODO: improve
 (cl-defmethod occ-properties-to-edit ((obj occ-obj-ctx-tsk))
   "return PROPERTIES list that can be edited."
-  (cl-method-sigs-matched-arg
-   '(occ-readprop-elem-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
-   '(occ-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
-   (occ-obj-ctx obj)))
+  (let ((list1 (cl-method-sigs-matched-arg '(occ-readprop-elem-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
+                                           '(occ-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
+                                           (occ-obj-ctx obj)))
+        (list2 (cl-method-sigs-matched-arg '(occ-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
+                                           '(occ-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
+                                           (occ-obj-ctx obj))))
+    (-union list1
+            list2)))
 
 
 (cl-defmethod occ-properties-to-inherit ((class symbol))
   "return PROPERTIES list that can be inherited."
-  (cl-method-param-values 'occ-readprop-elem-from-user
-                          (list '\` `(,class (eql ,'(\, val))))
-                          'val))
+  (let ((list1 (cl-method-param-values 'occ-readprop-elem-from-user
+                                       (list '\` `(,class (eql ,'(\, val))))
+                                       'val))
+        (list2 (cl-method-param-values 'occ-readprop-from-user
+                                       (list '\` `(,class (eql ,'(\, val))))
+                                       'val)))
+    (-union list1
+            list2)))
 
 (cl-defmethod occ-properties-to-inherit ((obj occ-obj-tsk))
   "return PROPERTIES list that can be inherited."
@@ -485,13 +494,12 @@ method provided.")))
   (if (occ-list-p prop)
       ;; TODO: where are generated actions?? (occ-operations-for-prop 'occ-obj-tsk 'root)
       (let* ((operations (occ-operations-for-prop obj prop))
-             ;; (actions    (mapcar #'(lambda (op)
-             ;;                         (cons (symbol-name op) op))
-             ;;                     operations))
-             (actions '(("add" . add)
-                        ("del" . remove)
-                        ("put" . put)))
-             )
+             ;; (actions '(("add" . add)
+             ;;            ("del" . remove)
+             ;;            ("put" . put)))
+             (actions    (mapcar #'(lambda (op)
+                                     (cons (symbol-name op) op))
+                                 operations)))
         (cl-assert actions)
         (let ((action  (completing-read (format "%s action: " prop) actions)))
           (cl-assert action)
