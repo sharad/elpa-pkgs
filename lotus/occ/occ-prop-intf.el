@@ -218,6 +218,9 @@ representation."
   "READ the value for property PROPERTY, Read value of element
 of list for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value.")
+(defun occ-readprop-list-from-user (obj
+                                    property)
+  (occ-error "Implement it, try with (occ-readprop-elem-from-user obj property)"))
 ;; TODO: should not we make them to be converted to OCC value here.
 (cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk)
                                            (property symbol))
