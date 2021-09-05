@@ -56,6 +56,11 @@ org string to occ representation.")
    "READ the value for property _TEMPLATE_, Read value of element
 of list for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value.")
+ (cl-defmethod occ-readprop-from-user ((obj occ-tsk)
+                                       (prop (eql _template_)))
+   "Read value of list of elements if (occ-list-p PROPERTY) else
+element for property PROPERTY from user for OCC-TSK OBJ, must
+return ORG compatible value.")
  (cl-defmethod occ-require-p ((obj occ-obj-tsk)
                               (operation (eql _operation_))
                               (prop (eql _template_))
