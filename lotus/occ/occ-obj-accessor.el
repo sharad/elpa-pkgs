@@ -59,6 +59,10 @@
 
 (cl-defmethod occ-obj-obj ((obj occ-return))
   (occ-return-get-value obj))
+
+
+(cl-defmethod occ-obj-obj ((obj null))
+  nil)
 
 
 (cl-defmethod occ-obj-tsk ((obj null))
