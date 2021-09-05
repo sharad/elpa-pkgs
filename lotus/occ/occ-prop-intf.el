@@ -184,14 +184,16 @@ org string to occ representation."
   "Return the Actual Object representation for list of elements
 if (occ-list-p PROPERTY) else element PROPERTY, Method convert
 value VALUE of property PROPERTY from org string to occ
-representation.")
+representation. Property specific method not required to be
+define by user.")
 
 (cl-defmethod occ-prop-from-org ((property symbol)
                                  (value string))
   "Return the Actual Object representation for list of elements
 if (occ-list-p PROPERTY) else element PROPERTY, Method convert
 value VALUE of property PROPERTY from org string to occ
-representation."
+representation. Property specific method not required to be
+define by user."
   ;; (occ-error "Implement method occ-prop-elem-from-org for property %s" property)
   (occ-debug :debug
              "occ-prop-elem-from-org: no method for property %s using default." property)
@@ -212,9 +214,6 @@ representation."
   "READ the value for property PROPERTY, Read value of element
 of list for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value.")
-(defun occ-readprop-list-from-user (obj
-                                    property)
-  (occ-error "Implement it, try with (occ-readprop-elem-from-user obj property)"))
 ;; TODO: should not we make them to be converted to OCC value here.
 (cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk)
                                            (property symbol))
@@ -229,16 +228,15 @@ return ORG compatible value."
   "Read value of list of elements if (occ-list-p PROPERTY) else
 element for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value."
-  (if (cl-next-method-p)
-      (cl-call-next-method)
-    (if (occ-list-p property)
-        ;;try with occ-readprop-elem-from-user in below method
-        (occ-readprop-list-from-user obj property)
-      ;; if occ-readprop-elem-from-user define then try it
-      (let ((retval (ignore-error (occ-readprop-elem-from-user obj property))))
-        (if retval
-            retval
-          (occ-error "Implement method occ-readprop-from-user for property %s" property))))))
+  (if (occ-list-p property)
+      ;;try with occ-readprop-elem-from-user in below method
+      (occ-prop-util-readprop-list-from-user obj property)
+    ;; if occ-readprop-elem-from-user define then try it
+    ;; (let ((retval (ignore-error (occ-readprop-elem-from-user obj property))))
+    ;;   (if retval
+    ;;       retval
+    ;;     (occ-error "Implement method occ-readprop-from-user for property %s" property)))
+    (occ-error "Implement method occ-readprop-from-user for property %s" property)))
 
 
 (cl-defgeneric occ-require-p (obj
