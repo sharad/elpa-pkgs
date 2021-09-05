@@ -46,7 +46,6 @@
                                  (property symbol))
    "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
    (occ-error "must return occ compatible value."))
-
  (cl-defmethod occ-format-prop ((obj occ-obj-tsk)
                                 (property symbol)
                                 value)
@@ -126,6 +125,17 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
                           property
                           value)
   "OBJ-has-property PROPERTY")
+(cl-defmethod occ-has-p ((obj occ-obj-tsk)
+                         (prop symbol)
+                         value)
+  (let ((tsk (occ-obj-tsk obj)))
+    (if (occ-list-p prop)
+        (memq value
+              (occ-get-property tsk
+                                prop))
+      (equal value
+             (occ-get-property tsk
+                               prop)))))
 
 
 (cl-defgeneric occ-get-property (obj

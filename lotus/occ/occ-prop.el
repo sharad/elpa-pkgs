@@ -111,7 +111,7 @@
   "return PROPERTIES list that can be used in calculating rank.")
 (cl-defmethod occ-properties-to-checkout (obj)
   "return PROPERTIES list that can be checked-out.")
- 
+
 
 (cl-defmethod occ-properties-to-edit ((class symbol))
   "return PROPERTIES list that can be edited."
@@ -538,18 +538,22 @@ method provided."
                                         values))))
 
 
-(cl-defgeneric occ-has-p (obj
-                          prop
-                          value)
-  "occ-has-p")
+;; (cl-defgeneric occ-has-p (obj
+;;                           prop
+;;                           value)
+;;   "occ-has-p")
 
-(cl-defmethod occ-has-p ((obj occ-obj-tsk)
-                         (prop symbol)
-                         value)
-  (let ((tsk (occ-obj-tsk obj)))
-    (if (occ-list-p prop)
-        (memq value (occ-get-property tsk prop))
-      (equal value (occ-get-property tsk prop)))))
+;; (cl-defmethod occ-has-p ((obj occ-obj-tsk)
+;;                          (prop symbol)
+;;                          value)
+;;   (let ((tsk (occ-obj-tsk obj)))
+;;     (if (occ-list-p prop)
+;;         (memq value
+;;               (occ-get-property tsk
+;;                                 prop))
+;;       (equal value
+;;              (occ-get-property tsk
+;;                                prop)))))
 
 
 (cl-defmethod occ-operations-for-prop ((class symbol)
@@ -685,9 +689,9 @@ method provided."
 ;; TODO: Add log not on property editing.
 (cl-defmethod occ-select-operation ((prop symbol))
   (if (occ-list-p prop)
-      (let* ((actions '(("add" . add)
+      (let* ((actions '(("add" . add))
                        ("del" . remove)
-                       ("put" . put)))
+                       ("put" . put))
              (action  (completing-read (format "%s action: " prop) actions)))
         (cdr (assoc action
                     actions)))
