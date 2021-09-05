@@ -79,7 +79,7 @@
 **** Correct Method
 
      #+begin_src emacs-lisp
-
+       
        ;;{{ currfile
        (cl-defmethod occ-rankprop ((obj occ-obj-ctx-tsk)
                                    (prop (eql currfile)))
@@ -103,23 +103,23 @@
                         (string= tsk-currfile ctx-file))
                    (* 2 (length tsk-currfile))     ;as exact match to files giving double matching points.
                  0)))))
-
+       
        (cl-defmethod occ-get-property ((ctx occ-ctx)
                                        (prop (eql currfile)))
-         "occ-get-property"
+         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
          (occ-debug :debug "calling occ-get-property(ctx occ-ctx)")
          (let ((currfile (occ-ctx-file ctx)))
            currfile))
-
+       
        (cl-defmethod occ-list-p ((prop (eql currfile)))
          t)
-
+       
        (cl-defmethod occ-prop-elem-to-org   ((prop (eql currfile)) value)
          value)
-
+       
        (cl-defmethod occ-prop-elem-from-org ((prop (eql currfile)) value)
          value)
-
+       
        (cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-ctx-tsk)
                                                   (prop (eql currfile)))
          "currfile property for tsk aka org entry"
@@ -132,7 +132,7 @@
              (ido-read-file-name prompt ctx-dir ctx-currfile))))
        ;;}}
        
-
+       
      #+end_src
 
 *** Template property of task in short
@@ -262,7 +262,7 @@
     #+end_src
 *** Root dir property of task
     #+begin_src emacs-lisp
-
+      
       ;;{{ root
       (cl-defmethod occ-rankprop ((obj occ-obj-ctx-tsk)
                                   (prop (eql root)))
@@ -290,24 +290,35 @@
                        (string-match tsk-root ctx-dir))
                   (length tsk-root)
                 0)))))
-
+      
       (cl-defmethod occ-get-property ((ctx occ-ctx)
                                       (prop (eql root)))
-        "occ-get-property"
+        "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
         (let ((file (occ-ctx-file ctx)))
           (when file (dirname-of-file file))))
-
+      
        (cl-defmethod occ-list-p ((prop (eql root)))
          t)
-
+      
        (cl-defmethod occ-prop-elem-to-org   ((prop (eql root)) value)
          value)
-
+      
        (cl-defmethod occ-prop-elem-from-org ((prop (eql root)) value)
          value)
-
+      
       (cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-ctx-tsk)
                                                  (prop (eql root)))
+        "READ"
+        (let ((tsk (occ-obj-tsk obj))
+              (ctx (occ-obj-ctx obj)))
+          (let* ((ctx-file   (when ctx (occ-ctx-file ctx)))
+                 (ctx-dir    (when (stringp ctx-file) (file-name-directory ctx-file)))
+                 (prompt     (concat (symbol-name prop) ": ")))
+            (ido-read-directory-name prompt ctx-dir ctx-dir))))
+      
+      
+      (cl-defmethod occ-readprop-from-user ((obj occ-obj-ctx-tsk)
+                                            (prop (eql root)))
         "READ"
         (let ((tsk (occ-obj-tsk obj))
               (ctx (occ-obj-ctx obj)))
@@ -399,11 +410,11 @@
 ** Read only properties
 *** Git branch property of task
     #+begin_src emacs-lisp
-
+      
       ;;{{ git-branch
       (cl-defmethod occ-get-property ((ctx occ-ctx)
                                       (prop (eql git-branch)))
-        "occ-get-property"
+        "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
         (let ((file (occ-ctx-file ctx)))
           file))
       

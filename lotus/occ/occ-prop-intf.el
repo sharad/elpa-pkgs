@@ -38,6 +38,20 @@
  (cl-defmethod occ-rankprop ((obj occ-tsk)
                              (prop (eql _template_)))
    "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE_")
+ (cl-defmethod occ-has-p ((obj occ-obj-tsk)
+                          (property symbol)
+                          value)
+   "OBJ-has-property PROPERTY")
+ (cl-defmethod occ-get-property ((obj occ-ctx)
+                                 (property symbol))
+   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
+   (occ-error "must return occ compatible value."))
+
+ (cl-defmethod occ-format-prop ((obj occ-obj-tsk)
+                                (property symbol)
+                                value)
+   "Return format printable value of property PROPERTY."
+   value)
  (cl-defmethod occ-list-p ((prop (eql _template_)))
    "Is the property _TEMPLATE_ has VALUES in list, Method tell
    property represent list or not.")
@@ -106,6 +120,25 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
   "Return the RANK (number) for OBJ based on the property PROPERTY"
   (occ-debug :debug "occ-rankprop(obj=%s symbol=%s)" obj property)
   (occ-rankprop obj property))
+
+
+(cl-defgeneric occ-has-p (obj
+                          property
+                          value)
+  "OBJ-has-property PROPERTY")
+
+
+(cl-defgeneric occ-get-property (obj
+                                 property)
+  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
+  (occ-error "must return occ compatible value."))
+
+
+(cl-defgeneric occ-format-prop (obj
+                                property
+                                value)
+  "Return format printable value of property PROPERTY."
+  value)
 
 
 (cl-defgeneric occ-list-p (property)
