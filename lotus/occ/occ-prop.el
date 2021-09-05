@@ -459,16 +459,21 @@ method provided."
                  values))
 
 
-(cl-defgeneric occ-select-operation (prop)
+(cl-defgeneric occ-select-operation (obj prop)
   "occ-select-operation")
 
 ;; TODO: Add log not on property editing.
-(cl-defmethod occ-select-operation ((prop symbol))
+(cl-defmethod occ-select-operation ((obj occ-obj-tsk)
+                                    (prop symbol))
   (if (occ-list-p prop)
-      ;; TODO: where are generated actions??
-      (let* ((actions '(("add" . add)
-                        ("del" . remove)
-                        ("put" . put)))
+      ;; TODO: where are generated actions?? (occ-operations-for-prop 'occ-obj-tsk 'root)
+      (let* ((operations (occ-operations-for-prop obj prop))
+             (actions    (mapcar #'(lambda (op)
+                                     (cons (symbol-name op) op))
+                                 operations))
+             ;; (actions '(("add" . add)
+             ;;            ("del" . remove)
+             ;;            ("put" . put)))
              (action  (completing-read (format "%s action: " prop) actions)))
         (cdr (assoc action
                     actions)))
@@ -492,7 +497,7 @@ method provided."
   (occ-debug :debug
              "occ-editprop: prop: %s, value: %s" prop value)
   (let ((operation  (or operation
-                        (occ-select-operation prop)))
+                        (occ-select-operation obj prop)))
         (prop-value (or value
                         (occ-readprop-from-user obj
                                                 prop))))
