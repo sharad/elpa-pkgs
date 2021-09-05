@@ -76,6 +76,7 @@
 (require 'occ-obj-method)
 (require 'occ-rank)
 (require 'occ-prop-intf)
+(require 'occ-prop-org)
 
 
 (require 'ert)
@@ -219,66 +220,6 @@ method provided.")))
 
 
 
-
-
-
-
-
-(defun occ-org-entry-get (pom
-                          prop)
-  (lotus-org-with-safe-modification
-    (org-entry-get pom
-                   prop)))
-
-(defun occ-org-entry-put (pom
-                          prop
-                          value)
-  (lotus-org-with-safe-modification
-    (org-entry-put pom
-                   prop
-                   value)))
-
-(defun occ-org-entry-get-multivalued-property (pom
-                                               prop)
-  (lotus-org-with-safe-modification
-    (org-entry-get-multivalued-property pom prop)))
-
-(defun occ-org-entry-put-multivalued-property (pom
-                                               prop
-                                               values)
-  (lotus-org-with-safe-modification
-    (apply #'org-entry-put-multivalued-property
-           pom
-           prop
-           values)))
-
-(defun occ-org-entry-add-to-multivalued-property (pom
-                                                  prop
-                                                  value)
-  (lotus-org-with-safe-modification
-    (org-entry-add-to-multivalued-property pom
-                                           prop
-                                           value)
-    t))
-
-(defun occ-org-entry-remove-from-multivalued-property (pom
-                                                       prop
-                                                       value)
-  (lotus-org-with-safe-modification
-    (org-entry-remove-from-multivalued-property pom
-                                                prop
-                                                value)
-    t))
-
-(defun occ-org-entry-member-in-multivalued-property (pom
-                                                     prop
-                                                     values)
-  (lotus-org-with-safe-modification
-    (org-entry-member-in-multivalued-property pom
-                                              prop
-                                              values)))
-
-
 (cl-defmethod occ-prop-to-org ((prop symbol)
                                values)
   "Method convert value VALUE of property PROP from occ to org string representation."
@@ -366,183 +307,6 @@ method provided."
                            operation)
   (memq operation
         '(add remove get put member)))
-
-
-(cl-defgeneric occ-org-operation (pom
-                                  operation
-                                  prop
-                                  values)
-  "Org operation implementation of OPERATION on POINT-OF-MARKER for PROP and VALUES")
-
-(cl-defmethod occ-org-operation ((pom  marker)
-                                 (operation (eql get))
-                                 (prop symbol)
-                                 values)
-  "Org operation implementation of OPERATION on POINT-OF-MARKER for prop GET and VALUES"
-  (let ((prop-string (symbol-name prop)))
-    (if (occ-list-p prop)
-        (occ-org-entry-get-multivalued-property pom
-                                                prop-string)
-      (list (occ-org-entry-get pom
-                               prop-string)))))
-
-(cl-defmethod occ-org-operation ((pom  marker)
-                                 (operation (eql add))
-                                 (prop symbol)
-                                 values)
-  "Org operation implementation of OPERATION on POINT-OF-MARKER for prop ADD and VALUES"
-  (let ((prop-string (symbol-name prop)))
-    (if (occ-list-p prop)
-        (occ-org-entry-add-to-multivalued-property pom
-                                                   prop-string
-                                                   (car values))
-      (occ-org-entry-put pom
-                         prop-string
-                         (car values)))))
-
-(cl-defmethod occ-org-operation ((pom  marker)
-                                 (operation (eql put))
-                                 (prop symbol)
-                                 values)
-  "Org operation implementation of OPERATION on POINT-OF-MARKER for prop PUT and VALUES"
-  (let ((prop-string (symbol-name prop)))
-    (if (occ-list-p prop)
-        (occ-org-entry-put-multivalued-property pom
-                                                prop-string
-                                                values)
-      (occ-org-entry-put pom
-                         prop-string
-                         (car values)))))
-
-(cl-defmethod occ-org-operation ((pom  marker)
-                                 (operation (eql remove))
-                                 (prop symbol)
-                                 values)
-  "Org operation implementation of OPERATION on POINT-OF-MARKER for prop REMOVE and VALUES"
-  (let ((prop-string (symbol-name prop)))
-    (if (occ-list-p prop)
-        (occ-org-entry-remove-from-multivalued-property pom
-                                                        prop-string
-                                                        (car values))
-      (occ-error "Implement it."))))
-
-(cl-defmethod occ-org-operation ((pom  marker)
-                                 (operation (eql member))
-                                 (prop symbol)
-                                 values)
-  "Org operation implementation of OPERATION on POINT-OF-MARKER for prop MEMBER and VALUES"
-  (let ((prop-string (symbol-name prop)))
-    (if (occ-list-p prop)
-        (occ-org-entry-member-in-from-multivalued-property pom
-                                                           prop-string
-                                                           (car values))
-      (string= (car values)
-               (occ-org-entry-get pom
-                                  prop-string)))))
-
-
-(cl-defmethod occ-org-operation ((obj occ-obj-tsk)
-                                 (operation symbol)
-                                 (prop symbol)
-                                 values)
-  "Org operation implementation of OPERATION on POINT-OF-MARKER for PROP and VALUES"
-  (occ-org-operation (occ-obj-marker obj)
-                     operation
-                     prop
-                     values))
-
-
-(cl-defgeneric occ-org-call-operation (pom
-                                       prop
-                                       operation
-                                       values)
-  "occ-org-call-operation")
-
-(cl-defmethod occ-org-call-operation ((pom  marker)
-                                      (prop symbol)
-                                      (operation symbol)
-                                      values)
-  "Accept org compatible VALUES"
-  ;; (unless (occ-valid-p prop operation)
-  ;;   (occ-error "occ-org-call-operation: operation %s is not allowed for prop %s" operation prop))
-  (occ-org-operation pom
-                     operation
-                     prop
-                     values))
-
-(cl-defmethod occ-org-call-operation-at-point ((mrk  marker)
-                                               (prop symbol)
-                                               operation
-                                               values)
-  "Accept org compatible VALUES"
-  (unless (occ-valid-p prop operation)
-    (occ-error "occ-org-call-operation: operation %s is not allowed for prop %s" operation prop))
-  (lotus-with-marker mrk
-    (unless (org-get-property-block)
-      ;; create property drawer
-      ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
-      (occ-debug :debug "occ-org-call-operation-at-point: property block not exist so creating it.")
-      (let* ((range (org-get-property-block (point) 'force))
-             (start (when (consp range) (1- (car range)))))
-        (if (and range
-                 start)
-            (when (numberp start)
-              (goto-char start))
-          (occ-error "occ-org-call-operation-at-point: not able to create property block to add property %s: %s"
-                     prop
-                     values))))
-
-    (if (org-get-property-block)
-        (progn
-          (occ-debug :debug "occ-org-call-operation-at-point: adding prop: %s value: %s using (org-set-property)."
-                     prop
-                     values)
-          (let ((retval (occ-org-call-operation mrk
-                                                prop
-                                                operation
-                                                values)))
-            (occ-debug :debug "occ-org-call-operation: (occ-org-call-operation mrk) returned %s" retval)
-            retval))
-        (occ-error "occ-org-call-operation-at-point: can not get property block to add property %s: %s"
-                   prop
-                   values))))
-
-
-(cl-defmethod occ-readprop-org ((obj  occ-obj-ctx-tsk)
-                                (prop symbol))
-  "Read property PROP of OBJ-CTX-TSK OBJ from its corresponding org file entry."
-  (let ((tsk (occ-obj-tsk obj))
-        (ctx (occ-obj-ctx obj)))
-    (let* ((mrk    (or (occ-obj-marker tsk) (point)))
-           (values (occ-org-call-operation-at-point mrk
-                                                    prop
-                                                    'get)))
-      (mapcar #'(lambda (v)
-                  (occ-prop-elem-from-org prop
-                                          v))
-              values))))
-
-(cl-defmethod occ-writeprop-org ((obj  occ-obj-ctx-tsk)
-                                 (prop symbol))
-  "Write property PROP of OBJ-CTX-TSK OBJ from its corresponding org file entry."
-  (let ((tsk (occ-obj-tsk obj))
-        (ctx (occ-obj-ctx obj)))
-    (let* ((values (occ-get-property tsk prop))
-           (values (if (consp values) values (list values)))
-           (values (mapcar #'(lambda (v)
-                               (occ-prop-elem-to-org prop v))
-                           values)))
-      (occ-org-call-operation-at-point (point
-                                        prop
-                                        'put
-                                        values)))))
-
-
-(cl-defmethod occ-get-property ((obj occ-ctx)
-                                (property symbol))
-  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
-  (occ-get-property-value-from-ctx obj
-                                   property))
 
 
 (cl-defmethod occ-operations-for-prop ((class symbol)

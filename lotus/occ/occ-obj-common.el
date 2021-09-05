@@ -27,6 +27,7 @@
 
 
 (require 'occ-obj)
+(require 'occ-prop-intf)
 
 
 ;; TODO org-base-buffer
@@ -75,6 +76,21 @@
         (occ-plist-get (cl-obj-plist-value obj)
                        (upcase-sym prop)))))
 
+(cl-defmethod occ-get-properties ((obj occ-obj)
+                                  (props list))
+  ;; mainly used by occ-tsk only.
+  (mapcar #'(lambda (prop)
+              (cons prop (occ-get-property obj prop)))
+          props))
+
+(cl-defmethod occ-get-property ((obj occ-ctx)
+                                (property symbol))
+  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
+  (occ-get-property-value-from-ctx obj
+                                   property))
+
+
+
 (cl-defmethod occ-set-property ((obj occ-obj)
                                 prop
                                 value
@@ -107,14 +123,6 @@
                         prop
                         value
                         :not-recursive not-recursive))))
-
-
-(cl-defmethod occ-get-properties ((obj occ-obj)
-                                  (props list))
-  ;; mainly used by occ-tsk only.
-  (mapcar #'(lambda (prop)
-              (cons prop (occ-get-property obj prop)))
-   props))
 
 
 (cl-defmethod occ-class-slots ((obj occ-obj))
