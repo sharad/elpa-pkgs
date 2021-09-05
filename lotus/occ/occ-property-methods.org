@@ -58,7 +58,7 @@
            "Predicate funtion to check if ctx matches to tsk's file attribute."
            (let ((tsk (occ-obj-tsk obj))
                  (ctx (occ-obj-ctx obj)))
-             (let* ((tsk-currfile (occ-get-property tsk 'currfile))
+             (let* ((tsk-currfile (occ-get-property-value-from-ctx tsk 'currfile))
                     (tsk-currfile (if tsk-currfile (file-truename tsk-currfile))))
                (let* ((ctx-file (occ-ctx-file ctx))
                       (ctx-file (when ctx-file (file-truename ctx-file))))
@@ -88,7 +88,7 @@
          (let ((tsk (occ-obj-tsk obj))
                (ctx (occ-obj-ctx obj)))
            (occ-debug :debug "occ-rankprop-with: currfile begin")
-           (occ-aggrigate-list-rank tsk-currfile (occ-get-property tsk prop) #'+
+           (occ-aggrigate-list-rank tsk-currfile (occ-get-property-value-from-ctx tsk prop) #'+
              (let* ((tsk-currfile (if tsk-currfile (file-truename tsk-currfile)))
                     (ctx-file     (occ-ctx-file ctx))
                     (ctx-file     (if ctx-file (file-truename ctx-file))))
@@ -104,10 +104,10 @@
                    (* 2 (length tsk-currfile))     ;as exact match to files giving double matching points.
                  0)))))
        
-       (cl-defmethod occ-get-property ((ctx occ-ctx)
+       (cl-defmethod occ-get-property-value-from-ctx ((ctx occ-ctx)
                                        (prop (eql currfile)))
          "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
-         (occ-debug :debug "calling occ-get-property(ctx occ-ctx)")
+         (occ-debug :debug "calling occ-get-property-value-from-ctx(ctx occ-ctx)")
          (let ((currfile (occ-ctx-file ctx)))
            currfile))
        
@@ -144,7 +144,7 @@
                                (property symbol)
                                value)
         "OBJ-has-property PROPERTY")
-      (cl-defmethod occ-get-property ((obj occ-ctx)
+      (cl-defmethod occ-get-property-value-from-ctx ((obj occ-ctx)
                                       (property symbol))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
         (occ-error "must return occ compatible value."))
@@ -203,14 +203,14 @@
                                   (prop (eql _template2_)))
         "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE2_"
         (let ((tsk (occ-obj-tsk obj)))
-          (let ((_template2_ (occ-get-property tsk
+          (let ((_template2_ (occ-get-property-value-from-ctx tsk
                                                '_template2_)))
             0)))
       (cl-defmethod occ-has-p ((obj occ-obj-tsk)
                                (property symbol)
                                value)
         "OBJ-has-property PROPERTY")
-      (cl-defmethod occ-get-property ((obj occ-ctx)
+      (cl-defmethod occ-get-property-value-from-ctx ((obj occ-ctx)
                                       (property symbol))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
         (occ-error "must return occ compatible value."))
@@ -300,8 +300,8 @@
                      (occ-format tsk 'capitalize)
                      (occ-format ctx 'capitalize)
                      prop)
-          (occ-aggrigate-list-rank tsk-root (occ-get-property tsk prop) #'+
-            (let* ((tsk-root (car (occ-get-property tsk prop)))
+          (occ-aggrigate-list-rank tsk-root (occ-get-property-value-from-ctx tsk prop) #'+
+            (let* ((tsk-root (car (occ-get-property-value-from-ctx tsk prop)))
                    (tsk-root (when tsk-root (file-truename tsk-root)))
                    (ctx-file (occ-ctx-file ctx))
                    ;; (ctx-file (when ctx-file (file-truename ctx-file)))
@@ -318,7 +318,7 @@
                   (length tsk-root)
                 0)))))
       
-      (cl-defmethod occ-get-property ((ctx occ-ctx)
+      (cl-defmethod occ-get-property-value-from-ctx ((ctx occ-ctx)
                                       (prop (eql root)))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
         (let ((file (occ-ctx-file ctx)))
@@ -363,12 +363,12 @@
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql timebeing)))
         (let ((tsk (occ-obj-tsk obj)))
-          (let ((timebeing (occ-get-property tsk
+          (let ((timebeing (occ-get-property-value-from-ctx tsk
                                              'timebeing)))
             (let ((timebeing-time (if timebeing
                                       (org-duration-string-to-minutes timebeing)
                                     0))
-                  (clocked-time   (occ-get-property tsk
+                  (clocked-time   (occ-get-property-value-from-ctx tsk
                                                     'clock-sum)))
               (if (and (numberp clocked-time)
                        (numberp timebeing-time)
@@ -439,7 +439,7 @@
     #+begin_src emacs-lisp
       
       ;;{{ git-branch
-      (cl-defmethod occ-get-property ((ctx occ-ctx)
+      (cl-defmethod occ-get-property-value-from-ctx ((ctx occ-ctx)
                                       (prop (eql git-branch)))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
         (let ((file (occ-ctx-file ctx)))
@@ -453,9 +453,9 @@
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql status)))
         "Predicate funtion to check if ctx matches to tsk's status attribute."
-        (let ((todo-type (occ-get-property obj 'todo-type))
-              (closed    (occ-get-property obj 'closed))
-              (status    (occ-get-property obj 'todo-keyword)))
+        (let ((todo-type (occ-get-property-value-from-ctx obj 'todo-type))
+              (closed    (occ-get-property-value-from-ctx obj 'closed))
+              (status    (occ-get-property-value-from-ctx obj 'todo-keyword)))
           (if (or closed
                   (eql todo-type 'done)
                   (string= status "HOLD"))
@@ -469,7 +469,7 @@
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql key)))
         "Predicate funtion to check if ctx matches to tsk's file attribute."
-        (let* ((key (occ-get-property obj 'KEY)))
+        (let* ((key (occ-get-property-value-from-ctx obj 'KEY)))
           (if key (string-to-number key) 0)))
       
     #+end_src
@@ -480,7 +480,7 @@
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql heading-level)))
         "Predicate funtion to check if ctx matches to tsk's file attribute."
-        (let* ((level (occ-get-property obj 'level)))
+        (let* ((level (occ-get-property-value-from-ctx obj 'level)))
           (if level level 0)))
       
     #+end_src
@@ -489,7 +489,7 @@
     #+begin_src emacs-lisp
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql current-clock)))
-        (let* ((tsk-marker (occ-get-property obj 'marker)))
+        (let* ((tsk-marker (occ-get-property-value-from-ctx obj 'marker)))
           (if (occ-marker= obj org-clock-marker)
               100
             0)))

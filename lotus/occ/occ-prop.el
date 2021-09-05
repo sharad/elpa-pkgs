@@ -538,22 +538,11 @@ method provided."
                                         values))))
 
 
-;; (cl-defgeneric occ-has-p (obj
-;;                           prop
-;;                           value)
-;;   "occ-has-p")
-
-;; (cl-defmethod occ-has-p ((obj occ-obj-tsk)
-;;                          (prop symbol)
-;;                          value)
-;;   (let ((tsk (occ-obj-tsk obj)))
-;;     (if (occ-list-p prop)
-;;         (memq value
-;;               (occ-get-property tsk
-;;                                 prop))
-;;       (equal value
-;;              (occ-get-property tsk
-;;                                prop)))))
+(cl-defmethod occ-get-property ((obj occ-ctx)
+                                (property symbol))
+  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
+  (occ-get-property-value-from-ctx obj
+                                   property))
 
 
 (cl-defmethod occ-operations-for-prop ((class symbol)

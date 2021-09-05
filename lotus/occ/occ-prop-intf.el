@@ -42,8 +42,8 @@
                           (property symbol)
                           value)
    "OBJ-has-property PROPERTY")
- (cl-defmethod occ-get-property ((obj occ-ctx)
-                                 (property symbol))
+ (cl-defmethod occ-get-property-value-from-ctx ((obj occ-ctx)
+                                                (property symbol))
    "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
    (occ-error "must return occ compatible value."))
  (cl-defmethod occ-format-prop ((obj occ-obj-tsk)
@@ -131,15 +131,15 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
   (let ((tsk (occ-obj-tsk obj)))
     (if (occ-list-p prop)
         (memq value
-              (occ-get-property tsk
-                                prop))
+              (occ-get-property-value-from-ctx tsk
+                                               prop))
       (equal value
-             (occ-get-property tsk
-                               prop)))))
+             (occ-get-property-value-from-ctx tsk
+                                              prop)))))
 
 
-(cl-defgeneric occ-get-property (obj
-                                 property)
+(cl-defgeneric occ-get-property-value-from-ctx (obj
+                                                property)
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
   (occ-error "must return occ compatible value."))
 
@@ -318,8 +318,8 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                       (property symbol)
                                       (operation symbol))
   "Return a default VALUE of property _TEMPLATE_."
-  (occ-get-property (occ-obj-ctx obj)
-                    property))
+  (occ-get-property-value-from-ctx (occ-obj-ctx obj)
+                                   property))
 
 
 (cl-defgeneric occ-operation (obj
