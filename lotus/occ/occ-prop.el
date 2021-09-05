@@ -689,9 +689,9 @@ method provided."
 ;; TODO: Add log not on property editing.
 (cl-defmethod occ-select-operation ((prop symbol))
   (if (occ-list-p prop)
-      (let* ((actions '(("add" . add))
-                       ("del" . remove)
-                       ("put" . put))
+      (let* ((actions '(("add" . add)
+                        ("del" . remove)
+                        ("put" . put)))
              (action  (completing-read (format "%s action: " prop) actions)))
         (cdr (assoc action
                     actions)))
