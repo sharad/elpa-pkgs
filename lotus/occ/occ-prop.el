@@ -321,9 +321,14 @@ method provided."
 
 (cl-defmethod occ-operations-for-prop ((obj  occ-obj-tsk)
                                        (prop symbol))
-  (let ((ops (cl-collect-on-classes #'(lambda (class) (occ-operations-for-prop class prop))
+  (let ((ops (cl-collect-on-classes #'(lambda (class)
+                                        (occ-operations-for-prop class
+                                                                 prop))
                                     obj)))
-   (delete-dups ops)))
+    (delete-dups ops)))
+
+(occ-testing
+ (occ-operations-for-prop 'occ-obj-tsk 'root))
 
 
 (cl-defmethod occ-operation ((obj occ-obj-tsk)
