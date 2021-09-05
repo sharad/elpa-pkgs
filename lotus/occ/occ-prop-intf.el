@@ -74,7 +74,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
  (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
                                   (prop (eql _template_)))
    "Checkout property _TEMPLATE_ in case of force clock-in."))
- 
 
 
 (cl-defgeneric occ-rankprop (obj
@@ -107,7 +106,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated.")
 (cl-defgeneric occ-list-p (property)
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not.")
-  
 
 (cl-defmethod occ-list-p ((property symbol))
   "Is the property PROPERTY has VALUES in list, Method tell
