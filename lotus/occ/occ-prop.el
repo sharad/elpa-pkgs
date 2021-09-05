@@ -648,16 +648,17 @@ method provided."
                              values)
   nil)
 
-(cl-defgeneric occ-update-property (obj
-                                    prop
-                                    operation
-                                    values)
+
+(cl-defgeneric occ-call-property-operation (obj
+                                            prop
+                                            operation
+                                            values)
   "Accept occ compatible VALUES")
 
-(cl-defmethod occ-update-property ((obj occ-obj-tsk)
-                                   (prop symbol)
-                                   operation
-                                   values)
+(cl-defmethod occ-call-property-operation ((obj occ-obj-tsk)
+                                           (prop symbol)
+                                           operation
+                                           values)
   "Accept occ compatible VALUES"
   (let ((mrk (occ-obj-marker obj)))
     (let ((retval (occ-org-call-property-operation-at-point mrk
@@ -708,12 +709,12 @@ method provided."
         (prop-value (or value
                         (occ-readprop-from-user obj
                                                 prop))))
-    (occ-update-property obj
-                         prop
-                         operation
-                         (if (consp prop-value)
-                             prop-value
-                           (list prop-value)))))
+    (occ-call-property-operation obj
+                                 prop
+                                 operation
+                                 (if (consp prop-value)
+                                     prop-value
+                                   (list prop-value)))))
 
 
 ;; TODO: also accommodate increase decrease etc.
