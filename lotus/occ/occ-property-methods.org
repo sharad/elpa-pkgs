@@ -105,7 +105,7 @@
                  0)))))
        
        (cl-defmethod occ-get-property-value-from-ctx ((ctx occ-ctx)
-                                       (prop (eql currfile)))
+                                                      (prop (eql currfile)))
          "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
          (occ-debug :debug "calling occ-get-property-value-from-ctx(ctx occ-ctx)")
          (let ((currfile (occ-ctx-file ctx)))
@@ -145,7 +145,7 @@
                                value)
         "OBJ-has-property PROPERTY")
       (cl-defmethod occ-get-property-value-from-ctx ((obj occ-ctx)
-                                      (property symbol))
+                                                     (prop (eql _template1_)))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
         (occ-error "must return occ compatible value."))
       
@@ -204,14 +204,14 @@
         "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE2_"
         (let ((tsk (occ-obj-tsk obj)))
           (let ((_template2_ (occ-get-property-value-from-ctx tsk
-                                               '_template2_)))
+                                                              '_template2_)))
             0)))
       (cl-defmethod occ-has-p ((obj occ-obj-tsk)
                                (property symbol)
                                value)
         "OBJ-has-property PROPERTY")
       (cl-defmethod occ-get-property-value-from-ctx ((obj occ-ctx)
-                                      (property symbol))
+                                                     (prop (eql _template2_)))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
         (occ-error "must return occ compatible value."))
       
@@ -319,7 +319,7 @@
                 0)))))
       
       (cl-defmethod occ-get-property-value-from-ctx ((ctx occ-ctx)
-                                      (prop (eql root)))
+                                                     (prop (eql root)))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
         (let ((file (occ-ctx-file ctx)))
           (when file (dirname-of-file file))))
@@ -364,12 +364,12 @@
                                   (prop (eql timebeing)))
         (let ((tsk (occ-obj-tsk obj)))
           (let ((timebeing (occ-get-property-value-from-ctx tsk
-                                             'timebeing)))
+                                                            'timebeing)))
             (let ((timebeing-time (if timebeing
                                       (org-duration-string-to-minutes timebeing)
                                     0))
                   (clocked-time   (occ-get-property-value-from-ctx tsk
-                                                    'clock-sum)))
+                                                                   'clock-sum)))
               (if (and (numberp clocked-time)
                        (numberp timebeing-time)
                        (> timebeing-time clocked-time))
@@ -440,7 +440,7 @@
       
       ;;{{ git-branch
       (cl-defmethod occ-get-property-value-from-ctx ((ctx occ-ctx)
-                                      (prop (eql git-branch)))
+                                                     (prop (eql git-branch)))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
         (let ((file (occ-ctx-file ctx)))
           file))
