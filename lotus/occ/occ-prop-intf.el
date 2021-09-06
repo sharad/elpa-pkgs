@@ -124,6 +124,15 @@ representation."
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation.")
 (cl-defmethod occ-prop-from-org ((property symbol)
+                                 value)
+  "Return the Actual Object representation for property
+PROPERTY, Method convert value VALUE of property PROPERTY from
+org string to occ representation."
+  ;; (occ-error "Implement method occ-prop-from-org for property %s" property)
+  (occ-debug :debug
+             "occ-prop-from-org: no method for property %s using default." property)
+  value)
+(cl-defmethod occ-prop-from-org ((property symbol)
                                  (value string))
   "Return the Actual Object representation for property
 PROPERTY, Method convert value VALUE of property PROPERTY from
