@@ -57,6 +57,10 @@
 (provide 'occ-obj-ctor)
 
 
+(require 'seq)
+(require 'list-utils)
+
+
 (eval-when-compile
   (require 'occ-macros))
 (require 'occ-macros)
@@ -121,23 +125,35 @@
 
 
 ;; utils
-(defun occ-plist-mapcar (fun plist)
-  "return alist"
-  (let ((alist (mapcar fun
-                       (seq-partition plist 2))))
-    (mapcar fun alist)))
+(defun occ-util-keyword2sym (k)
+  (let ((kname (symbol-name k)))
+    (intern (if (eq (aref kname 0) ?:)
+                (substring kname 1)
+              kname))))
 
-(defun occ-plist-value-mapcar (fun plist)
-  (occ-plist-mapcar #'(lambda (c) (cons (car c)
-                                        (funcall fun (cadr c))))
-                    plist))
+(defun occ-util-plist-mapcar (fun plist)
+  "return alist"
+  (mapcar fun
+          (seq-partition plist 2)))
+
+(defun occ-util-plist-value-mapcar (fun plist)
+  (list-utils-flatten (occ-plist-mapcar #'(lambda (c) (cons (car c)
+                                                            (funcall fun (cadr c))))
+                                        plist)))
 
 (defun occ-tsk-plist-from-org (plist)
-  (occ-plist-mapcar #'(lambda (occ-prop-from-org))))
+  (list-utils-flatten (occ-util-plist-mapcar #'(lambda (c)
+                                                 (cons (car c)
+                                                       (occ-prop-from-org (occ-util-keyword2sym (car c))
+                                                                          (cadr c))))
+                                        plist)))
   
+(occ-testing
+ (eq (aref (symbol-name :test) 0) ?:)
+ (seq-partition (list :a 1 :b 2 :c 3 :more (list 4 5 6)) 2))
+
 
-(seq-partition (list :a 1 :b 2 :c 3 :more (list 4 5 6)) 2)
-
+;; utils
 (defun occ-get-tsk-category (heading plist)
   (if (stringp heading)
       (or (when (string-match "<\\([a-zA-Z][a-zA-Z0-9]+\\)>" heading)
@@ -187,7 +203,7 @@
                              :clock-sum    (occ-prop-from-org 'clock-sum clock-sum)
                              :cat          (occ-prop-from-org 'cat (occ-get-tsk-category heading tsk-plist))
                              :plist        (occ-tsk-plist-from-org tsk-plist)))
-              (let ((inherit t)
+              (let ((inherit         t)
                     (inherited-props
                      ;; is it correct ? - guess it is ok and correct.
                      (occ-readprop-props)))
