@@ -361,18 +361,21 @@ method provided.")))
                              values)
   "Accept occ compatible VALUES"
   (let ((mrk (occ-obj-marker obj)))
-    (let ((retval (occ-org-call-operation-at-point mrk
+    (let ((retval (occ-org-call-operation-at-point mrk ;work in org file
                                                    prop
                                                    operation
                                                    ;; going to org world
                                                    (occ-prop-to-org prop
                                                                     values))))
       (occ-debug :debug "occ-editprop: (occ-org-call-operation-at-point mrk) returnd %s" retval)
-      (when retval
-        (occ-operation obj
-                       prop
-                       operation
-                       values)))))
+      (when retval                      ;; BUG: TODO: why calling again
+        ;; (occ-operation obj              ;now correct or reflect in occ objects.
+        ;;                prop
+        ;;                operation
+        ;;                values)
+        (when (cl-next-method-p)
+          (cl-call-next-method)
+          (occ-error "No occ-operation defined for prop %s operation %s" prop operation))))))
 
 
 (cl-defmethod occ-operation ((obj occ-obj-tsk)
