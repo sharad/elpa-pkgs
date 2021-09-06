@@ -665,45 +665,45 @@ method provided.")))
                   (occ-properties-to-checkout obj))))
 
 
-(cl-defmethod occ-gen-helm-fast-edits ((obj null)
-                                       &key param-only)
+(cl-defmethod occ-gen-fast-edits ((obj null)
+                                  &key param-only)
   nil)
 
-(cl-defmethod occ-gen-helm-fast-edits ((obj occ-obj-ctx-tsk)
-                                       &key param-only)
+(cl-defmethod occ-gen-fast-edits ((obj occ-obj-ctx-tsk)
+                                  &key param-only)
   (occ-gen-edits-if-required obj nil nil
                              :param-only param-only))
 
 
-(cl-defmethod occ-gen-helm-edits ((obj null)
-                                  &param-only param-only)
+(cl-defmethod occ-gen-edits ((obj null)
+                             &param-only param-only)
   nil)
 
-(cl-defmethod occ-gen-helm-edits ((obj occ-obj-ctx-tsk)
-                                  &param-only param-only)
+(cl-defmethod occ-gen-edits ((obj occ-obj-ctx-tsk)
+                             &param-only param-only)
   (list (occ-make-callable-normal :edit
                                   "Edit"
                                   ;; #'(lambda () (occ-props-edit obj)) -- earlier
                                   #'(lambda (obj) (occ-props-edit obj)))))
 
 
-(cl-defmethod occ-gen-helm-misc ((obj null)
-                                 &param-only param-only)
-  '(("Continue" . t)
-    ("Checkout" . occ-checkout)))
+(cl-defmethod occ-gen-misc ((obj null)
+                            &param-only param-only)
+  (list (occ-make-callable-normal :continue "Continue" t)
+        (occ-make-callable-normal :checkout "Checkout" occ-checkout)))
 
-(cl-defmethod occ-gen-helm-misc ((obj occ-obj-ctx-tsk)
-                                 &param-only param-only)
-  '(("Continue" . t)
-    ("Checkout" . occ-checkout)))
+(cl-defmethod occ-gen-misc ((obj occ-obj-ctx-tsk)
+                            &param-only param-only)
+  (list (occ-make-callable-normal :continue "Continue" t)
+        (occ-make-callable-normal :checkout "Checkout" occ-checkout)))
 
 
-(cl-defmethod occ-gen-helm-checkouts ((obj null)
-                                      &param-only param-only)
+(cl-defmethod occ-gen-checkouts ((obj null)
+                                 &param-only param-only)
   nil)
 
-(cl-defmethod occ-gen-helm-checkouts ((obj occ-obj-ctx-tsk)
-                                      &param-only param-only)
+(cl-defmethod occ-gen-checkouts ((obj occ-obj-ctx-tsk)
+                                 &param-only param-only)
   (occ-gen-checkouts obj))
 
 

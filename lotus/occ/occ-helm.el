@@ -185,10 +185,10 @@
       (occ-build-callable-normal :rank                     "Get Rank"                 #'occ-print-rank)
       (occ-build-callable-normal :tsk                      "Get Task"                 #'occ-print-tsk))
     (progn
-      (occ-build-callable-generator :fast-edits-gen     "Fast Edits" #'occ-gen-helm-fast-edits)
-      (occ-build-callable-generator :edits-gen          "Edit"       #'occ-gen-helm-edits)
-      (occ-build-callable-generator :misc-gen           "Misc"       #'occ-gen-helm-misc)
-      (occ-build-callable-generator :fast-checkouts-gen "Checkouts"  #'occ-gen-helm-checkouts)))
+      (occ-build-callable-generator :fast-edits-gen     "Fast Edits" #'occ-gen-fast-edits)
+      (occ-build-callable-generator :edits-gen          "Edit"       #'occ-gen-edits)
+      (occ-build-callable-generator :misc-gen           "Misc"       #'occ-gen-misc)
+      (occ-build-callable-generator :fast-checkouts-gen "Checkouts"  #'occ-gen-checkouts)))
 
   (progn
     (progn
@@ -267,8 +267,8 @@
  (occ-get-callables (occ-make-ctx-at-point)
                     (occ-get-keywords-list-from-tree '(t actions select general edit)))
 
- (car (occ-get-callables (occ-make-ctx-at-point)
-                          (occ-get-keywords-list-from-tree '(t actions select general edit))))
+ (car (occ-get-callables (occ-make-ctx-at-point
+                          (occ-get-keywords-list-from-tree '(t actions select general edit)))))
 
  (tree-collect-items occ-helm-actions-tree nil '(t actions general) 0)
 
