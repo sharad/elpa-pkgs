@@ -52,37 +52,37 @@
 
 (defvar occ-helm-callables)
 (defun occ-helm-callable-add (callable)
-  (push callable occ-helm-callables))
-;; (defun occ-helm-callables-get (keylist)
-;;   (remove-if-not #'(lambda (callable) (memq (occ-callable-keyword callable) keylist))
-;;                  occ-helm-callables))
+  (push callable
+        occ-helm-callables))
 (defun occ-helm-callables-get (keylist)
   (apply #'append
          (mapcar #'(lambda (key)
-                     (remove-if-not #'(lambda (callable) (eq (occ-callable-keyword callable) key))
+                     (remove-if-not #'(lambda (callable)
+                                        (eq key
+                                            (occ-callable-keyword callable)))
                                     occ-helm-callables))
                  keylist)))
+
 
 (cl-defmethod occ-get-callables ((obj occ-obj-tsk)
                                  keylist)
   ;; TODO: do we require (apply #'append ...)
   (apply #'append
          (mapcar #'(lambda (callable)
-                     (occ-obj-callables callable obj))
+                     (occ-obj-callables callable
+                                        obj))
                  (occ-helm-callables-get keylist))))
-
 (cl-defmethod occ-get-callables ((obj occ-obj)
                                  keylist)
   ;; TODO: do we require (apply #'append ...)
   (apply #'append
          (mapcar #'(lambda (callable)
-                     (occ-obj-callables callable obj))
+                     (occ-obj-callables callable
+                                        obj))
                  (occ-helm-callables-get keylist))))
 
 
 (defvar occ-helm-actions-tree '(t))
-
-(setq occ-helm-actions-tree '(t))
 
 (defun occ-add-helm-actions (tree-keybranch class &rest actions)
   (apply #'tree-add-class-item
@@ -91,9 +91,6 @@
          class
          actions))
 
-
-;; (defun occ-get-keywords-list-from-tree (keys)
-;;   (collect-alist (tree-collect-items occ-helm-actions-tree nil keys 0)))
 
 (defun occ-get-keywords-list-from-tree (tree-keybranch)
   (tree-collect-items occ-helm-actions-tree ;tree
@@ -107,21 +104,25 @@
 
 (cl-defmethod occ-get-helm-actions ((obj null) tree-keybranch)
   ;; (occ-message "occ-get-helm-actions: called with obj = %s, tree-keybranch = %s" obj tree-keybranch)
-  (apply #'append (occ-get-callables obj
-                                     (occ-get-keywords-list-from-tree tree-keybranch))))
+  (apply #'append
+         (occ-get-callables obj
+                            (occ-get-keywords-list-from-tree tree-keybranch))))
 
 (cl-defmethod occ-get-helm-actions ((obj occ-obj) tree-keybranch)
   ;; (occ-message "occ-get-helm-actions: called with obj = %s, tree-keybranch = %s" obj tree-keybranch)
-  (apply #'append (occ-get-callables obj
-                                     (occ-get-keywords-list-from-tree tree-keybranch))))
+  (apply #'append
+         (occ-get-callables obj
+                            (occ-get-keywords-list-from-tree tree-keybranch))))
 
 (cl-defmethod occ-get-helm-actions-genertator ((obj null) tree-keybranch)
   #'(lambda (action candidate)
-      (occ-get-helm-actions candidate tree-keybranch)))
+      (occ-get-helm-actions candidate
+                            tree-keybranch)))
 
 (cl-defmethod occ-get-helm-actions-genertator ((obj occ-obj) tree-keybranch)
   #'(lambda (action candidate)
-      (occ-get-helm-actions candidate tree-keybranch)))
+      (occ-get-helm-actions candidate
+                            tree-keybranch)))
 
 
 
