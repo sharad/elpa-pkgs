@@ -691,8 +691,8 @@ method provided.")))
                              &param-only param-only)
   (list (occ-make-callable-normal :edit
                                   "Edit"
-                                  ;; #'(lambda () (occ-props-edit obj)) -- earlier
-                                  #'(lambda (obj) (occ-props-edit obj)))))
+                                  #'(lambda (obj)
+                                      (occ-props-edit obj)))))
 
 
 
