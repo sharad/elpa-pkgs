@@ -194,6 +194,7 @@
             (when heading
               (setf tsk
                     (funcall builder
+                             ;; (occ-prop-from-org) from Org world to Occ world.
                              :name         (occ-prop-from-org 'name heading)
                              :heading      (occ-prop-from-org 'heading heading)
                              :heading-prop (occ-prop-from-org 'heading-prop heading-prop)

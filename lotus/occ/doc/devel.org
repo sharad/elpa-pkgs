@@ -22,3 +22,8 @@
   Yes this requires number of accessors methods.
   
   
+* Not run ahead
+  Mean do not code base and advanced feature together
+  first complete base feature, when it is working then only
+  go for advanced feature.
+  

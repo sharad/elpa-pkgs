@@ -258,6 +258,7 @@ method provided."
   (if (occ-list-p prop)
       (let* ((values (and value (split-string value))))
         (mapcar #'(lambda (v)
+                    ;; 
                     (occ-prop-from-org prop
                                        v))
                 (mapcar #'org-entry-restore-space

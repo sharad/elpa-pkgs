@@ -29,20 +29,9 @@
 
 (require 'occ-obj)
 
+
 ;; method
 (fmakunbound 'occ-return-tranform)
-;; (cl-defmethod occ-return-tranform ((ap-obj occ-ap-normal))
-;;   "Will make all action except first to return OCC-RETURN-SELECT-LABEL."
-;;   (let* ((identity-sel-callable            (occ-make-callable-normal :select
-;;                                                                      occ-return-select-name
-;;                                                                      occ-return-select-function))
-;;          (identity-sel-ret-lambda-callable (occ-build-return-lambda identity-sel-callable
-;;                                                                     occ-return-select-label))
-;;          (new-callables                    (cons identity-sel-ret-lambda-callable
-;;                                                  (mapcar #'occ-build-return-lambda
-;;                                                          (occ-obj-ap-callables ap-obj nil))))) ;;BUG to fix
-;;     (occ-build-ap-normal (cons :callables
-;;                                new-callables))))
 
 (cl-defmethod occ-return-tranform ((ap-obj occ-ap-normal)
                                    (obj occ-obj))
@@ -76,14 +65,7 @@
                                (occ-return-tranform ap-normal-obj obj))))))
     (occ-build-ap-transf (cons :transform
                                new-transform))))
-
-;; (cl-defmethod occ-return-operate-p (retval)
-;;   retval)
-
-;; (cl-defmethod occ-return-operate-p ((retval occ-return))
-;;   (eq
-;;    occ-return-operate-label
-;;    (occ-return-label retval)))
+
 
 (cl-defmethod occ-return-in-labels-p (retval &rest label)
   retval)
@@ -91,15 +73,14 @@
 (cl-defmethod occ-return-in-labels-p ((retval occ-return) &rest label)
   (memq (occ-return-label retval)
         label))
-
-;; (cl-defmethod occ-return-operate-p ((retval null))
-;;   nil)
+
 
 (cl-defmethod occ-return-get-value (retval)
   retval)
 
 (cl-defmethod occ-return-get-value ((retval occ-return))
   (occ-return-value retval))
+
 
 (cl-defmethod occ-return-get-label (retval)
   retval)
