@@ -134,14 +134,16 @@
           (seq-partition plist 2)))
 
 (defun occ-util-plist-value-mapcar (fun plist)
-  (list-utils-flatten (occ-plist-mapcar #'(lambda (c) (cons (car c)
-                                                            (funcall fun (cadr c))))
-                                        plist)))
+  (apply #'append
+         (occ-plist-mapcar #'(lambda (c)
+                               (list (car c)
+                                     (funcall fun (cadr c))))
+                           plist)))
 
 (defun occ-tsk-plist-from-org (plist)
   (let ((ret-plist (apply #'append
                           (occ-util-plist-mapcar #'(lambda (c)
-                                                     (cons (car c)
+                                                     (list (car c)
                                                            (occ-prop-from-org (occ-util-keyword2sym (car c))
                                                                               (cadr c))))
                                                  plist))))

@@ -45,7 +45,7 @@
 
 (defmacro occ-plist-set (plist prop value)
   `(let ((key (sym2key ,prop)))
-     (cl-assert (evenp (length plist)))
+     (cl-assert (evenp (length ,plist)))
      (if key
          (plist-put ,plist ;TODO ??? (cl-obj-plist-value obj)
                     key ,value)
@@ -90,7 +90,6 @@
   (occ-get-property-value-from-ctx obj
                                    property))
 
-
 
 (cl-defmethod occ-set-property ((obj occ-obj)
                                 prop
