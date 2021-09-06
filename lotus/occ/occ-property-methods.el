@@ -103,14 +103,16 @@
 (cl-defmethod occ-list-p ((prop (eql currfile)))
   t)
 
-(cl-defmethod occ-prop-to-org   ((prop (eql currfile)) value)
+(cl-defmethod occ-prop-to-org   ((prop (eql currfile))
+                                 value)
   value)
 
-(cl-defmethod occ-prop-from-org ((prop (eql currfile)) value)
+(cl-defmethod occ-prop-from-org ((prop (eql currfile))
+                                 value)
   value)
 
 (cl-defmethod occ-readprop-from-user ((obj occ-obj-ctx-tsk)
-                                           (prop (eql currfile)))
+                                      (prop (eql currfile)))
   "currfile property for tsk aka org entry"
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
@@ -146,12 +148,12 @@
   "Is the property _TEMPLATE1_ has VALUES in list, Method tell
    property represent list or not.")
 (cl-defmethod occ-prop-to-org   ((prop (eql _template1_))
-                                      value)
+                                 value)
   "Return string representation for property _TEMPLATE1_, Method
 convert value VALUE of property PROPERTY from occ to org string
 representation.")
 (cl-defmethod occ-prop-from-org ((prop (eql _template1_))
-                                      value)
+                                 value)
   "Return the Actual Object representation for property
 _TEMPLATE1_, Method convert value VALUE of property PROPERTY from
 org string to occ representation.")
@@ -208,22 +210,22 @@ _TEMPLATE1_ if CALLABLE (helm method) should be generated.")
    property represent list or not."
   nil)
 
-(cl-defmethod occ-prop-to-org   ((prop (eql _template2_)
-                                      value))
+(cl-defmethod occ-prop-to-org   ((prop (eql _template2_))
+                                 value)
   "Return string representation for property _TEMPLATE2_, Method
 convert value VALUE of property PROPERTY from occ to org string
 representation."
   nil)
 
-(cl-defmethod occ-prop-from-org ((prop (eql _template2_)
-                                      value))
+(cl-defmethod occ-prop-from-org ((prop (eql _template2_))
+                                 value)
   "Return the Actual Object representation for property
 _TEMPLATE2_, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
   nil)
 
-(cl-defmethod occ-readprop-from-user ((obj occ-tsk
-                                           (prop (eql _template2_))))
+(cl-defmethod occ-readprop-from-user ((obj occ-tsk)
+                                      (prop (eql _template2_)))
   "READ the value for property _TEMPLATE2_, Read value of element
 of list for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value."
@@ -304,10 +306,12 @@ _TEMPLATE2_ if CALLABLE (helm method) should be generated."
 (cl-defmethod occ-list-p ((prop (eql root)))
   t)
 
-(cl-defmethod occ-prop-to-org   ((prop (eql root)) value)
+(cl-defmethod occ-prop-to-org   ((prop (eql root))
+                                 value)
   value)
 
-(cl-defmethod occ-prop-from-org ((prop (eql root)) value)
+(cl-defmethod occ-prop-from-org ((prop (eql root))
+                                 value)
   value)
 
 (cl-defmethod occ-readprop-from-user ((obj occ-obj-ctx-tsk)
@@ -347,20 +351,20 @@ _TEMPLATE2_ if CALLABLE (helm method) should be generated."
    nil)
 
 (cl-defmethod occ-prop-to-org   ((prop (eql timebeing))
-                                      value)
+                                 value)
   (if (numberp value)
       (number-to-string value)
     ""))
 
 (cl-defmethod occ-prop-from-org ((prop (eql timebeing))
-                                      value)
+                                 value)
   (if (stringp value)
       (or (string-to-number value)
           0)
     0))
 
 (cl-defmethod occ-readprop-from-user ((obj occ-tsk)
-                                           (prop (eql timebeing)))
+                                      (prop (eql timebeing)))
   "READ"
   (let ((tsk (occ-obj-tsk obj)))
     (let* ((prompt     (concat (symbol-name prop)
