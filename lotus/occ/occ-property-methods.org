@@ -43,100 +43,7 @@
 
 #+end_src
 
-
-
-** Read Write properties of task
-*** Current File property of task
-**** Incorrect Method getting confused with `file' org buffer than current-file property of task
-     #+begin_src emacs-lisp
-
-       ;;{{ file
-       (when nil                               ;rank calculation for org file name in which tsk aka entry not much useful
-         (cl-defmethod occ-rankprop ((obj occ-obj-ctx-tsk)
-                                     (prop (eql file)))
-          ;; file in which tsk aka org entry exists.
-           "Predicate funtion to check if ctx matches to tsk's file attribute."
-           (let ((tsk (occ-obj-tsk obj))
-                 (ctx (occ-obj-ctx obj)))
-             (let* ((tsk-currfile (occ-get-property tsk 'currfile))
-                    (tsk-currfile (if tsk-currfile (file-truename tsk-currfile))))
-               (let* ((ctx-file (occ-ctx-file ctx))
-                      (ctx-file (when ctx-file (file-truename ctx-file))))
-                 (if tsk-currfile
-                     (progn
-                       (occ-debug :nodisplay "tsk %s tsk-currfile %s" (occ-format tsk 'capitalize) tsk-currfile)
-                       (occ-debug :nodisplay "tsk %s ctx-file %s"     (occ-format tsk 'capitalize) ctx-file))
-                   (occ-debug :nodisplay "tsk %s currfile %s not present."
-                              (occ-format tsk 'capitalize) tsk-currfile))
-                 (if (and tsk-currfile ctx-file
-                          (string-match tsk-currfile ctx-file))
-                     (* 2 (length tsk-currfile))     ;as exact match to file giving double matching points.
-                   0))))))
-       ;;}}
-       
-     #+end_src
-
-**** Correct Method
-
-     #+begin_src emacs-lisp
-       
-       ;;{{ currfile
-       (cl-defmethod occ-rankprop ((obj occ-obj-ctx-tsk)
-                                   (prop (eql currfile)))
-         ;; file in which tsk aka org entry exists.
-         "Predicate funtion to check if ctx matches to tsk's file attribute."
-         (let ((tsk (occ-obj-tsk obj))
-               (ctx (occ-obj-ctx obj)))
-           (occ-debug :debug "occ-rankprop-with: currfile begin")
-           (occ-aggrigate-list-rank tsk-currfile (occ-get-property tsk prop) #'+
-             (let* ((tsk-currfile (if tsk-currfile (file-truename tsk-currfile)))
-                    (ctx-file     (occ-ctx-file ctx))
-                    (ctx-file     (if ctx-file (file-truename ctx-file))))
-               (if tsk-currfile
-                   (progn
-                     (occ-debug :nodisplay "tsk %s tsk-currfile %s" (occ-format tsk 'capitalize) tsk-currfile)
-                     (occ-debug :nodisplay "tsk %s ctx-file %s"     (occ-format tsk 'capitalize) ctx-file))
-                 (occ-debug :nodisplay "tsk %s tsk-currfile %s not present."
-                            (occ-format tsk 'capitalize)
-                            tsk-currfile))
-               (if (and tsk-currfile ctx-file
-                        (string= tsk-currfile ctx-file))
-                   (* 2 (length tsk-currfile))     ;as exact match to files giving double matching points.
-                 0)))))
-       
-       (cl-defmethod occ-get-property-value-from-ctx ((ctx occ-ctx)
-                                                      (prop (eql currfile)))
-         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
-         (occ-debug :debug "calling occ-get-property-value-from-ctx(ctx occ-ctx)")
-         (let ((currfile (occ-ctx-file ctx)))
-           currfile))
-       
-       (cl-defmethod occ-list-p ((prop (eql currfile)))
-         t)
-       
-       (cl-defmethod occ-prop-to-org   ((prop (eql currfile))
-                                        value)
-         value)
-       
-       (cl-defmethod occ-prop-from-org ((prop (eql currfile))
-                                        value)
-         value)
-       
-       (cl-defmethod occ-readprop-from-user ((obj occ-obj-ctx-tsk)
-                                             (prop (eql currfile)))
-         "currfile property for tsk aka org entry"
-         (let ((tsk (occ-obj-tsk obj))
-               (ctx (occ-obj-ctx obj)))
-           (let* ((ctx-currfile (if ctx (occ-ctx-file ctx)))
-                  (ctx-dir      (when (stringp ctx-currfile)
-                                  (file-name-directory ctx-currfile)))
-                  (prompt       (concat (symbol-name prop) ": ")))
-             (ido-read-file-name prompt ctx-dir ctx-currfile))))
-       ;;}}
-       
-       
-     #+end_src
-
+** Sample Template Property methods
 *** Template property of task in short
     #+begin_src emacs-lisp
       (cl-defmethod occ-rankprop ((obj occ-tsk)
@@ -276,6 +183,68 @@
       
       
     #+end_src
+
+** Read Write properties of task
+*** Current File property of task
+    #+begin_src emacs-lisp
+      
+      ;;{{ currfile
+      (cl-defmethod occ-rankprop ((obj occ-obj-ctx-tsk)
+                                  (prop (eql currfile))) ;; do not use (prop (eql file)) that is another property which represent file in which task defined.
+        ;; file in which tsk aka org entry exists.
+        "Predicate funtion to check if ctx matches to tsk's file attribute."
+        (let ((tsk (occ-obj-tsk obj))
+              (ctx (occ-obj-ctx obj)))
+          (occ-debug :debug "occ-rankprop-with: currfile begin")
+          (occ-aggrigate-list-rank tsk-currfile (occ-get-property tsk prop) #'+
+            (let* ((tsk-currfile (if tsk-currfile (file-truename tsk-currfile)))
+                   (ctx-file     (occ-ctx-file ctx))
+                   (ctx-file     (if ctx-file (file-truename ctx-file))))
+              (if tsk-currfile
+                  (progn
+                    (occ-debug :nodisplay "tsk %s tsk-currfile %s" (occ-format tsk 'capitalize) tsk-currfile)
+                    (occ-debug :nodisplay "tsk %s ctx-file %s"     (occ-format tsk 'capitalize) ctx-file))
+                (occ-debug :nodisplay "tsk %s tsk-currfile %s not present."
+                           (occ-format tsk 'capitalize)
+                           tsk-currfile))
+              (if (and tsk-currfile ctx-file
+                       (string= tsk-currfile ctx-file))
+                  (* 2 (length tsk-currfile))     ;as exact match to files giving double matching points.
+                0)))))
+      
+      (cl-defmethod occ-get-property-value-from-ctx ((ctx occ-ctx)
+                                                     (prop (eql currfile)))
+        "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
+        (occ-debug :debug "calling occ-get-property-value-from-ctx(ctx occ-ctx)")
+        (let ((currfile (occ-ctx-file ctx)))
+          currfile))
+      
+      (cl-defmethod occ-list-p ((prop (eql currfile)))
+        t)
+      
+      (cl-defmethod occ-prop-to-org   ((prop (eql currfile))
+                                       value)
+        value)
+      
+      (cl-defmethod occ-prop-from-org ((prop (eql currfile))
+                                       value)
+        value)
+      
+      (cl-defmethod occ-readprop-from-user ((obj occ-obj-ctx-tsk)
+                                            (prop (eql currfile)))
+        "currfile property for tsk aka org entry"
+        (let ((tsk (occ-obj-tsk obj))
+              (ctx (occ-obj-ctx obj)))
+          (let* ((ctx-currfile (if ctx (occ-ctx-file ctx)))
+                 (ctx-dir      (when (stringp ctx-currfile)
+                                 (file-name-directory ctx-currfile)))
+                 (prompt       (concat (symbol-name prop) ": ")))
+            (ido-read-file-name prompt ctx-dir ctx-currfile))))
+      ;;}}
+      
+      
+    #+end_src
+
 *** Root dir property of task
     #+begin_src emacs-lisp
       
