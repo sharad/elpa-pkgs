@@ -194,12 +194,10 @@
     (progn
       (occ-add-helm-actions '(actions select)
                             "Select"
-                            ;; 'normal
                             :identity)
 
       (occ-add-helm-actions '(actions general)
                             "Simple"
-                            ;; 'normal
                             :procreate-child
                             :procreate-child-clock-in
                             :call-with-obj
@@ -211,24 +209,20 @@
 
       (occ-add-helm-actions '(actions edit)
                             "Editing"
-                            ;; 'normal
                             :proprty-window-edit
                             :proprty-edit-combined))
     (progn
       (occ-add-helm-actions '(actions general)
                             "General"
-                            ;; 'generator
                             :misc-gen)
 
       (occ-add-helm-actions '(actions edit)
                             "Editing"
-                            ;; 'generator
                             :fast-edits-gen
                             :edits-gen)
 
       (occ-add-helm-actions '(actions checkout)
                             "Checkout"
-                            ;; 'generator
                             :fast-checkouts-gen))))
 
 
