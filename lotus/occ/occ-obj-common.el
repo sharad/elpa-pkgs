@@ -45,6 +45,7 @@
 
 (defmacro occ-plist-set (plist prop value)
   `(let ((key (sym2key ,prop)))
+     (cl-assert (evenp (length plist)))
      (if key
          (plist-put ,plist ;TODO ??? (cl-obj-plist-value obj)
                     key ,value)

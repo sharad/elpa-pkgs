@@ -258,13 +258,13 @@ method provided."
   (if (occ-list-p prop)
       (let* ((values (and value (split-string value))))
         (mapcar #'(lambda (v)
-                    ;; 
+                    ;; from Org world to Occ world
                     (occ-prop-from-org prop
                                        v))
                 (mapcar #'org-entry-restore-space
                         values)))
     (occ-prop-from-org prop
-                            value)))
+                       value)))
 
 (cl-defmethod occ-reread-props ((obj occ-tsk))
   "Read all org string properties for task TSK to occ representation."
@@ -332,6 +332,7 @@ method provided.")))
 
 (cl-defmethod occ-operations-for-prop ((class symbol)
                                        (prop symbol))
+  ;; check about (occ-list-p prop) also
   (let ((ops (append (cl-method-param-values 'occ-operation
                                              (list '\` `(,class (eql ,'(\, val)) symbol t))
                                              'val)
@@ -342,6 +343,7 @@ method provided.")))
 
 (cl-defmethod occ-operations-for-prop ((obj  occ-obj-tsk)
                                        (prop symbol))
+  ;; check about (occ-list-p prop) also
   (let ((ops (cl-collect-on-classes #'(lambda (class)
                                         (occ-operations-for-prop class
                                                                  prop))
@@ -363,7 +365,8 @@ method provided.")))
                                                    prop
                                                    operation
                                                    ;; going to org world
-                                                   (occ-prop-to-org prop values))))
+                                                   (occ-prop-to-org prop
+                                                                    values))))
       (occ-debug :debug "occ-editprop: (occ-org-call-operation-at-point mrk) returnd %s" retval)
       (when retval
         (occ-operation obj

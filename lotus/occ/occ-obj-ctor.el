@@ -142,11 +142,14 @@
                                         plist)))
 
 (defun occ-tsk-plist-from-org (plist)
-  (list-utils-flatten (occ-util-plist-mapcar #'(lambda (c)
-                                                 (cons (car c)
-                                                       (occ-prop-from-org (occ-util-keyword2sym (car c))
-                                                                          (cadr c))))
-                                        plist)))
+  (let ((ret-plist (list-utils-flatten (occ-util-plist-mapcar #'(lambda (c)
+                                                                  (cons (car c)
+                                                                        (occ-prop-from-org (occ-util-keyword2sym (car c))
+                                                                                           (cadr c))))
+                                                              plist))))
+    (cl-assert (evenp (length     plist)))
+    (cl-assert (evenp (length ret-plist)))
+    ret-plist))
   
 (occ-testing
  (eq (aref (symbol-name :test) 0) ?:)
@@ -191,6 +194,7 @@
 
                 ;; NOTE also these two are mixed in one list only
                 (tsk-plist    (cadr (org-element-at-point))))
+            (cl-assert (evenp (length tsk-plist)))
             (when heading
               (setf tsk
                     (funcall builder
