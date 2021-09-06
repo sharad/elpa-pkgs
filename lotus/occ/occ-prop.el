@@ -659,10 +659,18 @@ method provided.")))
                         :param-only param-only)))
 
 
+(cl-defmethod occ-gen-checkouts ((obj null)
+                                 &param-only param-only)
+  nil)
+
+(cl-defmethod occ-gen-checkouts ((obj occ-obj-ctx-tsk)
+                                 &param-only param-only)
+  (occ-gen-checkouts obj))
+
 (cl-defmethod occ-gen-checkouts ((obj occ-obj-tsk))
   (remove nil
           (mapcar #'occ-gen-checkout-if-required
-                  (occ-properties-to-checkout obj))))
+                  (occ-properties-to-checkout (occ-obj-tsk obj)))))
 
 
 (cl-defmethod occ-gen-fast-edits ((obj null)
@@ -687,6 +695,8 @@ method provided.")))
                                   #'(lambda (obj) (occ-props-edit obj)))))
 
 
+
+;; Correct it ???
 (cl-defmethod occ-gen-misc ((obj null)
                             &param-only param-only)
   (list (occ-make-callable-normal :continue "Continue" t)
@@ -697,14 +707,6 @@ method provided.")))
   (list (occ-make-callable-normal :continue "Continue" t)
         (occ-make-callable-normal :checkout "Checkout" occ-checkout)))
 
-
-(cl-defmethod occ-gen-checkouts ((obj null)
-                                 &param-only param-only)
-  nil)
-
-(cl-defmethod occ-gen-checkouts ((obj occ-obj-ctx-tsk)
-                                 &param-only param-only)
-  (occ-gen-checkouts obj))
 
 
 ;; TODO: Implement Plist with title here (??)
