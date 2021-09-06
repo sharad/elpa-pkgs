@@ -125,11 +125,8 @@
 
 
 ;; utils
-(defun occ-util-keyword2sym (k)
-  (let ((kname (symbol-name k)))
-    (intern (if (eq (aref kname 0) ?:)
-                (substring kname 1)
-              kname))))
+(defun occ-util-keyword2sym (key)
+  (key2sym key))
 
 (defun occ-util-plist-mapcar (fun plist)
   "return alist"
@@ -142,20 +139,22 @@
                                         plist)))
 
 (defun occ-tsk-plist-from-org (plist)
-  (let ((ret-plist (list-utils-flatten (occ-util-plist-mapcar #'(lambda (c)
-                                                                  (cons (car c)
-                                                                        (occ-prop-from-org (occ-util-keyword2sym (car c))
-                                                                                           (cadr c))))
-                                                              plist))))
+  (let ((ret-plist (apply #'append
+                          (occ-util-plist-mapcar #'(lambda (c)
+                                                     (cons (car c)
+                                                           (occ-prop-from-org (occ-util-keyword2sym (car c))
+                                                                              (cadr c))))
+                                                 plist))))
     (cl-assert (evenp (length     plist)))
-    (occ-message "occ-tsk-plist-from-org: plist %s" plist)
+    (occ-debug :debug "occ-tsk-plist-from-org: plist %s" plist)
     (cl-assert (evenp (length ret-plist)))
     ret-plist))
   
 (occ-testing
  (eq (aref (symbol-name :test) 0) ?:)
  (list-utils-flatten '((a  b) (x)))
- (seq-partition (list :a 1 :b 2 :c 3 :more (list 4 5 6)) 2))
+ (seq-partition (list :a 1 :b 2 :c 3 :more (list 4 5 6) :x nil) 2)
+ (apply #'append (seq-partition (list :a 1 :b 2 :c 3 :more (list 4 5 6) :x nil) 2)))
 
 
 ;; utils
