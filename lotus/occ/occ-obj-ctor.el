@@ -148,11 +148,13 @@
                                                                                            (cadr c))))
                                                               plist))))
     (cl-assert (evenp (length     plist)))
+    (occ-message "occ-tsk-plist-from-org: plist %s" plist)
     (cl-assert (evenp (length ret-plist)))
     ret-plist))
   
 (occ-testing
  (eq (aref (symbol-name :test) 0) ?:)
+ (list-utils-flatten '((a  b) (x)))
  (seq-partition (list :a 1 :b 2 :c 3 :more (list 4 5 6)) 2))
 
 
