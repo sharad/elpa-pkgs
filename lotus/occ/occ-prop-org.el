@@ -233,8 +233,8 @@
                                                     prop
                                                     'get)))
       (mapcar #'(lambda (v)
-                  (occ-prop-elem-from-org prop
-                                          v))
+                  (occ-prop-from-org prop
+                                     v))
               values))))
 
 (cl-defmethod occ-writeprop-org ((obj  occ-obj-ctx-tsk)
@@ -245,7 +245,7 @@
     (let* ((values (occ-get-property tsk prop))
            (values (if (consp values) values (list values)))
            (values (mapcar #'(lambda (v)
-                               (occ-prop-elem-to-org prop v))
+                               (occ-prop-to-org prop v))
                            values)))
       (occ-org-call-operation-at-point (point
                                         prop

@@ -2,7 +2,7 @@
 
 * Code here may be the hell of [[https://en.wikipedia.org/wiki/Indirection][indirection]], but still helping in one way
   
-* To reduce number of params like (or this that elsethat)
+* To reduce number of params like (or this that else that)
 
   using
 

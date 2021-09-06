@@ -95,7 +95,9 @@
          (cl-assert (numberp subtree-level))
          (when entry
            (let* ((sub-tree (append (occ-org-map-subheading #'(lambda ()
-                                                                (occ-tree-tsk-build nil tsk-builder subtree-level)))
+                                                                (occ-tree-tsk-build nil
+                                                                                    tsk-builder
+                                                                                    subtree-level)))
                                     (let ((subtree-file-prop (occ-get-property entry :SUBTREEFILE)))
                                       (when subtree-file-prop
                                         (let* ((file         (if file file (buffer-file-name)))

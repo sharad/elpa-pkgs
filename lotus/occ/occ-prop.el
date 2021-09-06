@@ -92,13 +92,13 @@
   :expected-result :passed
   :tags '(occ)
   (should (equal (cl-method-sigs-matched-arg
-                  '(occ-readprop-elem-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
+                  '(occ-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
                   '(occ-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
                   (occ-make-ctx-at-point))
                  '(timebeing)))
   ;; do this test in buffer of a temporary file.
   (should (equal (cl-method-sigs-matched-arg
-                  '(occ-readprop-elem-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
+                  '(occ-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
                   '(occ-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
                   (occ-make-ctx-at-point))
                  '(timebeing root currfile))))
@@ -116,14 +116,9 @@
 
 (cl-defmethod occ-properties-to-edit ((class symbol))
   "return PROPERTIES list that can be edited."
-  (let ((prop-list1 (cl-method-param-values 'occ-readprop-elem-from-user
-                                            (list '\` `(,class (eql ,'(\, val))))
-                                            'val))
-        (prop-list2 (cl-method-param-values 'occ-readprop-from-user
-                                            (list '\` `(,class (eql ,'(\, val))))
-                                            'val)))
-    (-union prop-list1
-            prop-list2)))
+  (cl-method-param-values 'occ-readprop-from-user
+                          (list '\` `(,class (eql ,'(\, val))))
+                          'val))
 
 (cl-defmethod occ-properties-to-edit ((obj occ-tsk))
   "return PROPERTIES list that can be edited."
@@ -133,26 +128,16 @@
 ;; TODO: improve
 (cl-defmethod occ-properties-to-edit ((obj occ-obj-ctx-tsk))
   "return PROPERTIES list that can be edited."
-  (let ((list1 (cl-method-sigs-matched-arg '(occ-readprop-elem-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
-                                           '(occ-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
-                                           (occ-obj-ctx obj)))
-        (list2 (cl-method-sigs-matched-arg '(occ-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
-                                           '(occ-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
-                                           (occ-obj-ctx obj))))
-    (-union list1
-            list2)))
+  (cl-method-sigs-matched-arg '(occ-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
+                              '(occ-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
+                              (occ-obj-ctx obj)))
 
 
 (cl-defmethod occ-properties-to-inherit ((class symbol))
   "return PROPERTIES list that can be inherited."
-  (let ((list1 (cl-method-param-values 'occ-readprop-elem-from-user
-                                       (list '\` `(,class (eql ,'(\, val))))
-                                       'val))
-        (list2 (cl-method-param-values 'occ-readprop-from-user
-                                       (list '\` `(,class (eql ,'(\, val))))
-                                       'val)))
-    (-union list1
-            list2)))
+  (cl-method-param-values 'occ-readprop-from-user
+                          (list '\` `(,class (eql ,'(\, val))))
+                          'val))
 
 (cl-defmethod occ-properties-to-inherit ((obj occ-obj-tsk))
   "return PROPERTIES list that can be inherited."
@@ -233,43 +218,18 @@ method provided.")))
 method provided.")))
 
 
-
-(cl-defmethod occ-prop-to-org ((prop symbol)
-                               values)
-  "Method convert value VALUE of property PROP from occ to org string representation."
-  ;; (occ-error "Implement method occ-prop-to-org for prop %s" prop)
-  (occ-debug :debug "occ-prop-to-org: no method for prop %s using default." prop)
-  (occ-message "occ-prop-from-org: no method for prop %s using default." prop)
-  (occ-message "occ-prop-from-org: no method for values %s." values)
-  (mapcar #'(lambda (v)
-              (occ-prop-elem-to-org prop
-                                    v))
-          values))
-(cl-defmethod occ-prop-from-org ((prop symbol)
-                                 values)
-  "Method convert value VALUE of property PROP from org string to occ representation."
-  ;; (occ-error "Implement method occ-prop-from-org for prop %s" prop)
-  (occ-debug :debug
-             "occ-prop-from-org: no method for prop %s using default." prop)
-  (occ-message "occ-prop-from-org: no method for prop %s using default." prop)
-  (occ-message "occ-prop-from-org: no method for values %s." values)
-  (mapcar #'(lambda (v)
-              (occ-prop-elem-from-org prop
-                                      v))
-          values))
-
-
 ;; NOTE: These two around methods not belongs to occ-prop-intf.el
 ;;       they belongs here only.
-(cl-defmethod occ-readprop-elem-from-user :around ((obj occ-obj-tsk)
-                                                   (prop symbol))
+(cl-defmethod occ-readprop-from-user :around ((obj occ-obj-tsk)
+                                              (prop symbol))
   "Read value of element of list for property PROP from user for
 OCC-TSK OBJ."
   (if (cl-next-method-p)
-      (occ-prop-elem-from-org prop
-                              (cl-call-next-method))
+      ;; (occ-prop-from-org prop
+      ;;                    (cl-call-next-method))
+      (cl-call-next-method)
     (occ-error "No
-(cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk) (prop (eql %s)))
+(cl-defmethod occ-readprop-from-user ((obj occ-obj-tsk) (prop (eql %s)))
   ...)
 
 method provided."
@@ -280,10 +240,11 @@ method provided."
   "Read value of element of list for property PROP from user for
 OCC-TSK OBJ."
   (if (cl-next-method-p)
-      (occ-prop-from-org prop
-                         (cl-call-next-method))
+      ;; (occ-prop-from-org prop
+      ;;                    (cl-call-next-method))
+      (cl-call-next-method)
     (occ-error "No
-(cl-defmethod occ-readprop-elem-from-user ((obj occ-obj-tsk) (prop (eql %s)))
+(cl-defmethod occ-readprop-from-user ((obj occ-obj-tsk) (prop (eql %s)))
    ...)
 
 method provided."
@@ -297,11 +258,11 @@ method provided."
   (if (occ-list-p prop)
       (let* ((values (and value (split-string value))))
         (mapcar #'(lambda (v)
-                    (occ-prop-elem-from-org prop
-                                            v))
+                    (occ-prop-from-org prop
+                                       v))
                 (mapcar #'org-entry-restore-space
                         values)))
-    (occ-prop-elem-from-org prop
+    (occ-prop-from-org prop
                             value)))
 
 (cl-defmethod occ-reread-props ((obj occ-tsk))
@@ -309,13 +270,14 @@ method provided."
   (let ((props-by-is-list (cl-method-param-case
                            '(occ-list-p (`((eql ,val)) val))))
         (props-by-converter (cl-method-param-case
-                             '(occ-prop-elem-from-org (`((eql ,val) t) val)))))
+                             '(occ-prop-from-org (`((eql ,val) t) val)))))
     (let ((props (-union props-by-is-list
                          props-by-converter))) ;dash
       (dolist (p props)
         (occ-set-property obj p
-                          (occ-rereadprop-value p (occ-get-property obj
-                                                                    p)))))))
+                          (occ-rereadprop-value p
+                                                (occ-get-property obj
+                                                                  p)))))))
 
 (cl-defmethod occ-reread-props :around (obj)
   "return PROPERTIES list that can be checked-out."
@@ -399,6 +361,7 @@ method provided.")))
     (let ((retval (occ-org-call-operation-at-point mrk
                                                    prop
                                                    operation
+                                                   ;; going to org world
                                                    (occ-prop-to-org prop values))))
       (occ-debug :debug "occ-editprop: (occ-org-call-operation-at-point mrk) returnd %s" retval)
       (when retval
@@ -515,7 +478,7 @@ method provided.")))
                             &optional
                             operation
                             value)
-  ;; TODO: change this to use OCC VALUE like with corresponding changes to occ-readprop-elem-from-user
+  ;; TODO: change this to use OCC VALUE like with corresponding changes to occ-readprop-from-user
   "Accept occ compatible VALUES"
   (occ-debug :debug
              "occ-editprop: prop: %s, value: %s" prop value)

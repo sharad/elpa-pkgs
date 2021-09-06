@@ -135,8 +135,7 @@
   "OBJ-has-property PROPERTY")
 (cl-defmethod occ-get-property-value-from-ctx ((obj occ-ctx)
                                                (prop (eql _template1_)))
-  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
-  (occ-error "must return occ compatible value."))
+  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
 
 (cl-defmethod occ-format-prop ((obj occ-obj-tsk)
                                (property symbol)
@@ -202,8 +201,7 @@ _TEMPLATE1_ if CALLABLE (helm method) should be generated.")
   "OBJ-has-property PROPERTY")
 (cl-defmethod occ-get-property-value-from-ctx ((obj occ-ctx)
                                                (prop (eql _template2_)))
-  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
-  (occ-error "must return occ compatible value."))
+  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
 
 (cl-defmethod occ-format-prop ((obj occ-obj-tsk)
                                (property symbol)

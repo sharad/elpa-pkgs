@@ -120,14 +120,32 @@
               (buffer-substring start (point)))))))))
 
 
+;; utils
+(defun occ-plist-mapcar (fun plist)
+  "return alist"
+  (let ((alist (mapcar fun
+                       (seq-partition plist 2))))
+    (mapcar fun alist)))
+
+(defun occ-plist-value-mapcar (fun plist)
+  (occ-plist-mapcar #'(lambda (c) (cons (car c)
+                                        (funcall fun (cadr c))))
+                    plist))
+
+(defun occ-tsk-plist-from-org (plist)
+  (occ-plist-mapcar #'(lambda (occ-prop-from-org))))
+  
+
+(seq-partition (list :a 1 :b 2 :c 3 :more (list 4 5 6)) 2)
+
 (defun occ-get-tsk-category (heading plist)
   (if (stringp heading)
-      (or
-       (when (string-match "<\\([a-zA-Z][a-zA-Z0-9]+\\)>" heading)
-         (match-string 1 heading))
-       (plist-get plist :CATEGORY)
-       "TODO")
+      (or (when (string-match "<\\([a-zA-Z][a-zA-Z0-9]+\\)>" heading)
+            (match-string 1 heading))
+          (plist-get plist :CATEGORY)
+          "TODO")
     "TODO"))
+
 
 (defun occ-make-tsk-at-point (&optional builder)
     (let ((builder (or builder
@@ -160,15 +178,15 @@
             (when heading
               (setf tsk
                     (funcall builder
-                             :name         heading
-                             :heading      heading
-                             :heading-prop heading-prop
-                             :marker       marker
-                             :file         file
-                             :point        point
-                             :clock-sum    clock-sum
-                             :cat          (occ-get-tsk-category heading tsk-plist)
-                             :plist        tsk-plist))
+                             :name         (occ-prop-from-org 'name heading)
+                             :heading      (occ-prop-from-org 'heading heading)
+                             :heading-prop (occ-prop-from-org 'heading-prop heading-prop)
+                             :marker       (occ-prop-from-org 'marker marker)
+                             :file         (occ-prop-from-org 'file file)
+                             :point        (occ-prop-from-org 'point point)
+                             :clock-sum    (occ-prop-from-org 'clock-sum clock-sum)
+                             :cat          (occ-prop-from-org 'cat (occ-get-tsk-category heading tsk-plist))
+                             :plist        (occ-tsk-plist-from-org tsk-plist)))
               (let ((inherit t)
                     (inherited-props
                      ;; is it correct ? - guess it is ok and correct.
