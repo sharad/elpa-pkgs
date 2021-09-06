@@ -555,10 +555,10 @@ method provided.")))
                                  prop
                                  operation
                                  value
-                                 :param-only param-only))))
-  (occ-make-callable-normal :edit-1-generated
-                            prompt
-                            operation))
+                                 :param-only param-only)))
+    (occ-make-callable-normal :edit-1-generated
+                              prompt
+                              operation)))
 
 
 (cl-defmethod occ-gen-edit-if-required ((obj occ-obj-tsk)
