@@ -27,14 +27,15 @@
 (provide 'occ-cl-utils)
 
 
-;; (require 'occ-prop)
-
+(eval-when-compile
+  (require 'occ-macros))
 (eval-when-compile
   (require 'pcase))
 (require 'cl-macs)
 (require 'cl-generic)
 
-(when nil
+
+(occ-testing ;; required
   (progn
 
     (setq tsk-test (occ-make-tsk-at-point))
@@ -71,8 +72,6 @@
     (cl-inst-class-parent-names tsk-test)
 
     (occ-operations-for-prop tsk-test 'root)))
-
-
 
 
 (defun occ-flatten (L)
@@ -240,8 +239,6 @@
 (defun cl-method-param-values (method param-exp val)
   (funcall `(lambda ()
               (cl-method-param-case '(,method (,param-exp ,val))))))
-   
-
 
 (defun cl-collect-on-classes (fn inst)
   (apply #'append

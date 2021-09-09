@@ -220,7 +220,7 @@ method provided.")))
 
 ;; NOTE: These two around methods not belongs to occ-prop-intf.el
 ;;       they belongs here only.
-(cl-defmethod occ-readprop-from-user :around ((obj occ-obj-tsk)
+(cl-defmethod occ-readprop-from-user :around ((obj  occ-obj-tsk)
                                               (prop symbol))
   "Read value of element of list for property PROP from user for
 OCC-TSK OBJ."
@@ -235,7 +235,7 @@ OCC-TSK OBJ."
 method provided."
                prop)))
 
-(cl-defmethod occ-readprop-from-user :around ((obj occ-obj-tsk)
+(cl-defmethod occ-readprop-from-user :around ((obj  occ-obj-tsk)
                                               (prop symbol))
   "Read value of element of list for property PROP from user for
 OCC-TSK OBJ."
@@ -291,33 +291,33 @@ method provided."
 method provided.")))
 
 
-(cl-defmethod occ-require-p ((obj occ-obj-tsk)
+(cl-defmethod occ-require-p ((obj       occ-obj-tsk)
                              (operation (eql get))
                              (prop      symbol)
                              values)
   nil)
 
-(cl-defmethod occ-require-p ((obj occ-obj-tsk)
+(cl-defmethod occ-require-p ((obj       occ-obj-tsk)
                              (operation (eql add))
                              (prop      symbol)
                              values)
   (not (occ-has-p obj prop
                   values)))
 
-(cl-defmethod occ-require-p ((obj occ-obj-tsk)
+(cl-defmethod occ-require-p ((obj       occ-obj-tsk)
                              (operation (eql put))
                              (prop      symbol)
                              values)
   nil)
 
-(cl-defmethod occ-require-p ((obj occ-obj-tsk)
+(cl-defmethod occ-require-p ((obj       occ-obj-tsk)
                              (operation (eql remove))
                              (prop      symbol)
                              values)
   (occ-has-p obj prop
              values))
 
-(cl-defmethod occ-require-p ((obj occ-obj-tsk)
+(cl-defmethod occ-require-p ((obj       occ-obj-tsk)
                              (operation (eql member))
                              (prop      symbol)
                              values)
@@ -331,7 +331,7 @@ method provided.")))
 
 
 (cl-defmethod occ-operations-for-prop ((class symbol)
-                                       (prop symbol))
+                                       (prop  symbol))
   ;; check about (occ-list-p prop) also
   (let ((ops (append (cl-method-param-values 'occ-operation
                                              (list '\` `(,class (eql ,'(\, val)) symbol t))
@@ -355,7 +355,7 @@ method provided.")))
 
 
 ;; defined in occ-prop-intf.el
-(cl-defmethod occ-operation ((obj occ-obj-tsk)
+(cl-defmethod occ-operation ((obj  occ-obj-tsk)
                              (prop symbol)
                              operation
                              values)
@@ -378,7 +378,7 @@ method provided.")))
           (occ-error "No occ-operation defined for prop %s operation %s" prop operation))))))
 
 
-(cl-defmethod occ-operation ((obj occ-obj-tsk)
+(cl-defmethod occ-operation ((obj       occ-obj-tsk)
                              (operation (eql get))
                              (prop symbol)
                              values)
@@ -389,7 +389,7 @@ method provided.")))
       (list (occ-get-property tsk
                               prop)))))
 
-(cl-defmethod occ-operation ((obj occ-obj-tsk)
+(cl-defmethod occ-operation ((obj       occ-obj-tsk)
                              (operation (eql add))
                              (prop symbol)
                              values)
@@ -401,7 +401,7 @@ method provided.")))
       (occ-set-property tsk prop
                         (car values)))))
 
-(cl-defmethod occ-operation ((obj occ-obj-tsk)
+(cl-defmethod occ-operation ((obj       occ-obj-tsk)
                              (operation (eql put))
                              (prop symbol)
                              values)
@@ -412,7 +412,7 @@ method provided.")))
       (occ-set-property tsk prop
                         (car values)))))
 
-(cl-defmethod occ-operation ((obj occ-obj-tsk)
+(cl-defmethod occ-operation ((obj       occ-obj-tsk)
                              (operation (eql remove))
                              (prop symbol)
                              values)
@@ -423,7 +423,7 @@ method provided.")))
                                   (occ-get-property tsk prop)))
       (occ-error "Implement it."))))
 
-(cl-defmethod occ-operation ((obj occ-obj-tsk)
+(cl-defmethod occ-operation ((obj       occ-obj-tsk)
                              (operation (eql member))
                              (prop symbol)
                              values)
@@ -438,7 +438,7 @@ method provided.")))
                                    values)
   "Accept occ compatible VALUES")
 
-(cl-defmethod occ-call-operation ((obj occ-obj-tsk)
+(cl-defmethod occ-call-operation ((obj  occ-obj-tsk)
                                   (prop symbol)
                                   operation
                                   values)
@@ -480,7 +480,7 @@ method provided.")))
                              value)
   "Accept occ compatible VALUES")
 
-(cl-defmethod occ-editprop ((obj occ-obj-tsk)
+(cl-defmethod occ-editprop ((obj  occ-obj-tsk)
                             (prop symbol)
                             &optional
                             operation
@@ -505,11 +505,11 @@ method provided.")))
 
 
 ;; TODO: also accommodate increase decrease etc.
-(cl-defmethod occ-gen-edit ((obj occ-obj-tsk)
-                            (prop symbol)
-                            (operation symbol)
-                            value
-                            &key param-only)
+(cl-defmethod occ-gen-funedit ((obj       occ-obj-tsk)
+                               (prop      symbol)
+                               (operation symbol)
+                               value
+                               &key param-only)
   "Used by occ-gen-prompt-edit"
   (if param-only
       (list prop
@@ -521,8 +521,8 @@ method provided.")))
                       operation
                       value))))
 
-(cl-defmethod occ-gen-prompt ((obj occ-obj-tsk)
-                              (prop symbol)
+(cl-defmethod occ-gen-prompt ((obj       occ-obj-tsk)
+                              (prop      symbol)
                               (operation symbol)
                               value)
   "Used by occ-gen-prompt-edit"
@@ -542,8 +542,8 @@ method provided.")))
                                     &key param-only)
   "occ-gen-prompt-edit")
 
-(cl-defmethod occ-gen-prompt-edit ((obj occ-obj-tsk)
-                                   (prop symbol)
+(cl-defmethod occ-gen-prompt-edit ((obj       occ-obj-tsk)
+                                   (prop      symbol)
                                    (operation symbol)
                                    value
                                    &key param-only)
@@ -551,11 +551,11 @@ method provided.")))
                                    prop
                                    operation
                                    value))
-        (operation (occ-gen-edit obj
-                                 prop
-                                 operation
-                                 value
-                                 :param-only param-only)))
+        (operation (occ-gen-funedit obj
+                                    prop
+                                    operation
+                                    value
+                                    :param-only param-only)))
     (occ-make-callable-normal :edit-1-generated
                               prompt
                               operation)))
@@ -679,8 +679,10 @@ method provided.")))
 
 (cl-defmethod occ-gen-fast-edits ((obj occ-obj-ctx-tsk)
                                   &key param-only)
-  (occ-gen-edits-if-required obj nil nil
-                             :param-only param-only))
+  (let ((aps (occ-gen-edits-if-required obj nil nil
+                                        :param-only param-only)))
+    (occ-message "occ-gen-fast-edits: ap = %s" ap)
+    ap))
 
 
 (cl-defmethod occ-gen-edits ((obj null)
