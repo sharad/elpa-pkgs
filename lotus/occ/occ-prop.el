@@ -225,8 +225,6 @@ method provided.")))
   "Read value of element of list for property PROP from user for
 OCC-TSK OBJ."
   (if (cl-next-method-p)
-      ;; (occ-prop-from-org prop
-      ;;                    (cl-call-next-method))
       (cl-call-next-method)
     (occ-error "No
 (cl-defmethod occ-readprop-from-user ((obj occ-obj-tsk) (prop (eql %s)))
@@ -240,8 +238,6 @@ method provided."
   "Read value of element of list for property PROP from user for
 OCC-TSK OBJ."
   (if (cl-next-method-p)
-      ;; (occ-prop-from-org prop
-      ;;                    (cl-call-next-method))
       (cl-call-next-method)
     (occ-error "No
 (cl-defmethod occ-readprop-from-user ((obj occ-obj-tsk) (prop (eql %s)))
