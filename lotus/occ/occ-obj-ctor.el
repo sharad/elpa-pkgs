@@ -448,9 +448,9 @@
                                     name
                                     fun)
   "Dynamic object"
-  (make-occ-callable-normal :keyword keyword
-                            :name    name
-                            :fun     fun))
+  (make-occ-callable-generator :keyword keyword
+                               :name    name
+                               :fun     fun))
 
 (defun occ-build-callable-normal (keyword
                                   name
@@ -466,9 +466,9 @@
                                      name
                                      fun)
   "Callable creation and to be stored via (OCC-HELM-CALLABLE-ADD CALLABLE)"
-  (let ((callable (occ-make-callable-normal keyword
-                                            name
-                                            fun)))
+  (let ((callable (occ-make-callable-generator keyword
+                                               name
+                                               fun)))
     (occ-helm-callable-add callable)
     callable))
 

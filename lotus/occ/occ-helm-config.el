@@ -81,6 +81,7 @@
       (occ-build-callable-generator :fast-checkouts-gen "Checkouts"  #'occ-gen-checkouts)))
 
   (progn
+    (setq occ-helm-actions-tree '(t))
     (progn
       (occ-add-helm-actions '(actions select)
                             "Select"

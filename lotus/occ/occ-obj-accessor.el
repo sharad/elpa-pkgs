@@ -168,7 +168,7 @@
 (cl-defmethod occ-obj-callables ((callable occ-callable-generator)
                                  (obj      occ-obj))
   "Return list of ((NAME . FUN) ...)"
-  (occ-message "occ-obj-callables(callable occ-callable-generator): got %s" (occ-callable-desc x))
+  (occ-message "occ-obj-callables(callable occ-callable-generator): got %s" (occ-callable-desc callable))
   (let ((fun (occ-callable-fun callable)))
     (let ((callables (funcall fun obj
                               :param-only nil)))
@@ -195,6 +195,7 @@
   "Return list of ((NAME . FUN) ...)"
   (let ((callables-list (occ-obj-callables callables obj)))
     (cl-assert (cl-every #'occ-callable-normal-p callables-list))
+    (cl-assert (cl-notany #'occ-callable-generator-p callables-list))
     (mapcar #'occ-obj-callable-helm-action
             callables-list)))
   
@@ -246,8 +247,9 @@
              (callables     (occ-get-callables obj ;; ???
                                                keywords-list)))
         (unless keywords-list
-          (occ-error "keywords-list %s should be a keywords list for tree-keybranch %s"
-                     keywords-list tree-keybranch))
+          (occ-error "for tree-keybranch %s empty keywords-list %s returned "
+                     tree-keybranch
+                     keywords-list))
         (when tree-keybranch
           (cl-assert callables)
           (cl-assert keywords-list))
