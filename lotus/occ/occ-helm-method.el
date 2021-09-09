@@ -148,12 +148,12 @@
                (source-name          (occ-helm-build-candidate-source-prompt prompt
                                                                              candidates
                                                                              unfiltered-count)))
-           (occ-message "occ-helm-build-candidates-source: ap-normal: %s" ap-normal)
-           (occ-message "occ-helm-build-candidates-source: ap-transf: %s" ap-transf)
+           (occ-debug :debug "occ-helm-build-candidates-source: ap-normal: %s" ap-normal)
+           (occ-debug :debug "occ-helm-build-candidates-source: ap-transf: %s" ap-transf)
            (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
                  (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
-             (occ-message "occ-helm-build-candidates-source: helm-actions: %s" helm-actions)
-             (occ-message "occ-helm-build-candidates-source: helm-transfm: %s" helm-transfm)
+             (occ-debug :debug "occ-helm-build-candidates-source: helm-actions: %s" helm-actions)
+             (occ-debug :debug "occ-helm-build-candidates-source: helm-transfm: %s" helm-transfm)
              (progn
                (occ-debug :debug "occ-helm-build-candidates-source: helm-actions:")
                (dolist (a helm-actions)

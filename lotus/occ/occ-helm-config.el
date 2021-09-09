@@ -68,8 +68,8 @@
       (occ-build-callable-normal :procreate-child-clock-in "Procreate Child Clock-in" #'occ-procreate-child-clock-in)
       (occ-build-callable-normal :goto                     "Goto"                     #'occ-goto)
       (occ-build-callable-normal :set-to                   "Set To"                   #'occ-set-to)
-      (occ-build-callable-normal :proprty-window-edit      "Proprtes Window Edit"     #'occ-props-window-edit) ;TODO: implement it.
-      (occ-build-callable-normal :proprty-edit-combined    "Proprtes Edit Combined"   #'occ-props-edit-combined) ;TODO: implement it.
+      (occ-build-callable-normal :proprty-window-edit      "Properties Window Edit"   #'occ-props-window-edit) ;TODO: implement it.
+      (occ-build-callable-normal :proprty-edit-combined    "Properties Edit Combined" #'occ-props-edit-combined) ;TODO: implement it.
       (occ-build-callable-normal :call-with-obj            "Call with object"         #'occ-call-with-obj)
       (occ-build-callable-normal :set-debug-obj            "Set debug obj"            #'occ-set-debug-obj)
       (occ-build-callable-normal :rank                     "Get Rank"                 #'occ-print-rank)

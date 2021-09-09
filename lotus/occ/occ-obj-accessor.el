@@ -168,13 +168,13 @@
 (cl-defmethod occ-obj-callables ((callable occ-callable-generator)
                                  (obj      occ-obj))
   "Return list of ((NAME . FUN) ...)"
-  (occ-message "occ-obj-callables(callable occ-callable-generator): got %s" (occ-callable-desc callable))
+  (occ-debug :debug "occ-obj-callables(callable occ-callable-generator): got %s" (occ-callable-desc callable))
   (let ((fun (occ-callable-fun callable)))
     (let ((callables (funcall fun obj
                               :param-only nil)))
       ;; (cl-assert callables)
       (dolist (x callables)
-        (occ-message "occ-obj-callables(callable occ-callable-generator): generated %s" (occ-callable-desc x)))
+        (occ-debug :debug "occ-obj-callables(callable occ-callable-generator): generated %s" (occ-callable-desc x)))
       (cl-assert (cl-every #'occ-callable-p
                            callables))
       (cl-assert (cl-notany #'occ-callable-generator-p
@@ -305,10 +305,10 @@
                                                        candidate-obj)))
             (cl-assert helm-actions)
             (dolist (a helm-actions)
-              (occ-message " occ-obj-ap-helm-transformation: helm-action: %s" (prin1-to-string a)))
+              (occ-debug :debug "occ-obj-ap-helm-transformation: helm-action: %s" (prin1-to-string a)))
             (cl-assert (cl-every #'(lambda (x)
-                                     (occ-message "(cadr x) %s" (cadr x))
-                                     (functionp (cadr x))) helm-actions))
+                                     (functionp (cadr x)))
+                                 helm-actions))
             (occ-debug :debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
             helm-actions)))))
 
