@@ -679,6 +679,7 @@ method provided.")))
 
 (cl-defmethod occ-gen-fast-edits ((obj occ-obj-ctx-tsk)
                                   &key param-only)
+  (occ-message "occ-gen-fast-edits: called")
   (let ((aps (occ-gen-edits-if-required obj nil nil
                                         :param-only param-only)))
     (occ-message "occ-gen-fast-edits: ap = %s" ap)

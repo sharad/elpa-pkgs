@@ -46,7 +46,7 @@ be NIL, using (occ-match-filters) for FILTERS"
   (let ((filters          (occ-match-filters))
         (builder          #'occ-build-ctxual-tsk-with)
         (ap-normal        occ-list-select-keys)
-        (ap-transf        occ-list-select-keys)
+        (ap-transf        occ-list-select-ap-transf-keys)
         (return-transform nil)
         (timeout          occ-idle-timeout))
     (occ-select obj
@@ -163,9 +163,10 @@ must be NIL, using (occ-list-filters) for FILTERS"
         (builder          #'occ-build-ctsk-with)
         (return-transform t)
         (ap-normal        occ-list-select-keys)
-        (ap-transf        occ-list-select-keys)
+        (ap-transf        occ-list-select-ap-transf-keys)
         (timeout          occ-idle-timeout))
     (occ-message "occ-list-launch: ap-normal: %s" ap-normal)
+    (occ-message "occ-list-launch: ap-transf: %s" ap-transf)
     (let ((retval-ctx-tsk (occ-select obj
                                       :filters          filters
                                       :builder          builder

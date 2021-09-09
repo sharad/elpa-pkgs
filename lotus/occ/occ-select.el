@@ -113,6 +113,7 @@ ACTION "
       (occ-debug :debug "running occ-list-select")
       (progn
         (occ-message "occ-list-select: ap-normal: %s" ap-normal)
+        (occ-message "occ-list-select: ap-transf: %s" ap-transf)
         (let ((selected (occ-list-select-internal obj
                                                   :filters             filters
                                                   :builder             builder
@@ -129,6 +130,7 @@ ACTION "
               (or selected ;as return value is going to be used.
                   (occ-make-return occ-return-quit-label selected))
             selected))))))
+                  
 
 
 ;; TODO: Not to run when frame is not open [visible.]
