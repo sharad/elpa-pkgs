@@ -453,7 +453,7 @@ method provided.")))
   "occ-select-operation")
 
 ;; TODO: Add log not on property editing.
-(cl-defmethod occ-select-operation ((obj occ-obj-tsk)
+(cl-defmethod occ-select-operation ((obj  occ-obj-tsk)
                                     (prop symbol))
   (cl-assert prop)
   (if (occ-list-p prop)
@@ -561,8 +561,8 @@ method provided.")))
                               operation)))
 
 
-(cl-defmethod occ-gen-edit-if-required ((obj occ-obj-tsk)
-                                        (prop symbol)
+(cl-defmethod occ-gen-edit-if-required ((obj       occ-obj-tsk)
+                                        (prop      symbol)
                                         (operation symbol)
                                         value
                                         &key param-only)
@@ -595,8 +595,8 @@ method provided.")))
                            ops)))
     (remove nil edit-ops)))
 
-(cl-defmethod occ-gen-edits-if-required ((obj occ-obj-tsk)
-                                         (prop null)
+(cl-defmethod occ-gen-edits-if-required ((obj       occ-obj-tsk)
+                                         (prop      null)
                                          (operation symbol)
                                          &key param-only)
   (let* ((ops      (occ-properties-to-edit obj))
@@ -608,8 +608,8 @@ method provided.")))
                            ops)))
     (remove nil edit-ops)))
 
-(cl-defmethod occ-gen-edits-if-required ((obj occ-obj-tsk)
-                                         (prop null)
+(cl-defmethod occ-gen-edits-if-required ((obj       occ-obj-tsk)
+                                         (prop      null)
                                          (operation null)
                                          &key param-only)
   (let* ((ops      (occ-properties-to-edit obj))
@@ -633,15 +633,15 @@ method provided.")))
     (occ-checkout-prop obj prop)))
 
 
-(cl-defmethod occ-gen-checkout-prompt ((obj occ-obj-tsk)
-                                       (prop      symbol)
+(cl-defmethod occ-gen-checkout-prompt ((obj  occ-obj-tsk)
+                                       (prop symbol)
                                        &key param-only)
   (let ((list-p (occ-list-p prop)))
     (format "Checkout property %s"
             prop)))
 
-(cl-defmethod occ-gen-checkout ((obj occ-obj-tsk)
-                                (prop      symbol)
+(cl-defmethod occ-gen-checkout ((obj  occ-obj-tsk)
+                                (prop symbol)
                                 &key param-only)
   (if param-only
       (list prop)
@@ -649,8 +649,8 @@ method provided.")))
         (occ-checkoutprop obj prop))))
 
 
-(cl-defmethod occ-gen-checkout-if-required ((obj occ-obj-tsk)
-                                            (prop      symbol)
+(cl-defmethod occ-gen-checkout-if-required ((obj  occ-obj-tsk)
+                                            (prop symbol)
                                             &key param-only)
   (if (occ-required-p obj               ;TODO: ctx is require, and resolve function collision.
                       prop)
