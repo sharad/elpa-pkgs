@@ -178,7 +178,7 @@
                                                  auto-select-if-only
                                                  timeout
                                                  prompt)
-  (occ-debug "occ-helm-build-candidates-sources: ap-normal: %s" ap-normal)
+  ;; (occ-debug "occ-helm-build-candidates-sources: ap-normal: %s" ap-normal)
   (list (occ-helm-build-candidates-source obj
                                           candidates
                                           :unfiltered-count unfiltered-count
@@ -246,7 +246,7 @@
                                             (helm-refresh)
                                           (occ-debug :debug "Running occ-list-select-internal helm is gone"))))
            ;; :keymap occ-helm-map
-           (occ-debug "occ-helm-act-on-multiple: ap-normal: %s" ap-normal)
+           ;; (occ-debug "occ-helm-act-on-multiple: ap-normal: %s" ap-normal)
            (let ((candidates-sources (occ-helm-build-candidates-sources obj
                                                                         candidates-filtered
                                                                         :unfiltered-count unfiltered-count
@@ -289,7 +289,7 @@
                      #'occ-helm-act-on-multiple)))
           (funcall fun obj
                    candidates-filtered
-                   :unfiltered-count   unfiltered-count
+                   :unfiltered-count    unfiltered-count
                    :filters             filters
                    :builder             builder
                    :ap-normal           ap-normal

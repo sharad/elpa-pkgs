@@ -254,6 +254,7 @@
                                 candidate-obj)
                          (occ-debug :debug "occ-obj-ap-transform: lambda: ap-obj = %s" ap-obj)
                          (let ((callables (occ-obj-ap-callables ap-obj candidate-obj)))
+                           (cl-assert callables)
                            (occ-debug :debug "occ-obj-ap-transform: lambda: transform: callables = %s" callables)
                            (occ-make-ap-normal (cons :callables callables))))))
       (occ-debug :debug "occ-obj-ap-transform: setting transform tp %s" transform)
@@ -289,10 +290,14 @@
         (let ((ap-normal-obj (funcall transform
                                       action
                                       candidate-obj)))
+          (cl-assert (occ-ap-normal-p ap-normal-obj))
           (occ-debug :debug "helm-transformation: got ap-normal-obj = %s" ap-normal-obj)
           (let ((helm-actions (occ-obj-ap-helm-actions ap-normal-obj
                                                        candidate-obj)))
             (cl-assert helm-actions)
+            (dolist (a helm-actions)
+              (occ-message " occ-obj-ap-helm-transformation: helm-action: %s" a))
+            (cl-assert (every #'(lambda (x) (functionp (cadr x))) helm-actions))
             (occ-debug :debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
             helm-actions)))))
 
