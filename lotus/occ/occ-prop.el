@@ -555,8 +555,9 @@ method provided.")))
                                     prop
                                     operation
                                     value
-                                    :param-only param-only)))
-    (occ-make-callable-normal :edit-1-generated
+                                    :param-only param-only))
+        (keyword   (sym2key (gensym))))
+    (occ-make-callable-normal keyword
                               prompt
                               operation)))
 
