@@ -74,7 +74,6 @@ ACTION "
     (occ-debug :debug nil)
     (prog1
         (let* ((timeout   (or timeout occ-idle-timeout)))
-
           (let* ((candidates-unfiltered (occ-list obj
                                                   :builder   builder
                                                   :obtrusive obtrusive))
