@@ -172,7 +172,7 @@
   (let ((fun (occ-callable-fun callable)))
     (let ((callables (funcall fun obj
                               :param-only nil)))
-      (cl-assert callables)
+      ;; (cl-assert callables)
       (dolist (x callables)
         (occ-message "occ-obj-callables(callable occ-callable-generator): generated %s" (occ-callable-desc x)))
       (cl-assert (cl-every #'occ-callable-p
