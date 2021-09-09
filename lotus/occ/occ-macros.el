@@ -234,9 +234,50 @@
 (defmacro occ-load-noerror-mustsuffix (file)
   "Load FILE with optional arguments NOERROR and MUSTSUFFIX."
   `(load ,file 'noerror nil nil 'mustsuffix))
-
-
 
+
+(defvar occ-condition-case-control-debug nil)
+
+;;;###autoload
+(defun occ-enable-condition-case-control-debug ()
+  (interactive)
+  (setq occ-condition-case-control-debug t))
+
+;;;###autoload
+(defun occ-disable-condition-case-control-debug ()
+  (interactive)
+  (setq occ-condition-case-control-debug nil))
+
+(defmacro condition-case-control (var bodyform &rest handlers)
+  (if (not occ-condition-case-control-debug)
+      `(condition-case ,var
+           ,bodyform
+         ,@handlers)
+    bodyform))
+(put 'condition-case-control 'lisp-indent-function 1)
+
+
+(defmacro occ-run-unobtrusively (obtrusive &rest body)
+  `(if (or obtrusive
+           (called-interactively-p 'any))
+       (progn
+         ,@body)
+     (while-no-input
+       (redisplay)
+       ,@body)))
+
+(defmacro occ-run-unobtrusively (obtrusive &rest body)
+  `(if (or obtrusive
+           (called-interactively-p 'any))
+       (progn ,@body)
+     (let ((retval (while-no-input
+                     (redisplay)
+                     ,@body)))
+       (when (eq retval t)
+         (occ-debug :debug "user input %s retval %s" last-input-event retval))
+       retval)))
+
+
 (occ-testing
   (let ((collection
          '("* TODO %? %^g\n %i\n [%a]\n"

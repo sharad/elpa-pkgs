@@ -26,6 +26,10 @@
 (provide 'occ-util-common)
 
 
+(eval-when-compile
+  (require 'occ-macros))
+
+
 (defvar occ-verbose 0)
 
 
@@ -94,27 +98,6 @@
 (defun occ-error (&rest args)
   (apply #'error args)
   (apply #'occ-debug :debug args))
-
-
-(defvar occ-condition-case-control-debug nil)
-
-;;;###autoload
-(defun occ-enable-condition-case-control-debug ()
-  (interactive)
-  (setq occ-condition-case-control-debug t))
-
-;;;###autoload
-(defun occ-disable-condition-case-control-debug ()
-  (interactive)
-  (setq occ-condition-case-control-debug nil))
-
-(defmacro condition-case-control (var bodyform &rest handlers)
-  (if (not occ-condition-case-control-debug)
-      `(condition-case ,var
-           ,bodyform
-         ,@handlers)
-    bodyform))
-(put 'condition-case-control 'lisp-indent-function 1)
 
 
 (defun downcase-sym (sym)
@@ -204,27 +187,6 @@
             (if (null tail) (occ-error "There is no position ~D in ~S." pos list))
             (push node (cdr tail))
             list)))))
-
-
-(defmacro occ-run-unobtrusively (obtrusive &rest body)
-  `(if (or obtrusive
-           (called-interactively-p 'any))
-       (progn
-         ,@body)
-     (while-no-input
-      (redisplay)
-      ,@body)))
-
-(defmacro occ-run-unobtrusively (obtrusive &rest body)
-  `(if (or obtrusive
-           (called-interactively-p 'any))
-       (progn ,@body)
-    (let ((retval (while-no-input
-                   (redisplay)
-                   ,@body)))
-      (when (eq retval t)
-        (occ-debug :debug "user input %s retval %s" last-input-event retval))
-      retval)))
 
 
 (defun occ-helm-buffer-p (buffer)
