@@ -168,13 +168,17 @@
 (cl-defmethod occ-obj-callables ((callable occ-callable-generator)
                                  (obj      occ-obj))
   "Return list of ((NAME . FUN) ...)"
+  (occ-message "occ-obj-callables(callable occ-callable-generator): got %s" (occ-callable-desc x))
   (let ((fun (occ-callable-fun callable)))
     (let ((callables (funcall fun obj
                               :param-only nil)))
+      (cl-assert callables)
+      (dolist (x callables)
+        (occ-message "occ-obj-callables(callable occ-callable-generator): generated %s" (occ-callable-desc x)))
       (cl-assert (cl-every #'occ-callable-p
                            callables))
-      (cl-assert (cl-every #'occ-callable-normal-p
-                           callables))
+      (cl-assert (cl-notany #'occ-callable-generator-p
+                            callables))
       callables)))
 
 ;; methods
@@ -662,15 +666,17 @@ pointing to it."
                                        obtrusive)
   "return CTSKs list"
   (let ((builder (or builder #'occ-build-ctsk-with)))
-    (let ((ctsks
-           (occ-run-unobtrusively obtrusive
-              (let ((tsks (occ-collect-list collection))) ;;????TODO
-                (when tsks
-                  (mapcar #'(lambda (tsk) (funcall builder tsk obj))
-                          tsks))))))
+    (let ((ctsks (occ-run-unobtrusively obtrusive
+                                        (let ((tsks (occ-collect-list collection))) ;;????TODO
+                                          (when tsks
+                                            (mapcar #'(lambda (tsk) (funcall builder tsk obj))
+                                                    tsks))))))
       (unless (eq t ctsks)
         ;; BUG: TODO: convey it tpo occ-select occ-clock-in
-        (occ-message "Busy user input %s" last-input-event)
+        (occ-message "Busy user input `%s'"
+                     (if (numberp last-input-event)
+                         (single-key-description last-input-event)
+                       last-input-event))
         ctsks))))
 
 ;; FOr now.
@@ -681,14 +687,16 @@ pointing to it."
                                        obtrusive)
   "return CTSKs list"
   (let ((builder (or builder #'occ-build-ctsk-with)))
-    (let ((ctsks
-           (let ((tsks (occ-collect-list collection))) ;;????TODO
-             (when tsks
-               (mapcar #'(lambda (tsk) (funcall builder tsk obj))
-                       tsks)))))
+    (let ((ctsks (let ((tsks (occ-collect-list collection))) ;;????TODO
+                   (when tsks
+                     (mapcar #'(lambda (tsk) (funcall builder tsk obj))
+                             tsks)))))
       (unless (eq t ctsks)
         ;; BUG: TODO: convey it top occ-select occ-clock-in
-        (occ-message "Busy user input %s" last-input-event)
+        (occ-message "Busy user input `%s'"
+                     (if (numberp last-input-event)
+                         (single-key-description last-input-event)
+                       last-input-event))
         ctsks))))
 
 (cl-defmethod occ-collection-obj-list ((collection occ-collection)
