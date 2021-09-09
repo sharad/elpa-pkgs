@@ -700,13 +700,7 @@ method provided.")))
 ;; Correct it ???
 (cl-defmethod occ-gen-misc ((obj null)
                             &param-only param-only)
-  (list (occ-make-callable-normal :continue
-                                  "Continue"
-                                  t)
-        (occ-make-callable-normal :checkout
-                                  "Checkout"
-                                  #'(lambda (obj)
-                                      (occ-checkout obj)))))
+  nil)
 
 (cl-defmethod occ-gen-misc ((obj occ-obj-ctx-tsk)
                             &param-only param-only)
@@ -718,9 +712,9 @@ method provided.")))
                                   #'(lambda (obj)
                                       (occ-checkout obj)))))
 
-(cl-defmethod occ-gen-misc ((obj occ-obj-ctx)
-                            &param-only param-only)
-  nil)
+;; (cl-defmethod occ-gen-misc ((obj occ-obj-ctx)
+;;                             &param-only param-only)
+;;   nil)
 
 
 
