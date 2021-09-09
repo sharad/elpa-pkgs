@@ -181,7 +181,7 @@
 
 (cl-defmethod occ-obj-callable-helm-action ((callable occ-callable))
   "Return pair or (NAME . FUN)"
-  (cons (occ-callable-name callable)
+  (list (occ-callable-name callable)
         (occ-callable-fun  callable)))
 
 ;; methods
@@ -189,8 +189,11 @@
 (cl-defmethod occ-obj-callable-helm-actions ((callables list)
                                              (obj occ-obj))
   "Return list of ((NAME . FUN) ...)"
-  (mapcar #'occ-obj-callable-helm-action
-          (occ-obj-callables callables obj)))
+  (let ((callables-list (occ-obj-callables callables obj)))
+    (cl-assert (cl-every #'occ-callable-normal-p callables-list))
+    (mapcar #'occ-obj-callable-helm-action
+            callables-list)))
+  
 
 (cl-defmethod occ-obj-callable-helm-actions ((callable occ-callable)
                                              (obj occ-obj))
@@ -296,8 +299,10 @@
                                                        candidate-obj)))
             (cl-assert helm-actions)
             (dolist (a helm-actions)
-              (occ-message " occ-obj-ap-helm-transformation: helm-action: %s" a))
-            (cl-assert (every #'(lambda (x) (functionp (cadr x))) helm-actions))
+              (occ-message " occ-obj-ap-helm-transformation: helm-action: %s" (prin1-to-string a)))
+            (cl-assert (cl-every #'(lambda (x)
+                                     (occ-message "(cadr x) %s" (cadr x))
+                                     (functionp (cadr x))) helm-actions))
             (occ-debug :debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
             helm-actions)))))
 
