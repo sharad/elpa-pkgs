@@ -276,7 +276,8 @@
                             :action (list (cons "Edit" #'funcall)))
                           (helm-build-sync-source "other"
                             :candidates '(("Continue" . t)
-                                          ("Checkout" . #'(lambda () (occ-checkout obj)))))))
+                                          ("Checkout" . #'(lambda () (occ-checkout obj))))
+                            :action (list (cons "Edit" #'funcall)))))
            (retval
             (helm-timed occ-idle-timeout nil
               (helm :sources sources))))
