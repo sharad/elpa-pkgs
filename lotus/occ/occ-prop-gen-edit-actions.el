@@ -183,27 +183,27 @@
     aps))
 
 (cl-defmethod occ-gen-each-prop-edits ((obj occ-obj-ctx)
-                                       &param-only param-only)
+                                       &key param-only)
   nil)
 
 (defun occ-gen-each-prop-fast-edits (obj
-                                     &param-only param-only)
+                                     &key param-only)
   (occ-gen-each-prop-edits obj param-only))
 
 
 (cl-defmethod occ-gen-simple-edits ((obj null)
-                                    &param-only param-only)
+                                    &key param-only)
   nil)
 
 (cl-defmethod occ-gen-simple-edits ((obj occ-obj-ctx-tsk)
-                                    &param-only param-only)
+                                    &key param-only)
   (list (occ-make-callable-normal :edit
                                   "Edit"
                                   #'(lambda (obj)
                                       (occ-op-props-edit obj)))))
 
 (cl-defmethod occ-gen-simple-edits ((obj occ-obj-ctx)
-                                    &param-only param-only)
+                                    &key param-only)
   nil)
 
 ;;; occ-prop-gen-edit-actions.el ends here

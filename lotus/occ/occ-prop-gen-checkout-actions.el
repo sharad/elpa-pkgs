@@ -81,11 +81,11 @@
 
 
 (cl-defmethod occ-gen-checkouts-if-required ((obj null)
-                                             &param-only param-only)
+                                             &key param-only)
   nil)
 
 (cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-ctx-tsk)
-                                             &param-only param-only)
+                                             &key param-only)
   (occ-gen-checkouts obj))
 
 (cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-tsk))
@@ -100,7 +100,7 @@
 
 
 (cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-ctx)
-                                             &param-only param-only)
+                                             &key param-only)
   nil)
 
 
@@ -118,27 +118,27 @@
     aps))
 
 (cl-defmethod occ-gen-each-prop-checkouts ((obj occ-obj-ctx)
-                                           &param-only param-only)
+                                           &key param-only)
   nil)
 
 (defun occ-gen-each-prop-fast-checkouts (obj
-                                         &param-only param-only)
+                                         &key param-only)
   (occ-gen-each-prop-checkouts obj param-only))
 
 
 (cl-defmethod occ-gen-simple-checkouts ((obj null)
-                                        &param-only param-only)
+                                        &key param-only)
   nil)
 
 (cl-defmethod occ-gen-simple-checkouts ((obj occ-obj-ctx-tsk)
-                                        &param-only param-only)
+                                        &key param-only)
   (list (occ-make-callable-normal :checkout
                                   "Checkout"
                                   #'(lambda (obj)
                                       (occ-op-props-checkout obj)))))
 
 (cl-defmethod occ-gen-simple-checkouts ((obj occ-obj-ctx)
-                                        &param-only param-only)
+                                        &key param-only)
   nil)
 
 
