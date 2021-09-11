@@ -96,6 +96,7 @@
                                 value
                                 &key not-recursive)
   ;; mainly used by occ-tsk only
+  (occ-message "(occ-set-property oc-obj) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
   (if (memq prop
             (cl-class-slots (cl-inst-classname obj)))
       (setf (cl-struct-slot-value (cl-inst-classname obj) prop obj)
@@ -121,6 +122,7 @@
                                 value &key not-recursive)
   ;; TODO: do it recursively.
   ;; mainly used by occ-tsk only
+  (occ-message "(occ-set-property occ-set-property) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
   (cl-call-next-method)
   (when not-recursive
     (dolist (subtsk (occ-tree-tsk-subtree (occ-obj-tsk obj)))
