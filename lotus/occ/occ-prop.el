@@ -31,4 +31,7 @@
 (require 'occ-prop-edit)
 (require 'occ-prop-checkout)
 
+
+(require 'occ-prop-gen-actions)
+
 ;;; occ-prop.el ends here
