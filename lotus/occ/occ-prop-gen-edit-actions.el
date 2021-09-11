@@ -32,22 +32,6 @@
 
 
 ;; TODO: also accommodate increase decrease etc.
-(cl-defmethod occ-gen-edit-fun ((obj       occ-obj-tsk)
-                                (prop      symbol)
-                                (operation symbol)
-                                value
-                                &key param-only)
-  "Used by occ-gen-prompt-edit"
-  (if param-only
-      (list prop
-            operation
-            value)
-    #'(lambda (obj)
-        (occ-op-prop-edit obj
-                          prop
-                          operation
-                          value))))
-
 (cl-defmethod occ-gen-edit-prompt ((obj       occ-obj-tsk)
                                    (prop      symbol)
                                    (operation symbol)
@@ -60,6 +44,22 @@
             (occ-format-prop obj prop value)
             (if list-p "in" "from")
             prop)))
+
+(cl-defmethod occ-gen-edit-fun ((obj       occ-obj-tsk)
+                                (prop      symbol)
+                                (operation symbol)
+                                value
+                                &key param-only)
+  "Generate helm function, purpose PARAM-ONLY for the case where only argument required for some other further processing"
+  (if param-only
+      (list prop
+            operation
+            value)
+    #'(lambda (obj)
+        (occ-op-prop-edit obj
+                          prop
+                          operation
+                          value))))
 
 
 (cl-defgeneric occ-gen-edit (obj

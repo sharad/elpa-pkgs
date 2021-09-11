@@ -34,6 +34,7 @@
 (cl-defmethod occ-gen-checkout-prompt ((obj  occ-obj-tsk)
                                        (prop symbol)
                                        &key param-only)
+  "Used by occ-gen-checkout"
   (let ((list-p (occ-list-p prop)))
     (format "Checkout property %s"
             prop)))
@@ -41,6 +42,7 @@
 (cl-defmethod occ-gen-checkout-fun ((obj  occ-obj-tsk)
                                     (prop symbol)
                                     &key param-only)
+  "Generate helm function, purpose PARAM-ONLY for the case where only argument required for some other further processing"
   (if param-only
       (list prop)
     #'(lambda (obj)
