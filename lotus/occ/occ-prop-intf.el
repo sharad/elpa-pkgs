@@ -179,8 +179,8 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                       (property symbol)
                                       (operation symbol))
   "Return a default VALUE of property _TEMPLATE_."
-  (occ-get-property-value-from-ctx (occ-obj-ctx obj)
-                                   property))
+  (occ-get-property (occ-obj-ctx obj)
+                    property))
 
 
 (cl-defgeneric occ-operation (obj
