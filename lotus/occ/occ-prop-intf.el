@@ -65,12 +65,21 @@
 (cl-defmethod occ-has-p ((obj occ-obj-tsk)
                          (prop symbol)
                          value)
-  (let ((tsk (occ-obj-tsk obj)))
+  (let* ((tsk            (occ-obj-tsk obj))
+         (tsk-prop-value (occ-get-property tsk prop)))
+    (occ-message "occ-has-p prop %s, (consp tsk-prop-value) %s" prop (consp tsk-prop-value))
+    (occ-message "occ-has-p prop %s, (occ-list-p prop) %s, value %s" prop (occ-list-p prop) value)
+    (occ-message "occ-has-p prop %s, (occ-list-p prop) %s, tsk-prop-value %s" prop (occ-list-p prop) tsk-prop-value)
+
+
+    ;; BUG: list issue 
+
+    ;; occ-has-p prop root value /home/s/paradise/Projects/Fortinet/FWLC/main/include
+    ;; occ-has-p prop root tsk-prop-value (/home/s/paradise/Projects/Fortinet/FWLC/main/include/ /home/s/paradise/Projects/Fortinet/FWLC/main/src/util/ /home/s/paradise/Projects/Fortinet/FWLC/main/src/util/apache/ /home/s/paradise/Projects/Fortinet/FWLC/config/)
+
     (if (occ-list-p prop)
-        (memq value
-              (occ-get-property tsk prop))
-      (equal value
-             (occ-get-property tsk prop)))))
+        (memq value tsk-prop-value)
+      (equal value tsk-prop-value))))
 
 
 (cl-defgeneric occ-get-property-value-from-ctx (obj
