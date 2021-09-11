@@ -212,7 +212,7 @@
                                    force))))))
 
 
-(cl-defmethod occ-open-prop-block ((obj marker))
+(cl-defmethod occ-open-property-block ((obj marker))
   ;; Find better name
   (let ((mrk              obj)
         (buffer-read-only nil))
@@ -232,18 +232,18 @@
               (if (numberp prop-loc)
                   (goto-char prop-loc)
                 (if nil
-                    (occ-error "occ-open-prop-block: no prop-loc % for buff %s marker %s"
+                    (occ-error "occ-open-property-block: no prop-loc % for buff %s marker %s"
                            prop-loc buff mrk)
                   t))))
-        (occ-error "occ-open-prop-block: no buff %s found for object %s"
+        (occ-error "occ-open-property-block: no buff %s found for object %s"
                (occ-Format obj))))))
 
-(cl-defmethod occ-open-prop-block ((obj null))
-  (occ-open-prop-block (point-marker)))
+(cl-defmethod occ-open-property-block ((obj null))
+  (occ-open-property-block (point-marker)))
 
 
-(cl-defmethod occ-props-edit ((obj occ-obj-ctx-tsk))
-  (occ-debug :debug "occ-props-edit: begin %s"
+(cl-defmethod occ-properties-editor ((obj occ-obj-ctx-tsk))
+  (occ-debug :debug "occ-properties-editor: begin %s"
              (occ-Format obj))
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
@@ -256,13 +256,13 @@
                                     prop)))
           (when retval
             ;; (occ-tsk-update-tsks t)
-            (occ-debug :debug "occ-props-edit-with: done with retval %s" retval)
+            (occ-debug :debug "occ-properties-editor-with: done with retval %s" retval)
             retval))))))
 
 
 ;; do both fast and interactive editing.
-;; (occ-props-edit obj)
-(cl-defmethod occ-props-edit-combined ((obj occ-obj-ctx-tsk))
+;; (occ-properties-editor obj)
+(cl-defmethod occ-properties-editor-combined ((obj occ-obj-ctx-tsk))
   (let ((prompt (format "%s fast edit" (occ-Format obj))))
     (let* ((sources (list (helm-build-sync-source prompt
                             :candidates (occ-gen-edits-if-required obj ;;BUG: occ-ap-transform related changes will be required.
@@ -272,7 +272,7 @@
                             :action (list (cons "Edit" #'funcall)))
                           (helm-build-sync-source "edit"
                             :candidates (list
-                                         (cons "Edit" #'(lambda () (occ-props-edit obj))))
+                                         (cons "Edit" #'(lambda () (occ-properties-editor obj))))
                             :action (list (cons "Edit" #'funcall)))
                           (helm-build-sync-source "other"
                             :candidates '(("Continue" . t)
@@ -285,19 +285,24 @@
           t))))
 
 
-(cl-defmethod occ-props-edit-in-cloned-buffer ((obj occ-obj-ctx-tsk))
-  (occ-debug :debug "occ-props-edit-in-cloned-buffer: begin")
+(cl-defmethod occ-properties-editor-in-cloned-buffer ((obj occ-obj-ctx-tsk))
+  (occ-debug :debug "occ-properties-editor-in-cloned-buffer: begin")
   (let ((mrk (occ-obj-marker obj)))
     (org-with-cloned-marker mrk "<proptree>"
       (let ((cloned-mrk (point-marker)))
         (org-with-narrow-to-marker mrk
-          (if (occ-open-prop-block cloned-mrk)
-              (occ-props-edit obj)
-            (occ-error "occ-props-edit-in-cloned-buffer: can not edit props for %s"
+          (if (occ-open-property-block cloned-mrk)
+              (occ-properties-editor obj)
+            (occ-error "occ-properties-editor-in-cloned-buffer: can not edit props for %s"
                        (occ-Format obj))))))))
 
 
-(defun occ-props-edit-handle-response (prop timeout timer cleanup local-cleanup win)
+(defun occ-properties-editor-handle-response (prop
+                                              timeout
+                                              timer
+                                              cleanup
+                                              local-cleanup
+                                              win)
   (cond ((eql 'done prop)
          (funcall cleanup
                   win
@@ -334,13 +339,13 @@
         (lotus-with-timed-new-win ;break it in two macro call to accommodate local-cleanup
             timeout timer cleanup local-cleanup win
             (condition-case-control err
-              (let ((prop (occ-props-edit-in-cloned-buffer obj)))
-                (occ-props-edit-handle-response prop
-                                                timeout
-                                                timer
-                                                cleanup
-                                                local-cleanup
-                                                win)
+              (let ((prop (occ-properties-editor-in-cloned-buffer obj)))
+                (occ-properties-editor-handle-response prop
+                                                       timeout
+                                                       timer
+                                                       cleanup
+                                                       local-cleanup
+                                                       win)
                 (occ-debug :debug "occ-props-window-edit(obj occ-obj-ctx-tsk) noquit: label %s value %s"
                            occ-return-true-label obj)
                 (if return-transform ;Here caller know if return value is going to be used.

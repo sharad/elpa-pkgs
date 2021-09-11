@@ -156,7 +156,7 @@
       (with-org-capture-run marker 'entry `(marker ,mrk) template '(:empty-lines 1)
         (let* ((tmp-tsk  (occ-make-tsk marker))
                (tmp-ctsk (occ-build-ctsk-with tmp-tsk ctx)))
-          (occ-props-edit tmp-ctsk)
+          (occ-properties-editor tmp-ctsk)
           t)
         (let* ((child-tsk        (occ-make-tsk marker))
                (child-ctxual-tsk (occ-build-ctxual-tsk-with child-tsk ctx)))

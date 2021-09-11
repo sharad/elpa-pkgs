@@ -70,7 +70,7 @@
     (occ-try-until 3 (or (not (eq t retval))
                          (occ-associable-p obj))
       (setq retval
-            (occ-props-edit-combined obj '(timebeing add 10))))
+            (occ-properties-editor-combined obj '(timebeing add 10))))
     retval))
 
 (cl-defmethod occ-edit-clock-if-unassociated ((obj occ-ctx))

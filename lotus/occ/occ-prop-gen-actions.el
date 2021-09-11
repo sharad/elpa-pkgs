@@ -27,7 +27,9 @@
 (provide 'occ-prop-gen-actions)
 
 
-(require 'occ-prop)
+(require 'occ-prop-base)
+(require 'occ-prop-edit)
+(require 'occ-prop-checkout)
 
 
 ;; TODO: also accommodate increase decrease etc.
@@ -296,7 +298,7 @@
   (list (occ-make-callable-normal :edit
                                   "Edit"
                                   #'(lambda (obj)
-                                      (occ-props-edit obj)))))
+                                      (occ-properties-editor obj)))))
 
 (cl-defmethod occ-gen-edits ((obj occ-obj-ctx)
                              &param-only param-only)
