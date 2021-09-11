@@ -712,9 +712,9 @@ method provided.")))
                                   #'(lambda (obj)
                                       (occ-checkout obj)))))
 
-;; (cl-defmethod occ-gen-misc ((obj occ-obj-ctx)
-;;                             &param-only param-only)
-;;   nil)
+(cl-defmethod occ-gen-misc ((obj occ-obj-ctx)
+                            &param-only param-only)
+  nil)
 
 
 

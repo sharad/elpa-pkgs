@@ -29,6 +29,7 @@
 (require 'occ-tsk)
 (require 'occ-print)
 (require 'occ-obj-ctor)
+(require 'occ-prop)
 (require 'occ-rank)
 
 
@@ -185,7 +186,7 @@
 
 (cl-defmethod occ-obj-callable-helm-action ((callable occ-callable))
   "Return pair or (NAME . FUN)"
-  (list (occ-callable-name callable)
+  (cons (occ-callable-name callable)
         (occ-callable-fun  callable)))
 
 ;; methods
@@ -198,7 +199,6 @@
     (cl-assert (cl-notany #'occ-callable-generator-p callables-list))
     (mapcar #'occ-obj-callable-helm-action
             callables-list)))
-  
 
 (cl-defmethod occ-obj-callable-helm-actions ((callable occ-callable)
                                              (obj occ-obj))
@@ -306,9 +306,10 @@
             (cl-assert helm-actions)
             (dolist (a helm-actions)
               (occ-debug :debug "occ-obj-ap-helm-transformation: helm-action: %s" (prin1-to-string a)))
-            (cl-assert (cl-every #'(lambda (x)
-                                     (functionp (cadr x)))
-                                 helm-actions))
+            (when helm-actions
+              (cl-assert (cl-every #'(lambda (x)
+                                       (functionp (cadr x)))
+                                   helm-actions)))
             (occ-debug :debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
             helm-actions)))))
 
