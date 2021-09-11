@@ -253,72 +253,81 @@
 
 
 
-(cl-defmethod occ-gen-fast-edits ((obj null)
-                                  &key param-only)
+(cl-defmethod occ-gen-each-prop-edits ((obj null)
+                                       &key param-only)
   nil)
 
-(cl-defmethod occ-gen-fast-edits ((obj occ-obj-ctx-tsk)
-                                  &key param-only)
-  (occ-message "occ-gen-fast-edits: called")
+(cl-defmethod occ-gen-each-prop-edits ((obj occ-obj-ctx-tsk)
+                                       &key param-only)
+  (occ-message "occ-gen-each-prop-edits: called")
   (let ((aps (occ-gen-edits-if-required obj nil nil
                                         :param-only param-only)))
-    (occ-message "occ-gen-fast-edits: aps = %s" aps)
+    (occ-message "occ-gen-each-prop-edits: aps = %s" aps)
     ;; (occ-build-ap-normal (cons :callables aps))
     aps))
 
-(cl-defmethod occ-gen-fast-edits ((obj occ-obj-ctx)
-                                  &param-only param-only)
+(cl-defmethod occ-gen-each-prop-edits ((obj occ-obj-ctx)
+                                       &param-only param-only)
   nil)
+
+(defun occ-gen-each-prop-fast-edits (obj
+                                     &param-only param-only)
+  (occ-gen-each-prop-edits obj param-only))
 
 
-(cl-defmethod occ-gen-fast-checkouts ((obj null)
-                                      &key param-only)
+(cl-defmethod occ-gen-each-prop-checkouts ((obj null)
+                                           &key param-only)
   nil)
 
-(cl-defmethod occ-gen-fast-checkouts ((obj occ-obj-ctx-tsk)
-                                      &key param-only)
-  (occ-message "occ-gen-fast-checkouts: called")
+(cl-defmethod occ-gen-each-prop-checkouts ((obj occ-obj-ctx-tsk)
+                                           &key param-only)
+  (occ-message "occ-gen-each-prop-checkouts: called")
   (let ((aps (occ-gen-checkouts-if-required obj nil nil
                                         :param-only param-only)))
-    (occ-message "occ-gen-fast-checkouts: aps = %s" aps)
+    (occ-message "occ-gen-each-prop-checkouts: aps = %s" aps)
     ;; (occ-build-ap-normal (cons :callables aps))
     aps))
 
-(cl-defmethod occ-gen-fast-checkouts ((obj occ-obj-ctx)
-                                      &param-only param-only)
+(cl-defmethod occ-gen-each-prop-checkouts ((obj occ-obj-ctx)
+                                           &param-only param-only)
   nil)
+
+(defun occ-gen-each-prop-fast-checkouts (obj
+                                         &param-only param-only)
+  (occ-gen-each-prop-checkouts obj param-only))
 
 
-(cl-defmethod occ-gen-edits ((obj null)
-                             &param-only param-only)
+(cl-defmethod occ-gen-simple-edits ((obj null)
+                                    &param-only param-only)
   nil)
 
-(cl-defmethod occ-gen-edits ((obj occ-obj-ctx-tsk)
-                             &param-only param-only)
+(cl-defmethod occ-gen-simple-edits ((obj occ-obj-ctx-tsk)
+                                    &param-only param-only)
   (list (occ-make-callable-normal :edit
                                   "Edit"
                                   #'(lambda (obj)
                                       (occ-properties-editor obj)))))
 
-(cl-defmethod occ-gen-edits ((obj occ-obj-ctx)
-                             &param-only param-only)
+(cl-defmethod occ-gen-simple-edits ((obj occ-obj-ctx)
+                                    &param-only param-only)
   nil)
 
 
-(cl-defmethod occ-gen-checkouts ((obj null)
-                                 &param-only param-only)
+(cl-defmethod occ-gen-simple-checkouts ((obj null)
+                                        &param-only param-only)
   nil)
 
-(cl-defmethod occ-gen-checkouts ((obj occ-obj-ctx-tsk)
-                                 &param-only param-only)
+(cl-defmethod occ-gen-simple-checkouts ((obj occ-obj-ctx-tsk)
+                                        &param-only param-only)
   (list (occ-make-callable-normal :checkout
                                   "Checkout"
                                   #'(lambda (obj)
                                       (occ-props-checkout obj)))))
 
-(cl-defmethod occ-gen-checkouts ((obj occ-obj-ctx)
-                                 &param-only param-only)
+(cl-defmethod occ-gen-simple-checkouts ((obj occ-obj-ctx)
+                                        &param-only param-only)
   nil)
+
 
 
 
