@@ -43,8 +43,8 @@
 (defvar occ-debug-uncond nil "occ-debug-uncond")
 
 
-(defvar occ-list-select-ap-normal-keys '(t actions general))
-(defvar occ-list-select-ap-transf-keys '(t actions general edit))
+(defvar occ-list-select-ap-normal-keys '(t actions general edit checkout))
+(defvar occ-list-select-ap-transf-keys '(t actions general edit checkout))
 
 
 ;; DEPENDENCY remove it.
