@@ -152,22 +152,22 @@
     'put))
 
 
-(cl-defgeneric occ-editprop (obj
-                             prop
-                             &optional
-                             operation
-                             value)
+(cl-defgeneric occ-op-prop-edit (obj
+                                 prop
+                                 &optional
+                                 operation
+                                 value)
   "Accept occ compatible VALUES")
 
-(cl-defmethod occ-editprop ((obj  occ-obj-tsk)
-                            (prop symbol)
-                            &optional
-                            operation
-                            value)
+(cl-defmethod occ-op-prop-edit ((obj  occ-obj-tsk)
+                                (prop symbol)
+                                &optional
+                                operation
+                                value)
   ;; TODO: change this to use OCC VALUE like with corresponding changes to occ-readprop-from-user
   "Accept occ compatible VALUES"
   (occ-debug :debug
-             "occ-editprop: prop: %s, value: %s" prop value)
+             "occ-op-prop-edit: prop: %s, value: %s" prop value)
   (cl-assert prop)
   (let ((operation  (or operation
                         (occ-select-operation obj prop)))
@@ -175,7 +175,7 @@
                         (occ-readprop-from-user obj
                                                 prop))))
     (cl-assert operation)
-    (occ-message "(occ-editprop occ-obj-tsk): operation %s prop %s" operation prop)
+    (occ-message "(occ-op-prop-edit occ-obj-tsk): operation %s prop %s" operation prop)
     (occ-call-operation obj
                         operation
                         prop
@@ -184,10 +184,10 @@
                           (list prop-value)))))
 
 
-(cl-defgeneric occ-props-edit (obj)
+(cl-defgeneric occ-op-props-edit (obj)
   "Edit all property for forced clock-in.")
 
-(cl-defmethod occ-props-edit ((obj occ-obj-tsk))
+(cl-defmethod occ-op-props-edit ((obj occ-obj-tsk))
   "Edit all property for forced clock-in."
   (occ-properties-editor obj))
 

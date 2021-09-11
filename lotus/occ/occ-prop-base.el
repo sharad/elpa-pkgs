@@ -164,7 +164,7 @@
 
 (cl-defmethod occ-properties-to-checkout ((class symbol))
   "return PROPERTIES list that can be checked-out."
-  (cl-method-param-values 'occ-checkoutprop
+  (cl-method-param-values 'occ-checkout-prop ;NOTE: user have to define them for each properties.
                           (list '\` `(,class (eql ,'(\, val))))
                           'val))
 

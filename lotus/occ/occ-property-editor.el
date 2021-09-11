@@ -252,8 +252,8 @@
                           '(edit done)))
         ;; TODO: handle (occ-select-propetry obj ctx) return NIL
         (cl-assert prop)
-        (let ((retval (occ-editprop obj
-                                    prop)))
+        (let ((retval (occ-op-prop-edit obj
+                                        prop)))
           (when retval
             ;; (occ-tsk-update-tsks t)
             (occ-debug :debug "occ-properties-editor-with: done with retval %s" retval)

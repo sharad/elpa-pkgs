@@ -321,7 +321,7 @@
                    (occ-format tsk 'capitalize)
                    (occ-format ctx 'capitalize)
                    (- total-tries try))
-      (occ-properties-editor ctxtual-tsk))
+      (occ-op-props-edit ctxtual-tsk))
     (unless (occ-clock-in-if-associable ctxtual-tsk
                                         :filters   filters
                                         :builder   builder

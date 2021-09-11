@@ -44,10 +44,10 @@
             operation
             value)
     #'(lambda (obj)
-        (occ-editprop obj
-                      prop
-                      operation
-                      value))))
+        (occ-op-prop-edit obj
+                          prop
+                          operation
+                          value))))
 
 (cl-defmethod occ-gen-edit-prompt ((obj       occ-obj-tsk)
                                    (prop      symbol)
@@ -194,7 +194,7 @@
   (if param-only
       (list prop)
     #'(lambda (obj)
-        (occ-checkoutprop obj prop))))
+        (occ-op-prop-checkout obj prop))))
 
 
 (cl-defgeneric occ-gen-checkout (obj
@@ -306,7 +306,7 @@
   (list (occ-make-callable-normal :edit
                                   "Edit"
                                   #'(lambda (obj)
-                                      (occ-properties-editor obj)))))
+                                      (occ-op-props-edit obj)))))
 
 (cl-defmethod occ-gen-simple-edits ((obj occ-obj-ctx)
                                     &param-only param-only)
@@ -322,7 +322,7 @@
   (list (occ-make-callable-normal :checkout
                                   "Checkout"
                                   #'(lambda (obj)
-                                      (occ-props-checkout obj)))))
+                                      (occ-op-props-checkout obj)))))
 
 (cl-defmethod occ-gen-simple-checkouts ((obj occ-obj-ctx)
                                         &param-only param-only)
