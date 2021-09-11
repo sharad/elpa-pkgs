@@ -357,8 +357,8 @@ method provided.")))
 
 ;; defined in occ-prop-intf.el
 (cl-defmethod occ-operation ((obj  occ-obj-tsk)
+                             (operation symbol)
                              (prop symbol)
-                             operation
                              values)
   "Accept occ compatible VALUES"
   (let ((mrk (occ-obj-marker obj)))
@@ -368,14 +368,10 @@ method provided.")))
                                                    ;; going to org world
                                                    (occ-prop-to-org prop
                                                                     values))))
-      (occ-debug :debug "occ-editprop: (occ-org-call-operation-at-point mrk) returnd %s" retval)
+      (occ-debug :debug "occ-operation: (occ-org-call-operation-at-point mrk) returnd %s" retval)
       (when retval                      ;; BUG: TODO: why calling again
-        ;; (occ-operation obj              ;now correct or reflect in occ objects.
-        ;;                prop
-        ;;                operation
-        ;;                values)
-        (when (cl-next-method-p)
-          (cl-call-next-method)
+        (if (cl-next-method-p)
+            (cl-call-next-method)
           (occ-error "No occ-operation defined for prop %s operation %s" prop operation))))))
 
 
@@ -384,6 +380,7 @@ method provided.")))
                              (prop symbol)
                              values)
   (let ((tsk (occ-obj-tsk obj)))
+    (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
     (if (occ-list-p prop)
         (occ-get-property tsk
                           prop)
@@ -395,6 +392,7 @@ method provided.")))
                              (prop symbol)
                              values)
   (let ((tsk    (occ-obj-tsk obj)))
+    (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
     (if (occ-list-p prop)
         (occ-set-property tsk prop
                           (nconc (occ-get-property tsk prop)
@@ -407,6 +405,7 @@ method provided.")))
                              (prop symbol)
                              values)
   (let ((tsk    (occ-obj-tsk obj)))
+    (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
     (if (occ-list-p prop)
         (occ-set-property tsk prop
                           values)
@@ -418,6 +417,7 @@ method provided.")))
                              (prop symbol)
                              values)
   (let ((tsk    (occ-obj-tsk obj)))
+    (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
     (if (occ-list-p prop)
         (occ-set-property tsk prop
                           (remove (car values)
@@ -429,6 +429,7 @@ method provided.")))
                              (prop symbol)
                              values)
   (let ((tsk (occ-obj-tsk obj)))
+    (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
     (occ-has-p tsk prop
                (car values))))
 
@@ -440,13 +441,14 @@ method provided.")))
   "Accept occ compatible VALUES")
 
 (cl-defmethod occ-call-operation ((obj  occ-obj-tsk)
+                                  (operation symbol)
                                   (prop symbol)
-                                  operation
                                   values)
   "Accept occ compatible VALUES"
+  (occ-message "(occ-call-operation occ-obj-tsk): operation %s prop %s" operation prop)
   (occ-operation obj
-                 prop
                  operation
+                 prop
                  values))
 
 
@@ -497,9 +499,10 @@ method provided.")))
                         (occ-readprop-from-user obj
                                                 prop))))
     (cl-assert operation)
+    (occ-message "(occ-editprop occ-obj-tsk): operation %s prop %s" operation prop)
     (occ-call-operation obj
-                        prop
                         operation
+                        prop
                         (if (consp prop-value)
                             prop-value
                           (list prop-value)))))
