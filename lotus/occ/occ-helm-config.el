@@ -75,10 +75,10 @@
       (occ-build-callable-normal :rank                     "Get Rank"                 #'occ-print-rank)
       (occ-build-callable-normal :tsk                      "Get Task"                 #'occ-print-tsk))
     (progn
-      (occ-build-callable-generator :fast-edits-gen     "Fast Edits" #'occ-gen-fast-edits)
+      (occ-build-callable-generator :fast-edits-gen     "Fast Edits" #'occ-gen-each-prop-fast-edits)
       (occ-build-callable-generator :edits-gen          "Edit"       #'occ-gen-edits)
       (occ-build-callable-generator :misc-gen           "Misc"       #'occ-gen-misc)
-      (occ-build-callable-generator :fast-checkouts-gen "Checkouts"  #'occ-gen-checkouts)))
+      (occ-build-callable-generator :fast-checkouts-gen "Fast Checkouts"  #'occ-gen-each-prop-fast-checkouts)))
 
   (progn
     (setq occ-helm-actions-tree '(t))
