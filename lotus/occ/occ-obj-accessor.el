@@ -308,7 +308,7 @@
               (occ-debug :debug "occ-obj-ap-helm-transformation: helm-action: %s" (prin1-to-string a)))
             (when helm-actions
               (cl-assert (cl-every #'(lambda (x)
-                                       (functionp (cadr x)))
+                                       (functionp (cdr x)))
                                    helm-actions)))
             (occ-debug :debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
             helm-actions)))))
