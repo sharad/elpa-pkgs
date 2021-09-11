@@ -123,7 +123,7 @@
 
 (defun occ-gen-each-prop-fast-checkouts (obj
                                          &key param-only)
-  (occ-gen-each-prop-checkouts obj param-only))
+  (occ-gen-each-prop-checkouts obj :param-only param-only))
 
 
 (cl-defmethod occ-gen-simple-checkouts ((obj null)

@@ -232,6 +232,13 @@ _TEMPLATE2_ if CALLABLE (helm method) should be generated."
                            (file-name-directory ctx-currfile)))
            (prompt       (concat (symbol-name prop) ": ")))
       (ido-read-file-name prompt ctx-dir ctx-currfile))))
+
+(cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
+                                 (prop (eql currfile)))
+  (let* ((files      (occ-get-property obj))
+         (first-file (first files)))
+    (find-file first-file)))
+
 ;;}}
 
 ;; Current File property of task:1 ends here
@@ -293,6 +300,12 @@ _TEMPLATE2_ if CALLABLE (helm method) should be generated."
            (ctx-dir    (when (stringp ctx-file) (file-name-directory ctx-file)))
            (prompt     (concat (symbol-name prop) ": ")))
       (ido-read-directory-name prompt ctx-dir ctx-dir))))
+
+(cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
+                                 (prop (eql root)))
+  (let* ((dirs      (occ-get-property obj))
+         (first-dir (first dirs)))
+    (find-file first-dir)))
 ;;}}
 
 ;; Root dir property of task:1 ends here
