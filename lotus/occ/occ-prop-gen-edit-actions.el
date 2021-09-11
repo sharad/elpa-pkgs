@@ -95,12 +95,6 @@
                                         (operation symbol)
                                         value
                                         &key param-only)
-  ;; (occ-message "(occ-gen-edit-if-required occ-obj-tsk): checking prop %s operation %s" prop operation)
-  ;; (let ((required (occ-require-p obj
-  ;;                                operation
-  ;;                                prop
-  ;;                                value)))
-  ;;   (occ-message "occ-gen-edit-if-required: checking prop %s operation %s required %s" prop operation required))
   (when (occ-require-p obj
                        operation
                        prop

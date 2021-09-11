@@ -77,7 +77,7 @@
     (progn
       (occ-build-callable-generator :fast-edits-gen     "Fast Edits"      #'occ-gen-each-prop-fast-edits)
       (occ-build-callable-generator :edits-gen          "Simple Edit"     #'occ-gen-simple-edits)
-      (occ-build-callable-generator :edits-gen          "Simple Checkout" #'occ-gen-simple-checkouts)
+      (occ-build-callable-generator :checkouts-gen      "Simple Checkout" #'occ-gen-simple-checkouts)
       (occ-build-callable-generator :fast-checkouts-gen "Fast Checkouts"  #'occ-gen-each-prop-fast-checkouts)
       (occ-build-callable-generator :misc-gen           "Misc"       #'occ-gen-misc)))
 
@@ -115,6 +115,7 @@
 
       (occ-add-helm-actions '(actions checkout)
                             "Checkout"
-                            :fast-checkouts-gen))))
+                            :fast-checkouts-gen
+                            :checkouts-gen))))
 
 ;;; occ-helm-config.el ends here

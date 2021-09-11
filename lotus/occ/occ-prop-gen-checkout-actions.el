@@ -77,7 +77,8 @@
                       prop)
       (occ-gen-checkout obj
                         prop
-                        :param-only param-only)))
+                        :param-only param-only)
+    (occ-error "x")))
 
 
 (cl-defmethod occ-gen-checkouts-if-required ((obj null)
@@ -95,6 +96,7 @@
                                                                  prop
                                                                  :param-only param-only))
                                ops)))
+    (cl-assert ops)
     (remove nil
             checkout-ops)))
 
@@ -123,7 +125,8 @@
 
 (defun occ-gen-each-prop-fast-checkouts (obj
                                          &key param-only)
-  (occ-gen-each-prop-checkouts obj :param-only param-only))
+  (occ-gen-each-prop-checkouts obj
+                               :param-only param-only))
 
 
 (cl-defmethod occ-gen-simple-checkouts ((obj null)
