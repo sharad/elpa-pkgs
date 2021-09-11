@@ -23,7 +23,7 @@
 
 ;;; Code:
 
-(provide 'occ-prop-edit)
+(provide 'occ-property-editor)
 
 
 (require 'time-stamp)

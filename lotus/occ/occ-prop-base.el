@@ -57,7 +57,7 @@
 
 ;;; Code:
 
-(provide 'occ-prop)
+(provide 'occ-prop-base)
 
 
 (require 'dash)
@@ -508,54 +508,26 @@ method provided.")))
                           (list prop-value)))))
 
 
-(cl-defgeneric occ-checkout (obj)
+(cl-defgeneric occ-checkoutprop (obj
+                                 prop)
   "Checkout property for forced clock-in.")
 
-(cl-defmethod occ-checkout ((obj occ-obj-tsk))
+(cl-defmethod occ-checkoutprop ((obj  occ-obj-tsk)
+                                (prop symbol))
+  "Checkout property for forced clock-in."
+  (occ-checkout-prop obj prop))
+
+
+(cl-defgeneric occ-props-checkout (obj)
+  "Checkout property for forced clock-in.")
+
+(cl-defmethod occ-props-checkout ((obj occ-obj-tsk))
   "Checkout property for forced clock-in."
   (dolist (prop (occ-properties-to-checkout obj))
     (occ-message "occ-checkout: checkout prop %s" prop)
-    (occ-checkout-prop obj prop)))
+    (occ-checkoutprop obj prop)))
 
 
-;; What for
-(cl-defmethod occ-gen-edits ((obj null)
-                             &param-only param-only)
-  nil)
-
-(cl-defmethod occ-gen-edits ((obj occ-obj-ctx-tsk)
-                             &param-only param-only)
-  (list (occ-make-callable-normal :edit
-                                  "Edit"
-                                  #'(lambda (obj)
-                                      (occ-props-edit obj)))))
-
-
-(cl-defmethod occ-gen-edits ((obj occ-obj-ctx)
-                             &param-only param-only)
-  nil)
-
-
-
-;; Correct it ???
-(cl-defmethod occ-gen-misc ((obj null)
-                            &param-only param-only)
-  nil)
-
-(cl-defmethod occ-gen-misc ((obj occ-obj-ctx-tsk)
-                            &param-only param-only)
-  (list (occ-make-callable-normal :continue
-                                  "Continue"
-                                  t)
-        (occ-make-callable-normal :checkout
-                                  "Checkout"
-                                  #'(lambda (obj)
-                                      (occ-checkout obj)))))
-
-(cl-defmethod occ-gen-misc ((obj occ-obj-ctx)
-                            &param-only param-only)
-  nil)
-
 
 
 ;; TODO: Implement Plist with title here (??)
