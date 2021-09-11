@@ -291,12 +291,14 @@ method provided.")))
                              (operation (eql get))
                              (prop      symbol)
                              values)
+  (occ-message "occ-require-p11 prop %s operation %s values %s is called" prop operation values)
   nil)
 
 (cl-defmethod occ-require-p ((obj       occ-obj-tsk)
                              (operation (eql add))
                              (prop      symbol)
                              values)
+  (occ-message "occ-require-p7 prop %s operation %s values %s is called" prop operation values)
   (not (occ-has-p obj prop
                   values)))
 
@@ -304,12 +306,14 @@ method provided.")))
                              (operation (eql put))
                              (prop      symbol)
                              values)
+  (occ-message "occ-require-p10 prop %s operation %s values %s is called" prop operation values)
   nil)
 
 (cl-defmethod occ-require-p ((obj       occ-obj-tsk)
                              (operation (eql remove))
                              (prop      symbol)
                              values)
+  (occ-message "occ-require-p8 prop %s operation %s values %s is called" prop operation values)
   (occ-has-p obj prop
              values))
 
@@ -317,6 +321,7 @@ method provided.")))
                              (operation (eql member))
                              (prop      symbol)
                              values)
+  (occ-message "occ-require-p9 prop %s operation %s values %s is called" prop operation values)
   nil)
 
 
@@ -543,6 +548,7 @@ method provided.")))
                                    (operation symbol)
                                    value
                                    &key param-only)
+  (occ-message "occ-gen-prompt-edit: checking prop %s operation %s" prop operation)
   (let ((prompt    (occ-gen-prompt obj
                                    prop
                                    operation
@@ -563,10 +569,17 @@ method provided.")))
                                         (operation symbol)
                                         value
                                         &key param-only)
+  (occ-message "(occ-gen-edit-if-required occ-obj-tsk): checking prop %s operation %s" prop operation)
+  ;; (let ((required (occ-require-p obj
+  ;;                                operation
+  ;;                                prop
+  ;;                                value)))
+  ;;   (occ-message "occ-gen-edit-if-required: checking prop %s operation %s required %s" prop operation required))
   (when (occ-require-p obj
                        operation
                        prop
                        value)
+    (occ-message "occ-gen-edit-if-required: adding prop %s operation %s" prop operation)
     (occ-gen-prompt-edit obj
                          prop
                          operation
@@ -583,13 +596,17 @@ method provided.")))
                                (let ((value (occ-prop-default-value obj
                                                                     prop
                                                                     operation)))
+                                 (occ-message "(occ-gen-edits-if-required occ-obj-tsk)1: prop %s operation %s def value %s" prop operation value)
                                  (when value
+                                   (occ-message "(occ-gen-edits-if-required occ-obj-tsk)1: adding prop %s operation %s def value %s" prop operation value)
                                    (occ-gen-edit-if-required obj
                                                              prop
                                                              operation
                                                              value
                                                              :param-only param-only))))
                            ops)))
+    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)1: prop %s operation %s" prop operation)
+    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)1: edit-ops %s" edit-ops)
     (remove nil edit-ops)))
 
 (cl-defmethod occ-gen-edits-if-required ((obj       occ-obj-tsk)
@@ -603,6 +620,8 @@ method provided.")))
                                                           operation
                                                           :param-only param-only))
                            ops)))
+    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)2: prop %s operation %s" prop operation)
+    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)2: edit-ops %s" edit-ops)
     (remove nil edit-ops)))
 
 (cl-defmethod occ-gen-edits-if-required ((obj       occ-obj-tsk)
@@ -616,6 +635,10 @@ method provided.")))
                                                           operation
                                                           :param-only param-only))
                            ops)))
+    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)3: ops %s" ops)
+    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)3: obj %s" obj)
+    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)3: prop %s operation %s" prop operation)
+    (occ-message "occ-gen-edit-if-required: edit-ops %s" edit-ops)
     (apply #'append
            edit-ops)))
 

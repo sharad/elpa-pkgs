@@ -49,6 +49,7 @@
 (require 'occ-list-filter)
 (require 'occ-select)
 (require 'occ-helm)
+(require 'occ-helm-config)
 (require 'occ-clock)
 (require 'occ-util-method)
 

@@ -73,12 +73,13 @@ org string to occ representation.")
   "Read value of list of elements if (occ-list-p PROPERTY)
   else element for property PROPERTY from user for OCC-TSK OBJ,
   must return ORG compatible value.")
-(cl-defmethod occ-require-p ((obj occ-obj-tsk))
-                         (operation (eql _operation_))
-                         (prop (eql _template1_))
-                         values
+(cl-defmethod occ-require-p ((obj       occ-obj-tsk)
+                             (operation (eql _operation_))
+                             (prop (eql _template1_))
+                             values)
   "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
-_TEMPLATE1_ if CALLABLE (helm method) should be generated.")
+_TEMPLATE1_ if CALLABLE (helm method) should be generated."
+  (occ-message "occ-require-p4 is called"))
 (cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
                                       (prop (eql _template1_))
                                       (operation (eql _operation_)))
@@ -151,6 +152,7 @@ return ORG compatible value."
                              values)
   "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
 _TEMPLATE2_ if CALLABLE (helm method) should be generated."
+  (occ-message "occ-require-p5 is called")
   (occ-current-p obj))
 
 (cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
@@ -345,6 +347,7 @@ _TEMPLATE2_ if CALLABLE (helm method) should be generated."
                              (operation (eql increment))
                              (prop (eql timebeing))
                              values)
+  (occ-message "occ-require-p6 is called")
   (occ-current-p obj))
 
 (cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)

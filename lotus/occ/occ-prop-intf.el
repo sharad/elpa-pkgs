@@ -68,11 +68,9 @@
   (let ((tsk (occ-obj-tsk obj)))
     (if (occ-list-p prop)
         (memq value
-              (occ-get-property-value-from-ctx tsk
-                                               prop))
+              (occ-get-property tsk prop))
       (equal value
-             (occ-get-property-value-from-ctx tsk
-                                              prop)))))
+             (occ-get-property tsk prop)))))
 
 
 (cl-defgeneric occ-get-property-value-from-ctx (obj
@@ -156,13 +154,15 @@ return ORG compatible value."
                               property
                               values)
   "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
-_TEMPLATE_ if CALLABLE (helm method) should be generated.")
+_TEMPLATE_ if CALLABLE (helm method) should be generated."
+  (occ-message "occ-require-p0 is called"))
 (cl-defmethod occ-require-p ((obj occ-obj-tsk)
                              (operation (eql _operation_))
                              (property  symbol)
                              values)
   "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
 _TEMPLATE_ if CALLABLE (helm method) should be generated."
+  (occ-message "occ-require-p1 is called")
   t)
 
 
@@ -233,7 +233,8 @@ return ORG compatible value.")
                               (prop (eql _template_))
                               values)
    "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
-_TEMPLATE_ if CALLABLE (helm method) should be generated.")
+_TEMPLATE_ if CALLABLE (helm method) should be generated."
+   (occ-message "occ-require-p3 is called"))
  (cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
                                        (prop (eql _template_))
                                        (operation (eql _operation_)))

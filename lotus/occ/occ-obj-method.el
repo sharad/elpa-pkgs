@@ -42,6 +42,7 @@
 (require 'occ-debug-method)
 (require 'occ-unnamed)
 (require 'occ-helm)
+(require 'occ-helm-config)
 
 
 (defcustom *occ-last-buff-sel-time*            (current-time) "*occ-last-buff-sel-time*")
