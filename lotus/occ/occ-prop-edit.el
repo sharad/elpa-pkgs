@@ -183,4 +183,12 @@
                             prop-value
                           (list prop-value)))))
 
+
+(cl-defgeneric occ-props-edit (obj)
+  "Edit all property for forced clock-in.")
+
+(cl-defmethod occ-props-edit ((obj occ-obj-tsk))
+  "Edit all property for forced clock-in."
+  (occ-properties-editor obj))
+
 ;;; occ-prop-edit.el ends here

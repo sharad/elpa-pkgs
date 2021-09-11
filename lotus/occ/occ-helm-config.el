@@ -68,17 +68,18 @@
       (occ-build-callable-normal :procreate-child-clock-in "Procreate Child Clock-in" #'occ-procreate-child-clock-in)
       (occ-build-callable-normal :goto                     "Goto"                     #'occ-goto)
       (occ-build-callable-normal :set-to                   "Set To"                   #'occ-set-to)
-      (occ-build-callable-normal :proprty-window-edit      "Properties Window Edit"   #'occ-props-window-edit) ;TODO: implement it.
+      (occ-build-callable-normal :proprty-window-edit      "Properties Window Edit"   #'occ-properties-window-editor) ;TODO: implement it.
       (occ-build-callable-normal :proprty-edit-combined    "Properties Edit Combined" #'occ-properties-editor-combined) ;TODO: implement it.
       (occ-build-callable-normal :call-with-obj            "Call with object"         #'occ-call-with-obj)
       (occ-build-callable-normal :set-debug-obj            "Set debug obj"            #'occ-set-debug-obj)
       (occ-build-callable-normal :rank                     "Get Rank"                 #'occ-print-rank)
       (occ-build-callable-normal :tsk                      "Get Task"                 #'occ-print-tsk))
     (progn
-      (occ-build-callable-generator :fast-edits-gen     "Fast Edits" #'occ-gen-each-prop-fast-edits)
-      (occ-build-callable-generator :edits-gen          "Edit"       #'occ-gen-edits)
-      (occ-build-callable-generator :misc-gen           "Misc"       #'occ-gen-misc)
-      (occ-build-callable-generator :fast-checkouts-gen "Fast Checkouts"  #'occ-gen-each-prop-fast-checkouts)))
+      (occ-build-callable-generator :fast-edits-gen     "Fast Edits"      #'occ-gen-each-prop-fast-edits)
+      (occ-build-callable-generator :edits-gen          "Simple Edit"     #'occ-gen-simple-edits)
+      (occ-build-callable-generator :edits-gen          "Simple Checkout" #'occ-gen-simple-checkouts)
+      (occ-build-callable-generator :fast-checkouts-gen "Fast Checkouts"  #'occ-gen-each-prop-fast-checkouts)
+      (occ-build-callable-generator :misc-gen           "Misc"       #'occ-gen-misc)))
 
   (progn
     (setq occ-helm-actions-tree '(t))

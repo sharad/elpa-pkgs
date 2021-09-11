@@ -64,9 +64,9 @@
 (defun occ-proprty-edit ()
   (interactive)
   (let ((ctx (occ-make-ctx-at-point)))
-    (occ-props-window-edit ctx
-                           :ap-normal '(t actions edit)
-                           :ap-transf '(t actions edit))))
+    (occ-properties-window-editor ctx
+                                  :ap-normal '(t actions edit)
+                                  :ap-transf '(t actions edit))))
 
 
 ;;;###autoload

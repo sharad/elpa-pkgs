@@ -364,7 +364,7 @@
            (mrk  (if tsk (occ-tsk-marker tsk))))
       (org-capture-plus 'entry `(marker ,mrk) 'occ-capture+-helm-select-template
                         :finalize (lambda ()
-                                    (occ-props-window-edit-with tsk ctx 7)
+                                    (occ-properties-window-editor-with tsk ctx 7)
                                     t)
                         :empty-lines 1)))
 

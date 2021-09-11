@@ -249,15 +249,15 @@
             (occ-debug :debug
                        "occ-clock-in(ctx):  with this-command=%s" this-command)
             ;; (occ-delayed-select-obj-prop-edit-when-idle obj obj occ-idle-timeout)
-            (occ-debug :debug "occ-clock-in((obj occ-ctx)): calling occ-safe-ignore-quit-props-window-edit")
+            (occ-debug :debug "occ-clock-in((obj occ-ctx)): calling occ-safe-ignore-quit-properties-window-editor")
             (occ-message "occ-clock-in: Edit properties of a tsk to make associable to current context.")
-            (occ-safe-ignore-quit-props-window-edit obj
-                                                    :filters          (occ-list-filters)
-                                                    :builder          #'occ-build-ctsk-with
-                                                    :return-transform return-transform ;Here caller know if return value is going to be used.
-                                                    :ap-normal        ap-normal
-                                                    :ap-transf        ap-transf
-                                                    :timeout          timeout)))))
+            (occ-safe-ignore-quit-properties-window-editor obj
+                                                           :filters          (occ-list-filters)
+                                                           :builder          #'occ-build-ctsk-with
+                                                           :return-transform return-transform ;Here caller know if return value is going to be used.
+                                                           :ap-normal        ap-normal
+                                                           :ap-transf        ap-transf
+                                                           :timeout          timeout)))))
     (occ-debug :debug "ctx %s is not clockable." obj)))
 
 
