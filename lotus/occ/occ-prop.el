@@ -28,8 +28,8 @@
 
 
 (require 'occ-prop-base)
-(require 'occ-prop-edit)
-(require 'occ-prop-checkout)
+(require 'occ-prop-op-edit)
+(require 'occ-prop-op-checkout)
 
 
 (require 'occ-prop-gen-actions)

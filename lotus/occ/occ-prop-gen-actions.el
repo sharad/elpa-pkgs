@@ -350,6 +350,4 @@
                             &param-only param-only)
   nil)
 
-
-
 ;;; occ-prop-gen-actions.el ends here

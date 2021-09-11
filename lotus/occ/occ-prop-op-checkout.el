@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(provide 'occ-prop-checkout)
+(provide 'occ-prop-op-checkout)
 
 
 (require 'occ-prop-base)

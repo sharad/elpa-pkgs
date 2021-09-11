@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(provide 'occ-prop-edit)
+(provide 'occ-prop-op-edit)
 
 
 (require 'occ-prop-base)
