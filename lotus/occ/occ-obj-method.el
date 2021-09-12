@@ -69,18 +69,18 @@
   (let ((retval nil))
     (occ-try-until 3 (or (not (eq t retval))
                          (occ-associable-p obj))
+      ;; BUG FIX
       (setq retval
             (occ-properties-editor-combined obj '(timebeing add 10))))
     retval))
 
 (cl-defmethod occ-edit-clock-if-unassociated ((obj occ-ctx))
+  "If clock in task is not unnmaed clock then offer to increase clock time."
   (let*  ((curr-tsk        (occ-current-tsk))
           (ctxual-curr-tsk (occ-build-ctxual-tsk-with curr-tsk obj)))
-    (if (and
-         (not
-          (occ-clock-marker-unnamed-clock-p))
-         ctxual-curr-tsk
-         (not (occ-associable-p ctxual-curr-tsk)))
+    (if (and (not (occ-clock-marker-unnamed-clock-p))
+             ctxual-curr-tsk
+             (not (occ-associable-p ctxual-curr-tsk)))
         (occ-edit-until-associable ctxual-curr-tsk)
       t)))
 ;; (occ-edit-properties (occ-current-ctxual-tsk) '(timebeing add 10))

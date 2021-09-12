@@ -177,10 +177,10 @@
                         :not-recursive not-recursive))))
 
 
-;; (cl-defmethod occ-set-property ((obj occ-obj-tsk)
-;;                                 prop
-;;                                 value &key not-recursive)
-;;   (cl-call-next-method))
+(cl-defmethod occ-set-property ((obj occ-obj-tsk)
+                                prop
+                                value &key not-recursive)
+  (cl-call-next-method))
 
 (cl-defmethod occ-set-property ((obj occ-obj-ctx-tsk)
                                 prop
