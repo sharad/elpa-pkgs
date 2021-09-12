@@ -511,17 +511,20 @@ pointing to it."
   (cons (occ-format obj nil t) obj))
 
 
+(defun occ-util-read-sexp-from-minibuffer (prompt)
+ (car (read-from-string (read-from-minibuffer prompt))))
+
 (cl-defmethod occ-call-with-obj ((obj occ-obj-tsk))
   (let ((fun (let ((obj obj)
-                   (exp-with-obj (read)))
+                   (exp-with-obj (occ-util-read-sexp-from-minibuffer "expression with obj: ")))
                #'(lambda ()
                    (funcall
                     `(lambda (obj) ,exp-with-obj) obj)))))
     (funcall fun)))
 
 (cl-defmethod occ-call-with-obj ((obj occ-obj-tsk))
-  (let ((fun (let ((obj-name     (read)) ;prefill with obj
-                   (exp-with-obj (read)))
+  (let ((fun (let ((obj-name     (occ-util-read-sexp-from-minibuffer "obj name: ")) ;prefill with obj
+                   (exp-with-obj (occ-util-read-sexp-from-minibuffer "expression with obj: ")))
                #'(lambda ()
                    (funcall
                     `(lambda (,obj-name) ,exp-with-obj) obj)))))
