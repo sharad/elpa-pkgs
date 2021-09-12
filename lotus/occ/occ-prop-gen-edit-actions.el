@@ -36,7 +36,7 @@
                                    (prop      symbol)
                                    (operation symbol)
                                    value
-                                   :param-only param-only)
+                                   &key param-only)
   "Used by occ-gen-edit"
   ;; TODO: Improve it.
   (let ((list-p (occ-list-p prop)))
@@ -178,8 +178,7 @@
                                        &key param-only)
   nil)
 
-(defun occ-gen-each-prop-fast-edits (obj
-                                     &key param-only)
+(defun* occ-gen-each-prop-fast-edits (obj &key param-only)
   (occ-gen-each-prop-edits obj :param-only param-only))
 
 

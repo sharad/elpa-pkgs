@@ -265,7 +265,8 @@
 (cl-defmethod occ-properties-editor-combined ((obj occ-obj-ctx-tsk))
   (let ((prompt (format "%s fast edit" (occ-Format obj))))
     (let ((helm-fast-source     (helm-build-sync-source prompt
-                                  :candidates (occ-obj-callable-helm-actions (occ-gen-each-prop-fast-edits obj))
+                                  :candidates (occ-obj-callable-helm-actions (occ-gen-each-prop-fast-edits obj)
+                                                                             obj)
                                   :action (list (cons "Edit" #'funcall))))
           (helm-edit-source     (helm-build-sync-source "edit"
                                   :candidates (list
@@ -275,14 +276,14 @@
                                   :candidates (list
                                                (cons "Continue"  t)
                                                (cons "Checkout"  (occ-lambda-with-one-arg #'occ-checkout)))
-                             :action (list (cons "Edit" #'funcall))))))
-    (let* ((sources (list helm-fast-source
-                          helm-edit-source
-                          helm-checkout-source))
-           (retval  (helm-timed occ-idle-timeout nil
-                      (helm :sources sources))))
-      (if (eq retval t)
-          t))))
+                                  :action (list (cons "Edit" #'funcall)))))
+      (let* ((sources (list helm-fast-source
+                            helm-edit-source
+                            helm-checkout-source))
+             (retval  (helm-timed occ-idle-timeout nil
+                        (helm :sources sources))))
+        (if (eq retval t)
+            t)))))
 
 
 (cl-defmethod occ-properties-editor-in-cloned-buffer ((obj occ-obj-ctx-tsk))
