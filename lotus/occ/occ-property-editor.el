@@ -265,18 +265,16 @@
 (cl-defmethod occ-properties-editor-combined ((obj occ-obj-ctx-tsk))
   (let ((prompt (format "%s fast edit" (occ-Format obj))))
     (let ((helm-fast-source     (helm-build-sync-source prompt
-                                  :candidates (occ-gen-edits-if-required obj ;;BUG: occ-ap-transform related changes will be required.
-                                                                         nil
-                                                                         nil
-                                                                         :param-only t)
+                                  :candidates (occ-obj-callable-helm-actions (occ-gen-each-prop-fast-edits obj))
                                   :action (list (cons "Edit" #'funcall))))
           (helm-edit-source     (helm-build-sync-source "edit"
                                   :candidates (list
-                                               (cons "Edit" #'occ-properties-editor))
+                                               (cons "Edit" (occ-lambda-with-one-arg #'occ-properties-editor)))
                                   :action (list (cons "Edit" #'funcall))))
           (helm-checkout-source (helm-build-sync-source "other"
-                                  :candidates '(("Continue" . t)
-                                                ("Checkout" . #'occ-checkout))
+                                  :candidates (list
+                                               (cons "Continue"  t)
+                                               (cons "Checkout"  (occ-lambda-with-one-arg #'occ-checkout)))
                              :action (list (cons "Edit" #'funcall))))))
     (let* ((sources (list helm-fast-source
                           helm-edit-source

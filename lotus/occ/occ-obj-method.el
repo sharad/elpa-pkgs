@@ -71,7 +71,8 @@
                          (occ-associable-p obj))
       ;; BUG FIX
       (setq retval
-            (occ-properties-editor-combined obj '(timebeing add 10))))
+            ;; (occ-properties-editor-combined obj '(timebeing add 10))
+            (occ-properties-editor-combined obj)))
     retval))
 
 (cl-defmethod occ-edit-clock-if-unassociated ((obj occ-ctx))

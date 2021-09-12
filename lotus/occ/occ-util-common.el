@@ -230,4 +230,9 @@
     (add-hook 'occ-global-tsk-collection-change-hook
               fn)))
 
+
+;;;###autoload
+(defun occ-lambda-with-one-arg (fun)
+  #'(lambda (obj) (apply fun obj)))
+
 ;;; occ-util-common.el ends here
