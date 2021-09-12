@@ -99,7 +99,6 @@
                        operation
                        prop
                        value)
-    (occ-message "occ-gen-edit-if-required: adding prop %s operation %s" prop operation)
     (occ-gen-edit obj
                   prop
                   operation
@@ -116,17 +115,13 @@
                                (let ((value (occ-prop-default-value obj
                                                                     prop
                                                                     operation)))
-                                 (occ-message "(occ-gen-edits-if-required occ-obj-tsk)1: prop %s operation %s def value %s" prop operation value)
                                  (when value
-                                   (occ-message "(occ-gen-edits-if-required occ-obj-tsk)1: adding prop %s operation %s def value %s" prop operation value)
                                    (occ-gen-edit-if-required obj
                                                              prop
                                                              operation
                                                              value
                                                              :param-only param-only))))
                            ops)))
-    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)1: prop %s operation %s" prop operation)
-    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)1: edit-ops %s" edit-ops)
     (remove nil
             edit-ops)))
 
@@ -134,15 +129,15 @@
                                          (prop      null)
                                          (operation symbol)
                                          &key param-only)
-  (let* ((ops      (occ-properties-to-edit obj))
+  ;; NOTE: occ-properties-to-edit will handle (obj occ-obj-ctx-tsk)
+  (let* ((props    (occ-properties-to-edit obj))
+         ;; will be call (OCC-GEN-EDITS-IF-REQUIRED OBJ PROP OPERATION :PARAM_ONLY PARAM_ONLY)
          (edit-ops (mapcar #'(lambda (prop)
                                (occ-gen-edits-if-required obj
                                                           prop
                                                           operation
                                                           :param-only param-only))
-                           ops)))
-    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)2: prop %s operation %s" prop operation)
-    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)2: edit-ops %s" edit-ops)
+                           props)))
     (remove nil
             edit-ops)))
 
@@ -150,17 +145,16 @@
                                          (prop      null)
                                          (operation null)
                                          &key param-only)
-  (let* ((ops      (occ-properties-to-edit obj))
+  (let* ((props    (occ-properties-to-edit obj))
+         ;; NOTE:
+         ;; will be calling            (OCC-GEN-EDITS-IF-REQUIRED OBJ PROP NIL :PARAM_ONLY PARAM_ONLY)
+         ;; which in turn will be call (OCC-GEN-EDITS-IF-REQUIRED OBJ PROP OPERATION :PARAM_ONLY PARAM_ONLY)
          (edit-ops (mapcar #'(lambda (prop)
                                (occ-gen-edits-if-required obj
                                                           prop
-                                                          operation
+                                                          operation ;nil
                                                           :param-only param-only))
-                           ops)))
-    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)3: ops %s" ops)
-    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)3: obj %s" obj)
-    (occ-message "(occ-gen-edits-if-required occ-obj-tsk)3: prop %s operation %s" prop operation)
-    (occ-message "occ-gen-edit-if-required: edit-ops %s" edit-ops)
+                           props)))
     (apply #'append
            edit-ops)))
 
@@ -171,7 +165,9 @@
 
 (cl-defmethod occ-gen-each-prop-edits ((obj occ-obj-ctx-tsk)
                                        &key param-only)
-  (occ-message "occ-gen-each-prop-edits: called")
+  ;; NOTE:
+  ;; will call (OCC-GEN-EDITS-IF-REQUIRED ((OBJ OCC-OBJ-TSK) (PROP NULL) (OPERATION NULL) &KEY PARAM-ONLY)
+  ;; function as number of arguments are different.
   (let ((aps (occ-gen-edits-if-required obj nil nil
                                         :param-only param-only)))
     (occ-message "occ-gen-each-prop-edits: aps = %s" aps)

@@ -46,6 +46,9 @@
                                                                     values))))
       (occ-debug :debug "occ-operation: (occ-org-call-operation-at-point mrk) returnd %s" retval)
       (when retval                      ;; BUG: TODO: why calling again
+        ;; occ-prop-op-edit.el: ‘cl-next-method-p’ is an obsolete macro (as of
+        ;; 25.1); make sure there’s always a next method, or catch
+        ;; ‘cl-no-next-method’ instead
         (if (cl-next-method-p)
             (cl-call-next-method)
           (occ-error "No occ-operation defined for prop %s operation %s" prop operation))))))
