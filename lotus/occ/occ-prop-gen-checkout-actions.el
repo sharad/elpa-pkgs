@@ -44,7 +44,8 @@
 (cl-defmethod occ-gen-checkout-fun ((obj  occ-obj-tsk)
                                     (prop symbol)
                                     &key param-only)
-  "Generate helm function, purpose PARAM-ONLY for the case where only argument required for some other further processing"
+  "Generate helm function, purpose PARAM-ONLY for the case where
+only argument required for some other further processing"
   (if param-only
       (list prop)
     #'(lambda (obj)
@@ -72,13 +73,16 @@
                               fun)))
 
 
-
 (cl-defmethod occ-gen-checkout-if-required ((obj  occ-obj-tsk)
                                             (prop symbol)
                                             &key param-only)
-  (occ-gen-checkout obj
-                    prop
-                    :param-only param-only))
+  (if (occ-get-property obj prop)
+      (occ-gen-checkout obj
+                        prop
+                        :param-only param-only)
+    (occ-message "occ-gen-checkout-if-required: no value for prop %s present for %s"
+                 prop
+                 (occ-Format obj))))
 
 
 (cl-defmethod occ-gen-checkouts-if-required ((obj null)

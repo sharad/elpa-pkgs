@@ -63,12 +63,12 @@
 
 
 
-(cl-defmethod occ-get-property ((obj occ-obj-ctx)
-                                (property symbol))
-  "must return occ compatible value."
-  ;; (occ-error "must return occ compatible value2.")
-  (occ-message "occ-get-property: property %s obj %s" property obj)
-  (occ-get-property-value-from-ctx obj property))
+;; (cl-defmethod occ-get-property ((obj occ-obj-ctx)
+;;                                 (property symbol))
+;;   "must return occ compatible value."
+;;   ;; (occ-error "must return occ compatible value2.")
+;;   (occ-message "occ-get-property: property %s obj %s" property obj)
+;;   (occ-get-property-value-from-ctx obj property))
 
 (cl-defmethod occ-format-prop ((obj occ-obj-tsk)
                                (property symbol)
