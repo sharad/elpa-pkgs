@@ -540,7 +540,7 @@ pointing to it."
       (let ((inhibit-read-only t))
         (setf (buffer-string) "")
         ;; (cl-prettyprint obj)
-        (pp-to-string obj))
+        (insert (pp-to-string obj)))
       (read-only-mode 1))
     (switch-to-buffer-other-window buf)))
 
