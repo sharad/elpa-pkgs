@@ -73,7 +73,8 @@
       (occ-build-callable-normal :call-with-obj            "Call with object"         #'occ-call-with-obj)
       (occ-build-callable-normal :set-debug-obj            "Set debug obj"            #'occ-set-debug-obj)
       (occ-build-callable-normal :rank                     "Get Rank"                 #'occ-print-rank)
-      (occ-build-callable-normal :tsk                      "Get Task"                 #'occ-print-tsk))
+      (occ-build-callable-normal :tsk                      "Get Task"                 #'occ-print-tsk)
+      (occ-build-callable-normal :describe                 "Describe object"          #'occ-describe-obj))
     (progn
       (occ-build-callable-generator :fast-edits-gen     "Fast Edits"      #'occ-gen-each-prop-fast-edits)
       (occ-build-callable-generator :edits-gen          "Simple Edit"     #'occ-gen-simple-edits)
@@ -97,7 +98,8 @@
                             :try-clock-in
                             :goto
                             :rank
-                            :tsk)
+                            :tsk
+                            :describe)
 
       (occ-add-helm-actions '(actions edit)
                             "Editing"

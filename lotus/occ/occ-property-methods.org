@@ -250,8 +250,9 @@
                                        (prop (eql currfile)))
         (let* ((files      (occ-get-property obj prop))
                (first-file (first files)))
-          (find-file first-file)))
-      
+          (if first-file
+              (find-file first-file)
+            (occ-error "%s value ruturned for prop %s" first-file prop))))
       ;;}}
       
       
@@ -319,7 +320,9 @@
                                        (prop (eql root)))
         (let* ((dirs      (occ-get-property obj prop))
                (first-dir (first dirs)))
-          (find-file first-dir)))
+          (if first-dir
+              (find-file first-dir)
+            (occ-error "%s value ruturned for prop %s" first-dir prop))))
       ;;}}
       
     #+end_src

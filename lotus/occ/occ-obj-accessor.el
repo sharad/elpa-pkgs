@@ -534,6 +534,17 @@ pointing to it."
     occ-debug-object))
 
 
+(cl-defmethod occ-describe-obj ((obj occ-obj-tsk))
+  (let ((buf (get-buffer-create "occ-object-describe")))
+    (with-current-buffer buf
+      (let ((inhibit-read-only t))
+        (setf (buffer-string) "")
+        ;; (cl-prettyprint obj)
+        (pp-to-string obj))
+      (read-only-mode 1))
+    (switch-to-buffer-other-window buf)))
+
+
 (defun occ-current-ctxual-tsk (&optional occ-other-allowed)
   (let* ((ctxual-tsk (car *occ-clocked-ctxual-tsk-ctx-history*)))
     (let ((clock-marker    (occ-valid-marker org-clock-marker))
