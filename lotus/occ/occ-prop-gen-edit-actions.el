@@ -35,7 +35,8 @@
 (cl-defmethod occ-gen-edit-prompt ((obj       occ-obj-tsk)
                                    (prop      symbol)
                                    (operation symbol)
-                                   value)
+                                   value
+                                   :param-only param-only)
   "Used by occ-gen-edit"
   ;; TODO: Improve it.
   (let ((list-p (occ-list-p prop)))
@@ -76,16 +77,17 @@
                             value
                             &key param-only)
   (occ-message "occ-gen-edit: checking prop %s operation %s" prop operation)
-  (let ((prompt    (occ-gen-edit-prompt obj
-                                        prop
-                                        operation
-                                        value))
-        (fun       (occ-gen-edit-fun obj
-                                     prop
-                                     operation
-                                     value
-                                     :param-only param-only))
-        (keyword   (sym2key (gensym))))
+  (let ((prompt  (occ-gen-edit-prompt obj
+                                      prop
+                                      operation
+                                      value
+                                      :param-only param-only))
+        (fun     (occ-gen-edit-fun obj
+                                   prop
+                                   operation
+                                   value
+                                   :param-only param-only))
+        (keyword (sym2key (gensym))))
     (occ-make-callable-normal keyword
                               prompt
                               fun)))

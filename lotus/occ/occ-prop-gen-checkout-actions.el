@@ -60,12 +60,13 @@
                                 (prop      symbol)
                                 &key param-only)
   (occ-message "occ-gen-checkout: checking prop %s" prop)
-  (let ((prompt    (occ-gen-checkout-prompt obj
-                                            prop))
-        (fun       (occ-gen-checkout-fun obj
-                                         prop
-                                         :param-only param-only))
-        (keyword   (sym2key (gensym))))
+  (let ((prompt  (occ-gen-checkout-prompt obj
+                                          prop
+                                          :param-only param-only))
+        (fun     (occ-gen-checkout-fun obj
+                                       prop
+                                       :param-only param-only))
+        (keyword (sym2key (gensym))))
     (occ-make-callable-normal keyword
                               prompt
                               fun)))
