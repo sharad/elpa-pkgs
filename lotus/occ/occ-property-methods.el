@@ -36,64 +36,6 @@
 
 ;; Required libraries:1 ends here
 
-;; Template property of task in short
-
-;; [[file:occ-property-methods.org::*Template property of task in short][Template property of task in short:1]]
-(cl-defmethod occ-rankprop ((obj occ-tsk)
-                            (prop (eql _template1_)))
-  "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE1_")
-;; defined in icc-prop-intf.el
-;; (cl-defmethod occ-has-p ((obj occ-obj-tsk)
-;;                          (property symbol)
-;;                          value)
-;;   "OBJ-has-property PROPERTY")
-(cl-defmethod occ-get-property-value-from-ctx ((obj occ-ctx)
-                                               (prop (eql _template1_)))
-  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
-
-(cl-defmethod occ-format-prop ((obj occ-obj-tsk)
-                               (property symbol)
-                               value)
-  "Return format printable value of property PROPERTY."
-  value)
-(cl-defmethod occ-list-p ((prop (eql _template1_)))
-  "Is the property _TEMPLATE1_ has VALUES in list, Method tell
-   property represent list or not.")
-(cl-defmethod occ-prop-to-org   ((prop (eql _template1_))
-                                 value)
-  "Return string representation for property _TEMPLATE1_, Method
-convert value VALUE of property PROPERTY from occ to org string
-representation.")
-(cl-defmethod occ-prop-from-org ((prop (eql _template1_))
-                                 value)
-  "Return the Actual Object representation for property
-_TEMPLATE1_, Method convert value VALUE of property PROPERTY from
-org string to occ representation.")
-(cl-defmethod occ-readprop-from-user ((obj occ-tsk)
-                                      (prop (eql _template1_)))
-  "Read value of list of elements if (occ-list-p PROPERTY)
-  else element for property PROPERTY from user for OCC-TSK OBJ,
-  must return ORG compatible value.")
-(cl-defmethod occ-require-p ((obj occ-obj-tsk))
-                         (operation (eql _operation_))
-                         (prop (eql _template1_))
-                         values
-  "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
-_TEMPLATE1_ if CALLABLE (helm method) should be generated.")
-(cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
-                                      (prop (eql _template1_))
-                                      (operation (eql _operation_)))
-  "Return a default VALUE of property _TEMPLATE1_.")
-(cl-defmethod occ-operation ((obj occ-obj-tsk)
-                             (operation (eql _operation_))
-                             (prop (eql _template1_))
-                             values)
-  "Do the actual _OPERATION_.")
-(cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
-                                 (prop (eql _template1_)))
-  "Checkout property _TEMPLATE1_ in case of force clock-in.")
-;; Template property of task in short:1 ends here
-
 ;; Template property of task
 
 ;; [[file:occ-property-methods.org::*Template property of task][Template property of task:1]]
@@ -105,7 +47,7 @@ _TEMPLATE1_ if CALLABLE (helm method) should be generated.")
                                          '_template2_)))
       0)))
 (cl-defmethod occ-has-p ((obj occ-obj-tsk)
-                         (property symbol)
+                         (prop (eql _template2_))
                          value)
   "OBJ-has-property PROPERTY")
 (cl-defmethod occ-get-property-value-from-ctx ((obj occ-ctx)

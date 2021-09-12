@@ -39,11 +39,12 @@
   "Used by occ-gen-edit"
   ;; TODO: Improve it.
   (let ((list-p (occ-list-p prop)))
-    (format "%s %s %s property %s"
+    (format "%s %s %s property %s to %s"
             (symbol-name operation)
             (occ-format-prop obj prop value)
             (if list-p "in" "from")
-            prop)))
+            prop
+            (occ-Format obj))))
 
 (cl-defmethod occ-gen-edit-fun ((obj       occ-obj-tsk)
                                 (prop      symbol)

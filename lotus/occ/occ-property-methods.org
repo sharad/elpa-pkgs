@@ -45,14 +45,19 @@
 
 ** Sample Template Property methods
 *** Template property of task in short
-    #+begin_src emacs-lisp
+    #+begin_src emacs-lisp :tangle no
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql _template1_)))
         "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE1_")
       (cl-defmethod occ-has-p ((obj occ-obj-tsk)
-                               (property symbol)
+                               (prop symbol)
                                value)
-        "OBJ-has-property PROPERTY")
+        "OBJ has property PROPERTY"
+        (let* ((tsk            (occ-obj-tsk obj))
+               (tsk-prop-value (occ-get-property tsk prop)))
+          (if (occ-list-p prop)
+              (member value tsk-prop-value)
+            (equal value tsk-prop-value))))
       (cl-defmethod occ-get-property-value-from-ctx ((obj occ-ctx)
                                                      (prop (eql _template1_)))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
@@ -110,7 +115,7 @@
                                                '_template2_)))
             0)))
       (cl-defmethod occ-has-p ((obj occ-obj-tsk)
-                               (property symbol)
+                               (prop (eql _template2_))
                                value)
         "OBJ-has-property PROPERTY")
       (cl-defmethod occ-get-property-value-from-ctx ((obj occ-ctx)
