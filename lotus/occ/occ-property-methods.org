@@ -248,7 +248,7 @@
       
       (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
                                        (prop (eql currfile)))
-        (let* ((files      (occ-get-property obj))
+        (let* ((files      (occ-get-property obj prop))
                (first-file (first files)))
           (find-file first-file)))
       
@@ -317,7 +317,7 @@
       
       (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
                                        (prop (eql root)))
-        (let* ((dirs      (occ-get-property obj))
+        (let* ((dirs      (occ-get-property obj prop))
                (first-dir (first dirs)))
           (find-file first-dir)))
       ;;}}
