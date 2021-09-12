@@ -1,4 +1,4 @@
-;;; occ-prop-edit.el --- occ-api               -*- lexical-binding: t; -*-
+;;; occ-property-editor.el --- occ-api               -*- lexical-binding: t; -*-
 ;; Copyright (C) 2016  sharad
 
 ;; Author: sharad <sh4r4d _at_ _G-mail_>
@@ -579,4 +579,4 @@
   ;;  #'(lambda (args)
   ;;      (apply 'occ-delayed-select-obj-prop-edit args)) (list ctx timeout))
 
-;;; occ-prop-edit.el ends here
+;;; occ-property-editor.el ends here

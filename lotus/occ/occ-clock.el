@@ -29,7 +29,7 @@
 
 (require 'occ-obj-utils)
 (require 'occ-select)
-(require 'occ-prop-edit)
+(require 'occ-prop)
 (require 'occ-config)
 
 

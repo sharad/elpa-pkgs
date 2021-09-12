@@ -1,4 +1,4 @@
-;;; occ-prop-edit.el --- property edit code          -*- lexical-binding: t; -*-
+;;; occ-prop-op-edit.el --- property edit code          -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021  sharad
 
@@ -191,4 +191,4 @@
   "Edit all property for forced clock-in."
   (occ-properties-editor obj))
 
-;;; occ-prop-edit.el ends here
+;;; occ-prop-op-edit.el ends here
