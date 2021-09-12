@@ -248,11 +248,12 @@
       
       (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
                                        (prop (eql currfile)))
-        (let* ((files      (occ-get-property obj prop))
+        (let* ((tsk        (occ-obj-tsk obj))
+               (files      (occ-get-property tsk prop))
                (first-file (first files)))
-          (if first-file
-              (find-file first-file)
-            (occ-error "%s value ruturned for prop %s" first-file prop))))
+             (if first-file
+                 (find-file first-file)
+               (occ-error "%s value ruturned for prop %s" first-file prop))))
       ;;}}
       
       
@@ -318,7 +319,8 @@
       
       (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
                                        (prop (eql root)))
-        (let* ((dirs      (occ-get-property obj prop))
+        (let* ((tsk       (occ-obj-tsk obj))
+               (dirs      (occ-get-property tsk prop))
                (first-dir (first dirs)))
           (if first-dir
               (find-file first-dir)

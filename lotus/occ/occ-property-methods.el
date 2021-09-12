@@ -36,90 +36,6 @@
 
 ;; Required libraries:1 ends here
 
-;; Template property of task
-
-;; [[file:occ-property-methods.org::*Template property of task][Template property of task:1]]
-(cl-defmethod occ-rankprop ((obj occ-tsk)
-                            (prop (eql _template2_)))
-  "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE2_"
-  (let ((tsk (occ-obj-tsk obj)))
-    (let ((_template2_ (occ-get-property tsk
-                                         '_template2_)))
-      0)))
-(cl-defmethod occ-has-p ((obj occ-obj-tsk)
-                         (prop (eql _template2_))
-                         value)
-  "OBJ-has-property PROPERTY")
-(cl-defmethod occ-get-property-value-from-ctx ((obj occ-ctx)
-                                               (prop (eql _template2_)))
-  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
-
-(cl-defmethod occ-format-prop ((obj occ-obj-tsk)
-                               (property symbol)
-                               value)
-  "Return format printable value of property PROPERTY."
-  value)
-(cl-defmethod occ-list-p ((prop (eql _template2_)))
-  "Is the property _TEMPLATE2_ has VALUES in list, Method tell
-   property represent list or not."
-  nil)
-
-(cl-defmethod occ-prop-to-org   ((prop (eql _template2_))
-                                 value)
-  "Return string representation for property _TEMPLATE2_, Method
-convert value VALUE of property PROPERTY from occ to org string
-representation."
-  nil)
-
-(cl-defmethod occ-prop-from-org ((prop (eql _template2_))
-                                 value)
-  "Return the Actual Object representation for property
-_TEMPLATE2_, Method convert value VALUE of property PROPERTY from
-org string to occ representation."
-  nil)
-
-(cl-defmethod occ-readprop-from-user ((obj occ-tsk)
-                                      (prop (eql _template2_)))
-  "READ the value for property _TEMPLATE2_, Read value of element
-of list for property PROPERTY from user for OCC-TSK OBJ, must
-return ORG compatible value."
-  (let ((tsk (occ-obj-tsk obj)))
-    (let* ((prompt     (concat (symbol-name prop)
-                               ": ")))
-      (read-number (format "%s: " prompt)))))
-
-(cl-defmethod occ-require-p ((obj occ-obj-tsk)
-                             (operation (eql _operation_))
-                             (prop (eql _template2_))
-                             values)
-  "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
-_TEMPLATE2_ if CALLABLE (helm method) should be generated."
-  (occ-current-p obj))
-
-(cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
-                                      (prop (eql _template2_))
-                                      (operation (eql _operation_)))
-  "Return a default VALUE of property _TEMPLATE2_."
-  (if (occ-current-p obj)
-      10
-    0))
-
-(cl-defmethod occ-operation ((obj occ-obj-tsk)
-                             (operation (eql _operation_))
-                             (prop (eql _template2_))
-                             values)
-  "Do the actual _OPERATION_."
-  (let ((tsk (occ-obj-tsk obj)))
-      (if (occ-list-p prop)
-          (occ-error "Implement it.")
-        (occ-error "Implement it."))))
-
-(cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
-                                 (prop (eql _template2_)))
-  "Checkout property _TEMPLATE2_ in case of force clock-in.")
-
-;; Template property of task:1 ends here
-
 ;; Current File property of task
 
 ;; [[file:occ-property-methods.org::*Current File property of task][Current File property of task:1]]
@@ -178,10 +94,11 @@ _TEMPLATE2_ if CALLABLE (helm method) should be generated."
 
 (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
                                  (prop (eql currfile)))
-  (let* ((files      (occ-get-property obj))
+  (let* ((files      (occ-get-property obj prop))
          (first-file (first files)))
-    (find-file first-file)))
-
+    (if first-file
+        (find-file first-file)
+      (occ-error "%s value ruturned for prop %s" first-file prop))))
 ;;}}
 
 ;; Current File property of task:1 ends here
@@ -246,9 +163,11 @@ _TEMPLATE2_ if CALLABLE (helm method) should be generated."
 
 (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
                                  (prop (eql root)))
-  (let* ((dirs      (occ-get-property obj))
+  (let* ((dirs      (occ-get-property obj prop))
          (first-dir (first dirs)))
-    (find-file first-dir)))
+    (if first-dir
+        (find-file first-dir)
+      (occ-error "%s value ruturned for prop %s" first-dir prop))))
 ;;}}
 
 ;; Root dir property of task:1 ends here

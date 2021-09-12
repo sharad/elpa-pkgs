@@ -538,6 +538,7 @@ pointing to it."
   (cl-defmethod occ-set-debug-obj ((obj occ-obj-tsk))
     (setq occ-debug-object obj))
   (cl-defmethod occ-get-debug-obj ()
+    (interactive)
     occ-debug-object))
 
 

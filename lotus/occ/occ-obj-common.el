@@ -66,6 +66,13 @@
   (occ-list-get-evens plist))
 
 
+(cl-defgeneric occ-get-property (obj
+                                 prop)
+  "get property of object")
+(cl-defgeneric occ-get-properties (obj
+                                   props)
+  "get property of object")
+
 (cl-defmethod occ-get-property ((obj occ-obj)
                                 (prop symbol))
   ;; mainly used by occ-tsk only.
@@ -83,13 +90,31 @@
   (mapcar #'(lambda (prop)
               (cons prop (occ-get-property obj prop)))
           props))
+
 
-(cl-defmethod occ-get-property ((obj      occ-ctx)
+(cl-defmethod occ-get-property ((obj      occ-obj-ctx-tsk)
                                 (property symbol))
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
-  (occ-get-property-value-from-ctx obj
+  (occ-get-property (occ-obj-tsk obj) property))
+
+(cl-defmethod occ-get-property ((obj      occ-obj-ctx)
+                                (property symbol))
+  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
+  (occ-get-property-value-from-ctx (occ-obj-ctx obj)
                                    property))
 
+
+(cl-defmethod occ-get-properties ((obj   occ-obj-ctx-tsk)
+                                  (props list))
+  ;; mainly used by occ-tsk only.
+  (occ-get-properties (occ-obj-tsk obj) props))
+
+(cl-defmethod occ-get-properties ((obj   occ-obj-ctx)
+                                  (props list))
+  ;; mainly used by occ-tsk only.
+  (occ-get-properties (occ-obj-ctx obj) props))
+
+
 
 (cl-defmethod occ-set-property ((obj occ-obj)
                                 prop
@@ -130,6 +155,19 @@
                         prop
                         value
                         :not-recursive not-recursive))))
+
+
+(cl-defmethod occ-set-property ((obj occ-obj-ctx-tsk)
+                                prop
+                                value &key not-recursive)
+  (occ-set-property (occ-obj-tsk obj) prop
+                    value :not-recursive not-recursive))
+
+(cl-defmethod occ-set-property ((obj occ-obj-ctx)
+                                prop
+                                value &key not-recursive)
+  (occ-set-property (occ-obj-ctx obj) prop
+                    value :not-recursive not-recursive))
 
 
 (cl-defmethod occ-class-slots ((obj occ-obj))

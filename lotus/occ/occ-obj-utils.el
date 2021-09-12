@@ -59,10 +59,12 @@
                                   candidate)
                            (let ((transform (occ-obj-ap-transform ap-transf-obj)))
                              (cl-assert transform)
-                             (let ((ap-normal-obj (funcall transform
-                                                           action candidate)))
+                             (let* ((candidate-obj (occ-return-get-value candidate))
+                                    (ap-normal-obj (funcall transform
+                                                            action candidate-obj)))
                                (occ-debug :debug "occ-return-tranform: lambda: ap-normal-obj = %s" ap-normal-obj)
-                               (occ-return-tranform ap-normal-obj obj))))))
+                               ;; (occ-return-tranform ap-normal-obj obj)
+                               (occ-return-tranform ap-normal-obj candidate-obj))))))
     (occ-build-ap-transf (cons :transform
                                new-transform))))
 
