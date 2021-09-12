@@ -180,6 +180,12 @@
   tree)
 
 
+;; TODO: need to add ability to be proxy object
+;;       to pass all method to underlying object in
+;;       Menu
+;;           "Set debug obj"
+;;           "Call with obj"
+;;       occ-return getting passed
 (cl-defstruct occ-return
   "occ-return"
   label

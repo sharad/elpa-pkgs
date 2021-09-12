@@ -510,6 +510,10 @@ And return a cons cell with the selection character integer and the marker
 pointing to it."
   (cons (occ-format obj nil t) obj))
 
+;; BUG  in Menu
+;;           "Set debug obj"
+;;           "Call with obj"
+;;       occ-return getting passed
 
 (defun occ-util-read-sexp-from-minibuffer (prompt)
  (car (read-from-string (read-from-minibuffer prompt))))
