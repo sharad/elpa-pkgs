@@ -242,7 +242,9 @@
 (cl-defmethod occ-obj-ap-callables ((ap-obj occ-ap-normal)
                                     (obj occ-obj))
   (occ-debug :debug "occ-obj-ap-callables: ap-obj = %s" ap-obj)
-  (unless (occ-ap-normal-callables ap-obj)
+  (unless (and (not (occ-ap-tree-keybranch ap-obj))
+               (occ-ap-normal-callables ap-obj))
+    (occ-message "Called")
     (let ((tree-keybranch (occ-obj-ap-tree-keybranch ap-obj obj)))
       (let* ((keywords-list (occ-get-keywords-list-from-tree tree-keybranch))
              (callables     (occ-get-callables obj ;; ???

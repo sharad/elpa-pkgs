@@ -170,7 +170,7 @@
   ;; function as number of arguments are different.
   (let ((aps (occ-gen-edits-if-required obj nil nil
                                         :param-only param-only)))
-    (occ-message "occ-gen-each-prop-edits: aps = %s" aps)
+    ;; (occ-message "occ-gen-each-prop-edits: aps = %s" aps)
     ;; (occ-build-ap-normal (cons :callables aps))
     aps))
 

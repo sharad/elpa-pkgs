@@ -67,6 +67,7 @@
 (cl-defmethod occ-get-callables ((obj occ-obj-tsk)
                                  keylist)
   ;; TODO: do we require (apply #'append ...)
+  (occ-message "(OCC-GET-CALLABLES OCC-OBJ-TSK): called")
   (apply #'append
          (mapcar #'(lambda (callable)
                      (occ-obj-callables callable
@@ -75,6 +76,7 @@
 (cl-defmethod occ-get-callables ((obj occ-obj)
                                  keylist)
   ;; TODO: do we require (apply #'append ...)
+  (occ-message "(OCC-GET-CALLABLES OCC-OBJ): called")
   (apply #'append
          (mapcar #'(lambda (callable)
                      (occ-obj-callables callable

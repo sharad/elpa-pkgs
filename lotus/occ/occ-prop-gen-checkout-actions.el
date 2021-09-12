@@ -93,7 +93,7 @@
     (cl-assert props)
     (remove nil
             checkout-ops)))
-
+
 
 (cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-ctx-tsk)
                                              &key param-only)
@@ -142,7 +142,5 @@
 (cl-defmethod occ-gen-simple-checkouts ((obj occ-obj-ctx)
                                         &key param-only)
   nil)
-
-
 
 ;;; occ-prop-gen-checkout-actions.el ends here
