@@ -199,9 +199,7 @@
   (let ((act (first (occ-obj-ap-helm-get-actions obj
                                                  apn
                                                  apt))))
-    (if (functionp act)
-        act
-      (cdr act))))
+    (cdr act)))
 
 (cl-defmethod occ-get-first-helm-actions-for-obj ((obj occ-obj)
                                                   (apn occ-ap-normal)
@@ -209,9 +207,7 @@
   (let ((act (first (occ-obj-ap-helm-get-actions obj
                                                  apn
                                                  apt))))
-    (if (functionp act)
-        act
-      (cdr act))))
+    (cdr act)))
 
 (cl-defmethod occ-helm-act-on-single ((obj                 occ-ctx)
                                       (candidates-filtered list)

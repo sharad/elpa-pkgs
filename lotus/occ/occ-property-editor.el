@@ -264,23 +264,25 @@
 ;; (occ-properties-editor obj)
 (cl-defmethod occ-properties-editor-combined ((obj occ-obj-ctx-tsk))
   (let ((prompt (format "%s fast edit" (occ-Format obj))))
-    (let* ((sources (list (helm-build-sync-source prompt
-                            :candidates (occ-gen-edits-if-required obj ;;BUG: occ-ap-transform related changes will be required.
-                                                                   nil
-                                                                   nil
-                                                                   :param-only t)
-                            :action (list (cons "Edit" #'funcall)))
-                          (helm-build-sync-source "edit"
-                            :candidates (list
-                                         (cons "Edit" #'(lambda () (occ-properties-editor obj))))
-                            :action (list (cons "Edit" #'funcall)))
-                          (helm-build-sync-source "other"
-                            :candidates '(("Continue" . t)
-                                          ("Checkout" . #'(lambda () (occ-checkout obj))))
-                            :action (list (cons "Edit" #'funcall)))))
-           (retval
-            (helm-timed occ-idle-timeout nil
-              (helm :sources sources))))
+    (let ((helm-fast-source     (helm-build-sync-source prompt
+                                  :candidates (occ-gen-edits-if-required obj ;;BUG: occ-ap-transform related changes will be required.
+                                                                         nil
+                                                                         nil
+                                                                         :param-only t)
+                                  :action (list (cons "Edit" #'funcall))))
+          (helm-edit-source     (helm-build-sync-source "edit"
+                                  :candidates (list
+                                               (cons "Edit" #'occ-properties-editor))
+                                  :action (list (cons "Edit" #'funcall))))
+          (helm-checkout-source (helm-build-sync-source "other"
+                                  :candidates '(("Continue" . t)
+                                                ("Checkout" . #'occ-checkout))
+                             :action (list (cons "Edit" #'funcall))))))
+    (let* ((sources (list helm-fast-source
+                          helm-edit-source
+                          helm-checkout-source))
+           (retval  (helm-timed occ-idle-timeout nil
+                      (helm :sources sources))))
       (if (eq retval t)
           t))))
 
