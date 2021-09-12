@@ -199,7 +199,9 @@
   (let ((act (first (occ-obj-ap-helm-get-actions obj
                                                  apn
                                                  apt))))
-    act))
+    (if (functionp act)
+        act
+      (cdr act))))
 
 (cl-defmethod occ-get-first-helm-actions-for-obj ((obj occ-obj)
                                                   (apn occ-ap-normal)
@@ -207,7 +209,9 @@
   (let ((act (first (occ-obj-ap-helm-get-actions obj
                                                  apn
                                                  apt))))
-    act))
+    (if (functionp act)
+        act
+      (cdr act))))
 
 (cl-defmethod occ-helm-act-on-single ((obj                 occ-ctx)
                                       (candidates-filtered list)
@@ -226,6 +230,12 @@
          (helm-action (occ-get-first-helm-actions-for-obj obj
                                                           ap-normal
                                                           ap-transf)))
+    (occ-message "occ-helm-act-on-single: (cons p helm-action) %s, (functionp helm-action) %s"
+                 (consp helm-action)
+                 (functionp helm-action))
+    (occ-message "occ-helm-act-on-single: (cons p (cadr helm-action)) %s, (functionp (cadr helm-action)) %s"
+                 (consp (cdr helm-action))
+                 (functionp (cdr helm-action)))
     (funcall helm-action candidate)))
 
 (cl-defmethod occ-helm-act-on-multiple ((obj        occ-ctx)
