@@ -105,7 +105,7 @@
         "Checkout property _TEMPLATE1_ in case of force clock-in.")
     #+end_src
 *** Template property of task
-    #+begin_src emacs-lisp
+    #+begin_src emacs-lisp :tangle no
       
       (cl-defmethod occ-rankprop ((obj occ-tsk)
                                   (prop (eql _template2_)))

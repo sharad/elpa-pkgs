@@ -68,9 +68,9 @@
   "OBJ has property PROPERTY"
   (let* ((tsk            (occ-obj-tsk obj))
          (tsk-prop-value (occ-get-property tsk prop)))
-    (occ-message "occ-has-p prop %s, (consp tsk-prop-value) %s" prop (consp tsk-prop-value))
-    (occ-message "occ-has-p prop %s, (occ-list-p prop) %s, value %s" prop (occ-list-p prop) (prin1-to-string value))
-    (occ-message "occ-has-p prop %s, (occ-list-p prop) %s, tsk-prop-value %s" prop (occ-list-p prop) (prin1-to-string tsk-prop-value))
+    (occ-debug :debug "occ-has-p prop %s, (consp tsk-prop-value) %s" prop (consp tsk-prop-value))
+    (occ-debug :debug "occ-has-p prop %s, (occ-list-p prop) %s, value %s" prop (occ-list-p prop) (prin1-to-string value))
+    (occ-debug :debug "occ-has-p prop %s, (occ-list-p prop) %s, tsk-prop-value %s" prop (occ-list-p prop) (prin1-to-string tsk-prop-value))
     (if (occ-list-p prop)
         (member value tsk-prop-value)
       (equal value tsk-prop-value))))
@@ -158,14 +158,14 @@ return ORG compatible value."
                               values)
   "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
 _TEMPLATE_ if CALLABLE (helm method) should be generated."
-  (occ-message "occ-require-p0 is called"))
+  (occ-debug :debug "occ-require-p0 is called"))
 (cl-defmethod occ-require-p ((obj occ-obj-tsk)
                              (operation (eql _operation_))
                              (property  symbol)
                              values)
   "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
 _TEMPLATE_ if CALLABLE (helm method) should be generated."
-  (occ-message "occ-require-p1 is called")
+  (occ-debug :debug "occ-require-p1 is called")
   t)
 
 
@@ -237,7 +237,7 @@ return ORG compatible value.")
                               values)
    "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
 _TEMPLATE_ if CALLABLE (helm method) should be generated."
-   (occ-message "occ-require-p3 is called"))
+   (occ-debug :debug "occ-require-p3 is called"))
  (cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
                                        (prop (eql _template_))
                                        (operation (eql _operation_)))

@@ -242,6 +242,10 @@
 (cl-defmethod occ-obj-ap-callables ((ap-obj occ-ap-normal)
                                     (obj occ-obj))
   (occ-debug :debug "occ-obj-ap-callables: ap-obj = %s" ap-obj)
+
+  ;; NOTE:
+  ;; If TREE-KEYBRANCH are present then callable must have to generated afresh every time
+  ;; this method is called.
   (unless (and (not (occ-ap-tree-keybranch ap-obj))
                (occ-ap-normal-callables ap-obj))
     (occ-message "Called")
