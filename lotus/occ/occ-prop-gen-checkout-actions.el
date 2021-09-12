@@ -57,7 +57,7 @@
 (cl-defmethod occ-gen-checkout ((obj       occ-obj-tsk)
                                 (prop      symbol)
                                 &key param-only)
-  (occ-message "occ-gen-checkout: checking prop %s operation %s" prop operation)
+  (occ-message "occ-gen-checkout: checking prop %s" prop)
   (let ((prompt    (occ-gen-checkout-prompt obj
                                             prop))
         (fun       (occ-gen-checkout-fun obj
@@ -73,8 +73,8 @@
 (cl-defmethod occ-gen-checkout-if-required ((obj  occ-obj-tsk)
                                             (prop symbol)
                                             &key param-only)
-  (if (occ-required-p obj               ;TODO: ctx is require, and resolve function collision.
-                      prop)
+  (if t;; (occ-require-p obj               ;TODO: ctx is require, and resolve function collision.
+       ;;                prop)
       (occ-gen-checkout obj
                         prop
                         :param-only param-only)
@@ -85,11 +85,8 @@
                                              &key param-only)
   nil)
 
-(cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-ctx-tsk)
+(cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-tsk)
                                              &key param-only)
-  (occ-gen-checkouts obj))
-
-(cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-tsk))
   (let* ((ops          (occ-properties-to-checkout (occ-obj-tsk obj)))
          (checkout-ops (mapcar #'(lambda (prop)
                                    (occ-gen-checkout-if-required obj
@@ -100,6 +97,11 @@
     (remove nil
             checkout-ops)))
 
+
+(cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-ctx-tsk)
+                                             &key param-only)
+  (occ-gen-checkouts-if-required (occ-obj-tsk obj) ;; HBUG: Check if it is correct ? find corresponding in occ-prop-gen-edit-actions.el
+                                 :param-only param-only))
 
 (cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-ctx)
                                              &key param-only)
@@ -113,7 +115,7 @@
 (cl-defmethod occ-gen-each-prop-checkouts ((obj occ-obj-ctx-tsk)
                                            &key param-only)
   (occ-message "occ-gen-each-prop-checkouts: called")
-  (let ((aps (occ-gen-checkouts-if-required obj nil nil
+  (let ((aps (occ-gen-checkouts-if-required obj
                                             :param-only param-only)))
     (occ-message "occ-gen-each-prop-checkouts: aps = %s" aps)
     ;; (occ-build-ap-normal (cons :callables aps))
@@ -125,7 +127,7 @@
 
 (defun occ-gen-each-prop-fast-checkouts (obj
                                          &key param-only)
-  (occ-message "Test")
+  (occ-message "Test Checkout")
   (occ-gen-each-prop-checkouts obj
                                :param-only param-only))
 
