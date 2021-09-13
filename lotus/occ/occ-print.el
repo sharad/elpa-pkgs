@@ -133,11 +133,15 @@ pointing to it."
 
 
 (cl-defgeneric occ-format (obj
-                           &optional case rank)
+                           &optional
+                           case
+                           rank)
   "occ-format")
 
 (cl-defmethod occ-format (obj
-                          &optional case rank)
+                          &optional
+                          case
+                          rank)
   (concat (when case
             (concat (occ-title obj
                                case)
@@ -145,14 +149,18 @@ pointing to it."
           (format "%s" obj)))
 
 (cl-defmethod occ-format ((obj marker)
-                          &optional case rank)
+                          &optional
+                          case
+                          rank)
   (concat (when case (concat (occ-title obj case) ": "))
           (occ-fontify-like-in-org-mode obj)))
 
 (defvar occ-format-tsk-tag-alignment 100 "occ-format-tsk-tag-alignment")
 
 (cl-defmethod occ-format ((obj occ-tsk)
-                          &optional case rank)
+                          &optional
+                          case
+                          rank)
   (let* ((align      occ-format-tsk-tag-alignment)
          (heading    (occ-format-string obj))
          (headinglen (length heading))
@@ -169,19 +177,24 @@ pointing to it."
              heading tagstr))))
 
 (cl-defmethod occ-format ((obj occ-ctx)
-                          &optional case)
+                          &optional
+                          case
+                          rank)
   (format "%s" obj))
 
 (cl-defmethod occ-format ((obj occ-obj-ctx-tsk)
-                          &optional case rank)
+                          &optional
+                          case
+                          rank)
   (let ((tsk (occ-ctsk-tsk obj)))
     (concat (when case (concat (occ-title obj case) ": "))
             (when rank (format "[%4d] " (or (occ-rank obj) -128)))
             (occ-format tsk case nil)
             (when (occ-current-p obj) "          [CLOCKING]"))))
 
-(cl-defmethod occ-format ((obj occ-ctxual-tsk)
-                          &optional case rank)
+(cl-defmethod occ-format ((obj occ-ctxual-tsk) &optional
+                                               case
+                                               rank)
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
     (concat (when case (concat (occ-title obj case) ": "))
             (when rank (format "[%4d] " (or (occ-rank obj) -128)))
@@ -191,26 +204,18 @@ pointing to it."
 
 (defun occ-Format (obj &optional
                        rank)
-  (occ-format obj 'capitalize rank))
+  (occ-format obj 'capitalize
+              rank))
 
 (defun occ-FORMAT (obj &optional
                        rank)
-  (occ-format obj 'upcase rank))
+  (occ-format obj 'upcase
+              rank))
 
-
-;; (cl-defmethod occ-print-rank ((obj occ-tsk))
-;;   (occ-message "Rank for %s is %d"
-;;                (occ-format obj 'capitalize)
-;;                (occ-rank obj)))
-
-;; (cl-defmethod occ-print-rank ((obj occ-obj-ctx-tsk))
-;;   (occ-message "Rank for %s is %d"
-;;                (occ-format obj 'capitalize)
-;;                (occ-rank obj)))
 
 (cl-defmethod occ-print-rank ((obj occ-obj-tsk))
   (occ-message "Rank for %s is %d"
-               (occ-format obj 'capitalize)
+               (occ-Format obj)
                (occ-rank obj)))
 
 ;;; occ-print.el ends here

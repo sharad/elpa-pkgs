@@ -62,16 +62,16 @@
       (occ-current-associable-p obj)))
 
 (cl-defmethod occ-edit-until-associable ((obj occ-ctxual-tsk))
-  (occ-messge "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) begin" (occ-Format obj))
+  (occ-message "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) begin" (occ-Format obj))
   (let ((retval nil))
     (occ-try-until 3 (or (not (eq t retval))
                          (occ-associable-p obj))
-      (occ-messge "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) ITERATION" (occ-Format obj))
+      (occ-message "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) ITERATION" (occ-Format obj))
       ;; BUG FIX
       (setq retval
             ;; (occ-properties-editor-combined obj '(timebeing add 10))
             (occ-properties-editor-combined obj)))
-    (occ-messge "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) return %s"
+    (occ-message "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) return %s"
                 (occ-Format obj)
                 retval)
     retval))
@@ -88,15 +88,15 @@
 
 (cl-defmethod occ-edit-clock-if-unassociated ((obj occ-ctx))
   "If clock in task is not unnmaed clock then offer to increase clock time."
-  (occ-messge "(occ-edit-clock-if-unassociated (obj occ-ctx)[%s]) begin" (occ-Format obj))
-  (occ-messge "(occ-edit-clock-if-unassociated (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
+  (occ-message "(occ-edit-clock-if-unassociated (obj occ-ctx)[%s]) begin" (occ-Format obj))
+  (occ-message "(occ-edit-clock-if-unassociated (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
   (if (occ-clock-unassociated-p obj)
       (progn
-        (occ-messge "(occ-edit-clock-if-unassociated (obj occ-ctx)) IF need next clock-in")
+        (occ-message "(occ-edit-clock-if-unassociated (obj occ-ctx)) IF need next clock-in")
         t)
     (let* ((ctxual-curr-tsk (occ-ctxual-current-tsk obj))
            (retval          (occ-edit-until-associable ctxual-curr-tsk)))
-      (occ-messge "(occ-edit-clock-if-unassociated (obj occ-ctx)) ELSE occ-edit-until-associable: returned %s" retval)
+      (occ-message "(occ-edit-clock-if-unassociated (obj occ-ctx)) ELSE occ-edit-until-associable: returned %s" retval)
       retval)))
 ;; (occ-edit-properties (occ-current-ctxual-tsk) '(timebeing add 10))
 
