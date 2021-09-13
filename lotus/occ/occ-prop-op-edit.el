@@ -31,12 +31,6 @@
 (require 'occ-property-editor)
 
 
-
-;; BUG it is not called
-;; (occ-op-prop-edit occ-obj-tsk): operation add prop root
-;; (occ-call-operation occ-obj-tsk): operation add prop root
-;; (occ-operation occ-obj-tsk add): operation add prop root
-;; defined in occ-prop-intf.el
 (cl-defmethod occ-operation ((obj       marker)
                              (operation symbol)
                              (prop      symbol)
