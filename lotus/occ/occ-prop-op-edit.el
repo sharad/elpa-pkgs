@@ -63,7 +63,6 @@
                  operation
                  prop
                  values))
-
 
 
 (cl-defmethod occ-operation ((obj       occ-obj-tsk)
