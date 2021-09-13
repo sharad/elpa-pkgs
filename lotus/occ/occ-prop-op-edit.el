@@ -59,6 +59,8 @@
                  values))
 
 
+;;; * few frequent operations
+
 (cl-defmethod occ-operation ((obj       occ-obj-tsk)
                              (operation (eql get))
                              (prop      symbol)
