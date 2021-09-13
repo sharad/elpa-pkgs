@@ -55,25 +55,19 @@
 (cl-defmethod occ-ctxual-current-tsk ((obj occ-ctx))
   (let ((curr-tsk (occ-current-tsk)))
     (when curr-tsk
-      (occ-build-ctxual-tsk-with curr-tsk obj))))
-
-;; (cl-defmethod occ-clock-unassociated-p ((ctx occ-ctx))
-;;   "current clock is unassociated to CTX"
-;;   (if (occ-current-tsk)
-;;       (or (occ-clock-marker-unnamed-clock-p)
-;;           (not (occ-current-associable-p ctx)))
-;;     t))
+      (occ-build-ctxual-tsk-with curr-tsk
+                                 obj))))
 
 ;; TODO: use TSK in place of CLOCK and make is general or CLOCK may be replaced with CURRENT
 
-(cl-defmethod occ-clock-associated-p ((ctx occ-ctx))
+(cl-defmethod occ-current-associated-p ((ctx occ-ctx))
   "current clock is associated to CTX"
   (and (occ-current-tsk)
        (not (occ-clock-marker-unnamed-clock-p))
        (occ-current-associable-p ctx)))
-(cl-defmethod occ-clock-unassociated-p ((ctx occ-ctx))
+(cl-defmethod occ-current-unassociated-p ((ctx occ-ctx))
   "current clock is unassociated to CTX"
-  (not (occ-clock-associated-p ctx)))
+  (not (occ-current-associated-p ctx)))
 
 (cl-defmethod occ-edit-until-associable ((obj occ-ctxual-tsk))
   "Try three time to associated CTX with current TSK if succeed then return t else nil"
@@ -103,7 +97,7 @@
 ;;   (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
 ;;   (if (and (occ-current-tsk)
 ;;            (not (occ-clock-marker-unnamed-clock-p)))
-;;       (if (occ-clock-associated-p obj)
+;;       (if (occ-current-associated-p obj)
 ;;           (progn
 ;;             (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) ELSE need NO next clock-in")
 ;;             nil)
@@ -122,7 +116,7 @@
   (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
   (if (and (occ-current-tsk)
            (not (occ-clock-marker-unnamed-clock-p)))
-      (if (occ-clock-associated-p obj)
+      (if (occ-current-associated-p obj)
           (progn
             (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) ELSE need NO next clock-in")
             nil)
@@ -151,7 +145,7 @@
         (timeout          (or timeout occ-idle-timeout)))
     (let* ((ap-normal occ-list-select-ap-transf-keys))
       (occ-debug :debug "occ-clock-in-if-not((obj occ-ctx)): begin")
-      (if (occ-edit-clock-if-unassociated-p obj) ;; (occ-clock-unassociated-p obj) ;; (occ-edit-clock-if-unassociated-p obj)
+      (if (occ-edit-clock-if-unassociated-p obj) ;; (occ-current-unassociated-p obj) ;; (occ-edit-clock-if-unassociated-p obj)
           (prog1                ;current clock is not matching
               t
             (occ-debug :debug
