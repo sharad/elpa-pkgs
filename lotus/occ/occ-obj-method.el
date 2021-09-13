@@ -62,15 +62,21 @@
       (occ-current-associable-p obj)))
 
 (cl-defmethod occ-edit-until-associable ((obj occ-ctxual-tsk))
+  "Try three time to associated CTX with current TSK if succeed then return t else nil"
   (occ-message "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) begin" (occ-Format obj))
-  (let ((retval nil))
+  (let ((retval  nil)
+        (org-obj obj)
+        (obj     obj))
     (occ-try-until 3 (or (not (eq t retval))
                          (occ-associable-p obj))
       (occ-message "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) ITERATION" (occ-Format obj))
       ;; BUG FIX
       (setq retval
-            ;; (occ-properties-editor-combined obj '(timebeing add 10))
-            (occ-properties-editor-combined obj)))
+            ;; TODO: provision to pass prompt to describe why editor is called
+            ;; note: it supposed to return t or nil
+            (occ-properties-editor-combined obj))
+      (setq obj (occ-build-ctxual-tsk-with (occ-make-ctx-at-point)
+                                           (occ-obj-tsk org-obj))))
     (occ-message "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) return %s"
                 (occ-Format obj)
                 retval)
@@ -94,11 +100,9 @@
       (progn
         (occ-message "(occ-edit-clock-if-unassociated (obj occ-ctx)) IF need next clock-in")
         t)
-    (let* ((ctxual-curr-tsk (occ-ctxual-current-tsk obj))
-           (retval          (occ-edit-until-associable ctxual-curr-tsk)))
+    (let* ((retval (occ-edit-until-associable (occ-ctxual-current-tsk obj))))
       (occ-message "(occ-edit-clock-if-unassociated (obj occ-ctx)) ELSE occ-edit-until-associable: returned %s" retval)
       retval)))
-;; (occ-edit-properties (occ-current-ctxual-tsk) '(timebeing add 10))
 
 
 (cl-defmethod occ-clock-in-if-not ((obj occ-ctx)
