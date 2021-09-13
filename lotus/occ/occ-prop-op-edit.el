@@ -154,7 +154,11 @@
       (occ-operation obj
                      operation
                      prop
-                     values)))
+                     values)
+    (occ-error "Failed to %s on marker %s of %s in org world"
+               operation
+               (occ-marker obj)
+               (occ-Format obj))))
 
 
 (cl-defgeneric occ-select-operation (obj
