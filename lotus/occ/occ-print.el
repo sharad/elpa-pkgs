@@ -177,14 +177,16 @@ pointing to it."
   (let ((tsk (occ-ctsk-tsk obj)))
     (concat (when case (concat (occ-title obj case) ": "))
             (when rank (format "[%4d] " (or (occ-rank obj) -128)))
-            (occ-format tsk case nil))))
+            (occ-format tsk case nil)
+            (when (occ-current-p obj) "          [CLOCKING]"))))
 
 (cl-defmethod occ-format ((obj occ-ctxual-tsk)
                           &optional case rank)
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
     (concat (when case (concat (occ-title obj case) ": "))
             (when rank (format "[%4d] " (or (occ-rank obj) -128)))
-            (format "%s" (occ-format tsk case rank)))))
+            (format "%s" (occ-format tsk case rank))
+            (when (occ-current-p obj) "          [CLOCKING]"))))
 
 
 (defun occ-Format (obj &optional

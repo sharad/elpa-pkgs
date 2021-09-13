@@ -96,7 +96,8 @@
   (occ-unnamed-p (occ-obj-marker obj)))
 
 
-(cl-defmethod occ-current-p ((obj occ-tsk))
-  (occ-marker= (occ-current-tsk) obj))
+(cl-defmethod occ-current-p ((obj occ-obj-tsk))
+  (occ-marker= (occ-current-tsk)
+               (occ-obj-tsk obj)))
 
 ;;; occ-predicate.el ends here
