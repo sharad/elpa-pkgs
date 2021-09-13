@@ -251,7 +251,7 @@
               (prog1
                   nil
                 ;; BUG *occ-tsk-previous-ctx* *occ-tsk-current-ctx* not getting
-                ;; updated with simple buffer switch as idle tiem occur. IS IT CORRECT OR BUG
+                ;;     updated with simple buffer switch as idle tiem occur. IS IT CORRECT OR BUG
                 ;; TODO: here describe reason for not trying properly, need to print where necessary.
                 (occ-describe-try-to-clock-in-p *occ-tsk-current-ctx*
                                                 *occ-tsk-previous-ctx*))))
@@ -318,8 +318,8 @@
 ;;;###autoload
 (defun occ-clock-in-curr-ctx-if-not (&optional force)
   (interactive "P")
-  ;; TODO: Add code to which check if only focus present than only trigger
-  ;; else postpone it by calling run-with-idle-plus-timer
+  ;; TODO: Add code to which check if only focus present than only trigger else
+  ;;       postpone it by calling run-with-idle-plus-timer
   (occ-debug :debug "begin occ-clock-in-curr-ctx-if-not")
   ;;TODO: problem
   ;; (lotus-with-other-frame-event-debug "occ-clock-in-curr-ctx-if-not" :cancel
