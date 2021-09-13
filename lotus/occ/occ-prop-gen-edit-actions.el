@@ -189,7 +189,7 @@
 (cl-defmethod occ-gen-simple-edits ((obj occ-obj-ctx-tsk)
                                     &key param-only)
   (list (occ-make-callable-normal :edit
-                                  "Edit"
+                                  (format "Edit %s" (occ-Format obj))
                                   #'(lambda (obj)
                                       (occ-op-props-edit obj)))))
 

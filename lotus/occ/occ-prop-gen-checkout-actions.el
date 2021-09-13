@@ -142,7 +142,7 @@ only argument required for some other further processing"
 (cl-defmethod occ-gen-simple-checkouts ((obj occ-obj-ctx-tsk)
                                         &key param-only)
   (list (occ-make-callable-normal :checkout
-                                  "Checkout"
+                                  (format "Checkout %s" (occ-Format obj))
                                   #'(lambda (obj)
                                       (occ-op-props-checkout obj)))))
 

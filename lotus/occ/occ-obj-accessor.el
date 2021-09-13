@@ -536,14 +536,19 @@ pointing to it."
 
 (let ((occ-debug-object nil))
   (cl-defmethod occ-set-debug-obj ((obj occ-obj-tsk))
-    (setq occ-debug-object obj))
-  (cl-defmethod occ-get-debug-obj ()
+    (setq occ-debug-object obj)
+    (occ-message "Use (occ-get-debug-obj) to access object."))
+  (defun occ-describe-debug-obj ()
+    (interactive)
+    (occ-describe-obj occ-debug-object))
+  (defun occ-get-debug-obj ()
     (interactive)
     occ-debug-object))
 
 
 (cl-defmethod occ-describe-obj ((obj occ-obj-tsk))
-  (let ((buf (get-buffer-create "occ-object-describe")))
+  (let ((buf (get-buffer-create (format "*helpful occ-object: %s*"
+                                        (occ-format obj)))))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
         (setf (buffer-string) "")
@@ -574,7 +579,8 @@ pointing to it."
               (if occ-other-allowed
                   (occ-debug :warning msg)
                 (occ-error msg))
-              (occ-build-ctxual-tsk-with (and clock (occ-make-tsk clock))
+              (occ-build-ctxual-tsk-with (and clock
+                                              (occ-make-tsk clock))
                                          (occ-make-ctx-at-point)))))))))
 
 (defun occ-current-tsk (&optional occ-other-allowed)
