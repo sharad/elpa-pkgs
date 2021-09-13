@@ -267,16 +267,20 @@
     (let ((helm-fast-source     (helm-build-sync-source prompt
                                   :candidates (occ-obj-callable-helm-actions (occ-gen-each-prop-fast-edits obj)
                                                                              obj)
-                                  :action (list (cons "Edit" #'funcall))))
+                                  :action     (list (cons "Edit"
+                                                          #'funcall))))
           (helm-edit-source     (helm-build-sync-source "edit"
-                                  :candidates (list
-                                               (cons "Edit" (occ-lambda-with-one-arg #'occ-properties-editor)))
-                                  :action (list (cons "Edit" #'funcall))))
+                                  :candidates (list (cons "Edit"
+                                                          (occ-lambda-with-one-arg #'occ-properties-editor)))
+                                  :action     (list (cons "Edit"
+                                                          #'funcall))))
           (helm-checkout-source (helm-build-sync-source "other"
-                                  :candidates (list
-                                               (cons "Continue"  t)
-                                               (cons "Checkout"  (occ-lambda-with-one-arg #'occ-checkout)))
-                                  :action (list (cons "Edit" #'funcall)))))
+                                  :candidates (list (cons "Continue"
+                                                          #'(lambda (arg) t)) ;to bypass three repeat cycle of (occ-try-until ) function
+                                                    (cons "Checkout"
+                                                          (occ-lambda-with-one-arg #'occ-checkout)))
+                                  :action     (list (cons "Edit"
+                                                          #'funcall)))))
       (let* ((sources (list helm-fast-source
                             helm-edit-source
                             helm-checkout-source))

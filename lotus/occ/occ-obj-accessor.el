@@ -515,6 +515,12 @@ And return a cons cell with the selection character integer and the marker
 pointing to it."
   (cons (occ-format obj nil t) obj))
 
+
+;; find place to put these all function
+
+(cl-defmethod occ-checkout ((obj occ-obj-tsk))
+  (occ-op-props-checkout obj))
+
 ;; BUG  in Menu
 ;;           "Set debug obj"
 ;;           "Call with obj"
@@ -549,7 +555,6 @@ pointing to it."
   (defun occ-get-debug-obj ()
     (interactive)
     occ-debug-object))
-
 
 (cl-defmethod occ-describe-obj ((obj occ-obj-tsk))
   (let ((buf (get-buffer-create (format "*helpful occ-object: %s*"
