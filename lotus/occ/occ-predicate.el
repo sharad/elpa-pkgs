@@ -41,12 +41,19 @@
              mrk-marker)))))
 
 (cl-defmethod occ-marker= ((obj occ-obj-tsk)
+                           (tsk occ-obj-tsk))
+  (occ-marker= (occ-obj-marker obj)
+               (occ-obj-marker tsk)))
+
+(cl-defmethod occ-marker= ((obj occ-obj-tsk)
                            (mrk marker))
-  (occ-marker= (occ-obj-marker obj) (occ-obj-marker mrk)))
+  (occ-marker= (occ-obj-marker obj)
+               (occ-obj-marker mrk)))
 
 (cl-defmethod occ-marker= ((obj marker)
                            (tsk occ-obj-tsk))
-  (occ-marker= (occ-obj-marker obj) (occ-obj-marker tsk)))
+  (occ-marker= (occ-obj-marker obj)
+               (occ-obj-marker tsk)))
 
 (cl-defmethod occ-marker= ((obj occ-obj-tsk)
                            (mrk null))
@@ -55,10 +62,6 @@
 (cl-defmethod occ-marker= ((obj null)
                            (tsk occ-obj-tsk))
   nil)
-
-(cl-defmethod occ-marker= ((obj occ-obj-tsk)
-                           (tsk occ-obj-tsk))
-  (occ-marker= (occ-obj-marker obj) (occ-obj-marker tsk)))
 
 
 (cl-defmethod occ-current-associated-p ((ctx occ-ctx))

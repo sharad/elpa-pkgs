@@ -66,24 +66,43 @@
    (not (occ-associable-p (occ-ctxual-current-tsk obj)))))
 
 (cl-defmethod occ-edit-until-associable ((obj occ-ctxual-tsk))
+  (occ-messge "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) begin" (occ-Format obj))
   (let ((retval nil))
     (occ-try-until 3 (or (not (eq t retval))
                          (occ-associable-p obj))
+      (occ-messge "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) ITERATION" (occ-Format obj))
       ;; BUG FIX
       (setq retval
             ;; (occ-properties-editor-combined obj '(timebeing add 10))
             (occ-properties-editor-combined obj)))
+    (occ-messge "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) return %s"
+                (occ-Format obj)
+                retval)
     retval))
+
+;; (cl-defmethod occ-edit-clock-if-unassociated ((obj occ-ctx))
+;;   "If clock in task is not unnmaed clock then offer to increase clock time."
+;;   (let*  ((curr-tsk        (occ-current-tsk))
+;;           (ctxual-curr-tsk (occ-build-ctxual-tsk-with curr-tsk obj)))
+;;     (if (and (not (occ-clock-marker-unnamed-clock-p))
+;;              ctxual-curr-tsk
+;;              (not (occ-associable-p ctxual-curr-tsk)))
+;;         (occ-edit-until-associable ctxual-curr-tsk)
+;;       t)))
 
 (cl-defmethod occ-edit-clock-if-unassociated ((obj occ-ctx))
   "If clock in task is not unnmaed clock then offer to increase clock time."
-  (let*  ((curr-tsk        (occ-current-tsk))
-          (ctxual-curr-tsk (occ-build-ctxual-tsk-with curr-tsk obj)))
-    (if (and (not (occ-clock-marker-unnamed-clock-p))
-             ctxual-curr-tsk
-             (not (occ-associable-p ctxual-curr-tsk)))
-        (occ-edit-until-associable ctxual-curr-tsk)
-      t)))
+  (occ-messge "(occ-edit-clock-if-unassociated (obj occ-ctx)[%s]) begin" (occ-Format obj))
+  (occ-messge "(occ-edit-clock-if-unassociated (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
+  (if (or (occ-clock-marker-unnamed-clock-p)
+          (occ-current-associated-p obj))
+      (progn
+        (occ-messge "(occ-edit-clock-if-unassociated (obj occ-ctx)) IF need next clock-in")
+        t)
+    (let* ((ctxual-curr-tsk (occ-ctxual-current-tsk obj))
+           (retval          (occ-edit-until-associable ctxual-curr-tsk)))
+      (occ-messge "(occ-edit-clock-if-unassociated (obj occ-ctx)) ELSE occ-edit-until-associable: returned %s" retval)
+      retval)))
 ;; (occ-edit-properties (occ-current-ctxual-tsk) '(timebeing add 10))
 
 
@@ -262,7 +281,7 @@
                              :filters             filters
                              :builder             builder
                              :ap-normal           ap-normal
-                             ;; :ap-transf           ap-transf
+                             :ap-transf           ap-transf
                              :auto-select-if-only auto-select-if-only
                              :timeout             timeout)))))
 
@@ -288,7 +307,7 @@
                                  :filters             filters
                                  :builder             builder
                                  :ap-normal           ap-normal
-                                 ;; :ap-transf           ap-transf
+                                 :ap-transf           ap-transf
                                  :auto-select-if-only auto-select-if-only
                                  :timeout             timeout)))))
     (occ-debug :nodisplay "%s: end occ-clock-in-curr-ctx-if-not" (time-stamp-string))))
