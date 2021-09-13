@@ -101,7 +101,8 @@
   "If clock in task is not unnmaed clock then offer to increase clock time."
   (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)[%s]) begin" (occ-Format obj))
   (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
-  (if (occ-current-tsk)
+  (if (and (occ-current-tsk)
+           (not (occ-clock-marker-unnamed-clock-p)))
       (if (occ-clock-associated-p obj)
           (progn
             (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) ELSE need NO next clock-in")
