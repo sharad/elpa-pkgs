@@ -89,7 +89,7 @@
       ;;       ;; TODO: provision to pass prompt to describe why editor is called
       ;;       ;; note: it supposed to return t or nil
       ;;       (occ-properties-editor-combined obj))
-
+      ;;
       ;; TODO: provision to pass prompt to describe why editor is called
       (occ-properties-editor-combined obj)
       (setq obj (occ-build-ctxual-tsk-with (occ-obj-tsk org-obj)
@@ -97,7 +97,26 @@
     (occ-message "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s])" (occ-Format obj))
     (occ-associable-p obj)))
 
-(cl-defmethod occ-edit-clock-if-unassociated-p ((obj occ-ctx))
+;; (cl-defmethod occ-edit-clock-if-unassociated-p ((obj occ-ctx))
+;;   "If clock in task is not unnmaed clock then offer to increase clock time."
+;;   (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)[%s]) begin" (occ-Format obj))
+;;   (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
+;;   (if (and (occ-current-tsk)
+;;            (not (occ-clock-marker-unnamed-clock-p)))
+;;       (if (occ-clock-associated-p obj)
+;;           (progn
+;;             (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) ELSE need NO next clock-in")
+;;             nil)
+;;         (if (occ-clock-marker-unnamed-clock-p)
+;;             t
+;;           (let* ((retval (occ-edit-until-associable (occ-ctxual-current-tsk obj))))
+;;             (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) IF occ-edit-until-associable: returned %s" retval)
+;;             retval)))
+;;     (progn
+;;       (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) ELSE No clock active need next clock-in")
+;;      t)))
+
+(cl-defmethod occ-edit-clock-if-unassociated-p ((obj occ-obj-ctx)) ;; should handle occ-ctx
   "If clock in task is not unnmaed clock then offer to increase clock time."
   (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)[%s]) begin" (occ-Format obj))
   (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
@@ -114,7 +133,7 @@
             retval)))
     (progn
       (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) ELSE No clock active need next clock-in")
-     t)))
+      t)))
 
 
 (cl-defmethod occ-clock-in-if-not ((obj occ-ctx)
@@ -183,7 +202,7 @@
             nil
           (occ-debug :debug
                      "occ-clock-in-if-not: Current tsk already associate to %s"
-                     (occ-format obj 'captilize)))))))
+                     (occ-Format obj)))))))
 ;; occ-clock-in-if-not
 
 
@@ -273,7 +292,7 @@
                   (format "context is not changed."))
                  (t (format "Unknown reason.")))))
       (let ((full-msg (format "occ-clock-in-if-chg: ctx %s not suitable to associate as %s"
-                              (occ-format curr 'capitalize)
+                              (occ-Format curr)
                               msg)))
          ;; (occ-debug :nodisplay full-msg)
         (occ-message full-msg)))))
