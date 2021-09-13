@@ -269,10 +269,11 @@
   "This return callables"
   (unless (occ-ap-transf-transform ap-obj)
     (let ((transform #'(lambda (action
-                                candidate-obj)
+                                candidate)
                          (occ-debug :debug "occ-obj-ap-transform: lambda: ap-obj = %s" ap-obj)
-                         (let ((callables (occ-obj-ap-callables ap-obj
-                                                                (occ-obj-obj candidate-obj))))
+                         (let* ((candidate-obj (occ-obj-obj candidate))
+                                (callables (occ-obj-ap-callables ap-obj
+                                                                 (occ-obj-obj candidate-obj))))
                            (cl-assert callables)
                            (occ-debug :debug "occ-obj-ap-transform: lambda: transform: callables = %s" callables)
                            (occ-make-ap-normal (cons :callables callables))))))
@@ -303,12 +304,13 @@
   (let ((transform (occ-obj-ap-transform ap-obj)))
     (cl-assert transform)
     #'(lambda (action
-               candidate-obj)
+               candidate)
         (occ-debug :debug "occ-obj-ap-helm-transformation: lambda: transform = %s" transform)
         (cl-assert transform)
-        (let ((ap-normal-obj (funcall transform
-                                      action
-                                      candidate-obj)))
+        (let* ((candidate-obj (occ-obj-obj candidate))
+               (ap-normal-obj (funcall transform
+                                       action
+                                       candidate-obj)))
           (cl-assert (occ-ap-normal-p ap-normal-obj))
           (occ-debug :debug "helm-transformation: got ap-normal-obj = %s" ap-normal-obj)
           (let ((helm-actions (occ-obj-ap-helm-actions ap-normal-obj
