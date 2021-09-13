@@ -110,10 +110,10 @@
                                    auto-select-if-only
                                    timeout)
   (unless builder (occ-error "Builder can not be nil"))
-  (let ((filters            (or filters (occ-match-filters)))
-        (builder            (or builder #'occ-build-ctxual-tsk-with))
-        (return-transform   t) ;as return value is going to be used.)
-        (timeout            (or timeout occ-idle-timeout)))
+  (let ((filters          (or filters (occ-match-filters)))
+        (builder          (or builder #'occ-build-ctxual-tsk-with))
+        (return-transform t) ;as return value is going to be used.)
+        (timeout          (or timeout occ-idle-timeout)))
     (let* ((ap-normal occ-list-select-ap-transf-keys))
       (occ-debug :debug "occ-clock-in-if-not((obj occ-ctx)): begin")
       (if (occ-edit-clock-if-unassociated obj) ;; (occ-clock-unassociated-p obj) ;; (occ-edit-clock-if-unassociated obj)
@@ -194,9 +194,9 @@
                                    ap-transf
                                    auto-select-if-only
                                    timeout)
-  (let ((filters            (or filters (occ-match-filters)))
-        (builder            (or builder #'occ-build-ctxual-tsk-with))
-        (timeout            (or timeout occ-idle-timeout)))
+  (let ((filters (or filters (occ-match-filters)))
+        (builder (or builder #'occ-build-ctxual-tsk-with))
+        (timeout (or timeout occ-idle-timeout)))
     (let* ((ap-normal occ-list-select-ap-transf-keys))
       (occ-debug :debug "occ-clock-in-if-chg((obj occ-ctx)): begin")
       (if (occ-consider-for-clockin-in-p)
@@ -208,7 +208,7 @@
                                            :filters             filters
                                            :builder             builder
                                            :ap-normal           ap-normal
-                                           :ap-transf           ap-transf
+                                           :ap-transf           nil ;; ap-transf
                                            :auto-select-if-only auto-select-if-only
                                            :timeout             timeout)
                   (occ-debug :debug "occ-clock-in-if-chg((obj occ-ctx)): calling occ-clock-in-if-not")
@@ -276,7 +276,7 @@
                              :filters             filters
                              :builder             builder
                              :ap-normal           ap-normal
-                             :ap-transf           ap-transf
+                             :ap-transf           nil ;; ap-transf
                              :auto-select-if-only auto-select-if-only
                              :timeout             timeout)))))
 
@@ -302,7 +302,7 @@
                                  :filters             filters
                                  :builder             builder
                                  :ap-normal           ap-normal
-                                 :ap-transf           ap-transf
+                                 :ap-transf           nil ;; ap-transf
                                  :auto-select-if-only auto-select-if-only
                                  :timeout             timeout)))))
     (occ-debug :nodisplay "%s: end occ-clock-in-curr-ctx-if-not" (time-stamp-string))))
