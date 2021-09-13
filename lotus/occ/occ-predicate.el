@@ -68,6 +68,15 @@
   nil)
 
 
+(cl-defgeneric occ-current-p (obj)
+  "return if OBJ is currently clocking")
+
+(cl-defmethod occ-current-p ((obj occ-obj-tsk))
+  "return if OBJ is currently clocking"
+  (occ-marker= (occ-current-tsk)
+               (occ-obj-tsk obj)))
+
+
 (cl-defgeneric occ-associable-p (obj)
   "Test if CTSK is associate")
 
@@ -103,15 +112,6 @@
 (cl-defmethod occ-unnamed-p ((obj occ-obj-tsk))
   (occ-debug :debug "occ-unnamed-p(occ-tsk=%s)" obj)
   (occ-unnamed-p (occ-obj-marker obj)))
-
-
-(cl-defgeneric occ-current-p (obj)
-  "return if OBJ is currently clocking")
-
-(cl-defmethod occ-current-p ((obj occ-obj-tsk))
-  "return if OBJ is currently clocking"
-  (occ-marker= (occ-current-tsk)
-               (occ-obj-tsk obj)))
 
 
 (cl-defmethod occ-current-associable-p ((ctx occ-ctx))

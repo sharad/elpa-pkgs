@@ -57,9 +57,12 @@
     (when curr-tsk
       (occ-build-ctxual-tsk-with curr-tsk obj))))
 
-(cl-defmethod occ-clock-unassociated-p ((obj occ-ctx))
-  (or (occ-clock-marker-unnamed-clock-p)
-      (occ-current-associable-p obj)))
+(cl-defmethod occ-clock-unassociated-p ((ctx occ-ctx))
+  "current clock is unassociated to CTX"
+  (if (occ-current-tsk)
+      (or (occ-clock-marker-unnamed-clock-p)
+          (not (occ-current-associable-p ctx)))
+    t))
 
 (cl-defmethod occ-edit-until-associable ((obj occ-ctxual-tsk))
   "Try three time to associated CTX with current TSK if succeed then return t else nil"
@@ -67,8 +70,8 @@
   (let ((retval  nil)
         (org-obj obj)
         (obj     obj))
-    (occ-try-until 3 (or (not (eq t retval))
-                         (occ-associable-p obj))
+    (occ-try-until 3 (or (eq t retval)
+                         (not (occ-associable-p obj)))
       (occ-message "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) ITERATION" (occ-Format obj))
       ;; BUG FIX
       (setq retval
