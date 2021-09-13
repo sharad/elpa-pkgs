@@ -49,6 +49,11 @@
 ;; (with-helm-alive-p)
 ;; helm-find-files-initial-input
 ;; helm-browse-project-source
+;;
+;; find about helm source arguments
+;; :initarg :root-dir
+;; :initform nil
+;; :custom 'file
 
 
 ;;; occ-main.el ends here
