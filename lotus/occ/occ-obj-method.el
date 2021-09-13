@@ -75,8 +75,8 @@
             ;; TODO: provision to pass prompt to describe why editor is called
             ;; note: it supposed to return t or nil
             (occ-properties-editor-combined obj))
-      (setq obj (occ-build-ctxual-tsk-with (occ-make-ctx-at-point)
-                                           (occ-obj-tsk org-obj))))
+      (setq obj (occ-build-ctxual-tsk-with (occ-obj-tsk org-obj)
+                                           (occ-make-ctx-at-point))))
     (occ-message "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) return %s"
                 (occ-Format obj)
                 retval)
