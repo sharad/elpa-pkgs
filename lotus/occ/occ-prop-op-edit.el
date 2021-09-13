@@ -31,12 +31,18 @@
 (require 'occ-property-editor)
 
 
+
+;; BUG it is not called
+;; (occ-op-prop-edit occ-obj-tsk): operation add prop root
+;; (occ-call-operation occ-obj-tsk): operation add prop root
+;; (occ-operation occ-obj-tsk add): operation add prop root
 ;; defined in occ-prop-intf.el
-(cl-defmethod occ-operation ((obj  occ-obj-tsk)
+(cl-defmethod occ-operation ((obj       marker)
                              (operation symbol)
-                             (prop symbol)
+                             (prop      symbol)
                              values)
   "Accept occ compatible VALUES"
+  (occ-message "(occ-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
   (let ((mrk (occ-obj-marker obj)))
     (let ((retval (occ-org-call-operation-at-point mrk ;work in org file
                                                    prop
@@ -45,18 +51,24 @@
                                                    (occ-prop-to-org prop
                                                                     values))))
       (occ-debug :debug "occ-operation: (occ-org-call-operation-at-point mrk) returnd %s" retval)
-      (when retval                      ;; BUG: TODO: why calling again
-        ;; occ-prop-op-edit.el: ‘cl-next-method-p’ is an obsolete macro (as of
-        ;; 25.1); make sure there’s always a next method, or catch
-        ;; ‘cl-no-next-method’ instead
-        (if (cl-next-method-p)
-            (cl-call-next-method)
-          (occ-error "No occ-operation defined for prop %s operation %s" prop operation))))))
+      retval)))
+
+(cl-defmethod occ-operation ((obj       occ-obj-tsk)
+                             (operation symbol)
+                             (prop      symbol)
+                             values)
+  "Accept occ compatible VALUES"
+  (occ-message "(occ-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
+  (occ-operation (occ-marker obj)
+                 operation
+                 prop
+                 values))
+
 
 
 (cl-defmethod occ-operation ((obj       occ-obj-tsk)
                              (operation (eql get))
-                             (prop symbol)
+                             (prop      symbol)
                              values)
   (let ((tsk (occ-obj-tsk obj)))
     (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
@@ -68,10 +80,10 @@
 
 (cl-defmethod occ-operation ((obj       occ-obj-tsk)
                              (operation (eql add))
-                             (prop symbol)
+                             (prop      symbol)
                              values)
   (let ((tsk    (occ-obj-tsk obj)))
-    (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
+    (occ-message "(occ-operation occ-obj-tsk add): operation %s prop %s" operation prop)
     (if (occ-list-p prop)
         (occ-set-property tsk prop
                           (nconc (occ-get-property tsk prop)
@@ -81,7 +93,7 @@
 
 (cl-defmethod occ-operation ((obj       occ-obj-tsk)
                              (operation (eql put))
-                             (prop symbol)
+                             (prop      symbol)
                              values)
   (let ((tsk    (occ-obj-tsk obj)))
     (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
@@ -93,24 +105,24 @@
 
 (cl-defmethod occ-operation ((obj       occ-obj-tsk)
                              (operation (eql remove))
-                             (prop symbol)
+                             (prop      symbol)
                              values)
   (let ((tsk    (occ-obj-tsk obj)))
     (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
-    (if (occ-list-p prop)
-        (occ-set-property tsk prop
-                          (remove (car values)
-                                  (occ-get-property tsk prop)))
-      (occ-error "Implement it."))))
+    (if (occ-list-p prop
+                    (occ-set-property tsk prop
+                                      (remove (car values
+                                                   (occ-get-property tsk prop)))))
+        (occ-error "Implement it."))))
 
 (cl-defmethod occ-operation ((obj       occ-obj-tsk)
                              (operation (eql member))
-                             (prop symbol)
+                             (prop      symbol)
                              values)
   (let ((tsk (occ-obj-tsk obj)))
     (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
     (occ-has-p tsk prop
-               (car values))))
+               values)))
 
 
 (cl-defgeneric occ-call-operation (obj
@@ -119,19 +131,35 @@
                                    values)
   "Accept occ compatible VALUES")
 
-(cl-defmethod occ-call-operation ((obj  occ-obj-tsk)
+(cl-defmethod occ-call-operation ((obj       marker)
                                   (operation symbol)
-                                  (prop symbol)
+                                  (prop      symbol)
                                   values)
   "Accept occ compatible VALUES"
-  (occ-message "(occ-call-operation occ-obj-tsk): operation %s prop %s" operation prop)
+  (occ-message "(occ-call-operation marker): operation %s prop %s" operation prop)
   (occ-operation obj
                  operation
                  prop
                  values))
+
+(cl-defmethod occ-call-operation ((obj       occ-obj-tsk)
+                                  (operation symbol)
+                                  (prop      symbol)
+                                  values)
+  "Accept occ compatible VALUES"
+  (occ-message "(occ-call-operation occ-obj-tsk): operation %s prop %s" operation prop)
+  (if (occ-operation (occ-marker obj)
+                     operation
+                     prop
+                     values)
+      (occ-operation obj
+                     operation
+                     prop
+                     values)))
 
 
-(cl-defgeneric occ-select-operation (obj prop)
+(cl-defgeneric occ-select-operation (obj
+                                     prop)
   "occ-select-operation")
 
 ;; TODO: Add log not on property editing.
@@ -140,7 +168,8 @@
   (cl-assert prop)
   (if (occ-list-p prop)
       ;; TODO: where are generated actions?? (occ-operations-for-prop 'occ-obj-tsk 'root)
-      (let* ((operations (occ-operations-for-prop obj prop))
+      (let* ((operations (occ-operations-for-prop obj
+                                                  prop))
              ;; (actions '(("add" . add)
              ;;            ("del" . remove)
              ;;            ("put" . put)))

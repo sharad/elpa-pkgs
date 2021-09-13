@@ -141,7 +141,7 @@
                                 value
                                 &key not-recursive)
   ;; mainly used by occ-tsk only
-  (occ-message "(occ-set-property oc-obj) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
+  (occ-message "(occ-set-property occ-obj): prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
   (if (memq prop
             (cl-class-slots (cl-inst-classname obj)))
       (setf (cl-struct-slot-value (cl-inst-classname obj) prop obj)
@@ -150,7 +150,7 @@
                                          prop)
                           prop
                         (upcase-sym prop))))
-      (occ-debug :debug "occ-set-property: got %s using %s"
+      (occ-debug :debug "(occ-set-property occ-obj): plist got %s using %s"
                  prop plist-prop)
       (occ-plist-set
        ;; NOTE: as Property block keys return by (org-element-at-point) are in
@@ -167,7 +167,7 @@
                                 value &key not-recursive)
   ;; TODO: do it recursively.
   ;; mainly used by occ-tsk only
-  (occ-message "(occ-set-property occ-set-property) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
+  (occ-message "(occ-set-property (obj occ-tree-tsk)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
   (cl-call-next-method)
   (when not-recursive
     (dolist (subtsk (occ-tree-tsk-subtree (occ-obj-tsk obj)))
@@ -180,17 +180,20 @@
 (cl-defmethod occ-set-property ((obj occ-obj-tsk)
                                 prop
                                 value &key not-recursive)
+  (occ-message "(occ-set-property (obj occ-obj-tsk)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
   (cl-call-next-method))
 
 (cl-defmethod occ-set-property ((obj occ-obj-ctx-tsk)
                                 prop
                                 value &key not-recursive)
+  (occ-message "(occ-set-property (obj occ-obj-ctx-tsk)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
   (occ-set-property (occ-obj-tsk obj) prop
                     value :not-recursive not-recursive))
 
 (cl-defmethod occ-set-property ((obj occ-obj-ctx)
                                 prop
                                 value &key not-recursive)
+  (occ-message "(occ-set-property (obj occ-obj-ctx)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
   (occ-set-property (occ-obj-ctx obj) prop
                     value :not-recursive not-recursive))
 
