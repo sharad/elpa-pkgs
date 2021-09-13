@@ -53,7 +53,7 @@
                              values)
   "Accept occ compatible VALUES"
   (occ-message "(occ-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
-  (occ-operation (occ-marker obj)
+  (occ-operation (occ-obj-marker obj)
                  operation
                  prop
                  values))
@@ -143,7 +143,7 @@
                                   values)
   "Accept occ compatible VALUES"
   (occ-message "(occ-call-operation occ-obj-tsk): operation %s prop %s" operation prop)
-  (if (occ-operation (occ-marker obj)
+  (if (occ-operation (occ-obj-marker obj)
                      operation
                      prop
                      values)
@@ -153,7 +153,7 @@
                      values)
     (occ-error "Failed to %s on marker %s of %s in org world"
                operation
-               (occ-marker obj)
+               (occ-obj-marker obj)
                (occ-Format obj))))
 
 

@@ -73,6 +73,7 @@
 (cl-defmethod occ-obj-tsk ((obj occ-tsk))
   obj)
 
+;; will also cover occ-ctxual-tsk
 (cl-defmethod occ-obj-tsk ((obj occ-ctsk))
   (occ-ctsk-tsk obj))
 
@@ -83,6 +84,7 @@
 (cl-defmethod occ-obj-ctx ((obj occ-ctx))
   obj)
 
+;; will also cover occ-ctxual-tsk
 (cl-defmethod occ-obj-ctx ((obj occ-ctsk))
   (occ-ctsk-ctx obj))
 
