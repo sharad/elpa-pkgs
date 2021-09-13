@@ -271,7 +271,8 @@
     (let ((transform #'(lambda (action
                                 candidate-obj)
                          (occ-debug :debug "occ-obj-ap-transform: lambda: ap-obj = %s" ap-obj)
-                         (let ((callables (occ-obj-ap-callables ap-obj candidate-obj)))
+                         (let ((callables (occ-obj-ap-callables ap-obj
+                                                                (occ-obj-obj candidate-obj))))
                            (cl-assert callables)
                            (occ-debug :debug "occ-obj-ap-transform: lambda: transform: callables = %s" callables)
                            (occ-make-ap-normal (cons :callables callables))))))
