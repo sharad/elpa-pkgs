@@ -283,8 +283,9 @@
     (occ-debug :debug "occ-helm-act1: ap-normal: %s" ap-normal)
     (occ-debug :debug "occ-helm-act1: ap-transf: %s" ap-transf)
     (let* ((ap-normal (occ-build-ap-normal ap-normal))
-           (ap-transf (occ-build-ap-transf ap-transf
-                                           (cons :callables (occ-obj-ap-callables ap-normal obj)))))
+           (ap-transf (occ-build-ap-transf ap-transf   ;; HBUG: new change
+                                           ;; (cons :callables (occ-obj-ap-callables ap-normal obj))
+                                           (occ-obj-ap-base ap-normal))))
       (occ-debug :debug "occ-helm-act2: ap-normal: %s" ap-normal)
       (occ-debug :debug "occ-helm-act2: ap-transf: %s" ap-transf)
       (let* ((ap-normal (if return-transform (occ-return-tranform ap-normal obj) ap-normal)) ;as return value is going to be used.
