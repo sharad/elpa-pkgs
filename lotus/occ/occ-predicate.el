@@ -27,6 +27,10 @@
 (provide 'occ-predicate)
 
 
+(cl-defgeneric occ-marker= ((obj marker)
+                            (mrk marker))
+  "compare markers")
+
 (cl-defmethod occ-marker= ((obj marker)
                            (mrk marker))
   (if (and
@@ -42,18 +46,18 @@
 
 (cl-defmethod occ-marker= ((obj occ-obj-tsk)
                            (tsk occ-obj-tsk))
-  (occ-marker= (occ-obj-marker obj)
-               (occ-obj-marker tsk)))
+  (occ-marker= (occ-obj-marker (occ-obj-tsk obj))
+               (occ-obj-marker (occ-obj-tsk tsk))))
 
 (cl-defmethod occ-marker= ((obj occ-obj-tsk)
                            (mrk marker))
-  (occ-marker= (occ-obj-marker obj)
+  (occ-marker= (occ-obj-marker (occ-obj-tsk obj))
                (occ-obj-marker mrk)))
 
 (cl-defmethod occ-marker= ((obj marker)
                            (tsk occ-obj-tsk))
   (occ-marker= (occ-obj-marker obj)
-               (occ-obj-marker tsk)))
+               (occ-obj-marker (occ-obj-tsk tsk))))
 
 (cl-defmethod occ-marker= ((obj occ-obj-tsk)
                            (mrk null))
@@ -63,7 +67,10 @@
                            (tsk occ-obj-tsk))
   nil)
 
-  
+
+(cl-defgeneric occ-associable-p (obj)
+  "Test if CTSK is associate")
+
 (cl-defmethod occ-associable-p ((obj null))
   "Test if CTSK is associate"     ;not required.
   nil)
@@ -76,9 +83,14 @@
   (> (occ-rank obj) 0))
 
 
-(defmethod occ-associable-with-p ((obj occ-obj-tsk)
-                                  (ctx occ-ctx))
-  (occ-associable-p (occ-build-ctxual-tsk-with obj ctx)))
+(cl-defgeneric occ-associable-with-p (obj
+                                      ctx)
+  "Test if CTSK is associate")
+
+(cl-defmethod occ-associable-with-p ((obj occ-obj-tsk)
+                                     (ctx occ-ctx))
+  (occ-associable-p (occ-build-ctxual-tsk-with (occ-obj-tsk obj)
+                                               ctx)))
 
 
 (cl-defgeneric occ-unammed-p (obj)
@@ -93,8 +105,16 @@
   (occ-unnamed-p (occ-obj-marker obj)))
 
 
+(cl-defgeneric occ-current-p (obj)
+  "return if OBJ is currently clocking")
+
 (cl-defmethod occ-current-p ((obj occ-obj-tsk))
+  "return if OBJ is currently clocking"
   (occ-marker= (occ-current-tsk)
                (occ-obj-tsk obj)))
+
+
+(cl-defmethod occ-current-associable-p ((ctx occ-ctx))
+  (occ-associable-p (occ-ctxual-current-tsk ctx)))
 
 ;;; occ-predicate.el ends here
