@@ -58,12 +58,8 @@
       (occ-build-ctxual-tsk-with curr-tsk obj))))
 
 (cl-defmethod occ-clock-unassociated-p ((obj occ-ctx))
-  (or
-   (occ-clock-marker-unnamed-clock-p)
-   ;; TODO: BUG: Here provide option to user in case of non-unnamed tsk to
-   ;; increase time prop or other prop or continue to other clock. or
-   ;; force checkout for clock.
-   (not (occ-associable-p (occ-ctxual-current-tsk obj)))))
+  (or (occ-clock-marker-unnamed-clock-p)
+      (occ-current-associable-p obj)))
 
 (cl-defmethod occ-edit-until-associable ((obj occ-ctxual-tsk))
   (occ-messge "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) begin" (occ-Format obj))
@@ -94,8 +90,7 @@
   "If clock in task is not unnmaed clock then offer to increase clock time."
   (occ-messge "(occ-edit-clock-if-unassociated (obj occ-ctx)[%s]) begin" (occ-Format obj))
   (occ-messge "(occ-edit-clock-if-unassociated (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
-  (if (or (occ-clock-marker-unnamed-clock-p)
-          (occ-current-associated-p obj))
+  (if (occ-clock-unassociated-p obj)
       (progn
         (occ-messge "(occ-edit-clock-if-unassociated (obj occ-ctx)) IF need next clock-in")
         t)

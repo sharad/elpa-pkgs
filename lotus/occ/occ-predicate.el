@@ -64,20 +64,24 @@
   nil)
 
 
-(cl-defmethod occ-current-associated-p ((ctx occ-ctx))
-  (let ((tsk (occ-current-tsk)))
-    (when tsk
-     (occ-associable-with-p tsk
-                            ctx))))
+(cl-defmethod occ-current-associable-p ((ctx occ-ctx))
+  (occ-associable-with-p (occ-ctxual-current-tsk ctx)))
 
 
+(defmethod occ-associable-with-p ((obj occ-obj-tsk)
+                                  (ctx occ-ctx))
+  (occ-associable-p (occ-build-ctxual-tsk-with obj ctx)))
+  
 (cl-defmethod occ-associable-p ((obj null))
   "Test if CTSK is associate"     ;not required.
   nil)
 
 (cl-defmethod occ-associable-p ((obj occ-obj-ctx-tsk))
   "Test if CTSK is associate"     ;not required.
-  (> (occ-rank (occ-build-ctxual-tsk obj)) 0))
+  (occ-associable-p (occ-build-ctxual-tsk obj)))
+
+(cl-defmethod occ-associable-p  ((obj occ-ctxual-tsk))
+  (> (occ-rank obj) 0))
 
 
 (cl-defgeneric occ-unammed-p (obj)
