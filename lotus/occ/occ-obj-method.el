@@ -127,12 +127,11 @@
                                   :action     (list (cons "Edit"
                                                           #'(lambda (candidate-fun)
                                                               (funcall candidate-fun obj)))))))
-      (let* ((sources (list helm-checkout-source
-                            helm-fast-source
-                            helm-edit-source))
-             (retval  (helm-timed occ-idle-timeout nil
-                        (helm :sources sources))))
-        retval))))
+      (let ((sources (list helm-checkout-source
+                           helm-fast-source
+                           helm-edit-source)))
+        (helm-timed occ-idle-timeout nil
+          (helm :sources sources))))))
 
 
 (cl-defmethod occ-print-rank ((obj occ-obj-tsk))
