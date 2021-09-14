@@ -186,7 +186,9 @@
 (cl-defmethod occ-filter-max ((obj occ-ctx)
                               sequence
                               &key rank)
-  (remove-if-not #'(lambda (obj) (>= (funcall rank obj) occ-filter-max))
+  (remove-if-not #'(lambda (obj)
+                     (>= (funcall rank obj)
+                         occ-filter-max))
                  sequence))
 
 (occ-filter-add :max "Maximum" #'occ-filter-max)
