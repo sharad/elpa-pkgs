@@ -235,17 +235,17 @@
   (occ-error "Implement it"))
 
 
-(cl-defmethod occ-obj-ap-base (ap-obj occ-ap)
+(cl-defmethod occ-obj-ap-base ((ap-obj occ-ap))
   (occ-ap-tree-keybranch ap-obj))
 
-(cl-defmethod occ-obj-ap-base (ap-obj occ-ap-normal)
+(cl-defmethod occ-obj-ap-base ((ap-obj occ-ap-normal))
   (let ((base (cl-call-next-method)))
     (or base
         (let ((callables (occ-ap-normal-callables ap-obj)))
           (when callables
             (cons :callables callables))))))
 
-(cl-defmethod occ-obj-ap-base (ap-obj occ-ap-transf)
+(cl-defmethod occ-obj-ap-base ((ap-obj occ-ap-transf))
   (let ((base (cl-call-next-method)))
     (or base
         (let ((transform (occ-ap-normal-transform ap-obj)))
