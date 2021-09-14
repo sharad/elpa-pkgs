@@ -115,7 +115,7 @@
             (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) IF occ-edit-until-associable-p: returned %s" retval)
             retval)))
     (progn
-      (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) ELSE No clock active need next clock-in")
+      (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) ELSE No NAMED clock active need next clock-in")
       t)))
 
 
