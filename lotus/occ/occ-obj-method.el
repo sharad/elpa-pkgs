@@ -117,4 +117,10 @@
         (if (eq retval t)
             t)))))
 
+
+(cl-defmethod occ-print-rank ((obj occ-obj-tsk))
+  (occ-message "Rank for %s is %d"
+               (occ-Format obj)
+               (occ-rank obj)))
+
 ;;; occ-obj-method.el ends here

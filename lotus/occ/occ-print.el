@@ -212,10 +212,4 @@ pointing to it."
   (occ-format obj 'upcase
               rank))
 
-
-(cl-defmethod occ-print-rank ((obj occ-obj-tsk))
-  (occ-message "Rank for %s is %d"
-               (occ-Format obj)
-               (occ-rank obj)))
-
 ;;; occ-print.el ends here

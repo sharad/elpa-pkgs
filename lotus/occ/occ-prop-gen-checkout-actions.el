@@ -125,10 +125,10 @@ only argument required for some other further processing"
   (occ-gen-checkouts-if-required obj
                                  :param-only param-only))
 
-(cl-defmethod occ-gen-each-prop-checkouts ((obj occ-obj-ctx-tsk)
-                                           &key param-only)
-  (occ-gen-checkouts-if-required obj
-                                 :param-only param-only))
+;; (cl-defmethod occ-gen-each-prop-checkouts ((obj occ-obj-ctx-tsk)
+;;                                            &key param-only)
+;;   (occ-gen-checkouts-if-required obj
+;;                                  :param-only param-only))
 
 (cl-defmethod occ-gen-each-prop-checkouts ((obj occ-obj-ctx)
                                            &key param-only)
@@ -152,12 +152,12 @@ only argument required for some other further processing"
                                   #'(lambda (obj)
                                       (occ-op-props-checkout obj)))))
 
-(cl-defmethod occ-gen-simple-checkouts ((obj occ-obj-ctx-tsk)
-                                        &key param-only)
-  (list (occ-make-callable-normal :checkout
-                                  (format "Checkout %s" (occ-Format obj))
-                                  #'(lambda (obj)
-                                      (occ-op-props-checkout obj)))))
+;; (cl-defmethod occ-gen-simple-checkouts ((obj occ-obj-ctx-tsk)
+;;                                         &key param-only)
+;;   (list (occ-make-callable-normal :checkout
+;;                                   (format "Checkout %s" (occ-Format obj))
+;;                                   #'(lambda (obj)
+;;                                       (occ-op-props-checkout obj)))))
 
 (cl-defmethod occ-gen-simple-checkouts ((obj occ-obj-ctx)
                                         &key param-only)
