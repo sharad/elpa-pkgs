@@ -39,11 +39,6 @@
 (cl-defmethod occ-checkout ((obj occ-obj-tsk))
   (occ-op-props-checkout obj))
 
-;; BUG  in Menu
-;;           "Set debug obj"
-;;           "Call with obj"
-;;       occ-return getting passed
-
 (defun occ-util-read-sexp-from-minibuffer (prompt)
  (car (read-from-string (read-from-minibuffer prompt))))
 
@@ -92,8 +87,10 @@
 (cl-defmethod occ-properties-editor-combined ((obj occ-obj-ctx-tsk))
   (let ((prompt (format "%s fast edit" (occ-Format obj))))
     (let ((helm-fast-source     (helm-build-sync-source prompt
-                                  :candidates (occ-obj-callable-helm-actions (occ-gen-each-prop-fast-edits obj)
-                                                                             obj)
+                                  :candidates (append (occ-obj-callable-helm-actions (occ-gen-each-prop-fast-edits obj)
+                                                                                     obj)
+                                                      (occ-obj-callable-helm-actions (occ-gen-each-prop-fast-edits (occ-obj-tsk obj))
+                                                                                     obj))
                                   :action     (list (cons "Edit"
                                                           #'(lambda (candidate-fun)
                                                               (funcall candidate-fun obj))))))
