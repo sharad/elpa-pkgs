@@ -40,7 +40,10 @@
   (occ-op-props-checkout obj))
 
 (defun occ-util-read-sexp-from-minibuffer (prompt)
- (car (read-from-string (read-from-minibuffer prompt))))
+  ;; (car (read-from-string (read-from-minibuffer prompt)))
+  (read--expression prompt))
+
+
 
 (cl-defmethod occ-call-with-obj ((obj occ-obj-tsk))
   (let ((fun (let ((obj obj)

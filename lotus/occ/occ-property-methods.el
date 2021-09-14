@@ -94,12 +94,12 @@
 
 (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
                                  (prop (eql currfile)))
-  (let* ((tsk        (occ-obj-tsk obj))
+  (let* ((tsk        (occ-obj-tsk      obj))
          (files      (occ-get-property tsk prop))
          (first-file (first files)))
        (if first-file
            (find-file first-file)
-         (occ-error "%s value ruturned for prop %s" first-file prop))))
+         (occ-message "occ-checkout-prop: %s value ruturned for prop %s" first-file prop))))
 ;;}}
 
 ;; Current File property of task:1 ends here
@@ -164,12 +164,12 @@
 
 (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
                                  (prop (eql root)))
-  (let* ((tsk       (occ-obj-tsk obj))
+  (let* ((tsk       (occ-obj-tsk      obj))
          (dirs      (occ-get-property tsk prop))
          (first-dir (first dirs)))
     (if first-dir
         (find-file first-dir)
-      (occ-error "%s value ruturned for prop %s" first-dir prop))))
+      (occ-message "occ-checkout-prop: %s value ruturned for prop %s" first-dir prop))))
 ;;}}
 
 ;; Root dir property of task:1 ends here
