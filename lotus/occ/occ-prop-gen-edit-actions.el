@@ -166,6 +166,14 @@
                                        &key param-only)
   nil)
 
+(cl-defmethod occ-gen-each-prop-edits ((obj occ-obj-tsk)
+                                       &key param-only)
+  ;; NOTE:
+  ;; will call (OCC-GEN-EDITS-IF-REQUIRED ((OBJ OCC-OBJ-TSK) (PROP NULL) (OPERATION NULL) &KEY PARAM-ONLY)
+  ;; function as number of arguments are different.
+  (occ-gen-edits-if-required obj nil nil
+                             :param-only param-only))
+
 (cl-defmethod occ-gen-each-prop-edits ((obj occ-obj-ctx-tsk)
                                        &key param-only)
   ;; NOTE:
@@ -177,6 +185,7 @@
 (cl-defmethod occ-gen-each-prop-edits ((obj occ-obj-ctx)
                                        &key param-only)
   nil)
+
 
 (defun* occ-gen-each-prop-fast-edits (obj &key param-only)
   (occ-gen-each-prop-edits obj :param-only param-only))
@@ -185,6 +194,13 @@
 (cl-defmethod occ-gen-simple-edits ((obj null)
                                     &key param-only)
   nil)
+
+(cl-defmethod occ-gen-simple-edits ((obj occ-obj-tsk)
+                                    &key param-only)
+  (list (occ-make-callable-normal :edit
+                                  (format "Edit %s" (occ-Format obj))
+                                  #'(lambda (obj)
+                                      (occ-op-props-edit obj)))))
 
 (cl-defmethod occ-gen-simple-edits ((obj occ-obj-ctx-tsk)
                                     &key param-only)
