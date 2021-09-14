@@ -119,11 +119,9 @@
                                                               (funcall candidate-fun obj))))))
           (helm-checkout-source (helm-build-sync-source "other"
                                   :candidates (list (cons (format "Continue with same clock task %s" (occ-Format obj))
-                                                          #'(lambda (arg)
-                                                              'skip))
+                                                          (occ-lambda-with-one-arg 'skip))
                                                     (cons "Try another clocking"
-                                                          #'(lambda (arg)
-                                                              'no-action)) ;to bypass three repeat cycle of (occ-try-until ) function
+                                                          (occ-lambda-with-one-arg 'no-action)) ;to bypass three repeat cycle of (occ-try-until ) function
                                                     (cons "Checkout"
                                                           (occ-lambda-with-one-arg #'occ-checkout)))
                                   :action     (list (cons "Edit"
@@ -134,8 +132,7 @@
                             helm-edit-source))
              (retval  (helm-timed occ-idle-timeout nil
                         (helm :sources sources))))
-        (if (eq retval t)
-            t)))))
+        retval))))
 
 
 (cl-defmethod occ-print-rank ((obj occ-obj-tsk))

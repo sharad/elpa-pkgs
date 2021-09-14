@@ -70,14 +70,14 @@
   (not (occ-current-associated-p ctx)))
 
 (cl-defmethod occ-edit-until-associable-p ((obj occ-ctxual-tsk)
-                                         (tries number))
+                                           (tries number))
   "Try three time to associated CTX with current TSK if succeed then return t else nil"
   (occ-message "(occ-edit-until-associable-p (obj occ-ctxual-tsk)[%s]) begin" (occ-Format obj))
   (let ((retval  nil)
         (org-obj obj)
         (obj     obj))
-    (occ-try-until tries (or (memq retval '(no-action skip))
-                             (not (occ-associable-p obj)))
+    (occ-try-until tries (not (or (memq retval '(no-action skip))
+                                  (occ-associable-p obj)))
       (occ-message "(occ-edit-until-associable-p (obj occ-ctxual-tsk)[%s]) ITERATION" (occ-Format obj))
       ;; ;; BUG FIX
       ;; TODO: provision to pass prompt to describe why editor is called
@@ -85,8 +85,16 @@
       (setq retval
             (occ-properties-editor-combined obj))
       (setq obj (occ-build-ctxual-tsk-with (occ-obj-tsk org-obj)
-                                           (occ-make-ctx-at-point))))
-    (occ-message "(occ-edit-until-associable-p (obj occ-ctxual-tsk)[%s])" (occ-Format obj))
+                                           (occ-make-ctx-at-point)))
+      (occ-message "(occ-edit-until-associable-p (obj occ-ctxual-tsk)[%s]): occ-try-until: (occ-associable-p) %s retval %s"
+                   (occ-Format obj)
+                   (occ-associable-p obj)
+                   retval))
+
+    (occ-message "(occ-edit-until-associable-p (obj occ-ctxual-tsk)[%s]) (occ-associable-p) %s retval %s"
+                 (occ-Format obj)
+                 (occ-associable-p obj)
+                 retval)
     (or (eq 'skip retval)
         (occ-associable-p obj))))
 
