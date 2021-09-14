@@ -69,64 +69,64 @@
   "current clock is unassociated to CTX"
   (not (occ-current-associated-p ctx)))
 
-(cl-defmethod occ-edit-until-associable ((obj occ-ctxual-tsk))
+(cl-defmethod occ-edit-until-associable-p ((obj occ-ctxual-tsk)
+                                         (tries number))
   "Try three time to associated CTX with current TSK if succeed then return t else nil"
-  (occ-message "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) begin" (occ-Format obj))
+  (occ-message "(occ-edit-until-associable-p (obj occ-ctxual-tsk)[%s]) begin" (occ-Format obj))
   (let ((retval  nil)
         (org-obj obj)
         (obj     obj))
-    (occ-try-until 3 (or (eq ''no-action retval)
-                         (not (occ-associable-p obj)))
-      (occ-message "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) ITERATION" (occ-Format obj))
+    (occ-try-until tries (or (memq retval '(no-action skip))
+                             (not (occ-associable-p obj)))
+      (occ-message "(occ-edit-until-associable-p (obj occ-ctxual-tsk)[%s]) ITERATION" (occ-Format obj))
       ;; ;; BUG FIX
-      ;; (setq retval
-      ;;       ;; TODO: provision to pass prompt to describe why editor is called
-      ;;       ;; note: it supposed to return t or nil
-      ;;       (occ-properties-editor-combined obj))
-      ;;
       ;; TODO: provision to pass prompt to describe why editor is called
-      (occ-properties-editor-combined obj)
+      ;; note: it supposed to return t or nil
+      (setq retval
+            (occ-properties-editor-combined obj))
       (setq obj (occ-build-ctxual-tsk-with (occ-obj-tsk org-obj)
                                            (occ-make-ctx-at-point))))
-    (occ-message "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s])" (occ-Format obj))
-    (occ-associable-p obj)))
+    (occ-message "(occ-edit-until-associable-p (obj occ-ctxual-tsk)[%s])" (occ-Format obj))
+    (or (eq 'skip retval)
+        (occ-associable-p obj))))
 
-;; (cl-defmethod occ-edit-clock-if-unassociated-p ((obj occ-ctx))
+;; (cl-defmethod occ-edit-current-if-unassociated-p ((obj occ-ctx))
 ;;   "If clock in task is not unnmaed clock then offer to increase clock time."
-;;   (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)[%s]) begin" (occ-Format obj))
-;;   (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
+;;   (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)[%s]) begin" (occ-Format obj))
+;;   (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
 ;;   (if (and (occ-current-tsk)
 ;;            (not (occ-clock-marker-unnamed-clock-p)))
 ;;       (if (occ-current-associated-p obj)
 ;;           (progn
-;;             (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) ELSE need NO next clock-in")
+;;             (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) ELSE need NO next clock-in")
 ;;             nil)
 ;;         (if (occ-clock-marker-unnamed-clock-p)
 ;;             t
-;;           (let* ((retval (occ-edit-until-associable (occ-ctxual-current-tsk obj))))
-;;             (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) IF occ-edit-until-associable: returned %s" retval)
+;;           (let* ((retval (occ-edit-until-associable-p (occ-ctxual-current-tsk obj))))
+;;             (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) IF occ-edit-until-associable-p: returned %s" retval)
 ;;             retval)))
 ;;     (progn
-;;       (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) ELSE No clock active need next clock-in")
+;;       (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) ELSE No clock active need next clock-in")
 ;;      t)))
 
-(cl-defmethod occ-edit-clock-if-unassociated-p ((obj occ-obj-ctx)) ;; should handle occ-ctx
+(cl-defmethod occ-edit-current-if-unassociated-p ((obj occ-obj-ctx)) ;; should handle occ-ctx
   "If clock in task is not unnmaed clock then offer to increase clock time."
-  (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)[%s]) begin" (occ-Format obj))
-  (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
+  (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)[%s]) begin" (occ-Format obj))
+  (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
   (if (and (occ-current-tsk)
            (not (occ-clock-marker-unnamed-clock-p)))
       (if (occ-current-associated-p obj)
           (progn
-            (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) ELSE need NO next clock-in")
+            (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) ELSE need NO next clock-in")
             nil)
         (if (occ-clock-marker-unnamed-clock-p)
             t
-          (let* ((retval (occ-edit-until-associable (occ-ctxual-current-tsk obj))))
-            (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) IF occ-edit-until-associable: returned %s" retval)
+          (let* ((retval (not (occ-edit-until-associable-p (occ-ctxual-current-tsk obj)
+                                                           3))))
+            (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) IF occ-edit-until-associable-p: returned %s" retval)
             retval)))
     (progn
-      (occ-message "(occ-edit-clock-if-unassociated-p (obj occ-ctx)) ELSE No clock active need next clock-in")
+      (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) ELSE No clock active need next clock-in")
       t)))
 
 
@@ -145,7 +145,7 @@
         (timeout          (or timeout occ-idle-timeout)))
     (let* ((ap-normal occ-list-select-ap-transf-keys))
       (occ-debug :debug "occ-clock-in-if-not((obj occ-ctx)): begin")
-      (if (occ-edit-clock-if-unassociated-p obj) ;; (occ-current-unassociated-p obj) ;; (occ-edit-clock-if-unassociated-p obj)
+      (if (occ-edit-current-if-unassociated-p obj) ;; (occ-current-unassociated-p obj) ;; (occ-edit-current-if-unassociated-p obj)
           (prog1                ;current clock is not matching
               t
             (occ-debug :debug

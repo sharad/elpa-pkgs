@@ -118,7 +118,10 @@
                                                           #'(lambda (candidate-fun)
                                                               (funcall candidate-fun obj))))))
           (helm-checkout-source (helm-build-sync-source "other"
-                                  :candidates (list (cons "Continue"
+                                  :candidates (list (cons (format "Continue with same clock task %s" (occ-Format obj))
+                                                          #'(lambda (arg)
+                                                              'skip))
+                                                    (cons "Try another clocking"
                                                           #'(lambda (arg)
                                                               'no-action)) ;to bypass three repeat cycle of (occ-try-until ) function
                                                     (cons "Checkout"
