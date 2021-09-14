@@ -268,19 +268,23 @@
                                   :candidates (occ-obj-callable-helm-actions (occ-gen-each-prop-fast-edits obj)
                                                                              obj)
                                   :action     (list (cons "Edit"
-                                                          #'funcall))))
+                                                          #'(lambda (candidate-fun)
+                                                              (funcall candidate-fun obj))))))
           (helm-edit-source     (helm-build-sync-source "edit"
                                   :candidates (list (cons "Edit"
                                                           (occ-lambda-with-one-arg #'occ-properties-editor)))
                                   :action     (list (cons "Edit"
-                                                          #'funcall))))
+                                                          #'(lambda (candidate-fun)
+                                                              (funcall candidate-fun obj))))))
           (helm-checkout-source (helm-build-sync-source "other"
                                   :candidates (list (cons "Continue"
-                                                          #'(lambda (arg) t)) ;to bypass three repeat cycle of (occ-try-until ) function
+                                                          #'(lambda (arg)
+                                                              t)) ;to bypass three repeat cycle of (occ-try-until ) function
                                                     (cons "Checkout"
                                                           (occ-lambda-with-one-arg #'occ-checkout)))
                                   :action     (list (cons "Edit"
-                                                          #'funcall)))))
+                                                          #'(lambda (candidate-fun)
+                                                              (funcall candidate-fun obj)))))))
       (let* ((sources (list helm-fast-source
                             helm-edit-source
                             helm-checkout-source))

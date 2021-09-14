@@ -57,7 +57,7 @@
       (list prop
             operation
             value)
-    #'(lambda (obj)
+    #'(lambda (candidate)
         (occ-op-prop-edit obj
                           prop
                           operation

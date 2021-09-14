@@ -793,7 +793,8 @@ pointing to it."
                            :obtrusive obtrusive))
 
 (cl-defmethod occ-list ((obj null)
-                        &key builder
+                        &key
+                        builder
                         obtrusive)
   "return TSKs container"
   (occ-list (occ-make-ctx-at-point)
