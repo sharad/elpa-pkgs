@@ -302,4 +302,17 @@ FULL is given."
     (not current-prefix-arg)))
   (occ-message (occ-get-version here full message)))
 
+
+(defun occ-run ()
+  (interactive)
+  (helm :prompt "test"
+        :sources (list (helm-build-sync-source "Actions"
+                           :candidates (list (cons "occ clock-in current context (force)"
+                                                   #'(lambda ()
+                                                       (occ-clock-in-curr-ctx t))))
+                           :action     (list (cons "run"
+                                                   #'(lambda (candidate-fun)
+                                                       (funcall candidate-fun))))))))
+
+
 ;;; occ-commands.el ends here

@@ -109,14 +109,12 @@
                                                       (occ-obj-callable-helm-actions (occ-gen-each-prop-fast-edits (occ-obj-tsk obj))
                                                                                      obj))
                                   :action     (list (cons "Edit"
-                                                          #'(lambda (candidate-fun)
-                                                              (funcall candidate-fun obj))))))
+                                                          (occ-lambda-one-arg-run obj)))))
           (helm-edit-source     (helm-build-sync-source "edit"
                                   :candidates (list (cons "Edit"
                                                           (occ-lambda-with-one-arg #'occ-properties-editor)))
                                   :action     (list (cons "Edit"
-                                                          #'(lambda (candidate-fun)
-                                                              (funcall candidate-fun obj))))))
+                                                          (occ-lambda-one-arg-run obj)))))
           (helm-checkout-source (helm-build-sync-source "other"
                                   :candidates (list (cons (format "Continue with same clock task %s" (occ-Format obj))
                                                           (occ-lambda-with-one-arg 'skip))
@@ -125,8 +123,7 @@
                                                     (cons "Checkout"
                                                           (occ-lambda-with-one-arg #'occ-checkout)))
                                   :action     (list (cons "Edit"
-                                                          #'(lambda (candidate-fun)
-                                                              (funcall candidate-fun obj)))))))
+                                                          (occ-lambda-one-arg-run obj))))))
       (let ((sources (list helm-checkout-source
                            helm-fast-source
                            helm-edit-source)))

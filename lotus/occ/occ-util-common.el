@@ -237,5 +237,9 @@
       (if (functionp val-or-fun)
           (funcall val-or-fun obj)
         val-or-fun)))
+
+(defun occ-lambda-one-arg-run (obj)
+  #'(lambda (candidate-fun)
+      (funcall candidate-fun obj)))
 
 ;;; occ-util-common.el ends here
