@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;; Contains methods callable from helm selection menu for OCC-OBJ-TSK etc.
 
 ;;; Code:
 
@@ -38,6 +38,7 @@
 
 (cl-defmethod occ-checkout ((obj occ-obj-tsk))
   (occ-op-props-checkout obj))
+
 
 (defun occ-util-read-sexp-from-minibuffer (prompt)
   ;; (car (read-from-string (read-from-minibuffer prompt)))
@@ -71,6 +72,7 @@
   (defun occ-get-debug-obj ()
     (interactive)
     occ-debug-object))
+
 
 (cl-defmethod occ-describe-obj ((obj occ-obj-tsk))
   (let ((buf (get-buffer-create (format "*helpful occ-object: %s*"
@@ -80,6 +82,18 @@
         (setf (buffer-string) "")
         ;; (cl-prettyprint obj)
         (insert (format "Object: %s\n\n" (occ-Format obj)))
+        (insert (pp-to-string obj)))
+      (read-only-mode 1))
+    (switch-to-buffer-other-window buf)))
+
+
+(cl-defmethod occ-display-obj ((obj occ-obj-tsk))
+  (let ((buf (get-buffer-create (format "*helpful occ-object: %s*"
+                                        (occ-format obj)))))
+    (with-current-buffer buf
+      (let ((inhibit-read-only t))
+        (setf (buffer-string) "")
+        (insert (format "Object: %s\n\n" (occ-display obj)))
         (insert (pp-to-string obj)))
       (read-only-mode 1))
     (switch-to-buffer-other-window buf)))

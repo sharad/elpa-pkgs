@@ -212,4 +212,11 @@ pointing to it."
   (occ-format obj 'upcase
               rank))
 
+
+(cl-defgeneric occ-display (obj)
+  "Neatly Output OBJ with its properties")
+
+(cl-defmethod occ-display ((obj occ-obj-tsk))
+  (occ-error "Implement it: neatly output OBJ with its properties"))
+
 ;;; occ-print.el ends here
