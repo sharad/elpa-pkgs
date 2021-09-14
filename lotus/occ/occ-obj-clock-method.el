@@ -75,7 +75,7 @@
   (let ((retval  nil)
         (org-obj obj)
         (obj     obj))
-    (occ-try-until 3 (or (eq t retval)
+    (occ-try-until 3 (or (eq ''no-action retval)
                          (not (occ-associable-p obj)))
       (occ-message "(occ-edit-until-associable (obj occ-ctxual-tsk)[%s]) ITERATION" (occ-Format obj))
       ;; ;; BUG FIX

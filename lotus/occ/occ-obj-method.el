@@ -120,15 +120,15 @@
           (helm-checkout-source (helm-build-sync-source "other"
                                   :candidates (list (cons "Continue"
                                                           #'(lambda (arg)
-                                                              t)) ;to bypass three repeat cycle of (occ-try-until ) function
+                                                              'no-action)) ;to bypass three repeat cycle of (occ-try-until ) function
                                                     (cons "Checkout"
                                                           (occ-lambda-with-one-arg #'occ-checkout)))
                                   :action     (list (cons "Edit"
                                                           #'(lambda (candidate-fun)
                                                               (funcall candidate-fun obj)))))))
-      (let* ((sources (list helm-fast-source
-                            helm-edit-source
-                            helm-checkout-source))
+      (let* ((sources (list helm-checkout-source
+                            helm-fast-source
+                            helm-edit-source))
              (retval  (helm-timed occ-idle-timeout nil
                         (helm :sources sources))))
         (if (eq retval t)
