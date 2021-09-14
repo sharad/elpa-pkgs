@@ -86,4 +86,38 @@
       (read-only-mode 1))
     (switch-to-buffer-other-window buf)))
 
+
+;; do both fast and interactive editing.
+;; (occ-properties-editor obj)
+(cl-defmethod occ-properties-editor-combined ((obj occ-obj-ctx-tsk))
+  (let ((prompt (format "%s fast edit" (occ-Format obj))))
+    (let ((helm-fast-source     (helm-build-sync-source prompt
+                                  :candidates (occ-obj-callable-helm-actions (occ-gen-each-prop-fast-edits obj)
+                                                                             obj)
+                                  :action     (list (cons "Edit"
+                                                          #'(lambda (candidate-fun)
+                                                              (funcall candidate-fun obj))))))
+          (helm-edit-source     (helm-build-sync-source "edit"
+                                  :candidates (list (cons "Edit"
+                                                          (occ-lambda-with-one-arg #'occ-properties-editor)))
+                                  :action     (list (cons "Edit"
+                                                          #'(lambda (candidate-fun)
+                                                              (funcall candidate-fun obj))))))
+          (helm-checkout-source (helm-build-sync-source "other"
+                                  :candidates (list (cons "Continue"
+                                                          #'(lambda (arg)
+                                                              t)) ;to bypass three repeat cycle of (occ-try-until ) function
+                                                    (cons "Checkout"
+                                                          (occ-lambda-with-one-arg #'occ-checkout)))
+                                  :action     (list (cons "Edit"
+                                                          #'(lambda (candidate-fun)
+                                                              (funcall candidate-fun obj)))))))
+      (let* ((sources (list helm-fast-source
+                            helm-edit-source
+                            helm-checkout-source))
+             (retval  (helm-timed occ-idle-timeout nil
+                        (helm :sources sources))))
+        (if (eq retval t)
+            t)))))
+
 ;;; occ-obj-method.el ends here
