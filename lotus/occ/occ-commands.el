@@ -309,7 +309,10 @@ FULL is given."
         :sources (list (helm-build-sync-source "Actions"
                            :candidates (list (cons "occ clock-in current context (force)"
                                                    #'(lambda ()
-                                                       (occ-clock-in-curr-ctx t))))
+                                                       (occ-clock-in-curr-ctx t)))
+                                             (cons "occ clock-in current context"
+                                                   #'(lambda ()
+                                                       (occ-clock-in-curr-ctx nil))))
                            :action     (list (cons "run"
                                                    #'(lambda (candidate-fun)
                                                        (funcall candidate-fun))))))))
