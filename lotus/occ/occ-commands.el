@@ -316,6 +316,5 @@ FULL is given."
                            :action     (list (cons "run"
                                                    #'(lambda (candidate-fun)
                                                        (funcall candidate-fun))))))))
-
 
 ;;; occ-commands.el ends here
