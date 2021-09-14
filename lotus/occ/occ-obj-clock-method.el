@@ -98,25 +98,6 @@
     (or (eq 'skip retval)
         (occ-associable-p obj))))
 
-;; (cl-defmethod occ-edit-current-if-unassociated-p ((obj occ-ctx))
-;;   "If clock in task is not unnmaed clock then offer to increase clock time."
-;;   (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)[%s]) begin" (occ-Format obj))
-;;   (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
-;;   (if (and (occ-current-tsk)
-;;            (not (occ-clock-marker-unnamed-clock-p)))
-;;       (if (occ-current-associated-p obj)
-;;           (progn
-;;             (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) ELSE need NO next clock-in")
-;;             nil)
-;;         (if (occ-clock-marker-unnamed-clock-p)
-;;             t
-;;           (let* ((retval (occ-edit-until-associable-p (occ-ctxual-current-tsk obj))))
-;;             (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) IF occ-edit-until-associable-p: returned %s" retval)
-;;             retval)))
-;;     (progn
-;;       (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) ELSE No clock active need next clock-in")
-;;      t)))
-
 (cl-defmethod occ-edit-current-if-unassociated-p ((obj occ-obj-ctx)) ;; should handle occ-ctx
   "If clock in task is not unnmaed clock then offer to increase clock time."
   (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)[%s]) begin" (occ-Format obj))
