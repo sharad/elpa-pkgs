@@ -171,16 +171,6 @@
                                           occ-return-quit-label
                                           occ-return-timeout-label)
                   (unless (occ-obj-obj retval)
-                    ;; BUG Urgent TODO: SOLVE ASAP ???? at (occ-clock-in-if-not obj) and (occ-clock-in obj)
-                    ;; begin occ-clock-in-curr-ctx-if-not
-                    ;; 2019-03-06 22:55:31 s: occ-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug
-                    ;; occ-clock-in-if-not: Now really going to clock.
-                    ;; in occ-clock-in occ-ctx 1
-                    ;; user input 111 retval t
-                    ;; trying to create unnamed tsk.
-                    ;; occ-maybe-create-unnamed-tsk: Already clockin unnamed tsk
-                    ;; occ-clock-in-if-not: Now really clock done.
-                    ;; not able to find associated, or intentionally not selecting a clock
                     (if (occ-clock-marker-unnamed-clock-p)
                         (occ-debug :debug "occ-clock-in-if-not: already clock-in into unnamed task ")
                       (if (occ-config-clock-in)
