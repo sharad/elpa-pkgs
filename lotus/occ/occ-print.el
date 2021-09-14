@@ -190,7 +190,7 @@ pointing to it."
     (concat (when case (concat (occ-title obj case) ": "))
             (when rank (format "[%4d] " (or (occ-rank obj) -128)))
             (occ-format tsk case nil)
-            (when (occ-current-p obj) "          [CLOCKING]"))))
+            (when (occ-current-p obj) "          🕑"))))
 
 (cl-defmethod occ-format ((obj occ-ctxual-tsk) &optional
                                                case
@@ -199,7 +199,7 @@ pointing to it."
     (concat (when case (concat (occ-title obj case) ": "))
             (when rank (format "[%4d] " (or (occ-rank obj) -128)))
             (format "%s" (occ-format tsk case rank))
-            (when (occ-current-p obj) "          [CLOCKING]"))))
+            (when (occ-current-p obj) "          🕑"))))
 
 
 (defun occ-Format (obj &optional
