@@ -387,32 +387,4 @@
                    (occ-format tsk 'capitalize)
                    (occ-format ctx 'capitalize)))))
 
-;; BUG: solve it.
-;; Debugger entered--Lisp error: (error "Marker points into wrong buffer" #<marker at 28600 in report.org>)
-;;   comment-region-default(#<marker at 28600 in report.org> #<marker (moves after insertion) at 28600 in report.org> nil)
-;;   comment-region(#<marker at 28600 in report.org> #<marker (moves after insertion) at 28600 in report.org> nil)
-;;   outshine-comment-region(#<marker at 28600 in report.org> #<marker (moves after insertion) at 28600 in report.org>)
-;;   ad-Advice-org-store-log-note
-;;   apply(ad-Advice-org-store-log-note
-;;   org-store-log-note()
-;;   org-ctrl-c-ctrl-c(nil)
-;;   funcall-interactively(org-ctrl-c-ctrl-c nil)
-;;   call-interactively(org-ctrl-c-ctrl-c nil nil)
-;;   command-execute(org-ctrl-c-ctrl-c)
-
-
-
-
-  ;; #f(compiled-function (arg1 &rest rest) "Clock-in selected CTXUAL-TSK for occ-ctx OBJ or open interface for adding properties to heading." #<bytecode 0x409975d>)(#s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) :filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :return-transform t :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :ap-transf #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7)
-  ;; apply(#f(compiled-function (arg1 &rest rest) "Clock-in selected CTXUAL-TSK for occ-ctx OBJ or open interface for adding properties to heading." #<bytecode 0x409975d>) #s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) (:filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :return-transform t :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :ap-transf #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7))
-  ;; occ-clock-in(#s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) :filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :return-transform t :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :ap-transf #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7)
-  ;; #f(compiled-function (arg1 &rest rest) #<bytecode 0x57a9181>)(#s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) :filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :ap-transf #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7)
-  ;; apply(#f(compiled-function (arg1 &rest rest) #<bytecode 0x57a9181>) #s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) (:filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :ap-transf #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7))
-  ;; occ-clock-in-if-not(#s(occ-ctx :name "*Messages*" :filter-plist nil :buffer #<buffer *Messages*> :file nil) :filters (:positive :mutual-deviation (:positive occ-member-tsk-rank)) :builder occ-build-ctxual-tsk-with :action (("Procreate Child" . occ-procreate-child) ("Procreate Child Clock-in" . occ-procreate-child-clock-in) ("Call with object" . occ-call-with-obj) ("Set debug obj" . occ-set-debug-obj) ("Try Clock-in" . occ-try-clock-in) ("Goto" . occ-goto) ("Get Rank" . occ-print-rank) ("Get Task" . occ-print-tsk)) :ap-transf #f(compiled-function (action candidate) #<bytecode 0x6801cb9>) :auto-select-if-only nil :timeout 7)
-  ;; occ-clock-in-curr-ctx(nil)
-  ;; occ-run-curr-ctx-timer()
-  ;; occ-clock-in-curr-ctx-if-not-timer-function(nil)
-  ;; apply(occ-clock-in-curr-ctx-if-not-timer-function nil)
-  ;; timer-event-handler([t 0 6 750 nil occ-clock-in-curr-ctx-if-not-timer-function (nil) idle 339999])
-
 ;;; occ-clock.el ends here
