@@ -94,11 +94,15 @@
     (if (and override
              prompt)
         prompt
-      (format "Select matching %s(%d/%d)%s"
-              (symbol-name (cl-inst-classname (car candidates)))
-              unfiltered-count
-              filtered-count
-              (format " %s" prompt)))))
+      (progn
+        (occ-message "Test1")
+        (prog1
+            (format "Select matching %s(%d/%d)%s"
+                    (symbol-name (cl-inst-classname (car candidates)))
+                    unfiltered-count
+                    filtered-count
+                    (format " %s" prompt))
+          (occ-message "Test2"))))))
 
 (defun occ-gen-candidates-fun (obj
                                candidates
@@ -129,6 +133,7 @@
                                                 auto-select-if-only
                                                 timeout
                                                 prompt)
+  (cl-assert candidates)
   (let ((filtered-count (length candidates))
         (called-never   t))
      (let ((gen-candidates #'(lambda ()
@@ -141,6 +146,7 @@
                                                              (setq filtered-count
                                                                    (length candidates-filtered))
                                                              candidates-filtered))))
+                                 (cl-assert candidates-visible)
                                  (mapcar #'occ-candidate candidates-visible)))))
 
        (when (> unfiltered-count 0)
@@ -189,7 +195,7 @@
                                           :prompt           prompt)
         (occ-helm-dummy-source "Create (fast as child)"             #'occ-fast-procreate-child)
         (occ-helm-dummy-source "Create Anonymous (fast as unnamed)" #'occ-fast-procreate-anonymous-child)
-        (occ-helm-dummy-source "Create by Template (use template)"  #'occ-procreate-child-clock-in)))
+        (occ-helm-dummy-source "Create by Template (use template)"  #'occ-fast-procreate-child)))
 
 
 
@@ -261,10 +267,12 @@
                                                                         :ap-normal        ap-normal
                                                                         :ap-transf        ap-transf
                                                                         :prompt           prompt)))
+             (occ-message "Hello")
              (prog1
                  (helm :sources candidates-sources
                        :buffer  (occ-helm-select-buffer)
                        :resume  'noresume)
+               (occ-message "Hi")
                (setq in-occ-helm nil))))))
 
 (cl-defmethod occ-helm-act ((obj                 occ-ctx)

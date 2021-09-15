@@ -597,13 +597,12 @@ pointing to it."
                  (occ-marker= ctxual-tsk clock))
             ctxual-tsk
           (when clock
-            (let ((msg
-                   (if ctxual-tsk
-                       (format "occ-current-ctxual-tsk: %s from head of *occ-clocked-ctxual-tsk-ctx-history* is not equal to current clocking clock %s"
-                               (occ-format ctxual-tsk 'captilize)
-                               (occ-format clock      'captilize))
-                     (format "occ-current-ctxual-tsk: %s is outside of occ"
-                             (occ-format clock 'captilize)))))
+            (let ((msg (if ctxual-tsk
+                           (format "occ-current-ctxual-tsk: %s from head of *occ-clocked-ctxual-tsk-ctx-history* is not equal to current clocking clock %s"
+                                   (occ-Format ctxual-tsk nil nil t)
+                                   (occ-Format clock nil nil t))
+                         (format "occ-current-ctxual-tsk: %s is outside of occ"
+                                 (occ-Format clock nil nil t)))))
               (if occ-other-allowed
                   (occ-debug :warning msg)
                 (occ-error msg))
@@ -612,9 +611,33 @@ pointing to it."
                                          (occ-make-ctx-at-point)))))))))
 
 (defun occ-current-tsk (&optional occ-other-allowed)
-  (let ((curr-ctxual-tsk (occ-current-ctxual-tsk occ-other-allowed)))
+  (let ((curr-ctxual-tsk (occ-current-ctxual-tsk occ-other-allowed))) ;recursion
     (when curr-ctxual-tsk
       (occ-obj-tsk curr-ctxual-tsk))))
+
+
+(defun occ-current-tsk (&optional occ-other-allowed)
+  (let* ((ctxual-tsk (car *occ-clocked-ctxual-tsk-ctx-history*)))
+    (let ((clock-marker    (occ-valid-marker org-clock-marker))
+          (clock-hd-marker (occ-valid-marker org-clock-hd-marker)))
+      (let ((clock (or clock-marker
+                       clock-hd-marker)))
+        (if (and ctxual-tsk
+                 clock
+                 (occ-marker= ctxual-tsk clock))
+            (occ-obj-tsk ctxual-tsk)
+          (when clock
+            (let ((msg (if ctxual-tsk
+                           (format "occ-current-ctxual-tsk: %s from head of *occ-clocked-ctxual-tsk-ctx-history* is not equal to current clocking clock %s"
+                                   (occ-Format ctxual-tsk nil nil t)
+                                   (occ-Format clock nil nil t))
+                         (format "occ-current-ctxual-tsk: %s is outside of occ"
+                                 (occ-Format clock nil nil t)))))
+              (if occ-other-allowed
+                  (occ-debug :warning msg)
+                (occ-error msg))
+              (if clock
+                   (occ-make-tsk clock)))))))))
 
 
 (defun occ-collection-object ()
