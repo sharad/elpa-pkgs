@@ -271,6 +271,52 @@
              title))))
 
 
+(cl-defmethod occ-tsk-txt ((obj occ-obj-ctx)
+                           (heading string))
+  "Build a task name description from OBJ occ-ctx"
+  (concat "* " heading "\n"))
+
+
+(cl-defmethod occ-fast-procreate-child ((heading string)
+                                        &key
+                                        template
+                                        clock-in)
+  (let ((ctx (occ-make-ctx-at-point)))
+    (occ-capture nil
+                 :clock-in clock-in ;; helm-current-prefix-arg
+                 :template (occ-tsk-txt ctx heading))))
+
+(cl-defmethod occ-fast-procreate-anonymous-child ((heading string)
+                                                  &key
+                                                  template
+                                                  clock-in)
+  (let ((ctx (occ-make-ctx-at-point)))
+    (occ-capture nil
+                 :clock-in clock-in ;; helm-current-prefix-arg
+                 :template (occ-tsk-txt ctx heading))))
+
+
+(cl-defgeneric occ-procreate-child-clock-in (obj)
+  "occ-child-clock-in")
+
+(cl-defmethod occ-procreate-child-clock-in ((obj null))
+  (occ-capture obj
+               :clock-in t))
+
+(cl-defmethod occ-procreate-child-clock-in ((obj marker))
+  (occ-capture obj
+               :clock-in t))
+
+(cl-defmethod occ-procreate-child-clock-in ((obj occ-obj-tsk))
+  (occ-capture obj
+               :clock-in t))
+
+
+(defun occ-confirm (fn new)
+  (occ-y-or-n-timeout)
+  (occ-error "Implement it."))
+
+
 (defun sacha/org-capture-prefill-template (template &rest values)
   "Pre-fill TEMPLATE with VALUES."
   (let ((template (or template)))
@@ -306,47 +352,5 @@
       ((occ-error quit)
        (if (get-buffer "*Capture*") (kill-buffer "*Capture*"))
        (occ-error "Capture abort: %s" error)))) t)
-
-
-(cl-defmethod occ-tsk-txt ((obj occ-obj-ctx)
-                           (heading string))
-  "Build a task name description from OBJ occ-ctx"
-  (concat "* " heading "\n"))
-
-
-(cl-defmethod occ-fast-procreate-child ((heading string)
-                                        &key
-                                        template
-                                        clock-in)
-  (let ((ctx (occ-make-ctx-at-point)))
-    (occ-capture nil
-                 :clock-in clock-in ;; helm-current-prefix-arg
-                 :template (occ-tsk-txt ctx heading))))
-
-(cl-defmethod occ-fast-procreate-anonymous-child ((heading string)
-                                                  &key
-                                                  template
-                                                  clock-in)
-  (let ((ctx (occ-make-ctx-at-point)))
-    (occ-capture nil
-                 :clock-in clock-in ;; helm-current-prefix-arg
-                 :template (occ-tsk-txt ctx heading))))
-
-
-(cl-defgeneric occ-procreate-child-clock-in (obj)
-  "occ-child-clock-in")
-
-(cl-defmethod occ-procreate-child-clock-in ((obj marker))
-  (occ-capture obj
-               :clock-in t))
-
-(cl-defmethod occ-procreate-child-clock-in ((obj occ-obj-tsk))
-  (occ-capture obj
-               :clock-in t))
-
-
-(defun occ-confirm (fn new)
-  (occ-y-or-n-timeout)
-  (occ-error "Implement it."))
 
 ;;; occ-obj-simple.el ends here
