@@ -1,6 +1,30 @@
 
 
 * Code here may be the hell of [[https://en.wikipedia.org/wiki/Indirection][indirection]], but still helping in one way
+
+
+  
+* Naming convention
+** Naming generi function
+
+   for accessor or nousne
+
+   using prefix "occ-obj-"
+
+   for verb
+
+   using prefix "occ-do-"
+
+** Naming for ordinary function
+
+   for launcher or runner
+
+   could use prefix "occ-run-"
+
+   
+
+
+  
   
 * To reduce number of params like (or this that else that)
 
