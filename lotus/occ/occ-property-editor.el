@@ -100,13 +100,9 @@
                                          key-val-collection)))
                         (occ-debug :debug "selected option %s" sel)
                         (cdr sel))
-                    (occ-error "Not Keys Vals Collection %s for %s"
-                               key-val-collection
-                               (occ-Format tsk))))
-              (occ-error "Not Keys Vals for %s"
-                         (occ-Format tsk))))
-        (occ-debug :debug "Not Keys for %s"
-                   (occ-Format tsk))))))
+                    (occ-error "Not Keys Vals Collection %s for %s" key-val-collection (occ-Format tsk))))
+              (occ-error "Not Keys Vals for %s" (occ-Format tsk))))
+        (occ-debug :debug "Not Keys for %s" (occ-Format tsk))))))
 
 
 (defun org-get-flag-proprty-drawer (&optional force)
@@ -248,10 +244,12 @@
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (let ((prop nil))
-      (while (not (member (setq prop (occ-select-propetry obj))
-                          '(edit done)))
+      (while (and (not (member (setq prop (occ-select-propetry obj))
+                               '(edit done)))
+                  prop)
         ;; TODO: handle (occ-select-propetry obj ctx) return NIL
-        (cl-assert prop)
+        ;; No prop or NIL value can happen in CTX like *scratch*
+        ;; (cl-assert prop)
         (let ((retval (occ-op-prop-edit obj
                                         prop)))
           (when retval

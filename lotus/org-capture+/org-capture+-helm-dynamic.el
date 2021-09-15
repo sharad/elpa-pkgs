@@ -29,6 +29,8 @@
 
 (require 'dash)
 (require 'helm)
+(eval-when-compile
+  (require 'helm-source))
 
 
 (require 'lotus-tree-manager)

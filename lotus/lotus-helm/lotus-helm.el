@@ -27,6 +27,10 @@
 (provide 'lotus-helm)
 
 
+(eval-when-compile
+  (require 'helm-source))
+
+
 (defun helm-template-gen-selector (predicate arg level)
   (let* ((level        (or level     0))
          (arg          (or arg       '(t xx yy)))
