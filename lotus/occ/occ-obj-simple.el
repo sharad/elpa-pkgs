@@ -125,35 +125,41 @@
 
 (cl-defgeneric occ-capture (obj &key
                                 template
-                                clock-in)
+                                clock-in
+                                immediate-finish )
   "occ-capture")
 
 (cl-defmethod occ-capture ((obj marker) &key
                                         template
-                                        clock-in)
+                                        clock-in
+                                        immediate-finish)
   (org-capture-run 'entry
                    `(marker ,obj)
                    'occ-capture+-helm-select-template
+                   :immediate-finish immediate-finish
                    :empty-lines 1))
 
 (cl-defmethod occ-capture ((obj occ-tsk) &key
                                          template
-                                         clock-in)
+                                         clock-in
+                                         immediate-finish)
   (let ((mrk (occ-tsk-marker obj)))
     (occ-capture mrk
                  :clock-in clock-in
-                 :template template)))
+                 :template template
+                 :immediate-finish immediate-finish)))
 
 (cl-defmethod occ-capture ((obj occ-obj-ctx-tsk) &key
                                                  template
-                                                 clock-in)
+                                                 clock-in
+                                                 immediate-finish)
   (let ((mrk      (occ-obj-marker obj))
         (tsk      (occ-obj-tsk    obj))
         (ctx      (occ-obj-ctx    obj))
         (template (or template
                       (occ-capture+-helm-select-template))))
     (when template
-      (with-org-capture-run marker 'entry `(marker ,mrk) template '(:empty-lines 1)
+      (with-org-capture-run marker 'entry `(marker ,mrk) template (list :empty-lines 1 :immediate-finish immediate-finish)
         (let* ((tmp-tsk  (occ-make-tsk marker))
                (tmp-ctsk (occ-build-ctsk-with tmp-tsk ctx)))
           (occ-op-props-edit tmp-ctsk)
@@ -167,7 +173,8 @@
 
 (cl-defmethod occ-capture ((obj null) &key
                                       template
-                                      clock-in)
+                                      clock-in
+                                      immediate-finish)
   ;; BUG: occ-list-select is become an interactive function, here it is not returning desired object.
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION for OCC-LIST-SELECT
   (let ((ctx-tsk (occ-list-select (occ-make-ctx-at-point)
@@ -176,7 +183,8 @@
     (if ctx-tsk
         (occ-capture ctx-tsk
                    :template template
-                   :clock-in clock-in)
+                   :clock-in clock-in
+                   :immediate-finish immediate-finish)
       (occ-error "Not able to get ctx-tsk(%s) at point" ctx-tsk))))
 
 ;; TODO: DEBUG
