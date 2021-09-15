@@ -292,7 +292,18 @@
   (let ((ctx (occ-make-ctx-at-point)))
     (occ-capture nil
                  :clock-in clock-in ;; helm-current-prefix-arg
+                 :template (occ-tsk-txt ctx heading)
+                 :immediate-finish t)))
+
+(cl-defmethod occ-procreate-anonymous-child ((heading string)
+                                             &key
+                                             template
+                                             clock-in)
+  (let ((ctx (occ-make-ctx-at-point)))
+    (occ-capture nil
+                 :clock-in clock-in ;; helm-current-prefix-arg
                  :template (occ-tsk-txt ctx heading))))
+
 
 (cl-defmethod occ-fast-procreate-anonymous-child ((heading string)
                                                   &key
@@ -301,7 +312,8 @@
   (let ((ctx (occ-make-ctx-at-point)))
     (occ-capture nil
                  :clock-in clock-in ;; helm-current-prefix-arg
-                 :template (occ-tsk-txt ctx heading))))
+                 :template (occ-tsk-txt ctx heading)
+                 :immediate-finish t)))
 
 
 (cl-defgeneric occ-procreate-child-clock-in (obj)
