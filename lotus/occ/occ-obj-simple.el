@@ -156,14 +156,15 @@
   (let ((mrk      (occ-obj-marker obj))
         (tsk      (occ-obj-tsk    obj))
         (ctx      (occ-obj-ctx    obj))
-        (template (or template
+        (template (or template          ;FIX it.
                       (occ-capture+-helm-select-template))))
     (when template
       (with-org-capture-run marker 'entry `(marker ,mrk) template (list :empty-lines 1 :immediate-finish immediate-finish)
-        (let* ((tmp-tsk  (occ-make-tsk marker))
-               (tmp-ctsk (occ-build-ctsk-with tmp-tsk ctx)))
-          (occ-op-props-edit tmp-ctsk)
-          t)
+        (unless immediate-finish        ;*NOTE:
+          (let* ((tmp-tsk  (occ-make-tsk marker))
+                 (tmp-ctsk (occ-build-ctsk-with tmp-tsk ctx)))
+            (occ-op-props-edit tmp-ctsk)
+            t))
         (let* ((child-tsk        (occ-make-tsk marker))
                (child-ctxual-tsk (occ-build-ctxual-tsk-with child-tsk ctx)))
           (when child-tsk
