@@ -80,8 +80,9 @@
   (occ-debug :debug "occ-maybe-create-unnamed-tsk: begin")
   (let* ((unnamed-heading-marker (cdr (org-without-org-clock-persist
                                         (lotus-org-create-unnamed-task))))
-         (unnamed-tsk (when unnamed-heading-marker
-                        (occ-make-tsk unnamed-heading-marker (occ-tsk-builder)))))
+         (unnamed-tsk            (when unnamed-heading-marker
+                                   (occ-make-tsk unnamed-heading-marker
+                                                 (occ-tsk-builder)))))
     unnamed-tsk))
 
 
@@ -95,7 +96,9 @@
   ;; back
   (occ-debug :debug "occ-maybe-create-unnamed-ctxual-tsk: begin")
   (let* ((unnamed-tsk        (occ-maybe-create-unnamed-tsk))
-         (unnamed-ctxual-tsk (when unnamed-tsk (occ-build-ctxual-tsk-with unnamed-tsk ctx))))
+         (unnamed-ctxual-tsk (when unnamed-tsk
+                               (occ-build-ctxual-tsk-with unnamed-tsk
+                                                          ctx))))
     (assert unnamed-tsk)
     (assert unnamed-ctxual-tsk)
     unnamed-ctxual-tsk))

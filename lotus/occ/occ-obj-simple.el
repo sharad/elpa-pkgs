@@ -294,8 +294,8 @@
                                         clock-in)
   (let ((ctx (occ-make-ctx-at-point)))
     (occ-capture nil
-                 :clock-in clock-in ;; helm-current-prefix-arg
-                 :template (occ-tsk-txt ctx heading)
+                 :clock-in         clock-in ;; helm-current-prefix-arg
+                 :template         (occ-tsk-txt ctx heading)
                  :immediate-finish t)))
 
 (cl-defmethod occ-procreate-anonymous-child ((heading string)
@@ -316,10 +316,11 @@
     (let ((anonymous-heading-marker (cdr (org-without-org-clock-persist
                                            (lotus-org-create-anonymous-task))))
           (anonymous-tsk (when anonymous-heading-marker
-                           (occ-make-tsk anonymous-heading-marker (occ-tsk-builder)))))
+                           (occ-make-tsk anonymous-heading-marker
+                                         (occ-tsk-builder)))))
       (occ-capture anonymous-tsk
-                   :clock-in clock-in ;; helm-current-prefix-arg
-                   :template (occ-tsk-txt ctx heading)
+                   :clock-in         clock-in ;; helm-current-prefix-arg
+                   :template         (occ-tsk-txt ctx heading)
                    :immediate-finish t))))
 
 
