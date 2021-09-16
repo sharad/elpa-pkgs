@@ -43,9 +43,8 @@
     (setq *occ-unassociate-ctx-start-time* (current-time)))
   (let ((unassociate-ctx-start-time *occ-unassociate-ctx-start-time*))
     (prog1
-        (>
-         (float-time (time-since unassociate-ctx-start-time))
-         *occ-swapen-unnamed-threashold-interval*))))
+        (> (float-time (time-since unassociate-ctx-start-time))
+           *occ-swapen-unnamed-threashold-interval*))))
 
 (defun occ-clock-marker-unnamed-p (marker)
   (occ-debug "occ-clock-marker-is-unnamed-p: begin")
@@ -111,8 +110,10 @@
       (if (occ-clock-marker-unnamed-clock-p)
           (occ-debug "occ-maybe-create-unnamed-tsk: Already clockin unnamed tsk")
         (let* ((unnamed-ctxual-tsk (occ-maybe-create-unnamed-ctxual-tsk ctx))
-               (unnamed-tsk        (when unnamed-ctxual-tsk (occ-ctxual-tsk-tsk unnamed-ctxual-tsk)))
-               (unnamed-marker     (when unnamed-tsk (occ-tsk-marker unnamed-tsk))))
+               (unnamed-tsk        (when unnamed-ctxual-tsk
+                                     (occ-ctxual-tsk-tsk unnamed-ctxual-tsk)))
+               (unnamed-marker     (when unnamed-tsk
+                                     (occ-tsk-marker unnamed-tsk))))
           (assert unnamed-ctxual-tsk)
           (assert unnamed-tsk)
           (if unnamed-marker
