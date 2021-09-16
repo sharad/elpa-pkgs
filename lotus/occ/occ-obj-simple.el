@@ -314,6 +314,7 @@
                                                   clock-in)
   (let ((ctx (occ-make-ctx-at-point)))
     (let ((anonymous-heading-marker (cdr (org-without-org-clock-persist
+                                           ;; TODO: Implement it.
                                            (lotus-org-create-anonymous-task))))
           (anonymous-tsk (when anonymous-heading-marker
                            (occ-make-tsk anonymous-heading-marker
