@@ -233,7 +233,7 @@
                                               (muse-publish-get-style
                                                (mapcar (lambda (style)
                                                          (cons (muse-get-keyword :base style) style))
-                                                       (cddr muse-current-project)))))))
+                                                       (nthcdr 2 muse-current-project)))))))
      (message "muse-with-project-style: body:- %s muse-current-project:- %s" body muse-current-project)
      (message "muse-with-project-style: body:- %s muse-publishing-current-style:- %s" body muse-publishing-current-style)
      ,@body))
@@ -250,7 +250,7 @@
                  (muse-publish-get-style
                   (mapcar (lambda (style)
                             (cons (muse-get-keyword :base style) style))
-                          (cddr muse-current-project)))))))
+                          (nthcdr 2 muse-current-project)))))))
        (message "muse-with-project-style: body:- %s muse-current-project:- %s" body muse-current-project)
        (message "muse-with-project-style: body:- %s muse-publishing-current-style:- %s" body muse-publishing-current-style)
        ,@body)))
@@ -258,14 +258,14 @@
 ;; (muse-publish-get-style
 ;;  (mapcar (lambda (style)
 ;;            (cons (muse-get-keyword :base style) style))
-;;          (cddr (muse-read-project "Publish project: " t t))))
+;;          (nthcdr 2 (muse-read-project "Publish project: " t t))))
 
 ;; (ido-completing-read "sdfds" '(("aaa" "sdfds") ("ppp" "asfddsa")))
 
 
 ;; (mapcar (lambda (style)
 ;;            (cons (muse-get-keyword :base style) style))
-;;          (cddr (muse-read-project "Publish project: " t t)))
+;;          (nthcdr 2 (muse-read-project "Publish project: " t t)))
 
 ;; (ido-completing-read "sdfads: "
 ;; '(("xhtml" :base "xhtml" :base-url (muse-publishing-website-address "notes/") :path "~/Documents/CreatedContent/gen/web/site/wiki/notes/xhtml")
@@ -295,9 +295,9 @@
      (:path-function (lambda ()
                        (if (and (muse-project)
                                 muse-publishing-current-style)
-                           (let* ((project-dir (cadr (muse-project)))
+                           (let* ((project-dir (nth 1 (muse-project)))
                                   (project-dir (if (consp project-dir) (first project-dir) project-dir)))
-                             ;; (message "(cadr (muse-project)) %s" project-dir)
+                             ;; (message "(nth 1 (muse-project)) %s" project-dir)
                              (muse-meta-style-dirname project-dir (plist-get muse-publishing-current-style :base)))
                            'pass))))
 
@@ -350,7 +350,7 @@
   (if dirfnslist
       (let* ((style-dirname-list (first dirfnslist))
              (style-name (first style-dirname-list))
-             (strorfn (plist-get (cadr style-dirname-list) :path-function)))
+             (strorfn (plist-get (nth 1 style-dirname-list) :path-function)))
         (let ((dirpath
                (cond
                  ((functionp strorfn)
@@ -404,7 +404,7 @@
                    (mapcar
                     (lambda (fn-list)
                       (let ((name (first fn-list))
-                            (strfn (plist-get (cadr fn-list) :path-function)))
+                            (strfn (plist-get (nth 1 fn-list) :path-function)))
                         (cons name
                               (cond
                                 ((if (symbolp strfn)
@@ -625,7 +625,7 @@ If FILE is not specified, use the published version of the current file."
                         (muse-style-element
                          :path (first (muse-project-applicable-styles
                                      buffer-file-name
-                                     (cddr (muse-project-of-file))))))))
+                                     (nthcdr 2 (muse-project-of-file))))))))
     (save-match-data
       (muse-with-temp-buffer
         (muse-insert-file-contents file)
@@ -833,8 +833,8 @@ between the two tags."
 
     (defun muse-publish-classify-url (target)
       "Transform anchors and get published name, if TARGET is a page.
-The return value is two linked cons cells.  The car is the type
-of link, the cadr is the page name, and the cddr is the anchor."
+The return value is two linked cons cells.  The (first target) is the type
+of link, the (nth 1 target) is the page name, and the (nthcdr 2 target) is the anchor."
       (save-match-data
         (cond ((or (null target) (string= target ""))
                nil)
@@ -868,7 +868,7 @@ of link, the cadr is the page name, and the cddr is the anchor."
                                        (muse-project-current-output-style)
                                        (muse-project-applicable-styles
                                         (muse-project-page-file page project)
-                                        (cddr project)))
+                                        (nthcdr 2 project)))
             (muse-publish-link-file page))))
 
     (defsubst muse-publish-link-file (file &optional style)
@@ -988,8 +988,8 @@ FILE and any extensions that are in `muse-ignored-extensions'."
 
   (defun muse-publish-classify-url (target)
     "Transform anchors and get published name, if TARGET is a page.
-The return value is two linked cons cells.  The car is the type
-of link, the cadr is the page name, and the cddr is the anchor."
+The return value is two linked cons cells.  The (first target) is the type
+of link, the (nth 1 target) is the page name, and the (nthcdr 2 target) is the anchor."
     (save-match-data
       (cond ((or (null target) (string= target ""))
              nil)
@@ -1023,7 +1023,7 @@ of link, the cadr is the page name, and the cddr is the anchor."
                                      (muse-project-current-output-style)
                                      (muse-project-applicable-styles
                                       (muse-project-page-file page project)
-                                      (cddr project)))
+                                      (nthcdr 2 project)))
           (muse-publish-link-file page))))
 
   (defsubst muse-publish-link-file (file &optional style)

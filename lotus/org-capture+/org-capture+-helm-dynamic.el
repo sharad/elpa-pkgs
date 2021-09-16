@@ -72,7 +72,7 @@
 ;; TODO: keyword replacement
 (defun org-capture+-collect-templates-alist (fn arg level)
   (let* ((fn    (or fn #'org-capture+-tree-predicate))
-         (alist (mapcar #'cadr
+         (alist (mapcar #'(lambda (x) (nth 1 x))
                         (org-capture+-collect-template-alist fn arg level))))
     (let ((templates-alist (collect-alist alist)))
       ;; (delete-dups-alist templates-alist)
@@ -205,7 +205,7 @@
                                         0)
 
   (collect-alist
-   (mapcar #'cadr
+   (mapcar #'(lambda (x) (nth 1 x))
            (org-capture+-collect-template-alist #'org-capture+-tree-predicate
                                                 '(t xx yy)
                                                 0)))

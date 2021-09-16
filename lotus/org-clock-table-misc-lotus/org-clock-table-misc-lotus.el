@@ -117,7 +117,7 @@ from the dynamic block definition."
       (setq range-text (nth 2 (org-clock-special-range block nil t ws ms))))
 
     ;; Compute the total time
-    (setq total-time (apply '+ (mapcar 'cadr tables)))
+    (setq total-time (apply '+ (mapcar #'(lambda (x) (nth 1 x)) tables)))
 
     ;; Now we need to output this tsuff
     (goto-char ipos)
@@ -362,7 +362,7 @@ from the dynamic block definition."
       (setq range-text (nth 2 (org-clock-special-range block nil t ws ms))))
 
     ;; Compute the total time
-    (setq total-time (apply '+ (mapcar 'cadr tables)))
+    (setq total-time (apply '+ (mapcar #'(lambda (x) (nth 1 x)) tables)))
 
     ;; Now we need to output this tsuff
     (goto-char ipos)
@@ -652,7 +652,7 @@ from the dynamic block definition."
       (setq range-text (nth 2 (org-clock-special-range block nil t ws ms))))
 
     ;; Compute the total time
-    (setq total-time (apply '+ (mapcar 'cadr tables)))
+    (setq total-time (apply '+ (mapcar #'(lambda (x) (nth 1 x)) tables)))
 
     (setq max-report-line-len (apply #'max (mapcar 'org-report-get-max-line-length tables)))
 

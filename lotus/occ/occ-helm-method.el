@@ -88,7 +88,7 @@
                              (eq :overrride (first prompt))))
         (prompt         (when (consp prompt)
                           (if (consp (rest prompt))
-                              (cadr prompt)
+                              (nth 1 prompt)
                             (rest prompt))))
         (filtered-count (length candidates)))
     (if (and override
@@ -235,7 +235,7 @@
     (occ-message "occ-helm-act-on-single: (cons p helm-action) %s, (functionp helm-action) %s"
                  (consp helm-action)
                  (functionp helm-action))
-    (occ-message "occ-helm-act-on-single: (cons p (cadr helm-action)) %s, (functionp (cadr helm-action)) %s"
+    (occ-message "occ-helm-act-on-single: (cons p (nth 1 helm-action)) %s, (functionp (nth 1 helm-action)) %s"
                  (consp (rest helm-action))
                  (functionp (rest helm-action)))
     (funcall helm-action candidate)))

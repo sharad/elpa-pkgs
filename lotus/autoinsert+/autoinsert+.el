@@ -264,7 +264,7 @@ Matches the visited file name against the elements of `auto-insert+-alist'."
        (let ((alist auto-noinsert+-alist)
              noaction-alist cond)
          (while alist
-           (setq cond (caar alist))
+           (setq cond (first (first alist)))
            (if (if (symbolp cond)
                    (let ((cond-major-mode cond))
                      (eq cond-major-mode major-mode))
@@ -272,7 +272,7 @@ Matches the visited file name against the elements of `auto-insert+-alist'."
                    (and buffer-file-name
                         (string-match file-regex-cond buffer-file-name))))
                (setq
-                noaction-alist (append noaction-alist (caar alist))
+                noaction-alist (append noaction-alist (first (first alist)))
                 alist nil))
            (setq alist (rest alist)))
          ;; (message "noaction-alist %s" noaction-alist)
@@ -393,10 +393,10 @@ or if CONDITION had no actions, after all other CONDITIONs."
   (defun add-from-autoinsert-alist (name alist)
     (dolist (elt alist)
       (let ((pattern-mode (if (consp (first elt))
-                              (caar elt)
+                              (first (first elt))
                             (first elt)))
             (desc         (if (consp (first elt))
-                              (cdar elt)
+                              (rest (first elt))
                             (if (symbolp (first elt))
                                 (symbol-name (first elt))
                               (first elt))))

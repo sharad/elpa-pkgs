@@ -175,17 +175,14 @@
 ;;;###autoload
 (defun org-publish-get-attribute (project extention attrib)
   (let ((proj-alist (assoc project org-publish-project-alist)))
-    (or
-     (plist-get (rest proj-alist) attrib)
-     (plist-get
-      (cdar (remove-if-not
-             (lambda (p)
-               (string-match
-                (plist-get (rest p) :base-extension)
-                extention))
-             (org-publish-expand-projects
-              (list proj-alist))))
-      attrib))))
+    (or (plist-get (rest proj-alist) attrib)
+        (plist-get (rest (first (remove-if-not (lambda (p)
+                                                 (string-match
+                                                  (plist-get (rest p) :base-extension)
+                                                  extention))
+                                               (org-publish-expand-projects
+                                                (list proj-alist)))))
+                   attrib))))
 
 ;;;###autoload
 (defun org-publish-get-attribute (project extention attrib)
@@ -195,17 +192,15 @@
      (plist-get (rest proj-alist) attrib)
      (let* ((projects
              (mapcar #'car
-                     (remove-if-not
-                      (lambda (p)
-                        (string-match
-                         (plist-get (rest p) :base-extension)
-                         extention))
-                      (org-publish-expand-projects
-                       (list proj-alist)))))
+                     (remove-if-not (lambda (p)
+                                      (string-match
+                                       (plist-get (rest p) :base-extension)
+                                       extention))
+                                    (org-publish-expand-projects
+                                     (list proj-alist)))))
             (project
-             (find-if
-              (lambda (p)
-                (org-publish-get-attribute p extention attrib))
+             (find-if (lambda (p)
+                        (org-publish-get-attribute p extention attrib))
               projects)))
        (when project
          (org-publish-get-attribute project extention attrib))))))

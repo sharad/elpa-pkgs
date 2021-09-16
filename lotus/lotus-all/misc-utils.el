@@ -583,7 +583,7 @@ The indirect buffer can have another major mode."
            ((kbd "C-c <")   'list-callers)))
 
        (dolist (binding elisp-extra-keys)
-         (let ((key (eval (first binding))) (val (eval (cadr binding))))
+         (let ((key (eval (first binding))) (val (eval (nth 1 binding))))
            (define-key emacs-lisp-mode-map key val)
            (define-key lisp-interaction-mode-map key val))))
 

@@ -101,7 +101,7 @@
 (defun custom-plist-keys (in-plist)
   (if (null in-plist)
       in-plist
-      (cons (first in-plist) (custom-plist-keys (cddr in-plist)))))
+      (cons (first in-plist) (custom-plist-keys (nthcdr 2 in-plist)))))
 ;; Simple function:1 ends here
 
 ;; Disable for some time

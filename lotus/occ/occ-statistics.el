@@ -73,9 +73,10 @@
   (let ((num-pairs
          (reduce
           #'(lambda (r e)
-              (if (and r (= (caar r) e))
+              (if (and r (= (first (first r)) e))
                   (cons
-                   (cons (caar r) (1+ (cdar r)))
+                   (cons (first (first r))
+                         (1+ (rest (first r))))
                    (rest r))
                 (cons (cons e  1) r)))
           (sort nums #'>)
@@ -88,7 +89,7 @@
        #'car
        (remove-if-not
         #'(lambda (pair)
-            (= (rest pair) (cdar num-pairs)))
+            (= (rest pair) (rest (first num-pairs))))
         num-pairs)))))
 
 (defun occ-stats-variance-internal (average &rest nums)
@@ -126,11 +127,13 @@
            '((5 . 3) (3 . 3) (1 . 2) (4 . 1) (2 . 1))))
   (should (equal
            (reduce (lambda (r e)
-                     (if (and r (= (caar r) e))
-                         (cons
-                          (cons (caar r) (1+ (cdar r)))
-                          (rest r))
-                       (cons (cons e  1) r)))
+                     (if (and r (= (first (first r))
+                                   e))
+                         (cons (cons (first (first r))
+                                     (1+ (rest (first r))))
+                               (rest r))
+                       (cons (cons e  1)
+                             r)))
                    (sort (list 1 1 2 3 3 3 4 5 5 5 ) #'>)
                    :initial-value nil)
            '((1 . 2) (2 . 1) (3 . 3) (4 . 1) (5 . 3)))))

@@ -74,7 +74,7 @@ inside loops."
           (clock-sum (if (org-before-first-heading-p)
                          0
                          (org-clock-sum-current-item)))
-          (task (cadr (org-element-at-point))))
+          (task (nth 1 (org-element-at-point))))
       (when heading
         ;; (if root   (push (cons "Root" root) task))
         (if marker    (org-context-clock-task-set-property task :task-clock-marker marker))
@@ -111,7 +111,7 @@ inside loops."
           (clock-sum (if (org-before-first-heading-p)
                          0
                          (org-clock-sum-current-item)))
-          (task (cadr (org-element-at-point)))
+          (task (nth 1 (org-element-at-point)))
           (task-content-start ))
       (when heading
         ;; (if root   (push (cons "Root" root) task))

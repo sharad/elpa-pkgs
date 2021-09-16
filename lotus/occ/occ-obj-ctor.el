@@ -137,7 +137,7 @@
   (apply #'append
          (occ-plist-mapcar #'(lambda (c)
                                (list (first c)
-                                     (funcall fun (cadr c))))
+                                     (funcall fun (nth 1 c))))
                            plist)))
 
 (defun occ-tsk-plist-from-org (plist)
@@ -145,7 +145,7 @@
                           (occ-util-plist-mapcar #'(lambda (c)
                                                      (list (first c)
                                                            (occ-prop-from-org (occ-util-keyword2sym (first c))
-                                                                              (cadr c))))
+                                                                              (nth 1 c))))
                                                  plist))))
     (cl-assert (evenp (length     plist)))
     (occ-debug :debug "occ-tsk-plist-from-org: plist %s" plist)
@@ -196,7 +196,7 @@
                 ;; part of :PROPERTIES: block.
 
                 ;; NOTE also these two are mixed in one list only
-                (tsk-plist    (cadr (org-element-at-point))))
+                (tsk-plist    (nth 1 (org-element-at-point))))
             (cl-assert (evenp (length tsk-plist)))
             (when heading
               (setf tsk

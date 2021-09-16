@@ -360,9 +360,9 @@ With prefix arg C-u, copy region instad of killing it."
     (if (and
          element
          (eq (first element) 'heading))
-        (let ((begin (plist-get (cadr element) :begin))
-              (level (plist-get (cadr element) :level))
-              (title (plist-get (cadr element) :title)))
+        (let ((begin (plist-get (nth 1 element) :begin))
+              (level (plist-get (nth 1 element) :level))
+              (title (plist-get (nth 1 element) :title)))
          (goto-char (+ begin level (length title)))))))
 
 (defun org-insert-subheading-at-point (subheading)
@@ -929,7 +929,7 @@ With prefix arg C-u, copy region instad of killing it."
 ;;           ;; from within `org-add-log-note' because `buffer-undo-list'
 ;;           ;; is then modified outside of `org-with-remote-undo'.
 ;;           (when (eq this-command 'org-agenda-todo)
-;;             (setcdr buffer-undo-list (cddr buffer-undo-list)))))))
+;;             (setcdr buffer-undo-list (nthcdr 2 buffer-undo-list)))))))
 ;;   ;; Don't add undo information when called from `org-agenda-todo'
 ;;   (let ((buffer-undo-list (eq this-command 'org-agenda-todo)))
 ;;     (lotus-set-window-configuration org-log-note-window-configuration)

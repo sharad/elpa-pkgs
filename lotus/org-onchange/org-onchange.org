@@ -217,7 +217,7 @@
           ;; from within `org-add-log-note' because `buffer-undo-list'
           ;; is then modified outside of `org-with-remote-undo'.
           (when (eq this-command 'org-agenda-todo)
-            (setcdr buffer-undo-list (cddr buffer-undo-list))))))
+            (setcdr buffer-undo-list (nthcdr 2 buffer-undo-list))))))
     ;; Don't add undo information when called from `org-agenda-todo'.
     (let ((buffer-undo-list (eq this-command 'org-agenda-todo)))
       (set-window-configuration org-log-note-window-configuration)
@@ -323,7 +323,7 @@
                 ;; from within `org-add-log-note' because `buffer-undo-list'
                 ;; is then modified outside of `org-with-remote-undo'.
                 (when (eq this-command 'org-agenda-todo)
-                  (setcdr buffer-undo-list (cddr buffer-undo-list))))))
+                  (setcdr buffer-undo-list (nthcdr 2 buffer-undo-list))))))
           (error "merker %s buffer is nil" marker))))
 
  #+END_SRC

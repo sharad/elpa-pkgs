@@ -225,7 +225,7 @@ You need to add `Content-Type' to `nnmail-extra-headers' and
 	indicator)
     (mapc (lambda (el)
 	    (when (string-match (first el) ctype)
-	      (setq indicator (cadr el))))
+	      (setq indicator (nth 1 el))))
 	  rs-gnus-summary-line-content-type-alist)
     (if indicator
 	indicator
@@ -300,7 +300,7 @@ You need to add `X-Gnus-Label' to `nnmail-extra-headers' and
 	indicator)
     (mapc (lambda (el)
 	    (when (string-match (first el) label)
-	      (setq indicator (cadr el))))
+	      (setq indicator (nth 1 el))))
 	  rs-gnus-summary-line-label-alist)
     (if indicator
 	indicator
@@ -587,11 +587,11 @@ Argument REVERSE means reverse order."
    (let ((extract (funcall
 		   gnus-extract-address-components
 		   (or (rest (assq 'To (mail-header-extra h1))) ""))))
-     (or (first extract) (cadr extract)))
+     (or (first extract) (nth 1 extract)))
    (let ((extract (funcall
 		   gnus-extract-address-components
 		   (or (rest (assq 'To (mail-header-extra h2))) ""))))
-     (or (first extract) (cadr extract)))))
+     (or (first extract) (nth 1 extract)))))
 
 (defun rs-gnus-thread-sort-by-recipient (h1 h2)
   "Sort threads by root recipient."

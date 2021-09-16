@@ -55,12 +55,12 @@
   (cond
    ((null lst) nil)
    (t          (cons (first lst)
-                     (occ-list-get-evens (cddr lst))))))
+                     (occ-list-get-evens (nthcdr 2 lst))))))
 
 ;; (defun list-get-odds (lst)
 ;;   (cond
 ;;    ((null lst) nil)
-;;    ( t (cons  (cadr lst) (list-get-odds (rest (rest lst)))))))
+;;    ( t (cons  (nth 1 lst) (list-get-odds (rest (rest lst)))))))
 
 (defun occ-plist-get-keys (plist)
   (occ-list-get-evens plist))

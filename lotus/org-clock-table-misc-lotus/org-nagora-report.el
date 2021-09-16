@@ -116,7 +116,7 @@
              collect (list
                       iv
                       (let* ((cutstart (first iv))
-                             (cutend (cadr iv))
+                             (cutend (nth 1 iv))
                              (tmsum 0.0)
                              headings trlst)
                         ;; iterate over the task structure
@@ -124,7 +124,7 @@
                          for item in struct
                          do (progn
                               (setq headings (first item)
-                                    trlst (cadr item)
+                                    trlst (nth 1 item)
                                     ;; sum up the parts of the time
                                     ;; ranges falling into this
                                     ;; interval
@@ -133,7 +133,7 @@
                                            (mapcar
                                             (lambda (tr)
                                               (dfeich/org-slice-tr (first tr)
-                                                                   (cadr tr)
+                                                                   (nth 1 tr)
                                                                    cutstart
                                                                    cutend))
                                             trlst))))
@@ -156,17 +156,17 @@
     (cl-loop
      for item in table
      do (let ((ivl (first item))
-              (entries (cadr item)))
+              (entries (nth 1 item)))
           (cl-loop for e in entries
                    do (let ((headings (first e))
-                            (minutes (cadr e)))
+                            (minutes (nth 1 e)))
                         (insert (concat
                                  "|"
                                  (format-time-string "%H:%M" (seconds-to-time
                                                               (first ivl)))
                                  "-"
                                  (format-time-string "%H:%M" (seconds-to-time
-                                                              (cadr ivl)))
+                                                              (nth 1 ivl)))
                                  "|" (nth 1 headings)
                                  "|" (first (last headings))
                                  "|" (format "%d" minutes)

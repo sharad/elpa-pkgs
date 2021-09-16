@@ -564,6 +564,6 @@ will return point to the current position."
                 ;; from within `org-add-log-note' because `buffer-undo-list'
                 ;; is then modified outside of `org-with-remote-undo'.
                 (when (eq this-command 'org-agenda-todo)
-                  (setcdr buffer-undo-list (cddr buffer-undo-list))))))
+                  (setcdr buffer-undo-list (nthcdr 2 buffer-undo-list))))))
           (error "merker %s buffer is nil" marker))))
 ;; Org insert log note un-interactively:1 ends here

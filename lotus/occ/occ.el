@@ -165,7 +165,7 @@ FULL is given."
 
 ;;;###autoload
 (defun occ-add-deps-libs (pkg)
-  (let ((deps (cons (symbol-name pkg) (mapcar #'(lambda (x) (symbol-name (first x))) (package-desc-reqs (cadr (assoc 'occ package-alist)))))))
+  (let ((deps (cons (symbol-name pkg) (mapcar #'(lambda (x) (symbol-name (first x))) (package-desc-reqs (nth 1 (assoc 'occ package-alist)))))))
     (if occ-dev-dir
         (dolist (lib deps)
           (delete* (concat occ-dev-dir lib) load-path)
@@ -198,7 +198,7 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
          ;; (feature-re "^\\(org\\|ob\\|ox\\)\\(-.*\\)?")
          (occ-deps       (cons (symbol-name pkg)
                                (mapcar #'(lambda (x) (symbol-name (first x)))
-                                       (package-desc-reqs (cadr (assoc 'occ package-alist))))))
+                                       (package-desc-reqs (nth 1 (assoc 'occ package-alist))))))
          (occ-pkg-regexp (regexp-opt occ-deps))
          (feature-re     (concat "^" occ-pkg-regexp "$"))
          (remove-re      (format "\\`%s\\'"
@@ -237,7 +237,7 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
       (occ-message "Successfully reloaded Org\n%s" (occ-version nil 'full)))))
 
 (when nil
-  (let* ((occ-pkg-regexp (regexp-opt (cons "occ" (mapcar #'(lambda (x) (symbol-name (first x))) (package-desc-reqs (cadr (assoc 'occ package-alist)))))))
+  (let* ((occ-pkg-regexp (regexp-opt (cons "occ" (mapcar #'(lambda (x) (symbol-name (first x))) (package-desc-reqs (nth 1 (assoc 'occ package-alist)))))))
          (feature-re     (concat "^" occ-pkg-regexp "$")))
     (string-match feature-re "xocc")))
 

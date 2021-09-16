@@ -83,7 +83,7 @@
     (dolist (key keys)
       (let ((funkw-rank keys))
         (let ((funkw (or (car-safe funkw-rank) funkw-rank))
-              (rank  (if (consp funkw-rank) (cadr funkw-rank) nil)))
+              (rank  (if (consp funkw-rank) (nth 1 funkw-rank) nil)))
           (when funkw
               (let ((fun (or (occ-filter-get funkw) funkw #'identity)))
                 (setf funs (nconc funs
@@ -113,7 +113,7 @@
                                      &key rank)
   (let* ((funkw-rank (first methods)))
     (let ((funkw      (or (car-safe funkw-rank) funkw-rank))
-          (rank       (if (consp funkw-rank) (cadr funkw-rank) rank)))
+          (rank       (if (consp funkw-rank) (nth 1 funkw-rank) rank)))
      ;; (occ-message "occ-apply-recursively: trying funkw-rank= %s funkw= %s" funkw-rank funkw)
      (if funkw
          (let ((fun  (or (rest (occ-filter-get funkw))

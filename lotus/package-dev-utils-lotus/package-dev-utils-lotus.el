@@ -167,7 +167,7 @@ or nil if the version cannot be parsed."
                              ('end-of-file nil))))
                       contents))))
                 `(define-package ,pkg-name ,version ,(format "%s" pkg-name) nil)))))
-    (cadr (nth 4 pkg-def))))
+    (nth 1 (nth 4 pkg-def))))
 
 
 ;;;###autoload
@@ -454,7 +454,7 @@ or nil if the version cannot be parsed."
         (message "depecdencies to be installed %s" dependencies-external)
         (dolist (dep dependencies-external)
           (let ((dep-sym  (first (assoc dep package-archive-contents)))
-                (dep-desc (cadr (assoc dep package-archive-contents))))
+                (dep-desc (nth 1 (assoc dep package-archive-contents))))
             (if (package-installed-p dep-sym)
                 (message "dependency package %s already installed." dep)
               (progn
@@ -468,7 +468,7 @@ or nil if the version cannot be parsed."
       (progn
         (dolist (pkg-path subdir-paths)
           ;; as already uploaded.
-          (let (;; (dep-desc (cadr (assoc dep package-archive-contents)))
+          (let (;; (dep-desc (nth 1 (assoc dep package-archive-contents)))
                 (pkg (package-desc-package-from-dir pkg-path)))
             (message "Installing %s" pkg-path)
             (package-install pkg)
@@ -506,7 +506,7 @@ or nil if the version cannot be parsed."
   (add-hook 'post-command-hook #'package-menu--post-refresh)
   (let ((pkg-desc (if (package-desc-p pkg)
                       pkg
-                    (cadr (assq pkg package-alist)))))
+                    (nth 1 (assq pkg package-alist)))))
     (if pkg-desc
         (if (package-installed-p (package-desc-name pkg-desc))
             (package-delete pkg-desc t)
@@ -535,7 +535,7 @@ will be deleted."
             (remove-if-not
              #'(lambda (p)
                  (let* ((pdesc
-                         (cadr (assq p package-alist)))
+                         (nth 1 (assq p package-alist)))
                         (dir (if pdesc
                                  (package-desc-dir pdesc))))
                    (string-prefix-p (file-name-as-directory
@@ -549,7 +549,8 @@ will be deleted."
                          (length removable)
                          (mapconcat #'symbol-name removable ", ")))
             (mapc (lambda (p)
-                    (package-delete (cadr (assq p package-alist)) t))
+                    (package-delete (nth 1
+                                         (assq p package-alist)) t))
                   removable))
         (message "Nothing to autoremove")))))
 
@@ -558,8 +559,8 @@ will be deleted."
 ;; package-compute-transaction
 
 (when nil
-  (package-desc-p (cdar package-archive-contents))
-  (caar package-archive-contents)
+  (package-desc-p (rest (first package-archive-contents)))
+  (first (first package-archive-contents))
   (assoc
    'yasnippet-classic-snippets
    package-archive-contents))

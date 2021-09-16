@@ -325,7 +325,7 @@
 (defun task-party-org-master-file-ensure (&optional party)
   (let* ((party                 (or party (task-current-party)))
          (party-dir             (expand-file-name party (task-party-base-dir)))
-         (org-master-file       (cadr
+         (org-master-file       (nth 1
                                  (assoc 'org-master-file
                                         (rest (assoc party task-parties)))))
          (org-master-file-path (expand-file-name org-master-file party-dir)))
@@ -347,7 +347,7 @@
 (defun task-party-org-master-file (&optional party)
   (let* ((party                 (or party (task-current-party)))
          (party-dir             (expand-file-name party (task-party-base-dir)))
-         (org-master-file       (cadr
+         (org-master-file       (nth 1
                                  (assoc 'org-master-file
                                         (rest (assoc party task-parties)))))
          (org-master-file-path (expand-file-name org-master-file party-dir)))
@@ -394,7 +394,7 @@
 (defun task-party-org-heading (&optional party)
   (let ((party (or party (task-current-party))))
     (if (member party (mapcar 'car task-parties))
-        (cadr
+        (nth 1
          (assoc 'org-heading
                 (rest (assoc party task-parties))))
       (error "task-party-org-heading: party `%s' is not from task-parties" party))))
@@ -403,7 +403,7 @@
 (defun task-party-bugz-url (&optional party)
   (let ((party (or party (task-current-party))))
     (if (member party (mapcar 'car task-parties))
-        (cadr
+        (nth 1
          (assoc 'bugz-url
                 (rest (assoc party task-parties))))
         (error "task-party-bugz-url: party `%s' is not from task-parties" party))))
@@ -440,16 +440,16 @@
 (defun task-first-org-master-file (task-type)
   (if (member task-type
               (mapcar 'car *task-type-config*))
-      (cadr (assoc 'org-master-file
-                   (rest (assoc task-type *task-type-config*))))
+      (nth 1 (assoc 'org-master-file
+                    (rest (assoc task-type *task-type-config*))))
     (error "task-type is not from *task-type-config*")))
 
 ;;;###autoload
 (defun task-org-todo-file (task-type)
   (if (member task-type
               (mapcar 'car *task-type-config*))
-      (cadr (assoc 'org-todo-file
-                   (rest (assoc task-type *task-type-config*))))
+      (nth 1 (assoc 'org-todo-file
+                    (rest (assoc task-type *task-type-config*))))
     (error "task-type is not from *task-type-config*")))
 
 ;;;###autoload
@@ -471,7 +471,7 @@
                      nil
                      (not new))))
     (if new
-        (let* ((predicate (cadr (assoc 'name (rest (assoc task-type *task-type-config*)))))
+        (let* ((predicate (nth 1 (assoc 'name (rest (assoc task-type *task-type-config*)))))
                (task-name-match
                 (cond
                   ((stringp predicate)

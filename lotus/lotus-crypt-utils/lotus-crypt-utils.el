@@ -254,7 +254,7 @@ Return the modified ALIST."
 (defun epa-pop-last-passphrase ()
   (interactive)
   (when (y-or-n-p
-         (format "remove %s: " (caar epa-file-passphrase-alist)))
+         (format "remove %s: " (first (first epa-file-passphrase-alist))))
     (pop epa-file-passphrase-alist)))
 
 (defun epa-delete-passphrase ()
@@ -283,7 +283,7 @@ characters like \"l\" and \"1\", \"O\" and \"0\"."
     (if (called-interactively-p)
         (let* ((strength (make-password-strength length upper lower number symbol ambiguous))
                (bits (first strength))
-               (number (cadr strength)))
+               (number (nth 1 strength)))
           (message "The password \"%s\" is one of 10^%d possible and has a bit equivalence of %d"
                    password (round number) (round bits)))
       password)))

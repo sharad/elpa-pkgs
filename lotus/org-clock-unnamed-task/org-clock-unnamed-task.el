@@ -204,9 +204,9 @@
     (let ((element (org-element-at-point)))
       (if (and element
                (eq (first element) 'headline))
-          (let (;; (begin (plist-get (cadr element) :begin))
-                ;; (level (plist-get (cadr element) :level))
-                (title (plist-get (cadr element) :title)))
+          (let (;; (begin (plist-get (nth 1 element) :begin))
+                ;; (level (plist-get (nth 1 element) :level))
+                (title (plist-get (nth 1 element) :title)))
             (string-match-p "Unnamed task [0-9]+" title)))))))
 
 ;; (lotus-org-create-unnamed-task "~/Unnamed.org" "Unnamed tasks")

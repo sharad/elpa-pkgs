@@ -151,8 +151,8 @@ return a new alist whose car is the new pair and cdr is ALIST."
 
                (let (nickname-list)
                  (while (> (length nickname-type-map) 0)
-                   (let ((type (caar nickname-type-map))
-                         (buff-file (cdar nickname-type-map)))
+                   (let ((type (first (first nickname-type-map)))
+                         (buff-file (rest (first nickname-type-map))))
                      (when buff-file
                        (setq nickname-list (cons buff-file nickname-list)))
                      (setq nickname-type-map
@@ -236,9 +236,8 @@ return a new alist whose car is the new pair and cdr is ALIST."
                      (rest (assoc 'screens session-list))
                      `((,(length session-list) "*scratch*"))))
                    (session-current-screen-buffers
-                    (cadr (assoc
-                           (rest (assoc 'current-screen session-list))
-                           screens)))
+                    (nth 1 (assoc (rest (assoc 'current-screen session-list))
+                            screens)))
                    (session-current-buffer-file
                     (rest (assoc 'current-buffer-file session-list))))
               ;; (when t
@@ -286,10 +285,10 @@ return a new alist whose car is the new pair and cdr is ALIST."
               ;; setup elscreens with buffers
               (while screens
                 (message "while screen: %s" screens)
-                ;; (setq screen (caar screens))
-                ;; (setq buff-files (cdar screens))
-                (let* ((screen         (caar screens))
-                       (buff-files     (cdar screens))
+                ;; (setq screen (first (first screens)))
+                ;; (setq buff-files (rest  (first screens)))
+                (let* ((screen         (first (first screens)))
+                       (buff-files     (rest  (first screens)))
                        (not-first-buff nil))
 
                   (while buff-files
@@ -600,7 +599,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
             (if xwin-enabled
                 (ignore-errors (emacs-panel-wm-hints))))
            (desktop-name (if wm-hints
-                             (nth (cadr (assoc 'current-desktop wm-hints))
+                             (nth (nth 1 (assoc 'current-desktop wm-hints))
                                   (rest  (assoc 'desktop-names wm-hints)))))
            (location (if (and try-guessing
                               desktop-name

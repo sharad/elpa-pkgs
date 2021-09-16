@@ -56,7 +56,7 @@ HEADINGS: the heading titles of the current entry and all its parents as a list 
 (defun org-element-parent (element &optional type)
   "Get parent of ELEMENT or nil if there is none.
 If TYPE is non-nil get next parent of that type."
-  (let* ((props (cadr element))
+  (let* ((props (nth 1 element))
          (parent (plist-get props :parent)))
     (if type
         (when parent
@@ -71,8 +71,8 @@ TS1 and TS2 is timestamp data as returned by `org-element-timestamp-parser'.
 If end is non-nil the end-time of TS1 and TS2 is compared else the start time."
   (cl-assert (eq (first ts1) 'timestamp) "TS1 is not a timestamp")
   (cl-assert (eq (first ts2) 'timestamp) "TS2 is not a timestamp")
-  (let ((p1 (cadr ts1))
-        (p2 (cadr ts2))
+  (let ((p1 (nth 1 ts1))
+        (p2 (nth 1 ts2))
         (tests '("year" "month" "day" "hour" "minute"))
         ret)
     (while (and (let* ((what (intern-soft (concat ":" (first tests) (if end "-end" "-start"))))
@@ -100,7 +100,7 @@ START/END is either the symbol 'start or 'end or nil which is equivalent to 'sta
 If ENCODE is non-nil the return value is encoded as described in the documentation for `current-time'."
   (cl-assert (eq (first timestamp) 'timestamp) "Argument is not a timestamp")
   (unless start/end (setq start/end 'start))
-  (let* ((p (cadr timestamp))
+  (let* ((p (nth 1 timestamp))
          (ret (append
                '(0)
                (mapcar (lambda (what) (plist-get p (intern-soft (concat ":" what "-" (symbol-name start/end))))) '("minute" "hour" "day" "month" "year"))
@@ -156,9 +156,9 @@ for clocked items with start time within the range from tStart to tEnd."
      (org-element-map tree 'clock
        (lambda (clock)
          ;; get the relevant data of the clocks
-         (let* ((timestamp (plist-get (cadr clock) :value))
+         (let* ((timestamp (plist-get (nth 1 clock) :value))
                 (parent clock)
-                (headers (nreverse (cl-loop while (setq parent (org-element-parent parent 'headline)) collect (first (plist-get (cadr parent) :title))))))
+                (headers (nreverse (cl-loop while (setq parent (org-element-parent parent 'headline)) collect (first (plist-get (nth 1 parent) :title))))))
            (cl-assert timestamp nil "Clock line without timestamp")
            (when (and (or (null tStart) (null (time-less-p (org-element-timestamp-to-time timestamp 'start t) tStart)))
                       (or (null tEnd) (time-less-p (org-element-timestamp-to-time timestamp 'end t) tEnd)))
@@ -188,20 +188,20 @@ for clocked items with start time within the range from tStart to tEnd."
                    (minutes-start (if (decoded-time-less-p start-time start) start start-time))
                    (minutes-end (if (decoded-time-less-p end end-time) end end-time))
                    (minutes (/ (nth 1 (time-subtract (apply 'encode-time minutes-end) (apply 'encode-time minutes-start))) 60))
-                   (headlines (nth 2 (cadr iter)))
+                   (headlines (nth 2 (nth 1 iter)))
                    (project (assoc headlines project-alist)))
               (if (and project (null dont-sum))
-                  (setcdr project (list (+ (cadr project) minutes) minutes-start minutes-end))
+                  (setcdr project (list (+ (nth 1 project) minutes) minutes-start minutes-end))
                   (setq project-alist (cons (list headlines minutes minutes-start minutes-end) project-alist)))
               (if (decoded-time-less-p end end-time)
                   (setq iter (rest iter))
                   ;; delete clock that also finishes in this hour:
-                  (setcdr iter (cddr iter))) ;; delete clock entry
+                  (setcdr iter (nthcdr 2 iter))) ;; delete clock entry
               ))
           (setq project-alist (nreverse project-alist))
           ;; Compose shedule for hour:
           (while project-alist
-            (let ((headlines (caar project-alist))
+            (let ((headlines (first (first project-alist)))
                   (minutes (nth 1 (first project-alist)))
                   (minutes-start (nth 2 (first project-alist)))
                   (minutes-end (nth 3 (first project-alist))))
