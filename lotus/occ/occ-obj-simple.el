@@ -159,7 +159,7 @@
         (template (or template          ;FIX it.
                       (occ-capture+-helm-select-template))))
     (when template
-      (with-org-capture-run marker 'entry `(marker ,mrk) template (list :empty-lines 1 :immediate-finish immediate-finish)
+      (with-org-capture-run marker 'entry (list 'marker mrk) template (list :empty-lines 1 :immediate-finish immediate-finish)
         (unless immediate-finish        ;*NOTE:
           (let* ((tmp-tsk  (occ-make-tsk marker))
                  (tmp-ctsk (occ-build-ctsk-with tmp-tsk ctx)))
