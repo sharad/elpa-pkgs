@@ -98,14 +98,14 @@
       
           (set-marker marker pos buff)
           ;; (buffer-base-buffer (current-buffer))
-          (when (or (null before-finalize)
-                    (funcall before-finalize marker))
-            (when (org-capture-finalize stay-with-capture)
-              (unless (null after-finalize)
-                (funcall after-finalize marker))))))
-      
-      
-      
+          (if (or (null before-finalize)
+                  (funcall before-finalize marker))
+              (when (org-capture-finalize stay-with-capture)
+                (unless (null after-finalize)
+                  (funcall after-finalize marker)))
+            (lwarn 'org-capture+ :error
+                   "org-capture-plus-finalize: before-finalize %s returned NULL, so not finalizing."
+                   before-finalize))))
     #+end_src
 
 *** Overriding org-capture-place-template function
