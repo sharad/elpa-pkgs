@@ -57,7 +57,7 @@
     (org-master-file \"report.org\")
     (org-heading     \"Personal work\")
     (bugz-url        \"https://bugzilla.merunetworks.com\")))")
-    
+
 
 (defvar task-current-party nil "Task current party")
 (defvar task-current-party-change-hook nil "run hook when task-current-party chnage.")
@@ -73,7 +73,7 @@
     "#+TAGS: PERFORCE(4)  BUGZILLA(b) SVN(v) SCMBUG(m) PROJECT(j)"
     "#+TAGS: CVS(i) PHONE(p) INTERNET(i)")
     ;; "#+SEQ_TODO: TODO STARTED DONE"
-    
+
   "Desc")
 
 (defvar *task-projbuffs-base-dir* "~/Documents/org/tasks")
@@ -101,7 +101,7 @@
      (dirs            "logs" "programs" "patches" "deliverables")
      (links           ("notes.html" . "index.html"))
      (project         "works.pb"))))
-    
+
 
 (defvar *taskdir-current-task* nil "Current task")
 
@@ -228,12 +228,10 @@
       (task-make-party-base-dir base-dir))
     (when (file-directory-p base-dir)
       (task-party-base-org-master-file base-dir)
-      (setq
-       *task-party-base-dir* base-dir)))
-  (message
-   "task-projbuffs-base-dir: changing supplied base-dir %s and task-projbuffs-base-dir to %s"
-   base-dir
-   *task-party-base-dir*)
+      (setq *task-party-base-dir* base-dir)))
+  (message "task-party-base-dir: changing supplied base-dir %s and task-projbuffs-base-dir to %s"
+           base-dir
+           *task-party-base-dir*)
   *task-party-base-dir*)
 
 ;;;###autoload
@@ -287,9 +285,10 @@
      (list party)))
   (progn
     (when (member party (mapcar 'car task-parties))
-      (setq task-current-party party)
-      (run-hooks 'task-current-party-change-hook))
-    task-current-party))
+      (unless (eq task-current-party party)
+        (setq task-current-party party)
+        (run-hooks 'task-current-party-change-hook))
+      task-current-party)))
 
 ;;;###autoload
 (defun task-current-party-select-set (&optional prompt)
@@ -395,8 +394,8 @@
   (let ((party (or party (task-current-party))))
     (if (member party (mapcar 'car task-parties))
         (nth 1
-         (assoc 'org-heading
-                (rest (assoc party task-parties))))
+             (assoc 'org-heading
+                    (rest (assoc party task-parties))))
       (error "task-party-org-heading: party `%s' is not from task-parties" party))))
 
 ;;;###autoload
@@ -404,8 +403,8 @@
   (let ((party (or party (task-current-party))))
     (if (member party (mapcar 'car task-parties))
         (nth 1
-         (assoc 'bugz-url
-                (rest (assoc party task-parties))))
+             (assoc 'bugz-url
+                    (rest (assoc party task-parties))))
         (error "task-party-bugz-url: party `%s' is not from task-parties" party))))
 
 ;;;###autoload
@@ -668,9 +667,9 @@
                                              ;; (file-relative-name
                                              ;;  (concat task-dir "/" (task-first-org-master-file task-type))
                                              ;;  (file-name-directory file))
-                                             
+
                               ;; (org-entry-put nil "Root" project-root-folder)
-                              
+
     (with-current-buffer (find-file-noselect file)
       (let ((buffer-read-only nil))
         (save-buffer)))
@@ -696,7 +695,7 @@
                            (concat
                             (pluralize-string task-type) ".pb") ;; (task-projbuffs-dir)
                            (task-party-projbuffs-dir)))
-                           
+
       (iproject-add-project
        project-type                 ;project-type
        project-main-file            ;project-main-file

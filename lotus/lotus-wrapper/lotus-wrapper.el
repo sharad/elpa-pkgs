@@ -176,7 +176,7 @@ containing it, until no links are left at any level.
                     (unless (member
                              original-filename
                              (rest (assoc dir file-truename-cache-dependency-list)))
-                      (push original-filename (rest (assoc dir file-truename-cache-dependency-list))))
+                      (push original-filename (cdr (assoc dir file-truename-cache-dependency-list))))
                   (push (list dir original-filename) file-truename-cache-dependency-list))))
 
             (if (assoc original-filename file-truename-cache)
