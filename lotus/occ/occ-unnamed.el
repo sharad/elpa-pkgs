@@ -72,19 +72,16 @@
     (let ((org-log-note-clock-out nil))
       (if (occ-clock-marker-unnamed-clock-p)
           (occ-debug :debug "occ-maybe-create-unnamed-tsk: Already clockin unnamed tsk")
-        (cdr
-         (org-without-org-clock-persist
-           (lotus-org-create-unnamed-task)))))))
+        (cdr (org-without-org-clock-persist
+               (lotus-org-create-unnamed-task)))))))
 
 (defun occ-maybe-create-unnamed-tsk ()
   ;; back
   (occ-debug :debug "occ-maybe-create-unnamed-tsk: begin")
-  (let* ((unnamed-heading-marker
-          (cdr (org-without-org-clock-persist
-                 (lotus-org-create-unnamed-task))))
-         (unnamed-tsk
-          (when unnamed-heading-marker
-            (occ-make-tsk unnamed-heading-marker (occ-tsk-builder)))))
+  (let* ((unnamed-heading-marker (cdr (org-without-org-clock-persist
+                                        (lotus-org-create-unnamed-task))))
+         (unnamed-tsk (when unnamed-heading-marker
+                        (occ-make-tsk unnamed-heading-marker (occ-tsk-builder)))))
     unnamed-tsk))
 
 
