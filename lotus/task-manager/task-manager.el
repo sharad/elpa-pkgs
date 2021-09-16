@@ -285,9 +285,9 @@
      (list party)))
   (progn
     (when (member party (mapcar 'car task-parties))
+      (setq task-current-party party)
       (unless (eq task-current-party party)
-        (setq task-current-party party)
-        (run-hooks 'task-current-party-change-hook))
+         (run-hooks 'task-current-party-change-hook))
       task-current-party)))
 
 ;;;###autoload
