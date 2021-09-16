@@ -240,7 +240,7 @@ Of course, if exact position has been required, just put it there."
                  (org-capture-mark-kill-region beg end)
                  (org-capture-narrow beg end))
                (if (or (re-search-backward "%\\?" beg t)
-                       (re-search-forward  "%\\?" end t))
+                       (re-search-forward "%\\?" end t))
                    (replace-match ""))
                (when nil
                  (org-back-to-heading t)
@@ -392,9 +392,8 @@ Store them in the capture property list."
          (setq target-entry-p
                (and (derived-mode-p 'org-mode) (org-at-heading-p))))
         (`(clock)
-         (if (and
-              (markerp org-clock-hd-marker)
-              (marker-buffer org-clock-hd-marker))
+         (if (and (markerp       org-clock-hd-marker)
+                  (marker-buffer org-clock-hd-marker))
              (progn
                (set-buffer (marker-buffer org-clock-hd-marker))
                (org-capture-put-target-region-and-position)
@@ -408,8 +407,9 @@ Store them in the capture property list."
                  ((symbolp hd-marker) (symbol-value hd-marker))
                  (t (error "value %s is not marker" hd-marker)))))
            (message "hd-marker %s" hd-marker)
-           (if (and (markerp hd-marker)
-                    (marker-buffer hd-marker))
+           (if (and
+                (markerp hd-marker)
+                (marker-buffer hd-marker))
                (progn
                  (set-buffer (marker-buffer hd-marker))
                  (org-capture-put-target-region-and-position)
@@ -427,11 +427,12 @@ Store them in the capture property list."
                        :pos            (point)
                        :target-entry-p target-entry-p
                        :decrypted      (and (featurep 'org-crypt)
-                                            (org-at-encrypted-entry-p)
-                                            (save-excursion
-                                              (org-decrypt-entry)
-                                              (and (org-back-to-heading t)
-                                                   (point))))))))
+                                            (org-at-encrypted-entry-p
+                                             (save-excursion
+                                               (org-decrypt-entry)
+                                               (and
+                                                (org-back-to-heading t)
+                                                (point)))))))))
 ;; set target improved:1 ends here
 
 ;; new capture
@@ -442,7 +443,7 @@ Store them in the capture property list."
    ((stringp template) template)
    ((fboundp template) (funcall template))
    ((symbolp template) (symbol-value template))
-   (t template)))
+   (t                  template)))
 
 ;;;###autoload
 (defun org-capture-run (type target template &rest plist)
@@ -484,63 +485,69 @@ of the day at point (if any) or the current HH:MM time."
           (org-get-cursor-date t ;; (equal goto 1)
                                )))
 
-  (let* ((orig-buf (current-buffer))
+  (let* ((orig-buf   (current-buffer))
          (annotation (if (and (boundp 'org-capture-link-is-already-stored)
                               org-capture-link-is-already-stored)
                          (plist-get org-store-link-plist :annotation)
                        (ignore-errors (org-store-link nil))))
          ;; (template (or org-capture-entry (org-capture-select-template keys)))
-         (template (or org-capture-entry
-                       (org-capture-plus-get-template template)))
-         initial)
+         (template   (or org-capture-entry
+                         (org-capture-plus-get-template template)))
+         (initial    nil))
     (setq initial (or org-capture-initial
                       (and (org-region-active-p)
                            (buffer-substring (point) (mark)))))
     (when (stringp initial)
-      (remove-text-properties 0 (length initial) '(read-only t) initial))
+      (remove-text-properties 0
+                              (length initial)
+                              '(read-only t)
+                              initial))
     (when (stringp annotation)
-      (remove-text-properties 0 (length annotation)
-                              '(read-only t) annotation))
+      (remove-text-properties 0
+                              (length annotation)
+                              '(read-only t)
+                              annotation))
 
 
 
     ;; (org-capture-set-plist template)
 
     (setq org-capture-plist plist)
-    (org-capture-put
-     ;; :key (car entry)
-     ;; :description (nth 1 entry)
-     :target target)
+    (org-capture-put ;; :key (car entry)
+                     ;; :description (nth 1 entry)
+                     :target target)
 
     (let ((txt template)
-          (type (or type 'entry)))
-      (when (or (not txt) (and (stringp txt) (not (string-match "\\S-" txt))))
+          (type (or type
+                    'entry)))
+      (when (or (not txt)
+                (and (stringp txt)
+                     (not (string-match "\\S-" txt))))
         ;; The template may be empty or omitted for special types.
         ;; Here we insert the default templates for such cases.
         (cond
-         ((eq type 'item) (setq txt "- %?"))
-         ((eq type 'checkitem) (setq txt "- [ ] %?"))
-         ((eq type 'table-line) (setq txt "| %? |"))
+         ((eq type 'item)            (setq txt "- %?"))
+         ((eq type 'checkitem)       (setq txt "- [ ] %?"))
+         ((eq type 'table-line)      (setq txt "| %? |"))
          ((member type '(nil entry)) (setq txt "* %?\n  %a"))))
-      (org-capture-put :template txt :type type))
+      (org-capture-put :template txt
+                       :type     type))
 
     (org-capture-get-template)
 
-    (org-capture-put :original-buffer orig-buf
-                     :original-file (or (buffer-file-name orig-buf)
-                                        (and (featurep 'dired)
-                                             (car (rassq orig-buf
-                                                         dired-buffers))))
-                     :original-file-nondirectory
-                     (and (buffer-file-name orig-buf)
-                          (file-name-nondirectory
-                           (buffer-file-name orig-buf)))
-                     :annotation annotation
-                     :initial initial
-                     :return-to-wconf (current-window-configuration)
-                     :default-time
-                     (or org-overriding-default-time
-                         (org-current-time)))
+    (org-capture-put :original-buffer            orig-buf
+                     :original-file              (or (buffer-file-name orig-buf)
+                                                     (and (featurep 'dired)
+                                                          (car (rassq orig-buf
+                                                                      dired-buffers))))
+                     :original-file-nondirectory (and (buffer-file-name orig-buf)
+                                                      (file-name-nondirectory
+                                                       (buffer-file-name orig-buf)))
+                     :annotation                 annotation
+                     :initial                    initial
+                     :return-to-wconf            (current-window-configuration)
+                     :default-time               (or org-overriding-default-time
+                                                     (org-current-time)))
 
     (org-capture-set-target-location-improved)
 
@@ -551,14 +558,14 @@ of the day at point (if any) or the current HH:MM time."
        (error "Capture abort: %s" error)))
 
     (setq org-capture-clock-keep (org-capture-get :clock-keep))
-    (if (and
-         (not (org-capture-get :target))
-         (eq 'immdediate (car (org-capture-get :target)))) ;; (equal goto 0)
+    (if (and (not (org-capture-get :target))
+             (eq 'immdediate
+                 (car (org-capture-get :target)))) ;; (equal goto 0)
         ;;insert at point
         (org-capture-insert-template-here)
       (condition-case error
-          (org-capture-place-template
-           (eq (car (org-capture-get :target)) 'function))
+          (org-capture-place-template (eq (car (org-capture-get :target))
+                                          'function))
         ((error quit)
          (if (and (buffer-base-buffer (current-buffer))
                   (string-prefix-p "CAPTURE-" (buffer-name)))
@@ -590,10 +597,11 @@ of the day at point (if any) or the current HH:MM time."
 (defun org-goto-refile (&optional refile-targets)
   "Refile goto."
   ;; mark paragraph if no region is set
-  (let* ((org-refile-targets (or refile-targets org-refile-targets))
-         (target (save-excursion (safe-org-refile-get-location)))
-         (file (nth 1 target))
-         (pos (nth 3 target)))
+  (let* ((org-refile-targets (or refile-targets
+                                 org-refile-targets))
+         (target             (save-excursion (safe-org-refile-get-location)))
+         (file               (nth 1 target))
+         (pos                (nth 3 target)))
     (when (set-buffer (find-file-noselect file)) ;; (switch-to-buffer (find-file-noselect file) 'norecord)
       (goto-char pos))))
 
@@ -673,7 +681,7 @@ of the day at point (if any) or the current HH:MM time."
  )
 
 (when nil
-(let (helm-sources)
+  (let (helm-sources)
     ;; (when (marker-buffer org-clock-default-task)
     ;;   (push
     ;;    (helm-build-sync-source "Default Task"
@@ -708,8 +716,7 @@ of the day at point (if any) or the current HH:MM time."
     ;;               (cons "Clock in and track" #'(lambda (dyntaskpl) (plist-get dyntaskpl ))))
     ;;    helm-sources)))
 
-    (helm
-     helm-sources)))
+    (helm helm-sources)))
 ;; Application:1 ends here
 
 ;; Provide this file
