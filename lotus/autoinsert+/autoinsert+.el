@@ -338,8 +338,8 @@ or if CONDITION had no actions, after all other CONDITIONs."
     (push (cons pattern-mode nil) auto-insert+-alist))
   (let* ((elt (assoc pattern-mode auto-insert+-alist)))
     (when elt
-      (setcdr elt (plist-put (rest elt) :desc desc))
-      (let* ((action-alist (plist-get (rest  elt)
+      (setcdr elt (plist-put (cdr elt) :desc desc))
+      (let* ((action-alist (plist-get (cdr  elt)
                                       :action-alist)))
         (unless (assoc name action-alist)
           (push (list name) action-alist))
@@ -347,10 +347,10 @@ or if CONDITION had no actions, after all other CONDITIONs."
           (if name-action
               (setcdr name-action
                       (if after
-                          (append (rest name-action) (list (cons actkey action)))
-                        (push (cons actkey action) (rest name-action))))))
+                          (append (cdr name-action) (list (cons actkey action)))
+                        (push (cons actkey action) (cdr name-action))))))
         (setcdr elt
-                (plist-put (rest  elt)
+                (plist-put (cdr  elt)
                            :action-alist
                            action-alist))))))
 
