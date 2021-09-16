@@ -280,27 +280,25 @@
   "occ-make-ctx")
 
 (cl-defmethod occ-make-ctx-at-point (&optional mrk)
-  (let* ((mrk (or mrk (point-marker)))
-         (buff (marker-buffer mrk))
-         (buff (if buff
-                   (if (bufferp buff)
-                       buff
-                     (if (stringp buff)
-                         (or (get-buffer buff)
-                             (if (file-exists-p buff)
-                                 (get-file-buffer buff)))))
-                 (window-buffer)))
-         (buff (org-base-buffer buff))
-         (file (buffer-file-name buff))
-         (plist (list
-                 :name (buffer-name buff)
-                 :file file
-                 :buffer buff)))
+  (let* ((mrk   (or mrk (point-marker)))
+         (buff  (marker-buffer mrk))
+         (buff  (if buff
+                    (if (bufferp buff)
+                        buff
+                      (if (stringp buff)
+                          (or (get-buffer buff)
+                              (if (file-exists-p buff)
+                                  (get-file-buffer buff)))))
+                  (window-buffer)))
+         (buff  (org-base-buffer buff))
+         (file  (buffer-file-name buff))
+         (plist (list :name (buffer-name buff)
+                      :file file
+                      :buffer buff)))
     (unless (occ-ctx-gethash plist)
-      (occ-ctx-puthash plist (make-occ-ctx
-                              :name (buffer-name buff)
-                              :file file
-                              :buffer buff)))
+      (occ-ctx-puthash plist (make-occ-ctx :name (buffer-name buff)
+                                           :file file
+                                           :buffer buff)))
     (occ-ctx-gethash plist)))
 
 (cl-defmethod occ-make-ctx ((obj buffer))
@@ -324,10 +322,9 @@
 (cl-defmethod occ-make-ctsk-with ((tsk occ-tsk)
                                   (ctx occ-ctx))
   ;; use occ-build-ctsk-with
-  (make-occ-ctsk
-   :name    nil
-   :tsk     tsk
-   :ctx     ctx))
+  (make-occ-ctsk :name    nil
+                 :tsk     tsk
+                 :ctx     ctx))
 
 (cl-defmethod occ-make-ctsk ((obj occ-ctsk))
   obj)
@@ -336,10 +333,9 @@
   ;; use occ-build-ctsk-with
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (make-occ-ctsk
-     :name    nil
-     :tsk     tsk
-     :ctx     ctx)))
+    (make-occ-ctsk :name    nil
+                   :tsk     tsk
+                   :ctx     ctx)))
 
 (cl-defmethod occ-build-ctsk-with ((tsk occ-tsk) ;ctor
                                    (ctx occ-ctx))
@@ -363,11 +359,10 @@
                                         &optional
                                         rank)
   ;; use occ-build-ctxual-tsk-with
-  (make-occ-ctxual-tsk
-   :name    nil
-   :tsk     tsk
-   :ctx     ctx
-   :rank    rank))
+  (make-occ-ctxual-tsk :name    nil
+                       :tsk     tsk
+                       :ctx     ctx
+                       :rank    rank))
 
 (cl-defmethod occ-build-ctxual-tsk-with ((tsk occ-tsk) ;ctor
                                          (ctx occ-ctx))
@@ -386,11 +381,10 @@
                                    rank)
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (make-occ-ctxual-tsk
-     :name    nil
-     :tsk     tsk
-     :ctx     ctx
-     :rank    rank)))
+    (make-occ-ctxual-tsk :name    nil
+                         :tsk     tsk
+                         :ctx     ctx
+                         :rank    rank)))
 
 (cl-defmethod occ-make-ctxual-tsk ((obj occ-ctxual-tsk)
                                    &optional
