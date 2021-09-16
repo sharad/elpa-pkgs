@@ -145,8 +145,8 @@
                                          immediate-finish)
   (let ((mrk (occ-tsk-marker obj)))
     (occ-capture mrk
-                 :clock-in clock-in
-                 :template template
+                 :clock-in         clock-in
+                 :template         template
                  :immediate-finish immediate-finish)))
 
 (cl-defmethod occ-capture ((obj occ-obj-ctx-tsk) &key
@@ -159,7 +159,8 @@
         (template (or template          ;FIX it.
                       (occ-capture+-helm-select-template))))
     (when template
-      (with-org-capture-run marker 'entry (list 'marker mrk) template (list :empty-lines 1 :immediate-finish immediate-finish)
+      (with-org-capture-run marker 'entry (list 'marker mrk) template (list :empty-lines 1
+                                                                            :immediate-finish immediate-finish)
         (unless immediate-finish        ;*NOTE:
           (let* ((tmp-tsk  (occ-make-tsk marker))
                  (tmp-ctsk (occ-build-ctsk-with tmp-tsk ctx)))

@@ -66,10 +66,10 @@ abort `\\[org-capture-kill]'.")))
 (defun org-capture-plus-finalize (&optional stay-with-capture)
   (interactive "P")
   (let ((before-finalize (org-capture-get :before-finalize))
-        (after-finalize (org-capture-get :after-finalize))
-        (buff   (org-base-buffer (current-buffer)))
-        (pos    (point-min))
-        (marker (make-marker)))
+        (after-finalize  (org-capture-get :after-finalize))
+        (buff            (org-base-buffer (current-buffer)))
+        (pos             (point-min))
+        (marker          (make-marker)))
 
     (set-marker marker pos buff)
     ;; (buffer-base-buffer (current-buffer))
@@ -125,14 +125,16 @@ the text of the entry, before the first child.  If not, place the
 template at the beginning or end of the file.
 Of course, if exact position has been required, just put it there."
   ;; (debug)
-  (let* ((txt (org-capture-get :template))
-         beg end
-         (note-purpose (or (org-capture-get :note-purpose) 'note))
-         (effective-time (org-current-effective-time))
-         (note-state (org-capture-get :note-state))
+  (let* ((txt                 (org-capture-get :template))
+         (beg                 nil)
+         (end                 nil)
+         (note-purpose        (or (org-capture-get :note-purpose)
+                                  'note))
+         (effective-time      (org-current-effective-time))
+         (note-state          (org-capture-get :note-state))
          (note-previous-state (org-capture-get :note-previous-state))
-         (note-how (org-capture-get :note-how))
-         (note-extra (org-capture-get :note-extra)))
+         (note-how            (org-capture-get :note-how))
+         (note-extra          (org-capture-get :note-extra)))
     ;; (cond
     ;;   ((org-capture-get :exact-position)
     ;;    (goto-char (org-capture-get :exact-position)))
@@ -238,7 +240,7 @@ Of course, if exact position has been required, just put it there."
                  (org-capture-mark-kill-region beg end)
                  (org-capture-narrow beg end))
                (if (or (re-search-backward "%\\?" beg t)
-                       (re-search-forward "%\\?" end t))
+                       (re-search-forward  "%\\?" end t))
                    (replace-match ""))
                (when nil
                  (org-back-to-heading t)
@@ -406,9 +408,8 @@ Store them in the capture property list."
                  ((symbolp hd-marker) (symbol-value hd-marker))
                  (t (error "value %s is not marker" hd-marker)))))
            (message "hd-marker %s" hd-marker)
-           (if (and
-                (markerp hd-marker)
-                (marker-buffer hd-marker))
+           (if (and (markerp hd-marker)
+                    (marker-buffer hd-marker))
                (progn
                  (set-buffer (marker-buffer hd-marker))
                  (org-capture-put-target-region-and-position)
@@ -417,23 +418,20 @@ Store them in the capture property list."
                  (progn
                    (org-capture-put :exact-position (point))
                    (setq target-entry-p
-                         (and
-                          (derived-mode-p 'org-mode)
-                          (org-at-heading-p)))))
+                         (and (derived-mode-p 'org-mode)
+                              (org-at-heading-p)))))
              (error "No running clock that could be used as capture target"))))
         (target (error "Invalid capture target specification: %S" target)))
 
-      (org-capture-put :buffer (current-buffer)
-                       :pos (point)
+      (org-capture-put :buffer         (current-buffer)
+                       :pos            (point)
                        :target-entry-p target-entry-p
-                       :decrypted
-                       (and (featurep 'org-crypt)
-                            (org-at-encrypted-entry-p)
-                            (save-excursion
-                              (org-decrypt-entry)
-                              (and
-                               (org-back-to-heading t)
-                               (point))))))))
+                       :decrypted      (and (featurep 'org-crypt)
+                                            (org-at-encrypted-entry-p)
+                                            (save-excursion
+                                              (org-decrypt-entry)
+                                              (and (org-back-to-heading t)
+                                                   (point))))))))
 ;; set target improved:1 ends here
 
 ;; new capture
