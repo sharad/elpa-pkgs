@@ -172,13 +172,13 @@
 (cl-defmethod occ-obj-callables ((callable occ-callable-generator)
                                  (obj      occ-obj))
   "Return list of ((NAME . FUN) ...)"
-  (occ-debug :debug "occ-obj-callables(callable occ-callable-generator): got %s" (occ-callable-desc callable))
+  (occ-debug "occ-obj-callables(callable occ-callable-generator): got %s" (occ-callable-desc callable))
   (let ((fun (occ-callable-fun callable)))
     (let ((callables (funcall fun obj
                               :param-only nil)))
       ;; (cl-assert callables)
       (dolist (x callables)
-        (occ-debug :debug "occ-obj-callables(callable occ-callable-generator): generated %s" (occ-callable-desc x)))
+        (occ-debug "occ-obj-callables(callable occ-callable-generator): generated %s" (occ-callable-desc x)))
       (cl-assert (cl-every #'occ-callable-p
                            callables))
       (cl-assert (cl-notany #'occ-callable-generator-p
@@ -260,7 +260,7 @@
 
 (cl-defmethod occ-obj-ap-callables ((ap-obj occ-ap-normal)
                                     (obj occ-obj))
-  (occ-debug :debug "occ-obj-ap-callables: ap-obj = %s" ap-obj)
+  (occ-debug "occ-obj-ap-callables: ap-obj = %s" ap-obj)
 
   ;; NOTE:
   ;; If TREE-KEYBRANCH are present then callable must have to generated afresh every time
@@ -287,14 +287,14 @@
   (unless (occ-ap-transf-transform ap-obj)
     (let ((transform #'(lambda (action
                                 candidate)
-                         (occ-debug :debug "occ-obj-ap-transform: lambda: ap-obj = %s" ap-obj)
+                         (occ-debug "occ-obj-ap-transform: lambda: ap-obj = %s" ap-obj)
                          (let* ((candidate-obj (occ-obj-obj candidate))
                                 (callables (occ-obj-ap-callables ap-obj
                                                                  (occ-obj-obj candidate-obj))))
                            (cl-assert callables)
-                           (occ-debug :debug "occ-obj-ap-transform: lambda: transform: callables = %s" callables)
+                           (occ-debug "occ-obj-ap-transform: lambda: transform: callables = %s" callables)
                            (occ-make-ap-normal (cons :callables callables))))))
-      (occ-debug :debug "occ-obj-ap-transform: setting transform tp %s" transform)
+      (occ-debug "occ-obj-ap-transform: setting transform tp %s" transform)
       (setf (occ-ap-transf-transform ap-obj) transform)))
   (occ-ap-transf-transform ap-obj))
 
@@ -322,24 +322,24 @@
     (cl-assert transform)
     #'(lambda (action
                candidate)
-        (occ-debug :debug "occ-obj-ap-helm-transformation: lambda: transform = %s" transform)
+        (occ-debug "occ-obj-ap-helm-transformation: lambda: transform = %s" transform)
         (cl-assert transform)
         (let* ((candidate-obj (occ-obj-obj candidate))
                (ap-normal-obj (funcall transform
                                        action
                                        candidate-obj)))
           (cl-assert (occ-ap-normal-p ap-normal-obj))
-          (occ-debug :debug "helm-transformation: got ap-normal-obj = %s" ap-normal-obj)
+          (occ-debug "helm-transformation: got ap-normal-obj = %s" ap-normal-obj)
           (let ((helm-actions (occ-obj-ap-helm-actions ap-normal-obj
                                                        candidate-obj)))
             (cl-assert helm-actions)
             (dolist (a helm-actions)
-              (occ-debug :debug "occ-obj-ap-helm-transformation: helm-action: %s" (prin1-to-string a)))
+              (occ-debug "occ-obj-ap-helm-transformation: helm-action: %s" (prin1-to-string a)))
             (when helm-actions
               (cl-assert (cl-every #'(lambda (x)
                                        (functionp (rest x)))
                                    helm-actions)))
-            (occ-debug :debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
+            (occ-debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
             helm-actions)))))
 
 
@@ -397,123 +397,123 @@
 
 ;; occ-tsk - accessors
 (cl-defmethod occ-rank ((obj occ-tsk))
-  (occ-debug :debug "occ-rank(occ-tsk=%s)" (occ-format obj 'capitalize))
+  (occ-debug "occ-rank(occ-tsk=%s)" (occ-format obj 'capitalize))
   (let ((rank (occ-tsk-rank obj)))
     (unless rank
       (setf (occ-tsk-rank obj) (occ-calculate-rank obj)))
     (occ-tsk-rank obj)))
 
 (cl-defmethod (setf occ-rank) (value (obj occ-tsk))
-  (occ-debug :debug "setf occ-rank(occ-tsk=%s)" (occ-format obj 'capitalize))
+  (occ-debug "setf occ-rank(occ-tsk=%s)" (occ-format obj 'capitalize))
   (setf (occ-tsk-rank obj) value))
 
 
 ;; occ-ctsk - accessors
 (cl-defmethod occ-rank ((obj occ-ctsk))
-  (occ-debug :debug "occ-rank(occ-ctsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
+  (occ-debug "occ-rank(occ-ctsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
   (let ((tsk (occ-ctsk-tsk obj)))
     (occ-rank tsk)))
 
 (cl-defmethod (setf occ-rank) (value (obj occ-ctsk))
-  (occ-debug :debug "occ-rank(occ-ctsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
+  (occ-debug "occ-rank(occ-ctsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
   (let ((tsk (occ-ctsk-tsk obj)))
     (setf (occ-rank tsk) rank)))
 
 
 ;; occ-ctxual-tsk - accessors
 (cl-defmethod occ-rank ((obj occ-ctxual-tsk))
-  (occ-debug :debug "occ-rank(occ-ctxual-tsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
+  (occ-debug "occ-rank(occ-ctxual-tsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
   (let ((rank (occ-ctxual-tsk-rank obj)))
     (unless rank
       (setf (occ-ctxual-tsk-rank obj) (occ-calculate-rank obj)))
     (occ-ctxual-tsk-rank obj)))
 
 (cl-defmethod (setf occ-rank) (value (obj occ-ctxual-tsk))
-  (occ-debug :debug "occ-rank(occ-ctxual-tsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
+  (occ-debug "occ-rank(occ-ctxual-tsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
   (setf (occ-ctxual-tsk-rank obj) value))
 
 
 (cl-defmethod occ-member-tsk-rank ((obj occ-ctxual-tsk))
-  (occ-debug :debug "occ-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
+  (occ-debug "occ-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
     (occ-rank tsk)))
 
 
 ;; occ-tsk - accessors
 (cl-defmethod occ-format-string ((obj occ-tsk))
-  ;; (occ-debug :debug "occ-tsk-format-string(occ-tsk=%s)" obj)
+  ;; (occ-debug "occ-tsk-format-string(occ-tsk=%s)" obj)
   (let ((format-string (occ-tsk-format-string obj)))
     (unless format-string
       (setf (occ-tsk-format-string obj) (occ-build-format-string obj)))
     (occ-tsk-format-string obj)))
 
 (cl-defmethod (setf occ-format-string) (value (obj occ-tsk))
-  ;; (occ-debug :debug "occ-tsk-format-string(occ-tsk=%s)" obj)
+  ;; (occ-debug "occ-tsk-format-string(occ-tsk=%s)" obj)
   (setf (occ-tsk-format-string obj) value))
 
 
 ;; occ-tsk - accessors
 (cl-defmethod occ-format-file ((obj occ-tsk))
-  ;; (occ-debug :debug "occ-tsk-format-file(occ-tsk=%s)" obj)
+  ;; (occ-debug "occ-tsk-format-file(occ-tsk=%s)" obj)
   (let ((format-file (occ-tsk-format-file obj)))
     (unless format-file
       (setf (occ-tsk-format-file obj) (occ-build-format-file obj)))
     (occ-tsk-format-file obj)))
 
 (cl-defmethod (setf occ-format-file) (value (obj occ-tsk))
-  ;; (occ-debug :debug "occ-tsk-format-file(occ-tsk=%s)" obj)
+  ;; (occ-debug "occ-tsk-format-file(occ-tsk=%s)" obj)
   (setf (occ-tsk-format-file obj) value))
 
 
 ;; occ-ctx - accessors
 (cl-defmethod occ-avgrank ((obj occ-ctx))
-  (occ-debug :debug "occ-avgrank(occ-ctx=%s)" obj)
+  (occ-debug "occ-avgrank(occ-ctx=%s)" obj)
   (let ((avgrank (occ-ctx-avgrank obj)))
     (unless avgrank
       (setf (occ-ctx-avgrank obj) (occ-calculate-avgrank obj)))
     (occ-ctx-avgrank obj)))
 
 (cl-defmethod (setf occ-avgrank) (value (obj occ-ctx))
-  (occ-debug :debug "occ-avgrank(occ-ctx=%s)" obj)
+  (occ-debug "occ-avgrank(occ-ctx=%s)" obj)
   (setf (occ-ctx-avgrank obj) value))
 
 
 ;; occ-ctx - accessors
 (cl-defmethod occ-varirank ((obj occ-ctx))
-  (occ-debug :debug "occ-varirank(occ-ctx=%s)" obj)
+  (occ-debug "occ-varirank(occ-ctx=%s)" obj)
   (let ((varirank (occ-ctx-varirank obj)))
     (unless varirank
       (setf (occ-ctx-varirank obj) (occ-calculate-varirank obj)))
     (occ-ctx-varirank obj)))
 
 (cl-defmethod (setf occ-varirank) (value (obj occ-ctx))
-  (occ-debug :debug "occ-varirank(occ-ctx=%s)" obj)
+  (occ-debug "occ-varirank(occ-ctx=%s)" obj)
   (setf (occ-ctx-varirank obj) value))
 
 
 ;; occ-collection - accessors
 (cl-defmethod occ-avgrank ((obj occ-collection))
-  (occ-debug :debug "occ-avgrank(occ-collection=%s)" obj)
+  (occ-debug "occ-avgrank(occ-collection=%s)" obj)
   (let ((avgrank (occ-collection-avgrank obj)))
     (unless avgrank
       (setf (occ-collection-avgrank obj) (occ-calculate-avgrank obj)))
     (occ-collection-avgrank obj)))
 
 (cl-defmethod (setf occ-avgrank) (value (obj occ-collection))
-  (occ-debug :debug "occ-avgrank(occ-collection=%s)" obj)
+  (occ-debug "occ-avgrank(occ-collection=%s)" obj)
   (setf (occ-collection-avgrank obj) value))
 
 
 ;; occ-ctxual-tsk - accessors
 (cl-defmethod occ-varirank ((obj occ-collection))
-  (occ-debug :debug "occ-varirank(occ-collection=%s)" obj)
+  (occ-debug "occ-varirank(occ-collection=%s)" obj)
   (let ((varirank (occ-collection-varirank obj)))
     (unless varirank
       (setf (occ-collection-varirank obj) (occ-calculate-varirank obj)))
     (occ-collection-varirank obj)))
 
 (cl-defmethod (setf occ-varirank) (value (obj occ-collection))
-  (occ-debug :debug "occ-varirank(occ-collection=%s)" obj)
+  (occ-debug "occ-varirank(occ-collection=%s)" obj)
   (setf (occ-collection-varirank obj) value))
 
 

@@ -76,7 +76,7 @@
         (interactive
          (list (occ-make-ctx-at-point)))
         (progn
-          (occ-debug :debug "in occ-clock-in occ-ctx 1")
+          (occ-debug "in occ-clock-in occ-ctx 1")
           (let* ((ctx (or ctx (occ-make-ctx-at-point)))
                  (matched-ctxual-tsks
                   (occ-run-unobtrusively           ;heavy task
@@ -108,12 +108,12 @@
                     ;; (sel-tsk   (if sel-ctxual-tsk (plist-get sel-ctxual-tsk :tsk)))
                     ;; (sel-marker (if sel-tsk      (plist-get sel-tsk      :tsk-clock-marker)))
 
-                    ;; (occ-debug :debug "sel-ctxual-tsk %s sel-tsk %s sel-marker %s" sel-ctxual-tsk sel-tsk sel-marker)
+                    ;; (occ-debug "sel-ctxual-tsk %s sel-tsk %s sel-marker %s" sel-ctxual-tsk sel-tsk sel-marker)
                     (if sel-ctxual-tsk (occ-clock-in sel-ctxual-tsk)))
                 (progn
                   ;; here create unnamed tsk, no need
                   (setq *occ-update-current-ctx-msg* "null clock")
-                  (occ-debug :debug
+                  (occ-debug
                              "No clock found please set a match for this ctx %s, add it using M-x occ-add-to-org-heading."
                              ctx)
                   (occ-add-to-org-heading-when-idle ctx 7)
@@ -121,7 +121,7 @@
 
       (cl-defmethod occ-clock-in ((new-ctxask occ-ctxual-tsk))
         ;;TODO add org-insert-log-not
-        (occ-debug :debug "occ-clock-in-marker %s" new-ctxask)
+        (occ-debug "occ-clock-in-marker %s" new-ctxask)
         (let* (retval
                (old-ctxual-tsk     (first *occ-clocked-ctxual-tsk-ctx-history*))
                (old-tsk            (when old-ctxual-tsk (occ-ctxual-tsk-tsk old-ctxual-tsk)))
@@ -138,7 +138,7 @@
                    (old-marker org-clock-marker)
                    (old-buff   (marker-buffer old-marker)))
 
-              (occ-debug :debug "clocking in %s" new-marker)
+              (occ-debug "clocking in %s" new-marker)
 
               (let ((old-buff-read-only
                      (if old-buff
@@ -226,8 +226,8 @@
         (cons (occ-print ctxask) ctxask))
 
       (defun occ-sacha-helm-select (ctxasks)
-        ;; (occ-debug :debug "sacha marker %s" (first dyntskpls))
-        (occ-debug :debug "Running occ-sacha-helm-select")
+        ;; (occ-debug "sacha marker %s" (first dyntskpls))
+        (occ-debug "Running occ-sacha-helm-select")
         (helm
          (list
           (helm-build-sync-source "Select matching tsks"
@@ -243,7 +243,7 @@
 
       (defun occ-sacha-helm-select-timed (ctxasks)
         (helm-timed occ-idle-timeout nil
-          (occ-debug :debug "running sacha/helm-select-clock")
+          (occ-debug "running sacha/helm-select-clock")
           (occ-sacha-helm-select ctxasks))))
 
 
@@ -252,7 +252,7 @@
       "occ-sacha-helm-action")
 
     (cl-defmethod occ-sacha-helm-action ((ctxask occ-ctxual-tsk) clockin-fn)
-      ;; (occ-debug :debug "sacha marker %s" (first dyntskpls))
+      ;; (occ-debug "sacha marker %s" (first dyntskpls))
       ;; (setq sacha/helm-org-refile-locations tbl)
       (progn
         (helm
@@ -314,7 +314,7 @@
           (with-current-buffer buff
             (let ((currloc (point)))
               (goto-char loc)
-              (occ-debug :debug "%s: called to %s drawer of heading `%s' in file %s loc %d"
+              (occ-debug "%s: called to %s drawer of heading `%s' in file %s loc %d"
                          (time-stamp-string)
                          (if flag "close" "open")
                          heading
@@ -335,7 +335,7 @@
                         (org-show-context 'org-goto)))
                     (progn                                        ; changed from org-show-tsk to org-show-entry
                       (org-show-entry)
-                      (occ-debug :debug
+                      (occ-debug
                                  "did %s entry `%s'" (if flag "close" "open") heading)
                       (org-unlogged-message "CHILDREN")
                       (setq org-cycle-subtree-status 'children))))
@@ -343,18 +343,18 @@
                 (let* ((prop-range (org-get-property-block (point) 'force))
                        (prop-loc   (1- (first prop-range))))
                   (when prop-range
-                    (occ-debug :debug "pos %d before jumping to %s drawer, will jump to pos %d"
+                    (occ-debug "pos %d before jumping to %s drawer, will jump to pos %d"
                                (point)
                                (if flag "close" "open")
                                prop-loc)
                     (goto-char prop-loc)
-                    (occ-debug :debug "reached to %s drawer" (if flag "close" "open"))
+                    (occ-debug "reached to %s drawer" (if flag "close" "open"))
                     (if (org-at-drawer-p)
                         ;; show drawer
                         (let ((drawer (org-element-at-point)))
                           (when (memq (org-element-type drawer)
                                       '(node-property drawer property-drawer))
-                            (occ-debug :debug
+                            (occ-debug
                                        "trying to %s drawer %s current pos %d"
                                        (if flag "close" "open")
                                        drawer
@@ -365,11 +365,11 @@
                             ;; `org-drawer-regexp'.
                             (when nil       ;;BUG ?? what
                               (goto-char (org-element-property :end drawer)))))
-                      (occ-debug :debug "not at drawer to %s current pos is %s"
+                      (occ-debug "not at drawer to %s current pos is %s"
                                  (if flag "close" "open")
                                  (point)))
                     (goto-char prop-loc)
-                    (occ-debug :debug "reached to %s drawer1 current pos %d"
+                    (occ-debug "reached to %s drawer1 current pos %d"
                                (if flag "close" "open")
                                (point))
                     prop-range))))))))
@@ -400,12 +400,12 @@
                        (goto-char pos)
                        (set-marker marker (point)))
 
-                     (occ-debug :debug "called add-ctx-to-org-heading %s" (current-buffer))
+                     (occ-debug "called add-ctx-to-org-heading %s" (current-buffer))
 
                      (progn
                        (condition-case-control err
                          (let ((buffer-read-only nil))
-                           (occ-debug :debug "timer started for win %s" win)
+                           (occ-debug "timer started for win %s" win)
 
                            ;; show proptery drawer
                            (let* ((prop-range (org-flag-proprty-drawer-at-marker marker nil))
@@ -427,7 +427,7 @@
                                (when timer (cancel-timer timer)))
                               ((eql 'edit prop)
                                ;; (funcall cleanup win local-cleanup)
-                               (occ-debug :debug "debug editing")
+                               (occ-debug "debug editing")
                                (when timer (cancel-timer timer))
                                (when (and win (windowp win) (window-valid-p win))
                                  (select-window win 'norecord)))
@@ -445,18 +445,18 @@
       "add-ctx-to-org-heading"
       ;; TODO: make helm conditional when it is used than only it should be handled.
       (interactive '((occ-make-ctx-at-point) 7))
-      (occ-debug :debug "begin occ-add-to-org-heading")
+      (occ-debug "begin occ-add-to-org-heading")
       (lotus-with-no-active-minibuffer-if
           (progn
-            (occ-debug :debug "occ-add-to-org-heading: [minibuffer-body] lotus-with-no-active-minibuffer-if")
-            (occ-debug :debug "add-ctx-to-org-heading: minibuffer already active quitting")
-            (occ-debug :debug nil))
+            (occ-debug "occ-add-to-org-heading: [minibuffer-body] lotus-with-no-active-minibuffer-if")
+            (occ-debug "add-ctx-to-org-heading: minibuffer already active quitting")
+            (occ-debug nil))
         (lotus-with-other-frame-event-debug "occ-add-to-org-heading" :cancel
-          (occ-debug :debug "occ-add-to-org-heading: lotus-with-other-frame-event-debug")
+          (occ-debug "occ-add-to-org-heading: lotus-with-other-frame-event-debug")
           (let* ((timeout (or timeout 7))
                  (ctx     (or ctx (occ-make-ctx-at-point)))
                  (buff    (occ-ctx-buffer ctx)))
-            (occ-debug :debug "occ-add-to-org-heading: [body] lotus-with-no-active-minibuffer-if")
+            (occ-debug "occ-add-to-org-heading: [body] lotus-with-no-active-minibuffer-if")
             (if (and
                  (eq (current-buffer) buff)
                  (buffer-live-p buff)
@@ -477,7 +477,7 @@
                                 (abort-recursive-edit)))))
 
                     ;; (set-marker marker (point))
-                    ;; (occ-debug :debug "1 marker %s" marker)
+                    ;; (occ-debug "1 marker %s" marker)
 
                     (lotus-with-timed-new-win ;break it in two macro call to accommodate local-cleanup
                         timeout timer cleanup local-cleanup win
@@ -488,13 +488,13 @@
                             (switch-to-buffer target-buffer)
                             (goto-char pos)
                             (set-marker marker (point)))
-                          ;; (occ-debug :debug "2 marker %s" marker)
+                          ;; (occ-debug "2 marker %s" marker)
 
-                          (occ-debug :debug "called add-ctx-to-org-heading %s" (current-buffer))
+                          (occ-debug "called add-ctx-to-org-heading %s" (current-buffer))
                           (progn
                             (condition-case-control err
                               (let ((buffer-read-only nil))
-                                (occ-debug :debug "timer started for win %s" win)
+                                (occ-debug "timer started for win %s" win)
 
                                 ;; show proptery drawer
                                 (let* ((prop-range (org-flag-proprty-drawer-at-marker marker nil))
@@ -516,7 +516,7 @@
                                     (when timer (cancel-timer timer)))
                                    ((eql 'edit prop)
                                     ;; (funcall cleanup win local-cleanup)
-                                    (occ-debug :debug "debug editing")
+                                    (occ-debug "debug editing")
                                     (when timer (cancel-timer timer))
                                     (when (and win (windowp win) (window-valid-p win))
                                       (select-window win 'norecord)))
@@ -529,12 +529,12 @@
                                  (if timer (cancel-timer timer))
                                  (signal (first err) (rest err))))))))))
               (progn
-                (occ-debug :debug "not running add-ctx-to-org-heading 1 %s, 2 %s 3 %s"
+                (occ-debug "not running add-ctx-to-org-heading 1 %s, 2 %s 3 %s"
                            (eq (current-buffer) buff)
                            (buffer-live-p buff)
                            (eq buff
                                (get-buffer "*helm-mode-occ-add-to-org-heading*"))))))))
-      (occ-debug :debug "finished occ-add-to-org-heading"))
+      (occ-debug "finished occ-add-to-org-heading"))
     ;; occ-interactive.el
 
 
@@ -544,7 +544,7 @@
       (interactive
        (list (occ-make-ctx-at-point)))
       (progn
-        (occ-debug :debug "in occ-clock-in occ-ctx 1")
+        (occ-debug "in occ-clock-in occ-ctx 1")
         (let* ((obj (or obj (occ-make-ctx)))
                (matched-ctxual-tsks
                 (occ-run-unobtrusively           ;heavy task
@@ -582,10 +582,10 @@
  (defun org-prop-edit-at-point ()
   ;;experimental
   (progn
-    (occ-debug :debug "called add-ctx-to-org-heading %s" (current-buffer))
+    (occ-debug "called add-ctx-to-org-heading %s" (current-buffer))
     (condition-case-control err
       (let ((buffer-read-only nil))
-        (occ-debug :debug "timer started for win %s" win)
+        (occ-debug "timer started for win %s" win)
 
         ;; show proptery drawer
         (let* ((prop-range (org-flag-proprty-drawer-at-marker marker nil))
@@ -607,7 +607,7 @@
             (when timer (cancel-timer timer)))
            ((eql 'edit prop)
             ;; (funcall cleanup win local-cleanup)
-            (occ-debug :debug "debug editing")
+            (occ-debug "debug editing")
             (when timer (cancel-timer timer))
             (when (and win (windowp win) (window-valid-p win))
               (select-window win 'norecord)))
@@ -642,25 +642,25 @@
   (lotus-org-with-safe-modification
     (org-set-property prop value)))
 (cl-defmethod occ-readprop ((prop symbol) (ctx occ-ctx))
-  (occ-debug :debug "occ-readprop: prop: %s" prop)
+  (occ-debug "occ-readprop: prop: %s" prop)
   (occ-readprop (cons prop (occ-make-tsk nil)) ctx))
 (cl-defmethod occ-writeprop ((prop symbol) value)
-  (occ-debug :debug "occ-writeprop: prop: %s, value: %s" prop value)
+  (occ-debug "occ-writeprop: prop: %s, value: %s" prop value)
   (if value
       (progn
         (unless (org-get-property-block)
           ;;create property drawer
-          (occ-debug :debug "occ-writeprop: property block not exist so creating it.")
+          (occ-debug "occ-writeprop: property block not exist so creating it.")
           (let* ((range (org-get-property-block (point) 'force))
                  (start (when (consp range) (1- (first range)))))
             (when (numberp start)
               (goto-char start))))
-        (occ-debug :debug "occ-writeprop: adding prop: %s value: %s using (org-set-property)." prop value)
+        (occ-debug "occ-writeprop: adding prop: %s value: %s using (org-set-property)." prop value)
         (occ-org-set-property (symbol-name prop) value))
     (occ-error "occ-writeprop value is nil")))
 (cl-defmethod occ-editprop ((prop symbol) (ctx occ-ctx))
   (let ((value (occ-readprop prop ctx)))
-    (occ-debug :debug "occ-editprop: prop: %s, value: %s" prop value)
+    (occ-debug "occ-editprop: prop: %s, value: %s" prop value)
     (occ-writeprop prop value)))
 
 
@@ -704,32 +704,32 @@
                                   (obj occ-tsk)
                                   (ctx occ-ctx)
                                   value)
-  (occ-debug :debug "occ-writeprop: prop: %s, value: %s"
+  (occ-debug "occ-writeprop: prop: %s, value: %s"
              prop value)
   (if value
       (progn
         (unless (org-get-property-block)
           ;;create property drawer
-          (occ-debug :debug "occ-writeprop: property block not exist so creating it.")
+          (occ-debug "occ-writeprop: property block not exist so creating it.")
           (let* ((range (org-get-property-block (point) 'force))
                  (start (when (consp range) (1- (first range)))))
             (when (numberp start)
               (goto-char start))))
-        (occ-debug :debug
+        (occ-debug
                    "occ-writeprop: adding prop: %s value: %s using (org-set-property)." prop value)
         (occ-org-set-property (symbol-name prop) value))
     (occ-error "occ-writeprop value is nil")))
 (cl-defmethod occ-readprop-with ((prop symbol)
                                  (obj occ-tsk)
                                  (ctx occ-ctx))
-  (occ-debug :debug "occ-readprop: prop: %s"
+  (occ-debug "occ-readprop: prop: %s"
              prop)
   (occ-readprop prop obj ctx))
 (cl-defmethod occ-editprop-with ((prop symbol)
                                  (obj occ-tsk)
                                  (ctx occ-ctx))
   (let ((value (occ-readprop prop obj ctx)))
-    (occ-debug :debug
+    (occ-debug
                "occ-editprop: prop: %s, value: %s" prop value)
     (occ-writeprop-with prop obj ctx value)))
 
@@ -737,14 +737,14 @@
 (cl-defmethod occ-writeprop ((prop symbol)
                              (obj occ-obj-ctx-tsk)
                              value)
-  (occ-debug :debug "occ-writeprop: prop: %s, value: %s"
+  (occ-debug "occ-writeprop: prop: %s, value: %s"
              prop value)
   (let ((tsk (occ-ctsk-tsk obj))
         (ctx (occ-ctsk-ctx obj)))
     (occ-writeprop-with prop tsk ctx value)))
 (cl-defmethod occ-readprop ((prop symbol)
                             (obj occ-obj-ctx-tsk))
-  (occ-debug :debug "occ-readprop: prop: %s"
+  (occ-debug "occ-readprop: prop: %s"
              prop)
   (let ((tsk (occ-ctsk-tsk obj))
         (ctx (occ-ctsk-ctx obj)))
@@ -752,7 +752,7 @@
 (cl-defmethod occ-editprop ((prop symbol)
                             (obj occ-obj-ctx-tsk))
   (let ((value (occ-readprop prop obj)))
-    (occ-debug :debug
+    (occ-debug
                "occ-editprop: prop: %s, value: %s" prop value)
     (occ-writeprop prop obj value)))
 
@@ -813,9 +813,9 @@
              (file (if file (file-truename file))))
         (if currfile
             (progn
-              (occ-debug :nodisplay "tsk %s currfile %s" (occ-tsk-heading tsk) currfile)
-              (occ-debug :nodisplay "tsk %s file %s"     (occ-tsk-heading tsk) file))
-          (occ-debug :nodisplay "tsk %s currfile %s not present."
+              (occ-nodisplay "tsk %s currfile %s" (occ-tsk-heading tsk) currfile)
+              (occ-nodisplay "tsk %s file %s"     (occ-tsk-heading tsk) file))
+          (occ-nodisplay "tsk %s currfile %s not present."
                      (occ-tsk-heading tsk) currfile))
         (if (and currfile file
                  (string-match currfile file))
@@ -836,9 +836,9 @@
              (file (if file (file-truename file))))
         (if currfile
             (progn
-              (occ-debug :nodisplay "tsk %s currfile %s" (occ-tsk-heading tsk) currfile)
-              (occ-debug :nodisplay "tsk %s file %s"     (occ-tsk-heading tsk) file))
-          (occ-debug :nodisplay "tsk %s currfile %s not present."
+              (occ-nodisplay "tsk %s currfile %s" (occ-tsk-heading tsk) currfile)
+              (occ-nodisplay "tsk %s file %s"     (occ-tsk-heading tsk) file))
+          (occ-nodisplay "tsk %s currfile %s not present."
                      (occ-tsk-heading tsk) currfile))
         (if (and currfile file
                  (string-match currfile file))
@@ -872,9 +872,9 @@
             (file (if file (file-truename file))))
        (if root
            (progn
-             (occ-debug :nodisplay "tsk %s root %s" (occ-tsk-heading tsk) root)
-             (occ-debug :nodisplay "tsk %s file %s" (occ-tsk-heading tsk) file))
-         (occ-debug :nodisplay "tsk %s root %s not present."
+             (occ-nodisplay "tsk %s root %s" (occ-tsk-heading tsk) root)
+             (occ-nodisplay "tsk %s file %s" (occ-tsk-heading tsk) file))
+         (occ-nodisplay "tsk %s root %s not present."
                     (occ-tsk-heading tsk) root))
        (if (and root file
                 (string-match root file))

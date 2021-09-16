@@ -75,7 +75,7 @@
 
 
 ;;;###autoload
-(defun occ-debug (level &rest args)
+(defun occ-lwarn (level &rest args)
   (when occ-debug
     (when (first args)
       (apply #'format args)
@@ -84,17 +84,30 @@
       (unless (eq level :nodisplay)
         (apply #'message args)))))
 
+(defun occ-critical (fmt &rest args)
+  (apply #'occ-lwarn :critical fmt args)
+  (apply #'error fmt args))
+
 (defun occ-emergency (fmt &rest args)
-  (apply #'occ-warn :emergency fmt args))
+  (apply #'occ-lwarn :emergency fmt args)
+  (apply #'error fmt args))
 
 (defun occ-error (fmt &rest args)
-  (apply #'occ-warn :error fmt args))
+  (apply #'occ-lwarn :error fmt args)
+  (apply #'error fmt args))
 
-(defun occ-warning (fmt &rest args)
-  (apply #'occ-warn :error fmt args))
+(defun occ-warn (fmt &rest args)
+  (apply #'occ-lwarn :warning fmt args))
 
 (defun occ-debug (fmt &rest args)
-  (apply #'occ-warn :debug fmt args))
+  (apply #'occ-lwarn :debug fmt args))
+
+(defun occ-info (fmt &rest args)
+  (apply #'occ-lwarn :info fmt args))
+
+(defun occ-nodisplay (fmt &rest args)
+  (apply #'occ-lwarn :nodisplay fmt args))
+
 
 ;;;###autoload
 (defun occ-message (&rest args)
@@ -103,13 +116,14 @@
 
 ;;;###autoload
 (defun occ-debug-uncond (&rest args)
+  (apply #'occ-debug args)
   (when occ-debug-uncond
     (apply #'occ-message args)))
 
-;;;###autoload
-(defun occ-error (&rest args)
-  (apply #'error args)
-  (apply #'occ-debug :debug args))
+;; ;;;###autoload
+;; (defun occ-error (&rest args)
+;;   (apply #'error args)
+;;   (apply #'occ-debug :debug args))
 
 
 (defun downcase-sym (sym)

@@ -106,11 +106,11 @@
   "occ-unnamed-p")
 
 (cl-defmethod occ-unnamed-p ((obj marker))
-  (occ-debug :debug "occ-unnamed-p(marker=%s)" obj)
+  (occ-debug "occ-unnamed-p(marker=%s)" obj)
   (occ-clock-marker-unnamed-p obj))
 
 (cl-defmethod occ-unnamed-p ((obj occ-obj-tsk))
-  (occ-debug :debug "occ-unnamed-p(occ-tsk=%s)" obj)
+  (occ-debug "occ-unnamed-p(occ-tsk=%s)" obj)
   (occ-unnamed-p (occ-obj-marker obj)))
 
 

@@ -150,7 +150,7 @@
                                          prop)
                           prop
                         (upcase-sym prop))))
-      (occ-debug :debug "(occ-set-property occ-obj): plist got %s using %s"
+      (occ-debug "(occ-set-property occ-obj): plist got %s using %s"
                  prop plist-prop)
       (occ-plist-set
        ;; NOTE: as Property block keys return by (org-element-at-point) are in

@@ -200,16 +200,16 @@
         "Predicate funtion to check if ctx matches to tsk's file attribute."
         (let ((tsk (occ-obj-tsk obj))
               (ctx (occ-obj-ctx obj)))
-          (occ-debug :debug "occ-rankprop-with: currfile begin")
+          (occ-debug "occ-rankprop-with: currfile begin")
           (occ-aggrigate-list-rank tsk-currfile (occ-get-property tsk prop) #'+
             (let* ((tsk-currfile (if tsk-currfile (file-truename tsk-currfile)))
                    (ctx-file     (occ-ctx-file ctx))
                    (ctx-file     (if ctx-file (file-truename ctx-file))))
               (if tsk-currfile
                   (progn
-                    (occ-debug :nodisplay "tsk %s tsk-currfile %s" (occ-format tsk 'capitalize) tsk-currfile)
-                    (occ-debug :nodisplay "tsk %s ctx-file %s"     (occ-format tsk 'capitalize) ctx-file))
-                (occ-debug :nodisplay "tsk %s tsk-currfile %s not present."
+                    (occ-nodisplay "tsk %s tsk-currfile %s" (occ-format tsk 'capitalize) tsk-currfile)
+                    (occ-nodisplay "tsk %s ctx-file %s"     (occ-format tsk 'capitalize) ctx-file))
+                (occ-nodisplay "tsk %s tsk-currfile %s not present."
                            (occ-format tsk 'capitalize)
                            tsk-currfile))
               (if (and tsk-currfile ctx-file
@@ -220,7 +220,7 @@
       (cl-defmethod occ-get-property-value-from-ctx ((ctx occ-ctx)
                                                      (prop (eql currfile)))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
-        (occ-debug :debug "calling occ-get-property-value-from-ctx(ctx occ-ctx)")
+        (occ-debug "calling occ-get-property-value-from-ctx(ctx occ-ctx)")
         (let ((currfile (occ-ctx-file ctx)))
           currfile))
       
@@ -268,7 +268,7 @@
         "RANK Predicate funtion to check if ctx matches to tsk's ROOT attribute."
         (let ((tsk (occ-obj-tsk obj))
               (ctx (occ-obj-ctx obj)))
-          (occ-debug :nodisplay "rankprop(%s, %s): begin"
+          (occ-nodisplay "rankprop(%s, %s): begin"
                      (occ-format tsk 'capitalize)
                      (occ-format ctx 'capitalize)
                      prop)
@@ -281,9 +281,9 @@
                    (ctx-dir  (when (stringp ctx-file) (file-truename ctx-dir))))
               (if tsk-root
                   (progn
-                    (occ-debug :nodisplay "tsk %s tsk-root: %s" (occ-format tsk 'capitalize) tsk-root)
-                    (occ-debug :nodisplay "tsk %s ctx-dir:  %s" (occ-format tsk 'capitalize) ctx-dir))
-                (occ-debug :nodisplay "tsk %s tsk-root %s not present."
+                    (occ-nodisplay "tsk %s tsk-root: %s" (occ-format tsk 'capitalize) tsk-root)
+                    (occ-nodisplay "tsk %s ctx-dir:  %s" (occ-format tsk 'capitalize) ctx-dir))
+                (occ-nodisplay "tsk %s tsk-root %s not present."
                            (occ-format tsk 'capitalize) tsk-root))
               (if (and tsk-root ctx-dir
                        (string-match tsk-root ctx-dir))

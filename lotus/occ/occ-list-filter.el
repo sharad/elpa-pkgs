@@ -144,9 +144,9 @@
       (let* ((rankslist  (mapcar #'occ-rank sequence))
              (avgrank    (apply #'occ-stats-average rankslist))
              (varirank   (apply #'occ-stats-variance rankslist)))
-        ;; (occ-debug :debug "occ-collection-obj-matches :around finish")
-        (occ-debug :debug "matched ctxtsks %s" (length sequence))
-        (occ-debug :debug "occ-filter-mutual-deviation: avgrank = %d varirank = %d"
+        ;; (occ-debug "occ-collection-obj-matches :around finish")
+        (occ-debug "matched ctxtsks %s" (length sequence))
+        (occ-debug "occ-filter-mutual-deviation: avgrank = %d varirank = %d"
                           avgrank varirank)
         (remove-if-not
          #'(lambda (obj)

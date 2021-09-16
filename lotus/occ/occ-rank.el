@@ -39,7 +39,7 @@
 
 (cl-defmethod occ-calculate-rank ((obj occ-tsk))
   ;; too much output
-  (occ-debug :debug "occ-calculate-rank((occ-tsk=%s))"
+  (occ-debug "occ-calculate-rank((occ-tsk=%s))"
              (occ-format (occ-obj-tsk obj) 'capitalize))
   (let ((rank
          (reduce #'+
@@ -51,7 +51,7 @@
 
 (cl-defmethod occ-calculate-rank ((obj occ-obj-ctx-tsk))
   ;; too much output
-  ;; (occ-debug :debug "occ-calculate-rank((occ-obj-ctx-tsk=%s))"
+  ;; (occ-debug "occ-calculate-rank((occ-obj-ctx-tsk=%s))"
   ;;            (occ-format (occ-obj-tsk obj) 'capitalize))
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
@@ -63,7 +63,7 @@
 
 (cl-defmethod occ-calculate-avgrank ((obj occ-ctx))
   ;; too much output
-  ;; (occ-debug :debug "occ-calculate-avgrank(occ-ctx=%s)"
+  ;; (occ-debug "occ-calculate-avgrank(occ-ctx=%s)"
   ;;            obj)
   (let* ((objs      (occ-list obj #'occ-build-ctxual-tsk-with))
          (rankslist (mapcar #'occ-rank objs))
@@ -72,7 +72,7 @@
 
 (cl-defmethod occ-calculate-varirank ((obj occ-ctx))
   ;; too much output
-  (occ-debug :debug "occ-calculate-varirank(occ-ctx=%s)"
+  (occ-debug "occ-calculate-varirank(occ-ctx=%s)"
              obj)
   (let* ((objs      (occ-list obj #'occ-build-ctxual-tsk-with))
          (rankslist (mapcar #'occ-rank objs))
@@ -82,7 +82,7 @@
 
 (cl-defmethod occ-calculate-avgrank ((obj occ-collection))
   ;; too much output
-  ;; (occ-debug :debug "occ-calculate-avgrank(occ-collection=%s)"
+  ;; (occ-debug "occ-calculate-avgrank(occ-collection=%s)"
   ;;            obj)
   (let* ((objs      (occ-collect-list obj))
          (rankslist (mapcar #'occ-rank objs))
@@ -91,7 +91,7 @@
 
 (cl-defmethod occ-calculate-varirank ((obj occ-collection))
   ;; too much output
-  ;; (occ-debug :debug "occ-calculate-varirank(occ-collection=%s)"
+  ;; (occ-debug "occ-calculate-varirank(occ-collection=%s)"
   ;;            obj)
   (let* ((objs      (occ-collect-list obj))
          (rankslist (mapcar #'occ-rank objs))

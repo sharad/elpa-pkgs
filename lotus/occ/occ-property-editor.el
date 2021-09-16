@@ -62,7 +62,7 @@
                                    &optional prompt)
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (occ-debug :debug "occ-select-propetry: %s" (occ-Format tsk))
+    (occ-debug "occ-select-propetry: %s" (occ-Format tsk))
     (let ((prompt     (or prompt
                           (format "%s proptery: "
                                   (occ-Format tsk))))
@@ -75,7 +75,7 @@
                                               (length (symbol-name sym)))
                                           (append keys fixed-keys))))
                 (key-vals  (occ-get-properties tsk keys)))
-            (occ-debug :debug "occ-select-propetry: for %s with keys =%s got key-vals = %s"
+            (occ-debug "occ-select-propetry: for %s with keys =%s got key-vals = %s"
                               (occ-Format tsk)
                               keys
                               key-vals)
@@ -98,11 +98,11 @@
                                                            t))
                              (sel (assoc key-sel
                                          key-val-collection)))
-                        (occ-debug :debug "selected option %s" sel)
+                        (occ-debug "selected option %s" sel)
                         (rest sel))
                     (occ-error "Not Keys Vals Collection %s for %s" key-val-collection (occ-Format tsk))))
               (occ-error "Not Keys Vals for %s" (occ-Format tsk))))
-        (occ-debug :debug "Not Keys for %s" (occ-Format tsk))))))
+        (occ-debug "Not Keys for %s" (occ-Format tsk))))))
 
 
 (defun org-get-flag-proprty-drawer (&optional force)
@@ -130,7 +130,7 @@
             (org-show-context 'org-goto)))
         (progn                                        ; changed from org-show-tsk to org-show-entry
           (org-show-entry)
-          (occ-debug :debug "did %s entry `%s'"
+          (occ-debug "did %s entry `%s'"
                      (if flag "close" "open")
                      heading)
           (org-unlogged-message "CHILDREN")
@@ -141,19 +141,19 @@
            (prop-loc   (when (consp prop-range)
                          (1- (first prop-range)))))
       (when prop-range
-        (occ-debug :debug "pos %d before jumping to %s drawer, will jump to pos %d"
+        (occ-debug "pos %d before jumping to %s drawer, will jump to pos %d"
                    (point)
                    (if flag "close" "open")
                    prop-loc)
         (goto-char prop-loc)
-        (occ-debug :debug "reached to %s drawer"
+        (occ-debug "reached to %s drawer"
                    (if flag "close" "open"))
         (if (org-at-drawer-p)
             ;; show drawer
             (let ((drawer (org-element-at-point)))
               (when (memq (org-element-type drawer)
                           '(node-property drawer property-drawer))
-                (occ-debug :debug "trying to %s drawer %s current pos %d"
+                (occ-debug "trying to %s drawer %s current pos %d"
                            (if flag "close" "open")
                            drawer
                            (point))
@@ -164,11 +164,11 @@
                 ;; `org-drawer-regexp'.
                 (when nil       ;;BUG ?? what
                   (goto-char (org-element-property :end drawer)))))
-          (occ-debug :debug "not at drawer to %s current pos is %s"
+          (occ-debug "not at drawer to %s current pos is %s"
                      (if flag "close" "open")
                      (point)))
         (goto-char prop-loc)
-        (occ-debug :debug "reached to %s drawer1 current pos %d"
+        (occ-debug "reached to %s drawer1 current pos %d"
                    (if flag "close" "open")
                    (point))
         prop-range))))
@@ -198,7 +198,7 @@
       (with-current-buffer buff
         (let ((currloc (point)))
           (goto-char loc)
-          (occ-debug :debug "%s: org-flag-proprty-drawer-at-marker: called to %s drawer of heading `%s' in file %s loc %d"
+          (occ-debug "%s: org-flag-proprty-drawer-at-marker: called to %s drawer of heading `%s' in file %s loc %d"
                      (time-stamp-string)
                      (if flag "close" "open")
                      heading
@@ -212,7 +212,7 @@
   ;; Find better name
   (let ((mrk              obj)
         (buffer-read-only nil))
-    ;; (occ-debug :debug "timer started for win %s" win)
+    ;; (occ-debug "timer started for win %s" win)
     (let ((buff (marker-buffer   mrk))
           (pos  (marker-position mrk)))
       ;; show proptery drawer
@@ -239,7 +239,7 @@
 
 
 (cl-defmethod occ-properties-editor ((obj occ-obj-ctx-tsk))
-  (occ-debug :debug "occ-properties-editor: begin %s"
+  (occ-debug "occ-properties-editor: begin %s"
              (occ-Format obj))
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
@@ -254,12 +254,12 @@
                                         prop)))
           (when retval
             ;; (occ-tsk-update-tsks t)
-            (occ-debug :debug "occ-properties-editor-with: done with retval %s" retval)
+            (occ-debug "occ-properties-editor-with: done with retval %s" retval)
             retval))))))
 
 
 (cl-defmethod occ-properties-editor-in-cloned-buffer ((obj occ-obj-ctx-tsk))
-  (occ-debug :debug "occ-properties-editor-in-cloned-buffer: begin")
+  (occ-debug "occ-properties-editor-in-cloned-buffer: begin")
   (let ((mrk (occ-obj-marker obj)))
     (org-with-cloned-marker mrk "<proptree>"
       (let ((cloned-mrk (point-marker)))
@@ -284,7 +284,7 @@
            (cancel-timer timer)))
         ((eql 'edit prop)
          ;; (funcall cleanup win local-cleanup)
-         (occ-debug :debug "occ-obj-prop-edit: debug editing")
+         (occ-debug "occ-obj-prop-edit: debug editing")
          (when timer
            (cancel-timer timer))
          (when (and win
@@ -306,7 +306,7 @@
                       occ-idle-timeout)))
     (let* ((local-cleanup #'(lambda ()
                               (occ-debug :warning "occ-properties-window-editor(obj occ-obj-ctx-tsk): local-cleanup called")
-                              (occ-debug :debug "occ-properties-window-editor(obj occ-obj-ctx-tsk): local-cleanup called")
+                              (occ-debug "occ-properties-window-editor(obj occ-obj-ctx-tsk): local-cleanup called")
                               (when (active-minibuffer-window) ;required here, this function itself using minibuffer via helm-refile and occ-select-propetry
                                 (abort-recursive-edit)))))
         (lotus-with-timed-new-win ;break it in two macro call to accommodate local-cleanup
@@ -319,7 +319,7 @@
                                                        cleanup
                                                        local-cleanup
                                                        win)
-                (occ-debug :debug "occ-properties-window-editor(obj occ-obj-ctx-tsk) noquit: label %s value %s"
+                (occ-debug "occ-properties-window-editor(obj occ-obj-ctx-tsk) noquit: label %s value %s"
                            occ-return-true-label obj)
                 (if return-transform ;Here caller know if return value is going to be used.
                     (occ-make-return occ-return-true-label
@@ -328,7 +328,7 @@
               ((quit)
                (progn
                  (occ-debug :warning "occ-properties-window-editor(obj occ-obj-ctx-tsk): canceling timer")
-                 (occ-debug :debug "occ-properties-window-editor(obj occ-obj-ctx-tsk): canceling timer")
+                 (occ-debug "occ-properties-window-editor(obj occ-obj-ctx-tsk): canceling timer")
                  (funcall cleanup
                           win
                           local-cleanup)
@@ -336,7 +336,7 @@
                      (cancel-timer timer))
                  (signal (first err)
                          (rest  err))
-                 (occ-debug :debug "occ-properties-window-editor(obj occ-obj-ctx-tsk) quit: label %s value %s"
+                 (occ-debug "occ-properties-window-editor(obj occ-obj-ctx-tsk) quit: label %s value %s"
                             occ-return-quit-label
                             nil)
                  (when return-transform ;Here caller know if return value is going to be used.
@@ -356,7 +356,7 @@
          (ap-normal '(t actions general))
          (ap-transf '(t actions general edit))
          (timeout   (or timeout occ-idle-timeout)))
-    (occ-debug :debug "occ-select-obj-prop-edit((obj occ-ctx)): begin")
+    (occ-debug "occ-select-obj-prop-edit((obj occ-ctx)): begin")
     (let ((buff (occ-ctx-buffer obj)))
       (if (and (buffer-live-p buff)
                (not (occ-helm-buffer-p buff)))
@@ -367,9 +367,9 @@
                                           :ap-transf        ap-transf
                                           :return-transform return-transform ;Here caller know if return value is going to be used.
                                           :timeout          timeout)))
-          ;; (occ-debug :debug "occ-properties-window-editor((obj occ-ctx)): ap-transf: %s action %s"
+          ;; (occ-debug "occ-properties-window-editor((obj occ-ctx)): ap-transf: %s action %s"
           ;;                   ap-transf action)
-          (occ-debug :debug "occ-properties-window-editor((obj occ-ctx)): selected original: %s, retval: %s with label %s"
+          (occ-debug "occ-properties-window-editor((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                      retval-ctx-tsk
                      (occ-format (occ-obj-obj retval-ctx-tsk) 'capitalize)
                      (occ-return-get-label retval-ctx-tsk))
@@ -380,18 +380,18 @@
             (occ-properties-window-editor (occ-obj-obj retval-ctx-tsk)
                                           :return-transform return-transform
                                           :timeout          timeout
-              (occ-debug :debug "occ-properties-window-editor((obj occ-ctx)): No selection")))
-          (occ-debug :debug "occ-properties-window-editor((obj occ-ctx)): returning original: %s, retval: %s with label %s operate: %s"
+              (occ-debug "occ-properties-window-editor((obj occ-ctx)): No selection")))
+          (occ-debug "occ-properties-window-editor((obj occ-ctx)): returning original: %s, retval: %s with label %s operate: %s"
                             retval-ctx-tsk
                             (occ-Format (occ-obj-obj retval-ctx-tsk))
                             (occ-return-get-label retval-ctx-tsk)
                             (occ-return-in-labels-p retval-ctx-tsk
                                                     occ-return-select-label))
           retval-ctx-tsk)
-        (occ-debug :debug "occ-properties-window-editor((obj occ-ctx)): not running  as context buff is deleted or not live 1 %s, 2 %s"
+        (occ-debug "occ-properties-window-editor((obj occ-ctx)): not running  as context buff is deleted or not live 1 %s, 2 %s"
                    (buffer-live-p buff)
                    (not (occ-helm-buffer-p buff)))
-        (occ-debug :debug "occ-properties-window-editor((obj occ-ctx)): not running  as context buff is deleted or not live 1 %s, 2 %s"
+        (occ-debug "occ-properties-window-editor((obj occ-ctx)): not running  as context buff is deleted or not live 1 %s, 2 %s"
                    (buffer-live-p buff)
                    (not (occ-helm-buffer-p buff)))
         (when return-transform ;Here caller know if return value is going to be used.
@@ -406,7 +406,7 @@
                                             ap-transf
                                             return-transform
                                             timeout)
-  (occ-debug :debug "occ-select-obj-prop-edit((obj null)):")
+  (occ-debug "occ-select-obj-prop-edit((obj null)):")
   (let ((filters   (or filters nil))
         (builder   (or builder #'occ-build-ctsk-with))
         (ap-normal '(t actions general))
@@ -432,23 +432,23 @@
   "add-ctx-to-org-heading"
   ;; TODO: make helm conditional when it is used than only it should be handled.
   (interactive '((occ-make-ctx-at-point) occ-idle-timeout))
-  (occ-debug :debug "occ-safe-properties-window-editor((obj occ-ctx)): begin")
+  (occ-debug "occ-safe-properties-window-editor((obj occ-ctx)): begin")
   (let ((filters   (or filters nil))
         (builder   (or builder #'occ-build-ctsk-with))
         (ap-normal '(t actions general))
         (ap-transf '(t actions general edit))
         (timeout   (or timeout occ-idle-timeout)))
-    (occ-debug :debug "begin occ-safe-properties-window-editor")
+    (occ-debug "begin occ-safe-properties-window-editor")
     (occ-debug-return "occ-safe-properties-window-editor((obj occ-ctx)) no-active"
       (lotus-with-no-active-minibuffer-if
           (progn
-            (occ-debug :debug "occ-safe-properties-window-editor: [minibuffer-body] lotus-with-no-active-minibuffer-if")
-            (occ-debug :debug "occ-safe-properties-window-editor: minibuffer already active quitting")
-            (occ-debug :debug nil))
+            (occ-debug "occ-safe-properties-window-editor: [minibuffer-body] lotus-with-no-active-minibuffer-if")
+            (occ-debug "occ-safe-properties-window-editor: minibuffer already active quitting")
+            (occ-debug nil))
         ;;; TODO: extend lotus-with-other-frame-event-debug it to include elscreen change also.
         (occ-debug-return "occ-safe-properties-window-editor((obj occ-ctx)) frame-event-debug"
           (lotus-with-other-frame-event-debug "occ-safe-properties-window-editor" :cancel
-            (occ-debug :debug "occ-safe-properties-window-editor: lotus-with-other-frame-event-debug")
+            (occ-debug "occ-safe-properties-window-editor: lotus-with-other-frame-event-debug")
             (prog1
                 (let ((buff (occ-ctx-buffer obj)))
                   (if (eq (current-buffer)
@@ -461,8 +461,8 @@
                                                       :ap-transf        ap-transf
                                                       :return-transform return-transform
                                                       :timeout          timeout))
-                   (occ-debug :debug "context is not for current buffer.")))
-              (occ-debug :debug "finished occ-safe-properties-window-editor"))))))))
+                   (occ-debug "context is not for current buffer.")))
+              (occ-debug "finished occ-safe-properties-window-editor"))))))))
 
 (cl-defmethod occ-safe-properties-window-editor ((obj marker)
                                                  &key
@@ -471,7 +471,7 @@
                                                  ap-normal
                                                  ap-transf
                                                  timeout)
-  (occ-debug :debug "occ-safe-properties-window-editor((obj marker)): begin")
+  (occ-debug "occ-safe-properties-window-editor((obj marker)): begin")
   (let ((selected (occ-safe-properties-window-editor (occ-make-ctx marker)
                                                      :filters          filters
                                                      :builder          builder
@@ -479,7 +479,7 @@
                                                      :ap-normal        ap-normal
                                                      :ap-transf        ap-transf
                                                      :timeout          timeout)))
-    (occ-debug :debug "occ-safe-properties-window-editor((obj marker)): returning %s" selected)
+    (occ-debug "occ-safe-properties-window-editor((obj marker)): returning %s" selected)
     selected))
 
 (cl-defmethod occ-safe-ignore-quit-properties-window-editor ((obj occ-ctx)
@@ -499,14 +499,14 @@
   ;; NOTE: presently it is not running on idle time, it simply runs immediately
 
   "Return value is important to decide next action to (create unnamed tsk.)"
-  (occ-debug :debug "occ-safe-ignore-quit-properties-window-editor((obj occ-ctx)): begin")
+  (occ-debug "occ-safe-ignore-quit-properties-window-editor((obj occ-ctx)): begin")
   (let ((filters   (or filters nil))
         (builder   (or builder #'occ-build-ctsk-with))
         (ap-normal '(t actions general))
         (ap-transf '(t actions general edit))
         (timeout   (or timeout occ-idle-timeout)))
-    (occ-debug :debug "called occ-delayed-select-obj-prop-edit-when-idle")
-    (occ-debug :debug "%s: begin: occ-delayed-select-obj-prop-edit-when-idle" (time-stamp-string))
+    (occ-debug "called occ-delayed-select-obj-prop-edit-when-idle")
+    (occ-debug "%s: begin: occ-delayed-select-obj-prop-edit-when-idle" (time-stamp-string))
     ;; timed-newwin of occ-delayed-select-obj-prop-edit pass quit
     ;; signal to caller mean here, so need to be handled, else this function can
     ;; not return any value to its caller, which result into no next-action in
@@ -526,10 +526,10 @@
     ;;                                 :timeout            timeout))
 
     ;;   ;; (lotus-with-other-frame-event-debug "occ-delayed-select-obj-prop-edit-when-idle" :cancel
-    ;;   ;;   (occ-debug :debug "occ-delayed-select-obj-prop-edit-when-idle: lotus-with-other-frame-event-debug")
+    ;;   ;;   (occ-debug "occ-delayed-select-obj-prop-edit-when-idle: lotus-with-other-frame-event-debug")
     ;;   ;;   (occ-delayed-select-obj-prop-edit ctx timeout))
     ;;   ((quit)))
-    (occ-debug :debug
+    (occ-debug
            "occ-delayed-select-obj-prop-edit-when-idle: calling occ-delayed-select-obj-prop-edit with this-command=%s" this-command)
     (prog1
       ;; TODO: Add code to which check if only focus present than only trigger
@@ -542,9 +542,9 @@
                                            :return-transform return-transform
                                            :timeout          timeout)
       ;; (lotus-with-other-frame-event-debug "occ-delayed-select-obj-prop-edit-when-idle" :cancel
-      ;;   (occ-debug :debug "occ-delayed-select-obj-prop-edit-when-idle: lotus-with-other-frame-event-debug")
+      ;;   (occ-debug "occ-delayed-select-obj-prop-edit-when-idle: lotus-with-other-frame-event-debug")
       ;;   (occ-delayed-select-obj-prop-edit ctx timeout))
-      (occ-debug :debug
+      (occ-debug
                  "%s: end: occ-delayed-select-obj-prop-edit-when-idle"
                  (time-stamp-string)))))
   ;; (run-with-idle-timer-nonobtrusive-simple

@@ -115,7 +115,7 @@
 
   (defun test-no-input ()
     (let ((retval))
-      (occ-debug :debug "last-input-event %s retval %s" last-input-event retval)))
+      (occ-debug "last-input-event %s retval %s" last-input-event retval)))
 
   (progn
     (run-with-idle-timer 3 nil #'test-no-input)
@@ -133,11 +133,11 @@
       (let ((retval
              (while-no-input
                (redisplay)
-               (occ-debug :debug "started")
+               (occ-debug "started")
                (prog1
                    (time-consuming)
-                 (occ-debug :debug "stopped")))))
-        (occ-debug :debug "last-input-event %s retval %s" last-input-event retval))
+                 (occ-debug "stopped")))))
+        (occ-debug "last-input-event %s retval %s" last-input-event retval))
 
       (progn
         (run-with-idle-timer 3 nil #'test-no-input)
@@ -156,7 +156,7 @@
                (with-current-buffer (find-file-noselect f)
                  org-complex-heading-regexp))
            (occ-files))))
-     (occ-debug :debug "files with null regex %s" files)))
+     (occ-debug "files with null regex %s" files)))
 
  ;; testing verification;; testing verification
  (defun occ-files-not-in-org-mode ()
@@ -167,7 +167,7 @@
                (with-current-buffer (find-file-noselect f)
                  (eq major-mode 'org-mode)))
            (occ-files))))
-     (occ-debug :debug "files not in org-mode %s" files))))
+     (occ-debug "files not in org-mode %s" files))))
 
 
 (defun functions-in-file-test ()
@@ -200,7 +200,7 @@
       0)
 
     (cl-defmethod occ-rank ((tsk-pair (head root)) (ctx list))
-      (occ-debug :debug "%s" tsk-pair))
+      (occ-debug "%s" tsk-pair))
 
     (occ-rank '(root  1) nil)
 
@@ -208,7 +208,7 @@
 
     (cl-defmethod occ-rank ((tsk occ-tsk)
                             (ctx occ-ctx))
-      (occ-debug :debug "match occ-rank"))
+      (occ-debug "match occ-rank"))
 
     (occ-rank (make-occ-tree-tsk) (make-occ-ctx))))
 

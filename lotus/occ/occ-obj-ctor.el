@@ -148,7 +148,7 @@
                                                                               (nth 1 c))))
                                                  plist))))
     (cl-assert (evenp (length     plist)))
-    (occ-debug :debug "occ-tsk-plist-from-org: plist %s" plist)
+    (occ-debug "occ-tsk-plist-from-org: plist %s" plist)
     (cl-assert (evenp (length ret-plist)))
     ret-plist))
 
@@ -229,7 +229,7 @@
 
 (cl-defmethod occ-make-tsk ((obj number)
                             &optional builder)
-  (occ-debug :debug "point %s" obj)
+  (occ-debug "point %s" obj)
   (if (<= obj (point-max))
       (save-restriction
         (save-excursion
@@ -238,7 +238,7 @@
 
 (cl-defmethod occ-make-tsk ((obj marker)
                             &optional builder)
-  (occ-debug :debug "point %s" obj)
+  (occ-debug "point %s" obj)
   (if (and
        (marker-buffer obj)
        (numberp       (marker-position obj)))
@@ -248,7 +248,7 @@
 
 (cl-defmethod occ-make-tsk ((obj null)
                             &optional builder)
-  (occ-debug :debug "current pos %s" (point-marker))
+  (occ-debug "current pos %s" (point-marker))
   (occ-make-tsk (point-marker) builder))
 
 (cl-defmethod occ-make-tsk ((obj occ-tsk)

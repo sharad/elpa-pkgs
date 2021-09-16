@@ -154,17 +154,17 @@
                (source-name          (occ-helm-build-candidate-source-prompt prompt
                                                                              candidates
                                                                              unfiltered-count)))
-           (occ-debug :debug "occ-helm-build-candidates-source: ap-normal: %s" ap-normal)
-           (occ-debug :debug "occ-helm-build-candidates-source: ap-transf: %s" ap-transf)
+           (occ-debug "occ-helm-build-candidates-source: ap-normal: %s" ap-normal)
+           (occ-debug "occ-helm-build-candidates-source: ap-transf: %s" ap-transf)
            (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
                  (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
-             (occ-debug :debug "occ-helm-build-candidates-source: helm-actions: %s" helm-actions)
-             (occ-debug :debug "occ-helm-build-candidates-source: helm-transfm: %s" helm-transfm)
+             (occ-debug "occ-helm-build-candidates-source: helm-actions: %s" helm-actions)
+             (occ-debug "occ-helm-build-candidates-source: helm-transfm: %s" helm-transfm)
              (progn
-               (occ-debug :debug "occ-helm-build-candidates-source: helm-actions:")
+               (occ-debug "occ-helm-build-candidates-source: helm-actions:")
                (dolist (a helm-actions)
-                 (occ-debug :debug " occ-helm-build-candidates-source: helm-action: %s" a))
-               (occ-debug :debug "occ-helm-build-candidates-source: helm-transfm: %s" helm-transfm))
+                 (occ-debug " occ-helm-build-candidates-source: helm-action: %s" a))
+               (occ-debug "occ-helm-build-candidates-source: helm-transfm: %s" helm-transfm))
              (helm-build-sync-source source-name
                                      :candidates                     gen-candidate-lambda
                                      ;; :header-name
@@ -256,7 +256,7 @@
            (run-with-timer 0.08 nil #'(lambda ()
                                         (if in-occ-helm
                                             (helm-refresh)
-                                          (occ-debug :debug "Running occ-list-select-internal helm is gone"))))
+                                          (occ-debug "Running occ-list-select-internal helm is gone"))))
            ;; :keymap occ-helm-map
            ;; (occ-debug "occ-helm-act-on-multiple: ap-normal: %s" ap-normal)
            (let ((candidates-sources (occ-helm-build-candidates-sources obj
@@ -288,14 +288,14 @@
                             timeout
                             prompt)
   (when candidates-filtered
-    (occ-debug :debug "occ-helm-act1: ap-normal: %s" ap-normal)
-    (occ-debug :debug "occ-helm-act1: ap-transf: %s" ap-transf)
+    (occ-debug "occ-helm-act1: ap-normal: %s" ap-normal)
+    (occ-debug "occ-helm-act1: ap-transf: %s" ap-transf)
     (let* ((ap-normal (occ-build-ap-normal ap-normal))
            (ap-transf (occ-build-ap-transf ap-transf   ;; HBUG: new change
                                            ;; (cons :callables (occ-obj-ap-callables ap-normal obj))
                                            (occ-obj-ap-base ap-normal))))
-      (occ-debug :debug "occ-helm-act2: ap-normal: %s" ap-normal)
-      (occ-debug :debug "occ-helm-act2: ap-transf: %s" ap-transf)
+      (occ-debug "occ-helm-act2: ap-normal: %s" ap-normal)
+      (occ-debug "occ-helm-act2: ap-transf: %s" ap-transf)
       (let* ((ap-normal (if return-transform (occ-return-tranform ap-normal obj) ap-normal)) ;as return value is going to be used.
              (ap-transf (if return-transform (occ-return-tranform ap-transf obj) ap-transf)))
         (let ((fun (if (and auto-select-if-only
@@ -318,7 +318,7 @@
                             selector
                             action)
   ;; here
-  ;; (occ-debug :debug "sacha marker %s" (first ctxasks))
+  ;; (occ-debug "sacha marker %s" (first ctxasks))
   (let (helm-sources)
     (push (occ-helm-build-obj-source obj (list (cons "Clock in and track" selector)))
           helm-sources)
@@ -338,7 +338,7 @@
 ;;   "occ-sacha-helm-action")
 
 ;; (cl-defmethod occ-sacha-helm-action ((ctxask occ-ctxual-tsk) clockin-fn)
-;;   ;; (occ-debug :debug "sacha marker %s" (first dyntskpls))
+;;   ;; (occ-debug "sacha marker %s" (first dyntskpls))
 ;;   ;; (setq sacha/helm-org-refile-locations tbl)
 ;;   (progn
 ;;     (helm

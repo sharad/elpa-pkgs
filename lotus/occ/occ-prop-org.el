@@ -196,7 +196,7 @@
     (unless (org-get-property-block)
       ;; create property drawer
       ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
-      (occ-debug :debug "occ-org-call-operation-at-point: property block not exist so creating it.")
+      (occ-debug "occ-org-call-operation-at-point: property block not exist so creating it.")
       (let* ((range (org-get-property-block (point) 'force))
              (start (when (consp range) (1- (first range)))))
         (if (and range
@@ -209,14 +209,14 @@
 
     (if (org-get-property-block)
         (progn
-          (occ-debug :debug "occ-org-call-operation-at-point: adding prop: %s value: %s using (org-set-property)."
+          (occ-debug "occ-org-call-operation-at-point: adding prop: %s value: %s using (org-set-property)."
                      prop
                      values)
           (let ((retval (occ-org-call-operation mrk
                                                 prop
                                                 operation
                                                 values)))
-            (occ-debug :debug "occ-org-call-operation: (occ-org-call-operation mrk) returned %s" retval)
+            (occ-debug "occ-org-call-operation: (occ-org-call-operation mrk) returned %s" retval)
             retval))
         (occ-error "occ-org-call-operation-at-point: can not get property block to add property %s: %s"
                    prop

@@ -274,7 +274,7 @@
                      (redisplay)
                      ,@body)))
        (when (eq retval t)
-         (occ-debug :debug "user input %s retval %s" last-input-event retval))
+         (occ-debug "user input %s retval %s" last-input-event retval))
        retval)))
 
 

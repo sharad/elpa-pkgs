@@ -59,7 +59,7 @@
   "Main Machinery, TODO: Document it, NOTE: ACTION-TRANSFORMER is
 superseding ACTION, As in helm ACTION-TRANSFORMER are superseding
 ACTION "
-  ;; (occ-debug :debug "sacha marker %s" (first dyntskpls))
+  ;; (occ-debug "sacha marker %s" (first dyntskpls))
 
 
   ;; (lotus-with-no-active-minibuffer-if <- TODO: This should be there only for first level command, not in internal function
@@ -69,9 +69,9 @@ ACTION "
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION
 
   (progn ;; lotus-with-no-active-minibuffer-if
-    (occ-debug :debug "Running occ-list-select-internal")
-    (occ-debug :debug "occ-list-select-internal: [minibuffer-body] lotus-with-no-active-minibuffer-if")
-    (occ-debug :debug "occ-list-select-internal: minibuffer already active quitting")
+    (occ-debug "Running occ-list-select-internal")
+    (occ-debug "occ-list-select-internal: [minibuffer-body] lotus-with-no-active-minibuffer-if")
+    (occ-debug "occ-list-select-internal: minibuffer already active quitting")
     (occ-debug :debug nil)
     (prog1
         (let* ((timeout   (or timeout occ-idle-timeout)))
@@ -93,7 +93,7 @@ ACTION "
                           :auto-select-if-only auto-select-if-only
                           :timeout timeout
                           :prompt prompt)))
-      (occ-debug :debug "Running occ-list-select-internal"))))
+      (occ-debug "Running occ-list-select-internal"))))
 
 (cl-defmethod occ-list-select ((obj occ-ctx)
                                &key
@@ -110,7 +110,7 @@ ACTION "
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
   (let* ((timeout (or timeout occ-idle-timeout)))
     (helm-timed timeout (occ-helm-select-buffer)
-      (occ-debug :debug "running occ-list-select")
+      (occ-debug "running occ-list-select")
       (progn
         (occ-message "occ-list-select: ap-normal: %s" ap-normal)
         (occ-message "occ-list-select: ap-transf: %s" ap-transf)
@@ -124,7 +124,7 @@ ACTION "
                                                   :timeout             timeout
                                                   :obtrusive           obtrusive
                                                   :prompt              prompt)))
-          (occ-debug :debug "occ-list-select: selected = %s" selected)
+          (occ-debug "occ-list-select: selected = %s" selected)
           (if return-transform
               ;; TODO: add cl-defmethod magic here
               (or selected ;as return value is going to be used.
@@ -155,7 +155,7 @@ ACTION "
   "return interactively selected TSK or NIL,   TODO: Document it."
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
   (unless builder (occ-error "Builder can not be nil"))
-  (occ-debug :debug "OCC-SELECT((OBJ OCC-CTX)): begin")
+  (occ-debug "OCC-SELECT((OBJ OCC-CTX)): begin")
   (let* ((timeout (or timeout occ-idle-timeout)))
     (let* ((unfiltered-count (occ-length)))
       (if (> unfiltered-count 0)
@@ -191,7 +191,7 @@ ACTION "
                           prompt)
   "TODO: Document it."
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
-  (occ-debug :debug "occ-select((obj null)): begin")
+  (occ-debug "occ-select((obj null)): begin")
   (let ((retval (occ-select (occ-make-ctx-at-point)
                             :filters             filters
                             :builder             builder
@@ -202,7 +202,7 @@ ACTION "
                             :timeout             timeout
                             :obtrusive           obtrusive
                             :prompt              prompt)))
-    (occ-debug :debug "OCC-SELECT((OBJ NULL)): OCC-SELECT((OBJ OCC-CTX)) returned %s"
+    (occ-debug "OCC-SELECT((OBJ NULL)): OCC-SELECT((OBJ OCC-CTX)) returned %s"
                       (occ-Format retval))
     retval))
 

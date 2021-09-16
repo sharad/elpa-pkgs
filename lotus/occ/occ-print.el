@@ -85,7 +85,7 @@ pointing to it."
          (org-heading-noprop  (concat prefix heading))
          (org-heading         (org-fontify-like-in-org-mode org-heading-noprop org-odd-levels-only))
          (display-org-heading (concat heading-prefix org-heading)))
-    ;; (occ-debug :debug "fontify: %s subtree-level=%s" heading subtree-level)
+    ;; (occ-debug "fontify: %s subtree-level=%s" heading subtree-level)
     display-org-heading))
 
 (cl-defmethod occ-build-format-string ((obj occ-tsk))

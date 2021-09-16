@@ -44,7 +44,7 @@
                                                    ;; going to org world
                                                    (occ-prop-to-org prop
                                                                     values))))
-      (occ-debug :debug "occ-operation: (occ-org-call-operation-at-point mrk) returnd %s" retval)
+      (occ-debug "occ-operation: (occ-org-call-operation-at-point mrk) returnd %s" retval)
       retval)))
 
 (cl-defmethod occ-operation ((obj       occ-obj-tsk)
@@ -197,8 +197,7 @@
                                 value)
   ;; TODO: change this to use OCC VALUE like with corresponding changes to occ-readprop-from-user
   "Accept occ compatible VALUES"
-  (occ-debug :debug
-             "occ-op-prop-edit: prop: %s, value: %s" prop value)
+  (occ-debug "occ-op-prop-edit: prop: %s, value: %s" prop value)
   (cl-assert prop)
   (let ((operation  (or operation
                         (occ-select-operation obj prop)))

@@ -41,20 +41,20 @@
                             property)
   "Return the RANK (number) for OBJ based on the property PROPERTY"
   ;; too much output
-  ;; (occ-debug :debug "occ-rank(tsk-pair=%s ctx=%s)" tsk-pair ctx)
-  (occ-debug :debug "occ-rankprop(obj=%s symbol=%s)" obj property)
+  ;; (occ-debug "occ-rank(tsk-pair=%s ctx=%s)" tsk-pair ctx)
+  (occ-debug "occ-rankprop(obj=%s symbol=%s)" obj property)
   0)
 (cl-defmethod occ-rankprop ((obj  occ-tsk)
                             (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-debug :debug "occ-rankprop(obj=%s symbol=%s)"
+  (occ-debug "occ-rankprop(obj=%s symbol=%s)"
              obj
              property)
   0)
 (cl-defmethod occ-rankprop ((obj  occ-obj-ctx-tsk)
                             (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-debug :debug "occ-rankprop(obj=%s symbol=%s)" obj property)
+  (occ-debug "occ-rankprop(obj=%s symbol=%s)" obj property)
   (occ-rankprop obj property))
 
 
@@ -68,9 +68,9 @@
   "OBJ has property PROPERTY"
   (let* ((tsk            (occ-obj-tsk obj))
          (tsk-prop-value (occ-get-property tsk prop)))
-    (occ-debug :debug "occ-has-p prop %s, (consp tsk-prop-value) %s" prop (consp tsk-prop-value))
-    (occ-debug :debug "occ-has-p prop %s, (occ-list-p prop) %s, value %s" prop (occ-list-p prop) (prin1-to-string value))
-    (occ-debug :debug "occ-has-p prop %s, (occ-list-p prop) %s, tsk-prop-value %s" prop (occ-list-p prop) (prin1-to-string tsk-prop-value))
+    (occ-debug "occ-has-p prop %s, (consp tsk-prop-value) %s" prop (consp tsk-prop-value))
+    (occ-debug "occ-has-p prop %s, (occ-list-p prop) %s, value %s" prop (occ-list-p prop) (prin1-to-string value))
+    (occ-debug "occ-has-p prop %s, (occ-list-p prop) %s, tsk-prop-value %s" prop (occ-list-p prop) (prin1-to-string tsk-prop-value))
     (if (occ-list-p prop)
         (member value tsk-prop-value)
       (equal value tsk-prop-value))))
@@ -98,7 +98,7 @@
    property represent list or not."
   ;; 'list
   ;; (occ-error "Implement method occ-list-p for property %s" property)
-  (occ-debug :debug "occ-list-p: no method for property %s using default."
+  (occ-debug "occ-list-p: no method for property %s using default."
              property)
   nil)
 
@@ -114,7 +114,7 @@ representation.")
 convert value VALUE of property PROPERTY from occ to org string
 representation."
   ;; (occ-error "Implement method occ-prop-to-org for property %s" property)
-  (occ-debug :debug "occ-prop-to-org: no method for property %s using default."
+  (occ-debug "occ-prop-to-org: no method for property %s using default."
              property)
   value)
 
@@ -130,8 +130,7 @@ org string to occ representation.")
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
   ;; (occ-error "Implement method occ-prop-from-org for property %s" property)
-  (occ-debug :debug
-             "occ-prop-from-org: no method for property %s using default." property)
+  (occ-debug "occ-prop-from-org: no method for property %s using default." property)
   value)
 (cl-defmethod occ-prop-from-org ((property symbol)
                                  (value string))
@@ -139,8 +138,7 @@ org string to occ representation."
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
   ;; (occ-error "Implement method occ-prop-from-org for property %s" property)
-  (occ-debug :debug
-             "occ-prop-from-org: no method for property %s using default." property)
+  (occ-debug "occ-prop-from-org: no method for property %s using default." property)
   value)
 
 
@@ -158,14 +156,14 @@ return ORG compatible value."
                               values)
   "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
 _TEMPLATE_ if CALLABLE (helm method) should be generated."
-  (occ-debug :debug "occ-require-p0 is called"))
+  (occ-debug "occ-require-p0 is called"))
 (cl-defmethod occ-require-p ((obj occ-obj-tsk)
                              (operation (eql _operation_))
                              (property  symbol)
                              values)
   "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
 _TEMPLATE_ if CALLABLE (helm method) should be generated."
-  (occ-debug :debug "occ-require-p1 is called")
+  (occ-debug "occ-require-p1 is called")
   t)
 
 
@@ -237,7 +235,7 @@ return ORG compatible value.")
                               values)
    "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
 _TEMPLATE_ if CALLABLE (helm method) should be generated."
-   (occ-debug :debug "occ-require-p3 is called"))
+   (occ-debug "occ-require-p3 is called"))
  (cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
                                        (prop (eql _template_))
                                        (operation (eql _operation_)))
