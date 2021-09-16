@@ -89,7 +89,7 @@ only argument required for some other further processing"
                                              &key param-only)
   nil)
 
-(cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-tsk)
+(cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
                                              &key param-only)
   (let* ((props        (occ-properties-to-checkout (occ-obj-tsk obj)))
          (checkout-ops (mapcar #'(lambda (prop)
@@ -100,16 +100,15 @@ only argument required for some other further processing"
     (cl-assert props)
     (remove nil
             checkout-ops)))
-
 
-(cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-ctx-tsk)
-                                             &key param-only)
-  ;; NOTE:
-  ;; will not simply call (OCC-GEN-CHECKOUTS-IF-REQUIRED ((OBJ OCC-OBJ-TSK)  &KEY PARAM-ONLY)
-  ;; as number of arguments are same, so we have to change OBJ argument to (OCC-OBJ-TSK OBJ)
-  ;; or
-  ;; simply call (CL-CALL-NEXT-METHOD)
-  (cl-call-next-method))
+;; (cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-ctx-tsk)
+;;                                              &key param-only)
+;;   ;; NOTE:
+;;   ;; will not simply call (OCC-GEN-CHECKOUTS-IF-REQUIRED ((OBJ OCC-OBJ-TSK)  &KEY PARAM-ONLY)
+;;   ;; as number of arguments are same, so we have to change OBJ argument to (OCC-OBJ-TSK OBJ)
+;;   ;; or
+;;   ;; simply call (CL-CALL-NEXT-METHOD)
+;;   (cl-call-next-method))
 
 (cl-defmethod occ-gen-checkouts-if-required ((obj occ-obj-ctx)
                                              &key param-only)
@@ -120,7 +119,7 @@ only argument required for some other further processing"
                                            &key param-only)
   nil)
 
-(cl-defmethod occ-gen-each-prop-checkouts ((obj occ-obj-tsk)
+(cl-defmethod occ-gen-each-prop-checkouts ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
                                            &key param-only)
   (occ-gen-checkouts-if-required obj
                                  :param-only param-only))
