@@ -161,11 +161,12 @@
     (when template
       (with-org-capture-run marker 'entry (list 'marker mrk) template (list :empty-lines 1
                                                                             :immediate-finish immediate-finish)
-        (unless immediate-finish        ;*NOTE:
-          (let* ((tmp-tsk  (occ-make-tsk marker))
-                 (tmp-ctsk (occ-build-ctsk-with tmp-tsk ctx)))
-            (occ-op-props-edit tmp-ctsk)
-            t))
+        (progn
+          (unless immediate-finish        ;*NOTE:
+            (let* ((tmp-tsk  (occ-make-tsk marker))
+                   (tmp-ctsk (occ-build-ctsk-with tmp-tsk ctx)))
+              (occ-op-props-edit tmp-ctsk)))
+          t)
         (let* ((child-tsk        (occ-make-tsk marker))
                (child-ctxual-tsk (occ-build-ctxual-tsk-with child-tsk ctx)))
           (when child-tsk
