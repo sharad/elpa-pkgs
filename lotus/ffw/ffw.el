@@ -203,10 +203,10 @@
         (retval '(next))
         initial-string)
     (while (and wizard-alist ;; (eq file 'fallback-wizard)
-                (and (consp retval) (eq 'next (car retval))))
+                (and (consp retval) (eq 'next (first retval))))
       ;; (message "fileB: %s" file)
       (letf ((plist (cdar wizard-alist))
-             (initial-string (plist-get (cdr retval) :initial-string)))
+             (initial-string (plist-get (rest retval) :initial-string)))
         (let ((failval  (plist-get plist :failval))
               (ffretval (catch 'nextff
                           (condition-case e
@@ -214,7 +214,7 @@
                             (error '(next))))))
           (if (eq failval ffretval)
               (setq retval '(next)))
-          (setq wizard-alist (or (cdr wizard-alist)
+          (setq wizard-alist (or (rest wizard-alist)
                                  (setq wizard-alist *find-file-wizard-alist*))))))))
 
 

@@ -87,9 +87,9 @@
                              (consp prompt)
                              (eq :overrride (first prompt))))
         (prompt         (when (consp prompt)
-                          (if (consp (cdr prompt))
+                          (if (consp (rest prompt))
                               (cadr prompt)
-                            (cdr prompt))))
+                            (rest prompt))))
         (filtered-count (length candidates)))
     (if (and override
              prompt)
@@ -98,7 +98,7 @@
         (occ-message "Test1")
         (prog1
             (format "Select matching %s(%d/%d)%s"
-                    (symbol-name (cl-inst-classname (car candidates)))
+                    (symbol-name (cl-inst-classname (first candidates)))
                     unfiltered-count
                     filtered-count
                     (format " %s" prompt))
@@ -205,7 +205,7 @@
   (let ((act (first (occ-obj-ap-helm-get-actions obj
                                                  apn
                                                  apt))))
-    (cdr act)))
+    (rest act)))
 
 (cl-defmethod occ-get-first-helm-actions-for-obj ((obj occ-obj)
                                                   (apn occ-ap-normal)
@@ -213,7 +213,7 @@
   (let ((act (first (occ-obj-ap-helm-get-actions obj
                                                  apn
                                                  apt))))
-    (cdr act)))
+    (rest act)))
 
 (cl-defmethod occ-helm-act-on-single ((obj                 occ-ctx)
                                       (candidates-filtered list)
@@ -228,7 +228,7 @@
                                       prompt)
   ;; OBJ ignored
   "OBJ ignored"
-  (let* ((candidate   (car candidates-filtered))
+  (let* ((candidate   (first candidates-filtered))
          (helm-action (occ-get-first-helm-actions-for-obj obj
                                                           ap-normal
                                                           ap-transf)))
@@ -236,8 +236,8 @@
                  (consp helm-action)
                  (functionp helm-action))
     (occ-message "occ-helm-act-on-single: (cons p (cadr helm-action)) %s, (functionp (cadr helm-action)) %s"
-                 (consp (cdr helm-action))
-                 (functionp (cdr helm-action)))
+                 (consp (rest helm-action))
+                 (functionp (rest helm-action)))
     (funcall helm-action candidate)))
 
 (cl-defmethod occ-helm-act-on-multiple ((obj        occ-ctx)
@@ -318,7 +318,7 @@
                             selector
                             action)
   ;; here
-  ;; (occ-debug :debug "sacha marker %s" (car ctxasks))
+  ;; (occ-debug :debug "sacha marker %s" (first ctxasks))
   (let (helm-sources)
     (push (occ-helm-build-obj-source obj (list (cons "Clock in and track" selector)))
           helm-sources)
@@ -338,7 +338,7 @@
 ;;   "occ-sacha-helm-action")
 
 ;; (cl-defmethod occ-sacha-helm-action ((ctxask occ-ctxual-tsk) clockin-fn)
-;;   ;; (occ-debug :debug "sacha marker %s" (car dyntskpls))
+;;   ;; (occ-debug :debug "sacha marker %s" (first dyntskpls))
 ;;   ;; (setq sacha/helm-org-refile-locations tbl)
 ;;   (progn
 ;;     (helm

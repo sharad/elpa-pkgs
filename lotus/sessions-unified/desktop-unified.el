@@ -183,10 +183,10 @@
 so returns nil if pid is nil."
   (when pid
     (let* ((attributes (process-attributes pid))
-           (cmd        (cdr (assoc "comm" attributes #'string=))))
+           (cmd        (rest (assoc "comm" attributes #'string=))))
       ;; (dolist (attr attributes)
-      ;;   (if (string= "comm" (car attr))
-      ;;       (setq cmd (cdr attr))))
+      ;;   (if (string= "comm" (first attr))
+      ;;       (setq cmd (rest attr))))
       (and cmd
            (or (string= "emacs"     cmd)
                (string= "emacs.exe" cmd)
@@ -780,11 +780,11 @@ is function is a no-op when Emacs is running in batch mode.
              (let ((dirs desktop-path))
                (while (and dirs
                            (not (file-exists-p
-                                 (desktop-full-file-name (car dirs)))))
-                 (setq dirs (cdr dirs)))
-               (and dirs (car dirs)))
+                                 (desktop-full-file-name (first dirs)))))
+                 (setq dirs (rest dirs)))
+               (and dirs (first dirs)))
              ;; If not found and `desktop-path' is non-nil, use its first element.
-             (and desktop-path (car desktop-path))
+             (and desktop-path (first desktop-path))
              ;; Default: Home directory.
              "~"))))
     (if (file-exists-p (desktop-full-file-name))
@@ -824,8 +824,8 @@ is function is a no-op when Emacs is running in batch mode.
             ;; not reused) to be placed at the end of the buffer list, so we
             ;; move them here.
             (mapc 'bury-buffer
-                  (nreverse (cdr (memq desktop-first-buffer (nreverse (buffer-list))))))
-            (switch-to-buffer (car (buffer-list)))
+                  (nreverse (rest (memq desktop-first-buffer (nreverse (buffer-list))))))
+            (switch-to-buffer (first (buffer-list)))
             (run-hooks 'desktop-delay-hook)
             (setq desktop-delay-hook nil)
             (run-hooks 'desktop-after-read-hook)

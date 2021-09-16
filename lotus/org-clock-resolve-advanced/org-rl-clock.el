@@ -37,15 +37,15 @@
 (defun org-rl-get-resume-clocks (resume-clocks clock-alist)
   (if (cl-notany                        ;;no current running clock should be present.
        #'(lambda (name-clock)
-           (when (cdr name-clock)
-             (org-rl-clock-current-real (cdr name-clock))))
+           (when (rest name-clock)
+             (org-rl-clock-current-real (rest name-clock))))
        clock-alist)
       (remove-if
        (lambda (name-clock)
          (or
           (not (consp name-clock))
-          (null (cdr name-clock))
-          (org-rl-clock-null (cdr name-clock))))
+          (null (rest name-clock))
+          (org-rl-clock-null (rest name-clock))))
        (append clock-alist
                (unless (consp resume-clocks) nil)))))
 
@@ -308,14 +308,14 @@
 
            ((consp opt)
             (org-rl-debug nil "org-rl-clock-time-process-option: in consp")
-            (let ((caropt (car opt)))
+            (let ((caropt (first opt)))
              (cond
               ((eq caropt 'include-in-other) ;; subtract timelen-mins from timelength-mins
-               (let ((other-marker   (cdr opt)))
+               (let ((other-marker   (rest opt)))
                  (org-rl-clock-opt-include-in-other prev next other-marker timelen-mins resume fail-quietly resume-clocks)))
 
               ((eq caropt 'include-in-new)
-               (let ((template (cdr opt)))
+               (let ((template (rest opt)))
                  (org-rl-clock-opt-include-in-new prev next template timelen-mins resume fail-quietly resume-clocks)))
               (t (error "Wrong option %s" opt)))))
 
@@ -342,8 +342,8 @@
                            (lambda (el)
                              (cons
                               (format "%s %s"
-                                      (car el)
-                                      (if (cdr el) (org-rl-format (cdr el)))) el)
+                                      (first el)
+                                      (if (rest el) (org-rl-format (rest el)))) el)
                              resume-clocks)))
            (sel
             (completing-read "resume clock: " resume-clocks)
@@ -403,7 +403,7 @@
                          (format "Select option [%d]: " maxtimelen-mins))))
                  options
                  maxtimelen-mins-fn))
-               (opt (car option))
+               (opt (first option))
                (timelen-mins
                 (org-rl-clock-read-timelen-mins
                  org-rl-read-interval-secs
@@ -415,7 +415,7 @@
                  opt
                  maxtimelen-mins-fn)))
           ;; (barely-started-p (< (- (float-time last-valid)
-          ;;                         (float-time (cdr clock))) 45))
+          ;;                         (float-time (rest clock))) 45))
           ;; (start-over-p (and subtractp barely-started-p))
           ;; cancel prev and add to time
 

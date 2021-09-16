@@ -213,13 +213,13 @@
 (cl-defmethod occ-obj-callable-helm-actions ((callables (head :callables))
                                              (obj occ-obj))
   "Return list of ((NAME . FUN) ...)"
-  (let ((callables (cdr callables)))
+  (let ((callables (rest callables)))
     (occ-obj-callable-helm-actions callables)))
 
 (cl-defmethod occ-obj-callable-helm-actions ((callables (head :keywords))
                                              (obj occ-obj))
   "Return list of ((NAME . FUN) ...)"
-  (let* ((keywords  (cdr callables))
+  (let* ((keywords  (rest callables))
          (callables (occ-helm-callables-get keywords)))
     (occ-obj-callable-helm-actions callables)))
 
@@ -337,7 +337,7 @@
               (occ-debug :debug "occ-obj-ap-helm-transformation: helm-action: %s" (prin1-to-string a)))
             (when helm-actions
               (cl-assert (cl-every #'(lambda (x)
-                                       (functionp (cdr x)))
+                                       (functionp (rest x)))
                                    helm-actions)))
             (occ-debug :debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
             helm-actions)))))
@@ -544,7 +544,7 @@ pointing to it."
 ;;       occ-return getting passed
 
 (defun occ-util-read-sexp-from-minibuffer (prompt)
- (car (read-from-string (read-from-minibuffer prompt))))
+ (first (read-from-string (read-from-minibuffer prompt))))
 
 (cl-defmethod occ-call-with-obj ((obj occ-obj-tsk))
   (let ((fun (let ((obj obj)
@@ -587,7 +587,7 @@ pointing to it."
 
 
 (defun occ-current-ctxual-tsk (&optional occ-other-allowed)
-  (let* ((ctxual-tsk (car *occ-clocked-ctxual-tsk-ctx-history*)))
+  (let* ((ctxual-tsk (first *occ-clocked-ctxual-tsk-ctx-history*)))
     (let ((clock-marker    (occ-valid-marker org-clock-marker))
           (clock-hd-marker (occ-valid-marker org-clock-hd-marker)))
       (let ((clock (or clock-marker
@@ -617,7 +617,7 @@ pointing to it."
 
 
 (defun occ-current-tsk (&optional occ-other-allowed)
-  (let* ((ctxual-tsk (car *occ-clocked-ctxual-tsk-ctx-history*)))
+  (let* ((ctxual-tsk (first *occ-clocked-ctxual-tsk-ctx-history*)))
     (let ((clock-marker    (occ-valid-marker org-clock-marker))
           (clock-hd-marker (occ-valid-marker org-clock-hd-marker)))
       (let ((clock (or clock-marker

@@ -63,12 +63,12 @@ containing it, until no links are left at any level.
   (let* ((original-filename filename)
          (found-filename (and
                           file-truename-do-caching
-                          (cdr (assoc original-filename file-truename-cache)))))
+                          (rest (assoc original-filename file-truename-cache)))))
 
     ;; (when file-truename-do-caching
     ;;   (message "filename %s by cache: %s"
     ;;            original-filename
-    ;;            (cdr (assoc original-filename file-truename-cache))))
+    ;;            (rest (assoc original-filename file-truename-cache))))
 
     (if found-filename
         found-filename
@@ -118,8 +118,8 @@ containing it, until no links are left at any level.
           ;; If this file directly leads to a link, process that iteratively
           ;; so that we don't use lots of stack.
           (while (not done)
-            (setcar counter (1- (car counter)))
-            (if (< (car counter) 0)
+            (setcar counter (1- (first counter)))
+            (if (< (first counter) 0)
                 (error "Apparent cycle of symbolic links for %s" filename))
             (let ((handler (find-file-name-handler filename 'file-truename)))
               ;; For file name that has a special handler, call handler.
@@ -137,11 +137,11 @@ containing it, until no links are left at any level.
                            (eq (compare-strings dir 0 nil dirfile 0 nil t) t))
                       ;; If this is the same dir we last got the truename for,
                       ;; save time--don't recalculate.
-                      (if (assoc dir (car prev-dirs))
-                          (setq dir (cdr (assoc dir (car prev-dirs))))
+                      (if (assoc dir (first prev-dirs))
+                          (setq dir (rest (assoc dir (first prev-dirs))))
                         (let ((old dir)
                               (new (file-name-as-directory (file-truename dirfile counter prev-dirs))))
-                          (setcar prev-dirs (cons (cons old new) (car prev-dirs)))
+                          (setcar prev-dirs (cons (cons old new) (first prev-dirs)))
                           (setq dir new))))
                   (if (equal ".." (file-name-nondirectory filename))
                       (setq filename
@@ -170,13 +170,13 @@ containing it, until no links are left at any level.
 
           (when file-truename-do-caching
 
-            (dolist (dirpair (car prev-dirs))
-              (let ((dir (car dirpair)))
+            (dolist (dirpair (first prev-dirs))
+              (let ((dir (first dirpair)))
                 (if (assoc dir file-truename-cache-dependency-list)
                     (unless (member
                              original-filename
-                             (cdr (assoc dir file-truename-cache-dependency-list)))
-                      (push original-filename (cdr (assoc dir file-truename-cache-dependency-list))))
+                             (rest (assoc dir file-truename-cache-dependency-list)))
+                      (push original-filename (rest (assoc dir file-truename-cache-dependency-list))))
                   (push (list dir original-filename) file-truename-cache-dependency-list))))
 
             (if (assoc original-filename file-truename-cache)
@@ -247,7 +247,7 @@ system."
   (setq file-truename-cache nil)
   (setq file-truename-cache-dependency-list nil)
 
-  (car (car file-truename-cache-dependency-list)))
+  (first (first file-truename-cache-dependency-list)))
 
 ;; (replace-file-truename "~/.mailbox")
 

@@ -55,10 +55,10 @@
            (read-org-project-spec)))))
 
   (when (and
-         (member (car project-spec)
+         (member (first project-spec)
                  (mapcar 'car org-publish-project-alist))
          (or (not (called-interactively-p 'interactive))
-             (y-or-n-p (format "project %s already present, do you want to overwrite it?: " (car project-spec))))
+             (y-or-n-p (format "project %s already present, do you want to overwrite it?: " (first project-spec))))
          (remove-org-project project-spec)))
   (add-to-list 'org-publish-project-alist project-spec t))
 
@@ -73,8 +73,8 @@
   (let ((project
          (cond
            ((and (consp project-spec)
-                 (stringp (car project-spec)))
-            (car project-spec))
+                 (stringp (first project-spec)))
+            (first project-spec))
            ((stringp project-spec)
             project-spec)
            (t nil))))
@@ -118,7 +118,7 @@
             "Org Project Publishing Directory: "
             (org-publishing-generated-contents-path
                     (replace-regexp-in-string (org-publishing-created-contents-path ) ""
-                                              (if (consp org-dir) (car org-dir) org-dir)))))
+                                              (if (consp org-dir) (first org-dir) org-dir)))))
           (publishing-options nil))
      (list
       name
@@ -151,7 +151,7 @@
            "Org Project Publishing Directory: "
            (org-publishing-generated-contents-path
                    (replace-regexp-in-string (org-publishing-created-contents-path ) ""
-                                             (if (consp org-dir) (car org-dir) org-dir)))))
+                                             (if (consp org-dir) (first org-dir) org-dir)))))
          (publishing-options nil))
     `(
       ,name
@@ -176,12 +176,12 @@
 (defun org-publish-get-attribute (project extention attrib)
   (let ((proj-alist (assoc project org-publish-project-alist)))
     (or
-     (plist-get (cdr proj-alist) attrib)
+     (plist-get (rest proj-alist) attrib)
      (plist-get
       (cdar (remove-if-not
              (lambda (p)
                (string-match
-                (plist-get (cdr p) :base-extension)
+                (plist-get (rest p) :base-extension)
                 extention))
              (org-publish-expand-projects
               (list proj-alist))))
@@ -192,13 +192,13 @@
   ;; TODO: IMPROVE further
   (let ((proj-alist (assoc project org-publish-project-alist)))
     (or
-     (plist-get (cdr proj-alist) attrib)
+     (plist-get (rest proj-alist) attrib)
      (let* ((projects
              (mapcar #'car
                      (remove-if-not
                       (lambda (p)
                         (string-match
-                         (plist-get (cdr p) :base-extension)
+                         (plist-get (rest p) :base-extension)
                          extention))
                       (org-publish-expand-projects
                        (list proj-alist)))))

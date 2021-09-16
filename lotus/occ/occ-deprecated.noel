@@ -32,11 +32,11 @@
       ;;                             (ctx occ-ctx))
       ;;   (let* ((file (if ctx (occ-ctx-file ctx)))
       ;;          (dir (if (stringp file) (file-name-directory file) (dirname-of-file file)))
-      ;;          (prompt (concat (symbol-name (car tsk-pair)) ": ")))
+      ;;          (prompt (concat (symbol-name (first tsk-pair)) ": ")))
       ;;     (ido-read-directory-name prompt dir dir)))
       ;; (cl-defmethod occ-readprop ((tsk-pair (head subtree))
       ;;                             (ctx occ-ctx))
-      ;;   (let ((prompt (concat (symbol-name (car tsk-pair)) ": ")))
+      ;;   (let ((prompt (concat (symbol-name (first tsk-pair)) ": ")))
       ;;     (file-relative-name
       ;;      (ido-read-file-name ;; org-iread-file-name
       ;;       prompt
@@ -104,7 +104,7 @@
                   (let* ((sel-ctxual-tsk
                           (if (> (length matched-ctxual-tsks) 1)
                               (occ-sacha-helm-select-timed matched-ctxual-tsks)
-                            (car matched-ctxual-tsks))))
+                            (first matched-ctxual-tsks))))
                     ;; (sel-tsk   (if sel-ctxual-tsk (plist-get sel-ctxual-tsk :tsk)))
                     ;; (sel-marker (if sel-tsk      (plist-get sel-tsk      :tsk-clock-marker)))
 
@@ -123,7 +123,7 @@
         ;;TODO add org-insert-log-not
         (occ-debug :debug "occ-clock-in-marker %s" new-ctxask)
         (let* (retval
-               (old-ctxual-tsk     (car *occ-clocked-ctxual-tsk-ctx-history*))
+               (old-ctxual-tsk     (first *occ-clocked-ctxual-tsk-ctx-history*))
                (old-tsk            (when old-ctxual-tsk (occ-ctxual-tsk-tsk old-ctxual-tsk)))
                (old-marker         (or (if old-tsk (occ-tsk-marker old-tsk)) org-clock-hd-marker))
                (old-heading        (if old-tsk (occ-tsk-heading old-tsk)))
@@ -173,7 +173,7 @@
                       ((occ-error)
                        (progn
                          (setq retval nil)
-                         (signal (car err) (cdr err)))))))
+                         (signal (first err) (rest err)))))))
 
                 (if old-buff
                     (with-current-buffer old-buff
@@ -226,7 +226,7 @@
         (cons (occ-print ctxask) ctxask))
 
       (defun occ-sacha-helm-select (ctxasks)
-        ;; (occ-debug :debug "sacha marker %s" (car dyntskpls))
+        ;; (occ-debug :debug "sacha marker %s" (first dyntskpls))
         (occ-debug :debug "Running occ-sacha-helm-select")
         (helm
          (list
@@ -252,7 +252,7 @@
       "occ-sacha-helm-action")
 
     (cl-defmethod occ-sacha-helm-action ((ctxask occ-ctxual-tsk) clockin-fn)
-      ;; (occ-debug :debug "sacha marker %s" (car dyntskpls))
+      ;; (occ-debug :debug "sacha marker %s" (first dyntskpls))
       ;; (setq sacha/helm-org-refile-locations tbl)
       (progn
         (helm
@@ -341,7 +341,7 @@
                       (setq org-cycle-subtree-status 'children))))
                 ;; show expand property if flag is nil, else hide
                 (let* ((prop-range (org-get-property-block (point) 'force))
-                       (prop-loc   (1- (car prop-range))))
+                       (prop-loc   (1- (first prop-range))))
                   (when prop-range
                     (occ-debug :debug "pos %d before jumping to %s drawer, will jump to pos %d"
                                (point)
@@ -409,7 +409,7 @@
 
                            ;; show proptery drawer
                            (let* ((prop-range (org-flag-proprty-drawer-at-marker marker nil))
-                                  (prop-loc   (1- (car prop-range))))
+                                  (prop-loc   (1- (first prop-range))))
                              (if (numberp prop-loc)
                                  (goto-char prop-loc)))
 
@@ -438,7 +438,7 @@
                           (progn
                             (funcall cleanup win local-cleanup)
                             (if timer (cancel-timer timer))
-                            (signal (car err) (cdr err)))))))))))))
+                            (signal (first err) (rest err)))))))))))))
 
 
     (cl-defmethod occ-add-to-org-heading ((ctx occ-ctx) timeout)
@@ -498,7 +498,7 @@
 
                                 ;; show proptery drawer
                                 (let* ((prop-range (org-flag-proprty-drawer-at-marker marker nil))
-                                       (prop-loc   (1- (car prop-range))))
+                                       (prop-loc   (1- (first prop-range))))
                                   (if (numberp prop-loc)
                                       (goto-char prop-loc)))
 
@@ -527,7 +527,7 @@
                                (progn
                                  (funcall cleanup win local-cleanup)
                                  (if timer (cancel-timer timer))
-                                 (signal (car err) (cdr err))))))))))
+                                 (signal (first err) (rest err))))))))))
               (progn
                 (occ-debug :debug "not running add-ctx-to-org-heading 1 %s, 2 %s 3 %s"
                            (eq (current-buffer) buff)
@@ -572,7 +572,7 @@
               (let* ((sel-ctxual-tsk
                       (if (> (length matched-ctxual-tsks) 1)
                           (occ-list-select matched-ctxual-tsks (occ-helm-actions obj) timeout)
-                        (car matched-ctxual-tsks))))
+                        (first matched-ctxual-tsks))))
                 sel-ctxual-tsk)))))))
     ;; occ-simple
 
@@ -589,7 +589,7 @@
 
         ;; show proptery drawer
         (let* ((prop-range (org-flag-proprty-drawer-at-marker marker nil))
-               (prop-loc   (when (consp prop-range) (1- (car prop-range)))))
+               (prop-loc   (when (consp prop-range) (1- (first prop-range)))))
           (if (numberp prop-loc)
               (goto-char prop-loc)))
 
@@ -618,7 +618,7 @@
        (progn
          (funcall cleanup win local-cleanup)
          (if timer (cancel-timer timer))
-         (signal (car err) (cdr err))))))))
+         (signal (first err) (rest err))))))))
 
 
 
@@ -652,7 +652,7 @@
           ;;create property drawer
           (occ-debug :debug "occ-writeprop: property block not exist so creating it.")
           (let* ((range (org-get-property-block (point) 'force))
-                 (start (when (consp range) (1- (car range)))))
+                 (start (when (consp range) (1- (first range)))))
             (when (numberp start)
               (goto-char start))))
         (occ-debug :debug "occ-writeprop: adding prop: %s value: %s using (org-set-property)." prop value)
@@ -712,7 +712,7 @@
           ;;create property drawer
           (occ-debug :debug "occ-writeprop: property block not exist so creating it.")
           (let* ((range (org-get-property-block (point) 'force))
-                 (start (when (consp range) (1- (car range)))))
+                 (start (when (consp range) (1- (first range)))))
             (when (numberp start)
               (goto-char start))))
         (occ-debug :debug
@@ -805,8 +805,8 @@
                           (ctx occ-ctx))
    ;; file in which tsk aka org entry exists.
    "Predicate funtion to check if ctx matches to tsk's file attribute."
-   (let ((prop (car tsk-pair))
-         (tsk  (cdr tsk-pair)))
+   (let ((prop (first tsk-pair))
+         (tsk  (rest tsk-pair)))
      (let* ((currfile (occ-get-property tsk 'currfile))
             (currfile (if currfile (file-truename currfile))))
       (let* ((file (occ-ctx-file ctx))
@@ -828,8 +828,8 @@
                         (ctx occ-ctx))
   ;; file in which tsk aka org entry exists.
   "Predicate funtion to check if ctx matches to tsk's file attribute."
-  (let ((prop (car tsk-pair))
-        (tsk  (cdr tsk-pair)))
+  (let ((prop (first tsk-pair))
+        (tsk  (rest tsk-pair)))
     (let* ((currfile (occ-get-property tsk 'currfile))
            (currfile (if currfile (file-truename currfile))))
       (let* ((file (occ-ctx-file ctx))
@@ -847,7 +847,7 @@
 
 (cl-defmethod occ-ctx-property-get ((ctx-pair (head currfile)))
   "file of context"
-  (let* ((ctx (cdr ctx-pair))
+  (let* ((ctx (rest ctx-pair))
          (currfile (occ-ctx-file ctx)))
     currfile))
 (cl-defmethod occ-readprop ((tsk-pair (head currfile))
@@ -856,7 +856,7 @@
   (let* ((currfile (if ctx (occ-ctx-file ctx)))
          (dir (when (stringp currfile)
                   (file-name-directory currfile) (dirname-of-file currfile)))
-         (prompt (concat (symbol-name (car tsk-pair)) ": ")))
+         (prompt (concat (symbol-name (first tsk-pair)) ": ")))
     (ido-read-currfile-name prompt dir currfile)))
 ;;}}
 
@@ -864,8 +864,8 @@
 (cl-defmethod occ-rank ((tsk-pair (head root))
                         (ctx occ-ctx))
   "Predicate funtion to check if ctx matches to tsk's file attribute."
-  (let ((prop (car tsk-pair))
-        (tsk  (cdr tsk-pair)))
+  (let ((prop (first tsk-pair))
+        (tsk  (rest tsk-pair)))
     (let* ((root (occ-get-property tsk 'root))
            (root (if root (file-truename root))))
      (let* ((file (occ-ctx-file ctx))
@@ -881,7 +881,7 @@
            (length root)
          0)))))
 (cl-defmethod occ-ctx-property-get ((ctx-pair (head root)))
-  (let* ((ctx (cdr ctx-pair))
+  (let* ((ctx (rest ctx-pair))
          (file (occ-ctx-file ctx))
          (root (and file (dirname-of-file file))))
     root))
@@ -889,16 +889,16 @@
                             (ctx occ-ctx))
   (let* ((file (if ctx (occ-ctx-file ctx)))
          (dir (if (stringp file) (file-name-directory file) (dirname-of-file file)))
-         (prompt (concat (symbol-name (car tsk-pair)) ": ")))
+         (prompt (concat (symbol-name (first tsk-pair)) ": ")))
     (ido-read-directory-name prompt dir dir)))
 ;;}}
 
 ;;{{ sub-tree
 (cl-defmethod occ-readprop ((tsk-pair (head subtree))
                             (ctx occ-ctx))
-  (let ((prop (car tsk-pair))
-        (tsk  (cdr tsk-pair)))
-    (let ((prompt (concat (symbol-name (car tsk-pair)) ": ")))
+  (let ((prop (first tsk-pair))
+        (tsk  (rest tsk-pair)))
+    (let ((prompt (concat (symbol-name (first tsk-pair)) ": ")))
      (file-relative-name
        (ido-read-file-name ;; org-iread-file-name
         prompt
@@ -909,7 +909,7 @@
 
 ;;{{ git-branch
 (cl-defmethod occ-ctx-property-get ((ctx-pair (head git-branch)))
-  (let* ((ctx (cdr ctx-pair))
+  (let* ((ctx (rest ctx-pair))
          (file (occ-ctx-file ctx)))
     file))
 ;;}}
@@ -931,8 +931,8 @@
 (cl-defmethod occ-rank ((tsk-pair (head status))
                         (ctx occ-ctx))
   "Predicate funtion to check if ctx matches to tsk's status attribute."
-  (let ((prop (car tsk-pair))
-        (tsk  (cdr tsk-pair)))
+  (let ((prop (first tsk-pair))
+        (tsk  (rest tsk-pair)))
     (let ((todo-type
            (occ-get-property tsk 'todo-type))
           (closed
@@ -948,23 +948,23 @@
 (cl-defmethod occ-rank ((tsk-pair (head key))
                         (ctx occ-ctx))
   "Predicate funtion to check if ctx matches to tsk's file attribute."
-  (let ((prop (car tsk-pair))
-        (tsk  (cdr tsk-pair)))
+  (let ((prop (first tsk-pair))
+        (tsk  (rest tsk-pair)))
     (let* ((key (occ-get-property tsk 'KEY)))
       (if key (string-to-number key) 0))))
 
 (cl-defmethod occ-rank ((tsk-pair (head heading-level))
                         (ctx occ-ctx))
   "Predicate funtion to check if ctx matches to tsk's file attribute."
-  (let ((prop (car tsk-pair))
-        (tsk  (cdr tsk-pair)))
+  (let ((prop (first tsk-pair))
+        (tsk  (rest tsk-pair)))
     (let* ((level (occ-get-property tsk 'level)))
       (if level level 0))))
 
 (cl-defmethod occ-rank ((tsk-pair (head timebeing))
                         (ctx occ-ctx))
-  (let ((prop (car tsk-pair))
-        (tsk  (cdr tsk-pair)))
+  (let ((prop (first tsk-pair))
+        (tsk  (rest tsk-pair)))
    (let ((timebeing (occ-get-property tsk 'timebeing)))
      (let ((timebeing-time (if timebeing (org-duration-string-to-minutes timebeing) 0))
            (clocked-time   (occ-get-property tsk 'clock-sum)))
@@ -977,8 +977,8 @@
 
 (cl-defmethod occ-rank ((tsk-pair (head current-clock))
                         (ctx occ-ctx))
-  (let ((prop (car tsk-pair))
-        (tsk  (cdr tsk-pair)))
+  (let ((prop (first tsk-pair))
+        (tsk  (rest tsk-pair)))
     (let* ((tsk-marker (occ-get-property tsk 'marker)))
       (if (and
            (markerp org-clock-hd-marker)

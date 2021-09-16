@@ -130,7 +130,7 @@ from the dynamic block definition."
           "#+CAPTION: "
           (nth 9 lwords) " ["
           (substring
-           (format-time-string (cdr org-time-stamp-formats))
+           (format-time-string (rest org-time-stamp-formats))
            1 -1)
           "]"
           (if block (concat ", for " range-text ".") "")
@@ -187,7 +187,7 @@ from the dynamic block definition."
              (format (concat "| %s %s | %s%s"
                              (format org-clock-file-time-cell-format (nth 8 lwords))
                              " | *%s*|\n")
-                     (file-name-nondirectory (car tbl))
+                     (file-name-nondirectory (first tbl))
                      (if level-p   "| " "") ; level column, maybe
                      (if timestamp "| " "") ; timestamp column, maybe
                      (if properties (make-string (length properties) ?|) "")  ;properties columns, maybe
@@ -196,9 +196,9 @@ from the dynamic block definition."
           ;; Get the list of node entries and iterate over it
           (setq entries (nth 2 tbl))
           (while (setq entry (pop entries))
-            (setq level (car entry)
+            (setq level (first entry)
                   headline (nth 1 entry)
-                  hlc (if emph (or (cdr (assoc level hlchars)) "") ""))
+                  hlc (if emph (or (rest (assoc level hlchars)) "") ""))
             (when narrow-cut-p
               (if (and (string-match (concat "\\`" org-bracket-link-regexp
                                              "\\'")
@@ -213,12 +213,12 @@ from the dynamic block definition."
             (insert-before-markers
              "|"                      ; start the table line
              (if multifile "|" "")    ; free space for file name column?
-             (if level-p (format "%d|" (car entry)) "")   ; level, maybe
+             (if level-p (format "%d|" (first entry)) "")   ; level, maybe
              (if timestamp (concat (nth 2 entry) "|") "") ; timestamp, maybe
              (if properties
                  (concat
                   (mapconcat
-                   (lambda (p) (or (cdr (assoc p (nth 4 entry))) ""))
+                   (lambda (p) (or (rest (assoc p (nth 4 entry))) ""))
                    properties "|") "|") "")  ;properties columns, maybe
              (if indent (org-clocktable-indent-string level) "") ; indentation
              hlc headline hlc "|"                                ; headline
@@ -275,8 +275,8 @@ from the dynamic block definition."
     (when sort
       (save-excursion
         (org-table-goto-line 3)
-        (org-table-goto-column (car sort))
-        (org-table-sort-lines nil (cdr sort))))
+        (org-table-goto-column (first sort))
+        (org-table-sort-lines nil (rest sort))))
     (when recalc
       (if (eq formula '%)
           (save-excursion
@@ -375,7 +375,7 @@ from the dynamic block definition."
           "#+CAPTION: "
           (nth 9 lwords) " ["
           (substring
-           (format-time-string (cdr org-time-stamp-formats))
+           (format-time-string (rest org-time-stamp-formats))
            1 -1)
           "]"
           (if block (concat ", for " range-text ".") "")
@@ -432,7 +432,7 @@ from the dynamic block definition."
              (format (concat "| %s %s | %s%s"
                              (format org-clock-file-time-cell-format (nth 8 lwords))
                              " | *%s*|\n")
-                     (file-name-nondirectory (car tbl))
+                     (file-name-nondirectory (first tbl))
                      (if level-p   "| " "") ; level column, maybe
                      (if timestamp "| " "") ; timestamp column, maybe
                      (if properties (make-string (length properties) ?|) "")  ;properties columns, maybe
@@ -441,11 +441,11 @@ from the dynamic block definition."
           ;; Get the list of node entries and iterate over it
           (setq entries (nth 2 tbl))
           (while (setq entry (pop entries))
-            (setq level (car entry)
+            (setq level (first entry)
                   headline (nth 1 entry)
                   content  (nth 5 entry)
                   notes    (nth 6 entry)
-                  hlc (if emph (or (cdr (assoc level hlchars)) "") ""))
+                  hlc (if emph (or (rest (assoc level hlchars)) "") ""))
             (when narrow-cut-p
               (if (and (string-match (concat "\\`" org-bracket-link-regexp
                                              "\\'")
@@ -460,12 +460,12 @@ from the dynamic block definition."
             (insert-before-markers
              "|"                      ; start the table line
              (if multifile "|" "")    ; free space for file name column?
-             (if level-p (format "%d|" (car entry)) "")   ; level, maybe
+             (if level-p (format "%d|" (first entry)) "")   ; level, maybe
              (if timestamp (concat (nth 2 entry) "|") "") ; timestamp, maybe
              (if properties
                  (concat
                   (mapconcat
-                   (lambda (p) (or (cdr (assoc p (nth 4 entry))) ""))
+                   (lambda (p) (or (rest (assoc p (nth 4 entry))) ""))
                    properties "|") "|") "")  ;properties columns, maybe
              (if indent (org-clocktable-indent-string level) "") ; indentation
              hlc headline hlc "|"                                ; headline
@@ -523,8 +523,8 @@ from the dynamic block definition."
     (when sort
       (save-excursion
         (org-table-goto-line 3)
-        (org-table-goto-column (car sort))
-        (org-table-sort-lines nil (cdr sort))))
+        (org-table-goto-column (first sort))
+        (org-table-sort-lines nil (rest sort))))
     (when recalc
       (if (eq formula '%)
           (save-excursion
@@ -554,9 +554,9 @@ from the dynamic block definition."
     (custom-set-max
      max
      (+ (length "• File: ")
-        (length (file-relative-name (car tbl) default-directory))))
+        (length (file-relative-name (first tbl) default-directory))))
     (dolist (hl (nth 2 tbl))
-      (let ((level (car hl))
+      (let ((level (first hl))
             (headline (nth 1 hl))
             (content  (nth 5 hl))
             (notes    (nth 6 hl) ))
@@ -667,7 +667,7 @@ from the dynamic block definition."
           "#+CAPTION: "
           (nth 9 lwords) " ["
           (substring
-           (format-time-string (cdr org-time-stamp-formats))
+           (format-time-string (rest org-time-stamp-formats))
            1 -1)
           "]"
           (if block (concat ", for " range-text ".") "")
@@ -724,13 +724,13 @@ from the dynamic block definition."
           ;; First the file time, if we have multiple files
           (when multifile
             ;; Summarize the time collected from this file
-            (let ((filename (file-relative-name (car tbl) default-directory)))
+            (let ((filename (file-relative-name (first tbl) default-directory)))
               (insert-before-markers
                (format (concat "File: %s"
                                (make-string (- max-report-line-len (+ (length "File: ") (length filename))) ?\ )
                                " %s"
                                "\n")
-                       ;; (file-name-nondirectory (car tbl))
+                       ;; (file-name-nondirectory (first tbl))
                        filename
                        ;; (if level-p   "| " "") ; level column, maybe
                        ;; (if timestamp "| " "") ; timestamp column, maybe
@@ -740,11 +740,11 @@ from the dynamic block definition."
           ;; Get the list of node entries and iterate over it
           (setq entries (nth 2 tbl))
           (while (setq entry (pop entries))
-            (setq level (car entry)
+            (setq level (first entry)
                   headline (nth 1 entry)
                   content  (nth 5 entry)
                   notes    (nth 6 entry)
-                  hlc (if emph (or (cdr (assoc level hlchars)) "") ""))
+                  hlc (if emph (or (rest (assoc level hlchars)) "") ""))
             (when narrow-cut-p
               (if (and (string-match (concat "\\`" org-bracket-link-regexp
                                              "\\'")
@@ -760,12 +760,12 @@ from the dynamic block definition."
             (insert-before-markers
              ;; "|"                      ; start the table line
              ;; (if multifile "|" "")    ; free space for file name column?
-             ;; (if level-p (format "%d|" (car entry)) "")   ; level, maybe
+             ;; (if level-p (format "%d|" (first entry)) "")   ; level, maybe
              ;; (if timestamp (concat (nth 2 entry) "|") "") ; timestamp, maybe
              ;; (if properties
              ;;     (concat
              ;;      (mapconcat
-             ;;       (lambda (p) (or (cdr (assoc p (nth 4 entry))) ""))
+             ;;       (lambda (p) (or (rest (assoc p (nth 4 entry))) ""))
              ;;       properties "|") "|") "")  ;properties columns, maybe
              ;; (if indent (org-clocktable-indent-string level) "") ; indentation
              (make-string level
@@ -837,8 +837,8 @@ from the dynamic block definition."
       (when sort
         (save-excursion
           (org-table-goto-line 3)
-          (org-table-goto-column (car sort))
-          (org-table-sort-lines nil (cdr sort))))
+          (org-table-goto-column (first sort))
+          (org-table-sort-lines nil (rest sort))))
       (when recalc
         (if (eq formula '%)
             (save-excursion
@@ -1019,19 +1019,19 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
          (properties (plist-get params :properties))
          (inherit-property-p (plist-get params :inherit-props))
          todo-only
-         (matcher (if tags (cdr (org-make-tags-matcher tags))))
+         (matcher (if tags (rest (org-make-tags-matcher tags))))
          cc range-text st p time org-clock-notes org-heading-content-only level hdl props tsp tbl)
 
     (setq org-clock-file-total-minutes nil)
     (when block
       (setq cc (org-clock-special-range block nil t ws ms)
-            ts (car cc) te (nth 1 cc) range-text (nth 2 cc)))
+            ts (first cc) te (nth 1 cc) range-text (nth 2 cc)))
     (when (integerp ts) (setq ts (calendar-gregorian-from-absolute ts)))
     (when (integerp te) (setq te (calendar-gregorian-from-absolute te)))
     (when (and ts (listp ts))
-      (setq ts (format "%4d-%02d-%02d" (nth 2 ts) (car ts) (nth 1 ts))))
+      (setq ts (format "%4d-%02d-%02d" (nth 2 ts) (first ts) (nth 1 ts))))
     (when (and te (listp te))
-      (setq te (format "%4d-%02d-%02d" (nth 2 te) (car te) (nth 1 te))))
+      (setq te (format "%4d-%02d-%02d" (nth 2 te) (first te) (nth 1 te))))
     ;; Now the times are strings we can parse.
     (if ts (setq ts (org-matcher-time ts)))
     (if te (setq te (org-matcher-time te)))
@@ -1076,10 +1076,10 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
                                (match-string 2)))))
                     tsp (when timestamp
                           (setq props (org-entry-properties (point)))
-                          (or (cdr (assoc "SCHEDULED" props))
-                              (cdr (assoc "DEADLINE" props))
-                              (cdr (assoc "TIMESTAMP" props))
-                              (cdr (assoc "TIMESTAMP_IA" props))))
+                          (or (rest (assoc "SCHEDULED" props))
+                              (rest (assoc "DEADLINE" props))
+                              (rest (assoc "TIMESTAMP" props))
+                              (rest (assoc "TIMESTAMP_IA" props))))
                     props (when properties
                             (remove nil
                                     (mapcar
@@ -1114,7 +1114,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
       (when block
         ;; Get the range text for the header
         (setq cc (org-clock-special-range block nil t ws ms)
-              ts (car cc) te (nth 1 cc) range-text (nth 2 cc)))
+              ts (first cc) te (nth 1 cc) range-text (nth 2 cc)))
       (when step
         ;; Write many tables, in steps
         (unless (or block (and ts te))
@@ -1127,7 +1127,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
       ;; Get the right scope
       (setq pos (point))
       (cond
-        ((and scope (listp scope) (symbolp (car scope)))
+        ((and scope (listp scope) (symbolp (first scope)))
          (setq scope (eval scope)))
         ((eq scope 'agenda)
          (setq scope (org-agenda-files t)))
@@ -1216,7 +1216,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
       (when block
         ;; Get the range text for the header
         (setq cc (org-clock-special-range block nil t ws ms)
-              ts (car cc) te (nth 1 cc) range-text (nth 2 cc)))
+              ts (first cc) te (nth 1 cc) range-text (nth 2 cc)))
       (when step
         ;; Write many tables, in steps
         (unless (or block (and ts te))
@@ -1229,7 +1229,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
       ;; Get the right scope
       (setq pos (point))
       (cond
-        ((and scope (listp scope) (symbolp (car scope)))
+        ((and scope (listp scope) (symbolp (first scope)))
          (setq scope (eval scope)))
         ((eq scope 'agenda)
          (setq scope (org-agenda-files t)))

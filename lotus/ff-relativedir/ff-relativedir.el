@@ -39,14 +39,14 @@
 (defun get-subdirs (dir pos filename)
   (let* ((tpos 0)
          (epos 0)
-         (spos (dotimes (c (1+ (cdr dirnu)) tpos)
-                 (string-match (car dirnu) filename tpos)
+         (spos (dotimes (c (1+ (rest dirnu)) tpos)
+                 (string-match (first dirnu) filename tpos)
                  (setq tpos (match-beginning 0)
                        epos (match-end 0))))
          (prefix-filename (substring filename 0 spos))
          (suffix-filename (substring filename epos))
          (subdirs (remove
-                   (car dirnu)
+                   (first dirnu)
                    (remove-if-not
                     #'(lambda (d)
                         (and
@@ -67,7 +67,7 @@
   (interactive "P")
   (if buffer-file-name
     (let* ((filename (call-times (cond
-                                   ((and (consp updircount) (eq (car wprif) 4)) 1)
+                                   ((and (consp updircount) (eq (first wprif) 4)) 1)
                                    ((null updircount) 0)
                                    (t (prefix-numeric-value updircount)))
                                  'dirname-of-file buffer-file-name))
@@ -85,16 +85,16 @@
            (matcheddircomponents
             (remove-if-not
              #'(lambda (e)
-                 (string-equal (car e) matchd))
+                 (string-equal (first e) matchd))
              dircomponents))
            (dirnu
             (if (= (length matcheddircomponents) 1)
-                (car matcheddircomponents)
+                (first matcheddircomponents)
                 (rassoc
                  (ido-completing-read "which one: " (mapcar #'cdr matcheddircomponents))
                  matcheddircomponents))))
-      (let* ((results (get-subdirs (car dirnu) (cdr dirnu) filename))
-             (existing-subdirs (car results))
+      (let* ((results (get-subdirs (first dirnu) (rest dirnu) filename))
+             (existing-subdirs (first results))
              (prefix-filename (nth 1 results))
              (suffix-filename (nth 2 results))
              (select-subdir (if existing-subdirs

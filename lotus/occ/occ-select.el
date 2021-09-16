@@ -59,7 +59,7 @@
   "Main Machinery, TODO: Document it, NOTE: ACTION-TRANSFORMER is
 superseding ACTION, As in helm ACTION-TRANSFORMER are superseding
 ACTION "
-  ;; (occ-debug :debug "sacha marker %s" (car dyntskpls))
+  ;; (occ-debug :debug "sacha marker %s" (first dyntskpls))
 
 
   ;; (lotus-with-no-active-minibuffer-if <- TODO: This should be there only for first level command, not in internal function

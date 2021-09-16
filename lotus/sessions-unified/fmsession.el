@@ -157,8 +157,8 @@ return a new alist whose car is the new pair and cdr is ALIST."
                        (setq nickname-list (cons buff-file nickname-list)))
                      (setq nickname-type-map
                            (if (eq type 'nickname)
-                               (delete (car nickname-type-map) nickname-type-map)
-                               (cdr nickname-type-map)))))
+                               (delete (first nickname-type-map) nickname-type-map)
+                               (rest nickname-type-map)))))
                  ;; (setq screen-name
                  ;;       (mapconcat 'identity (reverse nickname-list) ":"))
                  (setq screen-name (reverse nickname-list))))
@@ -230,17 +230,17 @@ return a new alist whose car is the new pair and cdr is ALIST."
         (if (and elscreen-frame-confs
                  (elscreen-get-frame-confs nframe))
             (let* ((desktop-buffers
-                    (cdr (assoc 'desktop-buffers session-list)))
+                    (rest (assoc 'desktop-buffers session-list)))
                    (screens
                     (or
-                     (cdr (assoc 'screens session-list))
+                     (rest (assoc 'screens session-list))
                      `((,(length session-list) "*scratch*"))))
                    (session-current-screen-buffers
                     (cadr (assoc
-                           (cdr (assoc 'current-screen session-list))
+                           (rest (assoc 'current-screen session-list))
                            screens)))
                    (session-current-buffer-file
-                    (cdr (assoc 'current-buffer-file session-list))))
+                    (rest (assoc 'current-buffer-file session-list))))
               ;; (when t
               (when session-unified-debug
                (message "Bstart: session-current-screen-buffers %s" session-current-screen-buffers)
@@ -300,15 +300,15 @@ return a new alist whose car is the new pair and cdr is ALIST."
                         (unless (eq screen 0)
                           (elscreen-create))
 
-                        (let* ((buff-file  (car buff-files))
+                        (let* ((buff-file  (first buff-files))
                                (file-path  (if (consp buff-file)
-                                              (cdr buff-file)))
+                                              (rest buff-file)))
                                (buff (ignore-errors
                                        (get-buffer
                                         (or (if file-path
                                                 (find-buffer-visiting file-path))
                                             (if (consp buff-file)
-                                                (car buff-file)
+                                                (first buff-file)
                                               buff-file)))))
                                (minibuff-name " *Minibuf"))
                          (message "  while buff: %s file-path: %s" buff file-path)
@@ -325,12 +325,12 @@ return a new alist whose car is the new pair and cdr is ALIST."
                          (message "test4")))
                       (error "3 Screen is not active for frame %s" nframe))
 
-                    (setq buff-files (cdr buff-files))
+                    (setq buff-files (rest buff-files))
 
                     (message "progn buff-files: %s" buff-files)
                     (when session-unified-debug (message "else"))))
 
-                (setq screens (cdr screens))
+                (setq screens (rest screens))
                 (message "while screen: %s" screens)
                 (message "test5")) ;; (while screens
 
@@ -343,14 +343,14 @@ return a new alist whose car is the new pair and cdr is ALIST."
                     (when nil (elscreen-create))                 ;trap
                     ;; set current screen, window, and buffer.
                     (let* ((file-path  (if (consp session-current-buffer-file)
-                                           (cdr session-current-buffer-file)))
+                                           (rest session-current-buffer-file)))
                            (buff
                             (ignore-errors
                               (get-buffer
                                (or (if file-path
                                        (find-buffer-visiting file-path))
                                    (if (consp session-current-buffer-file)
-                                       (car session-current-buffer-file)
+                                       (first session-current-buffer-file)
                                      session-current-buffer-file))))))
                       (when (and buff
                                  (bufferp buff))
@@ -423,7 +423,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
 
 (defun fmsession-modify-name (fun)
   (mapcar (lambda (x)
-            (setcar x (funcall fun (car x)))
+            (setcar x (funcall fun (first x)))
             x)
           (copy-tree *frames-elscreen-session*)))
 
@@ -463,7 +463,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
   (message "elscreen-session-restore: start")
   (if elscreen-session
       (let ((elscreen-session-list
-             (cdr (assoc elscreen-session *frames-elscreen-session*))))
+             (rest (assoc elscreen-session *frames-elscreen-session*))))
         (when session-unified-debug
          (message "Nstart: session-session %s" elscreen-session))
         (if elscreen-session-list
@@ -538,13 +538,13 @@ return a new alist whose car is the new pair and cdr is ALIST."
 (defun server-create-frame-around-adrun ()
   "remove-scratch-buffer"
   (if *elscreen-session-restore-data*
-      (let* ((buffer-file (get-buffer (cdr (assoc 'cb *elscreen-session-restore-data*))))
+      (let* ((buffer-file (get-buffer (rest (assoc 'cb *elscreen-session-restore-data*))))
              (file-path  (if (consp buffer-file)
-                             (cdr buffer-file)))
+                             (rest buffer-file)))
              (buff (or (if file-path
                            (find-buffer-visiting file-path))
                        (if (consp buffer-file)
-                           (car buffer-file)
+                           (first buffer-file)
                          buffer-file))))
         (when buff
           (elscreen-kill)
@@ -601,7 +601,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
                 (ignore-errors (emacs-panel-wm-hints))))
            (desktop-name (if wm-hints
                              (nth (cadr (assoc 'current-desktop wm-hints))
-                                  (cdr  (assoc 'desktop-names wm-hints)))))
+                                  (rest  (assoc 'desktop-names wm-hints)))))
            (location (if (and try-guessing
                               desktop-name
                               (member desktop-name

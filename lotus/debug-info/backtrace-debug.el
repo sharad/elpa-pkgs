@@ -129,7 +129,7 @@
 
 
 (defun backtrace-before-error (orig-fun &rest args)
-  (apply #'message (concat "backtrace-before-error: " (car args)) (cdr args))
+  (apply #'message (concat "backtrace-before-error: " (first args)) (rest args))
   (backtrace-to-buffer "*errbuf*"))
 
 

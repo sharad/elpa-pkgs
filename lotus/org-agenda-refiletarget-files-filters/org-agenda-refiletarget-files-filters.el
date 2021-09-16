@@ -132,7 +132,7 @@ EXT is a list of the extensions of files to be included."
                    (completing-read "Tag: "
                                     (mapcar 'car tagslist)))))
     (org-agenda-remove-restriction-lock 'noupdate)
-    (put 'org-agenda-files 'org-restrict (cdr (assoc ftag tagslist)))
+    (put 'org-agenda-files 'org-restrict (rest (assoc ftag tagslist)))
     (setq org-agenda-overriding-restriction 'files)))
 
 (defun my-org-get-all-filetags ()
@@ -146,7 +146,7 @@ EXT is a list of the extensions of files to be included."
          (lambda (y)
            (let ((tagfiles (assoc y tagslist)))
              (if tagfiles
-                 (setcdr tagfiles (cons x (cdr tagfiles)))
+                 (setcdr tagfiles (cons x (rest tagfiles)))
                (add-to-list 'tagslist (list y x)))))
          (my-org-get-filetags)))
       tagslist)))

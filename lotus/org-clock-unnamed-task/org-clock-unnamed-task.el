@@ -202,9 +202,8 @@
    (save-excursion
     (org-back-to-heading t)
     (let ((element (org-element-at-point)))
-      (if (and
-           element
-           (eq (car element) 'headline))
+      (if (and element
+               (eq (first element) 'headline))
           (let (;; (begin (plist-get (cadr element) :begin))
                 ;; (level (plist-get (cadr element) :level))
                 (title (plist-get (cadr element) :title)))

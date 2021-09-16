@@ -53,7 +53,7 @@
                                                      (copy-sequence headings)
                                                      timelst)))))
                (setq tmphd (org-heading-components)
-                     lvl (car tmphd)
+                     lvl (first tmphd)
                      title (nth 4 tmphd)
                      timelst nil)
                ;; maintain a list of the current heading hierarchy
@@ -115,7 +115,7 @@
     (cl-loop for iv in intvls
              collect (list
                       iv
-                      (let* ((cutstart (car iv))
+                      (let* ((cutstart (first iv))
                              (cutend (cadr iv))
                              (tmsum 0.0)
                              headings trlst)
@@ -123,7 +123,7 @@
                         (cl-loop
                          for item in struct
                          do (progn
-                              (setq headings (car item)
+                              (setq headings (first item)
                                     trlst (cadr item)
                                     ;; sum up the parts of the time
                                     ;; ranges falling into this
@@ -132,7 +132,7 @@
                                            #'+
                                            (mapcar
                                             (lambda (tr)
-                                              (dfeich/org-slice-tr (car tr)
+                                              (dfeich/org-slice-tr (first tr)
                                                                    (cadr tr)
                                                                    cutstart
                                                                    cutend))
@@ -155,20 +155,20 @@
     (insert "|Time|Customer| Task |Minutes|\n|------\n")
     (cl-loop
      for item in table
-     do (let ((ivl (car item))
+     do (let ((ivl (first item))
               (entries (cadr item)))
           (cl-loop for e in entries
-                   do (let ((headings (car e))
+                   do (let ((headings (first e))
                             (minutes (cadr e)))
                         (insert (concat
                                  "|"
                                  (format-time-string "%H:%M" (seconds-to-time
-                                                              (car ivl)))
+                                                              (first ivl)))
                                  "-"
                                  (format-time-string "%H:%M" (seconds-to-time
                                                               (cadr ivl)))
                                  "|" (nth 1 headings)
-                                 "|" (car (last headings))
+                                 "|" (first (last headings))
                                  "|" (format "%d" minutes)
                                  "|\n"))))))
     (insert "|----\n|TOTAL||||\n#+TBLFM: @>$>=vsum(@I..@II)")

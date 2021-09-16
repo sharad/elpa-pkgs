@@ -165,13 +165,13 @@
  (occ-get-callables (occ-make-ctx-at-point)
                     (occ-get-keywords-list-from-tree '(t actions select general edit)))
 
- (car (occ-get-callables (occ-make-ctx-at-point
-                          (occ-get-keywords-list-from-tree '(t actions select general edit)))))
+ (first (occ-get-callables (occ-make-ctx-at-point
+                            (occ-get-keywords-list-from-tree '(t actions select general edit)))))
 
  (tree-collect-items occ-helm-actions-tree nil '(t actions general) 0)
 
  (occ-get-helm-actions-plist nil
-                             (car (occ-get-keywords-list-from-tree '(t actions general))))
+                             (first (occ-get-keywords-list-from-tree '(t actions general))))
 
  (apply #'append
         (mapcar #'(lambda (name-action-key)

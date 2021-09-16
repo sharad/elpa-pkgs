@@ -31,8 +31,8 @@
 (defun collect-carlist (alist)
   (let ((ulist nil))
     (dolist (pair (copy-tree alist))
-      (if (assoc (car pair) ulist)
-          (nconc (assoc (car pair) ulist) (cdr pair))
+      (if (assoc (first pair) ulist)
+          (nconc (assoc (first pair) ulist) (rest pair))
         (setf ulist (append ulist (list pair)))))
     ulist))
 
@@ -40,34 +40,34 @@
 (defun collect-carlist (alist)
   (let ((ulist nil))
     (dolist (pair alist)
-      (unless (assoc (car pair) ulist)
-        (when (car pair)
-          (push (list (car pair)) ulist)))
-      (let ((ef (car pair)))
-        (let ((xulist (assoc (car pair) ulist))
+      (unless (assoc (first pair) ulist)
+        (when (first pair)
+          (push (list (first pair)) ulist)))
+      (let ((ef (first pair)))
+        (let ((xulist (assoc (first pair) ulist))
               (tlist  nil)
-              (ilist  (cdr pair)))
+              (ilist  (rest pair)))
           (dolist (i ilist)
-            (unless (member i (cdr xulist))
+            (unless (member i (rest xulist))
               (push i tlist)))
           (setq tlist (nreverse tlist))
-          (nconc (assoc (car pair) ulist) tlist))))
+          (nconc (assoc (first pair) ulist) tlist))))
     (setq ulist (nreverse ulist))))
 
 
 (defun collect-alist (alist)
   (let ((ulist nil))
     (dolist (pair alist)
-      (unless (assoc (car pair) ulist)
-        (when (car pair)
-          (push (list (car pair)) ulist)))
-      (nconc (assoc (car pair) ulist) (list (cdr pair))))
+      (unless (assoc (first pair) ulist)
+        (when (first pair)
+          (push (list (first pair)) ulist)))
+      (nconc (assoc (first pair) ulist) (list (rest pair))))
     (setq ulist (nreverse ulist))))
 
 
 (defun delete-dups-alist (alist)
   (dolist (pair alist)
-    (setcdr pair (delete-dups (cdr pair))))
+    (setcdr pair (delete-dups (rest pair))))
   alist)
 
 
@@ -89,7 +89,7 @@
       (remove nil
               (mapcar #'(lambda (subtree)
                           (collect-elem-cond subtree nodep predicate))
-                      (cdr tree))))))
+                      (rest tree))))))
 
 (defun collect-elem-cond-depth (tree nodep predicate depth)
   (collect-elem-cond tree
@@ -104,47 +104,47 @@
                            #'(lambda (x)
                                (not (listp x)))
                            #'(lambda (subtree)
-                               (memq (car subtree) '(t)))
+                               (memq (first subtree) '(t)))
                            depth))
 
 
 (defun tree-add (keys item list)
-  (let ((key (car keys)))
-    (if (cdr list)
+  (let ((key (first keys)))
+    (if (rest list)
         (if key
             (progn
-              (unless (assoc key (cdr list))
-                (nconc (cdr list) (list (list key))))
-              (tree-add (cdr keys) item (assoc key (cdr list))))
-          (unless (memq item (cdr list))
-            (nconc (cdr list) (list item))))
+              (unless (assoc key (rest list))
+                (nconc (rest list) (list (list key))))
+              (tree-add (rest keys) item (assoc key (rest list))))
+          (unless (memq item (rest list))
+            (nconc (rest list) (list item))))
       (progn
         (when key
           (nconc list (list (list key))))
-        (if (cdr keys)
-            (tree-add (cdr keys) item (assoc key (cdr list)))
+        (if (rest keys)
+            (tree-add (rest keys) item (assoc key (rest list)))
           (if key
-              (nconc (assoc key (cdr list)) (list item))
+              (nconc (assoc key (rest list)) (list item))
             (nconc list (list item))))))))
 
 ;;;###autoload
 (defun tree-add (keys item list)
-  (let ((key (car keys)))
-    (if (cdr list)
+  (let ((key (first keys)))
+    (if (rest list)
         (if key
             (progn
-              (unless (assoc key (cdr list))
-                (nconc (cdr list) (list (list key))))
-              (tree-add (cdr keys) item (assoc key (cdr list))))
-          (unless (member item (cdr list))
-            (nconc (cdr list) (list item))))
+              (unless (assoc key (rest list))
+                (nconc (rest list) (list (list key))))
+              (tree-add (rest keys) item (assoc key (rest list))))
+          (unless (member item (rest list))
+            (nconc (rest list) (list item))))
       (progn
         (when key
           (nconc list (list (list key))))
-        (if (cdr keys)
-            (tree-add (cdr keys) item (assoc key (cdr list)))
+        (if (rest keys)
+            (tree-add (rest keys) item (assoc key (rest list)))
           (if key
-              (nconc (assoc key (cdr list)) (list item))
+              (nconc (assoc key (rest list)) (list item))
             (nconc list (list item))))))))
 
 

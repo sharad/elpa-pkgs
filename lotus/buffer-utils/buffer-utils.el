@@ -96,11 +96,11 @@
     (let ((list (nreverse (buffer-list)))
           found)
       (while (and (not found) list)
-        (let ((buffer (car list)))
+        (let ((buffer (first list)))
           (if (and (not (get-buffer-window buffer))
                    (not (string-match "\\` " (buffer-name buffer))))
               (setq found buffer)))
-        (setq list (cdr list)))
+        (setq list (rest list)))
       (switch-to-buffer found))))
 
 

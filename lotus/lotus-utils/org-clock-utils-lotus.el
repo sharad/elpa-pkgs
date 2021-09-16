@@ -125,11 +125,11 @@
 
 (defmacro org-with-clock-position (clock &rest forms)
   "Evaluate FORMS with CLOCK as the current active clock."
-  `(with-current-buffer (marker-buffer (car ,clock))
+  `(with-current-buffer (marker-buffer (first ,clock))
      (save-excursion
        (save-restriction
          (widen)
-         (goto-char (car ,clock))
+         (goto-char (first ,clock))
          (beginning-of-line)
          (let (buffer-read-only)
            ,@forms)))))

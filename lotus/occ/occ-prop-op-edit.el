@@ -82,9 +82,9 @@
     (if (occ-list-p prop)
         (occ-set-property tsk prop
                           (nconc (occ-get-property tsk prop)
-                                 (list (car values))))
+                                 (list (first values))))
       (occ-set-property tsk prop
-                        (car values)))))
+                        (first values)))))
 
 (cl-defmethod occ-operation ((obj       occ-obj-tsk)
                              (operation (eql put))
@@ -96,7 +96,7 @@
         (occ-set-property tsk prop
                           values)
       (occ-set-property tsk prop
-                        (car values)))))
+                        (first values)))))
 
 (cl-defmethod occ-operation ((obj       occ-obj-tsk)
                              (operation (eql remove))
@@ -106,7 +106,7 @@
     (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
     (if (occ-list-p prop
                     (occ-set-property tsk prop
-                                      (remove (car values
+                                      (remove (first values
                                                    (occ-get-property tsk prop)))))
         (occ-error "Implement it."))))
 
@@ -178,8 +178,8 @@
         (cl-assert actions)
         (let ((action  (completing-read (format "%s action: " prop) actions)))
           (cl-assert action)
-          (cdr (assoc action
-                      actions))))
+          (rest (assoc action
+                       actions))))
     'put))
 
 

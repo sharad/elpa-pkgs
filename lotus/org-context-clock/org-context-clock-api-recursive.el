@@ -221,14 +221,14 @@
   ;;        (tree-mapcar-nodes #'(lambda (tx) (plist-get tx :sub-tree))
   ;;                           #'(lambda (tx) (plist-get tx :title))
   ;;                           ;; testxx
-  ;;                           (car (plist-get testxx :sub-tree))
+  ;;                           (first (plist-get testxx :sub-tree))
   ;;                           ))
 
   ;;  (setq testxxmapc
   ;;        (tree-mapc-nodes #'(lambda (tx) (plist-get tx :sub-tree))
   ;;                         #'(lambda (tx) (plist-get tx :title))
   ;;                         ;; testxx
-  ;;                         (car (plist-get testxx :sub-tree))
+  ;;                         (first (plist-get testxx :sub-tree))
   ;;                         )))
   )
 

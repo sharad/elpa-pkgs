@@ -273,7 +273,7 @@
                      (occ-format ctx 'capitalize)
                      prop)
           (occ-aggrigate-list-rank tsk-root (occ-get-property tsk prop) #'+
-            (let* ((tsk-root (car (occ-get-property tsk prop)))
+            (let* ((tsk-root (first (occ-get-property tsk prop)))
                    (tsk-root (when tsk-root (file-truename tsk-root)))
                    (ctx-file (occ-ctx-file ctx))
                    ;; (ctx-file (when ctx-file (file-truename ctx-file)))

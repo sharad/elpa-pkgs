@@ -33,17 +33,17 @@
 (defvar org-rl-interfaces nil)
 
 (defun org-rl-interface-get (intf key)
-  (plist-get (cdr (assoc intf org-rl-interfaces)) key))
+  (plist-get (rest (assoc intf org-rl-interfaces)) key))
 
 (defun org-rl-interface-put (intf key value)
-  (plist-set (cdr (assoc intf org-rl-interfaces)) key value))
+  (plist-set (rest (assoc intf org-rl-interfaces)) key value))
 
 (defun org-rl-find-intf (clock-marker)
   (some #'(lambda (intf)
-            (let ((clock-p (org-rl-interface-get (car intf) :org-rl-clock-p)))
+            (let ((clock-p (org-rl-interface-get (first intf) :org-rl-clock-p)))
               (when (and clock-p
                          (funcall clock-p clock-marker))
-                (car intf))))
+                (first intf))))
         org-rl-interfaces))
 
 

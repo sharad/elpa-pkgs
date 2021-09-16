@@ -45,7 +45,7 @@
 
       (defun org-capture+-debug (level &rest args)
         (when org-capture+-debug
-          (when (car args)
+          (when (first args)
             (apply #'format args)
             (when (member level '(:emergency :error :warning :debug))
               ;; (apply #'lwarn 'occ level args)
@@ -183,7 +183,7 @@
       (if (and (org-capture-get :target-entry-p)
                 (bolp)
                 (looking-at org-outline-regexp))
-          (let ((note (cdr (assq note-purpose org-log-note-headings)))
+          (let ((note (rest (assq note-purpose org-log-note-headings)))
                 lines)
             (progn
               (while (string-match "\\`# .*\n[ \t\n]*" txt)
@@ -541,7 +541,7 @@
       ;; (org-capture-set-plist template)
   
       (setq org-capture-plist plist)
-      (org-capture-put ;; :key (car entry)
+      (org-capture-put ;; :key (first entry)
                        ;; :description (nth 1 entry)
                        :target target)
   
@@ -566,7 +566,7 @@
       (org-capture-put :original-buffer            orig-buf
                        :original-file              (or (buffer-file-name orig-buf)
                                                        (and (featurep 'dired)
-                                                            (car (rassq orig-buf
+                                                            (first (rassq orig-buf
                                                                         dired-buffers))))
                        :original-file-nondirectory (and (buffer-file-name orig-buf)
                                                         (file-name-nondirectory
@@ -588,11 +588,11 @@
       (setq org-capture-clock-keep (org-capture-get :clock-keep))
       (if (and (not (org-capture-get :target))
                (eq 'immdediate
-                   (car (org-capture-get :target)))) ;; (equal goto 0)
+                   (first (org-capture-get :target)))) ;; (equal goto 0)
           ;;insert at point
           (org-capture-insert-template-here)
         (condition-case error
-            (org-capture-place-template (eq (car (org-capture-get :target))
+            (org-capture-place-template (eq (first (org-capture-get :target))
                                             'function))
           ((error quit)
            (if (and (buffer-base-buffer (current-buffer))

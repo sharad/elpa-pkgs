@@ -220,11 +220,11 @@ See (info \"(gnus)Group Line Specification\").
 You need to add `Content-Type' to `nnmail-extra-headers' and
 `gnus-extra-headers', see Info node `(gnus)To From Newsgroups'."
   (let ((case-fold-search t)
-	(ctype (or (cdr (assq 'Content-Type (mail-header-extra header)))
+	(ctype (or (rest (assq 'Content-Type (mail-header-extra header)))
 		   "text/plain"))
 	indicator)
     (mapc (lambda (el)
-	    (when (string-match (car el) ctype)
+	    (when (string-match (first el) ctype)
 	      (setq indicator (cadr el))))
 	  rs-gnus-summary-line-content-type-alist)
     (if indicator
@@ -295,11 +295,11 @@ See (info \"(gnus)Group Line Specification\").
 You need to add `X-Gnus-Label' to `nnmail-extra-headers' and
 `gnus-extra-headers', see Info node `(gnus)To From Newsgroups'."
   (let ((case-fold-search t)
-	(label (or (cdr (assq 'X-Gnus-Label (mail-header-extra header)))
+	(label (or (rest (assq 'X-Gnus-Label (mail-header-extra header)))
 		   ""))
 	indicator)
     (mapc (lambda (el)
-	    (when (string-match (car el) label)
+	    (when (string-match (first el) label)
 	      (setq indicator (cadr el))))
 	  rs-gnus-summary-line-label-alist)
     (if indicator
@@ -355,7 +355,7 @@ See (info \"(gnus)Group Line Specification\").
 You need to add `Sender' to `nnmail-extra-headers' and
 `gnus-extra-headers', see Info node `(gnus)To From Newsgroups'."
   (let ((case-fold-search t))
-    (or (cdr (assq 'Sender (mail-header-extra header)))
+    (or (rest (assq 'Sender (mail-header-extra header)))
 	"no sender found")))
 
 ;; An example for noffle:
@@ -364,7 +364,7 @@ You need to add `Sender' to `nnmail-extra-headers' and
 ;; You need to add `X-NOFFLE-Status' to `nnmail-extra-headers' and
 ;; `gnus-extra-headers', see Info node `(gnus)To From Newsgroups'."
 ;;   (let ((case-fold-search t)
-;; 	(val (or (cdr (assq 'X-NOFFLE-Status (mail-header-extra header)))
+;; 	(val (or (rest (assq 'X-NOFFLE-Status (mail-header-extra header)))
 ;; 		 "unknown")))
 ;;     (gnus-replace-in-string val "^\\(\\w\\).*$" "\\1")))
 
@@ -383,7 +383,7 @@ Used as help echo for the summary buffer."
 		   (gnus-summary-line-message-size head)))
 	   (score (gnus-summary-article-score article))
 	   (ct (gnus-replace-in-string
-		(or (cdr (assq 'Content-Type (mail-header-extra head)))
+		(or (rest (assq 'Content-Type (mail-header-extra head)))
 		    "n/a")
 		"[; ].*$" ""))
 	   (no (mail-header-number head)))
@@ -404,8 +404,8 @@ Used as help echo for the summary buffer."
 	   (head (gnus-data-header (gnus-data-find article)))
 	   (from (mail-header-from head))
 	   (subject (mail-header-subject head))
-	   (to (cdr (or (assq 'To (mail-header-extra head)))))
-	   (ng (cdr (or (assq 'Newsgroups (mail-header-extra head)))))
+	   (to (rest (or (assq 'To (mail-header-extra head)))))
+	   (ng (rest (or (assq 'Newsgroups (mail-header-extra head)))))
 	   (date (mail-header-date head)))
       (format "%-11s%s\n%-11s%s\n%-11s%s\n%-11s%s\n"
 	      "From:" from
@@ -586,12 +586,12 @@ Argument REVERSE means reverse order."
   (string-lessp
    (let ((extract (funcall
 		   gnus-extract-address-components
-		   (or (cdr (assq 'To (mail-header-extra h1))) ""))))
-     (or (car extract) (cadr extract)))
+		   (or (rest (assq 'To (mail-header-extra h1))) ""))))
+     (or (first extract) (cadr extract)))
    (let ((extract (funcall
 		   gnus-extract-address-components
-		   (or (cdr (assq 'To (mail-header-extra h2))) ""))))
-     (or (car extract) (cadr extract)))))
+		   (or (rest (assq 'To (mail-header-extra h2))) ""))))
+     (or (first extract) (cadr extract)))))
 
 (defun rs-gnus-thread-sort-by-recipient (h1 h2)
   "Sort threads by root recipient."
@@ -620,14 +620,14 @@ default low)."
     (dolist (i gnus-newsgroup-scored)
       (cond
        ;; Ignore ancient articles
-       ;; ((memq (car i) gnus-newsgroup-ancient) 'ancient)
-       ;; ((not (memq (car i) gnus-newsgroup-unreads)) 'not-unread)
+       ;; ((memq (first i) gnus-newsgroup-ancient) 'ancient)
+       ;; ((not (memq (first i) gnus-newsgroup-unreads)) 'not-unread)
        ((and (not ancient)
-	     (not (memq (car i) gnus-newsgroup-articles)))
+	     (not (memq (first i) gnus-newsgroup-articles)))
 	'not-art)
        ;;
-       ((< (cdr i) gnus-summary-default-score) (setq low  (1+ low)))
-       ((> (cdr i) gnus-summary-default-score) (setq high (1+ high)))))
+       ((< (rest i) gnus-summary-default-score) (setq low  (1+ low)))
+       ((> (rest i) gnus-summary-default-score) (setq high (1+ high)))))
     (setq dflt (- (+ (length gnus-newsgroup-articles)
 		     (if ancient
 			 (length gnus-newsgroup-ancient)
@@ -677,7 +677,7 @@ default low)."
   (unless overview
     (setq overview ".overview"))
   (dolist (ent gnus-newsrc-alist)
-    (let ((full (car ent))
+    (let ((full (first ent))
 	  (level (nth 1 ent))
 	  overfile)
       (unless (string-match "nn.*:" full)

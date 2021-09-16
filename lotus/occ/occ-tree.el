@@ -73,12 +73,12 @@
         (tree-mapcar-nodes #'(lambda (tx) (plist-get tx :subtree))
                            #'(lambda (tx) (plist-get tx :title))
                            ;; testxx
-                           (car (plist-get testxx :subtree))))
+                           (first (plist-get testxx :subtree))))
 
   (setq testxxmapc
         (tree-mapc-nodes #'(lambda (tx) (plist-get tx :subtree))
                          #'(lambda (tx) (plist-get tx :title))
                          ;; testxx
-                         (car (plist-get testxx :subtree)))))
+                         (first (plist-get testxx :subtree)))))
 
 ;;; occ-tree.el ends here

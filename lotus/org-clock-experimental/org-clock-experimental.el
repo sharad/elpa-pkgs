@@ -111,9 +111,9 @@
 
 (defun org-insert-clock-range (&optional n)
   (interactive "NTime Offset (in min): ")
-  (let* ((ctime (cdr (decode-time (current-time))))
-         (min (car ctime))
-         (start (apply 'encode-time 0 (- min n) (cdr ctime))))
+  (let* ((ctime (rest (decode-time (current-time))))
+         (min (first ctime))
+         (start (apply 'encode-time 0 (- min n) (rest ctime))))
     (org-insert-time-stamp start t t "CLOCK: ")
     (insert "--")
     (org-insert-time-stamp (current-time) t t)))
@@ -129,9 +129,9 @@
 ;; My amended solution was this:
 
 (defun offset-current-time (n)
-  (let* ((ctime (cdr (decode-time (current-time))))
-         (minutes (car ctime)))
-    (apply 'encode-time 0 (- minutes n) (cdr ctime))))
+  (let* ((ctime (rest (decode-time (current-time))))
+         (minutes (first ctime)))
+    (apply 'encode-time 0 (- minutes n) (rest ctime))))
 
 (defun org-insert-clock-range (&optional n)
   (interactive "NTime Offset (in min): ")

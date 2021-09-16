@@ -48,11 +48,11 @@
 
   (assoc 'pmem (process-attributes (emacs-pid)))
 
-  (/ (* (cdr (assoc 'vsize (process-attributes (emacs-pid)))) 100.000)
-     (+ (car (memory-info)) (nth 3 (memory-info))))
+  (/ (* (rest (assoc 'vsize (process-attributes (emacs-pid)))) 100.000)
+     (+ (first (memory-info)) (nth 3 (memory-info))))
 
-  (/ (* (cdr (assoc 'vsize (process-attributes (emacs-pid)))) 100.000)
-     (car (memory-info))))
+  (/ (* (rest (assoc 'vsize (process-attributes (emacs-pid)))) 100.000)
+     (first (memory-info))))
 
 
 (defvar process-monitor-memory-usage-period-seconds 60)
@@ -64,17 +64,17 @@
 (defun process-percentage-mem-usage (pid)
   (let ((attrib (process-attributes pid)))
     (when attrib
-      (/ (* (cdr (assoc 'rss attrib)) 100.000)
-         (car (memory-info))))))
+      (/ (* (rest (assoc 'rss attrib)) 100.000)
+         (first (memory-info))))))
 
 (defun process-pid-list ()
   (let ((process-comm-pid-alist
          (mapcar #'(lambda (pid)
                      (let ((attribs (process-attributes pid)))
-                       (cons (cdr (assoc 'comm attribs)) pid)))
+                       (cons (rest (assoc 'comm attribs)) pid)))
                  (list-system-processes))))
-    (cdr (assoc (completing-read "Process PID: " process-comm-pid-alist)
-                process-comm-pid-alist))))
+    (rest (assoc (completing-read "Process PID: " process-comm-pid-alist)
+                 process-comm-pid-alist))))
 
 ;;;###autoload
 (defun process-check-mem-usage-diff (pid)
@@ -82,9 +82,9 @@
    (list (process-pid-list)))
   (let ((attribs (process-attributes pid)))
     (if attribs
-        (let ((old-mem  (or (cdr (assoc pid process-monitor-mem-usage-alist)) 0))
+        (let ((old-mem  (or (rest (assoc pid process-monitor-mem-usage-alist)) 0))
               (new-mem  (or (process-percentage-mem-usage pid) 0))
-              (pgm-name (or (cdr (assoc 'comm attribs)) "anonymous")))
+              (pgm-name (or (rest (assoc 'comm attribs)) "anonymous")))
           (unless (= old-mem new-mem)
             (let ((msg (format "pid %d memory usage %s by (%f - %f) = %f"
                                pid
@@ -92,7 +92,7 @@
                                new-mem old-mem
                                (- new-mem old-mem))))
               (if (assoc pid process-monitor-mem-usage-alist)
-                  (setf (cdr (assoc pid process-monitor-mem-usage-alist)) new-mem)
+                  (setf (rest (assoc pid process-monitor-mem-usage-alist)) new-mem)
                 (push (cons pid new-mem) process-monitor-mem-usage-alist))
               (notify (format "memory usage of %s[%d]" pgm-name pid)
                       msg))))
@@ -109,7 +109,7 @@
    (list (process-pid-list)))
   (when (assoc pid process-monitor-mem-usage-timer-alist)
     (cancel-timer
-     (cdr (assoc pid process-monitor-mem-usage-timer-alist)))
+     (rest (assoc pid process-monitor-mem-usage-timer-alist)))
     (setq process-monitor-mem-usage-timer-alist
           (remove (assoc pid process-monitor-mem-usage-timer-alist) process-monitor-mem-usage-timer-alist))
     (setq process-monitor-mem-usage-alist
@@ -140,8 +140,8 @@
             (apply fun
                    "%s %s by %f\n"
                     tag
-                    (if (> (cdr pair) 0) "increased" "decreased")
-                    (cdr pair))))))))
+                    (if (> (rest pair) 0) "increased" "decreased")
+                    (rest pair))))))))
 (put 'notify-memory-usage 'lisp-indent-function 2)
 
 (defmacro notify-memory-usage-message (tag &rest body)

@@ -41,7 +41,7 @@
 
 
 (defun occ-util-read-sexp-from-minibuffer (prompt)
-  ;; (car (read-from-string (read-from-minibuffer prompt)))
+  ;; (first (read-from-string (read-from-minibuffer prompt)))
   (read--expression prompt))
 
 

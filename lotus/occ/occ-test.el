@@ -67,7 +67,7 @@
     (dolist (prop plist-keys)
       ;; (occ-message "occ-verify: verifying %s" prop)
       (let* ((org-prop-value (occ-org-operation (occ-obj-tsk obj) 'get prop nil))
-             (org-prop-value (if (occ-list-p prop) org-prop-value (car org-prop-value)))
+             (org-prop-value (if (occ-list-p prop) org-prop-value (first org-prop-value)))
              (occ-prop-value (occ-get-property (occ-obj-tsk obj) prop)))
         (when (and org-prop-value
                    occ-prop-value)

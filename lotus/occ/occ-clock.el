@@ -61,7 +61,7 @@
             (progn
               (occ-straight-org-clock-clock-in (list obj)))
             ((error)
-             (signal (car err) (cdr err)))))))))
+             (signal (first err) (rest err)))))))))
 
 (cl-defmethod occ-clock-in ((obj occ-tsk)
                             &key
@@ -108,7 +108,7 @@
   "return "
   (occ-debug :debug "occ-clock-in(occ-ctxual-tsk=%s)" obj)
   (let* (retval
-         (old-ctxual-tsk (car *occ-clocked-ctxual-tsk-ctx-history*))
+         (old-ctxual-tsk (first *occ-clocked-ctxual-tsk-ctx-history*))
          (old-tsk        (when old-ctxual-tsk (occ-ctxual-tsk-tsk old-ctxual-tsk)))
          (old-marker     (or (if old-tsk (occ-tsk-marker old-tsk)) org-clock-hd-marker))
          (old-heading    (if old-tsk (occ-tsk-heading old-tsk)))

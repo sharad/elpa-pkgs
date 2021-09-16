@@ -107,13 +107,13 @@
 
 (defun reader-mode-set-config (key value)
   (interactive
-   (let* ((key (car (read-from-string
+   (let* ((key (first (read-from-string
                      (completing-read "key: "
                                       (mapcar (lambda (k)
-                                                (symbol-name (car k))) reader-mode-config)
+                                                (symbol-name (first k))) reader-mode-config)
                                       nil
                                       t))))
-          (value (car (read-from-string (read-from-minibuffer
+          (value (first (read-from-string (read-from-minibuffer
                                          (format "%s value: " key)
                                          (format "%s" (reader-mode-get-config key)))))))
      (list key value)))
@@ -128,7 +128,7 @@
  reader-mode-end-hook nil)
 
 (defun reader-mode-get-config (key)
-  (cdr (assoc key reader-mode-config)))
+  (rest (assoc key reader-mode-config)))
 
 ;; ;; To keep cursor on same place
 ;; (setq ccm-vpos-init
@@ -543,8 +543,8 @@
                                     (string-to-number
                                      (format ; "%x%x"
                                       "%x00%x"
-                                      (car active-window)
-                                      (cdr active-window)) 16)))
+                                      (first active-window)
+                                      (rest active-window)) 16)))
               (emacs-window-id (string-to-number
                                 (frame-parameter nil 'outer-window-id))))
 
@@ -635,8 +635,8 @@
 ;;                                                   active-window
 ;;                                                   (string-to-number
 ;;                                                    (format "%x%x"
-;;                                                            (car active-window)
-;;                                                            (cdr active-window)) 16)))
+;;                                                            (first active-window)
+;;                                                            (rest active-window)) 16)))
 ;;                             (emacs-window-id (string-to-number
 ;;                                               (frame-parameter nil 'outer-window-id))))
 ;;                        (message "emacs id %x aw id %x" emacs-window-id active-window-id))))

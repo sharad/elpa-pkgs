@@ -82,14 +82,14 @@
 ;;       `(progn
 ;;          (when ,(if (consp feature)
 ;;                     (cond
-;;                       ((or (equal (car feature) 'or)
-;;                            (equal (car feature) 'and)
-;;                            (equal (car feature) 'progn))
-;;                        `(,(car feature) ,@(mapcar (lambda (f) `(require ',f nil t)) (cdr feature))))
+;;                       ((or (equal (first feature) 'or)
+;;                            (equal (first feature) 'and)
+;;                            (equal (first feature) 'progn))
+;;                        `(,(first feature) ,@(mapcar (lambda (f) `(require ',f nil t)) (rest feature))))
 ;;                       (t feature))
 ;;                     `(require ',feature nil t))
-;;            ,@(if (stringp (car forms))
-;;                  (cdr forms)
+;;            ,@(if (stringp (first forms))
+;;                  (rest forms)
 ;;                  forms))))
 
 ;;;###autoload
@@ -99,16 +99,16 @@
   (cl-labels ((refine (feature)
              (if (consp feature)
                  (cond
-                   ((or (equal (car feature) 'or)
-                        (equal (car feature) 'and)
-                        (equal (car feature) 'progn))
-                    `(,(car feature) ,@(mapcar #'refine (cdr feature))))
+                   ((or (equal (first feature) 'or)
+                        (equal (first feature) 'and)
+                        (equal (first feature) 'progn))
+                    `(,(first feature) ,@(mapcar #'refine (rest feature))))
                    (t feature))
                  `(featurep ',feature))))
     `(progn
        (when ,(refine feature)
-         ,@(if (stringp (car forms))
-               (cdr forms)
+         ,@(if (stringp (first forms))
+               (rest forms)
                forms)))))
 
 ;;;###autoload
@@ -119,17 +119,17 @@
   (cl-labels ((refine (feature)
              (if (consp feature)
                  (cond
-                   ((or (equal (car feature) 'or)
-                        (equal (car feature) 'and)
-                        (equal (car feature) 'progn))
-                    `(,(car feature) ,@(mapcar #'refine (cdr feature))))
+                   ((or (equal (first feature) 'or)
+                        (equal (first feature) 'and)
+                        (equal (first feature) 'progn))
+                    `(,(first feature) ,@(mapcar #'refine (rest feature))))
                    (t feature))
                  `(unless (require ',feature nil t)
                     (funcall ,act ',feature)))))
     `(progn
        (if ,(refine feature)
-           (,@(if (stringp (car forms))
-                  (cdr forms)
+           (,@(if (stringp (first forms))
+                  (rest forms)
                   forms))
            ))))
 
@@ -148,16 +148,16 @@
   (cl-labels ((refine (feature)
              (if (consp feature)
                  (cond
-                   ((or (equal (car feature) 'or)
-                        (equal (car feature) 'and)
-                        (equal (car feature) 'progn))
-                    `(,(car feature) ,@(mapcar #'refine (cdr feature))))
+                   ((or (equal (first feature) 'or)
+                        (equal (first feature) 'and)
+                        (equal (first feature) 'progn))
+                    `(,(first feature) ,@(mapcar #'refine (rest feature))))
                    (t feature))
                  `(require ',feature nil t))))
     `(progn
        (if ,(refine feature)
-           (,@(if (stringp (car forms))
-                  (cdr forms)
+           (,@(if (stringp (first forms))
+                  (rest forms)
                   forms))
            ,todo-if-no-feature))))
 
@@ -168,16 +168,16 @@
   (cl-labels ((refine (feature)
              (if (consp feature)
                  (cond
-                   ((or (equal (car feature) 'or)
-                        (equal (car feature) 'and)
-                        (equal (car feature) 'progn))
-                    `(,(car feature) ,@(mapcar #'refine (cdr feature))))
+                   ((or (equal (first feature) 'or)
+                        (equal (first feature) 'and)
+                        (equal (first feature) 'progn))
+                    `(,(first feature) ,@(mapcar #'refine (rest feature))))
                    (t feature))
                  `(require ',feature nil t))))
     `(progn
        (when ,(refine feature)
-         ,@(if (stringp (car forms))
-               (cdr forms)
+         ,@(if (stringp (first forms))
+               (rest forms)
                forms)))))
 
 ;;;###autoload
@@ -187,16 +187,16 @@
   (cl-labels ((refine (feature)
              (if (consp feature)
                  (cond
-                   ((or (equal (car feature) 'or)
-                        (equal (car feature) 'and)
-                        (equal (car feature) 'progn))
-                    `(,(car feature) ,@(mapcar #'refine (cdr feature))))
+                   ((or (equal (first feature) 'or)
+                        (equal (first feature) 'and)
+                        (equal (first feature) 'progn))
+                    `(,(first feature) ,@(mapcar #'refine (rest feature))))
                    (t feature))
                  `(require ',feature nil nil))))
     `(progn
        (when ,(refine feature)
-         ,@(if (stringp (car forms))
-               (cdr forms)
+         ,@(if (stringp (first forms))
+               (rest forms)
                forms)))))
 
 ;;;###autoload

@@ -101,7 +101,7 @@
 (defun custom-plist-keys (in-plist)
   (if (null in-plist)
       in-plist
-      (cons (car in-plist) (custom-plist-keys (cddr in-plist)))))
+      (cons (first in-plist) (custom-plist-keys (cddr in-plist)))))
 ;; Simple function:1 ends here
 
 ;; Disable for some time
@@ -260,13 +260,13 @@
     (let ((org-log-note-clock-out nil))
       (if (org-clock-marker-is-unnamed-clock-p)
           (org-context-clock-debug :debug "org-context-clock-maybe-create-unnamed-task: Already clockin unnamed task")
-          (cdr (lotus-org-create-unnamed-task))))))
+          (rest (lotus-org-create-unnamed-task))))))
 
 
 (defun org-context-clock-maybe-create-unnamed-task ()
   ;; back
   (let* ((unnamed-heading-marker
-         (cdr (lotus-org-create-unnamed-task)))
+         (rest (lotus-org-create-unnamed-task)))
         (unnamed-task
          (when unnamed-heading-marker
            (with-current-buffer (marker-buffer unnamed-heading-marker)
@@ -418,7 +418,7 @@
   ;;TODO add org-insert-log-not
   (org-context-clock-debug :debug "org-context-clock-clockin-marker %s" new-dyntaskpl)
   (let* (retval
-         (old-dyntaskpl (car *org-context-clock-clocked-dyntaskpl-context-history*))
+         (old-dyntaskpl (first *org-context-clock-clocked-dyntaskpl-context-history*))
          (old-task    (plist-get old-dyntaskpl :task))
          (old-marker  (or (if old-task (plist-get old-task :task-clock-marker)) org-clock-hd-marker))
          (old-heading (if old-task (plist-get old-task :task-clock-heading)))
@@ -464,7 +464,7 @@
               ((error)
                (progn
                  (setq retval nil)
-                 (signal (car err) (cdr err)))))))
+                 (signal (first err) (rest err)))))))
         (if old-buff
             (with-current-buffer old-buff
               (setq buffer-read-only old-buff-read-only)))
@@ -492,7 +492,7 @@
           (let* ((sel-dyntaskpl
                   (if (> (length matched-dyntaskpls) 1)
                       (sacha/helm-select-dyntaskpl-timed matched-dyntaskpls)
-                      (car matched-dyntaskpls)))
+                      (first matched-dyntaskpls)))
                  ;; (sel-task   (if sel-dyntaskpl (plist-get sel-dyntaskpl :task)))
                  ;; (sel-marker (if sel-task      (plist-get sel-task      :task-clock-marker)))
                  )
@@ -603,7 +603,7 @@ pointing to it."
 ;; [[file:~/.xemacs/elpa/pkgs/org-context-clock/org-context-clock.org::*function%20to%20setup%20context%20clock%20timer][function to setup context clock timer:3]]
 ;; rank based
   (defun sacha/helm-select-dyntaskpl (dyntaskpls)
-    ;; (org-context-clock-debug :debug "sacha marker %s" (car dyntaskpls))
+    ;; (org-context-clock-debug :debug "sacha marker %s" (first dyntaskpls))
     (helm
      (list
       (helm-build-sync-source "Select matching tasks"
@@ -623,7 +623,7 @@ pointing to it."
       (sacha/helm-select-dyntaskpl dyntaskpls)))
 
   (defun sacha/helm-dyntaskpl-action (dyntaskpls clockin-fn)
-    ;; (message "sacha marker %s" (car dyntaskpls))
+    ;; (message "sacha marker %s" (first dyntaskpls))
     ;; (setq sacha/helm-org-refile-locations tbl)
     (progn
       (helm
@@ -776,16 +776,16 @@ pointing to it."
    (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
 
   (org-context-clock-task-get-property
-   (car (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
+   (first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
    :task-clock-marker)
 
   (org-context-clock-clockin-marker
    (org-context-clock-task-get-property
-    (car (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
+    (first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
     :task-clock-marker))
 
   (org-context-clock-task-associated-to-context-by-keys-p
-   (car (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
+   (first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
    (org-context-clock-build-context))
 
   (length

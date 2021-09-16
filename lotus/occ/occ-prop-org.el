@@ -110,10 +110,10 @@
     (if (occ-list-p prop)
         (occ-org-entry-add-to-multivalued-property pom
                                                    prop-string
-                                                   (car values))
+                                                   (first values))
       (occ-org-entry-put pom
                          prop-string
-                         (car values)))))
+                         (first values)))))
 
 (cl-defmethod occ-org-operation ((pom  marker)
                                  (operation (eql put))
@@ -127,7 +127,7 @@
                                                 values)
       (occ-org-entry-put pom
                          prop-string
-                         (car values)))))
+                         (first values)))))
 
 (cl-defmethod occ-org-operation ((pom  marker)
                                  (operation (eql remove))
@@ -138,7 +138,7 @@
     (if (occ-list-p prop)
         (occ-org-entry-remove-from-multivalued-property pom
                                                         prop-string
-                                                        (car values))
+                                                        (first values))
       (occ-error "Implement it."))))
 
 (cl-defmethod occ-org-operation ((pom  marker)
@@ -150,8 +150,8 @@
     (if (occ-list-p prop)
         (occ-org-entry-member-in-from-multivalued-property pom
                                                            prop-string
-                                                           (car values))
-      (string= (car values)
+                                                           (first values))
+      (string= (first values)
                (occ-org-entry-get pom
                                   prop-string)))))
 
@@ -198,7 +198,7 @@
       ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
       (occ-debug :debug "occ-org-call-operation-at-point: property block not exist so creating it.")
       (let* ((range (org-get-property-block (point) 'force))
-             (start (when (consp range) (1- (car range)))))
+             (start (when (consp range) (1- (first range)))))
         (if (and range
                  start)
             (when (numberp start)

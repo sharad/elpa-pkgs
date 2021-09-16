@@ -143,7 +143,7 @@
                (progn
                  (funcall cleanupfn-newwin win cleanupfn-local)
                  (if timer (cancel-timer timer))
-                 (signal (car err) (cdr err)))))))))
+                 (signal (first err) (rest err)))))))))
 
   (defun org-add-log-setup-with-timed-new-win (win-timeout &optional purpose state prev-state how extra)
     "Set up the post command hook to take a note.
@@ -240,29 +240,29 @@ will return point to the current position."
       (setq minimal-char-changes 10))
     (let ((char-changes 0)
           (undo-list (if lotus-last-buffer-undo-list-pos
-                         (cdr (memq lotus-last-buffer-undo-list-pos buffer-undo-list))
+                         (rest (memq lotus-last-buffer-undo-list-pos buffer-undo-list))
                          buffer-undo-list))
           undo)
       (while (and undo-list
-                  (car undo-list)
+                  (first undo-list)
                   (< char-changes minimal-char-changes))
-        (setq undo (car undo-list))
+        (setq undo (first undo-list))
         (cond
-          ((and (consp undo) (integerp (car undo)) (integerp (cdr undo)))
+          ((and (consp undo) (integerp (first undo)) (integerp (rest undo)))
            ;; (BEG . END)
-           (setq char-changes (+ char-changes (abs (- (car undo) (cdr undo))))))
-          ((and (consp undo) (stringp (car undo))) ; (TEXT . POSITION)
-           (setq char-changes (+ char-changes (length (car undo)))))
-          ((and (consp undo) (eq (car undo) t))) ; (t HIGH . LOW)
-          ((and (consp undo) (null (car undo)))
+           (setq char-changes (+ char-changes (abs (- (first undo) (rest undo))))))
+          ((and (consp undo) (stringp (first undo))) ; (TEXT . POSITION)
+           (setq char-changes (+ char-changes (length (first undo)))))
+          ((and (consp undo) (eq (first undo) t))) ; (t HIGH . LOW)
+          ((and (consp undo) (null (first undo)))
            ;; (nil PROPERTY VALUE BEG . END)
-           ;; (setq position (cdr (last undo)))
+           ;; (setq position (rest (last undo)))
            )
-          ((and (consp undo) (markerp (car undo)))) ; (MARKER . DISTANCE)
+          ((and (consp undo) (markerp (first undo)))) ; (MARKER . DISTANCE)
           ((integerp undo))		; POSITION
           ((null undo))		; nil
           (t (error "Invalid undo entry: %s" undo)))
-        (setq undo-list (cdr undo-list)))
+        (setq undo-list (rest undo-list)))
 
       (cond
         ((>= char-changes minimal-char-changes)
@@ -274,7 +274,7 @@ will return point to the current position."
   (let ((win-timeout (or win-timeout 7)))
     (if (and
          (consp buffer-undo-list)
-         (car buffer-undo-list))
+         (first buffer-undo-list))
         (lotus-action-on-buffer-undo-list-change #'org-clock-lotus-log-note-current-clock-with-timed-new-win  lotus-minimum-char-changes win-timeout)
         (lotus-action-on-buffer-undo-tree-change #'org-clock-lotus-log-note-current-clock-with-timed-new-win lotus-minimum-changes win-timeout))))
 ;; Org detect change to log note:1 ends here
@@ -484,7 +484,7 @@ will return point to the current position."
            (note-state state)
            (note-previous-state previous-state))
       (if (marker-buffer marker)
-          (let ((note (cdr (assq note-purpose org-log-note-headings)))
+          (let ((note (rest (assq note-purpose org-log-note-headings)))
                 lines)
             (while (string-match "\\`# .*\n[ \t\n]*" txt)
               (setq txt (replace-match "" t t txt)))

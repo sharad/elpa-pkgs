@@ -153,10 +153,10 @@
 ;;;###autoload
 (defun afind-if (fun list) ;; anaphoric
   (let ((result
-         (funcall fun (car list))))
+         (funcall fun (first list))))
     (if result
         result
-      (if list (afind-if fun (cdr list))))))
+      (if list (afind-if fun (rest list))))))
 
 (eval-when-compile
   '(when (featurep 'notify)
@@ -260,9 +260,9 @@
   (let ((fdef (assoc fnsym *undefine-function-alist*)))
     (if fdef
         (progn
-          (fset fnsym (cdr fdef))
+          (fset fnsym (rest fdef))
           (setq *undefine-function-alist*
-                (del-alist (car fdef) *undefine-function-alist*)))
+                (del-alist (first fdef) *undefine-function-alist*)))
       (message "def for %s function is not available." fnsym))))
 
 
@@ -478,7 +478,7 @@
   "Run FN with ARG at TIME if numeric is otherwise run now only."
   (if (numberp time)
       (run-with-timer time nil
-                      (lambda (a) (funcall (car a) (cdr a)))
+                      (lambda (a) (funcall (first a) (rest a)))
                       (cons fn arg))
     (funcall fn arg)))
 
@@ -650,10 +650,10 @@
 ;;;###autoload
 (defun afind-if (fun list) ;; anaphoric
   (let ((result
-         (funcall fun (car list))))
+         (funcall fun (first list))))
     (if result
         result
-      (if list (afind-if fun (cdr list))))))
+      (if list (afind-if fun (rest list))))))
 
 (eval-when-compile
   '(when (featurep 'notify)
@@ -760,9 +760,9 @@
   (let ((fdef (assoc fnsym *undefine-function-alist*)))
     (if fdef
         (progn
-          (fset fnsym (cdr fdef))
+          (fset fnsym (rest fdef))
           (setq *undefine-function-alist*
-                (del-alist (car fdef) *undefine-function-alist*)))
+                (del-alist (first fdef) *undefine-function-alist*)))
       (message "def for %s function is not available." fnsym))))
 
 
@@ -978,7 +978,7 @@
   "Run FN with ARG at TIME if numeric is otherwise run now only."
   (if (numberp time)
       (run-with-timer time nil
-                      (lambda (a) (funcall (car a) (cdr a)))
+                      (lambda (a) (funcall (first a) (rest a)))
                       (cons fn arg))
     (funcall fn arg)))
 

@@ -40,7 +40,7 @@
   (unless (assoc heading org-capture+-helm-templates-alist)
     (pushnew (list heading) org-capture+-helm-templates-alist))
   (pushnew template
-           (cdr (assoc heading org-capture+-helm-templates-alist))))
+           (rest (assoc heading org-capture+-helm-templates-alist))))
 
 (org-capture+-helm-template-add 'test "TODO"    "* TODO %? %^g\n %i\n [%a]\n")
 (org-capture+-helm-template-add 'test "TODO"    "* MILESTONE %? %^g\n %i\n [%a]\n")
@@ -59,9 +59,9 @@
   (mapcar
    #'(lambda (e)
        (apply #'org-capture+-build-helm-template-source
-              (car e)
+              (first e)
               attrib-list
-              (cdr e)))
+              (rest e)))
    alist))
 
 ;;;###autoload

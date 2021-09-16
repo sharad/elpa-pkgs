@@ -313,7 +313,7 @@
                                                   template
                                                   clock-in)
   (let ((ctx (occ-make-ctx-at-point)))
-    (let ((anonymous-heading-marker (cdr (org-without-org-clock-persist
+    (let ((anonymous-heading-marker (rest (org-without-org-clock-persist
                                            ;; TODO: Implement it.
                                            (lotus-org-create-anonymous-task))))
           (anonymous-tsk (when anonymous-heading-marker
@@ -362,9 +362,9 @@
                      "?\\([gGtTuUCLp]\\)?\\|"
                      "%\\\\\\([1-9][0-9]*\\)"
                      "\\)") nil t)
-       (if (car values)
-           (replace-match (car values) nil t))
-       (setq values (cdr values)))
+       (if (first values)
+           (replace-match (first values) nil t))
+       (setq values (rest values)))
      (buffer-string))))
 
 (defun sacha/helm-org-create-task (candidate)
@@ -377,7 +377,7 @@
                                                                       candidate))
                (cap-template (org-capture-fill-template pre-fill-template)))
           (org-capture-put :template cap-template)
-          (org-capture-place-template (equal (car (org-capture-get :target)) 'function)))
+          (org-capture-place-template (equal (first (org-capture-get :target)) 'function)))
       ((occ-error quit)
        (if (get-buffer "*Capture*") (kill-buffer "*Capture*"))
        (occ-error "Capture abort: %s" error)))) t)

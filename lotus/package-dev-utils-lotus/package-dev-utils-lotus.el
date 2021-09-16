@@ -61,7 +61,7 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
             (directory-files directory t)))
       ;; while we are in the current directory
       (while current-directory-list
-        (let ((f (car current-directory-list)))
+        (let ((f (first current-directory-list)))
           (cond
            ((and
              (file-directory-p f)
@@ -77,7 +77,7 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
              (string-match regexp f))
             (setq files-list (cons f files-list)))
            (t)))
-        (setq current-directory-list (cdr current-directory-list)))
+        (setq current-directory-list (rest current-directory-list)))
       files-list)))
 
 
@@ -104,20 +104,20 @@ or nil if the version cannot be parsed."
                           (contents (package--read-archive-file contents-file)))
                      contents))))
     (if package
-        (let* ((name (car package))
-               (version (package--ac-desc-version (cdr package)))
+        (let* ((name (first package))
+               (version (package--ac-desc-version (rest package)))
                (pkg-desc
                 (package-desc-create
                  :name name
                  :version version
-                 :reqs (package--ac-desc-reqs (cdr package))
-                 :summary (package--ac-desc-summary (cdr package))
-                 :kind (package--ac-desc-kind (cdr package))
+                 :reqs (package--ac-desc-reqs (rest package))
+                 :summary (package--ac-desc-summary (rest package))
+                 :kind (package--ac-desc-kind (rest package))
                  :archive archive
-                 :extras (and (> (length (cdr package)) 4)
+                 :extras (and (> (length (rest package)) 4)
                               ;; Older archive-contents files have only 4
                               ;; elements here.
-                              (package--ac-desc-extras (cdr package))))))
+                              (package--ac-desc-extras (rest package))))))
                ;; (existing-packages (assq name package-archive-contents))
                ;; (pinned-to-archive (assoc name package-pinned-packages))
                
@@ -266,7 +266,7 @@ or nil if the version cannot be parsed."
           (when nil
             (unless (nth 4 pkg-def)
               (let ((dep
-                     (car (read-from-string (read-from-minibuffer (format "package %s dependency: " pkg-name))))))
+                     (first (read-from-string (read-from-minibuffer (format "package %s dependency: " pkg-name))))))
                 (setcar (nthcdr 4 pkg-def) dep))))))
 
       (let ((pkgdir-def-file (expand-file-name (format "%s-pkg.el" pkg-name) pkg-dir)))
@@ -453,7 +453,7 @@ or nil if the version cannot be parsed."
       (progn
         (message "depecdencies to be installed %s" dependencies-external)
         (dolist (dep dependencies-external)
-          (let ((dep-sym  (car (assoc dep package-archive-contents)))
+          (let ((dep-sym  (first (assoc dep package-archive-contents)))
                 (dep-desc (cadr (assoc dep package-archive-contents))))
             (if (package-installed-p dep-sym)
                 (message "dependency package %s already installed." dep)
@@ -498,8 +498,8 @@ or nil if the version cannot be parsed."
                     "Install package: "
                     (delq nil
                           (mapcar (lambda (elt)
-                                    (when (package-installed-p (car elt))
-                                      (symbol-name (car elt))))
+                                    (when (package-installed-p (first elt))
+                                      (symbol-name (first elt))))
                                   ;; package-archive-contents
                                   package-alist))
                     nil t)))))

@@ -201,9 +201,9 @@
   (unless occ-global-tsk-collection-spec
     (occ-make-spec))
   (if occ-global-tsk-collection-spec
-    (unless (memq file (cdr occ-global-tsk-collection-spec))
-      (let ((spec       (car occ-global-tsk-collection-spec))
-            (spec-files (cdr occ-global-tsk-collection-spec)))
+    (unless (memq file (rest occ-global-tsk-collection-spec))
+      (let ((spec       (first occ-global-tsk-collection-spec))
+            (spec-files (rest occ-global-tsk-collection-spec)))
         (setq spec-files
              (if current-prefix-arg
                  (nconc (list file) spec-files)
@@ -222,7 +222,7 @@
 (defun occ-build-spec ()
   (interactive)
   (occ-make-spec)
-  (when (car occ-global-tsk-collection-spec)
+  (when (first occ-global-tsk-collection-spec)
         (occ-add-to-spec (read-file-name "Spec file: ")))
   (prog1
       occ-global-tsk-collection-spec

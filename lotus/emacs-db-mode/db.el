@@ -325,7 +325,7 @@ Special commands:
           (_db-region-info "mex" "MEX_ORDERS_DB" "MEX_ORDERS_QA")))
 
 (defconst *db-valid-regions*
-  (mapcar (lambda (e) (car e)) *db-info*))
+  (mapcar (lambda (e) (first e)) *db-info*))
 
 (defvar db-region "ldn-ro")
 ;; The Resultant Data
@@ -347,7 +347,7 @@ Special commands:
 (defsubst db-get-param (region ref)
   (let ((tuple (assoc region *db-info*)))
     (if tuple
-        (aref (cdr tuple) ref)
+        (aref (rest tuple) ref)
       "UNKNOWN")))
 
 (defsubst db-get-server (region) (db-get-param region 0))

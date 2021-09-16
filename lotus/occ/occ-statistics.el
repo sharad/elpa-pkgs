@@ -76,19 +76,19 @@
               (if (and r (= (caar r) e))
                   (cons
                    (cons (caar r) (1+ (cdar r)))
-                   (cdr r))
+                   (rest r))
                 (cons (cons e  1) r)))
           (sort nums #'>)
           :initial-value nil)))
     (let ((num-pairs
            (sort num-pairs
                  #'(lambda (a b)
-                     (> (cdr a) (cdr b))))))
+                     (> (rest a) (rest b))))))
       (mapcar
        #'car
        (remove-if-not
         #'(lambda (pair)
-            (= (cdr pair) (cdar num-pairs)))
+            (= (rest pair) (cdar num-pairs)))
         num-pairs)))))
 
 (defun occ-stats-variance-internal (average &rest nums)
@@ -122,14 +122,14 @@
            (occ-stats-mode 3 5 5 3 3 3 3 4 5 5 5 5 1 1 2 3)))
   (should (equal
            (sort
-            '((5 . 3) (4 . 1) (3 . 3) (2 . 1) (1 . 2)) #'(lambda (a b) (> (cdr a) (cdr b))))
+            '((5 . 3) (4 . 1) (3 . 3) (2 . 1) (1 . 2)) #'(lambda (a b) (> (rest a) (rest b))))
            '((5 . 3) (3 . 3) (1 . 2) (4 . 1) (2 . 1))))
   (should (equal
            (reduce (lambda (r e)
                      (if (and r (= (caar r) e))
                          (cons
                           (cons (caar r) (1+ (cdar r)))
-                          (cdr r))
+                          (rest r))
                        (cons (cons e  1) r)))
                    (sort (list 1 1 2 3 3 3 4 5 5 5 ) #'>)
                    :initial-value nil)

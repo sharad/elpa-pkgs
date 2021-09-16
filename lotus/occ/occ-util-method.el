@@ -141,8 +141,8 @@ for testing given ap-normal on selected tsk."
                    ;; (helm-actions (occ-obj-ap-helm-actions ap-normal obj)) -- TODO: VERIFY: here in place of OBJ CTSK should be present
                    (helm-actions (occ-obj-ap-helm-actions ap-normal ctsk))
                    ;; TODO: BUG: Correct it
-                   (launcher (cdr (assoc (completing-read "Helm-Actions: " helm-actions)
-                                         helm-actions))))
+                   (launcher (rest (assoc (completing-read "Helm-Actions: " helm-actions)
+                                          helm-actions))))
               (funcall launcher ctsk))
           (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection")))))
 
@@ -189,8 +189,8 @@ must be NIL, using (occ-list-filters) for FILTERS"
            (let* ((ctx-tsk      (occ-obj-obj retval-ctx-tsk))
                   ;; (helm-actions (occ-obj-ap-helm-actions ap-normal obj)) -- TODO: VERIFY: here in place of OBJ CTX-TSK should be present
                   (helm-actions (occ-obj-ap-helm-actions ap-normal ctx-tsk))
-                  (launcher     (cdr (assoc (completing-read "Action: " helm-actions)
-                                            helm-actions))))
+                  (launcher     (rest (assoc (completing-read "Action: " helm-actions)
+                                             helm-actions))))
              (funcall launcher ctx-tsk))
          (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection")))))
 

@@ -81,10 +81,10 @@ which other peoples are also working."
 
 ;;;###autoload
 (defun office-file-p (file)
-  (let ((remote-repo (car (remove-if-not #'(lambda (s)
-                                             (when s
-                                               (string-match-p "^origin" s)))
-                                         (magit-git-lines "remote" "-v")))))
+  (let ((remote-repo (first (remove-if-not #'(lambda (s)
+                                               (when s
+                                                 (string-match-p "^origin" s)))
+                                           (magit-git-lines "remote" "-v")))))
     (when (and office-git-remote-regex
                (functionp 'magit-git-lines)
                remote-repo)

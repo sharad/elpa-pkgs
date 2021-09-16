@@ -136,15 +136,15 @@
 (defun occ-util-plist-value-mapcar (fun plist)
   (apply #'append
          (occ-plist-mapcar #'(lambda (c)
-                               (list (car c)
+                               (list (first c)
                                      (funcall fun (cadr c))))
                            plist)))
 
 (defun occ-tsk-plist-from-org (plist)
   (let ((ret-plist (apply #'append
                           (occ-util-plist-mapcar #'(lambda (c)
-                                                     (list (car c)
-                                                           (occ-prop-from-org (occ-util-keyword2sym (car c))
+                                                     (list (first c)
+                                                           (occ-prop-from-org (occ-util-keyword2sym (first c))
                                                                               (cadr c))))
                                                  plist))))
     (cl-assert (evenp (length     plist)))
@@ -414,13 +414,13 @@
 (cl-defmethod occ-make-tsk-collection ((file-spec (head :tree)))
   (unless occ-global-tsk-collection
     (let ((collection (make-occ-tree-collection :name  "tsk collection tree"
-                                                :roots (cdr file-spec))))
+                                                :roots (rest file-spec))))
       (setf occ-global-tsk-collection collection))))
 
 (cl-defmethod occ-make-tsk-collection ((file-spec (head :list)))
   (unless occ-global-tsk-collection
     (let ((collection (make-occ-list-collection :name  "tsk collection list"
-                                                :roots (cdr dir-spec))))
+                                                :roots (rest dir-spec))))
       (setf occ-global-tsk-collection collection))))
 
 
@@ -476,17 +476,17 @@
   ap-obj)
 
 (cl-defmethod occ-make-ap-normal ((ap-obj (head :tree-keybranch)))
-  (let ((tree-keybranch (cdr ap-obj)))
+  (let ((tree-keybranch (rest ap-obj)))
     (make-occ-ap-normal :tree-keybranch
                         tree-keybranch)))
 
 (cl-defmethod occ-make-ap-normal ((ap-obj (head :callables)))
-  (let ((callables (cdr ap-obj)))
+  (let ((callables (rest ap-obj)))
     (make-occ-ap-normal :callables
                         (occ-obj-callables callables nil))))
 
 (cl-defmethod occ-make-ap-normal ((ap-obj (head :keywords)))
-  (let* ((keywords  (cdr ap-obj))
+  (let* ((keywords  (rest ap-obj))
          (callables (occ-helm-callables-get keywords)))
    (make-occ-ap-normal :callables
                        callables)))
@@ -505,23 +505,23 @@
   ap-obj)
 
 (cl-defmethod occ-make-ap-transf ((ap-obj (head :tree-keybranch)))
-  (let ((tree-keybranch (cdr ap-obj)))
+  (let ((tree-keybranch (rest ap-obj)))
     (make-occ-ap-transf :tree-keybranch
                         tree-keybranch)))
 
 (cl-defmethod occ-make-ap-transf ((ap-obj (head :callables)))
-  (let ((callables (cdr ap-obj)))
+  (let ((callables (rest ap-obj)))
     (make-occ-ap-transf :callables
                         callables)))
 
 (cl-defmethod occ-make-ap-transf ((ap-obj (head :keywords)))
-  (let* ((keywors   (cdr ap-obj))
+  (let* ((keywors   (rest ap-obj))
          (callables (occ-helm-callables-get keywords)))
     (make-occ-ap-transf :callables
                         callables)))
 
 (cl-defmethod occ-make-ap-transf ((ap-obj (head :transform)))
-  (let ((transform (cdr ap-obj)))
+  (let ((transform (rest ap-obj)))
     (make-occ-ap-transf :transform
                        transform)))
 

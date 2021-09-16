@@ -56,17 +56,17 @@
 (defun pushnew-alist (key value list)
   (unless (assoc key list)
     (pushnew (cons key nil) list :key #'car))
-  (pushnew value (cdr (assoc key list)) :test #'string-equal))
+  (pushnew value (rest (assoc key list)) :test #'string-equal))
 
 (defun task-status-map (sys status)
-  (cdr (assoc sys (cdr (assoc status status-mappings)))))
+  (rest (assoc sys (rest (assoc status status-mappings)))))
 
 (defun task-status-add-map (sys status sysstatus)
   (setf (tree-node* status-mappings status sys) sysstatus))
 
 (defun task-status-add-maps (sys maps)
   (dolist (m maps)
-    (task-status-add-map sys (car m) (cdr m))))
+    (task-status-add-map sys (first m) (rest m))))
 
 (task-status-add-maps 'planner
                       '((inprogress . "o")
@@ -81,14 +81,14 @@
 ;; single status query
 (defun task-status-of-sys (sys status &optional mappings)
   (let* ((mappings (or mappings status-mappings))
-         (rstatus (cdr (assoc sys (cdr (assoc status mappings))))))
+         (rstatus (rest (assoc sys (rest (assoc status mappings))))))
     rstatus))
 
 (defun task-map-from-sys-status (sys status &optional mappings)
   (let* ((mappings (or mappings status-mappings))
          (map (find status mappings
                     :key #'(lambda (e)
-                             (cdr (assoc sys (cdr e))))
+                             (rest (assoc sys (rest e))))
                     :test #'(lambda (statusa statusb)
                               (if (consp statusb)
                                   (member statusa statusb)
@@ -96,10 +96,10 @@
     map))
 
 (defun task-status-from-sys-status (sys status &optional mappings)
-  (car (task-map-from-sys-status sys status)))
+  (first (task-map-from-sys-status sys status)))
 
 (defun task-src-status-to-trg-status (src status trg &optional mappings)
-  (cdr (assoc trg (cdr (task-map-from-sys-status src status)))))
+  (rest (assoc trg (rest (task-map-from-sys-status src status)))))
 
 ;; status list query
 
@@ -122,15 +122,15 @@
 
 (defun task-stati-from-sys-stati (sys stati &optional mappings)
   (if (consp stati)
-      (car (task-map-from-sys-status sys stati mappings))
+      (first (task-map-from-sys-status sys stati mappings))
     (mapcar #'car (task-maps-from-sys-stati sys stati mappings))))
 
 (defun task-src-stati-to-trg-stati (src stati trg &optional mappings)
   (if (consp stati)
       (mapcar #'(lambda (map)
-                  (cdr (assoc trg (cdr map))))
+                  (rest (assoc trg (rest map))))
               (task-maps-from-sys-stati src stati mappings))
-    (cdr (assoc trg (cdr (task-map-from-sys-status src stati mappings))))))
+    (rest (assoc trg (rest (task-map-from-sys-status src stati mappings))))))
 
 (testing
 
@@ -150,7 +150,7 @@
 
 
 
- (cdr (assoc 'open status-mappings))
+ (rest (assoc 'open status-mappings))
  (task-status-map 'planner 'open))
 
 (defmacro with-writable-buffer (&rest body)
@@ -375,7 +375,7 @@
   (planner-task-lists (planner-today-ensure-exists)))
 
  (task-lists-of-plan-with-status-p
-  (car (planner-task-lists (planner-today-ensure-exists)))
+  (first (planner-task-lists (planner-today-ensure-exists)))
   (planner-today-ensure-exists)
   (task-stati-of-sys 'planner '(open inprogress)))
  )

@@ -208,7 +208,7 @@ using three `C-u' prefix arguments."
 (when nil ;;testing
   (progn
     (defun sacha/helm-select-clock (clocks)
-      (org-context-clock-debug :debug "sacha marker %s" (car clocks))
+      (org-context-clock-debug :debug "sacha marker %s" (first clocks))
       (helm
        (list
         (helm-build-sync-source "Select matching clock"
