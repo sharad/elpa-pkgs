@@ -41,25 +41,25 @@
 (require 'occ-statistics)
 
 
-(cl-defmethod occ-average ((obj occ-filter) sequence)
-  (unless (occ-filter-average obj)
-    (setf (occ-filter-average obj) (apply #'occ-stats-average sequence)))
-  (occ-filter-average obj))
+(cl-defmethod occ-obj-average ((obj occ-filter) sequence)
+  (unless (occ-obj-filter-average obj)
+    (setf (occ-obj-filter-average obj) (apply #'occ-stats-average sequence)))
+  (occ-obj-filter-average obj))
 
-(cl-defmethod occ-stddev ((obj occ-filter) sequence)
-  (unless (occ-filter-stddev obj)
-    (setf (occ-filter-stddev obj) (apply #'occ-stats-stddev sequence)))
-  (occ-filter-stddev obj))
+(cl-defmethod occ-obj-stddev ((obj occ-filter) sequence)
+  (unless (occ-obj-filter-stddev obj)
+    (setf (occ-obj-filter-stddev obj) (apply #'occ-stats-stddev sequence)))
+  (occ-obj-filter-stddev obj))
 
-(cl-defmethod occ-variance ((obj occ-filter) sequence)
-  (unless (occ-filter-variance obj)
-    (setf (occ-filter-variance obj) (apply #'occ-stats-variance sequence)))
-  (occ-filter-variance obj))
+(cl-defmethod occ-obj-variance ((obj occ-filter) sequence)
+  (unless (occ-obj-filter-variance obj)
+    (setf (occ-obj-filter-variance obj) (apply #'occ-stats-variance sequence)))
+  (occ-obj-filter-variance obj))
 
 
-(cl-defmethod occ-ctx-filter ((obj occ-obj-ctx) filter)
+(cl-defmethod occ-obj-ctx-filter ((obj occ-obj-ctx) filter)
   (unless (plist-get (occ-obj-ctx-filter-plist obj) filter)
-    (plist-put (occ-obj-ctx-filter-plist obj) filter (occ-make-filter)))
+    (plist-put (occ-obj-ctx-filter-plist obj) filter (occ-obj-make-filter)))
   (plist-get (occ-obj-ctx-filter-plist obj) filter))
 
 
@@ -85,7 +85,7 @@
         (let ((funkw (or (car-safe funkw-rank) funkw-rank))
               (rank  (if (consp funkw-rank) (nth 1 funkw-rank) nil)))
           (when funkw
-              (let ((fun (or (occ-filter-get funkw) funkw #'identity)))
+              (let ((fun (or (occ-obj-filter-get funkw) funkw #'identity)))
                 (setf funs (nconc funs
                                   (list (if rank ;; (consp funkw-rank)
                                             (list fun rank)
@@ -107,41 +107,41 @@
    (t (occ-error "Wrong %s methods" methods))))
 
 
-(cl-defmethod occ-apply-recursively ((obj occ-ctx)
-                                     methods
-                                     sequence
-                                     &key rank)
+(cl-defmethod occ-obj-apply-recursively ((obj occ-ctx)
+                                         methods
+                                         sequence
+                                         &key rank)
   (let* ((funkw-rank (first methods)))
     (let ((funkw      (or (car-safe funkw-rank) funkw-rank))
           (rank       (if (consp funkw-rank) (nth 1 funkw-rank) rank)))
-     ;; (occ-message "occ-apply-recursively: trying funkw-rank= %s funkw= %s" funkw-rank funkw)
+     ;; (occ-message "occ-obj-apply-recursively: trying funkw-rank= %s funkw= %s" funkw-rank funkw)
      (if funkw
-         (let ((fun  (or (rest (occ-filter-get funkw))
+         (let ((fun  (or (rest (occ-obj-filter-get funkw))
                          funkw
                          #'identity)))
-           (occ-apply-recursively obj
+           (occ-obj-apply-recursively obj
                                   (rest methods)
                                   (funcall fun obj sequence :rank rank)
                                   :rank rank))
        sequence))))
 
-(cl-defmethod occ-filter ((obj occ-ctx)
-                          methods
-                          sequence
-                          &key rank)
-  (let ((rank    (or rank #'occ-rank)))
-    (occ-apply-recursively obj
-                           methods
-                           sequence
-                           :rank rank)))
+(cl-defmethod occ-obj-filter ((obj occ-ctx)
+                              methods
+                              sequence
+                              &key rank)
+  (let ((rank    (or rank #'occ-obj-rank)))
+    (occ-obj-apply-recursively obj
+                               methods
+                               sequence
+                               :rank rank)))
 
 
-(cl-defmethod occ-filter-mutual-deviation ((obj occ-ctx)
-                                           sequence
-                                           &key rank) ;TODO: make it after method
+(cl-defmethod occ-obj-filter-mutual-deviation ((obj occ-ctx)
+                                               sequence
+                                               &key rank) ;TODO: make it after method
   "Return matched Sequence for context CTX"
   (if (occ-collection-object)
-      (let* ((rankslist  (mapcar #'occ-rank sequence))
+      (let* ((rankslist  (mapcar #'occ-obj-rank sequence))
              (avgrank    (apply #'occ-stats-average rankslist))
              (varirank   (apply #'occ-stats-variance rankslist)))
         ;; (occ-debug "occ-collection-obj-matches :around finish")
@@ -154,44 +154,44 @@
          sequence))
     (occ-error "(occ-collection-object) returned nil")))
 
-(occ-filter-add :mutual-deviation "Mutual Deviation" #'occ-filter-mutual-deviation)
+(occ-obj-filter-add :mutual-deviation "Mutual Deviation" #'occ-filter-mutual-deviation)
 
-(cl-defmethod occ-filter-positive ((obj occ-ctx)
-                                   sequence
-                                   &key rank)
+(cl-defmethod occ-obj-filter-positive ((obj occ-ctx)
+                                       sequence
+                                       &key rank)
   (remove-if-not #'(lambda (obj) (> (funcall rank obj) 0))
                  sequence))
 
-(occ-filter-add :positive "Positive" #'occ-filter-positive)
+(occ-obj-filter-add :positive "Positive" #'occ-filter-positive)
 
 
-(cl-defmethod occ-filter-nonnegative ((obj occ-ctx)
-                                      sequence
-                                      &key rank)
+(cl-defmethod occ-obj-filter-nonnegative ((obj occ-ctx)
+                                          sequence
+                                          &key rank)
   (remove-if-not #'(lambda (obj) (>= (funcall rank obj) 0))
                  sequence))
 
-(occ-filter-add :nonnegative "Non negative" #'occ-filter-nonnegative)
+(occ-obj-filter-add :nonnegative "Non negative" #'occ-filter-nonnegative)
 
 (defvar occ-filter-min 0)
-(cl-defmethod occ-filter-min ((obj occ-ctx)
-                              sequence
-                              &key rank)
+(cl-defmethod occ-obj-filter-min ((obj occ-ctx)
+                                  sequence
+                                  &key rank)
   (remove-if-not #'(lambda (obj) (>= (funcall rank obj) occ-filter-min))
                  sequence))
 
-(occ-filter-add :min "Minimum" #'occ-filter-min)
+(occ-obj-filter-add :min "Minimum" #'occ-filter-min)
 
 (defvar occ-filter-max 0)
-(cl-defmethod occ-filter-max ((obj occ-ctx)
-                              sequence
-                              &key rank)
+(cl-defmethod occ-obj-filter-max ((obj occ-ctx)
+                                  sequence
+                                  &key rank)
   (remove-if-not #'(lambda (obj)
                      (>= (funcall rank obj)
                          occ-filter-max))
                  sequence))
 
-(occ-filter-add :max "Maximum" #'occ-filter-max)
+(occ-obj-filter-add :max "Maximum" #'occ-filter-max)
 
 
 (defun occ-list-filters ()
@@ -200,8 +200,8 @@
 (defun occ-match-filters ()
   (list :positive
         :mutual-deviation
-        (list :positive         #'occ-member-tsk-rank)))
-        ;; (list :mutual-deviation #'occ-member-tsk-rank)
+        (list :positive         #'occ-obj-member-tsk-rank)))
+        ;; (list :mutual-deviation #'occ-obj-member-tsk-rank)
 
 (defun occ-never-filters ()
   "Used to filter mainly non-tsk"

@@ -33,73 +33,73 @@
 
 ;; TODO: graded ranking where ranking will be under priority of properties, where one can not go beyond above one, normally
 
-(cl-defgeneric occ-calculate-rank (obj)
-  "occ-rank")
+(cl-defgeneric occ-obj-calculate-rank (obj)
+  "occ-obj-rank")
 
 
-(cl-defmethod occ-calculate-rank ((obj occ-tsk))
+(cl-defmethod occ-obj-calculate-rank ((obj occ-tsk))
   ;; too much output
-  (occ-debug "occ-calculate-rank((occ-tsk=%s))"
-             (occ-format (occ-obj-tsk obj) 'capitalize))
+  (occ-debug "occ-obj-calculate-rank((occ-tsk=%s))"
+             (occ-obj-format (occ-obj-tsk obj) 'capitalize))
   (let ((rank
          (reduce #'+
                  (mapcar #'(lambda (slot)
-                             (occ-rankprop obj (downcase-sym slot)))
-                         (occ-properties-to-calculate-rank obj)))))
+                             (occ-obj-rankprop obj (downcase-sym slot)))
+                         (occ-obj-properties-to-calculate-rank obj)))))
     rank))
 
 
-(cl-defmethod occ-calculate-rank ((obj occ-obj-ctx-tsk))
+(cl-defmethod occ-obj-calculate-rank ((obj occ-obj-ctx-tsk))
   ;; too much output
-  ;; (occ-debug "occ-calculate-rank((occ-obj-ctx-tsk=%s))"
-  ;;            (occ-format (occ-obj-tsk obj) 'capitalize))
+  ;; (occ-debug "occ-obj-calculate-rank((occ-obj-ctx-tsk=%s))"
+  ;;            (occ-obj-format (occ-obj-tsk obj) 'capitalize))
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (reduce #'+
             (mapcar #'(lambda (slot)
-                        (occ-rankprop obj (downcase-sym slot)))
-                    (occ-properties-to-calculate-rank obj)))))
+                        (occ-obj-rankprop obj (downcase-sym slot)))
+                    (occ-obj-properties-to-calculate-rank obj)))))
 
 
-(cl-defmethod occ-calculate-avgrank ((obj occ-ctx))
+(cl-defmethod occ-obj-calculate-avgrank ((obj occ-ctx))
   ;; too much output
-  ;; (occ-debug "occ-calculate-avgrank(occ-ctx=%s)"
+  ;; (occ-debug "occ-obj-calculate-avgrank(occ-ctx=%s)"
   ;;            obj)
-  (let* ((objs      (occ-list obj #'occ-build-ctxual-tsk-with))
-         (rankslist (mapcar #'occ-rank objs))
+  (let* ((objs      (occ-obj-list obj #'occ-obj-build-ctxual-tsk-with))
+         (rankslist (mapcar #'occ-obj-rank objs))
          (avgrank   (occ-calculate-average rankslist)))
     avgrank))
 
-(cl-defmethod occ-calculate-varirank ((obj occ-ctx))
+(cl-defmethod occ-obj-calculate-varirank ((obj occ-ctx))
   ;; too much output
-  (occ-debug "occ-calculate-varirank(occ-ctx=%s)"
+  (occ-debug "occ-obj-calculate-varirank(occ-ctx=%s)"
              obj)
-  (let* ((objs      (occ-list obj #'occ-build-ctxual-tsk-with))
-         (rankslist (mapcar #'occ-rank objs))
+  (let* ((objs      (occ-obj-list obj #'occ-obj-build-ctxual-tsk-with))
+         (rankslist (mapcar #'occ-obj-rank objs))
          (varirank  (occ-calculate-variance rankslist)))
     varirank))
 
 
-(cl-defmethod occ-calculate-avgrank ((obj occ-collection))
+(cl-defmethod occ-obj-calculate-avgrank ((obj occ-collection))
   ;; too much output
-  ;; (occ-debug "occ-calculate-avgrank(occ-collection=%s)"
+  ;; (occ-debug "occ-obj-calculate-avgrank(occ-collection=%s)"
   ;;            obj)
   (let* ((objs      (occ-collect-list obj))
-         (rankslist (mapcar #'occ-rank objs))
+         (rankslist (mapcar #'occ-obj-rank objs))
          (avgrank   (occ-calculate-average rankslist)))
     avgrank))
 
-(cl-defmethod occ-calculate-varirank ((obj occ-collection))
+(cl-defmethod occ-obj-calculate-varirank ((obj occ-collection))
   ;; too much output
-  ;; (occ-debug "occ-calculate-varirank(occ-collection=%s)"
+  ;; (occ-debug "occ-obj-calculate-varirank(occ-collection=%s)"
   ;;            obj)
   (let* ((objs      (occ-collect-list obj))
-         (rankslist (mapcar #'occ-rank objs))
+         (rankslist (mapcar #'occ-obj-rank objs))
          (varirank  (occ-calculate-variance rankslist)))
     varirank))
 
 
-;; (occ-avgrank (occ-collection-object))
-;; (occ-varirank (occ-collection-object))
+;; (occ-obj-avgrank (occ-collection-object))
+;; (occ-obj-varirank (occ-collection-object))
 
 ;;; occ-rank.el ends here

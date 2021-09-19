@@ -60,7 +60,7 @@
 ;;;###autoload
 (defun occ-initialize (&optional spec)
   "occ-initialize"
-  (setq *occ-tsk-previous-ctx* (occ-make-ctx-at-point))
+  (setq *occ-tsk-previous-ctx* (occ-obj-make-ctx-at-point))
   (progn
     (setq occ-mode t)
     (occ-enable-mode-map)
@@ -74,7 +74,7 @@
     (add-hook 'switch-buffer-functions #'occ-switch-buffer-run-curr-ctx-timer-function)
     (add-hook 'org-mode-hook           #'occ-add-after-save-hook-fun-in-org-mode)
     (add-hook 'org-mode-hook           #'occ-add-org-file-timer))
-  (dolist (prop (occ-properties-to-inherit nil))
+  (dolist (prop (occ-obj-properties-to-inherit nil))
     (let ((propstr (upcase (if (keywordp prop)
                                (substring (symbol-name prop) 1)
                              (symbol-name prop)))))
@@ -85,7 +85,7 @@
       (if (occ-valid-spec-p spec)
           (setq occ-global-tsk-collection-spec spec)
         (when (called-interactively-p 'interactive)
-          (occ-build-spec)))))
+          (occ-obj-build-spec)))))
   ;; newly added
   (org-clock-load))
 
@@ -108,7 +108,7 @@
     (remove-hook 'switch-buffer-functions #'occ-switch-buffer-run-curr-ctx-timer-function)
     (remove-hook 'org-mode-hook           #'occ-add-after-save-hook-fun-in-org-mode)
     (remove-hook 'org-mode-hook           #'occ-add-org-file-timer))
-  (dolist (prop (occ-properties-to-inherit nil))
+  (dolist (prop (occ-obj-properties-to-inherit nil))
     (let ((propstr
            (upcase (if (keywordp prop) (substring (symbol-name prop) 1) (symbol-name prop)))))
       (unless (member propstr org-use-property-inheritance)

@@ -62,10 +62,10 @@
 (cl-defmethod occ-find ((collection list)
                         (mrk marker)))
 
-(cl-defgeneric occ-goto (obj)
-  "occ-goto")
+(cl-defgeneric occ-do-goto (obj)
+  "occ-do-goto")
 
-(cl-defmethod occ-goto ((obj marker))
+(cl-defmethod occ-do-goto ((obj marker))
   (switch-to-buffer (marker-buffer obj))
   ;; TODO find about "org-overview"
   ;; https://stackoverflow.com/questions/25161792/emacs-org-mode-how-can-i-fold-everything-but-the-current-headline
@@ -76,18 +76,18 @@
   (org-content 10)
   (goto-char obj))
 
-(cl-defmethod occ-goto ((obj occ-obj-tsk))
+(cl-defmethod occ-do-goto ((obj occ-obj-tsk))
   (let ((mrk (occ-obj-marker obj)))
     (if (and (markerp mrk)
              (marker-buffer mrk))
-        (occ-goto mrk)
+        (occ-do-goto mrk)
       (occ-error "marker %s invalid." mrk))))
 
 
-(cl-defgeneric occ-set-to (obj)
-  "occ-set-to")
+(cl-defgeneric occ-do-set-to (obj)
+  "occ-do-set-to")
 
-(cl-defmethod occ-set-to ((obj marker))
+(cl-defmethod occ-do-set-to ((obj marker))
   (set-buffer (marker-buffer obj))
   ;; TODO find about "org-overview"
   ;; https://stackoverflow.com/questions/25161792/emacs-org-mode-how-can-i-fold-everything-but-the-current-headline
@@ -98,58 +98,58 @@
   ;; (org-content 10)
   (goto-char obj))
 
-(cl-defmethod occ-set-to ((obj occ-obj-tsk))
+(cl-defmethod occ-do-set-to ((obj occ-obj-tsk))
   (let ((mrk (occ-obj-marker obj)))
     (if (and (markerp mrk)
              (marker-buffer mrk))
-        (occ-set-to mrk)
+        (occ-do-set-to mrk)
       (occ-error "marker %s invalid." mrk))))
 
 
-(cl-defmethod occ-induct-child ((obj   occ-tree-tsk)
+(cl-defmethod occ-do-induct-child ((obj   occ-tree-tsk)
                                 (child occ-tree-tsk))
   (occ-set-property child 'subtree-level
-                    (occ-get-property obj 'subtree-level))
+                    (occ-obj-get-property obj 'subtree-level))
   (occ-insert-node-after-element child obj
                                  (occ-tree-collection-list (occ-collection-object)))
   (setf (occ-tree-tsk-subtree obj) (nconc (occ-tree-tsk-subtree obj)
                                           (list  child))))
 
-(cl-defmethod occ-induct-child ((obj   occ-list-tsk)
+(cl-defmethod occ-do-induct-child ((obj   occ-list-tsk)
                                 (child occ-list-tsk))
   (occ-set-property child 'subtree-level
-                    (occ-get-property obj 'subtree-level))
+                    (occ-obj-get-property obj 'subtree-level))
   (occ-insert-node-after-element child obj
                                  (occ-tree-collection-list (occ-collection-object))))
 
 
-(cl-defgeneric occ-capture (obj &key
+(cl-defgeneric occ-do-capture (obj &key
                                 template
                                 clock-in
                                 immediate-finish )
-  "occ-capture")
+  "occ-do-capture")
 
-(cl-defmethod occ-capture ((obj marker) &key
+(cl-defmethod occ-do-capture ((obj marker) &key
                                         template
                                         clock-in
                                         immediate-finish)
   (org-capture-run 'entry
                    `(marker ,obj)
-                   'occ-capture+-helm-select-template
+                   'occ-do-capture+-helm-select-template
                    :immediate-finish immediate-finish
                    :empty-lines 1))
 
-(cl-defmethod occ-capture ((obj occ-tsk) &key
+(cl-defmethod occ-do-capture ((obj occ-tsk) &key
                                          template
                                          clock-in
                                          immediate-finish)
   (let ((mrk (occ-tsk-marker obj)))
-    (occ-capture mrk
+    (occ-do-capture mrk
                  :clock-in         clock-in
                  :template         template
                  :immediate-finish immediate-finish)))
 
-(cl-defmethod occ-capture ((obj occ-obj-ctx-tsk) &key
+(cl-defmethod occ-do-capture ((obj occ-obj-ctx-tsk) &key
                                                  template
                                                  clock-in
                                                  immediate-finish)
@@ -157,37 +157,37 @@
         (tsk      (occ-obj-tsk    obj))
         (ctx      (occ-obj-ctx    obj))
         (template (or template          ;FIX it.
-                      (occ-capture+-helm-select-template))))
+                      (occ-do-capture+-helm-select-template))))
     (when template
       (with-org-capture-run marker 'entry (list 'marker mrk) template (list :empty-lines 1
                                                                             :immediate-finish immediate-finish)
         (progn
           (unless immediate-finish        ;*NOTE:
-            (let* ((tmp-tsk  (occ-make-tsk marker))
-                   (tmp-ctsk (occ-build-ctsk-with tmp-tsk ctx)))
+            (let* ((tmp-tsk  (occ-obj-make-tsk marker))
+                   (tmp-ctsk (occ-obj-build-ctsk-with tmp-tsk ctx)))
               (occ-op-props-edit tmp-ctsk)))
           t)
-        (let* ((child-tsk        (occ-make-tsk marker))
-               (child-ctxual-tsk (occ-build-ctxual-tsk-with child-tsk ctx)))
+        (let* ((child-tsk        (occ-obj-make-tsk marker))
+               (child-ctxual-tsk (occ-obj-build-ctxual-tsk-with child-tsk ctx)))
           (when child-tsk
-            (occ-induct-child tsk child-tsk)
+            (occ-do-induct-child tsk child-tsk)
             (when clock-in
-              (occ-try-clock-in child-ctxual-tsk))))))))
+              (occ-do-try-clock-in child-ctxual-tsk))))))))
 
-(cl-defmethod occ-capture ((obj null) &key
+(cl-defmethod occ-do-capture ((obj null) &key
                                       template
                                       clock-in
                                       immediate-finish)
   ;; BUG: occ-list-select is become an interactive function, here it is not returning desired object.
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION for OCC-LIST-SELECT
-  (let ((ctx-tsk (occ-list-select (occ-make-ctx-at-point)
-                                  :ap-normal '(t actions select)
-                                  :obtrusive t)))
+  (let ((ctx-tsk (occ-obj-list-select (occ-obj-make-ctx-at-point)
+                                      :ap-normal '(t actions select)
+                                      :obtrusive t)))
     (if ctx-tsk
-        (occ-capture ctx-tsk
-                   :template template
-                   :clock-in clock-in
-                   :immediate-finish immediate-finish)
+        (occ-do-capture ctx-tsk
+                        :template template
+                        :clock-in clock-in
+                        :immediate-finish immediate-finish)
       (occ-error "Not able to get ctx-tsk(%s) at point" ctx-tsk))))
 
 ;; TODO: DEBUG
@@ -195,94 +195,94 @@
   ;;; Group1
 
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION for OCC-LIST-SELECT
-  ;; (occ-get-helm-actions nil '(t actions select)) -> nil
-  (occ-list-debug-select (occ-make-ctx-at-point)
-                         :ap-normal '(t actions select)
-                         :obtrusive nil)
-  (occ-list-select (occ-make-ctx-at-point)
+  ;; (occ-obj-get-helm-actions nil '(t actions select)) -> nil
+ (occ-obj-list-debug-select (occ-obj-make-ctx-at-point)
+                            :ap-normal '(t actions select)
+                            :obtrusive nil)
+  (occ-obj-list-select (occ-obj-make-ctx-at-point)
                    :ap-normal '(t actions select)
                    :obtrusive nil)
 
 
-  (occ-list-debug-select (occ-make-ctx-at-point)
-                         :ap-normal '(t actions select)
-                         :obtrusive nil)
+  (occ-obj-list-debug-select (occ-obj-make-ctx-at-point)
+                             :ap-normal '(t actions select)
+                             :obtrusive nil)
 
   ;;; Group2
-  (let ((obj (occ-make-ctx-at-point)))
-    (occ-select obj
-                :filters            (occ-list-filters)
-                :builder            #'occ-build-ctsk-with
-                :action             (occ-get-helm-actions obj
-                                                          occ-list-select-keys)
-                :return-transform   nil
-                :action-transformer #'(lambda (action candidate)
-                                        (occ-get-helm-actions obj
-                                                              occ-list-select-keys))
-                :timeout            occ-idle-timeout
-                :obtrusive         t))
+  (let ((obj (occ-obj-make-ctx-at-point)))
+    (occ-obj-select obj
+                    :filters            (occ-list-filters)
+                    :builder            #'occ-obj-build-ctsk-with
+                    :action             (occ-obj-get-helm-actions obj
+                                                                  occ-list-select-keys)
+                    :return-transform   nil
+                    :action-transformer #'(lambda (action candidate)
+                                            (occ-obj-get-helm-actions obj
+                                                                      occ-list-select-keys))
+                    :timeout            occ-idle-timeout
+                    :obtrusive         t))
 
 
-  ;; (occ-get-helm-actions nil '(t actions select)) -> nil
-  (occ-list-select (occ-make-ctx-at-point)
-                   :action (occ-get-helm-actions nil '(t actions select))
-                   :obtrusive nil)
+  ;; (occ-obj-get-helm-actions nil '(t actions select)) -> nil
+  (occ-obj-list-select (occ-obj-make-ctx-at-point)
+                       :action (occ-obj-get-helm-actions nil '(t actions select))
+                       :obtrusive nil)
 
 
   ;;; Group3
-  (let ((obj                    (occ-make-ctx-at-point))
+  (let ((obj                    (occ-obj-make-ctx-at-point))
         (occ-list-select-keys-1 '(t actions select))
         (occ-list-select-keys-2 '(t actions general)))
-    (occ-select obj
-                :filters            (occ-list-filters)
-                :builder            #'occ-build-ctsk-with
-                :action             (occ-get-helm-actions obj
-                                                          occ-list-select-keys-1)
-                :return-transform   nil
-                :action-transformer #'(lambda (action candidate)
-                                        (occ-get-helm-actions obj
-                                                              occ-list-select-keys-2))
-                :timeout            occ-idle-timeout
-                :obtrusive         t))
+    (occ-obj-select obj
+                    :filters            (occ-list-filters)
+                    :builder            #'occ-obj-build-ctsk-with
+                    :action             (occ-obj-get-helm-actions obj
+                                                                  occ-list-select-keys-1)
+                    :return-transform   nil
+                    :action-transformer #'(lambda (action candidate)
+                                            (occ-obj-get-helm-actions obj
+                                                                      occ-list-select-keys-2))
+                    :timeout            occ-idle-timeout
+                    :obtrusive         t))
 
 
 
   ())
 
 
-(cl-defgeneric occ-procreate-child (obj)
+(cl-defgeneric occ-do-procreate-child (obj)
   "occ-child")
 
-(cl-defmethod occ-procreate-child ((obj marker)
+(cl-defmethod occ-do-procreate-child ((obj marker)
                                    &key
                                    template
                                    clock-in)
-  (if (not (occ-unnamed-p obj))
-      (occ-capture obj
+  (if (not (occ-obj-unnamed-p obj))
+      (occ-do-capture obj
                    :clock-in clock-in ;; helm-current-prefix-arg
                    :template template)
-    (let ((title (occ-title obj 'captilize)))
+    (let ((title (occ-obj-title obj 'captilize)))
      (occ-error "%s is unnamed %s so can not create child "
-           (occ-format obj 'captilize)
+           (occ-obj-format obj 'captilize)
            title
            title))))
 
-(cl-defmethod occ-procreate-child ((obj occ-obj-tsk)
+(cl-defmethod occ-do-procreate-child ((obj occ-obj-tsk)
                                    &key
                                    template
                                    clock-in)
-  (if (not (occ-unnamed-p obj))
-      (occ-capture obj
+  (if (not (occ-obj-unnamed-p obj))
+      (occ-do-capture obj
                    :clock-in clock-in ;; helm-current-prefix-arg
                    :template template)
-    (let ((title (occ-title obj 'captilize)))
+    (let ((title (occ-obj-title obj 'captilize)))
       (occ-error "%s is unnamed %s so can not create child "
-             (occ-format obj 'captilize)
+             (occ-obj-format obj 'captilize)
              title
              title))))
 
 
-(cl-defmethod occ-tsk-txt ((obj occ-obj-ctx)
+(cl-defmethod occ-obj-tsk-txt ((obj occ-obj-ctx)
                            (heading string))
   "Build a task name description from OBJ occ-ctx"
   (concat "* " heading "\n"))
@@ -292,53 +292,53 @@
                                         &key
                                         template
                                         clock-in)
-  (let ((ctx (occ-make-ctx-at-point)))
-    (occ-capture nil
+  (let ((ctx (occ-obj-make-ctx-at-point)))
+    (occ-do-capture nil
                  :clock-in         clock-in ;; helm-current-prefix-arg
-                 :template         (occ-tsk-txt ctx heading)
+                 :template         (occ-obj-tsk-txt ctx heading)
                  :immediate-finish t)))
 
 (cl-defmethod occ-procreate-anonymous-child ((heading string)
                                              &key
                                              template
                                              clock-in)
-  (let ((ctx (occ-make-ctx-at-point)))
-    (occ-capture nil
+  (let ((ctx (occ-obj-make-ctx-at-point)))
+    (occ-do-capture nil
                  :clock-in clock-in ;; helm-current-prefix-arg
-                 :template (occ-tsk-txt ctx heading))))
+                 :template (occ-obj-tsk-txt ctx heading))))
 
 
 (cl-defmethod occ-fast-procreate-anonymous-child ((heading string)
                                                   &key
                                                   template
                                                   clock-in)
-  (let ((ctx (occ-make-ctx-at-point)))
+  (let ((ctx (occ-obj-make-ctx-at-point)))
     (let ((anonymous-heading-marker (rest (org-without-org-clock-persist
                                            ;; TODO: Implement it.
                                            (lotus-org-create-anonymous-task))))
           (anonymous-tsk (when anonymous-heading-marker
-                           (occ-make-tsk anonymous-heading-marker
+                           (occ-obj-make-tsk anonymous-heading-marker
                                          (occ-tsk-builder)))))
-      (occ-capture anonymous-tsk
+      (occ-do-capture anonymous-tsk
                    :clock-in         clock-in ;; helm-current-prefix-arg
-                   :template         (occ-tsk-txt ctx heading)
+                   :template         (occ-obj-tsk-txt ctx heading)
                    :immediate-finish t))))
 
 
-(cl-defgeneric occ-procreate-child-clock-in (obj)
+(cl-defgeneric occ-do-procreate-child-clock-in (obj)
   "occ-child-clock-in")
 
-(cl-defmethod occ-procreate-child-clock-in ((obj null))
-  (occ-capture obj
+(cl-defmethod occ-do-procreate-child-clock-in ((obj null))
+  (occ-do-capture obj
                :clock-in t))
 
-(cl-defmethod occ-procreate-child-clock-in ((obj marker))
-  (occ-capture obj
+(cl-defmethod occ-do-procreate-child-clock-in ((obj marker))
+  (occ-do-capture obj
                :clock-in t))
 
-(cl-defmethod occ-procreate-child-clock-in ((obj occ-obj-tsk))
-  (occ-capture obj
-               :clock-in t))
+(cl-defmethod occ-do-procreate-child-clock-in ((obj occ-obj-tsk))
+  (occ-do-capture obj
+                  :clock-in t))
 
 
 (defun occ-confirm (fn new)

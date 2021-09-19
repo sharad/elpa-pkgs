@@ -34,71 +34,71 @@
 (require 'occ-prop-utils)
 
 
-(cl-defgeneric occ-rankprop (obj
-                             property)
+(cl-defgeneric occ-obj-rankprop (obj
+                                 property)
   "Return the RANK (number) for OBJ based on the property PROPERTY")
-(cl-defmethod occ-rankprop (obj
-                            property)
+(cl-defmethod occ-obj-rankprop (obj
+                                property)
   "Return the RANK (number) for OBJ based on the property PROPERTY"
   ;; too much output
-  ;; (occ-debug "occ-rank(tsk-pair=%s ctx=%s)" tsk-pair ctx)
-  (occ-debug "occ-rankprop(obj=%s symbol=%s)" obj property)
+  ;; (occ-debug "occ-obj-rank(tsk-pair=%s ctx=%s)" tsk-pair ctx)
+  (occ-debug "occ-obj-rankprop(obj=%s symbol=%s)" obj property)
   0)
-(cl-defmethod occ-rankprop ((obj  occ-tsk)
-                            (property symbol))
+(cl-defmethod occ-obj-rankprop ((obj  occ-tsk)
+                                (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-debug "occ-rankprop(obj=%s symbol=%s)"
+  (occ-debug "occ-obj-rankprop(obj=%s symbol=%s)"
              obj
              property)
   0)
-(cl-defmethod occ-rankprop ((obj  occ-obj-ctx-tsk)
-                            (property symbol))
+(cl-defmethod occ-obj-rankprop ((obj  occ-obj-ctx-tsk)
+                                (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-debug "occ-rankprop(obj=%s symbol=%s)" obj property)
-  (occ-rankprop obj property))
+  (occ-debug "occ-obj-rankprop(obj=%s symbol=%s)" obj property)
+  (occ-obj-rankprop obj property))
 
 
-(cl-defgeneric occ-has-p (obj
-                          property
-                          value)
+(cl-defgeneric occ-obj-has-p (obj
+                              property
+                              value)
   "OBJ has property PROPERTY")
-(cl-defmethod occ-has-p ((obj occ-obj-tsk)
-                         (prop symbol)
-                         value)
+(cl-defmethod occ-obj-has-p ((obj occ-obj-tsk)
+                             (prop symbol)
+                             value)
   "OBJ has property PROPERTY"
   (let* ((tsk            (occ-obj-tsk obj))
-         (tsk-prop-value (occ-get-property tsk prop)))
-    (occ-debug "occ-has-p prop %s, (consp tsk-prop-value) %s" prop (consp tsk-prop-value))
-    (occ-debug "occ-has-p prop %s, (occ-list-p prop) %s, value %s" prop (occ-list-p prop) (prin1-to-string value))
-    (occ-debug "occ-has-p prop %s, (occ-list-p prop) %s, tsk-prop-value %s" prop (occ-list-p prop) (prin1-to-string tsk-prop-value))
-    (if (occ-list-p prop)
+         (tsk-prop-value (occ-obj-get-property tsk prop)))
+    (occ-debug "occ-obj-has-p prop %s, (consp tsk-prop-value) %s" prop (consp tsk-prop-value))
+    (occ-debug "occ-obj-has-p prop %s, (occ-obj-list-p prop) %s, value %s" prop (occ-obj-list-p prop) (prin1-to-string value))
+    (occ-debug "occ-obj-has-p prop %s, (occ-obj-list-p prop) %s, tsk-prop-value %s" prop (occ-obj-list-p prop) (prin1-to-string tsk-prop-value))
+    (if (occ-obj-list-p prop)
         (member value tsk-prop-value)
       (equal value tsk-prop-value))))
 
 
-(cl-defgeneric occ-get-property-value-from-ctx (obj
-                                                property)
+(cl-defgeneric occ-obj-get-property-value-from-ctx (obj
+                                                    property)
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
   ;; (occ-error "must return occ compatible value.")
 
 
-(cl-defgeneric occ-format-prop (obj
-                                property
-                                value)
+(cl-defgeneric occ-obj-format-prop (obj
+                                    property
+                                    value)
   "Return format printable value of property PROPERTY."
   value)
 
 
-(cl-defgeneric occ-list-p (property)
+(cl-defgeneric occ-obj-list-p (property)
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not.")
 
-(cl-defmethod occ-list-p ((property symbol))
+(cl-defmethod occ-obj-list-p ((property symbol))
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not."
   ;; 'list
-  ;; (occ-error "Implement method occ-list-p for property %s" property)
-  (occ-debug "occ-list-p: no method for property %s using default."
+  ;; (occ-error "Implement method occ-obj-list-p for property %s" property)
+  (occ-debug "occ-obj-list-p: no method for property %s using default."
              property)
   nil)
 
@@ -142,111 +142,111 @@ org string to occ representation."
   value)
 
 
-(cl-defmethod occ-readprop-from-user ((obj occ-obj-tsk)
-                                      (property symbol))
-  "Read value of list of elements if (occ-list-p PROPERTY) else
+(cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk)
+                                          (property symbol))
+  "Read value of list of elements if (occ-obj-list-p PROPERTY) else
 element for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value."
-  (occ-error "Implement method occ-readprop-from-user for property %s" property))
+  (occ-error "Implement method occ-obj-readprop-from-user for property %s" property))
 
 
-(cl-defgeneric occ-require-p (obj
-                              operation
-                              property
-                              values)
-  "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
+(cl-defgeneric occ-obj-require-p (obj
+                                  operation
+                                  property
+                                  values)
+  "Used by OCC-OBJ-GEN-EDIT-IF-REQUIRED to decide for this property
 _TEMPLATE_ if CALLABLE (helm method) should be generated."
-  (occ-debug "occ-require-p0 is called"))
-(cl-defmethod occ-require-p ((obj occ-obj-tsk)
-                             (operation (eql _operation_))
-                             (property  symbol)
-                             values)
-  "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
+  (occ-debug "occ-obj-require-p0 is called"))
+(cl-defmethod occ-obj-require-p ((obj occ-obj-tsk)
+                                 (operation (eql _operation_))
+                                 (property  symbol)
+                                 values)
+  "Used by OCC-OBJ-GEN-EDIT-IF-REQUIRED to decide for this property
 _TEMPLATE_ if CALLABLE (helm method) should be generated."
-  (occ-debug "occ-require-p1 is called")
+  (occ-debug "occ-obj-require-p1 is called")
   t)
 
 
-(cl-defgeneric occ-prop-default-value (obj
-                                       property
-                                       operation)
+(cl-defgeneric occ-obj-prop-default-value (obj
+                                           property
+                                           operation)
   "Return a default VALUE of property _TEMPLATE_.")
-(cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
-                                      (property symbol)
-                                      (operation symbol))
+(cl-defmethod occ-obj-prop-default-value ((obj occ-obj-tsk)
+                                          (property symbol)
+                                          (operation symbol))
   "Return a default VALUE of property _TEMPLATE_."
   nil)
-(cl-defmethod occ-prop-default-value ((obj occ-obj-ctx-tsk)
-                                      (property symbol)
-                                      (operation symbol))
+(cl-defmethod occ-obj-prop-default-value ((obj occ-obj-ctx-tsk)
+                                          (property symbol)
+                                          (operation symbol))
   "Return a default VALUE of property _TEMPLATE_."
-  (occ-get-property (occ-obj-ctx obj)
+  (occ-obj-get-property (occ-obj-ctx obj)
                     property))
 
 
-(cl-defgeneric occ-operation (obj
-                              operation
-                              property
-                              values)
+(cl-defgeneric occ-obj-operation (obj
+                                  operation
+                                  property
+                                  values)
   "Do the actual OPERATION.")
-;; (cl-defmethod occ-operation ((obj occ-obj-tsk)
+;; (cl-defmethod occ-obj-operation ((obj occ-obj-tsk)
 ;;                              (operation (eql XYZ))
 ;;                              (property      (eql x))
 ;;                              values)
 ;;   ())
 
 
-(cl-defgeneric occ-checkout-prop (obj
-                                  property)
+(cl-defgeneric occ-do-checkout-prop (obj
+                                     property)
   "Checkout property PROPERTY in case of force clock-in.")
-(cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
-                                 (property symbol))
+(cl-defmethod occ-do-checkout-prop ((obj occ-obj-tsk)
+                                    (property symbol))
   "Checkout property in case of force clock-in."
   (occ-error "Implement it for %s: Checkout property in case of force clock-in." property))
 
 (occ-testing
- (cl-defmethod occ-rankprop ((obj occ-tsk)
-                             (prop (eql _template_)))
+ (cl-defmethod occ-obj-rankprop ((obj occ-tsk)
+                                 (prop (eql _template_)))
    "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE_")
- (cl-defmethod occ-has-p ((obj occ-obj-tsk)
-                          (property symbol)
-                          value)
+ (cl-defmethod occ-obj-has-p ((obj occ-obj-tsk)
+                              (property symbol)
+                              value)
    "OBJ-has-property PROPERTY")
- (cl-defmethod occ-get-property-value-from-ctx ((obj occ-ctx)
-                                                (property symbol))
+ (cl-defmethod occ-obj-get-property-value-from-ctx ((obj occ-ctx)
+                                                    (property symbol))
    "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
    (occ-error "must return occ compatible value."))
- (cl-defmethod occ-format-prop ((obj occ-obj-tsk)
-                                (property symbol)
-                                value)
+ (cl-defmethod occ-obj-format-prop ((obj occ-obj-tsk)
+                                    (property symbol)
+                                    value)
    "Return format printable value of property PROPERTY."
    value)
- (cl-defmethod occ-list-p ((prop (eql _template_)))
+ (cl-defmethod occ-obj-list-p ((prop (eql _template_)))
    "Is the property _TEMPLATE_ has VALUES in list, Method tell
    property represent list or not.")
- (cl-defmethod occ-readprop-from-user ((obj occ-tsk)
-                                       (prop (eql _template_)))
-   "Read value of list of elements if (occ-list-p PROPERTY) else
+ (cl-defmethod occ-obj-readprop-from-user ((obj occ-tsk)
+                                           (prop (eql _template_)))
+   "Read value of list of elements if (occ-obj-list-p PROPERTY) else
 element for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value.")
- (cl-defmethod occ-require-p ((obj occ-obj-tsk)
-                              (operation (eql _operation_))
-                              (prop (eql _template_))
-                              values)
-   "Used by OCC-GEN-EDIT-IF-REQUIRED to decide for this property
+ (cl-defmethod occ-obj-require-p ((obj occ-obj-tsk)
+                                  (operation (eql _operation_))
+                                  (prop (eql _template_))
+                                  values)
+   "Used by OCC-OBJ-GEN-EDIT-IF-REQUIRED to decide for this property
 _TEMPLATE_ if CALLABLE (helm method) should be generated."
-   (occ-debug "occ-require-p3 is called"))
- (cl-defmethod occ-prop-default-value ((obj occ-obj-tsk)
-                                       (prop (eql _template_))
-                                       (operation (eql _operation_)))
+   (occ-debug "occ-obj-require-p3 is called"))
+ (cl-defmethod occ-obj-prop-default-value ((obj occ-obj-tsk)
+                                           (prop (eql _template_))
+                                           (operation (eql _operation_)))
    "Return a default VALUE of property _TEMPLATE_.")
- (cl-defmethod occ-operation ((obj occ-obj-tsk)
-                              (operation (eql _operation_))
-                              (prop (eql _template_))
-                              values)
+ (cl-defmethod occ-obj-operation ((obj occ-obj-tsk)
+                                  (operation (eql _operation_))
+                                  (prop (eql _template_))
+                                  values)
    "Do the actual _OPERATION_.")
- (cl-defmethod occ-checkout-prop ((obj occ-obj-tsk)
-                                  (prop (eql _template_)))
+ (cl-defmethod occ-do-checkout-prop ((obj occ-obj-tsk)
+                                     (prop (eql _template_)))
    "Checkout property _TEMPLATE_ in case of force clock-in."))
 
 ;;; occ-prop-intf.el ends here

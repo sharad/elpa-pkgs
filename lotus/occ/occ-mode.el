@@ -60,11 +60,11 @@
 (define-key occ-mode-keymap (kbd "do") 'occ-stop-day)
 (define-key occ-mode-keymap (kbd "dp") 'occ-pack-up)
 
-(define-key occ-mode-keymap (kbd "tif") 'occ-clock-in-force)
+(define-key occ-mode-keymap (kbd "tif") 'occ-do-clock-in-force)
 (define-key occ-mode-keymap (kbd "tii") 'occ-interrupt-clock-in)
 (define-key occ-mode-keymap (kbd "to")  'occ-clock-out)
 (define-key occ-mode-keymap (kbd "tP")  'occ-continue-prev)
-(define-key occ-mode-keymap (kbd "ta")  'occ-make-anonymous)
+(define-key occ-mode-keymap (kbd "ta")  'occ-obj-make-anonymous)
 
 (define-key occ-mode-keymap (kbd "q") 'occ-keep-quiet)
 (define-key occ-mode-keymap (kbd "Q") 'occ-keep-quiet-for)
@@ -73,10 +73,10 @@
 (define-key occ-mode-keymap (kbd "ru") 'occ-unregister-resolve-clock)
 
 (define-key occ-mode-keymap (kbd "sR") 'occ-reset-spec)
-(define-key occ-mode-keymap (kbd "sM") 'occ-make-spec)
+(define-key occ-mode-keymap (kbd "sM") 'occ-obj-make-spec)
 (define-key occ-mode-keymap (kbd "sA") 'occ-add-to-spec)
 (define-key occ-mode-keymap (kbd "sO") 'occ-add-org-file)
-(define-key occ-mode-keymap (kbd "sB") 'occ-build-spec)
+(define-key occ-mode-keymap (kbd "sB") 'occ-obj-build-spec)
 
 (define-key occ-mode-keymap (kbd "Tr") 'occ-files-with-null-regex)
 (define-key occ-mode-keymap (kbd "To") 'occ-files-not-in-org-mode)

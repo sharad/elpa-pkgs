@@ -52,10 +52,10 @@
 (defvar    *occ-tsk-current-ctx*               nil)
 
 
-(cl-defmethod occ-ctxual-current-tsk ((obj occ-ctx))
+(cl-defmethod occ-obj-ctxual-current-tsk ((obj occ-ctx))
   (let ((curr-tsk (occ-current-tsk)))
     (when curr-tsk
-      (occ-build-ctxual-tsk-with curr-tsk
+      (occ-obj-build-ctxual-tsk-with curr-tsk
                                  obj))))
 
 ;; TODO: use TSK in place of CLOCK and make is general or CLOCK may be replaced with CURRENT
@@ -69,80 +69,80 @@
   "current clock is unassociated to CTX"
   (not (occ-current-associated-p ctx)))
 
-(cl-defmethod occ-edit-until-associable-p ((obj occ-ctxual-tsk)
-                                           (tries number))
+(cl-defmethod occ-do-edit-until-associable-p ((obj occ-ctxual-tsk)
+                                              (tries number))
   "Try three time to associated CTX with current TSK if succeed then return t else nil"
-  (occ-message "(occ-edit-until-associable-p (obj occ-ctxual-tsk)[%s]) begin" (occ-Format obj))
+  (occ-message "(occ-do-edit-until-associable-p (obj occ-ctxual-tsk)[%s]) begin" (occ-obj-Format obj))
   (let ((retval  nil)
         (org-obj obj)
         (obj     obj))
     (occ-try-until tries (not (or (memq retval '(no-action skip))
-                                  (occ-associable-p obj)))
-      (occ-message "(occ-edit-until-associable-p (obj occ-ctxual-tsk)[%s]) ITERATION" (occ-Format obj))
+                                  (occ-obj-associable-p obj)))
+      (occ-message "(occ-do-edit-until-associable-p (obj occ-ctxual-tsk)[%s]) ITERATION" (occ-obj-Format obj))
       ;; ;; BUG FIX
       ;; TODO: provision to pass prompt to describe why editor is called
       ;; note: it supposed to return t or nil
       (setq retval
-            (occ-properties-editor-combined obj))
-      (setq obj (occ-build-ctxual-tsk-with (occ-obj-tsk org-obj)
-                                           (occ-make-ctx-at-point)))
-      (occ-message "(occ-edit-until-associable-p (obj occ-ctxual-tsk)[%s]): occ-try-until: (occ-associable-p) %s retval %s"
-                   (occ-Format obj)
-                   (occ-associable-p obj)
+            (occ-do-properties-editor-combined obj))
+      (setq obj (occ-obj-build-ctxual-tsk-with (occ-obj-tsk org-obj)
+                                           (occ-obj-make-ctx-at-point)))
+      (occ-message "(occ-do-edit-until-associable-p (obj occ-ctxual-tsk)[%s]): occ-try-until: (occ-obj-associable-p) %s retval %s"
+                   (occ-obj-Format obj)
+                   (occ-obj-associable-p obj)
                    retval))
 
-    (occ-message "(occ-edit-until-associable-p (obj occ-ctxual-tsk)[%s]) (occ-associable-p) %s retval %s"
-                 (occ-Format obj)
-                 (occ-associable-p obj)
+    (occ-message "(occ-do-edit-until-associable-p (obj occ-ctxual-tsk)[%s]) (occ-obj-associable-p) %s retval %s"
+                 (occ-obj-Format obj)
+                 (occ-obj-associable-p obj)
                  retval)
     (or (eq 'skip retval)
-        (occ-associable-p obj))))
+        (occ-obj-associable-p obj))))
 
-(cl-defmethod occ-edit-current-if-unassociated-p ((obj occ-obj-ctx)) ;; should handle occ-ctx
+(cl-defmethod occ-do-edit-current-if-unassociated-p ((obj occ-obj-ctx)) ;; should handle occ-ctx
   "If clock in task is not unnmaed clock then offer to increase clock time."
-  (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)[%s]) begin" (occ-Format obj))
-  (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) (occ-current-tsk) %s" (occ-Format (occ-current-tsk)))
+  (occ-message "(occ-do-edit-current-if-unassociated-p (obj occ-ctx)[%s]) begin" (occ-obj-Format obj))
+  (occ-message "(occ-do-edit-current-if-unassociated-p (obj occ-ctx)) (occ-current-tsk) %s" (occ-obj-Format (occ-current-tsk)))
   (if (and (occ-current-tsk)
            (not (occ-clock-marker-unnamed-clock-p)))
       (if (occ-current-associated-p obj)
           (progn
-            (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) ELSE need NO next clock-in")
+            (occ-message "(occ-do-edit-current-if-unassociated-p (obj occ-ctx)) ELSE need NO next clock-in")
             nil)
         (if (occ-clock-marker-unnamed-clock-p)
             t
-          (let* ((retval (not (occ-edit-until-associable-p (occ-ctxual-current-tsk obj)
+          (let* ((retval (not (occ-do-edit-until-associable-p (occ-obj-ctxual-current-tsk obj)
                                                            3))))
-            (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) IF occ-edit-until-associable-p: returned %s" retval)
+            (occ-message "(occ-do-edit-current-if-unassociated-p (obj occ-ctx)) IF occ-do-edit-until-associable-p: returned %s" retval)
             retval)))
     (progn
-      (occ-message "(occ-edit-current-if-unassociated-p (obj occ-ctx)) ELSE No NAMED clock active need next clock-in")
+      (occ-message "(occ-do-edit-current-if-unassociated-p (obj occ-ctx)) ELSE No NAMED clock active need next clock-in")
       t)))
 
 
-(cl-defmethod occ-clock-in-if-not ((obj occ-ctx)
-                                   &key
-                                   filters
-                                   builder
-                                   ap-normal
-                                   ap-transf
-                                   auto-select-if-only
-                                   timeout)
+(cl-defmethod occ-do-clock-in-if-not ((obj occ-ctx)
+                                      &key
+                                      filters
+                                      builder
+                                      ap-normal
+                                      ap-transf
+                                      auto-select-if-only
+                                      timeout)
   (unless builder (occ-error "Builder can not be nil"))
   (let ((filters          (or filters (occ-match-filters)))
-        (builder          (or builder #'occ-build-ctxual-tsk-with))
+        (builder          (or builder #'occ-obj-build-ctxual-tsk-with))
         (return-transform t) ;as return value is going to be used.)
         (timeout          (or timeout occ-idle-timeout)))
     (let* ((ap-normal occ-list-select-ap-transf-keys))
-      (occ-debug "occ-clock-in-if-not((obj occ-ctx)): begin")
-      (if (occ-edit-current-if-unassociated-p obj) ;; (occ-current-unassociated-p obj) ;; (occ-edit-current-if-unassociated-p obj)
+      (occ-debug "occ-do-clock-in-if-not((obj occ-ctx)): begin")
+      (if (occ-do-edit-current-if-unassociated-p obj) ;; (occ-current-unassociated-p obj) ;; (occ-do-edit-current-if-unassociated-p obj)
           (prog1                ;current clock is not matching
               t
-            (occ-debug "occ-clock-in-if-not: Now really going to clock with this-command=%s"
+            (occ-debug "occ-do-clock-in-if-not: Now really going to clock with this-command=%s"
                        this-command)
             ;; TODO: if (occ-current-tsk) is not unnamed than ask confirmation by :auto-select-if-only 'confirm
             (occ-debug
                        "TODO: if (occ-current-tsk) is not unnamed than ask confirmation by :auto-select-if-only 'confirm")
-            (let ((retval (occ-clock-in obj
+            (let ((retval (occ-do-clock-in obj
                                         :filters             filters
                                         :builder             builder
                                         :return-transform    return-transform
@@ -150,7 +150,7 @@
                                         :ap-transf           ap-transf
                                         :auto-select-if-only auto-select-if-only
                                         :timeout             timeout)))
-              (occ-debug "occ-clock-in-if-not: operate %s retval %s"
+              (occ-debug "occ-do-clock-in-if-not: operate %s retval %s"
                          (occ-return-in-labels-p retval
                                                  occ-return-quit-label
                                                  occ-return-timeout-label)
@@ -160,64 +160,64 @@
                                           occ-return-timeout-label)
                   (unless (occ-obj-obj retval)
                     (if (occ-clock-marker-unnamed-clock-p)
-                        (occ-debug "occ-clock-in-if-not: already clock-in into unnamed task ")
+                        (occ-debug "occ-do-clock-in-if-not: already clock-in into unnamed task ")
                       (if (occ-config-clock-in)
                           (progn
                             (occ-debug "trying to create unnamed tsk.")
                             (occ-message "trying to create unnamed tsk.")
                             (occ-maybe-create-clockedin-unnamed-ctxual-tsk obj))
-                        (occ-message "occ-clock-in(obj occ-ctx): clock-in not allowed."))))
-                (occ-debug "occ-clock-in-if-not: Can not operate on %s"
-                           (occ-format (occ-obj-obj retval)))))
-            (occ-debug "occ-clock-in-if-not: Now really clock done."))
+                        (occ-message "occ-do-clock-in(obj occ-ctx): clock-in not allowed."))))
+                (occ-debug "occ-do-clock-in-if-not: Can not operate on %s"
+                           (occ-obj-format (occ-obj-obj retval)))))
+            (occ-debug "occ-do-clock-in-if-not: Now really clock done."))
         (prog1
             nil
-          (occ-debug "occ-clock-in-if-not: Current tsk already associate to %s"
-                     (occ-Format obj)))))))
-;; occ-clock-in-if-not
+          (occ-debug "occ-do-clock-in-if-not: Current tsk already associate to %s"
+                     (occ-obj-Format obj)))))))
+;; occ-do-clock-in-if-not
 
 
 (cl-defmethod occ-consider-for-clockin-in-p ()
   (> (float-time (time-since *occ-last-buff-sel-time*))
      *occ-tsk-current-ctx-time-interval*))
 
-(cl-defmethod occ-try-to-clock-in-p ((curr occ-ctx)
-                                     (prev occ-ctx))
+(cl-defmethod occ-do-try-to-clock-in-p ((curr occ-ctx)
+                                        (prev occ-ctx))
   (not              ;BUG: Reconsider whether it is catching case after some delay.
    (equal curr prev)))
 
-(cl-defmethod occ-try-to-clock-in-p ((curr occ-ctx)
-                                     (prev null))
+(cl-defmethod occ-do-try-to-clock-in-p ((curr occ-ctx)
+                                        (prev null))
   t)
 
-(defvar occ-clock-in-ctx-auto-select-if-only t "occ-clock-in-ctx-auto-select-if-only")
+(defvar occ-do-clock-in-ctx-auto-select-if-only t "occ-do-clock-in-ctx-auto-select-if-only")
 
-(cl-defmethod occ-clock-in-if-chg ((obj occ-ctx)
-                                   &key
-                                   filters
-                                   builder
-                                   ap-normal
-                                   ap-transf
-                                   auto-select-if-only
-                                   timeout)
+(cl-defmethod occ-do-clock-in-if-chg ((obj occ-ctx)
+                                      &key
+                                      filters
+                                      builder
+                                      ap-normal
+                                      ap-transf
+                                      auto-select-if-only
+                                      timeout)
   (let ((filters (or filters (occ-match-filters)))
-        (builder (or builder #'occ-build-ctxual-tsk-with))
+        (builder (or builder #'occ-obj-build-ctxual-tsk-with))
         (timeout (or timeout occ-idle-timeout)))
     (let* ((ap-normal occ-list-select-ap-transf-keys))
-      (occ-debug "occ-clock-in-if-chg((obj occ-ctx)): begin")
+      (occ-debug "occ-do-clock-in-if-chg((obj occ-ctx)): begin")
       (if (occ-consider-for-clockin-in-p)
           (progn
             (setq *occ-tsk-current-ctx* obj)
 
-            (if (occ-try-to-clock-in-p obj *occ-tsk-previous-ctx*)
-                (when (occ-clock-in-if-not obj
+            (if (occ-do-try-to-clock-in-p obj *occ-tsk-previous-ctx*)
+                (when (occ-do-clock-in-if-not obj
                                            :filters             filters
                                            :builder             builder
                                            :ap-normal           ap-normal
                                            :ap-transf           nil ;; ap-transf
                                            :auto-select-if-only auto-select-if-only
                                            :timeout             timeout)
-                  (occ-debug "occ-clock-in-if-chg((obj occ-ctx)): calling occ-clock-in-if-not")
+                  (occ-debug "occ-do-clock-in-if-chg((obj occ-ctx)): calling occ-do-clock-in-if-not")
                   (setq *occ-tsk-previous-ctx* *occ-tsk-current-ctx*))
               (prog1
                   nil
@@ -226,8 +226,8 @@
                 ;; TODO: here describe reason for not trying properly, need to print where necessary.
                 (occ-describe-try-to-clock-in-p *occ-tsk-current-ctx*
                                                 *occ-tsk-previous-ctx*))))
-        (occ-nodisplay "occ-clock-in-if-chg: not enough time passed.")))))
-;; occ-clock-in-if-chg
+        (occ-nodisplay "occ-do-clock-in-if-chg: not enough time passed.")))))
+;; occ-do-clock-in-if-chg
 
 
 (defvar *occ-last-buff-sel-time*            (current-time) "*occ-last-buff-sel-time*")
@@ -257,28 +257,28 @@
                   (format "context buffer is not live now."))
                  ((minibufferp buff)
                   (format "context buffer is minibuffer."))
-                 ((occ-ignore-p buff)
+                 ((occ-obj-ignore-p buff)
                   (format "context buffer is ignored buffer."))
                  ((equal prev curr)
                   (format "context is not changed."))
                  (t (format "Unknown reason.")))))
-      (let ((full-msg (format "occ-clock-in-if-chg: ctx %s not suitable to associate as %s"
-                              (occ-Format curr)
+      (let ((full-msg (format "occ-do-clock-in-if-chg: ctx %s not suitable to associate as %s"
+                              (occ-obj-Format curr)
                               msg)))
          ;; (occ-nodisplay full-msg)
         (occ-message full-msg)))))
 
 
 ;;;###autoload
-(defun occ-clock-in-curr-ctx (&optional force)
+(defun occ-do-clock-in-curr-ctx (&optional force)
   (interactive "P")
-  (let ((ctx (occ-make-ctx-at-point)))
+  (let ((ctx (occ-obj-make-ctx-at-point)))
     (let ((filters             (occ-match-filters))
-          (builder             #'occ-build-ctxual-tsk-with)
-          (auto-select-if-only nil) ; occ-clock-in-ctx-auto-select-if-only)
+          (builder             #'occ-obj-build-ctxual-tsk-with)
+          (auto-select-if-only nil) ; occ-do-clock-in-ctx-auto-select-if-only)
           (timeout             occ-idle-timeout))
       (let* ((ap-normal occ-list-select-ap-transf-keys))
-        (occ-clock-in-if-not ctx
+        (occ-do-clock-in-if-not ctx
                              :filters             filters
                              :builder             builder
                              :ap-normal           ap-normal
@@ -287,31 +287,31 @@
                              :timeout             timeout)))))
 
 ;;;###autoload
-(defun occ-clock-in-curr-ctx-if-not (&optional force)
+(defun occ-do-clock-in-curr-ctx-if-not (&optional force)
   (interactive "P")
   ;; TODO: Add code to which check if only focus present than only trigger else
   ;;       postpone it by calling run-with-idle-plus-timer
-  (occ-debug "begin occ-clock-in-curr-ctx-if-not")
+  (occ-debug "begin occ-do-clock-in-curr-ctx-if-not")
   ;;TODO: problem
-  ;; (lotus-with-other-frame-event-debug "occ-clock-in-curr-ctx-if-not" :cancel
+  ;; (lotus-with-other-frame-event-debug "occ-do-clock-in-curr-ctx-if-not" :cancel
   (progn
-    (occ-debug "%s: occ-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug" (time-stamp-string))
+    (occ-debug "%s: occ-do-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug" (time-stamp-string))
     (if force
-        (occ-clock-in-curr-ctx force)
-      (let ((ctx (occ-make-ctx-at-point)))
+        (occ-do-clock-in-curr-ctx force)
+      (let ((ctx (occ-obj-make-ctx-at-point)))
         (let ((filters             (occ-match-filters))
-              (builder             #'occ-build-ctxual-tsk-with)
-              (auto-select-if-only occ-clock-in-ctx-auto-select-if-only)
+              (builder             #'occ-obj-build-ctxual-tsk-with)
+              (auto-select-if-only occ-do-clock-in-ctx-auto-select-if-only)
               (timeout             occ-idle-timeout))
           (let ((ap-normal '(t actions general edit)))
-            (occ-clock-in-if-chg ctx
+            (occ-do-clock-in-if-chg ctx
                                  :filters             filters
                                  :builder             builder
                                  :ap-normal           ap-normal
                                  :ap-transf           nil ;; ap-transf
                                  :auto-select-if-only auto-select-if-only
                                  :timeout             timeout)))))
-    (occ-nodisplay "%s: end occ-clock-in-curr-ctx-if-not" (time-stamp-string))))
+    (occ-nodisplay "%s: end occ-do-clock-in-curr-ctx-if-not" (time-stamp-string))))
 
 
 ;;; Timers
@@ -319,25 +319,25 @@
 
 (defun occ-run-curr-ctx-timer ()
   (occ-debug "occ-run-curr-ctx-chg-timer: begin")
-  (occ-clock-in-curr-ctx nil))
+  (occ-do-clock-in-curr-ctx nil))
 
 (defun occ-run-curr-ctx-chg-timer ()
   (occ-debug "occ-run-curr-ctx-chg-timer: begin")
-  (occ-clock-in-curr-ctx-if-not nil))
+  (occ-do-clock-in-curr-ctx-if-not nil))
 
 
 ;; TODO: find some better name
 ;;;###autoload
-(defun occ-clock-in-curr-ctx-if-not-timer-function (event)
-  (occ-debug "occ-clock-in-curr-ctx-if-not-timer-function: begin")
+(defun occ-do-clock-in-curr-ctx-if-not-timer-function (event)
+  (occ-debug "occ-do-clock-in-curr-ctx-if-not-timer-function: begin")
   ;;BUG: could be the cause of high MEM usage
   (unwind-protect
       (if (occ-config-value-quiet)
           (occ-message "Occ is quiet for some time.")
         (lotus-with-no-recursive-edit-if
-            (occ-message "occ-clock-in-curr-ctx-if-not-timer-function: (recursion-depth) [%d] > 0" (recursion-depth))
+            (occ-message "occ-do-clock-in-curr-ctx-if-not-timer-function: (recursion-depth) [%d] > 0" (recursion-depth))
           (lotus-with-no-active-minibuffer-if
-              (occ-debug "occ-clock-in-curr-ctx-if-not-timer-function: minibuffer active")
+              (occ-debug "occ-do-clock-in-curr-ctx-if-not-timer-function: minibuffer active")
             (occ-cancel-timer)
             (if (eq 'buffer-switch event)
                 (occ-run-curr-ctx-chg-timer)
@@ -351,14 +351,14 @@
     (cancel-timer *occ-buff-sel-timer*)
     (setq *occ-buff-sel-timer* nil)))
 
-(cl-defmethod occ-try-clock-in-next-timeout ()
+(cl-defmethod occ-do-try-clock-in-next-timeout ()
   "Get next timeout to try clock-in"
-  (occ-debug "occ-try-clock-in-next-timeout: begin")
-  (let* ((ctx             (occ-make-ctx-at-point))
-         (ctxual-curr-tsk (occ-ctxual-current-tsk ctx)))
+  (occ-debug "occ-do-try-clock-in-next-timeout: begin")
+  (let* ((ctx             (occ-obj-make-ctx-at-point))
+         (ctxual-curr-tsk (occ-obj-ctxual-current-tsk ctx)))
     (cond
      ((null ctxual-curr-tsk)          3)
-     ((occ-unnamed-p ctxual-curr-tsk) (+ *occ-tsk-current-ctx-time-interval* 10))
+     ((occ-obj-unnamed-p ctxual-curr-tsk) (+ *occ-tsk-current-ctx-time-interval* 10))
      (t                               30))))
 
 (cl-defmethod occ-try-clock-schedule-next-timeout (event)
@@ -369,9 +369,9 @@
         ;; distrubing while editing.
         ;; run-with-timer
         (run-with-idle-plus-timer
-         (occ-try-clock-in-next-timeout)
+         (occ-do-try-clock-in-next-timeout)
          nil
-         'occ-clock-in-curr-ctx-if-not-timer-function event)))
+         'occ-do-clock-in-curr-ctx-if-not-timer-function event)))
 
 
 ;;;###autoload

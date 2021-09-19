@@ -63,23 +63,23 @@
 
 
 
-;; (cl-defmethod occ-get-property ((obj occ-obj-ctx)
+;; (cl-defmethod occ-obj-get-property ((obj occ-obj-ctx)
 ;;                                 (property symbol))
 ;;   "must return occ compatible value."
 ;;   ;; (occ-error "must return occ compatible value2.")
-;;   (occ-message "occ-get-property: property %s obj %s" property obj)
-;;   (occ-get-property-value-from-ctx obj property))
+;;   (occ-message "occ-obj-get-property: property %s obj %s" property obj)
+;;   (occ-obj-get-property-value-from-ctx obj property))
 
-(cl-defmethod occ-format-prop ((obj occ-obj-tsk)
-                               (property symbol)
-                               value)
+(cl-defmethod occ-obj-format-prop ((obj occ-obj-tsk)
+                                   (property symbol)
+                                   value)
   "Should return format printable value"
   value)
 
 
-(cl-defgeneric occ-has-p (obj
-                          property
-                          value)
-  "occ-has-p")
+(cl-defgeneric occ-obj-has-p (obj
+                              property
+                              value)
+  "occ-obj-has-p")
 
 ;;; occ-prop-utils.el ends here

@@ -36,7 +36,7 @@
 (require 'occ-rank)
 
 
-(cl-defmethod occ-checkout ((obj occ-obj-tsk))
+(cl-defmethod occ-do-checkout ((obj occ-obj-tsk))
   (occ-op-props-checkout obj))
 
 
@@ -46,7 +46,7 @@
 
 
 
-(cl-defmethod occ-call-with-obj ((obj occ-obj-tsk))
+(cl-defmethod occ-do-call-with-obj ((obj occ-obj-tsk))
   (let ((fun (let ((obj obj)
                    (exp-with-obj (occ-util-read-sexp-from-minibuffer "expression with obj: ")))
                #'(lambda ()
@@ -54,7 +54,7 @@
                     `(lambda (obj) ,exp-with-obj) obj)))))
     (funcall fun)))
 
-(cl-defmethod occ-call-with-obj ((obj occ-obj-tsk))
+(cl-defmethod occ-do-call-with-obj ((obj occ-obj-tsk))
   (let ((fun (let ((obj-name     (occ-util-read-sexp-from-minibuffer "obj name: ")) ;prefill with obj
                    (exp-with-obj (occ-util-read-sexp-from-minibuffer "expression with obj: ")))
                #'(lambda ()
@@ -63,65 +63,65 @@
     (funcall fun)))
 
 (let ((occ-debug-object nil))
-  (cl-defmethod occ-set-debug-obj ((obj occ-obj-tsk))
+  (cl-defmethod occ-do-set-debug-obj ((obj occ-obj-tsk))
     (setq occ-debug-object obj)
     (occ-message "Use (occ-get-debug-obj) to access object."))
   (defun occ-describe-debug-obj ()
     (interactive)
-    (occ-describe-obj occ-debug-object))
+    (occ-do-describe-obj occ-debug-object))
   (defun occ-get-debug-obj ()
     (interactive)
     occ-debug-object))
 
 
-(cl-defmethod occ-describe-obj ((obj occ-obj-tsk))
+(cl-defmethod occ-do-describe-obj ((obj occ-obj-tsk))
   (let ((buf (get-buffer-create (format "*helpful occ-object: %s*"
-                                        (occ-format obj)))))
+                                        (occ-obj-format obj)))))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
         (setf (buffer-string) "")
         ;; (cl-prettyprint obj)
-        (insert (format "Object: %s\n\n" (occ-Format obj)))
+        (insert (format "Object: %s\n\n" (occ-obj-Format obj)))
         (insert (pp-to-string obj)))
       (read-only-mode 1))
     (switch-to-buffer-other-window buf)))
 
 
-(cl-defmethod occ-display-obj ((obj occ-obj-tsk))
+(cl-defmethod occ-do-display-obj ((obj occ-obj-tsk))
   (let ((buf (get-buffer-create (format "*helpful occ-object: %s*"
-                                        (occ-format obj)))))
+                                        (occ-obj-format obj)))))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
         (setf (buffer-string) "")
-        (insert (format "Object: %s\n\n" (occ-display obj)))
+        (insert (format "Object: %s\n\n" (occ-obj-display obj)))
         (insert (pp-to-string obj)))
       (read-only-mode 1))
     (switch-to-buffer-other-window buf)))
 
 
 ;; do both fast and interactive editing.
-;; (occ-properties-editor obj)
-(cl-defmethod occ-properties-editor-combined ((obj occ-obj-ctx-tsk))
-  (let ((prompt (format "%s fast edit" (occ-Format obj))))
+;; (occ-do-properties-editor obj)
+(cl-defmethod occ-do-properties-editor-combined ((obj occ-obj-ctx-tsk))
+  (let ((prompt (format "%s fast edit" (occ-obj-Format obj))))
     (let ((helm-fast-source     (helm-build-sync-source prompt
-                                  :candidates (append (occ-obj-callable-helm-actions (occ-gen-each-prop-fast-edits obj)
+                                  :candidates (append (occ-obj-callable-helm-actions (occ-obj-gen-each-prop-fast-edits obj)
                                                                                      obj)
-                                                      (occ-obj-callable-helm-actions (occ-gen-each-prop-fast-edits (occ-obj-tsk obj))
+                                                      (occ-obj-callable-helm-actions (occ-obj-gen-each-prop-fast-edits (occ-obj-tsk obj))
                                                                                      obj))
                                   :action     (list (cons "Edit"
                                                           (occ-lambda-one-arg-run obj)))))
           (helm-edit-source     (helm-build-sync-source "edit"
                                   :candidates (list (cons "Edit"
-                                                          (occ-lambda-with-one-arg #'occ-properties-editor)))
+                                                          (occ-lambda-with-one-arg #'occ-do-properties-editor)))
                                   :action     (list (cons "Edit"
                                                           (occ-lambda-one-arg-run obj)))))
           (helm-checkout-source (helm-build-sync-source "other"
-                                  :candidates (list (cons (format "Continue with same clock task %s" (occ-Format obj))
+                                  :candidates (list (cons (format "Continue with same clock task %s" (occ-obj-Format obj))
                                                           (occ-lambda-with-one-arg 'skip))
                                                     (cons "Try another clocking"
                                                           (occ-lambda-with-one-arg 'no-action)) ;to bypass three repeat cycle of (occ-try-until ) function
                                                     (cons "Checkout"
-                                                          (occ-lambda-with-one-arg #'occ-checkout)))
+                                                          (occ-lambda-with-one-arg #'occ-do-checkout)))
                                   :action     (list (cons "Edit"
                                                           (occ-lambda-one-arg-run obj))))))
       (let ((sources (list helm-checkout-source
@@ -131,9 +131,9 @@
           (helm :sources sources))))))
 
 
-(cl-defmethod occ-print-rank ((obj occ-obj-tsk))
+(cl-defmethod occ-do-print-rank ((obj occ-obj-tsk))
   (occ-message "Rank for %s is %d"
-               (occ-Format obj)
-               (occ-rank obj)))
+               (occ-obj-Format obj)
+               (occ-obj-rank obj)))
 
 ;;; occ-obj-method.el ends here

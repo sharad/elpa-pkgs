@@ -36,22 +36,22 @@
 
 
 ;; Correct it ???
-(cl-defmethod occ-gen-misc ((obj null)
-                            &param-only param-only)
+(cl-defmethod occ-obj-gen-misc ((obj null)
+                                &param-only param-only)
   nil)
 
-(cl-defmethod occ-gen-misc ((obj occ-obj-ctx-tsk)
-                            &param-only param-only)
-  (list (occ-make-callable-normal :continue
+(cl-defmethod occ-obj-gen-misc ((obj occ-obj-ctx-tsk)
+                                &param-only param-only)
+  (list (occ-obj-make-callable-normal :continue
                                   "Continue"
                                   t)
-        (occ-make-callable-normal :checkout
+        (occ-obj-make-callable-normal :checkout
                                   "Checkout"
                                   #'(lambda (obj)
-                                      (occ-checkout obj)))))
+                                      (occ-do-checkout obj)))))
 
-(cl-defmethod occ-gen-misc ((obj occ-obj-ctx)
-                            &param-only param-only)
+(cl-defmethod occ-obj-gen-misc ((obj occ-obj-ctx)
+                                &param-only param-only)
   nil)
 
 ;;; occ-prop-gen-actions.el ends here

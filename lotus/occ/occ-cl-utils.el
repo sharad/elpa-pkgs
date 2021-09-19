@@ -38,7 +38,7 @@
 (occ-testing ;; required
   (progn
 
-    (setq tsk-test (occ-make-tsk-at-point))
+    (setq tsk-test (occ-obj-make-tsk-at-point))
 
     (cl-structure-class cl-struct-occ-tree-tsk)
 
@@ -71,7 +71,7 @@
 
     (cl-inst-class-parent-names tsk-test)
 
-    (occ-operations-for-prop tsk-test 'root)))
+    (occ-obj-operations-for-prop tsk-test 'root)))
 
 
 (defun occ-flatten (L)

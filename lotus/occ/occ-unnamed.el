@@ -80,14 +80,14 @@
   (let* ((unnamed-heading-marker (rest (org-without-org-clock-persist
                                          (lotus-org-create-unnamed-task))))
          (unnamed-tsk            (when unnamed-heading-marker
-                                   (occ-make-tsk unnamed-heading-marker
+                                   (occ-obj-make-tsk unnamed-heading-marker
                                                  (occ-tsk-builder)))))
     unnamed-tsk))
 
 
 (when nil
-  (cl-inst-classname (occ-make-tsk org-clock-hd-marker (occ-tsk-builder)))
-  (setq unnamed-test (occ-make-tsk org-clock-hd-marker (occ-tsk-builder)))
+  (cl-inst-classname (occ-obj-make-tsk org-clock-hd-marker (occ-tsk-builder)))
+  (setq unnamed-test (occ-obj-make-tsk org-clock-hd-marker (occ-tsk-builder)))
   (occ-tsk-marker unnamed-test)
   (type-of (lotus-org-unnamed-task-clock-marker)))
 
@@ -96,7 +96,7 @@
   (occ-debug "occ-maybe-create-unnamed-ctxual-tsk: begin")
   (let* ((unnamed-tsk        (occ-maybe-create-unnamed-tsk))
          (unnamed-ctxual-tsk (when unnamed-tsk
-                               (occ-build-ctxual-tsk-with unnamed-tsk
+                               (occ-obj-build-ctxual-tsk-with unnamed-tsk
                                                           ctx))))
     (assert unnamed-tsk)
     (assert unnamed-ctxual-tsk)
@@ -118,7 +118,7 @@
           (assert unnamed-tsk)
           (if unnamed-marker
               (prog1
-                  (occ-clock-in unnamed-ctxual-tsk)
+                  (occ-do-clock-in unnamed-ctxual-tsk)
                 ;; id:x11 make org-ctx-clock version
                 (lotus-org-unnamed-task-clock-marker unnamed-marker)
                 (occ-message "clockin to unnnamed tsk.")

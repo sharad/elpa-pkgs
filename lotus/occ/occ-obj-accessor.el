@@ -34,25 +34,25 @@
 (require 'occ-rank)
 
 
-(cl-defmethod occ-class-name (obj)
+(cl-defmethod occ-obj-class-name (obj)
   "unknown")
 
-(cl-defmethod occ-class-name ((obj symbol))
+(cl-defmethod occ-obj-class-name ((obj symbol))
   "symbol")
 
-(cl-defmethod occ-class-name ((obj null))
+(cl-defmethod occ-obj-class-name ((obj null))
   "null")
 
-(cl-defmethod occ-class-name ((obj marker))
+(cl-defmethod occ-obj-class-name ((obj marker))
   "marker")
 
-(cl-defmethod occ-class-name ((obj occ-tsk))
+(cl-defmethod occ-obj-class-name ((obj occ-tsk))
   "task")
 
-(cl-defmethod occ-class-name ((obj occ-ctsk))
+(cl-defmethod occ-obj-class-name ((obj occ-ctsk))
   "context task")
 
-(cl-defmethod occ-class-name ((obj occ-ctxual-tsk))
+(cl-defmethod occ-obj-class-name ((obj occ-ctxual-tsk))
   "contextual task")
 
 
@@ -114,9 +114,9 @@
 
 (cl-defmethod occ-obj-callable-internal ((callable list) (type symbol))
   (let ((callable-ctor (if (eq type :normal)
-                           #'occ-make-callable-normal
+                           #'occ-obj-make-callable-normal
                          (if (eq type :generator)
-                             #'occ-make-callable-generator
+                             #'occ-obj-make-callable-generator
                            (occ-error "occ-obj-callable-internal: type is not one of (:normal :generator)")))))
     (let ((keyword (nth 0 (callable)))
           (name    (nth 1 (callable)))
@@ -270,8 +270,8 @@
     (occ-message "Called")
     (let ((tree-keybranch (occ-obj-ap-tree-keybranch ap-obj obj)))
       (let* ((keywords-list (occ-get-keywords-list-from-tree tree-keybranch))
-             (callables     (occ-get-callables obj ;; ???
-                                               keywords-list)))
+             (callables     (occ-obj-get-callables obj ;; ???
+                                                   keywords-list)))
         (unless keywords-list
           (occ-error "for tree-keybranch %s empty keywords-list %s returned "
                      tree-keybranch
@@ -293,7 +293,7 @@
                                                                  (occ-obj-obj candidate-obj))))
                            (cl-assert callables)
                            (occ-debug "occ-obj-ap-transform: lambda: transform: callables = %s" callables)
-                           (occ-make-ap-normal (cons :callables callables))))))
+                           (occ-obj-make-ap-normal (cons :callables callables))))))
       (occ-debug "occ-obj-ap-transform: setting transform tp %s" transform)
       (setf (occ-ap-transf-transform ap-obj) transform)))
   (occ-ap-transf-transform ap-obj))
@@ -301,7 +301,7 @@
 
 (cl-defmethod occ-obj-ap-helm-actions ((ap-obj list)
                                        (obj occ-obj))
-  (let* ((ap-obj    (occ-build-ap-normal ap-obj obj))
+  (let* ((ap-obj    (occ-obj-build-ap-normal ap-obj obj))
          (callables (occ-obj-ap-callables ap-obj obj)))
     (occ-obj-callable-helm-actions callables
                                    obj)))
@@ -379,10 +379,10 @@
   (occ-obj-ap-helm-transformation ap-obj))
 
 
-(cl-defmethod occ-heading-marker ((obj null))
+(cl-defmethod occ-obj-heading-marker ((obj null))
   (make-marker))
 
-(cl-defmethod occ-heading-marker ((obj marker))
+(cl-defmethod occ-obj-heading-marker ((obj marker))
   (save-excursion
     (with-current-buffer (marker-buffer obj)
       (goto-char obj)
@@ -390,152 +390,152 @@
       (outline-previous-heading)
       (point-marker))))
 
-(cl-defmethod occ-heading-marker ((obj occ-obj-tsk))
-  (occ-heading-marker
-   (occ-obj-marker obj)))
+(cl-defmethod occ-obj-heading-marker ((obj occ-obj-tsk))
+  (occ-obj-heading-marker (occ-obj-marker obj)))
 
 
 ;; occ-tsk - accessors
-(cl-defmethod occ-rank ((obj occ-tsk))
-  (occ-debug "occ-rank(occ-tsk=%s)" (occ-format obj 'capitalize))
+(cl-defmethod occ-obj-rank ((obj occ-tsk))
+  (occ-debug "occ-obj-rank(occ-tsk=%s)" (occ-obj-format obj 'capitalize))
   (let ((rank (occ-tsk-rank obj)))
     (unless rank
-      (setf (occ-tsk-rank obj) (occ-calculate-rank obj)))
+      (setf (occ-tsk-rank obj) (occ-obj-calculate-rank obj)))
     (occ-tsk-rank obj)))
 
-(cl-defmethod (setf occ-rank) (value (obj occ-tsk))
-  (occ-debug "setf occ-rank(occ-tsk=%s)" (occ-format obj 'capitalize))
+(cl-defmethod (setf occ-obj-rank) (value (obj occ-tsk))
+  (occ-debug "setf occ-obj-rank(occ-tsk=%s)" (occ-obj-format obj 'capitalize))
   (setf (occ-tsk-rank obj) value))
 
 
 ;; occ-ctsk - accessors
-(cl-defmethod occ-rank ((obj occ-ctsk))
-  (occ-debug "occ-rank(occ-ctsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
+(cl-defmethod occ-obj-rank ((obj occ-ctsk))
+  (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-format (occ-obj-tsk obj) 'capitalize))
   (let ((tsk (occ-ctsk-tsk obj)))
-    (occ-rank tsk)))
+    (occ-obj-rank tsk)))
 
-(cl-defmethod (setf occ-rank) (value (obj occ-ctsk))
-  (occ-debug "occ-rank(occ-ctsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
+(cl-defmethod (setf occ-obj-rank) (value (obj occ-ctsk))
+  (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-format (occ-obj-tsk obj) 'capitalize))
   (let ((tsk (occ-ctsk-tsk obj)))
-    (setf (occ-rank tsk) rank)))
+    (setf (occ-obj-rank tsk) rank)))
 
 
 ;; occ-ctxual-tsk - accessors
-(cl-defmethod occ-rank ((obj occ-ctxual-tsk))
-  (occ-debug "occ-rank(occ-ctxual-tsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
+(cl-defmethod occ-obj-rank ((obj occ-ctxual-tsk))
+  (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-format (occ-obj-tsk obj) 'capitalize))
   (let ((rank (occ-ctxual-tsk-rank obj)))
     (unless rank
-      (setf (occ-ctxual-tsk-rank obj) (occ-calculate-rank obj)))
+      (setf (occ-ctxual-tsk-rank obj) (occ-obj-calculate-rank obj)))
     (occ-ctxual-tsk-rank obj)))
 
-(cl-defmethod (setf occ-rank) (value (obj occ-ctxual-tsk))
-  (occ-debug "occ-rank(occ-ctxual-tsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
+(cl-defmethod (setf occ-obj-rank) (value (obj occ-ctxual-tsk))
+  (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-format (occ-obj-tsk obj) 'capitalize))
   (setf (occ-ctxual-tsk-rank obj) value))
 
 
-(cl-defmethod occ-member-tsk-rank ((obj occ-ctxual-tsk))
-  (occ-debug "occ-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-format (occ-obj-tsk obj) 'capitalize))
+(cl-defmethod occ-obj-member-tsk-rank ((obj occ-ctxual-tsk))
+  (occ-debug "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-format (occ-obj-tsk obj) 'capitalize))
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
-    (occ-rank tsk)))
+    (occ-obj-rank tsk)))
 
 
 ;; occ-tsk - accessors
-(cl-defmethod occ-format-string ((obj occ-tsk))
+(cl-defmethod occ-obj-format-string ((obj occ-tsk))
   ;; (occ-debug "occ-tsk-format-string(occ-tsk=%s)" obj)
   (let ((format-string (occ-tsk-format-string obj)))
     (unless format-string
-      (setf (occ-tsk-format-string obj) (occ-build-format-string obj)))
+      (setf (occ-tsk-format-string obj) (occ-obj-build-format-string obj)))
     (occ-tsk-format-string obj)))
 
-(cl-defmethod (setf occ-format-string) (value (obj occ-tsk))
+(cl-defmethod (setf occ-obj-format-string) (value (obj occ-tsk))
   ;; (occ-debug "occ-tsk-format-string(occ-tsk=%s)" obj)
   (setf (occ-tsk-format-string obj) value))
 
 
 ;; occ-tsk - accessors
-(cl-defmethod occ-format-file ((obj occ-tsk))
+(cl-defmethod occ-obj-format-file ((obj occ-tsk))
   ;; (occ-debug "occ-tsk-format-file(occ-tsk=%s)" obj)
   (let ((format-file (occ-tsk-format-file obj)))
     (unless format-file
-      (setf (occ-tsk-format-file obj) (occ-build-format-file obj)))
+      (setf (occ-tsk-format-file obj) (occ-obj-build-format-file obj)))
     (occ-tsk-format-file obj)))
 
-(cl-defmethod (setf occ-format-file) (value (obj occ-tsk))
+(cl-defmethod (setf occ-obj-format-file) (value (obj occ-tsk))
   ;; (occ-debug "occ-tsk-format-file(occ-tsk=%s)" obj)
   (setf (occ-tsk-format-file obj) value))
 
 
 ;; occ-ctx - accessors
-(cl-defmethod occ-avgrank ((obj occ-ctx))
-  (occ-debug "occ-avgrank(occ-ctx=%s)" obj)
+(cl-defmethod occ-obj-avgrank ((obj occ-ctx))
+  (occ-debug "occ-obj-avgrank(occ-ctx=%s)" obj)
   (let ((avgrank (occ-ctx-avgrank obj)))
     (unless avgrank
-      (setf (occ-ctx-avgrank obj) (occ-calculate-avgrank obj)))
+      (setf (occ-ctx-avgrank obj) (occ-obj-calculate-avgrank obj)))
     (occ-ctx-avgrank obj)))
 
-(cl-defmethod (setf occ-avgrank) (value (obj occ-ctx))
-  (occ-debug "occ-avgrank(occ-ctx=%s)" obj)
+(cl-defmethod (setf occ-obj-avgrank) (value (obj occ-ctx))
+  (occ-debug "occ-obj-avgrank(occ-ctx=%s)" obj)
   (setf (occ-ctx-avgrank obj) value))
 
 
 ;; occ-ctx - accessors
-(cl-defmethod occ-varirank ((obj occ-ctx))
-  (occ-debug "occ-varirank(occ-ctx=%s)" obj)
+(cl-defmethod occ-obj-varirank ((obj occ-ctx))
+  (occ-debug "occ-obj-varirank(occ-ctx=%s)" obj)
   (let ((varirank (occ-ctx-varirank obj)))
     (unless varirank
       (setf (occ-ctx-varirank obj) (occ-calculate-varirank obj)))
     (occ-ctx-varirank obj)))
 
-(cl-defmethod (setf occ-varirank) (value (obj occ-ctx))
-  (occ-debug "occ-varirank(occ-ctx=%s)" obj)
+(cl-defmethod (setf occ-obj-varirank) (value (obj occ-ctx))
+  (occ-debug "occ-obj-varirank(occ-ctx=%s)" obj)
   (setf (occ-ctx-varirank obj) value))
 
 
 ;; occ-collection - accessors
-(cl-defmethod occ-avgrank ((obj occ-collection))
-  (occ-debug "occ-avgrank(occ-collection=%s)" obj)
+(cl-defmethod occ-obj-avgrank ((obj occ-collection))
+  (occ-debug "occ-obj-avgrank(occ-collection=%s)" obj)
   (let ((avgrank (occ-collection-avgrank obj)))
     (unless avgrank
-      (setf (occ-collection-avgrank obj) (occ-calculate-avgrank obj)))
+      (setf (occ-collection-avgrank obj) (occ-obj-calculate-avgrank obj)))
     (occ-collection-avgrank obj)))
 
-(cl-defmethod (setf occ-avgrank) (value (obj occ-collection))
-  (occ-debug "occ-avgrank(occ-collection=%s)" obj)
+(cl-defmethod (setf occ-obj-avgrank) (value (obj occ-collection))
+  (occ-debug "occ-obj-avgrank(occ-collection=%s)" obj)
   (setf (occ-collection-avgrank obj) value))
 
 
 ;; occ-ctxual-tsk - accessors
-(cl-defmethod occ-varirank ((obj occ-collection))
-  (occ-debug "occ-varirank(occ-collection=%s)" obj)
+(cl-defmethod occ-obj-varirank ((obj occ-collection))
+  (occ-debug "occ-obj-varirank(occ-collection=%s)" obj)
   (let ((varirank (occ-collection-varirank obj)))
     (unless varirank
       (setf (occ-collection-varirank obj) (occ-calculate-varirank obj)))
     (occ-collection-varirank obj)))
 
-(cl-defmethod (setf occ-varirank) (value (obj occ-collection))
-  (occ-debug "occ-varirank(occ-collection=%s)" obj)
+(cl-defmethod (setf occ-obj-varirank) (value (obj occ-collection))
+  (occ-debug "occ-obj-varirank(occ-collection=%s)" obj)
   (setf (occ-collection-varirank obj) value))
 
 
-(cl-defgeneric occ-candidate (obj)
-  "occ-candidate")
+(cl-defgeneric occ-obj-candidate (obj)
+  "occ-obj-candidate")
 
-(cl-defmethod occ-candidate ((obj marker))
+(cl-defmethod occ-obj-candidate
+  ((obj marker))
   "Insert a line for the clock selection menu.
 And return a cons cell with the selection character integer and the obj
 pointing to it."
-  (cons (occ-format obj nil t) obj))
+  (cons (occ-obj-format obj nil t) obj))
 
-(cl-defmethod occ-candidate ((obj occ-obj-tsk))
+(cl-defmethod occ-obj-candidate ((obj occ-obj-tsk))
   "Insert a line for the clock selection menu.
 And return a cons cell with the selection character integer and the marker
 pointing to it."
-  (cons (occ-format obj nil t) obj))
+  (cons (occ-obj-format obj nil t) obj))
 
 
 ;; find place to put these all function
 
-(cl-defmethod occ-checkout ((obj occ-obj-tsk))
+(cl-defmethod occ-do-checkout ((obj occ-obj-tsk))
   (occ-op-props-checkout obj))
 
 ;; BUG  in Menu
@@ -546,7 +546,7 @@ pointing to it."
 (defun occ-util-read-sexp-from-minibuffer (prompt)
  (first (read-from-string (read-from-minibuffer prompt))))
 
-(cl-defmethod occ-call-with-obj ((obj occ-obj-tsk))
+(cl-defmethod occ-do-call-with-obj ((obj occ-obj-tsk))
   (let ((fun (let ((obj obj)
                    (exp-with-obj (occ-util-read-sexp-from-minibuffer "expression with obj: ")))
                #'(lambda ()
@@ -554,7 +554,7 @@ pointing to it."
                     `(lambda (obj) ,exp-with-obj) obj)))))
     (funcall fun)))
 
-(cl-defmethod occ-call-with-obj ((obj occ-obj-tsk))
+(cl-defmethod occ-do-call-with-obj ((obj occ-obj-tsk))
   (let ((fun (let ((obj-name     (occ-util-read-sexp-from-minibuffer "obj name: ")) ;prefill with obj
                    (exp-with-obj (occ-util-read-sexp-from-minibuffer "expression with obj: ")))
                #'(lambda ()
@@ -563,24 +563,24 @@ pointing to it."
     (funcall fun)))
 
 (let ((occ-debug-object nil))
-  (cl-defmethod occ-set-debug-obj ((obj occ-obj-tsk))
+  (cl-defmethod occ-do-set-debug-obj ((obj occ-obj-tsk))
     (setq occ-debug-object obj)
     (occ-message "Use (occ-get-debug-obj) to access object."))
   (defun occ-describe-debug-obj ()
     (interactive)
-    (occ-describe-obj occ-debug-object))
+    (occ-do-describe-obj occ-debug-object))
   (defun occ-get-debug-obj ()
     (interactive)
     occ-debug-object))
 
-(cl-defmethod occ-describe-obj ((obj occ-obj-tsk))
+(cl-defmethod occ-do-describe-obj ((obj occ-obj-tsk))
   (let ((buf (get-buffer-create (format "*helpful occ-object: %s*"
-                                        (occ-format obj)))))
+                                        (occ-obj-format obj)))))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
         (setf (buffer-string) "")
         ;; (cl-prettyprint obj)
-        (insert (format "Object: %s\n\n" (occ-Format obj)))
+        (insert (format "Object: %s\n\n" (occ-obj-Format obj)))
         (insert (pp-to-string obj)))
       (read-only-mode 1))
     (switch-to-buffer-other-window buf)))
@@ -594,21 +594,21 @@ pointing to it."
                        clock-hd-marker)))
         (if (and ctxual-tsk
                  clock
-                 (occ-marker= ctxual-tsk clock))
+                 (occ-obj-marker= ctxual-tsk clock))
             ctxual-tsk
           (when clock
             (let ((msg (if ctxual-tsk
                            (format "occ-current-ctxual-tsk: %s from head of *occ-clocked-ctxual-tsk-ctx-history* is not equal to current clocking clock %s"
-                                   (occ-Format ctxual-tsk nil nil t)
-                                   (occ-Format clock nil nil t))
+                                   (occ-obj-Format ctxual-tsk nil nil t)
+                                   (occ-obj-Format clock nil nil t))
                          (format "occ-current-ctxual-tsk: %s is outside of occ"
-                                 (occ-Format clock nil nil t)))))
+                                 (occ-obj-Format clock nil nil t)))))
               (if occ-other-allowed
                   (occ-debug :warning msg)
                 (occ-error msg))
-              (occ-build-ctxual-tsk-with (and clock
-                                              (occ-make-tsk clock))
-                                         (occ-make-ctx-at-point)))))))))
+              (occ-obj-build-ctxual-tsk-with (and clock
+                                                  (occ-obj-make-tsk clock))
+                                         (occ-obj-make-ctx-at-point)))))))))
 
 (defun occ-current-tsk (&optional occ-other-allowed)
   (let ((curr-ctxual-tsk (occ-current-ctxual-tsk occ-other-allowed))) ;recursion
@@ -624,32 +624,32 @@ pointing to it."
                        clock-hd-marker)))
         (if (and ctxual-tsk
                  clock
-                 (occ-marker= ctxual-tsk clock))
+                 (occ-obj-marker= ctxual-tsk clock))
             (occ-obj-tsk ctxual-tsk)
           (when clock
             (let ((msg (if ctxual-tsk
                            (format "occ-current-ctxual-tsk: %s from head of *occ-clocked-ctxual-tsk-ctx-history* is not equal to current clocking clock %s"
-                                   (occ-Format ctxual-tsk nil nil t)
-                                   (occ-Format clock nil nil t))
+                                   (occ-obj-Format ctxual-tsk nil nil t)
+                                   (occ-obj-Format clock nil nil t))
                          (format "occ-current-ctxual-tsk: %s is outside of occ"
-                                 (occ-Format clock nil nil t)))))
+                                 (occ-obj-Format clock nil nil t)))))
               (if occ-other-allowed
                   (occ-debug :warning msg)
                 (occ-error msg))
               (if clock
-                   (occ-make-tsk clock)))))))))
+                   (occ-obj-make-tsk clock)))))))))
 
 
 (defun occ-collection-object ()
   (unless occ-global-tsk-collection
     (if occ-global-tsk-collection-spec
         (progn
-          (occ-make-tsk-collection occ-global-tsk-collection-spec)
+          (occ-obj-make-tsk-collection occ-global-tsk-collection-spec)
           (occ-collect-tsks occ-global-tsk-collection t))
       (progn
         (occ-uninsinuate)
-        (occ-message "occ-global-tsk-collection-spec is nil, set it using M-x occ-build-spec or set occ-global-tsk-collection-spec, disabled occ")
-        (occ-error "occ-global-tsk-collection-spec is nil, set it using M-x occ-build-spec or set occ-global-tsk-collection-spec, disabled occ"))))
+        (occ-message "occ-global-tsk-collection-spec is nil, set it using M-x occ-obj-build-spec or set occ-global-tsk-collection-spec, disabled occ")
+        (occ-error "occ-global-tsk-collection-spec is nil, set it using M-x occ-obj-build-spec or set occ-global-tsk-collection-spec, disabled occ"))))
   occ-global-tsk-collection)
 
 
@@ -751,14 +751,14 @@ pointing to it."
                                        builder
                                        obtrusive)
   "return CTSKs list"
-  (let ((builder (or builder #'occ-build-ctsk-with)))
+  (let ((builder (or builder #'occ-obj-build-ctsk-with)))
     (let ((ctsks (occ-run-unobtrusively obtrusive
                                         (let ((tsks (occ-collect-list collection))) ;;????TODO
                                           (when tsks
                                             (mapcar #'(lambda (tsk) (funcall builder tsk obj))
                                                     tsks))))))
       (unless (eq t ctsks)
-        ;; BUG: TODO: convey it tpo occ-select occ-clock-in
+        ;; BUG: TODO: convey it tpo occ-select occ-do-clock-in
         (occ-message "Busy user input `%s'"
                      (if (numberp last-input-event)
                          (single-key-description last-input-event)
@@ -772,13 +772,13 @@ pointing to it."
                                        builder
                                        obtrusive)
   "return CTSKs list"
-  (let ((builder (or builder #'occ-build-ctsk-with)))
+  (let ((builder (or builder #'occ-obj-build-ctsk-with)))
     (let ((ctsks (let ((tsks (occ-collect-list collection))) ;;????TODO
                    (when tsks
                      (mapcar #'(lambda (tsk) (funcall builder tsk obj))
                              tsks)))))
       (unless (eq t ctsks)
-        ;; BUG: TODO: convey it top occ-select occ-clock-in
+        ;; BUG: TODO: convey it top occ-select occ-do-clock-in
         (occ-message "Busy user input `%s'"
                      (if (numberp last-input-event)
                          (single-key-description last-input-event)
@@ -792,37 +792,37 @@ pointing to it."
                                        obtrusive)
   "return CTSKs list"
   (occ-collection-obj-list collection
-                           (occ-make-ctx-at-point)
+                           (occ-obj-make-ctx-at-point)
                            :builder   builder
                            :obtrusive obtrusive))
 
 
 ;; http://sachachua.com/blog/2015/03/getting-helm-org-refile-clock-create-tasks/
 
-(cl-defgeneric occ-list (obj
-                         &key
-                         builder
-                         obtrusive)
-  "occ-list")
+(cl-defgeneric occ-obj-list (obj
+                             &key
+                             builder
+                             obtrusive)
+  "occ-obj-list")
 
-(cl-defmethod occ-list ((obj occ-ctx)
-                        &key
-                        builder
-                        obtrusive)
+(cl-defmethod occ-obj-list ((obj occ-ctx)
+                            &key
+                            builder
+                            obtrusive)
   "return CTXUAL-TSKs container"
   (occ-collection-obj-list (occ-collection-object)
                            obj
                            :builder builder
                            :obtrusive obtrusive))
 
-(cl-defmethod occ-list ((obj null)
-                        &key
-                        builder
-                        obtrusive)
+(cl-defmethod occ-obj-list ((obj null)
+                            &key
+                            builder
+                            obtrusive)
   "return TSKs container"
-  (occ-list (occ-make-ctx-at-point)
-            :builder   builder
-            :obtrusive obtrusive))
+  (occ-obj-list (occ-obj-make-ctx-at-point)
+                :builder   builder
+                :obtrusive obtrusive))
 
 (cl-defmethod occ-length ()
   (length (occ-collect-list (occ-collection-object))))

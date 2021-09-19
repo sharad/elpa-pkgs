@@ -37,20 +37,20 @@
                                    (obj occ-obj))
   "Will make all action except first to return OCC-RETURN-SELECT-LABEL."
   ;; (occ-message "(occ-obj-ap-callables ap-obj obj) = %s" (first (occ-obj-ap-callables ap-obj obj)))
-  (let* ((identity-sel-callable            (occ-make-callable-normal :select
+  (let* ((identity-sel-callable            (occ-obj-make-callable-normal :select
                                                                      occ-return-select-name
                                                                      occ-return-select-function))
-         (identity-sel-ret-lambda-callable (occ-build-return-lambda identity-sel-callable
+         (identity-sel-ret-lambda-callable (occ-obj-build-return-lambda identity-sel-callable
                                                                     occ-return-select-label))
          (callables                        (occ-obj-ap-callables ap-obj obj))
          (new-callables                    (cons identity-sel-ret-lambda-callable
-                                                 (mapcar #'occ-build-return-lambda
+                                                 (mapcar #'occ-obj-build-return-lambda
                                                          ;; #'(lambda (c)
-                                                         ;;     (occ-build-return-lambda c occ-return-evaluate))
+                                                         ;;     (occ-obj-build-return-lambda c occ-return-evaluate))
                                                          callables)))) ;;BUG to fix
     (cl-assert callables)
-    (occ-build-ap-normal (cons :callables
-                               new-callables))))
+    (occ-obj-build-ap-normal (cons :callables
+                                   new-callables))))
 
 (cl-defmethod occ-return-tranform ((ap-transf-obj occ-ap-transf)
                                    (obj occ-obj))
@@ -65,8 +65,8 @@
                                (occ-debug "occ-return-tranform: lambda: ap-normal-obj = %s" ap-normal-obj)
                                ;; (occ-return-tranform ap-normal-obj obj)
                                (occ-return-tranform ap-normal-obj candidate-obj))))))
-    (occ-build-ap-transf (cons :transform
-                               new-transform))))
+    (occ-obj-build-ap-transf (cons :transform
+                                   new-transform))))
 
 
 (cl-defmethod occ-return-in-labels-p (retval &rest label)
@@ -93,7 +93,7 @@
 
 (defun occ-specs ()
   (cl-method-param-case
-   '(occ-make-tsk-collection (`((head ,val)) val))))
+   '(occ-obj-make-tsk-collection (`((head ,val)) val))))
 
 (defun occ-valid-spec-p (spec)
   t)

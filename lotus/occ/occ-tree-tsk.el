@@ -34,11 +34,11 @@
 
 (defun occ-tree-tsk-node-p (tx)
   "Test org TX is org tsks tree non-leaf node"
-  (occ-get-property tx 'subtree))
+  (occ-obj-get-property tx 'subtree))
 
 (defun occ-tree-tsk-subtree (tx)
   "Test org TX is org tsks tree non-leaf node"
-  (occ-get-property tx 'subtree))
+  (occ-obj-get-property tx 'subtree))
 
 (defun occ-mapcar-tree-tsks (fn tree args)
   "Tree mapcar return result for FN for all TREE nodes with ARGS"
@@ -80,7 +80,7 @@
                            subtree-level)
   "Build recursive org tsks from org FILE (or current buffer) using TSK-BUILDER function e.g. occ-collect-tsk"
   (let ((subtree-level (or subtree-level 1))
-        (tsk-builder   (or tsk-builder #'occ-make-tsk-at-point)))
+        (tsk-builder   (or tsk-builder #'occ-obj-make-tsk-at-point)))
    (with-current-buffer (if file
                             (find-file-noselect file)
                           (current-buffer))
@@ -98,7 +98,7 @@
                                                                 (occ-tree-tsk-build nil
                                                                                     tsk-builder
                                                                                     subtree-level)))
-                                    (let ((subtree-file-prop (occ-get-property entry :SUBTREEFILE)))
+                                    (let ((subtree-file-prop (occ-obj-get-property entry :SUBTREEFILE)))
                                       (when subtree-file-prop
                                         (let* ((file         (if file file (buffer-file-name)))
                                                (subtree-file (if (and subtree-file-prop
@@ -113,7 +113,7 @@
                                               (list (occ-tree-tsk-build subtree-file
                                                                         tsk-builder
                                                                         (+ 1
-                                                                           (or (occ-get-property entry 'level) 0)
+                                                                           (or (occ-obj-get-property entry 'level) 0)
                                                                            (or subtree-level 0)))))))))))
              (when sub-tree      (occ-set-property entry 'subtree sub-tree))
              entry)))))))

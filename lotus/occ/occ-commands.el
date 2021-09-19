@@ -42,31 +42,31 @@
 ;;;###autoload
 (defun occ-helm-match-select (ctx)
   (interactive
-   (list (occ-make-ctx-at-point)))
-  (occ-match-select ctx))
+   (list (occ-obj-make-ctx-at-point)))
+  (occ-obj-match-select ctx))
 
 (defun occ-helm-list-select (ctx)
   (interactive
-   (list (occ-make-ctx-at-point)))
-  (occ-list-select ctx))
+   (list (occ-obj-make-ctx-at-point)))
+  (occ-obj-list-select ctx))
 
 (defun occ-helm-list-debug-select (ctx)
   (interactive
-   (list (occ-make-ctx-at-point)))
-  (occ-list-debug-select ctx))
+   (list (occ-obj-make-ctx-at-point)))
+  (occ-obj-list-debug-select ctx))
 
 (defun occ-helm-list-launch (ctx)
   (interactive
-   (list (occ-make-ctx-at-point)))
-  (occ-list-launch ctx))
+   (list (occ-obj-make-ctx-at-point)))
+  (occ-obj-list-launch ctx))
 
 ;;;###autoload
 (defun occ-proprty-edit ()
   (interactive)
-  (let ((ctx (occ-make-ctx-at-point)))
-    (occ-properties-window-editor ctx
-                                  :ap-normal '(t actions edit)
-                                  :ap-transf '(t actions edit))))
+  (let ((ctx (occ-obj-make-ctx-at-point)))
+    (occ-do-properties-window-editor ctx
+                                     :ap-normal '(t actions edit)
+                                     :ap-transf '(t actions edit))))
 
 
 ;;;###autoload
@@ -74,7 +74,7 @@
   (interactive)
   (let ((ctxual-tsk (occ-current-ctxual-tsk)))
     (if ctxual-tsk
-        (occ-procreate-child ctxual-tsk)
+        (occ-do-procreate-child ctxual-tsk)
       (occ-message "No current task clocking-in"))))
 
 ;;;###autoload
@@ -82,7 +82,7 @@
   (interactive)
   (let ((ctxual-tsk (occ-current-ctxual-tsk)))
     (if ctxual-tsk
-        (occ-procreate-child-clock-in ctxual-tsk)
+        (occ-do-procreate-child-clock-in ctxual-tsk)
       (occ-message "No current task clocking-in"))))
 
 (defun occ-curr-tsk-continue-for (mins)
@@ -117,8 +117,8 @@
   (occ-error "Implement it."))
 
 
-(defun occ-clock-in-force ()
-  (occ-error "Implement it, open context ctx if not present, then occ-clock-in-if-associable else show error."))
+(defun occ-do-clock-in-force ()
+  (occ-error "Implement it, open context ctx if not present, then occ-do-clock-in-if-associable else show error."))
 
 (defun occ-interrupt-clock-in (mins)
   (occ-error "Implement it."))
@@ -134,7 +134,7 @@
 (defun occ-continue-prev ()
   (occ-error "Implement it."))
 
-(defun occ-make-anonymous ())
+(defun occ-obj-make-anonymous ())
 
 ;; TODO: direct prop edit/add/replace/remove etc from helm menu
 
@@ -183,7 +183,7 @@
   (setq occ-global-tsk-collection-spec nil))
 
 ;;;###autoload
-(defun occ-make-spec ()
+(defun occ-obj-make-spec ()
   (interactive)
   (if occ-global-tsk-collection-spec
       (occ-message "spec: %s already present, first reset it with occ-reset-spec"
@@ -199,7 +199,7 @@
   (interactive "FSpec file: ")
   ;; TODO: Improve to create direct tree from here rather than resetting whole occ-global-tsk-collection
   (unless occ-global-tsk-collection-spec
-    (occ-make-spec))
+    (occ-obj-make-spec))
   (if occ-global-tsk-collection-spec
     (unless (memq file (rest occ-global-tsk-collection-spec))
       (let ((spec       (first occ-global-tsk-collection-spec))
@@ -219,9 +219,9 @@
   (occ-add-org-buffer buffer))
 
 ;;;###autoload
-(defun occ-build-spec ()
+(defun occ-obj-build-spec ()
   (interactive)
-  (occ-make-spec)
+  (occ-obj-make-spec)
   (when (first occ-global-tsk-collection-spec)
         (occ-add-to-spec (read-file-name "Spec file: ")))
   (prog1
@@ -304,10 +304,10 @@ FULL is given."
         :sources (list (helm-build-sync-source "Actions"
                            :candidates (list (cons "occ clock-in current context (force)"
                                                    #'(lambda ()
-                                                       (occ-clock-in-curr-ctx t)))
+                                                       (occ-do-clock-in-curr-ctx t)))
                                              (cons "occ clock-in current context"
                                                    #'(lambda ()
-                                                       (occ-clock-in-curr-ctx nil))))
+                                                       (occ-do-clock-in-curr-ctx nil))))
                            :action     (list (cons "run"
                                                    #'(lambda (candidate-fun)
                                                        (funcall candidate-fun))))))))

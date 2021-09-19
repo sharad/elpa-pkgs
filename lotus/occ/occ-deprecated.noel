@@ -49,7 +49,7 @@
       ;; And return a cons cell with the selection character integer and the marker
       ;; pointing to it."
       ;;   (let ((marker (occ-ctxual-tsk-marker ctxask))
-      ;;         (rank   (occ-rank   ctxask)))
+      ;;         (rank   (occ-obj-rank   ctxask)))
       ;;     (when (marker-buffer marker)
       ;;       (with-current-buffer (org-base-buffer (marker-buffer marker))
       ;;         (org-with-wide-buffer
@@ -71,26 +71,26 @@
       ;;                ;; marker
       ;;                (cons (occ-print ctxask) ctxask))))))))) ;TODO
 
-      (cl-defmethod occ-clock-in ((ctx occ-ctx))
+      (cl-defmethod occ-do-clock-in ((ctx occ-ctx))
         "marker and ranked version"
         (interactive
-         (list (occ-make-ctx-at-point)))
+         (list (occ-obj-make-ctx-at-point)))
         (progn
-          (occ-debug "in occ-clock-in occ-ctx 1")
-          (let* ((ctx (or ctx (occ-make-ctx-at-point)))
+          (occ-debug "in occ-do-clock-in occ-ctx 1")
+          (let* ((ctx (or ctx (occ-obj-make-ctx-at-point)))
                  (matched-ctxual-tsks
                   (occ-run-unobtrusively           ;heavy task
 
-                    ;; BUG Urgent TODO: SOLVE ASAP ???? at (occ-clock-in-if-not ctx) and (occ-clock-in ctx)
+                    ;; BUG Urgent TODO: SOLVE ASAP ???? at (occ-do-clock-in-if-not ctx) and (occ-do-clock-in ctx)
 
-                    ;; begin occ-clock-in-curr-ctx-if-not
-                    ;; 2019-03-06 22:55:31 s: occ-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug
-                    ;; occ-clock-in-if-not: Now really going to clock.
-                    ;; in occ-clock-in occ-ctx 1
+                    ;; begin occ-do-clock-in-curr-ctx-if-not
+                    ;; 2019-03-06 22:55:31 s: occ-do-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug
+                    ;; occ-do-clock-in-if-not: Now really going to clock.
+                    ;; in occ-do-clock-in occ-ctx 1
                     ;; user input 111 retval t
                     ;; trying to create unnamed tsk.
                     ;; occ-maybe-create-unnamed-tsk: Already clockin unnamed tsk
-                    ;; occ-clock-in-if-not: Now really clock done.
+                    ;; occ-do-clock-in-if-not: Now really clock done.
 
                     (remove-if-not
                      #'(lambda (ctxual-tsk)
@@ -109,7 +109,7 @@
                     ;; (sel-marker (if sel-tsk      (plist-get sel-tsk      :tsk-clock-marker)))
 
                     ;; (occ-debug "sel-ctxual-tsk %s sel-tsk %s sel-marker %s" sel-ctxual-tsk sel-tsk sel-marker)
-                    (if sel-ctxual-tsk (occ-clock-in sel-ctxual-tsk)))
+                    (if sel-ctxual-tsk (occ-do-clock-in sel-ctxual-tsk)))
                 (progn
                   ;; here create unnamed tsk, no need
                   (setq *occ-update-current-ctx-msg* "null clock")
@@ -119,9 +119,9 @@
                   (occ-add-to-org-heading-when-idle ctx 7)
                   nil))))))
 
-      (cl-defmethod occ-clock-in ((new-ctxask occ-ctxual-tsk))
+      (cl-defmethod occ-do-clock-in ((new-ctxask occ-ctxual-tsk))
         ;;TODO add org-insert-log-not
-        (occ-debug "occ-clock-in-marker %s" new-ctxask)
+        (occ-debug "occ-do-clock-in-marker %s" new-ctxask)
         (let* (retval
                (old-ctxual-tsk     (first *occ-clocked-ctxual-tsk-ctx-history*))
                (old-tsk            (when old-ctxual-tsk (occ-ctxual-tsk-tsk old-ctxual-tsk)))
@@ -151,7 +151,7 @@
 
                 (setq *occ-update-current-ctx-msg* old-marker)
 
-                (run-hook-with-args 'occ-clock-in-hooks
+                (run-hook-with-args 'occ-do-clock-in-hooks
                                     old-marker
                                     new-marker)
 
@@ -273,7 +273,7 @@
     ;; (defun org-get-property (prop-key)
     ;;   (org-entry-get nil prop-key))
 
-    ;; (defun occ-get-property (prop-key)
+    ;; (defun occ-obj-get-property (prop-key)
     ;;   (org-get-property prop-key))
 
     ;; (defun occ-set-property (prop-key value ctx &rest args)
@@ -288,7 +288,7 @@
 
     ;; (eq (elt ":root" 0) ?\:)
 
-    ;; (occ-select-propetry nil)
+    ;; (occ-do-select-propetry nil)
 
     ;; (occ-keys-with-operation :getter nil)
 
@@ -377,7 +377,7 @@
 
     (cl-defmethod occ-add-to-heading-internal ((ctx occ-ctx) timeout)
       (let* (;; (marker (safe-timed-org-refile-get-marker timeout))
-             (tsk (occ-select nil #'occ-list))
+             (tsk (occ-obj-select nil #'occ-obj-list))
              (mrk (if tsk (occ-tsk-marker tsk))))
         (when mrk
           (lotus-with-marker mrk
@@ -386,7 +386,7 @@
                    #'(lambda ()
                        (save-excursion ;what to do here
                          (org-flag-proprty-drawer-at-marker marker t))
-                       (when (active-minibuffer-window) ;required here, this function itself using minibuffer via helm-refile and occ-select-propetry
+                       (when (active-minibuffer-window) ;required here, this function itself using minibuffer via helm-refile and occ-do-select-propetry
                          (abort-recursive-edit)))))
 
                (lotus-with-timed-new-win ;break it in two macro call to accommodate local-cleanup
@@ -417,7 +417,7 @@
                            (let ((prop nil))
                              (while (not
                                      (member
-                                      (setq prop (occ-select-propetry (occ-make-tsk nil) ctx))
+                                      (setq prop (occ-do-select-propetry (occ-obj-make-tsk nil) ctx))
                                       '(edit done)))
                                (when (occ-editprop prop ctx)
                                  (occ-tsk-update-tsks t)))
@@ -444,7 +444,7 @@
     (cl-defmethod occ-add-to-org-heading ((ctx occ-ctx) timeout)
       "add-ctx-to-org-heading"
       ;; TODO: make helm conditional when it is used than only it should be handled.
-      (interactive '((occ-make-ctx-at-point) 7))
+      (interactive '((occ-obj-make-ctx-at-point) 7))
       (occ-debug "begin occ-add-to-org-heading")
       (lotus-with-no-active-minibuffer-if
           (progn
@@ -454,7 +454,7 @@
         (lotus-with-other-frame-event-debug "occ-add-to-org-heading" :cancel
           (occ-debug "occ-add-to-org-heading: lotus-with-other-frame-event-debug")
           (let* ((timeout (or timeout 7))
-                 (ctx     (or ctx (occ-make-ctx-at-point)))
+                 (ctx     (or ctx (occ-obj-make-ctx-at-point)))
                  (buff    (occ-ctx-buffer ctx)))
             (occ-debug "occ-add-to-org-heading: [body] lotus-with-no-active-minibuffer-if")
             (if (and
@@ -473,7 +473,7 @@
                           #'(lambda ()
                               (save-excursion ;what to do here
                                 (org-flag-proprty-drawer-at-marker marker t))
-                              (when (active-minibuffer-window) ;required here, this function itself using minibuffer via helm-refile and occ-select-propetry
+                              (when (active-minibuffer-window) ;required here, this function itself using minibuffer via helm-refile and occ-do-select-propetry
                                 (abort-recursive-edit)))))
 
                     ;; (set-marker marker (point))
@@ -506,7 +506,7 @@
                                 (let ((prop nil))
                                   (while (not
                                           (member
-                                           (setq prop (occ-select-propetry (occ-make-tsk nil) ctx))
+                                           (setq prop (occ-do-select-propetry (occ-obj-make-tsk nil) ctx))
                                            '(edit done)))
                                     (when (occ-editprop prop ctx)
                                       (occ-tsk-update-tsks t)))
@@ -542,23 +542,23 @@
     (cl-defmethod occ-select ((obj occ-ctx) collector &optional timeout)
       "return interactively selected CTXUAL-TSK or NIL, marker and ranked version"
       (interactive
-       (list (occ-make-ctx-at-point)))
+       (list (occ-obj-make-ctx-at-point)))
       (progn
-        (occ-debug "in occ-clock-in occ-ctx 1")
-        (let* ((obj (or obj (occ-make-ctx)))
+        (occ-debug "in occ-do-clock-in occ-ctx 1")
+        (let* ((obj (or obj (occ-obj-make-ctx)))
                (matched-ctxual-tsks
                 (occ-run-unobtrusively           ;heavy task
 
-                  ;; BUG Urgent TODO: SOLVE ASAP ???? at (occ-clock-in-if-not ctx) and (occ-clock-in ctx)
+                  ;; BUG Urgent TODO: SOLVE ASAP ???? at (occ-do-clock-in-if-not ctx) and (occ-do-clock-in ctx)
 
-                  ;; begin occ-clock-in-curr-ctx-if-not
-                  ;; 2019-03-06 22:55:31 s: occ-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug
-                  ;; occ-clock-in-if-not: Now really going to clock.
-                  ;; in occ-clock-in occ-ctx 1
+                  ;; begin occ-do-clock-in-curr-ctx-if-not
+                  ;; 2019-03-06 22:55:31 s: occ-do-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug
+                  ;; occ-do-clock-in-if-not: Now really going to clock.
+                  ;; in occ-do-clock-in occ-ctx 1
                   ;; user input 111 retval t
                   ;; trying to create unnamed tsk.
                   ;; occ-maybe-create-unnamed-tsk: Already clockin unnamed tsk
-                  ;; occ-clock-in-if-not: Now really clock done.
+                  ;; occ-do-clock-in-if-not: Now really clock done.
 
                   (remove-if-not
                    #'(lambda (ctxual-tsk)
@@ -571,7 +571,7 @@
             (when matched-ctxual-tsks
               (let* ((sel-ctxual-tsk
                       (if (> (length matched-ctxual-tsks) 1)
-                          (occ-list-select matched-ctxual-tsks (occ-helm-actions obj) timeout)
+                          (occ-obj-list-select matched-ctxual-tsks (occ-helm-actions obj) timeout)
                         (first matched-ctxual-tsks))))
                 sel-ctxual-tsk)))))))
     ;; occ-simple
@@ -597,7 +597,7 @@
         (let ((prop nil))
           (while (not
                   (member
-                   (setq prop (occ-select-propetry tsk ctx))
+                   (setq prop (occ-do-select-propetry tsk ctx))
                    '(edit done)))
             (when (occ-editprop prop ctx)
               (occ-tsk-update-tsks t)))
@@ -643,7 +643,7 @@
     (org-set-property prop value)))
 (cl-defmethod occ-readprop ((prop symbol) (ctx occ-ctx))
   (occ-debug "occ-readprop: prop: %s" prop)
-  (occ-readprop (cons prop (occ-make-tsk nil)) ctx))
+  (occ-readprop (cons prop (occ-obj-make-tsk nil)) ctx))
 (cl-defmethod occ-writeprop ((prop symbol) value)
   (occ-debug "occ-writeprop: prop: %s, value: %s" prop value)
   (if value
@@ -801,13 +801,13 @@
 
 ;;{{ file
 (when nil                               ;rank calculation for org file name in which tsk aka entry not much useful
-  (cl-defmethod occ-rank ((tsk-pair (head file))
+  (cl-defmethod occ-obj-rank ((tsk-pair (head file))
                           (ctx occ-ctx))
    ;; file in which tsk aka org entry exists.
    "Predicate funtion to check if ctx matches to tsk's file attribute."
    (let ((prop (first tsk-pair))
          (tsk  (rest tsk-pair)))
-     (let* ((currfile (occ-get-property tsk 'currfile))
+     (let* ((currfile (occ-obj-get-property tsk 'currfile))
             (currfile (if currfile (file-truename currfile))))
       (let* ((file (occ-ctx-file ctx))
              (file (if file (file-truename file))))
@@ -824,13 +824,13 @@
 ;;}}
 
 ;;{{ currfile
-(cl-defmethod occ-rank ((tsk-pair (head currfile))
+(cl-defmethod occ-obj-rank ((tsk-pair (head currfile))
                         (ctx occ-ctx))
   ;; file in which tsk aka org entry exists.
   "Predicate funtion to check if ctx matches to tsk's file attribute."
   (let ((prop (first tsk-pair))
         (tsk  (rest tsk-pair)))
-    (let* ((currfile (occ-get-property tsk 'currfile))
+    (let* ((currfile (occ-obj-get-property tsk 'currfile))
            (currfile (if currfile (file-truename currfile))))
       (let* ((file (occ-ctx-file ctx))
              (file (if file (file-truename file))))
@@ -861,12 +861,12 @@
 ;;}}
 
 ;;{{ root
-(cl-defmethod occ-rank ((tsk-pair (head root))
+(cl-defmethod occ-obj-rank ((tsk-pair (head root))
                         (ctx occ-ctx))
   "Predicate funtion to check if ctx matches to tsk's file attribute."
   (let ((prop (first tsk-pair))
         (tsk  (rest tsk-pair)))
-    (let* ((root (occ-get-property tsk 'root))
+    (let* ((root (occ-obj-get-property tsk 'root))
            (root (if root (file-truename root))))
      (let* ((file (occ-ctx-file ctx))
             (file (if file (file-truename file))))
@@ -928,46 +928,46 @@
 
 
 
-(cl-defmethod occ-rank ((tsk-pair (head status))
+(cl-defmethod occ-obj-rank ((tsk-pair (head status))
                         (ctx occ-ctx))
   "Predicate funtion to check if ctx matches to tsk's status attribute."
   (let ((prop (first tsk-pair))
         (tsk  (rest tsk-pair)))
     (let ((todo-type
-           (occ-get-property tsk 'todo-type))
+           (occ-obj-get-property tsk 'todo-type))
           (closed
-           (occ-get-property tsk 'closed))
+           (occ-obj-get-property tsk 'closed))
           (status
-           (occ-get-property tsk 'todo-keyword)))
+           (occ-obj-get-property tsk 'todo-keyword)))
       (if (or
            closed
            (eql todo-type 'done)
            (string= status "HOLD"))
           -30 0))))
 
-(cl-defmethod occ-rank ((tsk-pair (head key))
+(cl-defmethod occ-obj-rank ((tsk-pair (head key))
                         (ctx occ-ctx))
   "Predicate funtion to check if ctx matches to tsk's file attribute."
   (let ((prop (first tsk-pair))
         (tsk  (rest tsk-pair)))
-    (let* ((key (occ-get-property tsk 'KEY)))
+    (let* ((key (occ-obj-get-property tsk 'KEY)))
       (if key (string-to-number key) 0))))
 
-(cl-defmethod occ-rank ((tsk-pair (head heading-level))
+(cl-defmethod occ-obj-rank ((tsk-pair (head heading-level))
                         (ctx occ-ctx))
   "Predicate funtion to check if ctx matches to tsk's file attribute."
   (let ((prop (first tsk-pair))
         (tsk  (rest tsk-pair)))
-    (let* ((level (occ-get-property tsk 'level)))
+    (let* ((level (occ-obj-get-property tsk 'level)))
       (if level level 0))))
 
-(cl-defmethod occ-rank ((tsk-pair (head timebeing))
+(cl-defmethod occ-obj-rank ((tsk-pair (head timebeing))
                         (ctx occ-ctx))
   (let ((prop (first tsk-pair))
         (tsk  (rest tsk-pair)))
-   (let ((timebeing (occ-get-property tsk 'timebeing)))
+   (let ((timebeing (occ-obj-get-property tsk 'timebeing)))
      (let ((timebeing-time (if timebeing (org-duration-string-to-minutes timebeing) 0))
-           (clocked-time   (occ-get-property tsk 'clock-sum)))
+           (clocked-time   (occ-obj-get-property tsk 'clock-sum)))
        (if (and
             (numberp clocked-time)
             (numberp timebeing-time)
@@ -975,11 +975,11 @@
            (- timebeing-time clocked-time)
          0)))))
 
-(cl-defmethod occ-rank ((tsk-pair (head current-clock))
+(cl-defmethod occ-obj-rank ((tsk-pair (head current-clock))
                         (ctx occ-ctx))
   (let ((prop (first tsk-pair))
         (tsk  (rest tsk-pair)))
-    (let* ((tsk-marker (occ-get-property tsk 'marker)))
+    (let* ((tsk-marker (occ-obj-get-property tsk 'marker)))
       (if (and
            (markerp org-clock-hd-marker)
            (markerp tsk-marker)
@@ -991,14 +991,14 @@
 (when nil
   (cl-method-first-arg 'occ-ctx-property-get)
   (occ-readprop-props)
-  (cl-method-matched-arg 'occ-readprop 'occ-ctx-property-get (occ-make-ctx-at-point))
-  (funcall 'occ-ctx-property-get (cons 'file (occ-make-ctx-at-point))))
+  (cl-method-matched-arg 'occ-readprop 'occ-ctx-property-get (occ-obj-make-ctx-at-point))
+  (funcall 'occ-ctx-property-get (cons 'file (occ-obj-make-ctx-at-point))))
 
 (when nil
   (cl-method-sigs-matched-arg
    '(occ-readprop (`((head ,val) occ-ctx) val))
    '(occ-ctx-property-get (`((head ,val) val)))
-   (occ-make-ctx-at-point)))
+   (occ-obj-make-ctx-at-point)))
 
 
 

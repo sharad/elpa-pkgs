@@ -31,12 +31,12 @@
 (require 'occ-property-editor)
 
 
-(cl-defmethod occ-operation ((obj       marker)
-                             (operation symbol)
-                             (prop      symbol)
-                             values)
+(cl-defmethod occ-obj-operation ((obj       marker)
+                                 (operation symbol)
+                                 (prop      symbol)
+                                 values)
   "Accept occ compatible VALUES"
-  (occ-message "(occ-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
+  (occ-message "(occ-obj-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
   (let ((mrk (occ-obj-marker obj)))
     (let ((retval (occ-org-call-operation-at-point mrk ;work in org file
                                                    prop
@@ -44,16 +44,16 @@
                                                    ;; going to org world
                                                    (occ-prop-to-org prop
                                                                     values))))
-      (occ-debug "occ-operation: (occ-org-call-operation-at-point mrk) returnd %s" retval)
+      (occ-debug "occ-obj-operation: (occ-org-call-operation-at-point mrk) returnd %s" retval)
       retval)))
 
-(cl-defmethod occ-operation ((obj       occ-obj-tsk)
-                             (operation symbol)
-                             (prop      symbol)
-                             values)
+(cl-defmethod occ-obj-operation ((obj       occ-obj-tsk)
+                                 (operation symbol)
+                                 (prop      symbol)
+                                 values)
   "Accept occ compatible VALUES"
-  (occ-message "(occ-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
-  (occ-operation (occ-obj-marker obj)
+  (occ-message "(occ-obj-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
+  (occ-obj-operation (occ-obj-marker obj)
                  operation
                  prop
                  values))
@@ -61,113 +61,113 @@
 
 ;;; * few frequent operations
 
-(cl-defmethod occ-operation ((obj       occ-obj-tsk)
-                             (operation (eql get))
-                             (prop      symbol)
-                             values)
+(cl-defmethod occ-obj-operation ((obj       occ-obj-tsk)
+                                 (operation (eql get))
+                                 (prop      symbol)
+                                 values)
   (let ((tsk (occ-obj-tsk obj)))
-    (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
-    (if (occ-list-p prop)
-        (occ-get-property tsk
+    (occ-message "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
+    (if (occ-obj-list-p prop)
+        (occ-obj-get-property tsk
                           prop)
-      (list (occ-get-property tsk
+      (list (occ-obj-get-property tsk
                               prop)))))
 
-(cl-defmethod occ-operation ((obj       occ-obj-tsk)
-                             (operation (eql add))
-                             (prop      symbol)
-                             values)
+(cl-defmethod occ-obj-operation ((obj       occ-obj-tsk)
+                                 (operation (eql add))
+                                 (prop      symbol)
+                                 values)
   (let ((tsk    (occ-obj-tsk obj)))
-    (occ-message "(occ-operation occ-obj-tsk add): operation %s prop %s" operation prop)
-    (if (occ-list-p prop)
+    (occ-message "(occ-obj-operation occ-obj-tsk add): operation %s prop %s" operation prop)
+    (if (occ-obj-list-p prop)
         (occ-set-property tsk prop
-                          (nconc (occ-get-property tsk prop)
+                          (nconc (occ-obj-get-property tsk prop)
                                  (list (first values))))
       (occ-set-property tsk prop
                         (first values)))))
 
-(cl-defmethod occ-operation ((obj       occ-obj-tsk)
-                             (operation (eql put))
-                             (prop      symbol)
-                             values)
+(cl-defmethod occ-obj-operation ((obj       occ-obj-tsk)
+                                 (operation (eql put))
+                                 (prop      symbol)
+                                 values)
   (let ((tsk    (occ-obj-tsk obj)))
-    (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
-    (if (occ-list-p prop)
+    (occ-message "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
+    (if (occ-obj-list-p prop)
         (occ-set-property tsk prop
                           values)
       (occ-set-property tsk prop
                         (first values)))))
 
-(cl-defmethod occ-operation ((obj       occ-obj-tsk)
-                             (operation (eql remove))
-                             (prop      symbol)
-                             values)
+(cl-defmethod occ-obj-operation ((obj       occ-obj-tsk)
+                                 (operation (eql remove))
+                                 (prop      symbol)
+                                 values)
   (let ((tsk    (occ-obj-tsk obj)))
-    (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
-    (if (occ-list-p prop
+    (occ-message "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
+    (if (occ-obj-list-p prop
                     (occ-set-property tsk prop
                                       (remove (first values
-                                                   (occ-get-property tsk prop)))))
+                                                   (occ-obj-get-property tsk prop)))))
         (occ-error "Implement it."))))
 
-(cl-defmethod occ-operation ((obj       occ-obj-tsk)
-                             (operation (eql member))
-                             (prop      symbol)
-                             values)
+(cl-defmethod occ-obj-operation ((obj       occ-obj-tsk)
+                                 (operation (eql member))
+                                 (prop      symbol)
+                                 values)
   (let ((tsk (occ-obj-tsk obj)))
-    (occ-message "(occ-operation occ-obj-tsk): operation %s prop %s" operation prop)
-    (occ-has-p tsk prop
-               values)))
+    (occ-message "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
+    (occ-obj-has-p tsk prop
+                   values)))
 
 
-(cl-defgeneric occ-call-operation (obj
-                                   prop
-                                   operation
-                                   values)
+(cl-defgeneric occ-obj-call-operation (obj
+                                       prop
+                                       operation
+                                       values)
   "Accept occ compatible VALUES")
 
-(cl-defmethod occ-call-operation ((obj       marker)
-                                  (operation symbol)
-                                  (prop      symbol)
-                                  values)
+(cl-defmethod occ-obj-call-operation ((obj       marker)
+                                      (operation symbol)
+                                      (prop      symbol)
+                                      values)
   "Accept occ compatible VALUES"
-  (occ-message "(occ-call-operation marker): operation %s prop %s" operation prop)
-  (occ-operation obj
+  (occ-message "(occ-obj-call-operation marker): operation %s prop %s" operation prop)
+  (occ-obj-operation obj
                  operation
                  prop
                  values))
 
-(cl-defmethod occ-call-operation ((obj       occ-obj-tsk)
-                                  (operation symbol)
-                                  (prop      symbol)
-                                  values)
+(cl-defmethod occ-obj-call-operation ((obj       occ-obj-tsk)
+                                      (operation symbol)
+                                      (prop      symbol)
+                                      values)
   "Accept occ compatible VALUES"
-  (occ-message "(occ-call-operation occ-obj-tsk): operation %s prop %s" operation prop)
-  (if (occ-operation (occ-obj-marker obj)
+  (occ-message "(occ-obj-call-operation occ-obj-tsk): operation %s prop %s" operation prop)
+  (if (occ-obj-operation (occ-obj-marker obj)
                      operation
                      prop
                      values)
-      (occ-operation obj
+      (occ-obj-operation obj
                      operation
                      prop
                      values)
     (occ-error "Failed to %s on marker %s of %s in org world"
                operation
                (occ-obj-marker obj)
-               (occ-Format obj))))
+               (occ-obj-Format obj))))
 
 
-(cl-defgeneric occ-select-operation (obj
-                                     prop)
-  "occ-select-operation")
+(cl-defgeneric occ-obj-select-operation (obj
+                                         prop)
+  "occ-obj-select-operation")
 
 ;; TODO: Add log not on property editing.
-(cl-defmethod occ-select-operation ((obj  occ-obj-tsk)
-                                    (prop symbol))
+(cl-defmethod occ-obj-select-operation ((obj  occ-obj-tsk)
+                                        (prop symbol))
   (cl-assert prop)
-  (if (occ-list-p prop)
-      ;; TODO: where are generated actions?? (occ-operations-for-prop 'occ-obj-tsk 'root)
-      (let* ((operations (occ-operations-for-prop obj
+  (if (occ-obj-list-p prop)
+      ;; TODO: where are generated actions?? (occ-obj-operations-for-prop 'occ-obj-tsk 'root)
+      (let* ((operations (occ-obj-operations-for-prop obj
                                                   prop))
              ;; (actions '(("add" . add)
              ;;            ("del" . remove)
@@ -183,35 +183,35 @@
     'put))
 
 
-(cl-defgeneric occ-op-prop-edit (obj
-                                 prop
-                                 &optional
-                                 operation
-                                 value)
+(cl-defgeneric occ-do-op-prop-edit (obj
+                                    prop
+                                    &optional
+                                    operation
+                                    value)
   "Accept occ compatible VALUES")
 
-(cl-defmethod occ-op-prop-edit ((obj  occ-obj-tsk)
-                                (prop symbol)
-                                &optional
-                                operation
-                                value)
-  ;; TODO: change this to use OCC VALUE like with corresponding changes to occ-readprop-from-user
+(cl-defmethod occ-do-op-prop-edit ((obj  occ-obj-tsk)
+                                   (prop symbol)
+                                   &optional
+                                   operation
+                                   value)
+  ;; TODO: change this to use OCC VALUE like with corresponding changes to occ-obj-readprop-from-user
   "Accept occ compatible VALUES"
-  (occ-debug "occ-op-prop-edit: prop: %s, value: %s" prop value)
+  (occ-debug "occ-do-op-prop-edit: prop: %s, value: %s" prop value)
   (cl-assert prop)
   (let ((operation  (or operation
-                        (occ-select-operation obj prop)))
+                        (occ-obj-select-operation obj prop)))
         (prop-value (or value
-                        (occ-readprop-from-user obj
-                                                prop))))
+                        (occ-obj-readprop-from-user obj
+                                                    prop))))
     (cl-assert operation)
-    (occ-message "(occ-op-prop-edit occ-obj-tsk): operation %s prop %s" operation prop)
-    (occ-call-operation obj
-                        operation
-                        prop
-                        (if (consp prop-value)
-                            prop-value
-                          (list prop-value)))))
+    (occ-message "(occ-do-op-prop-edit occ-obj-tsk): operation %s prop %s" operation prop)
+    (occ-obj-call-operation obj
+                            operation
+                            prop
+                            (if (consp prop-value)
+                                prop-value
+                              (list prop-value)))))
 
 
 (cl-defgeneric occ-op-props-edit (obj)
