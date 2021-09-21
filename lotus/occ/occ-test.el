@@ -62,7 +62,7 @@
   (occ-message "occ-do-verify: Verifying %s" (occ-obj-format obj 'capitalize))
   (let ((plist-keys (mapcar #'downcase-sym
                             (mapcar #'key2sym
-                                    (occ-plist-get-keys (cl-obj-plist-value (occ-obj-tsk obj)))))))
+                                    (occ-plist-get-keys (occ-cl-obj-plist-value (occ-obj-tsk obj)))))))
     ;; (occ-message "plist (%s)" plist-keys)
     (dolist (prop plist-keys)
       ;; (occ-message "occ-do-verify: verifying %s" prop)
@@ -81,7 +81,7 @@
 
 (defun occ-do-verify-objects ()
   (interactive)
-  (occ-do-verify (occ-collection-object)))
+  (occ-do-verify (occ-obj-collection-object)))
 ;; testing verification
 ;; occ-files-with-null-regex
 ;; occ-files-not-in-org-mode
@@ -89,24 +89,24 @@
 
 (when nil                               ;occ-obj-method.el
 
-  (occ-add-to-org-heading-when-idle (occ-obj-make-ctx-at-point) 7)
+  (occ-do-add-to-org-heading-when-idle (occ-obj-make-ctx-at-point) 7)
 
   (length
    (occ-matching-ctxual-tsks
-    (occ-collection-object)
+    (occ-obj-collection-object)
     (occ-obj-make-ctx
      (find-file-noselect "/home/s/paradise/git/main/src/wnc/security/authenticator/accounting.cpp"))))
 
   (occ-ctxual-tsk-tsk
    (car
     (occ-matching-ctxual-tsks
-     (occ-collection-object)
+     (occ-obj-collection-object)
      (occ-obj-make-ctx
       (find-file-noselect "/home/s/paradise/git/main/src/wnc/security/authenticator/accounting.cpp")))))
 
   (length
    (occ-matching-ctxual-tsks
-    (occ-collection-object)
+    (occ-obj-collection-object)
     (occ-obj-make-ctx (current-buffer)))))
 
 (when nil                               ;occ-util-common.el
@@ -155,7 +155,7 @@
            #'(lambda (f)
                (with-current-buffer (find-file-noselect f)
                  org-complex-heading-regexp))
-           (occ-files))))
+           (occ-obj-files))))
      (occ-debug "files with null regex %s" files)))
 
  ;; testing verification;; testing verification
@@ -166,7 +166,7 @@
            #'(lambda (f)
                (with-current-buffer (find-file-noselect f)
                  (eq major-mode 'org-mode)))
-           (occ-files))))
+           (occ-obj-files))))
      (occ-debug "files not in org-mode %s" files))))
 
 
@@ -185,7 +185,7 @@
 
 (progn                                  ;method
   (when nil
-    (occ-tree-collection-files (occ-collection-object))
+    (occ-tree-collection-files (occ-obj-collection-object))
 
     (occ-tree-collection-files (make-occ-tree-collection))))
 
@@ -219,11 +219,11 @@
 
   (when nil ;; https://curiousprogrammer.wordpress.com/2010/07/19/emacs-defstruct-vs-other-languages/
 
-    (defun cl-get-field (object field)
-      (cl-struct-slot-value (cl-inst-classname object) field object))
+    (defun occ-cl-get-field (object field)
+      (cl-struct-slot-value (occ-cl-inst-classname object) field object))
 
-    (defun cl-set-field (object field value)
-      (setf (cl-struct-slot-value (cl-inst-classname object) field object) value))
+    (defun occ-occ-cl-set-field (object field value)
+      (setf (cl-struct-slot-value (occ-cl-inst-classname object) field object) value))
 
     (get-field dave 'name)
     (set-field dave 'name "Simon Smith"))
@@ -231,27 +231,26 @@
   (progn
     (when nil
       (occ-readprop-props)
-      (cl-method-matched-arg 'occ-readprop nil)
-      (cl-method-matched-arg 'occ-readprop (occ-obj-make-ctx-at-point))
+      (occ-obj-cl-method-matched-arg 'occ-obj-readprop nil)
+      (occ-obj-cl-method-matched-arg 'occ-obj-readprop (occ-obj-make-ctx-at-point))
       (occ-obj-defined-slots-with-value (occ-obj-make-ctx-at-point))))
 
   (progn
-    (cl-method-sig-matched-arg '(occ-readprop (`((head ,val) occ-ctx) val)) nil)
+    (occ-obj-cl-method-sig-matched-arg '(occ-obj-readprop (`((head ,val) occ-ctx) val)) nil)
 
-    (cl-method-param-signs 'occ-ctx-property-get)
-    (cl-method-sigs-matched-arg
-     '(occ-readprop (`((head ,val) occ-ctx) val))
-     '(occ-ctx-property-get (`((head ,val)) val))
-     (occ-obj-make-ctx-at-point)))
+    (cl-method-param-signs 'occ-obj-ctx-property-get)
+    (occ-obj-cl-method-sigs-matched-arg '(occ-obj-readprop (`((head ,val) occ-ctx) val))
+                                        '(occ-obj-ctx-property-get (`((head ,val)) val))
+                                        (occ-obj-make-ctx-at-point)))
 
-  ;; (cl-method-param-case '(occ-readprop (`((head ,val) occ-ctx) val)))
+  ;; (occ-cl-method-param-case '(occ-obj-readprop (`((head ,val) occ-ctx) val)))
   (setq xxnaaa
         (mapcar
          #'(lambda (x) (aref x 1))
-         (aref (cl--generic 'occ-readprop) 3)))
+         (aref (cl--generic 'occ-obj-readprop) 3)))
 
   (setq xxnaaa
-        (aref (cl--generic 'occ-readprop) 3))))
+        (aref (cl--generic 'occ-obj-readprop) 3))))
 
 
 ;; ctor.el
@@ -260,21 +259,21 @@
     (setq occ-global-tsk-collection nil)
     (occ-obj-make-tsk-collection occ-global-tsk-collection-spec)
     (occ-tree-collection-tree occ-global-tsk-collection)
-    (occ-collect-tsks occ-global-tsk-collection t)
+    (occ-obj-collect-tsks occ-global-tsk-collection t)
     (occ-tree-collection-roots occ-global-tsk-collection)
     (setf occ-gtree
           (occ-tree-collection-tree occ-global-tsk-collection)))
 
 
-  (cl-get-field occ-gtree 'subtree)
+  (occ-cl-get-field occ-gtree 'subtree)
 
-  (cl-get-field occ-gtree 'plist)
+  (occ-cl-get-field occ-gtree 'plist)
 
-  (cl-get-field (make-occ-tree-tsk :name "empty tree tsk" :subtree nil) 'subtree)
+  (occ-cl-get-field (make-occ-tree-tsk :name "empty tree tsk" :subtree nil) 'subtree)
 
-  (cl-set-field occ-gtree 'subtree 1)
+  (occ-cl-set-field occ-gtree 'subtree 1)
 
-  (cl-class-slots (cl-inst-classname occ-gtree))
+  (occ-cl-class-slots (occ-cl-inst-classname occ-gtree))
   ;; (type-of occ-gtree)
 
   (setf
@@ -340,7 +339,7 @@
 
 ;; (helm :sources 'h-source)
 
-;; (occ-collect-list occ-global-tsk-collection)
+;; (occ-obj-collect-list occ-global-tsk-collection)
 ;; (occ-tree-collection-list occ-global-tsk-collection)
 
 
@@ -390,30 +389,29 @@
 
 
 (when nil
-  (cl-method-first-arg 'occ-ctx-property-get)
+  (occ-cl-method-first-arg 'occ-obj-ctx-property-get)
   (occ-readprop-props)
-  (cl-method-matched-arg 'occ-readprop 'occ-ctx-property-get (occ-obj-make-ctx-at-point))
-  (funcall 'occ-ctx-property-get (cons 'file (occ-obj-make-ctx-at-point))))
+  (occ-obj-cl-method-matched-arg 'occ-obj-readprop 'occ-obj-ctx-property-get (occ-obj-make-ctx-at-point))
+  (funcall 'occ-obj-ctx-property-get (cons 'file (occ-obj-make-ctx-at-point))))
 
 (when nil
-  (cl-method-sigs-matched-arg
-   '(occ-readprop (`((head ,val) occ-ctx) val))
-   '(occ-ctx-property-get (`((head ,val) val)))
-   (occ-obj-make-ctx-at-point)))
+  (occ-obj-cl-method-sigs-matched-arg '(occ-obj-readprop (`((head ,val) occ-ctx) val))
+                                      '(occ-obj-ctx-property-get (`((head ,val) val)))
+                                      (occ-obj-make-ctx-at-point)))
 
 ;; move to occ-test.el
-;; (cl-method-param-case-with-value-new '(occ-obj-get-property  (`(occ-ctx (eql ,val)) val)) (occ-obj-make-ctx-at-point))
+;; (occ-cl-method-param-case-with-value-new '(occ-obj-get-property  (`(occ-ctx (eql ,val)) val)) (occ-obj-make-ctx-at-point))
 ;; (occ-match-prop-method-args (occ-obj-make-ctx-at-point))
 
-;; (cl-method-param-signs 'occ-readprop-with)
+;; (cl-method-param-signs 'occ-obj-readprop-with)
 
 ;; (cl-method-param-signs 'occ-obj-get-property)
 
 
-;; (cl-method-param-case
+;; (occ-cl-method-param-case
 ;;  '(occ-prop-is-list (`((eql ,val)) val)))
 ;;
-;; (cl-method-param-case
+;; (occ-cl-method-param-case
 ;;  '(occ-prop-elem-from-org (`((eql ,val) t) val)))
 ;;
 ;; (cl-method-param-signs 'occ-prop-is-list)

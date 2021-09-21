@@ -91,7 +91,7 @@
        (let ((entry         (funcall tsk-builder))
              (subtree-level (if subtree-level subtree-level 1)))
          (when (numberp subtree-level)
-           (occ-set-property entry 'subtree-level subtree-level))
+           (occ-obj-set-property entry 'subtree-level subtree-level))
          (cl-assert (numberp subtree-level))
          (when entry
            (let* ((sub-tree (append (occ-org-map-subheading #'(lambda ()
@@ -115,7 +115,7 @@
                                                                         (+ 1
                                                                            (or (occ-obj-get-property entry 'level) 0)
                                                                            (or subtree-level 0)))))))))))
-             (when sub-tree      (occ-set-property entry 'subtree sub-tree))
+             (when sub-tree      (occ-obj-set-property entry 'subtree sub-tree))
              entry)))))))
 
 ;;; occ-tree-tsk.el ends here

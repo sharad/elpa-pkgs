@@ -40,10 +40,10 @@
   (occ-do-checkout-prop obj prop))
 
 
-(cl-defgeneric occ-op-props-checkout (obj)
+(cl-defgeneric occ-do-op-props-checkout (obj)
   "Checkout all property for forced clock-in.")
 
-(cl-defmethod occ-op-props-checkout ((obj occ-obj-tsk))
+(cl-defmethod occ-do-op-props-checkout ((obj occ-obj-tsk))
   "Checkout all property for forced clock-in."
   (dolist (prop (occ-obj-properties-to-checkout obj))
     (occ-message "occ-do-checkout: checkout prop %s" prop)

@@ -92,9 +92,9 @@
 
 
 (defun occ-tsk-builder ()
-  (unless occ-global-tsk-collection (occ-collection-object))
+  (unless occ-global-tsk-collection (occ-obj-collection-object))
   (if occ-global-tsk-collection
-      (let ((classname (cl-inst-classname (occ-collection-object))))
+      (let ((classname (occ-cl-inst-classname (occ-obj-collection-object))))
         (cond
          ((eq 'occ-list-collection classname)
           #'make-occ-list-tsk)
@@ -144,8 +144,8 @@
   (let ((ret-plist (apply #'append
                           (occ-util-plist-mapcar #'(lambda (c)
                                                      (list (first c)
-                                                           (occ-prop-from-org (occ-util-keyword2sym (first c))
-                                                                              (nth 1 c))))
+                                                           (occ-obj-prop-from-org (occ-util-keyword2sym (first c))
+                                                                                  (nth 1 c))))
                                                  plist))))
     (cl-assert (evenp (length     plist)))
     (occ-debug "occ-tsk-plist-from-org: plist %s" plist)
@@ -201,15 +201,15 @@
             (when heading
               (setf tsk
                     (funcall builder
-                             ;; (occ-prop-from-org) from Org world to Occ world.
-                             :name         (occ-prop-from-org 'name heading)
-                             :heading      (occ-prop-from-org 'heading heading)
-                             :heading-prop (occ-prop-from-org 'heading-prop heading-prop)
-                             :marker       (occ-prop-from-org 'marker marker)
-                             :file         (occ-prop-from-org 'file file)
-                             :point        (occ-prop-from-org 'point point)
-                             :clock-sum    (occ-prop-from-org 'clock-sum clock-sum)
-                             :cat          (occ-prop-from-org 'cat (occ-get-tsk-category heading tsk-plist))
+                             ;; (occ-obj-prop-from-org) from Org world to Occ world.
+                             :name         (occ-obj-prop-from-org 'name heading)
+                             :heading      (occ-obj-prop-from-org 'heading heading)
+                             :heading-prop (occ-obj-prop-from-org 'heading-prop heading-prop)
+                             :marker       (occ-obj-prop-from-org 'marker marker)
+                             :file         (occ-obj-prop-from-org 'file file)
+                             :point        (occ-obj-prop-from-org 'point point)
+                             :clock-sum    (occ-obj-prop-from-org 'clock-sum clock-sum)
+                             :cat          (occ-obj-prop-from-org 'cat (occ-get-tsk-category heading tsk-plist))
                              :plist        (occ-tsk-plist-from-org tsk-plist)))
               (let ((inherit         t)
                     (inherited-props
@@ -222,7 +222,7 @@
                          (val (org-entry-get nil propstr inherit)))
                     (unless (occ-obj-get-property tsk prop)
                       ;; What is the solution
-                      (occ-set-property tsk prop val :not-recursive t)))))
+                      (occ-obj-set-property tsk prop val :not-recursive t)))))
               (progn "set :plist here"))
             (occ-obj-reread-props tsk)      ;reset list properties
             tsk))))

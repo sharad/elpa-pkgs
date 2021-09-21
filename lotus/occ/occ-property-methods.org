@@ -70,13 +70,13 @@
       (cl-defmethod occ-obj-list-p ((prop (eql _template1_)))
         "Is the property _TEMPLATE1_ has VALUES in list, Method tell
          property represent list or not.")
-      (cl-defmethod occ-prop-to-org   ((prop (eql _template1_))
-                                       value)
+      (cl-defmethod occ-obj-prop-to-org ((prop (eql _template1_))
+                                         value)
         "Return string representation for property _TEMPLATE1_, Method
       convert value VALUE of property PROPERTY from occ to org string
       representation.")
-      (cl-defmethod occ-prop-from-org ((prop (eql _template1_))
-                                       value)
+      (cl-defmethod occ-obj-prop-from-org ((prop (eql _template1_))
+                                           value)
         "Return the Actual Object representation for property
       _TEMPLATE1_, Method convert value VALUE of property PROPERTY from
       org string to occ representation.")
@@ -132,15 +132,15 @@
          property represent list or not."
         nil)
       
-      (cl-defmethod occ-prop-to-org   ((prop (eql _template2_))
-                                       value)
+      (cl-defmethod occ-obj-prop-to-org ((prop (eql _template2_))
+                                         value)
         "Return string representation for property _TEMPLATE2_, Method
       convert value VALUE of property PROPERTY from occ to org string
       representation."
         nil)
       
-      (cl-defmethod occ-prop-from-org ((prop (eql _template2_))
-                                       value)
+      (cl-defmethod occ-obj-prop-from-org ((prop (eql _template2_))
+                                           value)
         "Return the Actual Object representation for property
       _TEMPLATE2_, Method convert value VALUE of property PROPERTY from
       org string to occ representation."
@@ -227,12 +227,12 @@
       (cl-defmethod occ-obj-list-p ((prop (eql currfile)))
         t)
       
-      (cl-defmethod occ-prop-to-org   ((prop (eql currfile))
-                                       value)
+      (cl-defmethod occ-obj-prop-to-org ((prop (eql currfile))
+                                         value)
         value)
       
-      (cl-defmethod occ-prop-from-org ((prop (eql currfile))
-                                       value)
+      (cl-defmethod occ-obj-prop-from-org ((prop (eql currfile))
+                                           value)
         value)
       
       (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-ctx-tsk)
@@ -299,12 +299,12 @@
       (cl-defmethod occ-obj-list-p ((prop (eql root)))
         t)
       
-      (cl-defmethod occ-prop-to-org   ((prop (eql root))
-                                       value)
+      (cl-defmethod occ-obj-prop-to-org ((prop (eql root))
+                                         value)
         value)
       
-      (cl-defmethod occ-prop-from-org ((prop (eql root))
-                                       value)
+      (cl-defmethod occ-obj-prop-from-org ((prop (eql root))
+                                           value)
         value)
       
       (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-ctx-tsk)
@@ -352,14 +352,14 @@
       (cl-defmethod occ-obj-list-p ((prop (eql timebeing)))
          nil)
       
-      (cl-defmethod occ-prop-to-org   ((prop (eql timebeing))
-                                       value)
+      (cl-defmethod occ-obj-prop-to-org ((prop (eql timebeing))
+                                         value)
         (if (numberp value)
             (number-to-string value)
           ""))
       
-      (cl-defmethod occ-prop-from-org ((prop (eql timebeing))
-                                       value)
+      (cl-defmethod occ-obj-prop-from-org ((prop (eql timebeing))
+                                           value)
         (if (stringp value)
             (or (string-to-number value)
                 0)
@@ -471,10 +471,10 @@
 ** Special properties
 *** SubtreeFile property of task
     #+begin_src emacs-lisp
-
+      
       ;;{{ sub-tree
-      (cl-defmethod occ-readprop ((obj occ-obj-ctx-tsk)
-                                  (prop (eql subtree)))
+      (cl-defmethod occ-obj-readprop ((obj occ-obj-ctx-tsk)
+                                      (prop (eql subtree)))
         (let ((tsk (occ-obj-tsk obj))
               (ctx (occ-obj-ctx obj)))
           (let ((prompt (concat (symbol-name prop) ": ")))

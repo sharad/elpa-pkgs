@@ -57,10 +57,8 @@
 (defvar occ-idle-timeout 7)
 
 
-;; (cl-defmethod occ-find ((collection occ-collection) (mrk marker)))
-
-(cl-defmethod occ-find ((collection list)
-                        (mrk marker)))
+(cl-defmethod occ-obj-find ((collection list)
+                            (mrk marker)))
 
 (cl-defgeneric occ-do-goto (obj)
   "occ-do-goto")
@@ -108,19 +106,19 @@
 
 (cl-defmethod occ-do-induct-child ((obj   occ-tree-tsk)
                                 (child occ-tree-tsk))
-  (occ-set-property child 'subtree-level
-                    (occ-obj-get-property obj 'subtree-level))
+  (occ-obj-set-property child 'subtree-level
+                        (occ-obj-get-property obj 'subtree-level))
   (occ-insert-node-after-element child obj
-                                 (occ-tree-collection-list (occ-collection-object)))
+                                 (occ-tree-collection-list (occ-obj-collection-object)))
   (setf (occ-tree-tsk-subtree obj) (nconc (occ-tree-tsk-subtree obj)
                                           (list  child))))
 
 (cl-defmethod occ-do-induct-child ((obj   occ-list-tsk)
                                 (child occ-list-tsk))
-  (occ-set-property child 'subtree-level
-                    (occ-obj-get-property obj 'subtree-level))
+  (occ-obj-set-property child 'subtree-level
+                        (occ-obj-get-property obj 'subtree-level))
   (occ-insert-node-after-element child obj
-                                 (occ-tree-collection-list (occ-collection-object))))
+                                 (occ-tree-collection-list (occ-obj-collection-object))))
 
 
 (cl-defgeneric occ-do-capture (obj &key
@@ -288,30 +286,30 @@
   (concat "* " heading "\n"))
 
 
-(cl-defmethod occ-fast-procreate-child ((heading string)
-                                        &key
-                                        template
-                                        clock-in)
+(cl-defmethod occ-do-fast-procreate-child ((heading string)
+                                            &key
+                                            template
+                                            clock-in)
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (occ-do-capture nil
                  :clock-in         clock-in ;; helm-current-prefix-arg
                  :template         (occ-obj-tsk-txt ctx heading)
                  :immediate-finish t)))
 
-(cl-defmethod occ-procreate-anonymous-child ((heading string)
-                                             &key
-                                             template
-                                             clock-in)
+(cl-defmethod occ-do-procreate-anonymous-child ((heading string)
+                                                &key
+                                                template
+                                                clock-in)
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (occ-do-capture nil
                  :clock-in clock-in ;; helm-current-prefix-arg
                  :template (occ-obj-tsk-txt ctx heading))))
 
 
-(cl-defmethod occ-fast-procreate-anonymous-child ((heading string)
-                                                  &key
-                                                  template
-                                                  clock-in)
+(cl-defmethod occ-do-fast-procreate-anonymous-child ((heading string)
+                                                     &key
+                                                     template
+                                                     clock-in)
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (let ((anonymous-heading-marker (rest (org-without-org-clock-persist
                                            ;; TODO: Implement it.

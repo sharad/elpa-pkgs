@@ -103,42 +103,42 @@
   nil)
 
 
-(cl-defgeneric occ-prop-to-org (property
-                                value)
+(cl-defgeneric occ-obj-prop-to-org (property
+                                    value)
   "Return string representation for property PROPERTY, Method
 convert value VALUE of property PROPERTY from occ to org string
 representation.")
-(cl-defmethod occ-prop-to-org ((property symbol)
-                               value)
+(cl-defmethod occ-obj-prop-to-org ((property symbol)
+                                   value)
   "Return string representation for property PROPERTY, Method
 convert value VALUE of property PROPERTY from occ to org string
 representation."
-  ;; (occ-error "Implement method occ-prop-to-org for property %s" property)
-  (occ-debug "occ-prop-to-org: no method for property %s using default."
+  ;; (occ-error "Implement method occ-obj-prop-to-org for property %s" property)
+  (occ-debug "occ-obj-prop-to-org: no method for property %s using default."
              property)
   value)
 
 
-(cl-defgeneric occ-prop-from-org (property
-                                  value)
+(cl-defgeneric occ-obj-prop-from-org (property
+                                      value)
   "Return the Actual Object representation for property
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation.")
-(cl-defmethod occ-prop-from-org ((property symbol)
-                                 value)
+(cl-defmethod occ-obj-prop-from-org ((property symbol)
+                                     value)
   "Return the Actual Object representation for property
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
-  ;; (occ-error "Implement method occ-prop-from-org for property %s" property)
-  (occ-debug "occ-prop-from-org: no method for property %s using default." property)
+  ;; (occ-error "Implement method occ-obj-prop-from-org for property %s" property)
+  (occ-debug "occ-obj-prop-from-org: no method for property %s using default." property)
   value)
-(cl-defmethod occ-prop-from-org ((property symbol)
-                                 (value string))
+(cl-defmethod occ-obj-prop-from-org ((property symbol)
+                                     (value string))
   "Return the Actual Object representation for property
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
-  ;; (occ-error "Implement method occ-prop-from-org for property %s" property)
-  (occ-debug "occ-prop-from-org: no method for property %s using default." property)
+  ;; (occ-error "Implement method occ-obj-prop-from-org for property %s" property)
+  (occ-debug "occ-obj-prop-from-org: no method for property %s using default." property)
   value)
 
 

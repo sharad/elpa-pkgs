@@ -86,14 +86,14 @@
 
 
 (when nil
-  (cl-inst-classname (occ-obj-make-tsk org-clock-hd-marker (occ-tsk-builder)))
+  (occ-cl-inst-classname (occ-obj-make-tsk org-clock-hd-marker (occ-tsk-builder)))
   (setq unnamed-test (occ-obj-make-tsk org-clock-hd-marker (occ-tsk-builder)))
   (occ-tsk-marker unnamed-test)
   (type-of (lotus-org-unnamed-task-clock-marker)))
 
-(cl-defmethod occ-maybe-create-unnamed-ctxual-tsk ((ctx occ-ctx))
+(cl-defmethod occ-do-maybe-create-unnamed-ctxual-tsk ((ctx occ-ctx))
   ;; back
-  (occ-debug "occ-maybe-create-unnamed-ctxual-tsk: begin")
+  (occ-debug "occ-do-maybe-create-unnamed-ctxual-tsk: begin")
   (let* ((unnamed-tsk        (occ-maybe-create-unnamed-tsk))
          (unnamed-ctxual-tsk (when unnamed-tsk
                                (occ-obj-build-ctxual-tsk-with unnamed-tsk
@@ -102,14 +102,14 @@
     (assert unnamed-ctxual-tsk)
     unnamed-ctxual-tsk))
 
-(cl-defmethod occ-maybe-create-clockedin-unnamed-ctxual-tsk ((ctx occ-ctx))
+(cl-defmethod occ-do-maybe-create-clockedin-unnamed-ctxual-tsk ((ctx occ-ctx))
   ;; back
-  (occ-debug "occ-maybe-create-clockedin-unnamed-ctxual-tsk: begin")
+  o(occ-debug "occ-do-maybe-create-clockedin-unnamed-ctxual-tsk: begin")
   (when (occ-can-create-unnamed-tsk-p)
     (let ((org-log-note-clock-out nil))
       (if (occ-clock-marker-unnamed-clock-p)
           (occ-debug "occ-maybe-create-unnamed-tsk: Already clockin unnamed tsk")
-        (let* ((unnamed-ctxual-tsk (occ-maybe-create-unnamed-ctxual-tsk ctx))
+        (let* ((unnamed-ctxual-tsk (occ-do-maybe-create-unnamed-ctxual-tsk ctx))
                (unnamed-tsk        (when unnamed-ctxual-tsk
                                      (occ-ctxual-tsk-tsk unnamed-ctxual-tsk)))
                (unnamed-marker     (when unnamed-tsk

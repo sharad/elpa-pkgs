@@ -31,10 +31,10 @@
 
 
 ;; method
-(fmakunbound 'occ-return-tranform)
+(fmakunbound 'occ-obj-return-tranform)
 
-(cl-defmethod occ-return-tranform ((ap-obj occ-ap-normal)
-                                   (obj occ-obj))
+(cl-defmethod occ-obj-return-tranform ((ap-obj occ-ap-normal)
+                                       (obj occ-obj))
   "Will make all action except first to return OCC-RETURN-SELECT-LABEL."
   ;; (occ-message "(occ-obj-ap-callables ap-obj obj) = %s" (first (occ-obj-ap-callables ap-obj obj)))
   (let* ((identity-sel-callable            (occ-obj-make-callable-normal :select
@@ -52,48 +52,47 @@
     (occ-obj-build-ap-normal (cons :callables
                                    new-callables))))
 
-(cl-defmethod occ-return-tranform ((ap-transf-obj occ-ap-transf)
-                                   (obj occ-obj))
+(cl-defmethod occ-obj-return-tranform ((ap-transf-obj occ-ap-transf)
+                                       (obj occ-obj))
   "Will make transformer fun to change action except first to return occ-return-label."
   (let ((new-transform #'(lambda (action
                                   candidate)
                            (let ((transform (occ-obj-ap-transform ap-transf-obj)))
                              (cl-assert transform)
-                             (let* ((candidate-obj (occ-return-get-value candidate))
+                             (let* ((candidate-obj (occ-obj-return-get-value candidate))
                                     (ap-normal-obj (funcall transform
                                                             action candidate-obj)))
-                               (occ-debug "occ-return-tranform: lambda: ap-normal-obj = %s" ap-normal-obj)
-                               ;; (occ-return-tranform ap-normal-obj obj)
-                               (occ-return-tranform ap-normal-obj candidate-obj))))))
+                               (occ-debug "occ-obj-return-tranform: lambda: ap-normal-obj = %s" ap-normal-obj)
+                               ;; (occ-obj-return-tranform ap-normal-obj obj)
+                               (occ-obj-return-tranform ap-normal-obj candidate-obj))))))
     (occ-obj-build-ap-transf (cons :transform
                                    new-transform))))
 
 
-(cl-defmethod occ-return-in-labels-p (retval &rest label)
+(cl-defmethod occ-obj-return-in-labels-p (retval &rest label)
   retval)
 
-(cl-defmethod occ-return-in-labels-p ((retval occ-return) &rest label)
+(cl-defmethod occ-obj-return-in-labels-p ((retval occ-return) &rest label)
   (memq (occ-return-label retval)
         label))
 
 
-(cl-defmethod occ-return-get-value (retval)
+(cl-defmethod occ-obj-return-get-value (retval)
   retval)
 
-(cl-defmethod occ-return-get-value ((retval occ-return))
+(cl-defmethod occ-obj-return-get-value ((retval occ-return))
   (occ-return-value retval))
 
 
-(cl-defmethod occ-return-get-label (retval)
+(cl-defmethod occ-obj-return-get-label (retval)
   retval)
 
-(cl-defmethod occ-return-get-label ((retval occ-return))
+(cl-defmethod occ-obj-return-get-label ((retval occ-return))
   (occ-return-label retval))
 
 
 (defun occ-specs ()
-  (cl-method-param-case
-   '(occ-obj-make-tsk-collection (`((head ,val)) val))))
+  (occ-cl-method-param-case '(occ-obj-make-tsk-collection (`((head ,val)) val))))
 
 (defun occ-valid-spec-p (spec)
   t)

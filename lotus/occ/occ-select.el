@@ -170,7 +170,7 @@ ACTION "
   (unless builder (occ-error "Builder can not be nil"))
   (occ-debug "OCC-SELECT((OBJ OCC-CTX)): begin")
   (let* ((timeout (or timeout occ-idle-timeout)))
-    (let* ((unfiltered-count (occ-length)))
+    (let* ((unfiltered-count (occ-obj-length)))
       (if (> unfiltered-count 0)
           (let ((retval (occ-obj-list-select obj
                                              :filters             filters

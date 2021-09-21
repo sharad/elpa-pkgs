@@ -553,25 +553,25 @@ USAGE:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
 
 
 (when nil
-  (cl-defgeneric display-number (i)
-    "display-number")
+  (cl-defgeneric occ-obj-display-number (i)
+    "occ-obj-display-number")
 
-  (cl-defmethod display-number ((i number))
+  (cl-defmethod occ-obj-display-number ((i number))
     ;; (cl-call-next-method)
     (occ-message "plain i=%d" i))
 
-  (cl-defmethod display-number :extra "test0" ((i number))
+  (cl-defmethod occ-obj-display-number :extra "test0" ((i number))
                 (cl-call-next-method)
                 (occ-message "test0 i=%d" i))
 
-  (cl-defmethod display-number :extra "test1" ((i number))
+  (cl-defmethod occ-obj-display-number :extra "test1" ((i number))
                 (cl-call-next-method)
                 (occ-message "test1 i=%d" i))
 
-  (cl-defmethod display-number :extra "test2" ((i number))
+  (cl-defmethod occ-obj-display-number :extra "test2" ((i number))
                 (cl-call-next-method)
                 (occ-message "test2 i=%d" i))
 
-  (display-number 1))
+  (occ-obj-display-number 1))
 
 ;;; occ-scratch-space.el ends here

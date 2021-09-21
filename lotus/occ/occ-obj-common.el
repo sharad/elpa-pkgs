@@ -47,7 +47,7 @@
   `(let ((key (sym2key ,prop)))
      (cl-assert (evenp (length ,plist)))
      (if key
-         (plist-put ,plist ;TODO ??? (cl-obj-plist-value obj)
+         (plist-put ,plist ;TODO ??? (occ-cl-obj-plist-value obj)
                     key ,value)
        (occ-error "occ-plist-set: Can not make keyword for `'%s'" ,prop))))
 
@@ -72,11 +72,11 @@
 (cl-defgeneric occ-obj-get-property (obj
                                      prop)
   "get property of object")
-(cl-defgeneric occ-get-properties-internal (obj
-                                            props)
+(cl-defgeneric occ-obj-get-properties-internal (obj
+                                                props)
   "get property of object")
-(cl-defgeneric occ-get-properties (obj
-                                   props)
+(cl-defgeneric occ-obj-get-properties (obj
+                                       props)
   "get property of object")
 
 (cl-defmethod occ-obj-get-property-internal ((obj occ-obj)
@@ -84,15 +84,15 @@
   ;; mainly used by occ-tsk only.
   (occ-message "(OCC-OBJ-GET-PROPERTY (OBJ OCC-OBJ)): calling for prop %s" prop)
   (if (memq prop
-            (cl-class-slots (cl-inst-classname obj)))
-      (cl-get-field obj prop)
-    (or (occ-plist-get (cl-obj-plist-value obj)
+            (occ-cl-class-slots (occ-cl-inst-classname obj)))
+      (occ-cl-get-field obj prop)
+    (or (occ-plist-get (occ-cl-obj-plist-value obj)
                        prop)
-        (occ-plist-get (cl-obj-plist-value obj)
+        (occ-plist-get (occ-cl-obj-plist-value obj)
                        (upcase-sym prop)))))
 
-(cl-defmethod occ-get-properties-internal ((obj   occ-obj)
-                                           (props list))
+(cl-defmethod occ-obj-get-properties-internal ((obj   occ-obj)
+                                               (props list))
   ;; mainly used by occ-tsk only.
   (mapcar #'(lambda (prop)
               (cons prop (occ-obj-get-property obj prop)))
@@ -119,95 +119,95 @@
                                prop))
 
 
-(cl-defmethod occ-get-properties ((obj   occ-obj-tsk)
-                                  (props list))
+(cl-defmethod occ-obj-get-properties ((obj   occ-obj-tsk)
+                                      (props list))
   ;; mainly used by occ-tsk only.
-  (occ-get-properties-internal (occ-obj-tsk obj) props))
+  (occ-obj-get-properties-internal (occ-obj-tsk obj) props))
 
-(cl-defmethod occ-get-properties ((obj   occ-obj-ctx-tsk)
-                                  (props list))
+(cl-defmethod occ-obj-get-properties ((obj   occ-obj-ctx-tsk)
+                                      (props list))
   ;; mainly used by occ-tsk only.
-  (occ-get-properties (occ-obj-tsk obj) props))
+  (occ-obj-get-properties (occ-obj-tsk obj) props))
 
-(cl-defmethod occ-get-properties ((obj   occ-obj-ctx)
-                                  (props list))
+(cl-defmethod occ-obj-get-properties ((obj   occ-obj-ctx)
+                                      (props list))
   ;; mainly used by occ-tsk only.
-  (occ-get-properties (occ-obj-ctx obj) props))
+  (occ-obj-get-properties (occ-obj-ctx obj) props))
 
 
 
-(cl-defmethod occ-set-property ((obj occ-obj)
-                                prop
-                                value
-                                &key not-recursive)
+(cl-defmethod occ-obj-set-property ((obj occ-obj)
+                                    prop
+                                    value
+                                    &key not-recursive)
   ;; mainly used by occ-tsk only
-  (occ-message "(occ-set-property occ-obj): prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
+  (occ-message "(occ-obj-set-property occ-obj): prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
   (if (memq prop
-            (cl-class-slots (cl-inst-classname obj)))
-      (setf (cl-struct-slot-value (cl-inst-classname obj) prop obj)
+            (occ-cl-class-slots (occ-cl-inst-classname obj)))
+      (setf (cl-struct-slot-value (occ-cl-inst-classname obj) prop obj)
             value)
-    (let ((plist-prop (if (occ-plist-get (cl-obj-plist-value obj)
+    (let ((plist-prop (if (occ-plist-get (occ-cl-obj-plist-value obj)
                                          prop)
                           prop
                         (upcase-sym prop))))
-      (occ-debug "(occ-set-property occ-obj): plist got %s using %s"
+      (occ-debug "(occ-obj-set-property occ-obj): plist got %s using %s"
                  prop plist-prop)
       (occ-plist-set
        ;; NOTE: as Property block keys return by (org-element-at-point) are in
        ;; UPCASE even in actual org file it is lower or camel case. so our obj
        ;; (tsk) also must have to be in line of it as it also got created with
        ;; same function (org-element-at-point).
-       (cl-struct-slot-value (cl-inst-classname obj)
+       (cl-struct-slot-value (occ-cl-inst-classname obj)
                              'plist
                              obj)
        plist-prop value))))
 
-(cl-defmethod occ-set-property ((obj occ-tree-tsk)
-                                prop
-                                value &key not-recursive)
+(cl-defmethod occ-obj-set-property ((obj occ-tree-tsk)
+                                    prop
+                                    value &key not-recursive)
   ;; TODO: do it recursively.
   ;; mainly used by occ-tsk only
-  (occ-message "(occ-set-property (obj occ-tree-tsk)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
+  (occ-message "(occ-obj-set-property (obj occ-tree-tsk)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
   (cl-call-next-method)
   (when not-recursive
     (dolist (subtsk (occ-tree-tsk-subtree (occ-obj-tsk obj)))
-      (occ-set-property subtsk
+      (occ-obj-set-property subtsk
                         prop
                         value
                         :not-recursive not-recursive))))
 
 
-(cl-defmethod occ-set-property ((obj occ-obj-tsk)
-                                prop
-                                value &key not-recursive)
-  (occ-message "(occ-set-property (obj occ-obj-tsk)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
+(cl-defmethod occ-obj-set-property ((obj occ-obj-tsk)
+                                    prop
+                                    value &key not-recursive)
+  (occ-message "(occ-obj-set-property (obj occ-obj-tsk)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
   (cl-call-next-method))
 
-(cl-defmethod occ-set-property ((obj occ-obj-ctx-tsk)
-                                prop
-                                value &key not-recursive)
-  (occ-message "(occ-set-property (obj occ-obj-ctx-tsk)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
-  (occ-set-property (occ-obj-tsk obj) prop
+(cl-defmethod occ-obj-set-property ((obj occ-obj-ctx-tsk)
+                                    prop
+                                    value &key not-recursive)
+  (occ-message "(occ-obj-set-property (obj occ-obj-ctx-tsk)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
+  (occ-obj-set-property (occ-obj-tsk obj) prop
                     value :not-recursive not-recursive))
 
-(cl-defmethod occ-set-property ((obj occ-obj-ctx)
-                                prop
-                                value &key not-recursive)
-  (occ-message "(occ-set-property (obj occ-obj-ctx)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
-  (occ-set-property (occ-obj-ctx obj) prop
+(cl-defmethod occ-obj-set-property ((obj occ-obj-ctx)
+                                    prop
+                                    value &key not-recursive)
+  (occ-message "(occ-obj-set-property (obj occ-obj-ctx)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
+  (occ-obj-set-property (occ-obj-ctx obj) prop
                     value :not-recursive not-recursive))
 
 
-(cl-defmethod occ-class-slots ((obj occ-obj))
-  (let* ((plist      (cl-obj-plist-value obj))
+(cl-defmethod occ-obj-class-slots ((obj occ-obj))
+  (let* ((plist      (occ-cl-obj-plist-value obj))
          (plist-keys (occ-plist-get-keys plist))
-         (slots      (cl-class-slots (cl-inst-classname obj))))
+         (slots      (occ-cl-class-slots (occ-cl-inst-classname obj))))
     (append slots
             (mapcar #'key2sym plist-keys))))
 (cl-defmethod occ-obj-defined-slots ((obj occ-obj))
-  (let* ((plist      (cl-obj-plist-value obj))
+  (let* ((plist      (occ-cl-obj-plist-value obj))
          (plist-keys (occ-plist-get-keys plist))
-         (slots      (append (cl-class-slots (cl-inst-classname obj))
+         (slots      (append (occ-cl-class-slots (occ-cl-inst-classname obj))
                              (mapcar #'key2sym
                                      plist-keys))))
     slots))
@@ -216,39 +216,39 @@
     (remove-if-not #'(lambda (slot)
                        (occ-obj-get-property obj slot))
                    slots)))
-(cl-defmethod cl-method-matched-arg ((method symbol)
-                                     (ctx symbol))
-  (cl-method-first-arg method))
-(cl-defmethod cl-method-matched-arg ((method symbol)
-                                     (ctx occ-ctx))
+(cl-defmethod occ-obj-cl-method-matched-arg ((method symbol)
+                                             (ctx symbol))
+  (occ-cl-method-first-arg method))
+(cl-defmethod occ-obj-cl-method-matched-arg ((method symbol)
+                                             (ctx occ-ctx))
   (let ((slots (occ-obj-defined-slots-with-value ctx)))
     (remove-if-not #'(lambda (arg) (memq arg slots))
-                   (cl-method-first-arg method))))
-(cl-defmethod cl-method-matched-arg ((method1 symbol)
-                                     (method2 symbol)
-                                     (ctx occ-ctx))
-  (let ((slots (cl-method-first-arg-with-value method2
+                   (occ-cl-method-first-arg method))))
+(cl-defmethod occ-obj-cl-method-matched-arg ((method1 symbol)
+                                             (method2 symbol)
+                                             (ctx occ-ctx))
+  (let ((slots (occ-cl-method-first-arg-with-value method2
                                                ctx)))
     (remove-if-not #'(lambda (arg) (memq arg slots))
-                   (cl-method-first-arg method1))))
+                   (occ-cl-method-first-arg method1))))
 
 
-(cl-defgeneric cl-method-sig-matched-arg (method-sig
-                                          ctx)
+(cl-defgeneric occ-obj-cl-method-sig-matched-arg (method-sig
+                                                  ctx)
   "test")
-(cl-defmethod cl-method-sig-matched-arg ((method-sig cons)
-                                         (ctx symbol))
-  (cl-method-param-case method-sig))
-(cl-defmethod cl-method-sig-matched-arg ((method-sig cons)
-                                         (ctx occ-ctx))
+(cl-defmethod occ-obj-cl-method-sig-matched-arg ((method-sig cons)
+                                                 (ctx symbol))
+  (occ-cl-method-param-case method-sig))
+(cl-defmethod occ-obj-cl-method-sig-matched-arg ((method-sig cons)
+                                                 (ctx occ-ctx))
   (let ((slots (occ-obj-defined-slots-with-value-new ctx)))
     (remove-if-not #'(lambda (arg) (memq arg slots))
-                   (cl-method-param-case method-sig))))
-(cl-defmethod cl-method-sigs-matched-arg ((method-sig1 cons)
-                                          (method-sig2 cons)
-                                          (ctx occ-ctx))
-  (let ((slots (cl-method-param-case-with-value-new method-sig2 ctx)))
+                   (occ-cl-method-param-case method-sig))))
+(cl-defmethod occ-obj-cl-method-sigs-matched-arg ((method-sig1 cons)
+                                                  (method-sig2 cons)
+                                                  (ctx occ-ctx))
+  (let ((slots (occ-cl-method-param-case-with-value-new method-sig2 ctx)))
     (remove-if-not #'(lambda (arg) (memq arg slots))
-                   (cl-method-param-case method-sig1))))
+                   (occ-cl-method-param-case method-sig1))))
 
 ;;; occ-obj-common.el ends here

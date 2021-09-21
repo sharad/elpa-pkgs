@@ -110,10 +110,10 @@
   (occ-error "Implement it."))
 
 ;; action
-(cl-defmethod occ-log-not ()
+(cl-defmethod occ-do-log-not ()
   (occ-error "Implement it."))
 
-(cl-defmethod occ-curr-tsk-log-not ()
+(cl-defmethod occ-do-curr-tsk-log-not ()
   (occ-error "Implement it."))
 
 
@@ -216,7 +216,7 @@
 ;;;###autoload
 (defun occ-add-org-file (buffer)
   (interactive (list (current-buffer)))
-  (occ-add-org-buffer buffer))
+  (occ-do-add-org-buffer buffer))
 
 ;;;###autoload
 (defun occ-obj-build-spec ()
@@ -235,7 +235,7 @@
   (let ((files (remove-if #'(lambda (f)
                               (with-current-buffer (find-file-noselect f)
                                 org-complex-heading-regexp))
-                          (occ-files))))
+                          (occ-obj-files))))
     (occ-message "files with null regex %s" files)))
 
 ;; testing verification
@@ -244,7 +244,7 @@
   (let ((files (remove-if #'(lambda (f)
                               (with-current-buffer (find-file-noselect f)
                                 (eq major-mode 'org-mode)))
-                          (occ-files))))
+                          (occ-obj-files))))
     (occ-message "files not in org-mode %s" files)))
 
 

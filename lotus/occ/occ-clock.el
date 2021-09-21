@@ -221,9 +221,9 @@
                              :timeout             timeout)))
         (occ-debug "occ-do-clock-in((obj occ-ctx)): selected  returned-ctxual-tsk=%s ret-label=%s value=%s"
                           returned-ctxual-tsk
-                          (occ-return-in-labels-p returned-ctxual-tsk occ-return-select-label)
+                          (occ-obj-return-in-labels-p returned-ctxual-tsk occ-return-select-label)
                           (occ-obj-format (occ-obj-obj returned-ctxual-tsk)))
-        (if (occ-return-in-labels-p returned-ctxual-tsk ;TODO: should return t if action were done than select[=identity] ;; occ-return-label
+        (if (occ-obj-return-in-labels-p returned-ctxual-tsk ;TODO: should return t if action were done than select[=identity] ;; occ-return-label
                                     occ-return-select-label)
             (let ((ctxual-tsk (occ-obj-obj returned-ctxual-tsk)))
               (prog1
@@ -244,9 +244,9 @@
                        obj)
             (occ-debug "occ-do-clock-in(ctx):  with this-command=%s" this-command)
             ;; (occ-delayed-select-obj-prop-edit-when-idle obj obj occ-idle-timeout)
-            (occ-debug "occ-do-clock-in((obj occ-ctx)): calling occ-safe-ignore-quit-properties-window-editor")
+            (occ-debug "occ-do-clock-in((obj occ-ctx)): calling occ-obj-safe-ignore-quit-properties-window-editor")
             (occ-message "occ-do-clock-in: Edit properties of a tsk to make associable to current context.")
-            (occ-safe-ignore-quit-properties-window-editor obj
+            (occ-obj-safe-ignore-quit-properties-window-editor obj
                                                            :filters          (occ-list-filters)
                                                            :builder          #'occ-obj-build-ctsk-with
                                                            :return-transform return-transform ;Here caller know if return value is going to be used.

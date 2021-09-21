@@ -133,8 +133,8 @@ for testing given ap-normal on selected tsk."
                           retval-ctx-tsk
                           (occ-obj-format (occ-obj-obj retval-ctx-tsk)
                                       'capitalize)
-                          (occ-return-get-label retval-ctx-tsk))
-        (if (and (occ-return-in-labels-p retval-ctx-tsk
+                          (occ-obj-return-get-label retval-ctx-tsk))
+        (if (and (occ-obj-return-in-labels-p retval-ctx-tsk
                                          occ-return-select-label)
                  (occ-obj-obj retval-ctx-tsk))
             (let* ((ctsk         (occ-obj-obj retval-ctx-tsk))
@@ -181,21 +181,21 @@ must be NIL, using (occ-list-filters) for FILTERS"
        (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                          retval-ctx-tsk
                          (occ-obj-format (occ-obj-obj retval-ctx-tsk)
-                                     'capitalize)
-                         (occ-return-get-label retval-ctx-tsk))
-       (if (and (occ-return-in-labels-p retval-ctx-tsk
-                                        occ-return-select-label)
+                                         'capitalize)
+                         (occ-obj-return-get-label retval-ctx-tsk))
+       (if (and (occ-obj-return-in-labels-p retval-ctx-tsk
+                                            occ-return-select-label)
                 (occ-obj-obj retval-ctx-tsk))
-           (let* ((ctx-tsk      (occ-obj-obj retval-ctx-tsk))
-                  ;; (helm-actions (occ-obj-ap-helm-actions ap-normal obj)) -- TODO: VERIFY: here in place of OBJ CTX-TSK should be present
-                  (helm-actions (occ-obj-ap-helm-actions ap-normal ctx-tsk))
-                  (launcher     (rest (assoc (completing-read "Action: " helm-actions)
-                                             helm-actions))))
-             (funcall launcher ctx-tsk))
-         (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection")))))
+           (let* ((ctx-tsk      (occ-obj-obj retval-ctx-tsk
+                                  ;; (helm-actions (occ-obj-ap-helm-actions ap-normal obj)) -- TODO: VERIFY: here in place of OBJ CTX-TSK should be present
+                                  (helm-actions (occ-obj-ap-helm-actions ap-normal ctx-tsk))
+                                  (launcher     (rest (assoc (completing-read "Action: " helm-actions)
+                                                             helm-actions))))
+                             (funcall launcher ctx-tsk)
+                         (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection"))))))))
 
 
-(cl-defmethod occ-list-select-interactive ())
-(cl-defmethod occ-list-select-get-obj ())
+(cl-defmethod occ-obj-list-select-interactive ())
+(cl-defmethod occ-obj-list-select-get-obj ())
 
 ;;; occ-util-method.el ends here

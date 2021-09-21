@@ -37,7 +37,7 @@
 
 
 (cl-defmethod occ-do-checkout ((obj occ-obj-tsk))
-  (occ-op-props-checkout obj))
+  (occ-do-op-props-checkout obj))
 
 
 (defun occ-util-read-sexp-from-minibuffer (prompt)

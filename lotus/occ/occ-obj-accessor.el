@@ -57,10 +57,10 @@
 
 
 (cl-defmethod occ-obj-obj ((obj occ-obj))
-  (occ-return-get-value obj))
+  (occ-obj-return-get-value obj))
 
 (cl-defmethod occ-obj-obj ((obj occ-return))
-  (occ-return-get-value obj))
+  (occ-obj-return-get-value obj))
 
 
 (cl-defmethod occ-obj-obj ((obj null))
@@ -536,7 +536,7 @@ pointing to it."
 ;; find place to put these all function
 
 (cl-defmethod occ-do-checkout ((obj occ-obj-tsk))
-  (occ-op-props-checkout obj))
+  (occ-do-op-props-checkout obj))
 
 ;; BUG  in Menu
 ;;           "Set debug obj"
@@ -640,12 +640,12 @@ pointing to it."
                    (occ-obj-make-tsk clock)))))))))
 
 
-(defun occ-collection-object ()
+(defun occ-obj-collection-object ()
   (unless occ-global-tsk-collection
     (if occ-global-tsk-collection-spec
         (progn
           (occ-obj-make-tsk-collection occ-global-tsk-collection-spec)
-          (occ-collect-tsks occ-global-tsk-collection t))
+          (occ-obj-collect-tsks occ-global-tsk-collection t))
       (progn
         (occ-uninsinuate)
         (occ-message "occ-global-tsk-collection-spec is nil, set it using M-x occ-obj-build-spec or set occ-global-tsk-collection-spec, disabled occ")
@@ -654,23 +654,23 @@ pointing to it."
 
 
 ;; global-object - accessors
-(cl-defmethod occ-collect-tsks (collection
-                                &optional
-                                force)
+(cl-defmethod occ-obj-collect-tsks (collection
+                                    &optional
+                                    force)
   (occ-error "first argument should be of type (or occ-tree-collection occ-list-collection)"))
 
 ;; FIND: what it mean by tsks collection-tree are same ?
-(cl-defmethod occ-collect-tsks ((collection occ-tree-collection)
-                                &optional
-                                force)
+(cl-defmethod occ-obj-collect-tsks ((collection occ-tree-collection)
+                                    &optional
+                                    force)
   (unless (occ-tree-collection-tree collection)
     (setf (occ-tree-collection-tree collection)
           (remove nil (mapcar #'occ-tree-tsk-build
                               (occ-tree-collection-roots collection)))))
   (occ-tree-collection-tree collection))
 
-(cl-defmethod occ-collect-tsks ((collection occ-list-collection)
-                                force)
+(cl-defmethod occ-obj-collect-tsks ((collection occ-list-collection)
+                                    force)
   (unless (occ-list-collection-list collection)
     (setf (occ-list-collection-list collection)
           (append (remove nil (mapcar #'occ-list-tsk-build
@@ -678,12 +678,12 @@ pointing to it."
   (occ-list-collection-list collection))
 
 
-(cl-defmethod occ-collect-files ((collection occ-tree-collection)
-                                 &optional
-                                 force)
+(cl-defmethod occ-obj-collect-files ((collection occ-tree-collection)
+                                     &optional
+                                     force)
   (unless (occ-tree-collection-files collection)
-    (occ-collect-tsks collection nil)
-    (let ((occ-files (let ((tsks  (occ-collection collection))
+    (occ-obj-collect-tsks collection nil)
+    (let ((occ-files (let ((tsks  (occ-obj-collection collection))
                            (files '()))
                        (mapc #'(lambda (tsk)
                                  (occ-mapc-tree-tsks #'(lambda (tsk args)
@@ -695,9 +695,9 @@ pointing to it."
        (setf (occ-tree-collection-files collection) (remove nil (delete-dups occ-files)))))
   (occ-tree-collection-files collection))
 
-(cl-defmethod occ-collect-files ((collection occ-list-collection)
-                                 &optional
-                                 force)
+(cl-defmethod occ-obj-collect-files ((collection occ-list-collection)
+                                     &optional
+                                     force)
   (unless (occ-list-collection-files collection)
     (setf
      (occ-list-collection-files collection)
@@ -705,14 +705,13 @@ pointing to it."
   (occ-list-collection-files collection))
 
 
-(cl-defmethod occ-files ()
-  (occ-collect-files
-   (occ-collection-object)))
+(cl-defmethod occ-obj-files ()
+  (occ-obj-collect-files (occ-obj-collection-object)))
 
 
-(cl-defmethod occ-collect-list ((collection occ-tree-collection))
+(cl-defmethod occ-obj-collect-list ((collection occ-tree-collection))
   (unless (occ-tree-collection-list collection)
-    (let ((tsks (occ-collection collection))
+    (let ((tsks (occ-obj-collection collection))
           (tsk-list '()))
       (mapc #'(lambda (tsk)
                 (occ-mapc-tree-tsks
@@ -725,34 +724,34 @@ pointing to it."
             tsk-list)))
   (occ-tree-collection-list collection))
 
-(cl-defmethod occ-collect-list ((collection occ-list-collection))
-  (let ((tsks (occ-collection collection)))
+(cl-defmethod occ-obj-collect-list ((collection occ-list-collection))
+  (let ((tsks (occ-obj-collection collection)))
     tsks))
 
 
-(cl-defmethod occ-collection ((collection occ-tree-collection))
+(cl-defmethod occ-obj-collection ((collection occ-tree-collection))
   (unless (occ-tree-collection-tree occ-global-tsk-collection)
-    (occ-collect-tsks occ-global-tsk-collection nil)
+    (occ-obj-collect-tsks occ-global-tsk-collection nil)
     (run-hooks 'occ-global-tsk-collection-change-hook))
   (occ-tree-collection-tree occ-global-tsk-collection))
 
 
-(cl-defmethod occ-collection ((collection occ-list-collection))
+(cl-defmethod occ-obj-collection ((collection occ-list-collection))
   (unless (occ-list-collection-list occ-global-tsk-collection)
-    (occ-collect-tsks occ-global-tsk-collection nil)
+    (occ-obj-collect-tsks occ-global-tsk-collection nil)
     (run-hooks 'occ-global-tsk-collection-change-hook))
   (occ-list-collection-list occ-global-tsk-collection))
 
 
-(cl-defmethod occ-collection-obj-list ((collection occ-collection)
-                                       (obj occ-ctx)
-                                       &key
-                                       builder
-                                       obtrusive)
+(cl-defmethod occ-obj-collection-obj-list ((collection occ-collection)
+                                           (obj occ-ctx)
+                                           &key
+                                           builder
+                                           obtrusive)
   "return CTSKs list"
   (let ((builder (or builder #'occ-obj-build-ctsk-with)))
     (let ((ctsks (occ-run-unobtrusively obtrusive
-                                        (let ((tsks (occ-collect-list collection))) ;;????TODO
+                                        (let ((tsks (occ-obj-collect-list collection))) ;;????TODO
                                           (when tsks
                                             (mapcar #'(lambda (tsk) (funcall builder tsk obj))
                                                     tsks))))))
@@ -765,14 +764,14 @@ pointing to it."
         ctsks))))
 
 ;; FOr now.
-(cl-defmethod occ-collection-obj-list ((collection occ-collection)
-                                       (obj occ-ctx)
-                                       &key
-                                       builder
-                                       obtrusive)
+(cl-defmethod occ-obj-collection-obj-list ((collection occ-collection)
+                                           (obj occ-ctx)
+                                           &key
+                                           builder
+                                           obtrusive)
   "return CTSKs list"
   (let ((builder (or builder #'occ-obj-build-ctsk-with)))
-    (let ((ctsks (let ((tsks (occ-collect-list collection))) ;;????TODO
+    (let ((ctsks (let ((tsks (occ-obj-collect-list collection))) ;;????TODO
                    (when tsks
                      (mapcar #'(lambda (tsk) (funcall builder tsk obj))
                              tsks)))))
@@ -784,11 +783,11 @@ pointing to it."
                        last-input-event))
         ctsks))))
 
-(cl-defmethod occ-collection-obj-list ((collection occ-collection)
-                                       (obj null)
-                                       &key
-                                       builder
-                                       obtrusive)
+(cl-defmethod occ-obj-collection-obj-list ((collection occ-collection)
+                                           (obj null)
+                                           &key
+                                           builder
+                                           obtrusive)
   "return CTSKs list"
   (occ-collection-obj-list collection
                            (occ-obj-make-ctx-at-point)
@@ -809,7 +808,7 @@ pointing to it."
                             builder
                             obtrusive)
   "return CTXUAL-TSKs container"
-  (occ-collection-obj-list (occ-collection-object)
+  (occ-collection-obj-list (occ-obj-collection-object)
                            obj
                            :builder builder
                            :obtrusive obtrusive))
@@ -823,7 +822,7 @@ pointing to it."
                 :builder   builder
                 :obtrusive obtrusive))
 
-(cl-defmethod occ-length ()
-  (length (occ-collect-list (occ-collection-object))))
+(cl-defmethod occ-obj-length ()
+  (length (occ-obj-collect-list (occ-obj-collection-object))))
 
 ;;; occ-obj-accessor.el ends here

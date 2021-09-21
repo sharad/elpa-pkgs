@@ -114,7 +114,7 @@
   (occ-obj-unnamed-p (occ-obj-marker obj)))
 
 
-(cl-defmethod occ-current-associable-p ((ctx occ-ctx))
+(cl-defmethod occ-obj-current-associable-p ((ctx occ-ctx))
   (occ-obj-associable-p (occ-obj-ctxual-current-tsk ctx)))
 
 ;;; occ-predicate.el ends here

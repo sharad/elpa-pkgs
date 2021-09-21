@@ -98,7 +98,7 @@
         (occ-message "Test1")
         (prog1
             (format "Select matching %s(%d/%d)%s"
-                    (symbol-name (cl-inst-classname (first candidates)))
+                    (symbol-name (occ-cl-inst-classname (first candidates)))
                     unfiltered-count
                     filtered-count
                     (format " %s" prompt))
@@ -193,9 +193,9 @@
                                           :ap-normal        ap-normal
                                           :ap-transf        ap-transf
                                           :prompt           prompt)
-        (occ-helm-dummy-source "Create (fast as child)"             #'occ-fast-procreate-child)
-        (occ-helm-dummy-source "Create Anonymous (fast as unnamed)" #'occ-fast-procreate-anonymous-child)
-        (occ-helm-dummy-source "Create by Template (use template)"  #'occ-fast-procreate-child)))
+        (occ-helm-dummy-source "Create (fast as child)"             #'occ-do-fast-procreate-child)
+        (occ-helm-dummy-source "Create Anonymous (fast as unnamed)" #'occ-do-fast-procreate-anonymous-child)
+        (occ-helm-dummy-source "Create by Template (use template)"  #'occ-do-fast-procreate-child)))
 
 
 
@@ -296,8 +296,8 @@
                                            (occ-obj-ap-base ap-normal))))
       (occ-debug "occ-obj-helm-act2: ap-normal: %s" ap-normal)
       (occ-debug "occ-obj-helm-act2: ap-transf: %s" ap-transf)
-      (let* ((ap-normal (if return-transform (occ-return-tranform ap-normal obj) ap-normal)) ;as return value is going to be used.
-             (ap-transf (if return-transform (occ-return-tranform ap-transf obj) ap-transf)))
+      (let* ((ap-normal (if return-transform (occ-obj-return-tranform ap-normal obj) ap-normal)) ;as return value is going to be used.
+             (ap-transf (if return-transform (occ-obj-return-tranform ap-transf obj) ap-transf)))
         (let ((fun (if (and auto-select-if-only
                             (= 1 (length candidates-filtered)))
                        #'occ-obj-helm-act-on-single
@@ -334,10 +334,10 @@
     (funcall action (helm helm-sources))))
 
 
-;; (cl-defgeneric occ-sacha-helm-action (ctxask clockin-fn)
-;;   "occ-sacha-helm-action")
+;; (cl-defgeneric occ-obj-sacha-helm-action (ctxask clockin-fn)
+;;   "occ-obj-sacha-helm-action")
 
-;; (cl-defmethod occ-sacha-helm-action ((ctxask occ-ctxual-tsk) clockin-fn)
+;; (cl-defmethod occ-obj-sacha-helm-action ((ctxask occ-ctxual-tsk) clockin-fn)
 ;;   ;; (occ-debug "sacha marker %s" (first dyntskpls))
 ;;   ;; (setq sacha/helm-org-refile-locations tbl)
 ;;   (progn

@@ -74,7 +74,7 @@
                                   (mapcar #'(lambda (sym) ;https://www.gnu.org/software/emacs/manual/html_node/elisp/Formatting-Strings.html
                                               (length (symbol-name sym)))
                                           (append keys fixed-keys))))
-                (key-vals  (occ-get-properties tsk keys)))
+                (key-vals  (occ-obj-get-properties tsk keys)))
             (occ-debug "occ-do-select-propetry: for %s with keys =%s got key-vals = %s"
                               (occ-obj-Format tsk)
                               keys
@@ -372,9 +372,9 @@
             (occ-debug "occ-do-properties-window-editor((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                        retval-ctx-tsk
                        (occ-obj-format (occ-obj-obj retval-ctx-tsk) 'capitalize)
-                       (occ-return-get-label retval-ctx-tsk))
+                       (occ-obj-return-get-label retval-ctx-tsk))
             ;; BUG: will do run recursively as another method with (obj null) is define below.
-            (when (and (occ-return-in-labels-p retval-ctx-tsk
+            (when (and (occ-obj-return-in-labels-p retval-ctx-tsk
                                                occ-return-select-label)
                        (occ-obj-obj retval-ctx-tsk))
               (occ-do-properties-window-editor (occ-obj-obj retval-ctx-tsk)
@@ -384,9 +384,9 @@
             (occ-debug "occ-do-properties-window-editor((obj occ-ctx)): returning original: %s, retval: %s with label %s operate: %s"
                               retval-ctx-tsk
                               (occ-obj-Format (occ-obj-obj retval-ctx-tsk))
-                              (occ-return-get-label retval-ctx-tsk)
-                              (occ-return-in-labels-p retval-ctx-tsk
-                                                      occ-return-select-label))
+                              (occ-obj-return-get-label retval-ctx-tsk)
+                              (occ-obj-return-in-labels-p retval-ctx-tsk
+                                                          occ-return-select-label))
             retval-ctx-tsk)
         (occ-debug "occ-do-properties-window-editor((obj occ-ctx)): not running  as context buff is deleted or not live 1 %s, 2 %s"
                    (buffer-live-p buff)
@@ -482,14 +482,14 @@
     (occ-debug "occ-do-safe-properties-window-editor((obj marker)): returning %s" selected)
     selected))
 
-(cl-defmethod occ-safe-ignore-quit-properties-window-editor ((obj occ-ctx)
-                                                             &key
-                                                             filters
-                                                             builder
-                                                             return-transform
-                                                             ap-normal
-                                                             ap-transf
-                                                             timeout)
+(cl-defmethod occ-obj-safe-ignore-quit-properties-window-editor ((obj occ-ctx)
+                                                                 &key
+                                                                 filters
+                                                                 builder
+                                                                 return-transform
+                                                                 ap-normal
+                                                                 ap-transf
+                                                                 timeout)
 
   ;; either this should also be in occ-obj-method
   ;; or (cl-defmethod occ-do-clock-in ((ctx occ-ctx))
@@ -499,7 +499,7 @@
   ;; NOTE: presently it is not running on idle time, it simply runs immediately
 
   "Return value is important to decide next action to (create unnamed tsk.)"
-  (occ-debug "occ-safe-ignore-quit-properties-window-editor((obj occ-ctx)): begin")
+  (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor((obj occ-ctx)): begin")
   (let ((filters   (or filters nil))
         (builder   (or builder #'occ-obj-build-ctsk-with))
         (ap-normal '(t actions general))

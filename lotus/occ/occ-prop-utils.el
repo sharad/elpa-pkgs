@@ -32,9 +32,9 @@
 
 (defvar occ-property-rank-hierarchy '(t))
 
-(cl-defmethod occ-set-rank-hierarchy ((property symbol)
-                                      &key
-                                      pos)
+(cl-defmethod occ-obj-set-rank-hierarchy ((property symbol)
+                                          &key
+                                          pos)
 
   (cond))
 

@@ -149,14 +149,14 @@ only argument required for some other further processing"
   (list (occ-obj-make-callable-normal :checkout
                                   (format "Checkout %s" (occ-obj-Format obj))
                                   #'(lambda (obj)
-                                      (occ-op-props-checkout obj)))))
+                                      (occ-do-op-props-checkout obj)))))
 
 ;; (cl-defmethod occ-obj-gen-simple-checkouts ((obj occ-obj-ctx-tsk)
 ;;                                         &key param-only)
 ;;   (list (occ-obj-make-callable-normal :checkout
 ;;                                   (format "Checkout %s" (occ-obj-Format obj))
 ;;                                   #'(lambda (obj)
-;;                                       (occ-op-props-checkout obj)))))
+;;                                       (occ-do-op-props-checkout obj)))))
 
 (cl-defmethod occ-obj-gen-simple-checkouts ((obj occ-obj-ctx)
                                             &key param-only)

@@ -91,16 +91,14 @@
   "Test"
   :expected-result :passed
   :tags '(occ)
-  (should (equal (cl-method-sigs-matched-arg
-                  '(occ-obj-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
-                  '(occ-obj-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
-                  (occ-obj-make-ctx-at-point))
+  (should (equal (occ-obj-cl-method-sigs-matched-arg '(occ-obj-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
+                                                     '(occ-obj-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
+                                                     (occ-obj-make-ctx-at-point))
                  '(timebeing)))
   ;; do this test in buffer of a temporary file.
-  (should (equal (cl-method-sigs-matched-arg
-                  '(occ-obj-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
-                  '(occ-obj-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
-                  (occ-obj-make-ctx-at-point))
+  (should (equal (occ-obj-cl-method-sigs-matched-arg '(occ-obj-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
+                                                     '(occ-obj-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
+                                                     (occ-obj-make-ctx-at-point))
                  '(timebeing root currfile))))
 
 
@@ -116,32 +114,32 @@
 
 (cl-defmethod occ-obj-properties-to-edit ((class symbol))
   "return PROPERTIES list that can be edited."
-  (cl-method-param-values 'occ-obj-readprop-from-user
-                          (list '\` `(,class (eql ,'(\, val))))
-                          'val))
+  (occ-cl-method-param-values 'occ-obj-readprop-from-user
+                              (list '\` `(,class (eql ,'(\, val))))
+                              'val))
 
 (cl-defmethod occ-obj-properties-to-edit ((obj occ-tsk))
   "return PROPERTIES list that can be edited."
-  (cl-collect-on-classes #'occ-obj-properties-to-edit
-                         obj))
+  (occ-cl-collect-on-classes #'occ-obj-properties-to-edit
+                             obj))
 
 ;; TODO: improve
 (cl-defmethod occ-obj-properties-to-edit ((obj occ-obj-ctx-tsk))
   "return PROPERTIES list that can be edited."
-  (cl-method-sigs-matched-arg '(occ-obj-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
-                              '(occ-obj-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
-                              (occ-obj-ctx obj)))
+  (occ-obj-cl-method-sigs-matched-arg '(occ-obj-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
+                                      '(occ-obj-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
+                                      (occ-obj-ctx obj)))
 
 
 (cl-defmethod occ-obj-properties-to-inherit ((class symbol))
   "return PROPERTIES list that can be inherited."
-  (cl-method-param-values 'occ-obj-readprop-from-user
-                          (list '\` `(,class (eql ,'(\, val))))
-                          'val))
+  (occ-cl-method-param-values 'occ-obj-readprop-from-user
+                              (list '\` `(,class (eql ,'(\, val))))
+                              'val))
 
 (cl-defmethod occ-obj-properties-to-inherit ((obj occ-obj-tsk))
   "return PROPERTIES list that can be inherited."
-  (cl-collect-on-classes #'occ-obj-properties-to-inherit
+  (occ-cl-collect-on-classes #'occ-obj-properties-to-inherit
                          obj))
 
 
@@ -152,25 +150,25 @@
 
 (cl-defmethod occ-obj-properties-to-calculate-rank ((class symbol))
   "return PROPERTIES list that can be used in calculating rank."
-  (cl-method-param-values 'occ-obj-rankprop
-                          (list '\` `(,class (eql ,'(\, val))))
-                          'val))
+  (occ-cl-method-param-values 'occ-obj-rankprop
+                              (list '\` `(,class (eql ,'(\, val))))
+                              'val))
 
 (cl-defmethod occ-obj-properties-to-calculate-rank ((obj occ-obj-tsk))
   "return PROPERTIES list that can be used in calculating rank."
-  (cl-collect-on-classes #'occ-obj-properties-to-calculate-rank ;; occ-properties-to-calcuate-rank
+  (occ-cl-collect-on-classes #'occ-obj-properties-to-calculate-rank ;; occ-properties-to-calcuate-rank
                          obj))
 
 
 (cl-defmethod occ-obj-properties-to-checkout ((class symbol))
   "return PROPERTIES list that can be checked-out."
-  (cl-method-param-values 'occ-do-checkout-prop ;NOTE: user have to define them for each properties.
-                          (list '\` `(,class (eql ,'(\, val))))
-                          'val))
+  (occ-cl-method-param-values 'occ-do-checkout-prop ;NOTE: user have to define them for each properties.
+                              (list '\` `(,class (eql ,'(\, val))))
+                              'val))
 
 (cl-defmethod occ-obj-properties-to-checkout ((obj occ-obj-tsk))
   "return PROPERTIES list that can be checked-out."
-  (cl-collect-on-classes #'occ-obj-properties-to-checkout
+  (occ-cl-collect-on-classes #'occ-obj-properties-to-checkout
                          obj))
 
 
@@ -255,26 +253,24 @@ method provided."
       (let* ((values (and value (split-string value))))
         (mapcar #'(lambda (v)
                     ;; from Org world to Occ world
-                    (occ-prop-from-org prop
-                                       v))
+                    (occ-obj-prop-from-org prop
+                                           v))
                 (mapcar #'org-entry-restore-space
                         values)))
-    (occ-prop-from-org prop
-                       value)))
+    (occ-obj-prop-from-org prop
+                           value)))
 
 (cl-defmethod occ-obj-reread-props ((obj occ-tsk))
   "Read all org string properties for task TSK to occ representation."
-  (let ((props-by-is-list (cl-method-param-case
-                           '(occ-obj-list-p (`((eql ,val)) val))))
-        (props-by-converter (cl-method-param-case
-                             '(occ-prop-from-org (`((eql ,val) t) val)))))
+  (let ((props-by-is-list   (occ-cl-method-param-case   '(occ-obj-list-p (`((eql ,val)) val))))
+        (props-by-converter (occ-cl-method-param-case '(occ-obj-prop-from-org (`((eql ,val) t) val)))))
     (let ((props (-union props-by-is-list
                          props-by-converter))) ;dash
       (dolist (p props)
-        (occ-set-property obj p
-                          (occ-obj-rereadprop-value p
-                                                (occ-obj-get-property obj
-                                                                  p)))))))
+        (occ-obj-set-property obj p
+                              (occ-obj-rereadprop-value p
+                                                        (occ-obj-get-property obj
+                                                                              p)))))))
 
 (cl-defmethod occ-obj-reread-props :around (obj)
   "return PROPERTIES list that can be checked-out."
@@ -325,8 +321,8 @@ method provided.")))
   nil)
 
 
-(cl-defmethod occ-valid-p ((prop symbol)
-                           operation)
+(cl-defmethod occ-obj-valid-p ((prop symbol)
+                               operation)
   (memq operation
         '(add remove get put member)))
 
@@ -334,20 +330,20 @@ method provided.")))
 (cl-defmethod occ-obj-operations-for-prop ((class symbol)
                                            (prop  symbol))
   ;; check about (occ-obj-list-p prop) also
-  (let ((ops (append (cl-method-param-values 'occ-obj-operation
-                                             (list '\` `(,class (eql ,'(\, val)) symbol t))
-                                             'val)
-                     (cl-method-param-values 'occ-obj-operation
-                                             (list '\` `(,class (eql ,'(\, val)) (eql ,prop) t))
-                                             'val))))
+  (let ((ops (append (occ-cl-method-param-values 'occ-obj-operation
+                                                 (list '\` `(,class (eql ,'(\, val)) symbol t))
+                                                 'val)
+                     (occ-cl-method-param-values 'occ-obj-operation
+                                                 (list '\` `(,class (eql ,'(\, val)) (eql ,prop) t))
+                                                 'val))))
     (delete-dups ops)))
 
 (cl-defmethod occ-obj-operations-for-prop ((obj  occ-obj-tsk)
                                            (prop symbol))
   ;; check about (occ-obj-list-p prop) also
-  (let ((ops (cl-collect-on-classes #'(lambda (class)
-                                        (occ-obj-operations-for-prop class
-                                                                 prop))
+  (let ((ops (occ-cl-collect-on-classes #'(lambda (class)
+                                            (occ-obj-operations-for-prop class
+                                                                     prop))
                                     obj)))
     (delete-dups ops)))
 

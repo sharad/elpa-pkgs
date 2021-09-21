@@ -140,7 +140,7 @@
                                                sequence
                                                &key rank) ;TODO: make it after method
   "Return matched Sequence for context CTX"
-  (if (occ-collection-object)
+  (if (occ-obj-collection-object)
       (let* ((rankslist  (mapcar #'occ-obj-rank sequence))
              (avgrank    (apply #'occ-stats-average rankslist))
              (varirank   (apply #'occ-stats-variance rankslist)))
@@ -152,7 +152,7 @@
          #'(lambda (obj)
              (>= (funcall rank obj) avgrank))
          sequence))
-    (occ-error "(occ-collection-object) returned nil")))
+    (occ-error "(occ-obj-collection-object) returned nil")))
 
 (occ-obj-filter-add :mutual-deviation "Mutual Deviation" #'occ-filter-mutual-deviation)
 

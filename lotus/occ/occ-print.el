@@ -33,10 +33,10 @@
   (require 'org-macs))
 
 
-(cl-defmethod occ-uniquify-file ((tsk occ-tsk))
+(cl-defmethod occ-obj-uniquify-file ((tsk occ-tsk))
   (let* ((filename (occ-obj-get-property tsk 'file))
          (basename (file-name-nondirectory filename))
-         (files (occ-files)))))
+         (files (occ-obj-files)))))
     ;; (uniquify-buffer-file-name)
 
 ;; (file-name-nondirectory "/aaa/aaa/aaa")
@@ -94,7 +94,7 @@ pointing to it."
 
 (cl-defmethod occ-obj-build-format-file ((obj occ-tsk))
   (let ((filename (occ-obj-get-property obj 'file))
-        (lcp      (apply #'s-lcp (occ-files))))
+        (lcp      (apply #'s-lcp (occ-obj-files))))
     (s-chop-prefix lcp filename)))
 
 
