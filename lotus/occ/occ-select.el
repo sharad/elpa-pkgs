@@ -128,8 +128,8 @@ ACTION "
           (if return-transform
               ;; TODO: add cl-defmethod magic here
               (or selected ;as return value is going to be used.
-                  (occ-obj-make-return occ-return-quit-label selected
-                          selected))))))))
+                  (occ-obj-make-return occ-return-quit-label selected))
+            selected))))))
                   
 
 
