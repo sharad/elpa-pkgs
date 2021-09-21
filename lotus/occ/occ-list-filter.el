@@ -65,6 +65,8 @@
 
 (occ-generate-plist-functions occ filter)
 
+(occ-generate-plist-functions occ-obj filter)
+
 ;; (occ-helm-actions-get )
 
 ;; (defvar occ-filters-plist nil)
