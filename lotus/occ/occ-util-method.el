@@ -186,13 +186,13 @@ must be NIL, using (occ-list-filters) for FILTERS"
        (if (and (occ-obj-return-in-labels-p retval-ctx-tsk
                                             occ-return-select-label)
                 (occ-obj-obj retval-ctx-tsk))
-           (let* ((ctx-tsk      (occ-obj-obj retval-ctx-tsk
+           (let* ((ctx-tsk      (occ-obj-obj retval-ctx-tsk))
                                   ;; (helm-actions (occ-obj-ap-helm-actions ap-normal obj)) -- TODO: VERIFY: here in place of OBJ CTX-TSK should be present
-                                  (helm-actions (occ-obj-ap-helm-actions ap-normal ctx-tsk))
-                                  (launcher     (rest (assoc (completing-read "Action: " helm-actions)
-                                                             helm-actions))))
-                             (funcall launcher ctx-tsk)
-                         (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection"))))))))
+                  (helm-actions (occ-obj-ap-helm-actions ap-normal ctx-tsk))
+                  (launcher     (rest (assoc (completing-read "Action: " helm-actions)
+                                             helm-actions))))
+             (funcall launcher ctx-tsk)
+             (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection"))))))
 
 
 (cl-defmethod occ-obj-list-select-interactive ())
