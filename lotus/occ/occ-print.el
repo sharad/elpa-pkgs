@@ -212,14 +212,14 @@ pointing to it."
               (when (occ-obj-current-p obj) "          🕑")))))
 
 
-(defun occ-obj-format (obj &optional
+(defun occ-obj-Format (obj &optional
                            rank
                            no-curr-clock)
   (occ-obj-format obj 'capitalize
               rank
               no-curr-clock))
 
-(defun occ-obj-format (obj &optional
+(defun occ-obj-FORMAT (obj &optional
                            rank
                            no-curr-clock)
   (occ-obj-format obj 'upcase
