@@ -714,13 +714,12 @@ pointing to it."
   (unless (occ-tree-collection-list collection)
     (let ((tsks (occ-collection collection))
           (tsk-list '()))
-      (mapc
-       #'(lambda (tsk)
-           (occ-mapc-tree-tsks
-            #'(lambda (subtsk args) (setf tsk-list (nconc tsk-list (list subtsk))))
-            tsk
-            nil))
-       tsks)
+      (mapc #'(lambda (tsk)
+                (occ-mapc-tree-tsks
+                 #'(lambda (subtsk args) (setf tsk-list (nconc tsk-list (list subtsk))))
+                 tsk
+                 nil))
+            tsks)
 
       (setf (occ-tree-collection-list collection)
             tsk-list)))
