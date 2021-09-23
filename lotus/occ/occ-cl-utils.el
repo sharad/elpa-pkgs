@@ -126,11 +126,10 @@
 
 (defun occ-cl-class-parent-names (class)
   (mapcar #'(lambda (parent)
-              (cons
-               (cl-struct-slot-value 'cl-structure-class
-                                     'name
-                                     parent)
-               (when parent (occ-cl-class-parent-names parent))))
+              (cons (cl-struct-slot-value 'cl-structure-class
+                                          'name
+                                          parent)
+                    (when parent (occ-cl-class-parent-names parent))))
           (occ-cl-class-parents class)))
 
 
@@ -151,18 +150,19 @@
   (setf (cl-struct-slot-value (occ-cl-inst-classname object) field object) value))
 (defun occ-cl-get-fields (object fields)
   (mapcar #'(lambda (field)
-              (cons field (occ-cl-get-field object field)))
+              (cons field
+                    (occ-cl-get-field object field)))
           fileds))
 (defun occ-cl-class-slots (class)
   (mapcar #'(lambda (slot) (aref slot 1))
-          (cl--struct-class-slots
-           (cl--struct-get-class class))))
+          (cl--struct-class-slots (cl--struct-get-class class))))
 ;; (defun cl-class-slot-value (obj slot)
 ;;   (when (member slot (occ-cl-class-slots (occ-cl-inst-classname obj)))
 ;;     (cl-struct-slot-value (occ-cl-inst-classname obj) slot obj)))
 (defun occ-cl-class-obj-slot-value (class slot obj)
   (when (member slot (occ-cl-class-slots class))
-    (cl-struct-slot-value class slot obj)))
+    (cl-struct-slot-value class slot
+                          obj)))
 (defun occ-cl-obj-slot-value (obj slot)
   (occ-cl-class-obj-slot-value (occ-cl-inst-classname obj) slot obj))
 (defun occ-cl-obj-plist-value (obj)

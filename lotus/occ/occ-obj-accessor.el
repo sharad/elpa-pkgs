@@ -409,31 +409,31 @@
 
 ;; occ-ctsk - accessors
 (cl-defmethod occ-obj-rank ((obj occ-ctsk))
-  (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-format (occ-obj-tsk obj) 'capitalize))
+  (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
   (let ((tsk (occ-ctsk-tsk obj)))
     (occ-obj-rank tsk)))
 
 (cl-defmethod (setf occ-obj-rank) (value (obj occ-ctsk))
-  (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-format (occ-obj-tsk obj) 'capitalize))
+  (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
   (let ((tsk (occ-ctsk-tsk obj)))
     (setf (occ-obj-rank tsk) rank)))
 
 
 ;; occ-ctxual-tsk - accessors
 (cl-defmethod occ-obj-rank ((obj occ-ctxual-tsk))
-  (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-format (occ-obj-tsk obj) 'capitalize))
+  (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
   (let ((rank (occ-ctxual-tsk-rank obj)))
     (unless rank
       (setf (occ-ctxual-tsk-rank obj) (occ-obj-calculate-rank obj)))
     (occ-ctxual-tsk-rank obj)))
 
 (cl-defmethod (setf occ-obj-rank) (value (obj occ-ctxual-tsk))
-  (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-format (occ-obj-tsk obj) 'capitalize))
+  (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
   (setf (occ-ctxual-tsk-rank obj) value))
 
 
 (cl-defmethod occ-obj-member-tsk-rank ((obj occ-ctxual-tsk))
-  (occ-debug "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-format (occ-obj-tsk obj) 'capitalize))
+  (occ-debug "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
     (occ-obj-rank tsk)))
 
@@ -482,7 +482,7 @@
   (occ-debug "occ-obj-varirank(occ-ctx=%s)" obj)
   (let ((varirank (occ-ctx-varirank obj)))
     (unless varirank
-      (setf (occ-ctx-varirank obj) (occ-calculate-varirank obj)))
+      (setf (occ-ctx-varirank obj) (occ-obj-calculate-varirank obj)))
     (occ-ctx-varirank obj)))
 
 (cl-defmethod (setf occ-obj-varirank) (value (obj occ-ctx))
@@ -508,7 +508,7 @@
   (occ-debug "occ-obj-varirank(occ-collection=%s)" obj)
   (let ((varirank (occ-collection-varirank obj)))
     (unless varirank
-      (setf (occ-collection-varirank obj) (occ-calculate-varirank obj)))
+      (setf (occ-collection-varirank obj) (occ-obj-calculate-varirank obj)))
     (occ-collection-varirank obj)))
 
 (cl-defmethod (setf occ-obj-varirank) (value (obj occ-collection))

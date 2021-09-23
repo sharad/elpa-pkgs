@@ -113,8 +113,11 @@
                                               (list (occ-tree-tsk-build subtree-file
                                                                         tsk-builder
                                                                         (+ 1
-                                                                           (or (occ-obj-get-property entry 'level) 0)
-                                                                           (or subtree-level 0)))))))))))
+                                                                           (or (occ-obj-get-property entry
+                                                                                                     'level)
+                                                                               0)
+                                                                           (or subtree-level
+                                                                               0)))))))))))
              (when sub-tree      (occ-obj-set-property entry 'subtree sub-tree))
              entry)))))))
 

@@ -81,7 +81,7 @@
       (occ-obj-build-callable-generator :edits-gen          "Simple Edit"     #'occ-obj-gen-simple-edits)
       (occ-obj-build-callable-generator :checkouts-gen      "Simple Checkout" #'occ-obj-gen-simple-checkouts)
       (occ-obj-build-callable-generator :fast-checkouts-gen "Fast Checkouts"  #'occ-obj-gen-each-prop-fast-checkouts)
-      (occ-obj-build-callable-generator :misc-gen           "Misc"       #'occ-obj-gen-misc)))
+      (occ-obj-build-callable-generator :misc-gen           "Misc"            #'occ-obj-gen-misc)))
 
   (progn
     (setq occ-helm-actions-tree '(t))

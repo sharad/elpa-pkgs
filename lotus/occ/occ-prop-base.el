@@ -140,7 +140,7 @@
 (cl-defmethod occ-obj-properties-to-inherit ((obj occ-obj-tsk))
   "return PROPERTIES list that can be inherited."
   (occ-cl-collect-on-classes #'occ-obj-properties-to-inherit
-                         obj))
+                             obj))
 
 
 (defun occ-readprop-props () ;;TODO: check about them
@@ -157,7 +157,7 @@
 (cl-defmethod occ-obj-properties-to-calculate-rank ((obj occ-obj-tsk))
   "return PROPERTIES list that can be used in calculating rank."
   (occ-cl-collect-on-classes #'occ-obj-properties-to-calculate-rank ;; occ-properties-to-calcuate-rank
-                         obj))
+                             obj))
 
 
 (cl-defmethod occ-obj-properties-to-checkout ((class symbol))
@@ -169,7 +169,7 @@
 (cl-defmethod occ-obj-properties-to-checkout ((obj occ-obj-tsk))
   "return PROPERTIES list that can be checked-out."
   (occ-cl-collect-on-classes #'occ-obj-properties-to-checkout
-                         obj))
+                             obj))
 
 
 (defun occ-internal-remove-template-symbol (prop-list)
@@ -296,7 +296,7 @@ method provided.")))
                                  values)
   (occ-message "occ-obj-require-p7 prop %s operation %s values %s is called" prop operation values)
   (not (occ-obj-has-p obj prop
-                  values)))
+                      values)))
 
 (cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
                                  (operation (eql put))
@@ -311,7 +311,7 @@ method provided.")))
                                  values)
   (occ-message "occ-obj-require-p8 prop %s operation %s values %s is called" prop operation values)
   (occ-obj-has-p obj prop
-             values))
+                 values))
 
 (cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
                                  (operation (eql member))
@@ -343,7 +343,7 @@ method provided.")))
   ;; check about (occ-obj-list-p prop) also
   (let ((ops (occ-cl-collect-on-classes #'(lambda (class)
                                             (occ-obj-operations-for-prop class
-                                                                     prop))
+                                                                         prop))
                                     obj)))
     (delete-dups ops)))
 

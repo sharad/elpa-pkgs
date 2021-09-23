@@ -85,12 +85,13 @@
                                          (lotus-org-create-unnamed-task))))
          (unnamed-tsk            (when unnamed-heading-marker
                                    (occ-obj-make-tsk unnamed-heading-marker
-                                                 (occ-tsk-builder)))))
+                                                     (occ-tsk-builder)))))
     unnamed-tsk))
 
 (occ-testing
   (occ-cl-inst-classname (occ-obj-make-tsk org-clock-hd-marker (occ-tsk-builder)))
-  (setq unnamed-test (occ-obj-make-tsk org-clock-hd-marker (occ-tsk-builder)))
+  (setq unnamed-test (occ-obj-make-tsk org-clock-hd-marker
+                                       (occ-tsk-builder)))
   (occ-tsk-marker unnamed-test)
   (type-of (lotus-org-unnamed-task-clock-marker)))
 
@@ -100,7 +101,7 @@
   (let* ((unnamed-tsk        (occ-maybe-create-unnamed-tsk))
          (unnamed-ctxual-tsk (when unnamed-tsk
                                (occ-obj-build-ctxual-tsk-with unnamed-tsk
-                                                          ctx))))
+                                                              ctx))))
     (assert unnamed-tsk)
     (assert unnamed-ctxual-tsk)
     unnamed-ctxual-tsk))
