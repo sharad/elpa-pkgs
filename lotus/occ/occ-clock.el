@@ -205,15 +205,14 @@
           (ap-transf '(t actions general edit))
           (timeout   (or timeout occ-idle-timeout)))
       (occ-debug "occ-do-clock-in((obj occ-ctx)): begin")
-      (let ((returned-ctxual-tsk
-             (occ-obj-select obj ;TODO: if only one match then where it is selecting that.
-                             :filters          filters
-                             :builder          builder
-                             :return-transform t ;Here I know return value is going to be used, so passing t
-                             :ap-normal        ap-normal ;as return value is going to be used.
-                             :ap-transf        ap-transf
-                             :auto-select-if-only auto-select-if-only
-                             :timeout             timeout)))
+      (let ((returned-ctxual-tsk (occ-obj-select obj ;TODO: if only one match then where it is selecting that.
+                                                 :filters          filters
+                                                 :builder          builder
+                                                 :return-transform t ;Here I know return value is going to be used, so passing t
+                                                 :ap-normal        ap-normal ;as return value is going to be used.
+                                                 :ap-transf        ap-transf
+                                                 :auto-select-if-only auto-select-if-only
+                                                 :timeout             timeout)))
         (occ-debug "occ-do-clock-in((obj occ-ctx)): selected  returned-ctxual-tsk=%s ret-label=%s value=%s"
                           returned-ctxual-tsk
                           (occ-obj-return-in-labels-p returned-ctxual-tsk occ-return-select-label)
@@ -239,15 +238,17 @@
                        obj)
             (occ-debug "occ-do-clock-in(ctx):  with this-command=%s" this-command)
             ;; (occ-delayed-select-obj-prop-edit-when-idle obj obj occ-idle-timeout)
-            (occ-debug "occ-do-clock-in((obj occ-ctx)): calling occ-obj-safe-ignore-quit-properties-window-editor")
-            (occ-message "occ-do-clock-in: Edit properties of a tsk to make associable to current context.")
+            (occ-debug "occ-do-clock-in((obj occ-ctx)): calling occ-obj-safe-ignore-quit-properties-window-editor(obj[%s])"
+                       (occ-obj-Format obj))
+            (occ-message "occ-do-clock-in: Edit properties of a tsk %s to make associable to current context."
+                         (occ-obj-Format obj))
             (occ-obj-safe-ignore-quit-properties-window-editor obj
-                                                           :filters          (occ-list-filters)
-                                                           :builder          #'occ-obj-build-ctsk-with
-                                                           :return-transform return-transform ;Here caller know if return value is going to be used.
-                                                           :ap-normal        ap-normal
-                                                           :ap-transf        ap-transf
-                                                           :timeout          timeout)))))
+                                                               :filters          (occ-list-filters)
+                                                               :builder          #'occ-obj-build-ctsk-with
+                                                               :return-transform return-transform ;Here caller know if return value is going to be used.
+                                                               :ap-normal        ap-normal
+                                                               :ap-transf        ap-transf
+                                                               :timeout          timeout)))))
     (occ-debug "ctx %s is not clockable." obj)))
 
 
