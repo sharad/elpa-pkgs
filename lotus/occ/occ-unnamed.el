@@ -30,6 +30,9 @@
 (require 'org-clock-unnamed-task)
 
 
+(eval-when-compile
+  (require 'occ-macros))
+
 
 (defvar *occ-unassociate-ctx-start-time*         nil)
 (defvar *occ-swapen-unnamed-threashold-interval* (* 60 2)) ;2 mins
@@ -51,7 +54,8 @@
   (org-clock-marker-unnamed-p marker))
 
 (defun occ-clock-marker-unnamed-clock-p (&optional clock)
-  (let ((clock (or clock org-clock-marker)))
+  (let ((clock (or clock
+                   org-clock-marker)))
      (occ-clock-marker-unnamed-p clock)))
 
 (defun occ-maybe-create-clockedin-unnamed-heading ()
@@ -84,8 +88,7 @@
                                                  (occ-tsk-builder)))))
     unnamed-tsk))
 
-
-(when nil
+(occ-testing
   (occ-cl-inst-classname (occ-obj-make-tsk org-clock-hd-marker (occ-tsk-builder)))
   (setq unnamed-test (occ-obj-make-tsk org-clock-hd-marker (occ-tsk-builder)))
   (occ-tsk-marker unnamed-test)
