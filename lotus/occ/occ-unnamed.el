@@ -104,7 +104,7 @@
 
 (cl-defmethod occ-do-maybe-create-clockedin-unnamed-ctxual-tsk ((ctx occ-ctx))
   ;; back
-  o(occ-debug "occ-do-maybe-create-clockedin-unnamed-ctxual-tsk: begin")
+  (occ-debug "occ-do-maybe-create-clockedin-unnamed-ctxual-tsk: begin")
   (when (occ-can-create-unnamed-tsk-p)
     (let ((org-log-note-clock-out nil))
       (if (occ-clock-marker-unnamed-clock-p)
