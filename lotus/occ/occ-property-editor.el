@@ -323,7 +323,7 @@
                            occ-return-true-label obj)
                 (if return-transform ;Here caller know if return value is going to be used.
                     (occ-obj-make-return occ-return-true-label
-                                     obj)
+                                         obj)
                   obj))
               ((quit)
                (progn
@@ -341,7 +341,7 @@
                             nil)
                  (when return-transform ;Here caller know if return value is going to be used.
                    (occ-obj-make-return occ-return-quit-label
-                                    nil)))))))))
+                                        nil)))))))))
 
 (cl-defmethod occ-do-properties-window-editor ((obj occ-ctx)
                                                &key
@@ -376,7 +376,7 @@
                        (occ-obj-return-get-label retval-ctx-tsk))
             ;; BUG: will do run recursively as another method with (obj null) is define below.
             (when (and (occ-obj-return-in-labels-p retval-ctx-tsk
-                                               occ-return-select-label)
+                                                   occ-return-select-label)
                        (occ-obj-obj retval-ctx-tsk))
               (occ-do-properties-window-editor (occ-obj-obj retval-ctx-tsk)
                                                :return-transform return-transform
@@ -397,7 +397,7 @@
                    (not (occ-helm-buffer-p buff)))
         (when return-transform ;Here caller know if return value is going to be used.
           (occ-obj-make-return occ-return-false-label
-                           nil))))))
+                               nil))))))
 
 (cl-defmethod occ-do-properties-window-editor ((obj null)
                                                &key
@@ -573,7 +573,6 @@
                                                                  timeout)
   "Return value is important to decide next action to (create unnamed tsk.)"
   (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor((obj occ-ctx)): begin")
-  (occ-message "occ-obj-safe-ignore-quit-properties-window-editor((obj occ-ctx)): begin")
   (occ-message "occ-obj-safe-ignore-quit-properties-window-editor((obj[%s] occ-ctx)): begin" (occ-obj-Format obj))
   (let ((filters   (or filters nil))
         (builder   (or builder #'occ-obj-build-ctsk-with))
