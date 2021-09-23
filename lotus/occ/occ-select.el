@@ -182,7 +182,7 @@ ACTION "
                                              :timeout             timeout
                                              :obtrusive           obtrusive
                                              :prompt              prompt)))
-            (occ-message "OCC-SELECT((OBJ OCC-CTX)): occ-list-select returned %s"
+            (occ-message "OCC-OBJ-SELECT((OBJ OCC-CTX)): occ-list-select returned %s"
                        (occ-obj-Format retval))
             retval)
         (prog1

@@ -83,9 +83,8 @@
                                ap-transf
                                timeout)
   (occ-debug "occ-do-clock-in(occ-ctsk=%s)" obj)
-  (if (or
-       (occ-obj-unnamed-p obj)
-       (occ-obj-associable-p obj))
+  (if (or (occ-obj-unnamed-p    obj)
+          (occ-obj-associable-p obj))
       (occ-do-clock-in (occ-ctsk-tsk obj)
                     :filters   filters
                     :builder   builder
@@ -106,7 +105,7 @@
   ;;TODO add org-insert-log-not
   "return "
   (occ-debug "occ-do-clock-in(occ-ctxual-tsk=%s)" obj)
-  (let* (retval
+  (let* ((retval         nil)
          (old-ctxual-tsk (first *occ-clocked-ctxual-tsk-ctx-history*))
          (old-tsk        (when old-ctxual-tsk (occ-ctxual-tsk-tsk old-ctxual-tsk)))
          (old-marker     (or (if old-tsk (occ-tsk-marker old-tsk)) org-clock-hd-marker))
@@ -124,11 +123,9 @@
 
         (occ-debug "clocking in %s" new-marker)
 
-        (let ((old-buff-read-only
-               (when old-buff
-                 (with-current-buffer (marker-buffer old-marker)
-                   buffer-read-only))))
-
+        (let ((old-buff-read-only (when old-buff
+                                    (with-current-buffer (marker-buffer old-marker)
+                                      buffer-read-only))))
           (when old-buff
             (with-current-buffer old-buff
               (setq buffer-read-only nil)))
@@ -139,17 +136,15 @@
                               old-marker
                               new-marker)
 
-          (when (and
-                 new-heading
-                 old-marker
-                 (marker-buffer old-marker))
+          (when (and new-heading
+                     old-marker
+                     (marker-buffer old-marker))
             (org-insert-log-note old-marker (format "clocking out to clockin to <%s>" new-heading)))
           (when old-heading
             (org-insert-log-note new-marker (format "clocking in to here from last clock <%s>" old-heading)))
 
-          (if (or
-               (occ-obj-unnamed-p obj)
-               (occ-obj-associable-p obj))
+          (if (or (occ-obj-unnamed-p obj)
+                  (occ-obj-associable-p obj))
               (occ-do-clock-in obj-tsk
                             :filters   filters
                             :builder   builder

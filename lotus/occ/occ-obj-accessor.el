@@ -789,7 +789,7 @@ pointing to it."
                                            builder
                                            obtrusive)
   "return CTSKs list"
-  (occ-collection-obj-list collection
+  (occ-obj-collection-obj-list collection
                            (occ-obj-make-ctx-at-point)
                            :builder   builder
                            :obtrusive obtrusive))
@@ -808,7 +808,7 @@ pointing to it."
                             builder
                             obtrusive)
   "return CTXUAL-TSKs container"
-  (occ-collection-obj-list (occ-obj-collection-object)
+  (occ-obj-collection-obj-list (occ-obj-collection-object)
                            obj
                            :builder builder
                            :obtrusive obtrusive))

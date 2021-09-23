@@ -63,13 +63,11 @@
   (plist-get (occ-obj-ctx-filter-plist obj) filter))
 
 
-(occ-generate-plist-functions occ filter)
-
 (occ-generate-plist-functions occ-obj filter)
 
 ;; (occ-helm-actions-get )
 
-;; (defvar occ-filters-plist nil)
+;; (defvar occ-obj-filters-plist nil)
 
 ;; (defun occ-filter-add (key fun)
 ;;   (setq occ-filters-plist
@@ -156,7 +154,7 @@
          sequence))
     (occ-error "(occ-obj-collection-object) returned nil")))
 
-(occ-obj-filter-add :mutual-deviation "Mutual Deviation" #'occ-filter-mutual-deviation)
+(occ-obj-filter-add :mutual-deviation "Mutual Deviation" #'occ-obj-filter-mutual-deviation)
 
 (cl-defmethod occ-obj-filter-positive ((obj occ-ctx)
                                        sequence
@@ -164,7 +162,7 @@
   (remove-if-not #'(lambda (obj) (> (funcall rank obj) 0))
                  sequence))
 
-(occ-obj-filter-add :positive "Positive" #'occ-filter-positive)
+(occ-obj-filter-add :positive "Positive" #'occ-obj-filter-positive)
 
 
 (cl-defmethod occ-obj-filter-nonnegative ((obj occ-ctx)
@@ -173,7 +171,7 @@
   (remove-if-not #'(lambda (obj) (>= (funcall rank obj) 0))
                  sequence))
 
-(occ-obj-filter-add :nonnegative "Non negative" #'occ-filter-nonnegative)
+(occ-obj-filter-add :nonnegative "Non negative" #'occ-obj-filter-nonnegative)
 
 (defvar occ-filter-min 0)
 (cl-defmethod occ-obj-filter-min ((obj occ-ctx)
@@ -182,7 +180,7 @@
   (remove-if-not #'(lambda (obj) (>= (funcall rank obj) occ-filter-min))
                  sequence))
 
-(occ-obj-filter-add :min "Minimum" #'occ-filter-min)
+(occ-obj-filter-add :min "Minimum" #'occ-obj-filter-min)
 
 (defvar occ-filter-max 0)
 (cl-defmethod occ-obj-filter-max ((obj occ-ctx)
@@ -193,7 +191,7 @@
                          occ-filter-max))
                  sequence))
 
-(occ-obj-filter-add :max "Maximum" #'occ-filter-max)
+(occ-obj-filter-add :max "Maximum" #'occ-obj-filter-max)
 
 
 (defun occ-list-filters ()

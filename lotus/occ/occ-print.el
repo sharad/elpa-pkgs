@@ -195,7 +195,7 @@ pointing to it."
                               no-curr-clock)
   (let ((tsk (occ-ctsk-tsk obj)))
     (concat (when case (concat (occ-obj-title obj case) ": "))
-            (when rank (format "[%4d] " (or (occ-rank obj) -128)))
+            (when rank (format "[%4d] " (or (occ-obj-rank obj) -128)))
             (occ-obj-format tsk case nil)
             (unless no-curr-clock
               (when (occ-obj-current-p obj) "          🕑")))))
@@ -206,7 +206,7 @@ pointing to it."
                                                    no-curr-clock)
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
     (concat (when case (concat (occ-obj-title obj case) ": "))
-            (when rank (format "[%4d] " (or (occ-rank obj) -128)))
+            (when rank (format "[%4d] " (or (occ-obj-rank obj) -128)))
             (format "%s" (occ-obj-format tsk case rank))
             (unless no-curr-clock
               (when (occ-obj-current-p obj) "          🕑")))))
