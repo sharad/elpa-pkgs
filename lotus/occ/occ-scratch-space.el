@@ -1,28 +1,28 @@
 ;;; occ-scratch-space.el --- occ scratch space       -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2019  Sharad
+;; copyright (c) 2019  sharad
 
-;; Author: Sharad <sh4r4d@gmail.com>
-;; Keywords: convenience
+;; author: sharad <sh4r4d@gmail.com>
+;; keywords: convenience
 
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
+;; this program is free software; you can redistribute it and/or modify
+;; it under the terms of the gnu general public license as published by
+;; the free software foundation, either version 3 of the license, or
 ;; (at your option) any later version.
 
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
+;; this program is distributed in the hope that it will be useful,
+;; but without any warranty; without even the implied warranty of
+;; merchantability or fitness for a particular purpose.  see the
+;; gnu general public license for more details.
 
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; you should have received a copy of the gnu general public license
+;; along with this program.  if not, see <http://www.gnu.org/licenses/>.
 
-;;; Commentary:
+;;; commentary:
 
 ;;
 
-;;; Code:
+;;; code:
 
 (provide 'occ-scratch-space)
 
@@ -34,12 +34,12 @@
 
 (when nil
   (progn
-    ;; http://pages.sachachua.com/.emacs.d/Sacha.html#orgd593b27
-    ;; Self-tracking, statistics, and other data transformations
-    ;; Quantified Awesome
+    ;; http://pages.sachachua.com/.emacs.d/sacha.html#orgd593b27
+    ;; self-tracking, statistics, and other data transformations
+    ;; quantified awesome
 
     (defmacro my/org-with-current-task (&rest body)
-      "Execute BODY with the point at the subtree of the current task."
+      "execute body with the point at the subtree of the current task."
       `(if (derived-mode-p 'org-agenda-mode)
            (save-window-excursion
              (org-agenda-switch-to)
@@ -47,17 +47,17 @@
          ,@body))
 
     (defun my/org-clock-in-and-track ()
-      "Start the clock running. Clock into Quantified Awesome."
+      "start the clock running. clock into quantified awesome."
       (interactive)
       (my/org-with-current-task
        (org-clock-in)
        (call-interactively 'my/org-quantified-track)
-       (when (org-entry-get (point) "AUTO")
-         (org-open-link-from-string (org-entry-get (point) "AUTO")))))
+       (when (org-entry-get (point) "auto")
+         (org-open-link-from-string (org-entry-get (point) "auto")))))
     (bind-key "!" 'my/org-clock-in-and-track org-agenda-mode-map)
 
     (defmacro my/with-org-task (&rest body)
-      "Run BODY within the current agenda task, clocked task, or cursor task."
+      "run body within the current agenda task, clocked task, or cursor task."
       `(cond
         ((derived-mode-p 'org-agenda-mode)
          (let* ((marker (org-get-at-bol 'org-marker))
@@ -74,39 +74,39 @@
         ((derived-mode-p 'org-mode) ,@body)))
 
     (defun my/org-quantified-track (&optional category note)
-      "Create a tracking record using CATEGORY and NOTE.
-Default to the current task in the agenda, the currently-clocked
-entry, or the current subtree in Org."
+      "create a tracking record using category and note.
+default to the current task in the agenda, the currently-clocked
+entry, or the current subtree in org."
       (interactive (list nil nil))
       (unless (and category note)
         (my/with-org-task
          (setq category (or category
-                            (org-entry-get-with-inheritance "QUANTIFIED")))
+                            (org-entry-get-with-inheritance "quantified")))
          (cond
           ((null category)
-           (setq category (read-string "Category: "))
-           (org-set-property "QUANTIFIED" category))
+           (setq category (read-string "category: "))
+           (org-set-property "quantified" category))
           ((string= category "ask")
-           (setq category (read-string "Category: "))))
+           (setq category (read-string "category: "))))
          (setq note
                (concat
-                (if (string= (or (org-entry-get-with-inheritance "QUANTIFIEDQUIET") "") "t")
+                (if (string= (or (org-entry-get-with-inheritance "quantifiedquiet") "") "t")
                     "!private "
                   "")
-                (or note (elt (org-heading-components) 4) (read-string "Note: "))))))
+                (or note (elt (org-heading-components) 4) (read-string "note: "))))))
       (quantified-track (concat category " | " note)))
 
     (defun my/org-quick-clock-in-task (location jump)
-      "Track and clock in on the specified task.
-If JUMP is non-nil or the function is called with the prefix argument, jump to that location afterwards."
-      (interactive (list (save-excursion (my/org-refile-get-location "Location")) current-prefix-arg))
+      "track and clock in on the specified task.
+if jump is non-nil or the function is called with the prefix argument, jump to that location afterwards."
+      (interactive (list (save-excursion (my/org-refile-get-location "location")) current-prefix-arg))
       (when location
         (if jump
             (progn (org-refile 4 nil location) (my/org-clock-in-and-track))
           (save-window-excursion
             (org-refile 4 nil location)
             (my/org-clock-in-and-track)))))
-    (bind-key "C-c q" 'my/org-quick-clock-in-task)
+    (bind-key "c-c q" 'my/org-quick-clock-in-task)
 
     (require 'quantified nil t))
 
@@ -117,134 +117,134 @@ If JUMP is non-nil or the function is called with the prefix argument, jump to t
 
   (progn
 
-    ;;http://pages.sachachua.com/.emacs.d/Sacha.html
+    ;;http://pages.sachachua.com/.emacs.d/sacha.html
     ;;http://sachachua.com/blog/2015/03/getting-helm-org-refile-clock-create-tasks/
 
     (defun my/org-contacts-template-email (&optional return-value)
-      "Try to return the contact email for a template.
-  If not found return RETURN-VALUE or something that would ask the user."
+      "try to return the contact email for a template.
+  if not found return return-value or something that would ask the user."
       (or (nth 1 (if (gnus-alive-p)
                      (gnus-with-article-headers
                       (mail-extract-address-components
-                       (or (mail-fetch-field "Reply-To") (mail-fetch-field "From") "")))))
+                       (or (mail-fetch-field "reply-to") (mail-fetch-field "from") "")))))
           return-value
           (concat "%^{" org-contacts-email-property "}p")))
 
 
-    (defvar my/org-basic-task-template "* TODO %^{Task}
-:PROPERTIES:
-:Effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}
-:END:
-Captured %<%Y-%m-%d %H:%M>
+    (defvar my/org-basic-task-template "* todo %^{task}
+:properties:
+:effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}
+:end:
+captured %<%y-%m-%d %h:%m>
 %?
 
 %i
-" "Basic task data")
+" "basic task data")
 
     (setq org-capture-templates
-          `(("t" "Tasks" entry
-             (file+headline "~/personal/organizer.org" "Inbox")
+          `(("t" "tasks" entry
+             (file+headline "~/personal/organizer.org" "inbox")
              ,my/org-basic-task-template)
-            ("T" "Quick task" entry
-             (file+headline "~/personal/organizer.org" "Inbox")
-             "* TODO %^{Task}\nSCHEDULED: %t\n"
+            ("t" "quick task" entry
+             (file+headline "~/personal/organizer.org" "inbox")
+             "* todo %^{task}\nscheduled: %t\n"
              :immediate-finish t)
-            ("i" "Interrupting task" entry
-             (file+headline "~/personal/organizer.org" "Inbox")
-             "* STARTED %^{Task}"
+            ("i" "interrupting task" entry
+             (file+headline "~/personal/organizer.org" "inbox")
+             "* started %^{task}"
              :clock-in :clock-resume)
-            ("e" "Emacs idea" entry
-             (file+headline "~/code/emacs-notes/tasks.org" "Emacs")
-             "* TODO %^{Task}"
+            ("e" "emacs idea" entry
+             (file+headline "~/code/emacs-notes/tasks.org" "emacs")
+             "* todo %^{task}"
              :immediate-finish t)
-            ("E" "Energy" table-line
-             (file+headline "~/personal/organizer.org" "Track energy")
-             "| %U | %^{Energy 5-awesome 3-fuzzy 1-zzz} | %^{Note} |"
+            ("e" "energy" table-line
+             (file+headline "~/personal/organizer.org" "track energy")
+             "| %u | %^{energy 5-awesome 3-fuzzy 1-zzz} | %^{note} |"
              :immediate-finish t)
              
-            ("b" "Business task" entry
-             (file+headline "~/personal/business.org" "Tasks")
+            ("b" "business task" entry
+             (file+headline "~/personal/business.org" "tasks")
              ,my/org-basic-task-template)
-            ("p" "People task" entry
-             (file+headline "~/personal/people.org" "Tasks")
+            ("p" "people task" entry
+             (file+headline "~/personal/people.org" "tasks")
              ,my/org-basic-task-template)
-            ("j" "Journal entry" plain
+            ("j" "journal entry" plain
              (file+datetree "~/personal/journal.org")
-             "%K - %a\n%i\n%?\n"
+             "%k - %a\n%i\n%?\n"
              :unnarrowed t)
-            ("J" "Journal entry with date" plain
+            ("j" "journal entry with date" plain
              (file+datetree+prompt "~/personal/journal.org")
-             "%K - %a\n%i\n%?\n"
+             "%k - %a\n%i\n%?\n"
              :unnarrowed t)
-            ("s" "Journal entry with date, scheduled" entry
+            ("s" "journal entry with date, scheduled" entry
              (file+datetree+prompt "~/personal/journal.org")
-             "* \n%K - %a\n%t\t%i\n%?\n"
+             "* \n%k - %a\n%t\t%i\n%?\n"
              :unnarrowed t)
-            ("c" "Protocol Link" entry (file+headline ,org-default-notes-file "Inbox")
-             "* [[%:link][%:description]] \n\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n%?\n\nCaptured: %U")
-            ("db" "Done - Business" entry
-             (file+headline "~/personal/business.org" "Tasks")
-             "* DONE %^{Task}\nSCHEDULED: %^t\n%?")
-            ("dp" "Done - People" entry
-             (file+headline "~/personal/people.org" "Tasks")
-             "* DONE %^{Task}\nSCHEDULED: %^t\n%?")
-            ("dt" "Done - Task" entry
-             (file+headline "~/personal/organizer.org" "Inbox")
-             "* DONE %^{Task}\nSCHEDULED: %^t\n%?")
-            ("q" "Quick note" item
-             (file+headline "~/personal/organizer.org" "Quick notes"))
-            ("l" "Ledger entries")
-            ("lm" "MBNA" plain
+            ("c" "protocol link" entry (file+headline ,org-default-notes-file "inbox")
+             "* [[%:link][%:description]] \n\n#+begin_quote\n%i\n#+end_quote\n\n%?\n\ncaptured: %u")
+            ("db" "done - business" entry
+             (file+headline "~/personal/business.org" "tasks")
+             "* done %^{task}\nscheduled: %^t\n%?")
+            ("dp" "done - people" entry
+             (file+headline "~/personal/people.org" "tasks")
+             "* done %^{task}\nscheduled: %^t\n%?")
+            ("dt" "done - task" entry
+             (file+headline "~/personal/organizer.org" "inbox")
+             "* done %^{task}\nscheduled: %^t\n%?")
+            ("q" "quick note" item
+             (file+headline "~/personal/organizer.org" "quick notes"))
+            ("l" "ledger entries")
+            ("lm" "mbna" plain
              (file "~/personal/ledger")
-             "%(org-read-date) %^{Payee}
-    Liabilities:MBNA
-    Expenses:%^{Account}  $%^{Amount}
+             "%(org-read-date) %^{payee}
+    liabilities:mbna
+    expenses:%^{account}  $%^{amount}
   " :immediate-finish t)
-            ("ln" "No Frills" plain
+            ("ln" "no frills" plain
              (file "~/personal/ledger")
-             "%(let ((org-read-date-prefer-future nil)) (org-read-date)) * No Frills
-    Liabilities:MBNA
-    Assets:Wayne:Groceries  $%^{Amount}
+             "%(let ((org-read-date-prefer-future nil)) (org-read-date)) * no frills
+    liabilities:mbna
+    assets:wayne:groceries  $%^{amount}
   " :immediate-finish t)
-            ("lc" "Cash" plain
+            ("lc" "cash" plain
              (file "~/personal/ledger")
-             "%(org-read-date) * %^{Payee}
-    Expenses:Cash
-    Expenses:%^{Account}  %^{Amount}
+             "%(org-read-date) * %^{payee}
+    expenses:cash
+    expenses:%^{account}  %^{amount}
   ")
-            ("B" "Book" entry
-             (file+datetree "~/personal/books.org" "Inbox")
-             "* %^{Title}  %^g
+            ("b" "book" entry
+             (file+datetree "~/personal/books.org" "inbox")
+             "* %^{title}  %^g
   %i
-  *Author(s):* %^{Author} \\\\
-  *ISBN:* %^{ISBN}
+  *author(s):* %^{author} \\\\
+  *isbn:* %^{isbn}
 
   %?
 
-  *Review on:* %^t \\
+  *review on:* %^t \\
   %a
-  %U"
+  %u"
              :clock-in :clock-resume)
-            ("C" "Contact" entry (file "~/personal/contacts.org")
+            ("c" "contact" entry (file "~/personal/contacts.org")
              "* %(org-contacts-template-name)
-  :PROPERTIES:
-  :EMAIL: %(my/org-contacts-template-email)
-  :END:")
-            ("n" "Daily note" table-line (file+olp "~/personal/organizer.org" "Inbox")
-             "| %u | %^{Note} |"
+  :properties:
+  :email: %(my/org-contacts-template-email)
+  :end:")
+            ("n" "daily note" table-line (file+olp "~/personal/organizer.org" "inbox")
+             "| %u | %^{note} |"
              :immediate-finish t)
-            ("r" "Notes" entry
+            ("r" "notes" entry
              (file+datetree "~/personal/organizer.org")
-             "* %?\n\n%i\n%U\n")))
+             "* %?\n\n%i\n%u\n")))
              
-    (bind-key "C-M-r" 'org-capture)
+    (bind-key "c-m-r" 'org-capture)
 
-    ;; Allow refiling in the middle(ish) of a capture
+    ;; allow refiling in the middle(ish) of a capture
 
-    ;; This lets me use C-c C-r to refile a capture and then jump to the new
-    ;; location. I wanted to be able to file tasks under projects so that they
-    ;; could inherit the QUANTIFIED property that I use to track time (and any
-    ;; Beeminder-related properties too), but I also wanted to be able to clock in
+    ;; this lets me use c-c c-r to refile a capture and then jump to the new
+    ;; location. i wanted to be able to file tasks under projects so that they
+    ;; could inherit the quantified property that i use to track time (and any
+    ;; beeminder-related properties too), but i also wanted to be able to clock in
     ;; on them.
 
     (defun my/org-refile-and-jump ()
@@ -254,13 +254,13 @@ Captured %<%Y-%m-%d %H:%M>
         (call-interactively 'org-refile))
       (org-refile-goto-last-stored))
     (eval-after-load 'org-capture
-      '(bind-key "C-c C-r" 'my/org-refile-and-jump org-capture-mode-map)))
+      '(bind-key "c-c c-r" 'my/org-refile-and-jump org-capture-mode-map)))
 
 
     
 
   (progn
-    ;;http://pages.sachachua.com/.emacs.d/Sacha.html
+    ;;http://pages.sachachua.com/.emacs.d/sacha.html
     ;;http://sachachua.com/blog/2015/03/getting-helm-org-refile-clock-create-tasks/
     (progn
 
@@ -268,28 +268,28 @@ Captured %<%Y-%m-%d %H:%M>
 
       (ert-deftest my/org-capture-prefill-template ()
         (should
-         ;; It should fill things in one field at ia time
+         ;; it should fill things in one field at ia time
          (string=
           (my/org-capture-prefill-template
-           "* TODO %^{Task}\nSCHEDULED: %^t\n:PROPERTIES:\n:Effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:END:\n%?\n"
-           "Hello World")
-          "* TODO Hello World\nSCHEDULED: %^t\n:PROPERTIES:\n:Effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:END:\n%?\n"))
+           "* todo %^{task}\nscheduled: %^t\n:properties:\n:effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:end:\n%?\n"
+           "hello world")
+          "* todo hello world\nscheduled: %^t\n:properties:\n:effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:end:\n%?\n"))
           
         (should
          (string=
           (my/org-capture-prefill-template
-           "* TODO %^{Task}\nSCHEDULED: %^t\n:PROPERTIES:\n:Effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:END:\n%?\n"
-           "Hello World" "<2015-01-01>")
-          "* TODO Hello World\nSCHEDULED: <2015-01-01>\n:PROPERTIES:\n:Effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:END:\n%?\n"))
+           "* todo %^{task}\nscheduled: %^t\n:properties:\n:effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:end:\n%?\n"
+           "hello world" "<2015-01-01>")
+          "* todo hello world\nscheduled: <2015-01-01>\n:properties:\n:effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:end:\n%?\n"))
         (should
          (string=
           (my/org-capture-prefill-template
-           "* TODO %^{Task}\nSCHEDULED: %^t\n:PROPERTIES:\n:Effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:END:\n%?\n"
-           "Hello World" "<2015-01-01>" "0:05")
-          "* TODO Hello World\nSCHEDULED: <2015-01-01>\n:PROPERTIES:\n:Effort: 0:05\n:END:\n%?\n")))
+           "* todo %^{task}\nscheduled: %^t\n:properties:\n:effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:end:\n%?\n"
+           "hello world" "<2015-01-01>" "0:05")
+          "* todo hello world\nscheduled: <2015-01-01>\n:properties:\n:effort: 0:05\n:end:\n%?\n")))
 
       (defun my/org-capture-prefill-template (template &rest values)
-        "Pre-fill TEMPLATE with VALUES."
+        "pre-fill template with values."
         (setq template (or template (org-capture-get :template)))
         (with-temp-buffer
           (insert template)
@@ -298,10 +298,10 @@ Captured %<%Y-%m-%d %H:%M>
                   (concat "%\\("
                           "\\[\\(.+\\)\\]\\|"
                           "<\\([^>\n]+\\)>\\|"
-                          "\\([tTuUaliAcxkKInfF]\\)\\|"
-                          "\\(:[-a-zA-Z]+\\)\\|"
+                          "\\([ttuualiacxkkinff]\\)\\|"
+                          "\\(:[-a-za-z]+\\)\\|"
                           "\\^\\({\\([^}]*\\)}\\)"
-                          "?\\([gGtTuUCLp]\\)?\\|"
+                          "?\\([ggttuuclp]\\)?\\|"
                           "%\\\\\\([1-9][0-9]*\\)"
                           "\\)") nil t)
             (if (first values)
@@ -310,7 +310,7 @@ Captured %<%Y-%m-%d %H:%M>
           (buffer-string)))
 
       (defun my/org-get-current-refile-location ()
-        "Return the current entry as a location understood by org-refile."
+        "return the current entry as a location understood by org-refile."
         (interactive)
         (list (elt (org-heading-components) 4)
               (or buffer-file-name
@@ -320,8 +320,8 @@ Captured %<%Y-%m-%d %H:%M>
               (point)))
 
       (defun my/helm-org-create-task (candidate)
-        "Creates the task and returns the location."
-        (let ((entry (org-capture-select-template "T")))
+        "creates the task and returns the location."
+        (let ((entry (org-capture-select-template "t")))
           (org-capture-set-plist entry)
           (org-capture-get-template)
           (org-capture-set-target-location)
@@ -335,18 +335,18 @@ Captured %<%Y-%m-%d %H:%M>
                 (org-capture-place-template
                  (equal (first (org-capture-get :target)) 'function))
                 (setq org-refile-target-table (org-refile-get-targets))
-                ;; Return the new location
+                ;; return the new location
                 (my/org-get-current-refile-location))
             ((occ-error quit)
-             (if (get-buffer "*Capture*") (kill-buffer "*Capture*"))
-             (occ-error "Capture abort: %s" error)))))
+             (if (get-buffer "*capture*") (kill-buffer "*capture*"))
+             (occ-error "capture abort: %s" error)))))
 
-      ;; (my/org-refile-get-location-by-substring "Try again")
+      ;; (my/org-refile-get-location-by-substring "try again")
 
-      ;; Next, I want to add this to the way that Helm prompts me to refile. That
+      ;; next, i want to add this to the way that helm prompts me to refile. that
       ;; means that my creation task should return something ready for org-refile.
-      ;; Actually, maybe I don't have to do that if I know I'm always going to
-      ;; call it when I want to jump to something. I might as well add that bit of
+      ;; actually, maybe i don't have to do that if i know i'm always going to
+      ;; call it when i want to jump to something. i might as well add that bit of
       ;; code that sets up clocking in, too.
 
       (defvar my/helm-org-refile-locations nil)
@@ -360,7 +360,7 @@ Captured %<%Y-%m-%d %H:%M>
             t)))
 
       (defun my/org-get-todays-items-as-refile-candidates ()
-        "Return items scheduled for today, ready for choosing during refiling."
+        "return items scheduled for today, ready for choosing during refiling."
         (delq
          nil
          (mapcar
@@ -373,10 +373,10 @@ Captured %<%Y-%m-%d %H:%M>
                  (marker-position (get-text-property 0 'org-marker s)))))
           (save-window-excursion (my/org-get-entries-fn (calendar-current-date) (calendar-current-date))))))
 
-      ;; Based on http://emacs.stackexchange.com/questions/4063/how-to-get-the-raw-data-for-an-org-mode-agenda-without-an-agenda-view
+      ;; based on http://emacs.stackexchange.com/questions/4063/how-to-get-the-raw-data-for-an-org-mode-agenda-without-an-agenda-view
       (defun my/org-get-entries-fn (begin end)
-        "Return org schedule items between BEGIN and END.
-USAGE:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
+        "return org schedule items between begin and end.
+usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
         (require 'calendar)
         (require 'org)
         (require 'org-agenda)
@@ -386,21 +386,21 @@ USAGE:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
              (calendar-date-is-valid-p begin)
              (calendar-date-is-valid-p end))
           (let ((debug-on-quit nil))
-            (signal 'quit `("One or both of your gregorian dates are invalid."))))
+            (signal 'quit `("one or both of your gregorian dates are invalid."))))
         (let* ((result nil)
                (org-agenda-prefix-format "  • ")
                (org-agenda-entry-types '(:scheduled))
                (date-after
                 (lambda (date num)
-                  "Return the date after NUM days from DATE."
+                  "return the date after num days from date."
                   (calendar-gregorian-from-absolute
                    (+ (calendar-absolute-from-gregorian date) num))))
                (enumerate-days
                 (lambda (begin end)
-                  "Enumerate date objects between BEGIN and END."
+                  "enumerate date objects between begin and end."
                   (when (> (calendar-absolute-from-gregorian begin)
                            (calendar-absolute-from-gregorian end))
-                    (occ-error "Invalid period : %S - %S" begin end))
+                    (occ-error "invalid period : %s - %s" begin end))
                   (let ((d begin) ret (cont t))
                     (while cont
                       (push (copy-sequence d) ret)
@@ -438,31 +438,31 @@ USAGE:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
         (setq my/helm-org-refile-locations tbl)
         (helm
          (list
-          ;; (helm-build-sync-source "Today's tasks"
+          ;; (helm-build-sync-source "today's tasks"
           ;;   :candidates (mapcar (lambda (a) (cons (first a) a))
           ;;                       (my/org-get-todays-items-as-refile-candidates))
-          ;;   :action '(("Select" . identity)
-          ;;             ("Clock in and track" . my/helm-org-clock-in-and-track-from-refile)
-          ;;             ("Draw index card" . my/helm-org-prepare-index-card-for-subtree))
+          ;;   :action '(("select" . identity)
+          ;;             ("clock in and track" . my/helm-org-clock-in-and-track-from-refile)
+          ;;             ("draw index card" . my/helm-org-prepare-index-card-for-subtree))
           ;;   :history 'org-refile-history)
-          (helm-build-sync-source "Refile targets"
+          (helm-build-sync-source "refile targets"
             :candidates (mapcar (lambda (a) (cons (first a) a)) tbl)
-            :action '(("Select" . identity)
-                      ("Clock in and track" . my/helm-org-clock-in-and-track-from-refile)
-                      ("Draw index card" . my/helm-org-prepare-index-card-for-subtree))
+            :action '(("select" . identity)
+                      ("clock in and track" . my/helm-org-clock-in-and-track-from-refile)
+                      ("draw index card" . my/helm-org-prepare-index-card-for-subtree))
             :history 'org-refile-history)
-          (helm-build-dummy-source "Create task"
+          (helm-build-dummy-source "create task"
             :action (helm-make-actions
-                     "Create task"
+                     "create task"
                      'my/helm-org-create-task)))))
 
       (defun my/org-refile-get-location (&optional prompt default-buffer new-nodes no-exclude)
-        "Prompt the user for a refile location, using PROMPT.
-  PROMPT should not be suffixed with a colon and a space, because
+        "prompt the user for a refile location, using prompt.
+  prompt should not be suffixed with a colon and a space, because
   this function appends the default value from
   `org-refile-history' automatically, if that is not empty.
-  When NO-EXCLUDE is set, do not exclude headlines in the current subtree,
-  this is used for the GOTO interface."
+  when no-exclude is set, do not exclude headlines in the current subtree,
+  this is used for the goto interface."
         (let ((org-refile-targets org-refile-targets)
               (org-refile-use-outline-path org-refile-use-outline-path)
               excluded-entries)
@@ -477,7 +477,7 @@ USAGE:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
                 ;; (org-refile-get-targets default-buffer excluded-entries)
                 (org-refile-get-targets default-buffer)))
         (unless org-refile-target-table
-          (user-error "No refile targets"))
+          (user-error "no refile targets"))
         (let* ((cbuf (current-buffer))
                (partial-completion-mode nil)
                (cfn (buffer-file-name (buffer-base-buffer cbuf)))
@@ -507,7 +507,7 @@ USAGE:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
                                         (concat " (default " cbnex ")"))) ": "))
                pa answ parent-target child parent old-hist)
           (setq old-hist org-refile-history)
-          ;; Use Helm's sources instead
+          ;; use helm's sources instead
           (setq answ (my/helm-org-refile-read-location tbl))
           (cond
            ((and (stringp answ)
@@ -531,12 +531,12 @@ USAGE:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
             (when (and parent-target
                        (or (eq new-nodes t)
                            (and (eq new-nodes 'confirm)
-                                (y-or-n-p (format "Create new node \"%s\"? "
+                                (y-or-n-p (format "create new node \"%s\"? "
                                                   child)))))
               (org-refile-new-child parent-target child)))
-           ((listp answ) answ) ;; Sacha: Helm returned a refile location
+           ((listp answ) answ) ;; sacha: helm returned a refile location
            ((not (equal answ t))
-            (user-error "Invalid target location")))))
+            (user-error "invalid target location")))))
 
       (fset 'org-refile-get-location-bkp 'org-refile-get-location)
 
@@ -573,5 +573,49 @@ USAGE:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
                 (occ-message "test2 i=%d" i))
 
   (occ-obj-display-number 1))
+
+
+
+(occ-testing
+ 
+ (cl-defgeneric occ-test-combine (obj))
+ 
+
+ (cl-defmethod occ-test-combine ((x symbol))
+   (append (list 'symbol)
+           (when (cl-next-method-p)
+             (cl-call-next-method))))
+
+ (cl-defmethod occ-test-combine ((x (head z)))
+   (append (list 'z)
+           (when (cl-next-method-p)
+             (cl-call-next-method))))
+
+ (cl-defmethod occ-test-combine ((x (eql a)))
+   (append (list 'a)
+           (when (cl-next-method-p)
+             (cl-call-next-method))))
+
+ (let ((generic (cl--generic 'occ-test-combine)))
+   (cl--generic-method-table generic))
+
+ (occ-test-combine '(z))
+
+ (cl-generic-combine-methods (cl--generic 'occ-test-combine)
+                             (let ((generic (cl--generic 'occ-test-combine)))
+                               (cl--generic-method-table generic)))
+
+
+ (cl-generic-call-method (cl--generic-make 'occz-combine) (list #'occ-test-combine))
+
+ (cl-generic-call-method (cl--generic-make 'occ-test-combine)
+                         #'occ-test-combine)
+
+
+ (cl--generic-make 'occ-test1-combine)
+
+ ())
+ 
+
 
 ;;; occ-scratch-space.el ends here

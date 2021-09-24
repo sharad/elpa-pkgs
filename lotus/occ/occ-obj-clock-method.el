@@ -273,7 +273,7 @@
 
 
 (defvar occ-ignore-buffer-names   '(" *helm" "*Help*") "occ-ignore-buffer-names")
-(defvar occ-ignore-buffer-regexps '(" *helm" "*Help*") "occ-ignore-buffer-names")
+(defvar occ-ignore-buffer-regexps '(" *helm" "*Help*" "*helpful") "occ-ignore-buffer-names")
 
 (defun occ-add-ignore-buffer-names ()
   (interactive)
