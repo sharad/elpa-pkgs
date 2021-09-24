@@ -109,21 +109,21 @@
                                                       (occ-obj-callable-helm-actions (occ-obj-gen-each-prop-fast-edits (occ-obj-tsk obj))
                                                                                      obj))
                                   :action     (list (cons "Edit"
-                                                          (occ-lambda-one-arg-run obj)))))
+                                                          (occ-clouser-call-cand-on-obj obj)))))
           (helm-edit-source     (helm-build-sync-source "edit"
                                   :candidates (list (cons "Edit"
-                                                          (occ-lambda-with-one-arg #'occ-do-properties-editor)))
+                                                          (occ-clouser-with-one-arg #'occ-do-properties-editor)))
                                   :action     (list (cons "Edit"
-                                                          (occ-lambda-one-arg-run obj)))))
+                                                          (occ-clouser-call-cand-on-obj obj)))))
           (helm-checkout-source (helm-build-sync-source "other"
                                   :candidates (list (cons (format "Continue with same clock task %s" (occ-obj-Format obj))
-                                                          (occ-lambda-with-one-arg 'skip))
+                                                          (occ-clouser-with-one-arg 'skip))
                                                     (cons "Try another clocking"
-                                                          (occ-lambda-with-one-arg 'no-action)) ;to bypass three repeat cycle of (occ-try-until ) function
+                                                          (occ-clouser-with-one-arg 'no-action)) ;to bypass three repeat cycle of (occ-try-until ) function
                                                     (cons "Checkout"
-                                                          (occ-lambda-with-one-arg #'occ-do-checkout)))
+                                                          (occ-clouser-with-one-arg #'occ-do-checkout)))
                                   :action     (list (cons "Edit"
-                                                          (occ-lambda-one-arg-run obj))))))
+                                                          (occ-clouser-call-cand-on-obj obj))))))
       (let ((sources (list helm-checkout-source
                            helm-fast-source
                            helm-edit-source)))

@@ -258,14 +258,32 @@
 
 
 ;;;###autoload
-(defun occ-lambda-with-one-arg (val-or-fun)
-  #'(lambda (obj)
-      (if (functionp val-or-fun)
-          (funcall val-or-fun obj)
-        val-or-fun)))
+(defun occ-clouser-call-obj-on-cand (obj)
+  "Closed OBJ will be called on CANDIDATE arg"
+  #'(lambda (candidate)
+      (if (functionp obj)
+          (funcall obj candidate)
+        obj)))
 
-(defun occ-lambda-one-arg-run (obj)
+;;;###autoload
+(defun occ-clouser-call-cand-on-obj (obj)
+  "CANDIDATE-FUN arguemnt will be called on closed OBJ"
   #'(lambda (candidate-fun)
       (funcall candidate-fun obj)))
+
+
+;;;###autoload
+(defun occ-lambda-call-obj (obj)
+  "Closed OBJ will be called, ignoring CANDIDATE arg"
+  #'(lambda (candidate)
+      (if (functionp obj)
+          (funcall obj)
+        obj)))
+
+;;;###autoload
+(defun occ-lambda-call-cand ()
+  "CANDIDATE-FUN arguemnt will be called"
+  #'(lambda (candidate-fun)
+      (funcall candidate-fun)))
 
 ;;; occ-util-common.el ends here

@@ -177,17 +177,17 @@
             (occ-debug
                        "TODO: if (occ-current-tsk) is not unnamed than ask confirmation by :auto-select-if-only 'confirm")
             (let ((retval (occ-do-clock-in obj
-                                        :filters             filters
-                                        :builder             builder
-                                        :return-transform    return-transform
-                                        :ap-normal           ap-normal
-                                        :ap-transf           ap-transf
-                                        :auto-select-if-only auto-select-if-only
-                                        :timeout             timeout)))
+                                           :filters             filters
+                                           :builder             builder
+                                           :return-transform    return-transform
+                                           :ap-normal           ap-normal
+                                           :ap-transf           ap-transf
+                                           :auto-select-if-only auto-select-if-only
+                                           :timeout             timeout)))
               (occ-debug "occ-do-clock-in-if-not: operate %s retval %s"
                          (occ-obj-return-in-labels-p retval
-                                                 occ-return-quit-label
-                                                 occ-return-timeout-label)
+                                                     occ-return-quit-label
+                                                     occ-return-timeout-label)
                          (occ-obj-obj retval))
               (if (occ-obj-return-in-labels-p retval
                                               occ-return-quit-label
@@ -243,14 +243,15 @@
           (progn
             (setq *occ-tsk-current-ctx* obj)
 
-            (if (occ-obj-try-to-clock-in-p obj *occ-tsk-previous-ctx*)
+            (if (occ-obj-try-to-clock-in-p obj
+                                           *occ-tsk-previous-ctx*)
                 (when (occ-do-clock-in-if-not obj
-                                           :filters             filters
-                                           :builder             builder
-                                           :ap-normal           ap-normal
-                                           :ap-transf           nil ;; ap-transf
-                                           :auto-select-if-only auto-select-if-only
-                                           :timeout             timeout)
+                                              :filters             filters
+                                              :builder             builder
+                                              :ap-normal           ap-normal
+                                              :ap-transf           nil ;; ap-transf
+                                              :auto-select-if-only auto-select-if-only
+                                              :timeout             timeout)
                   (occ-debug "occ-do-clock-in-if-chg((obj occ-ctx)): calling occ-do-clock-in-if-not")
                   (setq *occ-tsk-previous-ctx* *occ-tsk-current-ctx*))
               (prog1
@@ -259,7 +260,7 @@
                 ;;     updated with simple buffer switch as idle tiem occur. IS IT CORRECT OR BUG
                 ;; TODO: here describe reason for not trying properly, need to print where necessary.
                 (occ-do-describe-try-to-clock-in *occ-tsk-current-ctx*
-                                                *occ-tsk-previous-ctx*))))
+                                                 *occ-tsk-previous-ctx*))))
         (occ-nodisplay "occ-do-clock-in-if-chg: not enough time passed.")))))
 ;; occ-do-clock-in-if-chg
 
@@ -271,7 +272,7 @@
 (defvar *occ-tsk-current-ctx*               nil)
 
 
-(defvar occ-ignore-buffer-names '(" *helm" "*Help*") "occ-ignore-buffer-names")
+(defvar occ-ignore-buffer-names   '(" *helm" "*Help*") "occ-ignore-buffer-names")
 (defvar occ-ignore-buffer-regexps '(" *helm" "*Help*") "occ-ignore-buffer-names")
 
 (defun occ-add-ignore-buffer-names ()
@@ -313,12 +314,12 @@
           (timeout             occ-idle-timeout))
       (let* ((ap-normal occ-list-select-ap-transf-keys))
         (occ-do-clock-in-if-not ctx
-                             :filters             filters
-                             :builder             builder
-                             :ap-normal           ap-normal
-                             :ap-transf           nil ;; ap-transf
-                             :auto-select-if-only auto-select-if-only
-                             :timeout             timeout)))))
+                                :filters             filters
+                                :builder             builder
+                                :ap-normal           ap-normal
+                                :ap-transf           nil ;; ap-transf
+                                :auto-select-if-only auto-select-if-only
+                                :timeout             timeout)))))
 
 ;;;###autoload
 (defun occ-do-clock-in-curr-ctx-if-not (&optional force)
@@ -339,12 +340,12 @@
               (timeout             occ-idle-timeout))
           (let ((ap-normal '(t actions general edit)))
             (occ-do-clock-in-if-chg ctx
-                                 :filters             filters
-                                 :builder             builder
-                                 :ap-normal           ap-normal
-                                 :ap-transf           nil ;; ap-transf
-                                 :auto-select-if-only auto-select-if-only
-                                 :timeout             timeout)))))
+                                    :filters             filters
+                                    :builder             builder
+                                    :ap-normal           ap-normal
+                                    :ap-transf           nil ;; ap-transf
+                                    :auto-select-if-only auto-select-if-only
+                                    :timeout             timeout)))))
     (occ-nodisplay "%s: end occ-do-clock-in-curr-ctx-if-not" (time-stamp-string))))
 
 

@@ -59,6 +59,11 @@
 ;; add occ-child-clock-in in action
 
 
+;; (fmakunbound 'occ-helm-null-candidate)
+
+(cl-defmethod occ-helm-null-candidate ((obj occ-ctx))
+  nil)
+
 ;;
 ;; https://sachachua.com/blog/2015/03/getting-helm-org-refile-clock-create-tasks/
 
@@ -173,6 +178,21 @@
                                      :filtered-candidate-transformer nil
                                      :history                        'org-refile-history)))))))
 
+(cl-defmethod occ-obj-helm-fun-action-function-call-source ((prompt string)
+                                                            (candidates list))
+  (helm-build-sync-source prompt
+    :candidates candidates
+    :action     (list (cons "Run action"
+                            (occ-lambda-call-cand)))))
+
+(cl-defmethod occ-obj-helm-build-dummy-source ((prompt string)
+                                               (fun    compiled-function))
+  (occ-helm-dummy-source prompt fun))
+
+(cl-defmethod occ-obj-helm-build-dummy-source ((prompt string)
+                                               (fun    symbol))
+  (occ-helm-dummy-source prompt fun))
+
 (cl-defmethod occ-obj-helm-build-candidates-sources ((obj        occ-ctx)
                                                      (candidates list)
                                                      &key
@@ -186,16 +206,21 @@
                                                      prompt)
   ;; (occ-debug "occ-obj-helm-build-candidates-sources: ap-normal: %s" ap-normal)
   (list (occ-obj-helm-build-candidates-source obj
-                                          candidates
-                                          :unfiltered-count unfiltered-count
-                                          :filters          filters
-                                          :builder          builder
-                                          :ap-normal        ap-normal
-                                          :ap-transf        ap-transf
-                                          :prompt           prompt)
-        (occ-helm-dummy-source "Create (fast as child)"             #'occ-do-fast-procreate-child)
-        (occ-helm-dummy-source "Create Anonymous (fast as unnamed)" #'occ-do-fast-procreate-anonymous-child)
-        (occ-helm-dummy-source "Create by Template (use template)"  #'occ-do-fast-procreate-child)))
+                                              candidates
+                                              :unfiltered-count unfiltered-count
+                                              :filters          filters
+                                              :builder          builder
+                                              :ap-normal        ap-normal
+                                              :ap-transf        ap-transf
+                                              :prompt           prompt)
+        (occ-obj-helm-build-dummy-source "Create (fast as child)"             #'occ-do-fast-procreate-child)
+        (occ-obj-helm-build-dummy-source "Create Anonymous (fast as unnamed)" #'occ-do-fast-procreate-anonymous-child)
+        (occ-obj-helm-build-dummy-source "Create by Template (use template)"  #'occ-do-fast-procreate-child)
+        (occ-obj-helm-fun-action-function-call-source "Other Actions" (list (cons (format "Add current buffer %s to ignore list" (current-buffer))
+                                                                                  #'(lambda ()
+                                                                                      (let ((buff (buffer-name (current-buffer))))
+                                                                                        (pushnew buff occ-ignore-buffer-names)
+                                                                                        (occ-helm-null-candidate obj))))))))
 
 
 
