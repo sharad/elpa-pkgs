@@ -56,7 +56,13 @@
 (defun occ-clock-marker-unnamed-clock-p (&optional clock)
   (let ((clock (or clock
                    org-clock-marker)))
-     (occ-clock-marker-unnamed-p clock)))
+    (occ-clock-marker-unnamed-p clock)))
+
+;; defiend in occ-predicate.el
+;; (defmethod occ-unnamed-p ((obj occ-tsk))
+;;   (let ((mrk (occ-obj-marker (occ-obj-tsk obj))))
+;;     (occ-clock-marker-unnamed-p mrk)))
+
 
 (defun occ-maybe-create-clockedin-unnamed-heading ()
   (occ-debug "occ-maybe-create-clockedin-unnamed-heading: begin")

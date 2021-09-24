@@ -99,10 +99,10 @@
 (cl-defmethod occ-obj-associable-with-p ((obj occ-obj-tsk)
                                          (ctx occ-ctx))
   (occ-obj-associable-p (occ-obj-build-ctxual-tsk-with (occ-obj-tsk obj)
-                                                   ctx)))
+                                                       ctx)))
 
 
-(cl-defgeneric occ-unammed-p (obj)
+(cl-defgeneric occ-obj-unammed-p (obj)
   "occ-obj-unnamed-p")
 
 (cl-defmethod occ-obj-unnamed-p ((obj marker))

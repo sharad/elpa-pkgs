@@ -27,6 +27,9 @@
 (provide 'occ-clock)
 
 
+(require 'org-onchange) ;; for org-insert-log-note
+
+
 (require 'occ-obj-utils)
 (require 'occ-select)
 (require 'occ-prop)
@@ -86,11 +89,11 @@
   (if (or (occ-obj-unnamed-p    obj)
           (occ-obj-associable-p obj))
       (occ-do-clock-in (occ-ctsk-tsk obj)
-                    :filters   filters
-                    :builder   builder
-                    :ap-normal ap-normal
-                    :ap-transf ap-transf
-                    :timeout   timeout)
+                       :filters   filters
+                       :builder   builder
+                       :ap-normal ap-normal
+                       :ap-transf ap-transf
+                       :timeout   timeout)
     (occ-debug "occ-do-clock-in(occ-ctxual-tsk): not clocking in (occ-obj-unnamed-p obj)=%s (occ-obj-associable-p obj)=%s"
                (occ-obj-unnamed-p obj)
                (occ-obj-associable-p obj))))
@@ -146,11 +149,11 @@
           (if (or (occ-obj-unnamed-p obj)
                   (occ-obj-associable-p obj))
               (occ-do-clock-in obj-tsk
-                            :filters   filters
-                            :builder   builder
-                            :ap-normal ap-normal
-                            :ap-transf ap-transf
-                            :timeout   timeout)
+                               :filters   filters
+                               :builder   builder
+                               :ap-normal ap-normal
+                               :ap-transf ap-transf
+                               :timeout   timeout)
             (occ-debug "occ-do-clock-in(occ-ctxual-tsk): not clocking in (occ-obj-unnamed-p obj)=%s (occ-obj-associable-p obj)=%s"
                        (occ-obj-unnamed-p obj)
                        (occ-obj-associable-p obj)))
@@ -225,11 +228,11 @@
                        (occ-obj-make-return occ-return-true-label nil))
                 (if (occ-ctxual-tsk-p ctxual-tsk)
                     (occ-do-clock-in ctxual-tsk
-                                  :filters   filters
-                                  :builder   builder
-                                  :ap-normal ap-normal
-                                  :ap-transf ap-transf
-                                  :timeout   timeout)
+                                     :filters   filters
+                                     :builder   builder
+                                     :ap-normal ap-normal
+                                     :ap-transf ap-transf
+                                     :timeout   timeout)
                   (occ-message "%s is not ctxual-tsk" (occ-obj-format ctxual-tsk 'capitalize)))))
           (progn
             ;; here create unnamed tsk, no need
@@ -262,11 +265,11 @@
   (let ((ctxtual-tsk (occ-obj-build-ctxual-tsk obj)))
     (when ctxtual-tsk
       (occ-do-clock-in ctxtual-tsk
-                    :filters   filters
-                    :builder   builder
-                    :ap-normal ap-normal
-                    :ap-transf ap-transf
-                    :timeout            timeout))))
+                       :filters   filters
+                       :builder   builder
+                       :ap-normal ap-normal
+                       :ap-transf ap-transf
+                       :timeout            timeout))))
 
 
 (cl-defmethod occ-do-try-clock-in ((obj marker)
@@ -277,11 +280,11 @@
                                    ap-transf
                                    timeout)
   (occ-do-clock-in obj
-                :filters   filters
-                :builder   builder
-                :ap-normal ap-normal
-                :ap-transf ap-transf
-                :timeout   timeout))
+                   :filters   filters
+                   :builder   builder
+                   :ap-normal ap-normal
+                   :ap-transf ap-transf
+                   :timeout   timeout))
 
 (cl-defmethod occ-do-try-clock-in ((obj occ-obj-tsk)
                                    &key
@@ -291,11 +294,37 @@
                                    ap-transf
                                    timeout)
   (occ-do-clock-in obj
-                :filters   filters
-                :builder   builder
-                :ap-normal ap-normal
-                :ap-transf ap-transf
-                :timeout   timeout))
+                   :filters   filters
+                   :builder   builder
+                   :ap-normal ap-normal
+                   :ap-transf ap-transf
+                   :timeout   timeout))
+
+;; (cl-defmethod occ-do-try-clock-in ((obj occ-ctsk)
+;;                                    &key
+;;                                    filters
+;;                                    builder
+;;                                    ap-normal
+;;                                    ap-transf
+;;                                    timeout)
+;;   (let ((tsk (occ-obj-tsk obj))
+;;         (ctx (occ-obj-ctx obj))
+;;         (ctxtual-tsk (occ-obj-build-ctxual-tsk obj)))
+;;     (occ-try-until 3 (not (occ-obj-associable-p ctxtual-tsk))
+;;       (occ-message "occ-do-try-clock-in %s is not associable with %s [try %d]"
+;;                    (occ-obj-Format tsk)
+;;                    (occ-obj-Format ctx)
+;;                    (- total-tries try))
+;;       (occ-op-props-edit ctxtual-tsk))
+;;     (unless (occ-do-clock-in-if-associable ctxtual-tsk
+;;                                            :filters   filters
+;;                                            :builder   builder
+;;                                            :ap-normal ap-normal
+;;                                            :ap-transf ap-transf
+;;                                            :timeout   timeout)
+;;       (occ-message "%s is not associable with %s not clocking-in."
+;;                    (occ-obj-format tsk 'capitalize)
+;;                    (occ-obj-format ctx 'capitalize)))))
 
 (cl-defmethod occ-do-try-clock-in ((obj occ-ctsk)
                                    &key
@@ -304,24 +333,21 @@
                                    ap-normal
                                    ap-transf
                                    timeout)
-  (let ((tsk (occ-obj-tsk obj))
-        (ctx (occ-obj-ctx obj))
+  (let ((tsk         (occ-obj-tsk obj))
+        (ctx         (occ-obj-ctx obj))
         (ctxtual-tsk (occ-obj-build-ctxual-tsk obj)))
-    (occ-try-until 3 (not (occ-obj-associable-p ctxtual-tsk))
-      (occ-message "occ-do-try-clock-in %s is not associable with %s [try %d]"
-                   (occ-obj-format tsk 'capitalize)
-                   (occ-obj-format ctx 'capitalize)
-                   (- total-tries try))
-      (occ-op-props-edit ctxtual-tsk))
-    (unless (occ-do-clock-in-if-associable ctxtual-tsk
-                                        :filters   filters
-                                        :builder   builder
-                                        :ap-normal ap-normal
-                                        :ap-transf ap-transf
-                                        :timeout   timeout)
-      (occ-message "%s is not associable with %s not clocking-in."
-                   (occ-obj-format tsk 'capitalize)
-                   (occ-obj-format ctx 'capitalize)))))
+    (when (occ-obj-try-if-unassociated-p ctxtual-tsk)
+      (unless (occ-do-clock-in-if-associable ctxtual-tsk
+                                             :filters   filters
+                                             :builder   builder
+                                             :ap-normal ap-normal
+                                             :ap-transf ap-transf
+                                             :timeout   timeout)
+        (occ-message "%s is not associable with %s not clocking-in."
+                     (occ-obj-Format tsk)
+                     (occ-obj-Format ctx))))))
+
+
 
 (cl-defmethod occ-do-try-clock-in ((obj null)
                                    &key
@@ -331,11 +357,11 @@
                                    ap-transf
                                    timeout)
   (occ-do-clock-in obj
-                :filters   filters
-                :builder   builder
-                :ap-normal ap-normal
-                :ap-transf ap-transf
-                :timeout   timeout))
+                   :filters   filters
+                   :builder   builder
+                   :ap-normal ap-normal
+                   :ap-transf ap-transf
+                   :timeout   timeout))
 
 
 (cl-defmethod occ-do-try-fast-clock-in ((obj marker)
@@ -346,12 +372,38 @@
                                         ap-transf
                                         timeout)
   (occ-do-clock-in obj
-                :filters   filters
-                :builder   builder
-                :ap-normal ap-normal
-                :ap-transf ap-transf
-                :timeout   timeout))
+                   :filters   filters
+                   :builder   builder
+                   :ap-normal ap-normal
+                   :ap-transf ap-transf
+                   :timeout   timeout))
 
+
+;; (cl-defmethod occ-do-try-fast-clock-in ((obj occ-ctsk)
+;;                                         &key
+;;                                         filters
+;;                                         builder
+;;                                         ap-normal
+;;                                         ap-transf
+;;                                         timeout)
+;;   (let ((tsk (occ-obj-tsk obj))
+;;         (ctx (occ-obj-ctx obj))
+;;         (ctxtual-tsk (occ-obj-build-ctxual-tsk obj)))
+;;     (occ-try-until 3 (or (not (eq t retval))
+;;                          (occ-obj-associable-p obj))
+;;       ;; (helm (occ-obj-gen-edits-if-required obj nil nil))
+;;       ;; (setq retval
+;;       ;;       (occ-edit-properties obj '(timebeing add 10)))
+;;       (setq retval (occ-op-props-edit obj '(timebeing add 10))))
+;;     (unless (occ-do-clock-in-if-associable ctxtual-tsk
+;;                                            :filters   filters
+;;                                            :builder   builder
+;;                                            :ap-normal ap-normal
+;;                                            :ap-transf ap-transf
+;;                                            :timeout   timeout)
+;;       (occ-message "%s is not associable with %s not clocking-in."
+;;                    (occ-obj-Format tsk)
+;;                    (occ-obj-Format ctx)))))
 
 (cl-defmethod occ-do-try-fast-clock-in ((obj occ-ctsk)
                                         &key
@@ -360,22 +412,18 @@
                                         ap-normal
                                         ap-transf
                                         timeout)
-  (let ((tsk (occ-obj-tsk obj))
-        (ctx (occ-obj-ctx obj))
+  (let ((tsk         (occ-obj-tsk obj))
+        (ctx         (occ-obj-ctx obj))
         (ctxtual-tsk (occ-obj-build-ctxual-tsk obj)))
-    (occ-try-until 3 (or (not (eq t retval))
-                         (occ-obj-associable-p obj))
-      ;; (helm (occ-obj-gen-edits-if-required obj nil nil))
-      (setq retval
-            (occ-edit-properties obj '(timebeing add 10))))
-    (unless (occ-do-clock-in-if-associable ctxtual-tsk
-                                        :filters   filters
-                                        :builder   builder
-                                        :ap-normal ap-normal
-                                        :ap-transf ap-transf
-                                        :timeout   timeout)
-      (occ-message "%s is not associable with %s not clocking-in."
-                   (occ-obj-format tsk 'capitalize)
-                   (occ-obj-format ctx 'capitalize)))))
+    (when (occ-obj-try-if-unassociated-p ctxtual-tsk)
+      (unless (occ-do-clock-in-if-associable ctxtual-tsk
+                                             :filters   filters
+                                             :builder   builder
+                                             :ap-normal ap-normal
+                                             :ap-transf ap-transf
+                                             :timeout   timeout)
+        (occ-message "%s is not associable with %s not clocking-in."
+                     (occ-obj-Format tsk)
+                     (occ-obj-Format ctx))))))
 
 ;;; occ-clock.el ends here

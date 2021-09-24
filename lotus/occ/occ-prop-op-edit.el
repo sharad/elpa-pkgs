@@ -39,11 +39,11 @@
   (occ-message "(occ-obj-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
   (let ((mrk (occ-obj-marker obj)))
     (let ((retval (occ-obj-org-call-operation-at-point mrk ;work in org file
-                                                   prop
-                                                   operation
-                                                   ;; going to org world
-                                                   (occ-obj-prop-to-org prop
-                                                                        values))))
+                                                       prop
+                                                       operation
+                                                       ;; going to org world
+                                                       (occ-obj-prop-to-org prop
+                                                                            values))))
       (occ-debug "occ-obj-operation: (occ-obj-org-call-operation-at-point mrk) returnd %s" retval)
       retval)))
 
@@ -54,9 +54,9 @@
   "Accept occ compatible VALUES"
   (occ-message "(occ-obj-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
   (occ-obj-operation (occ-obj-marker obj)
-                 operation
-                 prop
-                 values))
+                     operation
+                     prop
+                     values))
 
 
 ;;; * few frequent operations
@@ -69,15 +69,15 @@
     (occ-message "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
     (if (occ-obj-list-p prop)
         (occ-obj-get-property tsk
-                          prop)
+                              prop)
       (list (occ-obj-get-property tsk
-                              prop)))))
+                                  prop)))))
 
 (cl-defmethod occ-obj-operation ((obj       occ-obj-tsk)
                                  (operation (eql add))
                                  (prop      symbol)
                                  values)
-  (let ((tsk    (occ-obj-tsk obj)))
+  (let ((tsk (occ-obj-tsk obj)))
     (occ-message "(occ-obj-operation occ-obj-tsk add): operation %s prop %s" operation prop)
     (if (occ-obj-list-p prop)
         (occ-obj-set-property tsk prop
@@ -90,7 +90,7 @@
                                  (operation (eql put))
                                  (prop      symbol)
                                  values)
-  (let ((tsk    (occ-obj-tsk obj)))
+  (let ((tsk (occ-obj-tsk obj)))
     (occ-message "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
     (if (occ-obj-list-p prop)
         (occ-obj-set-property tsk prop
@@ -102,7 +102,7 @@
                                  (operation (eql remove))
                                  (prop      symbol)
                                  values)
-  (let ((tsk    (occ-obj-tsk obj)))
+  (let ((tsk (occ-obj-tsk obj)))
     (occ-message "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
     (if (occ-obj-list-p prop
                         (occ-obj-set-property tsk prop
@@ -133,9 +133,9 @@
   "Accept occ compatible VALUES"
   (occ-message "(occ-obj-call-operation marker): operation %s prop %s" operation prop)
   (occ-obj-operation obj
-                 operation
-                 prop
-                 values))
+                     operation
+                     prop
+                     values))
 
 (cl-defmethod occ-obj-call-operation ((obj       occ-obj-tsk)
                                       (operation symbol)
@@ -144,13 +144,13 @@
   "Accept occ compatible VALUES"
   (occ-message "(occ-obj-call-operation occ-obj-tsk): operation %s prop %s" operation prop)
   (if (occ-obj-operation (occ-obj-marker obj)
-                     operation
-                     prop
-                     values)
+                         operation
+                         prop
+                         values)
       (occ-obj-operation obj
-                     operation
-                     prop
-                     values)
+                         operation
+                         prop
+                         values)
     (occ-error "Failed to %s on marker %s of %s in org world"
                operation
                (occ-obj-marker obj)
@@ -168,7 +168,7 @@
   (if (occ-obj-list-p prop)
       ;; TODO: where are generated actions?? (occ-obj-operations-for-prop 'occ-obj-tsk 'root)
       (let* ((operations (occ-obj-operations-for-prop obj
-                                                  prop))
+                                                      prop))
              ;; (actions '(("add" . add)
              ;;            ("del" . remove)
              ;;            ("put" . put)))
@@ -213,12 +213,19 @@
                                 prop-value
                               (list prop-value)))))
 
+;; Usage not implemented
+;; (occ-op-props-edit obj '(timebeing add 10)) in occ-obj-try-fast-clock-in and occ-obj-try-until-associable-p
 
 (cl-defgeneric occ-op-props-edit (obj)
   "Edit all property for forced clock-in.")
 
 (cl-defmethod occ-op-props-edit ((obj occ-obj-tsk))
   "Edit all property for forced clock-in."
-  (occ-properties-editor obj))
+  ;; (debug)
+  ;; (occ-properties-editor obj)
+  ;; (occ-do-properties-editor-combined obj)
+  (occ-do-properties-window-editor obj))
+
+
 
 ;;; occ-prop-op-edit.el ends here
