@@ -105,12 +105,12 @@
         (occ-debug "Not Keys for %s" (occ-obj-Format tsk))))))
 
 
-(defun org-get-flag-proprty-drawer (&optional force)
+(defun org-get-flag-property-drawer (&optional force)
   (let ((range (org-get-property-block (point) force)))
     (when range
       org-cycle-subtree-status)))
 
-(defun org-flag-proprty-drawer (flag
+(defun org-flag-property-drawer (flag
                                 &optional force)
   "NIL to open drawer T to close drawer"
   ;; https://orgmode.org/worg/org-hacks.html
@@ -174,7 +174,7 @@
         prop-range))))
 
 
-(defun org-get-flag-proprty-drawer-at-marker (marker
+(defun org-get-flag-property-drawer-at-marker (marker
                                               &optional force)
   (let ((buff (marker-buffer marker))
         (loc  (marker-position marker)))
@@ -182,9 +182,9 @@
                loc)
       (with-current-buffer buff
         (when (goto-char loc)
-          (org-get-flag-proprty-drawer force))))))
+          (org-get-flag-property-drawer force))))))
 
-(defun org-flag-proprty-drawer-at-marker (marker
+(defun org-flag-property-drawer-at-marker (marker
                                           flag
                                           &optional force)
   "NIL to open drawer T to close drawer"
@@ -198,13 +198,13 @@
       (with-current-buffer buff
         (let ((currloc (point)))
           (goto-char loc)
-          (occ-debug "%s: org-flag-proprty-drawer-at-marker: called to %s drawer of heading `%s' in file %s loc %d"
+          (occ-debug "%s: org-flag-property-drawer-at-marker: called to %s drawer of heading `%s' in file %s loc %d"
                      (time-stamp-string)
                      (if flag "close" "open")
                      heading
                      (buffer-file-name buff)
                      loc)
-          (org-flag-proprty-drawer flag
+          (org-flag-property-drawer flag
                                    force))))))
 
 
@@ -222,7 +222,7 @@
             (goto-char pos)
             (set-marker mrk (point))
             (recenter-top-bottom 2)
-            (let* ((prop-range (org-flag-proprty-drawer-at-marker mrk nil))
+            (let* ((prop-range (org-flag-property-drawer-at-marker mrk nil))
                    (prop-loc   (when (consp prop-range) (1- (first prop-range)))))
               (show-all)
               (if (numberp prop-loc)

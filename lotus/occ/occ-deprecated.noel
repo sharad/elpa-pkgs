@@ -303,7 +303,7 @@
 
 
 
-    (defun org-flag-proprty-drawer-at-marker (marker flag)
+    (defun org-flag-property-drawer-at-marker (marker flag)
       "NIL to open drawer T to close drawer"
       ;; https://orgmode.org/worg/org-hacks.html
       ;; https://orgmode.org/worg/org-hacks.html#org6d4906f
@@ -385,7 +385,7 @@
                   (local-cleanup
                    #'(lambda ()
                        (save-excursion ;what to do here
-                         (org-flag-proprty-drawer-at-marker marker t))
+                         (org-flag-property-drawer-at-marker marker t))
                        (when (active-minibuffer-window) ;required here, this function itself using minibuffer via helm-refile and occ-do-select-propetry
                          (abort-recursive-edit)))))
 
@@ -408,7 +408,7 @@
                            (occ-debug "timer started for win %s" win)
 
                            ;; show proptery drawer
-                           (let* ((prop-range (org-flag-proprty-drawer-at-marker marker nil))
+                           (let* ((prop-range (org-flag-property-drawer-at-marker marker nil))
                                   (prop-loc   (1- (first prop-range))))
                              (if (numberp prop-loc)
                                  (goto-char prop-loc)))
@@ -472,7 +472,7 @@
                          (local-cleanup
                           #'(lambda ()
                               (save-excursion ;what to do here
-                                (org-flag-proprty-drawer-at-marker marker t))
+                                (org-flag-property-drawer-at-marker marker t))
                               (when (active-minibuffer-window) ;required here, this function itself using minibuffer via helm-refile and occ-do-select-propetry
                                 (abort-recursive-edit)))))
 
@@ -497,7 +497,7 @@
                                 (occ-debug "timer started for win %s" win)
 
                                 ;; show proptery drawer
-                                (let* ((prop-range (org-flag-proprty-drawer-at-marker marker nil))
+                                (let* ((prop-range (org-flag-property-drawer-at-marker marker nil))
                                        (prop-loc   (1- (first prop-range))))
                                   (if (numberp prop-loc)
                                       (goto-char prop-loc)))
@@ -588,7 +588,7 @@
         (occ-debug "timer started for win %s" win)
 
         ;; show proptery drawer
-        (let* ((prop-range (org-flag-proprty-drawer-at-marker marker nil))
+        (let* ((prop-range (org-flag-property-drawer-at-marker marker nil))
                (prop-loc   (when (consp prop-range) (1- (first prop-range)))))
           (if (numberp prop-loc)
               (goto-char prop-loc)))

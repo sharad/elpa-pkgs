@@ -68,8 +68,8 @@
       (occ-obj-build-callable-normal :procreate-child-clock-in "Procreate Child Clock-in" #'occ-do-procreate-child-clock-in)
       (occ-obj-build-callable-normal :goto                     "Goto"                     #'occ-do-goto)
       (occ-obj-build-callable-normal :set-to                   "Set To"                   #'occ-set-to)
-      (occ-obj-build-callable-normal :proprty-window-edit      "Properties Window Edit"   #'occ-do-properties-window-editor) ;TODO: implement it.
-      (occ-obj-build-callable-normal :proprty-edit-combined    "Properties Edit Combined" #'occ-do-properties-editor-combined) ;TODO: implement it.
+      (occ-obj-build-callable-normal :property-window-edit      "Properties Window Edit"   #'occ-do-properties-window-editor) ;TODO: implement it.
+      (occ-obj-build-callable-normal :property-edit-combined    "Properties Edit Combined" #'occ-do-properties-editor-combined) ;TODO: implement it.
       (occ-obj-build-callable-normal :call-with-obj            "Call with object"         #'occ-do-call-with-obj)
       (occ-obj-build-callable-normal :set-debug-obj            "Set debug obj"            #'occ-do-set-debug-obj)
       (occ-obj-build-callable-normal :rank                     "Get Rank"                 #'occ-do-print-rank)
@@ -104,8 +104,8 @@
 
       (occ-add-helm-actions '(actions edit)
                             "Editing"
-                            :proprty-window-edit
-                            :proprty-edit-combined))
+                            :property-window-edit
+                            :property-edit-combined))
     (progn
       (occ-add-helm-actions '(actions general)
                             "General"

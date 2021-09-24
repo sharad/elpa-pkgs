@@ -457,7 +457,7 @@
       
     #+end_src
 
-*** Current clock status proprty of task (will rank based on task is currently clocking-in or not
+*** Current clock status property of task (will rank based on task is currently clocking-in or not
     #+begin_src emacs-lisp
       (cl-defmethod occ-obj-rankprop ((obj occ-tsk)
                                   (prop (eql current-clock)))

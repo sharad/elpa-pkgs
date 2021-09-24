@@ -48,7 +48,7 @@
 (define-key occ-mode-keymap (kbd "ls") 'occ-helm-list-select)
 (define-key occ-mode-keymap (kbd "ld") 'occ-helm-list-debug-select)
 (define-key occ-mode-keymap (kbd "ll") 'occ-helm-list-launch)
-(define-key occ-mode-keymap (kbd "le") 'occ-proprty-edit)
+(define-key occ-mode-keymap (kbd "le") 'occ-property-edit)
 
 
 (define-key occ-mode-keymap (kbd "Cc") 'occ-curr-procreate-child)
