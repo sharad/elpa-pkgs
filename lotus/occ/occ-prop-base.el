@@ -321,8 +321,8 @@ method provided.")))
   nil)
 
 
-(cl-defmethod occ-obj-valid-p ((prop symbol)
-                               operation)
+(cl-defmethod occ-obj-valid-p ((operation symbol)
+                               (prop symbol))
   (memq operation
         '(add remove get put member)))
 

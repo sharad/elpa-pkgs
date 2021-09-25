@@ -190,7 +190,7 @@
                                                    operation
                                                    values)
   "Accept org compatible VALUES"
-  (unless (occ-obj-valid-p prop operation)
+  (unless (occ-obj-valid-p operation prop)
     (occ-error "occ-obj-org-call-operation: operation %s is not allowed for prop %s" operation prop))
   (lotus-with-marker mrk
     (unless (org-get-property-block)
