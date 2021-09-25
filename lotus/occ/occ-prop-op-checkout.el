@@ -37,7 +37,8 @@
 (cl-defmethod occ-do-op-prop-checkout ((obj  occ-obj-tsk)
                                        (prop symbol))
   "Checkout property PROP for forced clock-in."
-  (occ-do-checkout-prop obj prop))
+  (occ-do-checkout-prop obj
+                        prop))
 
 
 (cl-defgeneric occ-do-op-props-checkout (obj)
@@ -46,7 +47,8 @@
 (cl-defmethod occ-do-op-props-checkout ((obj occ-obj-tsk))
   "Checkout all property for forced clock-in."
   (dolist (prop (occ-obj-properties-to-checkout obj))
-    (occ-message "occ-do-checkout: checkout prop %s" prop)
-    (occ-do-op-prop-checkout obj prop)))
+    (occ-message "occ-do-op-props-checkout: checkout prop %s" prop)
+    (occ-do-op-prop-checkout obj
+                             prop)))
 
 ;;; occ-prop-checkout.el ends here

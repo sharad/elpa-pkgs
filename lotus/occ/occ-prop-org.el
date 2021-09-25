@@ -162,9 +162,9 @@
                                     values)
   "Org operation implementation of OPERATION on POINT-OF-MARKER for PROP and VALUES"
   (occ-do-org-operation (occ-obj-marker obj)
-                     operation
-                     prop
-                     values))
+                        operation
+                        prop
+                        values))
 
 
 (cl-defgeneric occ-obj-org-call-operation (pom
@@ -213,9 +213,9 @@
                      prop
                      values)
           (let ((retval (occ-obj-org-call-operation mrk
-                                                prop
-                                                operation
-                                                values)))
+                                                    prop
+                                                    operation
+                                                    values)))
             (occ-debug "occ-obj-org-call-operation: (occ-obj-org-call-operation mrk) returned %s" retval)
             retval))
         (occ-error "occ-obj-org-call-operation-at-point: can not get property block to add property %s: %s"

@@ -33,31 +33,29 @@
 
 (cl-defmethod occ-obj-marker= ((obj marker)
                                (mrk marker))
-  (if (and
-       (occ-valid-marker obj)
-       (occ-valid-marker mrk))
+  (if (and (occ-valid-marker obj)
+           (occ-valid-marker mrk))
    (let ((obj-marker (occ-obj-heading-marker obj))
          (mrk-marker (occ-obj-heading-marker mrk)))
-     (if (and
-          (occ-valid-marker obj-marker)
-          (occ-valid-marker mrk-marker))
+     (if (and (occ-valid-marker obj-marker)
+              (occ-valid-marker mrk-marker))
       (equal obj-marker
              mrk-marker)))))
 
 (cl-defmethod occ-obj-marker= ((obj occ-obj-tsk)
                                (tsk occ-obj-tsk))
   (occ-obj-marker= (occ-obj-marker (occ-obj-tsk obj))
-               (occ-obj-marker (occ-obj-tsk tsk))))
+                   (occ-obj-marker (occ-obj-tsk tsk))))
 
 (cl-defmethod occ-obj-marker= ((obj occ-obj-tsk)
                                (mrk marker))
   (occ-obj-marker= (occ-obj-marker (occ-obj-tsk obj))
-               (occ-obj-marker mrk)))
+                   (occ-obj-marker mrk)))
 
 (cl-defmethod occ-obj-marker= ((obj marker)
                                (tsk occ-obj-tsk))
   (occ-obj-marker= (occ-obj-marker obj)
-               (occ-obj-marker (occ-obj-tsk tsk))))
+                   (occ-obj-marker (occ-obj-tsk tsk))))
 
 (cl-defmethod occ-obj-marker= ((obj occ-obj-tsk)
                                (mrk null))
@@ -74,7 +72,7 @@
 (cl-defmethod occ-obj-current-p ((obj occ-obj-tsk))
   "return if OBJ is currently clocking"
   (occ-obj-marker= (occ-current-tsk)
-               (occ-obj-tsk obj)))
+                   (occ-obj-tsk obj)))
 
 
 (cl-defgeneric occ-obj-associable-p (obj)
@@ -86,10 +84,12 @@
 
 (cl-defmethod occ-obj-associable-p ((obj occ-obj-ctx-tsk))
   "Test if CTSK is associate"     ;not required.
-  (occ-obj-associable-p (occ-obj-build-ctxual-tsk obj)))
+  (let ((ctxual-tsk (occ-obj-build-ctxual-tsk obj)))
+    (occ-obj-associable-p ctxual-tsk)))
 
 (cl-defmethod occ-obj-associable-p ((obj occ-ctxual-tsk))
-  (> (occ-obj-rank obj) 0))
+  (> (occ-obj-rank obj)
+     0))
 
 
 (cl-defgeneric occ-obj-associable-with-p (obj
@@ -98,8 +98,9 @@
 
 (cl-defmethod occ-obj-associable-with-p ((obj occ-obj-tsk)
                                          (ctx occ-ctx))
-  (occ-obj-associable-p (occ-obj-build-ctxual-tsk-with (occ-obj-tsk obj)
-                                                       ctx)))
+  (let ((ctxual-tsk (occ-obj-build-ctxual-tsk-with (occ-obj-tsk obj)
+                                                   ctx)))
+    (occ-obj-associable-p ctxual-tsk)))
 
 
 (cl-defgeneric occ-obj-unammed-p (obj)
