@@ -136,8 +136,10 @@ only argument required for some other further processing"
 
 (defun occ-obj-gen-each-prop-fast-checkouts (obj
                                              &key param-only)
-  (occ-obj-gen-each-prop-checkouts obj
-                                   :param-only param-only))
+  (append (occ-obj-gen-each-prop-checkouts obj
+                                           :param-only param-only)
+          (occ-obj-gen-each-prop-checkouts (occ-obj-tsk obj)
+                                           :param-only param-only)))
 
 
 (cl-defmethod occ-obj-gen-simple-checkouts ((obj null)

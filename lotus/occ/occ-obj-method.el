@@ -104,24 +104,22 @@
 (cl-defmethod occ-do-properties-editor-combined ((obj occ-obj-ctx-tsk))
   (let ((prompt (format "%s fast edit" (occ-obj-Format obj))))
     (let ((helm-fast-source     (helm-build-sync-source prompt
-                                  :candidates (append (occ-obj-callable-helm-actions (occ-obj-gen-each-prop-fast-edits obj)
-                                                                                     obj)
-                                                      (occ-obj-callable-helm-actions (occ-obj-gen-each-prop-fast-edits (occ-obj-tsk obj))
-                                                                                     obj))
+                                  :candidates (occ-obj-callable-helm-actions (occ-obj-gen-each-prop-fast-edits obj)
+                                                                             obj)
                                   :action     (list (cons "Edit"
                                                           (occ-clouser-call-cand-on-obj obj)))))
           (helm-edit-source     (helm-build-sync-source "edit"
                                   :candidates (list (cons "Edit"
-                                                          (occ-clouser-with-one-arg #'occ-do-properties-editor)))
+                                                          (occ-clouser-call-obj-on-cand #'occ-do-properties-editor)))
                                   :action     (list (cons "Edit"
                                                           (occ-clouser-call-cand-on-obj obj)))))
           (helm-checkout-source (helm-build-sync-source "other"
                                   :candidates (list (cons (format "Continue with same clock task %s" (occ-obj-Format obj))
-                                                          (occ-clouser-with-one-arg 'skip))
+                                                          (occ-clouser-call-obj-on-cand 'skip))
                                                     (cons "Try another clocking"
-                                                          (occ-clouser-with-one-arg 'no-action)) ;to bypass three repeat cycle of (occ-try-until ) function
+                                                          (occ-clouser-call-obj-on-cand 'no-action)) ;to bypass three repeat cycle of (occ-try-until ) function
                                                     (cons "Checkout"
-                                                          (occ-clouser-with-one-arg #'occ-do-checkout)))
+                                                          (occ-clouser-call-obj-on-cand #'occ-do-checkout)))
                                   :action     (list (cons "Edit"
                                                           (occ-clouser-call-cand-on-obj obj))))))
       (let ((sources (list helm-checkout-source

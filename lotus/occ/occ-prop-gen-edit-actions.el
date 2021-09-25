@@ -182,7 +182,10 @@
 
 
 (defun* occ-obj-gen-each-prop-fast-edits (obj &key param-only)
-  (occ-obj-gen-each-prop-edits obj :param-only param-only))
+  (append (occ-obj-gen-each-prop-edits obj
+                                       :param-only param-only)
+          (occ-obj-gen-each-prop-edits (occ-obj-tsk obj)
+                                       :param-only param-only)))
 
 
 (cl-defmethod occ-obj-gen-simple-edits ((obj null)
