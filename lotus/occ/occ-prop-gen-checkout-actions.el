@@ -101,15 +101,6 @@ only argument required for some other further processing"
     (remove nil
             checkout-ops)))
 
-;; (cl-defmethod occ-obj-gen-checkouts-if-required ((obj occ-obj-ctx-tsk)
-;;                                              &key param-only)
-;;   ;; NOTE:
-;;   ;; will not simply call (OCC-OBJ-GEN-CHECKOUTS-IF-REQUIRED ((OBJ OCC-OBJ-TSK)  &KEY PARAM-ONLY)
-;;   ;; as number of arguments are same, so we have to change OBJ argument to (OCC-OBJ-TSK OBJ)
-;;   ;; or
-;;   ;; simply call (CL-CALL-NEXT-METHOD)
-;;   (cl-call-next-method))
-
 (cl-defmethod occ-obj-gen-checkouts-if-required ((obj occ-obj-ctx)
                                                  &key param-only)
   nil)
@@ -123,11 +114,6 @@ only argument required for some other further processing"
                                                &key param-only)
   (occ-obj-gen-checkouts-if-required obj
                                  :param-only param-only))
-
-;; (cl-defmethod occ-obj-gen-each-prop-checkouts ((obj occ-obj-ctx-tsk)
-;;                                            &key param-only)
-;;   (occ-obj-gen-checkouts-if-required obj
-;;                                  :param-only param-only))
 
 (cl-defmethod occ-obj-gen-each-prop-checkouts ((obj occ-obj-ctx)
                                                &key param-only)
@@ -152,13 +138,6 @@ only argument required for some other further processing"
                                   (format "Checkout %s" (occ-obj-Format obj))
                                   #'(lambda (obj)
                                       (occ-do-op-props-checkout obj)))))
-
-;; (cl-defmethod occ-obj-gen-simple-checkouts ((obj occ-obj-ctx-tsk)
-;;                                         &key param-only)
-;;   (list (occ-obj-make-callable-normal :checkout
-;;                                   (format "Checkout %s" (occ-obj-Format obj))
-;;                                   #'(lambda (obj)
-;;                                       (occ-do-op-props-checkout obj)))))
 
 (cl-defmethod occ-obj-gen-simple-checkouts ((obj occ-obj-ctx)
                                             &key param-only)
