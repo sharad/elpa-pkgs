@@ -262,7 +262,7 @@ method provided."
 
 (cl-defmethod occ-obj-reread-props ((obj occ-tsk))
   "Read all org string properties for task TSK to occ representation."
-  (let ((props-by-is-list   (occ-cl-method-param-case   '(occ-obj-list-p (`((eql ,val)) val))))
+  (let ((props-by-is-list   (occ-cl-method-param-case '(occ-obj-list-p (`((eql ,val)) val))))
         (props-by-converter (occ-cl-method-param-case '(occ-obj-prop-from-org (`((eql ,val) t) val)))))
     (let ((props (-union props-by-is-list
                          props-by-converter))) ;dash
