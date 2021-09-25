@@ -267,10 +267,9 @@ method provided."
     (let ((props (-union props-by-is-list
                          props-by-converter))) ;dash
       (dolist (p props)
-        (occ-obj-set-property obj p
-                              (occ-obj-rereadprop-value p
-                                                        (occ-obj-get-property obj
-                                                                              p)))))))
+        (let* ((value         (occ-obj-get-property obj p))
+               (rearead-value (occ-obj-rereadprop-value p value)))
+          (occ-obj-set-property obj p rearead-value))))))
 
 (cl-defmethod occ-obj-reread-props :around (obj)
   "return PROPERTIES list that can be checked-out."
@@ -322,7 +321,7 @@ method provided.")))
 
 
 (cl-defmethod occ-obj-valid-p ((operation symbol)
-                               (prop symbol))
+                               (prop      symbol))
   (memq operation
         '(add remove get put member)))
 
