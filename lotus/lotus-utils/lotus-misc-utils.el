@@ -30,6 +30,7 @@
 
 (eval-when-compile
   (require 'elscreen))
+(require 'elscreen)
 
 (require 'lotus-utils-debug)
 (require 'timer)

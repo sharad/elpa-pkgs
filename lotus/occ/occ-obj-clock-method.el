@@ -129,6 +129,11 @@
         (ctx (occ-obj-ctx obj)))
     (occ-obj-try-if-unassociated-with-p tsk ctx)))
 
+
+(cl-defmethod occ-obj-try-if-unassociated-p ((obj null)) ;; should handle occ-ctx
+  "If clock in task is not unnamed clock then offer to increase clock time."
+  t)
+
 ;; (cl-defmethod occ-obj-try-current-if-unassociated-p ((obj occ-obj-ctx)) ;; should handle occ-ctx
 ;;   "If clock in task is not unnamed clock then offer to increase clock time."
 ;;   (occ-message "(occ-obj-try-current-if-unassociated-p (obj occ-ctx)[%s]) begin" (occ-obj-Format obj))

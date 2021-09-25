@@ -77,8 +77,8 @@
 (cl-defmethod occ-obj-tsk ((obj occ-ctsk))
   (occ-ctsk-tsk obj))
 
-(cl-defmethod occ-obj-tsk ((obj occ-ctx))
-  nil)
+;; (cl-defmethod occ-obj-tsk ((obj occ-ctx))
+;;   nil)
 
 (cl-defmethod occ-obj-tsk ((obj occ-obj-ctx))
   nil)

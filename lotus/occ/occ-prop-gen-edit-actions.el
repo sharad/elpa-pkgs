@@ -148,7 +148,7 @@
                                              (prop      null)
                                              (operation null)
                                              &key param-only)
-  (let* ((props    (occ-obj-properties-to-edit obj))
+  (let* ((props (occ-obj-properties-to-edit obj))
          ;; NOTE:
          ;; will be calling            (OCC-OBJ-GEN-EDITS-IF-REQUIRED OBJ PROP NIL :PARAM_ONLY PARAM_ONLY)
          ;; which in turn will be call (OCC-OBJ-GEN-EDITS-IF-REQUIRED OBJ PROP OPERATION :PARAM_ONLY PARAM_ONLY)
