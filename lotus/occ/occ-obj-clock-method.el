@@ -122,17 +122,16 @@
       (occ-message "(occ-obj-try-if-unassociated-p (ctx occ-ctx)) ELSE No NAMED clock active need next clock-in")
       t)))
 
+(cl-defmethod occ-obj-try-if-unassociated-p ((obj null)) ;; should handle occ-ctx
+  "If clock in task is not unnamed clock then offer to increase clock time."
+  t)
 
 (cl-defmethod occ-obj-try-if-unassociated-p ((obj occ-ctsk)) ;; should handle occ-ctx
   "If clock in task is not unnamed clock then offer to increase clock time."
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (occ-obj-try-if-unassociated-with-p tsk ctx)))
-
-
-(cl-defmethod occ-obj-try-if-unassociated-p ((obj null)) ;; should handle occ-ctx
-  "If clock in task is not unnamed clock then offer to increase clock time."
-  t)
+    (occ-obj-try-if-unassociated-with-p tsk
+                                        ctx)))
 
 ;; (cl-defmethod occ-obj-try-current-if-unassociated-p ((obj occ-obj-ctx)) ;; should handle occ-ctx
 ;;   "If clock in task is not unnamed clock then offer to increase clock time."
@@ -222,8 +221,9 @@
 
 (cl-defmethod occ-obj-try-to-clock-in-p ((curr occ-ctx)
                                          (prev occ-ctx))
-  (not              ;BUG: Reconsider whether it is catching case after some delay.
-   (equal curr prev)))
+  ;;BUG: Reconsider whether it is catching case after some delay.
+  (not (equal curr
+              prev)))
 
 (cl-defmethod occ-obj-try-to-clock-in-p ((curr occ-ctx)
                                          (prev null))
