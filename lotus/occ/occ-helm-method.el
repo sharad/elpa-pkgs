@@ -79,13 +79,15 @@
     :action (helm-make-actions prompt
                                action)))
 
-(cl-defmethod occ-obj-helm-build-obj-source ((obj occ-obj-ctx) &optional actions)
+(cl-defmethod occ-obj-helm-build-obj-source ((obj occ-obj-ctx)
+                                             &optional
+                                             actions)
   (occ-helm-build-candidates   :source
                                (occ-list obj)
                                actions))
 
 
-(cl-defmethod occ-obj-helm-fun-action-function-call-source ((prompt string)
+(cl-defmethod occ-obj-helm-fun-action-function-call-source ((prompt     string)
                                                             (candidates list))
   (helm-build-sync-source prompt
     :candidates candidates
@@ -272,7 +274,7 @@
                  (functionp (rest helm-action)))
     (funcall helm-action candidate)))
 
-(cl-defmethod occ-obj-helm-act-on-multiple ((obj        occ-ctx)
+(cl-defmethod occ-obj-helm-act-on-multiple ((obj                 occ-ctx)
                                             (candidates-filtered list)
                                             &key
                                             unfiltered-count
@@ -302,9 +304,9 @@
              (occ-message "Hello")
              (prog1
                  (helm :sources candidates-sources
-                                    :buffer  (occ-helm-select-buffer)
-                       :resume  'noresume
-                            (occ-message "Hi"))
+                       :buffer  (occ-helm-select-buffer)
+                       :resume  'noresume)
+               (occ-message "Hi")
                (setq in-occ-helm nil))))))
 
 (cl-defmethod occ-obj-helm-act ((obj                 occ-ctx)
@@ -323,18 +325,17 @@
     (occ-debug "occ-obj-helm-act1: ap-normal: %s" ap-normal)
     (occ-debug "occ-obj-helm-act1: ap-transf: %s" ap-transf)
     (let* ((ap-normal (occ-obj-build-ap-normal ap-normal))
-           (ap-transf (occ-obj-build-ap-transf ap-transf   ;; HBUG: new change
-                                           ;; (cons :callables (occ-obj-ap-callables ap-normal obj))
-                                           (occ-obj-ap-base ap-normal))))
+           (ap-transf (occ-obj-build-ap-transf ap-transf
+                                               (occ-obj-ap-base ap-normal))))
       (occ-debug "occ-obj-helm-act2: ap-normal: %s" ap-normal)
       (occ-debug "occ-obj-helm-act2: ap-transf: %s" ap-transf)
       (let* ((ap-normal (if return-transform (occ-obj-return-tranform ap-normal obj) ap-normal)) ;as return value is going to be used.
              (ap-transf (if return-transform (occ-obj-return-tranform ap-transf obj) ap-transf)))
-        (let ((fun (if (and auto-select-if-only
-                            (= 1 (length candidates-filtered)))
-                       #'occ-obj-helm-act-on-single
-                     #'occ-obj-helm-act-on-multiple)))
-          (funcall fun obj
+        (let ((helm-fun (if (and auto-select-if-only
+                                 (= 1 (length candidates-filtered)))
+                            #'occ-obj-helm-act-on-single
+                          #'occ-obj-helm-act-on-multiple)))
+          (funcall helm-fun obj
                    candidates-filtered
                    :unfiltered-count    unfiltered-count
                    :filters             filters
@@ -354,14 +355,12 @@
   (let (helm-sources)
     (push (occ-obj-helm-build-obj-source obj (list (cons "Clock in and track" selector)))
           helm-sources)
-
     (when (and (org-clocking-p)
                (marker-buffer org-clock-marker))
       (push (helm-build-sync-source "Current Clocking Tsk"
               :candidates (list (occ-obj-candidate (occ-obj-build-obj-with (occ-current-tsk)
-                                                                       obj)))
-              :action (list (cons "Clock in and track"
-                                  selector)))
+                                                                           obj)))
+              :action     (list (cons "Clock in and track" selector)))
             helm-sources))
     (funcall action (helm helm-sources))))
 
