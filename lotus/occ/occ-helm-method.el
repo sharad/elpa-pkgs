@@ -29,6 +29,7 @@
 
 (eval-when-compile
   (require 'helm-source))
+
 
 ;; (defvar occ-helm-map
 ;;   (let ((map (make-sparse-keymap)))
@@ -197,13 +198,18 @@
                                      :history                        'org-refile-history)))))))
 
 
-(defun occ-helm-ignore-ctx-buffer-source ()
+(defun occ-helm-build-ignore-ctx-buffer-source ()
   (occ-obj-helm-fun-action-function-call-source "Other Actions"
                                                 (list (cons (format "Add current buffer %s to ignore list" (current-buffer))
                                                             #'(lambda ()
                                                                 (let ((buff (buffer-name (current-buffer))))
                                                                   (pushnew buff occ-ignore-buffer-names)
                                                                   (occ-helm-null-candidate obj)))))))
+
+(defun occ-helm-build-dummy-sources ()
+  (list (occ-obj-helm-build-dummy-source "Create (fast as child)"             #'occ-do-fast-procreate-child)
+        (occ-obj-helm-build-dummy-source "Create Anonymous (fast as unnamed)" #'occ-do-fast-procreate-anonymous-child)
+        (occ-obj-helm-build-dummy-source "Create by Template (use template)"  #'occ-do-fast-procreate-child)))
 
 
 (cl-defmethod occ-obj-helm-build-candidates-sources ((obj        occ-ctx)
@@ -218,18 +224,16 @@
                                                      timeout
                                                      prompt)
   ;; (occ-debug "occ-obj-helm-build-candidates-sources: ap-normal: %s" ap-normal)
-  (list (occ-obj-helm-build-candidates-source obj
-                                              candidates
-                                              :unfiltered-count unfiltered-count
-                                              :filters          filters
-                                              :builder          builder
-                                              :ap-normal        ap-normal
-                                              :ap-transf        ap-transf
-                                              :prompt           prompt)
-        (occ-obj-helm-build-dummy-source "Create (fast as child)"             #'occ-do-fast-procreate-child)
-        (occ-obj-helm-build-dummy-source "Create Anonymous (fast as unnamed)" #'occ-do-fast-procreate-anonymous-child)
-        (occ-obj-helm-build-dummy-source "Create by Template (use template)"  #'occ-do-fast-procreate-child)
-        (occ-helm-ignore-ctx-buffer-source)))
+  (append (list (occ-obj-helm-build-candidates-source obj
+                                                      candidates
+                                                      :unfiltered-count unfiltered-count
+                                                      :filters          filters
+                                                      :builder          builder
+                                                      :ap-normal        ap-normal
+                                                      :ap-transf        ap-transf
+                                                      :prompt           prompt))
+          (occ-helm-build-dummy-sources)
+          (list (occ-helm-build-ignore-ctx-buffer-source))))
 
 
 
@@ -248,6 +252,7 @@
                                                  apn
                                                  apt))))
     (rest act)))
+
 
 (cl-defmethod occ-obj-helm-act-on-single ((obj                 occ-ctx)
                                           (candidates-filtered list)
