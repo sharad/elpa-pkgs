@@ -83,9 +83,8 @@
 (cl-defmethod occ-obj-helm-build-obj-source ((obj occ-obj-ctx)
                                              &optional
                                              actions)
-  (occ-helm-build-candidates   :source
-                               (occ-list obj)
-                               actions))
+  (occ-helm-build-candidates :source (occ-list obj)
+                             actions))
 
 
 (cl-defmethod occ-obj-helm-fun-action-function-call-source ((prompt     string)
@@ -97,11 +96,13 @@
 
 (cl-defmethod occ-obj-helm-build-dummy-source ((prompt string)
                                                (fun    compiled-function))
-  (occ-helm-dummy-source prompt fun))
+  (occ-helm-dummy-source prompt
+                         fun))
 
 (cl-defmethod occ-obj-helm-build-dummy-source ((prompt string)
                                                (fun    symbol))
-  (occ-helm-dummy-source prompt fun))
+  (occ-helm-dummy-source prompt
+                         fun))
 
 
 (defun occ-helm-build-candidate-source-prompt (prompt
