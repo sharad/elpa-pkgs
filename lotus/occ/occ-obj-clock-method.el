@@ -84,10 +84,9 @@
       ;; note: it supposed to return t or nil
       ;; (setq retval
       ;;       (occ-op-props-edit obj '(timebeing add 10)))
-      (setq retval
-            (occ-do-properties-editor-combined obj))
+      (setq retval (occ-do-properties-editor-combined obj))
       (setq obj (occ-obj-build-ctxual-tsk-with (occ-obj-tsk org-obj)
-                                           (occ-obj-make-ctx-at-point)))
+                                               (occ-obj-make-ctx-at-point)))
       (occ-message "(occ-obj-try-until-associable-p (obj occ-ctxual-tsk)[%s]): occ-try-until: (occ-obj-associable-p) %s retval %s"
                    (occ-obj-Format obj)
                    (occ-obj-associable-p obj)
@@ -283,7 +282,8 @@
 (defun occ-add-ignore-buffer-names ()
   (interactive)
   (let ((buffname (buffer-name (current-buffer))))
-    (push buffname occ-ignore-buffer-names)))
+    (push buffname
+          occ-ignore-buffer-names)))
 
 (cl-defmethod occ-do-describe-try-to-clock-in ((curr occ-ctx)
                                                (prev occ-ctx))

@@ -282,9 +282,8 @@
 
 ;;;###autoload
 (defun occ-reload (&optional uncompiled)
-  (interactive "P"))
-  ;; (occ-reload-lib uncompiled)
-  
+  (interactive "P")
+  (occ-reload-lib uncompiled))
 
 (defun occ-version (&optional here full message)
   "Show the Occ version.
@@ -295,7 +294,9 @@ FULL is given."
   (interactive (list current-prefix-arg
                      t
                      (not current-prefix-arg)))
-  (occ-message (occ-get-version here full message)))
+  (occ-message (occ-get-version here
+                                full
+                                message)))
 
 
 (defun occ-run ()
@@ -303,13 +304,12 @@ FULL is given."
   (helm :prompt "test"
         :sources (list (helm-build-sync-source "Actions"
                            :candidates (list (cons "occ clock-in current context (force)"
-                                                   #'(lambda ()
-                                                       (occ-do-clock-in-curr-ctx t)))
+                                                   #'(lambda () (occ-do-clock-in-curr-ctx t)))
                                              (cons "occ clock-in current context"
-                                                   #'(lambda ()
-                                                       (occ-do-clock-in-curr-ctx nil))))
+                                                   #'(lambda () (occ-do-clock-in-curr-ctx nil))))
                            :action     (list (cons "run"
                                                    #'(lambda (candidate-fun)
-                                                       (funcall candidate-fun))))))))
+                                                       (funcall candidate-fun)))))
+                       (occ-helm-ignore-ctx-buffer-source))))
 
 ;;; occ-commands.el ends here

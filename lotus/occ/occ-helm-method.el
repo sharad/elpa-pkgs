@@ -85,6 +85,22 @@
                                actions))
 
 
+(cl-defmethod occ-obj-helm-fun-action-function-call-source ((prompt string)
+                                                            (candidates list))
+  (helm-build-sync-source prompt
+    :candidates candidates
+    :action     (list (cons "Run action"
+                            (occ-lambda-call-cand)))))
+
+(cl-defmethod occ-obj-helm-build-dummy-source ((prompt string)
+                                               (fun    compiled-function))
+  (occ-helm-dummy-source prompt fun))
+
+(cl-defmethod occ-obj-helm-build-dummy-source ((prompt string)
+                                               (fun    symbol))
+  (occ-helm-dummy-source prompt fun))
+
+
 (defun occ-helm-build-candidate-source-prompt (prompt
                                                candidates
                                                unfiltered-count)
@@ -177,21 +193,16 @@
                                      :action-transformer             helm-transfm
                                      :filtered-candidate-transformer nil
                                      :history                        'org-refile-history)))))))
+
 
-(cl-defmethod occ-obj-helm-fun-action-function-call-source ((prompt string)
-                                                            (candidates list))
-  (helm-build-sync-source prompt
-    :candidates candidates
-    :action     (list (cons "Run action"
-                            (occ-lambda-call-cand)))))
-
-(cl-defmethod occ-obj-helm-build-dummy-source ((prompt string)
-                                               (fun    compiled-function))
-  (occ-helm-dummy-source prompt fun))
-
-(cl-defmethod occ-obj-helm-build-dummy-source ((prompt string)
-                                               (fun    symbol))
-  (occ-helm-dummy-source prompt fun))
+(defun occ-helm-ignore-ctx-buffer-source ()
+  (occ-obj-helm-fun-action-function-call-source "Other Actions"
+                                                (list (cons (format "Add current buffer %s to ignore list" (current-buffer))
+                                                            #'(lambda ()
+                                                                (let ((buff (buffer-name (current-buffer))))
+                                                                  (pushnew buff occ-ignore-buffer-names)
+                                                                  (occ-helm-null-candidate obj)))))))
+
 
 (cl-defmethod occ-obj-helm-build-candidates-sources ((obj        occ-ctx)
                                                      (candidates list)
@@ -216,11 +227,7 @@
         (occ-obj-helm-build-dummy-source "Create (fast as child)"             #'occ-do-fast-procreate-child)
         (occ-obj-helm-build-dummy-source "Create Anonymous (fast as unnamed)" #'occ-do-fast-procreate-anonymous-child)
         (occ-obj-helm-build-dummy-source "Create by Template (use template)"  #'occ-do-fast-procreate-child)
-        (occ-obj-helm-fun-action-function-call-source "Other Actions" (list (cons (format "Add current buffer %s to ignore list" (current-buffer))
-                                                                                  #'(lambda ()
-                                                                                      (let ((buff (buffer-name (current-buffer))))
-                                                                                        (pushnew buff occ-ignore-buffer-names)
-                                                                                        (occ-helm-null-candidate obj))))))))
+        (occ-helm-ignore-ctx-buffer-source)))
 
 
 

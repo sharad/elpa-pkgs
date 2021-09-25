@@ -44,6 +44,7 @@
   (define-key occ-mode-main-keymap (kbd occ-prefix-key) nil))
 
 
+(define-key occ-mode-keymap (kbd "cr") 'occ-run)
 (define-key occ-mode-keymap (kbd "ms") 'occ-helm-match-select)
 (define-key occ-mode-keymap (kbd "ls") 'occ-helm-list-select)
 (define-key occ-mode-keymap (kbd "ld") 'occ-helm-list-debug-select)
