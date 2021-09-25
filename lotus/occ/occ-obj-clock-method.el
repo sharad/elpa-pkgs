@@ -434,7 +434,7 @@
             (make-local-variable 'occ-add-inquery)
             (if (y-or-n-p-with-timeout (format "Do you want to add %s to occ: "
                                                (file-name-nondirectory file))
-                                       3
+                                       10
                                        nil)
                 (progn
                   (setq occ-add-inquery 3)
@@ -444,9 +444,9 @@
 
 (defun occ-add-org-file-timer (&optional buffer)
   (occ-nodisplay "occ-add-org-file-timer: started for buff %s, occ-add-inquery %s, occ-add-org-file-timer %s"
-             buffer
-             occ-add-inquery
-             occ-add-org-file-timer)
+                 buffer
+                 occ-add-inquery
+                 occ-add-org-file-timer)
   (let ((buffer (or buffer (current-buffer))))
     (when (buffer-live-p buffer)
       (with-current-buffer buffer
@@ -456,7 +456,7 @@
           (setq occ-add-org-file-timer nil))
         (when (< occ-add-inquery 3)
           (setq occ-add-org-file-timer
-                (run-with-idle-plus-timer (* (1+ occ-add-inquery) 10)
+                (run-with-idle-plus-timer (* (1+ occ-add-inquery) 20)
                                           nil
                                           #'occ-do-add-org-buffer buffer)))))))
 

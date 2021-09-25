@@ -82,7 +82,7 @@
 (cl-defmethod occ-obj-get-property-internal ((obj occ-obj)
                                              (prop symbol))
   ;; mainly used by occ-tsk only.
-  (occ-message "(OCC-OBJ-GET-PROPERTY (OBJ OCC-OBJ)): calling for prop %s" prop)
+  (occ-debug "(OCC-OBJ-GET-PROPERTY (OBJ OCC-OBJ)): calling for prop %s" prop)
   (if (memq prop
             (occ-cl-class-slots (occ-cl-inst-classname obj)))
       (occ-cl-get-field obj prop)
@@ -102,19 +102,19 @@
 (cl-defmethod occ-obj-get-property ((obj  occ-obj-tsk)
                                     (prop symbol))
   "Return occ compatible value of prop PROP from OCC-CTX OBJ."
-  (occ-message "(OCC-OBJ-GET-PROPERTY (OBJ OCC-OBJ-TSK)): calling for prop %s" prop)
+  (occ-debug "(OCC-OBJ-GET-PROPERTY (OBJ OCC-OBJ-TSK)): calling for prop %s" prop)
   (occ-obj-get-property-internal (occ-obj-tsk obj) prop))
 
 (cl-defmethod occ-obj-get-property ((obj  occ-obj-ctx-tsk)
                                     (prop symbol))
   "Return occ compatible value of prop PROP from OCC-CTX OBJ."
-  (occ-message "(OCC-OBJ-GET-PROPERTY (OBJ OCC-OBJ-CTX-TSK)): calling for prop %s" prop)
+  (occ-debug "(OCC-OBJ-GET-PROPERTY (OBJ OCC-OBJ-CTX-TSK)): calling for prop %s" prop)
   (occ-obj-get-property (occ-obj-tsk obj) prop))
 
 (cl-defmethod occ-obj-get-property ((obj  occ-obj-ctx)
                                     (prop symbol))
   "Return occ compatible value of prop PROP from OCC-CTX OBJ."
-  (occ-message "(OCC-OBJ-GET-PROPERTY (OBJ OCC-OBJ-CTX)): calling for prop %s" prop)
+  (occ-debug "(OCC-OBJ-GET-PROPERTY (OBJ OCC-OBJ-CTX)): calling for prop %s" prop)
   (occ-obj-get-property-value-from-ctx (occ-obj-ctx obj)
                                prop))
 
