@@ -287,14 +287,14 @@ method provided.")))
                                  (operation (eql get))
                                  (prop      symbol)
                                  values)
-  (occ-message "occ-obj-require-p11 prop %s operation %s values %s is called" prop operation values)
+  (occ-debug "occ-obj-require-p11 prop %s operation %s values %s is called" prop operation values)
   nil)
 
 (cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
                                  (operation (eql add))
                                  (prop      symbol)
                                  values)
-  (occ-message "occ-obj-require-p7 prop %s operation %s values %s is called" prop operation values)
+  (occ-debug "occ-obj-require-p7 prop %s operation %s values %s is called" prop operation values)
   (not (occ-obj-has-p obj prop
                       values)))
 
@@ -302,14 +302,14 @@ method provided.")))
                                  (operation (eql put))
                                  (prop      symbol)
                                  values)
-  (occ-message "occ-obj-require-p10 prop %s operation %s values %s is called" prop operation values)
+  (occ-debug "occ-obj-require-p10 prop %s operation %s values %s is called" prop operation values)
   nil)
 
 (cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
                                  (operation (eql remove))
                                  (prop      symbol)
                                  values)
-  (occ-message "occ-obj-require-p8 prop %s operation %s values %s is called" prop operation values)
+  (occ-debug "occ-obj-require-p8 prop %s operation %s values %s is called" prop operation values)
   (occ-obj-has-p obj prop
                  values))
 
@@ -317,7 +317,7 @@ method provided.")))
                                  (operation (eql member))
                                  (prop      symbol)
                                  values)
-  (occ-message "occ-obj-require-p9 prop %s operation %s values %s is called" prop operation values)
+  (occ-debug "occ-obj-require-p9 prop %s operation %s values %s is called" prop operation values)
   nil)
 
 
