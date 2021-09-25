@@ -116,6 +116,7 @@
 
 
 (cl-defmethod occ-obj-current-associable-p ((ctx occ-ctx))
-  (occ-obj-associable-p (occ-obj-ctxual-current-tsk ctx)))
+  (let ((ctxual-current-tsk (occ-obj-ctxual-current-tsk ctx)))
+    (occ-obj-associable-p ctxual-current-tsk)))
 
 ;;; occ-predicate.el ends here
