@@ -82,7 +82,7 @@
   (let ((subtree-level (or subtree-level
                            1))
         (tsk-builder   (or tsk-builder
-                           #'occ-obj-make-tsk-at-point)))
+                           (occ-obj-builder-tsk-at-point #'make-occ-tree-tsk))))
    (with-current-buffer (if file
                             (find-file-noselect file)
                           (current-buffer))
@@ -123,5 +123,9 @@
                                                                                0)))))))))))
              (when sub-tree      (occ-obj-set-property entry 'subtree sub-tree))
              entry)))))))
+
+(defun  occ-tree-tsk-builder ()
+  #'(lambda (file)
+      (occ-tree-tsk-build file)))
 
 ;;; occ-tree-tsk.el ends here

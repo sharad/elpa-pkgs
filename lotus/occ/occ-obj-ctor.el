@@ -72,10 +72,10 @@
 (require 'occ-property-methods)
 
 
-(defvar occ-global-tsk-collection-spec        nil)
+(defvar (occ-collections-map-spec key)        nil)
 
 
-(defvar occ-global-tsk-collection             nil)
+(defvar (occ-collections-map-get key)             nil)
 (defvar occ-global-tsk-collection-change-hook nil
   "run when occ-global-tsk-collection-change-hook get changed.")
 
@@ -91,9 +91,9 @@
 ;;          (match-string 2))))
 
 
-(defun occ-tsk-builder ()
-  (unless occ-global-tsk-collection (occ-obj-collection-object))
-  (if occ-global-tsk-collection
+(defun occ-tsk-builder-ORIGINAL ()
+  (unless (occ-collections-map-get key) (occ-obj-collection-object))
+  (if (occ-collections-map-get key)
       (let ((classname (occ-cl-inst-classname (occ-obj-collection-object))))
         (cond
          ((eq 'occ-list-collection classname)
@@ -101,8 +101,22 @@
          ((eq 'occ-tree-collection classname)
           #'make-occ-tree-tsk)
          (t
-          (occ-error "occ-global-tsk-collection is not from occ-list-collection or occ-tree-collection class"))))
-    (occ-error "occ-global-tsk-collection is NIL not from occ-list-collection or occ-tree-collection class")))
+          (occ-error "(occ-collections-map-get key) is not from occ-list-collection or occ-tree-collection class"))))
+    (occ-error "(occ-collections-map-get key) is NIL not from occ-list-collection or occ-tree-collection class")))
+
+
+(defun occ-tsk-builder (key)
+  (unless (occ-collections-map-get key) (occ-obj-collection-object))
+  (if (occ-collections-map-get key)
+      (let ((classname (occ-cl-inst-classname (occ-obj-collection-object))))
+        (cond
+         ((eq 'occ-list-collection classname)
+          #'make-occ-list-tsk)
+         ((eq 'occ-tree-collection classname)
+          #'make-occ-tree-tsk)
+         (t
+          (occ-error "(occ-collections-map-get key) is not from occ-list-collection or occ-tree-collection class"))))
+    (occ-error "(occ-collections-map-get key) is NIL not from occ-list-collection or occ-tree-collection class")))
 
 
 (defun occ-heading-content-only ()
@@ -169,7 +183,7 @@
     "TODO"))
 
 
-(defun occ-obj-make-tsk-at-point (&optional builder)
+(defun occ-obj-make-tsk-at-point-ORIGINAL (&optional builder)
     (let ((builder (or builder
                        (occ-tsk-builder))))
         (let ((tsk nil)
@@ -227,32 +241,97 @@
             (occ-obj-reread-props tsk)      ;reset list properties
             tsk))))
 
+(defun occ-obj-make-tsk-at-point (builder)
+  (let ((tsk nil)
+        (heading-with-string-prop
+         (if (org-before-first-heading-p)
+             'noheading
+           (org-get-heading 'notags))))
+       (let ((heading      (when heading-with-string-prop
+                             (if (eq heading-with-string-prop 'noheading)
+                                 heading-with-string-prop
+                               (substring-no-properties heading-with-string-prop))))
+             (heading-prop heading-with-string-prop)
+             (marker       (move-marker (make-marker)
+                                        (point)
+                                        (org-base-buffer (current-buffer))))
+             (file         (buffer-file-name))
+             (point        (point))
+             (clock-sum    (if (org-before-first-heading-p)
+                               0
+                             (org-clock-sum-current-item)))
+             ;; BUG: TODO: SHOULD need to maintain plist of :PROPERTIES:
+             ;; separately as keys for these are returned in UPCASE. while it
+             ;; is not the case with other generic properties which are not
+             ;; part of :PROPERTIES: block.
+
+             ;; NOTE also these two are mixed in one list only
+             (tsk-plist    (nth 1 (org-element-at-point))))
+         (cl-assert (evenp (length tsk-plist)))
+         (when heading
+           (setf tsk
+                 (funcall builder
+                          ;; (occ-obj-prop-from-org) from Org world to Occ world.
+                          :name         (occ-obj-prop-from-org 'name heading)
+                          :heading      (occ-obj-prop-from-org 'heading heading)
+                          :heading-prop (occ-obj-prop-from-org 'heading-prop heading-prop)
+                          :marker       (occ-obj-prop-from-org 'marker marker)
+                          :file         (occ-obj-prop-from-org 'file file)
+                          :point        (occ-obj-prop-from-org 'point point)
+                          :clock-sum    (occ-obj-prop-from-org 'clock-sum clock-sum)
+                          :cat          (occ-obj-prop-from-org 'cat (occ-get-tsk-category heading tsk-plist))
+                          :plist        (occ-tsk-plist-from-org tsk-plist)))
+           (let ((inherit         t)
+                 (inherited-props
+                  ;; is it correct ? - guess it is ok and correct.
+                  (occ-readprop-props)))
+             (dolist (prop inherited-props)
+               (let* ((propstr (if (keywordp prop)
+                                   (substring (symbol-name prop) 1)
+                                 (symbol-name prop)))
+                      (val (org-entry-get nil propstr inherit)))
+                 (unless (occ-obj-get-property tsk prop)
+                   ;; What is the solution
+                   (occ-obj-set-property tsk prop val :not-recursive t)))))
+           (progn "set :plist here"))
+         (occ-obj-reread-props tsk)      ;reset list properties
+         tsk)))
+       
+(defun occ-obj-builder-tsk-at-point (builder)
+  #'(lambda ()
+      (occ-obj-make-tsk-at-point builder)))
+
 (cl-defmethod occ-obj-make-tsk ((obj number)
-                                &optional builder)
+                                &optional
+                                (key string))
   (occ-debug "point %s" obj)
   (if (<= obj (point-max))
       (save-restriction
         (save-excursion
           (goto-char obj)
-          (occ-obj-make-tsk-at-point builder)))))
+          (occ-obj-make-tsk-at-point (occ-tsk-builder (or key "default")))))))
 
 (cl-defmethod occ-obj-make-tsk ((obj marker)
-                                &optional builder)
+                                &optional
+                                (key string))
   (occ-debug "point %s" obj)
-  (if (and
-       (marker-buffer obj)
-       (numberp       (marker-position obj)))
+  (if (and (marker-buffer obj)
+           (numberp       (marker-position obj)))
       (with-current-buffer (marker-buffer obj)
-        (if (<= (marker-position obj) (point-max))
-            (occ-obj-make-tsk (marker-position obj) builder)))))
+        (if (<= (marker-position obj)
+                (point-max))
+            (occ-obj-make-tsk (marker-position obj)
+                              key)))))
 
 (cl-defmethod occ-obj-make-tsk ((obj null)
-                                &optional builder)
+                                &optional
+                                (key string))
   (occ-debug "current pos %s" (point-marker))
-  (occ-obj-make-tsk (point-marker) builder))
+  (occ-obj-make-tsk (point-marker) key))
 
 (cl-defmethod occ-obj-make-tsk ((obj occ-tsk)
-                                &optional builder)
+                                &optional
+                                (key string))
   obj)
 
 
@@ -412,16 +491,16 @@
 
 
 (cl-defmethod occ-obj-make-tsk-collection ((file-spec (head :tree)))
-  (unless occ-global-tsk-collection
+  (unless (occ-collections-map-get key)
     (let ((collection (make-occ-tree-collection :name  "tsk collection tree"
                                                 :roots (rest file-spec))))
-      (setf occ-global-tsk-collection collection))))
+      (setf (occ-collections-map-get key) collection))))
 
 (cl-defmethod occ-obj-make-tsk-collection ((file-spec (head :list)))
-  (unless occ-global-tsk-collection
+  (unless (occ-collections-map-get key)
     (let ((collection (make-occ-list-collection :name  "tsk collection list"
                                                 :roots (rest dir-spec))))
-      (setf occ-global-tsk-collection collection))))
+      (setf (occ-collections-map-get key) collection))))
 
 
 (defun occ-obj-make-return (label

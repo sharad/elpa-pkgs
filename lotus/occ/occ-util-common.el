@@ -251,7 +251,7 @@
 
 ;;;###autoload
 (defun occ-run-with-global-tsk-collection (fn)
-  (if occ-global-tsk-collection
+  (if (occ-collections-map-get key)
       (funcall fn)
     (add-hook 'occ-global-tsk-collection-change-hook
               fn)))

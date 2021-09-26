@@ -48,8 +48,8 @@
 
 ;;;###autoload
 (defun occ-set-global-tsk-collection-spec (spec)
-  (setq occ-global-tsk-collection      nil
-        occ-global-tsk-collection-spec spec))
+  (setq (occ-collections-map-get key)      nil
+        (occ-collections-map-spec key) spec))
 
 (defun occ-reset-global-tsk-collection ()
   (occ-debug "resetting global-tsk-collection")
@@ -80,9 +80,9 @@
       (unless (member propstr org-use-property-inheritance)
         (push propstr org-use-property-inheritance))))
   (progn
-    (unless occ-global-tsk-collection-spec
+    (unless (occ-collections-map-spec key)
       (if (occ-valid-spec-p spec)
-          (setq occ-global-tsk-collection-spec spec)
+          (setq (occ-collections-map-spec key) spec)
         (when (called-interactively-p 'interactive)
           (occ-obj-build-spec)))))
   ;; newly added

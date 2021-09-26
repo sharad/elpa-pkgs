@@ -644,16 +644,16 @@ pointing to it."
 
 
 (defun occ-obj-collection-object ()
-  (unless occ-global-tsk-collection
-    (if occ-global-tsk-collection-spec
+  (unless (occ-collections-map-get key)
+    (if (occ-collections-map-spec key)
         (progn
-          (occ-obj-make-tsk-collection occ-global-tsk-collection-spec)
-          (occ-obj-collect-tsks occ-global-tsk-collection t))
+          (occ-obj-make-tsk-collection (occ-collections-map-spec key))
+          (occ-obj-collect-tsks (occ-collections-map-get key) t))
       (progn
         (occ-uninsinuate)
-        (occ-message "occ-global-tsk-collection-spec is nil, set it using M-x occ-obj-build-spec or set occ-global-tsk-collection-spec, disabled occ")
-        (occ-error "occ-global-tsk-collection-spec is nil, set it using M-x occ-obj-build-spec or set occ-global-tsk-collection-spec, disabled occ"))))
-  occ-global-tsk-collection)
+        (occ-message "(occ-collections-map-spec key) is nil, set it using M-x occ-obj-build-spec or set (occ-collections-map-spec key), disabled occ")
+        (occ-error "(occ-collections-map-spec key) is nil, set it using M-x occ-obj-build-spec or set (occ-collections-map-spec key), disabled occ"))))
+  (occ-collections-map-get key))
 
 
 ;; global-object - accessors
@@ -733,17 +733,17 @@ pointing to it."
 
 
 (cl-defmethod occ-obj-collection ((collection occ-tree-collection))
-  (unless (occ-tree-collection-tree occ-global-tsk-collection)
-    (occ-obj-collect-tsks occ-global-tsk-collection nil)
+  (unless (occ-tree-collection-tree (occ-collections-map-get key))
+    (occ-obj-collect-tsks (occ-collections-map-get key) nil)
     (run-hooks 'occ-global-tsk-collection-change-hook))
-  (occ-tree-collection-tree occ-global-tsk-collection))
+  (occ-tree-collection-tree (occ-collections-map-get key)))
 
 
 (cl-defmethod occ-obj-collection ((collection occ-list-collection))
-  (unless (occ-list-collection-list occ-global-tsk-collection)
-    (occ-obj-collect-tsks occ-global-tsk-collection nil)
+  (unless (occ-list-collection-list (occ-collections-map-get key))
+    (occ-obj-collect-tsks (occ-collections-map-get key) nil)
     (run-hooks 'occ-global-tsk-collection-change-hook))
-  (occ-list-collection-list occ-global-tsk-collection))
+  (occ-list-collection-list (occ-collections-map-get key)))
 
 
 (cl-defmethod occ-obj-collection-obj-list ((collection occ-collection)
