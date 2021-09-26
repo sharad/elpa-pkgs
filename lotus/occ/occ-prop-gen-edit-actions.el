@@ -195,9 +195,9 @@
 (cl-defmethod occ-obj-gen-simple-edits ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
                                         &key param-only)
   (list (occ-obj-make-callable-normal :edit
-                                  (format "Edit %s" (occ-obj-Format obj))
-                                  #'(lambda (obj)
-                                      (occ-op-props-edit obj)))))
+                                      (format "Edit %s" (occ-obj-Format obj))
+                                      #'(lambda (obj)
+                                          (occ-op-props-edit obj)))))
 
 (cl-defmethod occ-obj-gen-simple-edits ((obj occ-obj-ctx)
                                         &key param-only)

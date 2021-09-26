@@ -79,8 +79,10 @@
                            tsk-builder
                            subtree-level)
   "Build recursive org tsks from org FILE (or current buffer) using TSK-BUILDER function e.g. occ-collect-tsk"
-  (let ((subtree-level (or subtree-level 1))
-        (tsk-builder   (or tsk-builder #'occ-obj-make-tsk-at-point)))
+  (let ((subtree-level (or subtree-level
+                           1))
+        (tsk-builder   (or tsk-builder
+                           #'occ-obj-make-tsk-at-point)))
    (with-current-buffer (if file
                             (find-file-noselect file)
                           (current-buffer))
@@ -91,7 +93,8 @@
        (let ((entry         (funcall tsk-builder))
              (subtree-level (if subtree-level subtree-level 1)))
          (when (numberp subtree-level)
-           (occ-obj-set-property entry 'subtree-level subtree-level))
+           (occ-obj-set-property entry 'subtree-level
+                                 subtree-level))
          (cl-assert (numberp subtree-level))
          (when entry
            (let* ((sub-tree (append (occ-org-map-subheading #'(lambda ()
