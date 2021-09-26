@@ -48,9 +48,8 @@
 
 ;;;###autoload
 (defun occ-set-global-tsk-collection-spec (spec)
-  (setq
-   occ-global-tsk-collection      nil
-   occ-global-tsk-collection-spec spec))
+  (setq occ-global-tsk-collection      nil
+        occ-global-tsk-collection-spec spec))
 
 (defun occ-reset-global-tsk-collection ()
   (occ-debug "resetting global-tsk-collection")
