@@ -78,6 +78,21 @@
 (defvar (occ-collections-map-get key)             nil)
 (defvar occ-global-tsk-collection-change-hook nil
   "run when occ-global-tsk-collection-change-hook get changed.")
+
+
+(defun occ-collections-map-get (key)
+  (first (assoc key occ-collections-map-global)))
+
+(defun occ-collections-map-set (key value)
+  (setcdr (assoc key occ-collections-map-global) value))
+
+(defun occ-collections-map-spec (key)
+  (let ((colection (occ-collections-map-get key)))
+    (occ-collection-spec key)))
+
+(defun occ-collections-map-root (key)
+  (let ((colection (occ-collections-map-get key)))
+    (occ-collection-root key)))
 
 
 ;; org-todo-line-regexp
@@ -92,7 +107,8 @@
 
 
 (defun occ-tsk-builder-ORIGINAL ()
-  (unless (occ-collections-map-get key) (occ-obj-collection-object))
+  (unless (occ-collections-map-get key)
+    (occ-obj-collection-object))
   (if (occ-collections-map-get key)
       (let ((classname (occ-cl-inst-classname (occ-obj-collection-object))))
         (cond
@@ -106,7 +122,8 @@
 
 
 (defun occ-tsk-builder (key)
-  (unless (occ-collections-map-get key) (occ-obj-collection-object))
+  (unless (occ-collections-map-get key)
+    (occ-obj-collection-object))
   (if (occ-collections-map-get key)
       (let ((classname (occ-cl-inst-classname (occ-obj-collection-object))))
         (cond
@@ -490,17 +507,19 @@
   (occ-obj-build-obj-with obj (occ-obj-make-ctx-at-point)))
 
 
-(cl-defmethod occ-obj-make-tsk-collection ((file-spec (head :tree)))
+(cl-defmethod occ-obj-make-tsk-collection ((key string)
+                                           (file-spec (head :tree)))
   (unless (occ-collections-map-get key)
     (let ((collection (make-occ-tree-collection :name  "tsk collection tree"
                                                 :roots (rest file-spec))))
-      (setf (occ-collections-map-get key) collection))))
+      (occ-collections-map-set key collection))))
 
-(cl-defmethod occ-obj-make-tsk-collection ((file-spec (head :list)))
+(cl-defmethod occ-obj-make-tsk-collection ((key string)
+                                           (file-spec (head :list)))
   (unless (occ-collections-map-get key)
     (let ((collection (make-occ-list-collection :name  "tsk collection list"
                                                 :roots (rest dir-spec))))
-      (setf (occ-collections-map-get key) collection))))
+      (setf (occ-collections-map-set key collection)))))
 
 
 (defun occ-obj-make-return (label

@@ -643,11 +643,12 @@ pointing to it."
                    (occ-obj-make-tsk clock)))))))))
 
 
-(defun occ-obj-collection-object ()
-  (unless (occ-collections-map-get key)
+;; TODO: GLOBAL-TO-LOCAL
+(defun occ-obj-collection-object (key)
+  (unless (occ-collections-map-roots key)
     (if (occ-collections-map-spec key)
         (progn
-          (occ-obj-make-tsk-collection (occ-collections-map-spec key))
+          (occ-obj-make-tsk-collection key (occ-collections-map-spec key))
           (occ-obj-collect-tsks (occ-collections-map-get key) t))
       (progn
         (occ-uninsinuate)
