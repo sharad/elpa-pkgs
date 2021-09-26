@@ -611,7 +611,7 @@ pointing to it."
                 (occ-error msg))
               (occ-obj-build-ctxual-tsk-with (and clock
                                                   (occ-obj-make-tsk clock))
-                                         (occ-obj-make-ctx-at-point)))))))))
+                                             (occ-obj-make-ctx-at-point)))))))))
 
 (defun occ-current-tsk (&optional occ-other-allowed)
   (let ((curr-ctxual-tsk (occ-current-ctxual-tsk occ-other-allowed))) ;recursion
