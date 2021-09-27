@@ -185,6 +185,7 @@
 ;;;###autoload
 (defun occ-obj-make-spec ()
   (interactive)
+  ;; TODO: GLOBAL-TO-LOCAL
   (if (occ-collections-map-spec key)
       (occ-message "spec: %s already present, first reset it with occ-reset-spec"
                    (occ-collections-map-spec key))
@@ -197,6 +198,7 @@
 ;;;###autoload
 (defun occ-add-to-spec (file)
   (interactive "FSpec file: ")
+  ;; TODO: GLOBAL-TO-LOCAL
   ;; TODO: Improve to create direct tree from here rather than resetting whole (occ-collections-map-get key)
   (unless (occ-collections-map-spec key)
     (occ-obj-make-spec))
@@ -215,12 +217,14 @@
 
 ;;;###autoload
 (defun occ-add-org-file (buffer)
+  ;; TODO: GLOBAL-TO-LOCAL
   (interactive (list (current-buffer)))
   (occ-do-add-org-buffer buffer))
 
 ;;;###autoload
 (defun occ-obj-build-spec ()
   (interactive)
+  ;; TODO: GLOBAL-TO-LOCAL
   (occ-obj-make-spec)
   (when (first (occ-collections-map-spec key))
         (occ-add-to-spec (read-file-name "Spec file: ")))

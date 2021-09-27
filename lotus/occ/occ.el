@@ -48,10 +48,12 @@
 
 ;;;###autoload
 (defun occ-set-global-tsk-collection-spec (spec)
+  ;; TODO: GLOBAL-TO-LOCAL
   (setq (occ-collections-map-get key)      nil
         (occ-collections-map-spec key) spec))
 
 (defun occ-reset-global-tsk-collection ()
+  ;; TODO: GLOBAL-TO-LOCAL
   (occ-debug "resetting global-tsk-collection")
   (occ-reset-collection-object))
 
@@ -77,13 +79,16 @@
     (let ((propstr (upcase (if (keywordp prop)
                                (substring (symbol-name prop) 1)
                              (symbol-name prop)))))
-      (unless (member propstr org-use-property-inheritance)
-        (push propstr org-use-property-inheritance))))
+      (unless (member propstr
+                      org-use-property-inheritance)
+        (push propstr
+              org-use-property-inheritance))))
   (progn
     (unless (occ-collections-map-spec key)
       (if (occ-valid-spec-p spec)
           (setq (occ-collections-map-spec key) spec)
         (when (called-interactively-p 'interactive)
+          ;; TODO: GLOBAL-TO-LOCAL
           (occ-obj-build-spec)))))
   ;; newly added
   (org-clock-load))

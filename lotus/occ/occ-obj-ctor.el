@@ -72,27 +72,33 @@
 (require 'occ-property-methods)
 
 
-(defvar (occ-collections-map-spec key)        nil)
+(defvar occ-global-tsk-collection-spec        nil)
 
 
-(defvar (occ-collections-map-get key)             nil)
+(defvar occ-global-tsk-collection             nil)
 (defvar occ-global-tsk-collection-change-hook nil
   "run when occ-global-tsk-collection-change-hook get changed.")
+
 
-
-(defun occ-collections-map-get (key)
-  (first (assoc key occ-collections-map-global)))
-
-(defun occ-collections-map-set (key value)
-  (setcdr (assoc key occ-collections-map-global) value))
-
-(defun occ-collections-map-spec (key)
-  (let ((colection (occ-collections-map-get key)))
-    (occ-collection-spec key)))
-
-(defun occ-collections-map-root (key)
-  (let ((colection (occ-collections-map-get key)))
-    (occ-collection-root key)))
+(defun occ-init-collector (type)
+  (let ((collector (cond
+                    ((eq type :tree) (make-occ-tree-collector))
+                    ((eq type :list) (make-occ-list-collector)))))
+    (defun occ-collector ()
+      collector)
+    (defun occ-collector-get (key)
+      (rest (assoc key (occ-obj-collector-alist collector))))
+    (defun occ-collector-set (key value)
+      (setcdr (assoc key (occ-obj-collector-alist collector))
+              value))
+    (defun occ-collector-root (key)
+      (let ((colection (occ-collector-get key)))
+        (occ-collection-root collection)))
+    (defun occ-collector-spec (key)
+      (let ((colection (occ-collector-get key)))
+        (occ-collection-spec collection)))))
+(occ-init-collector :tree)
+;; (occ-collector)
 
 
 ;; org-todo-line-regexp
@@ -122,6 +128,7 @@
 
 
 (defun occ-tsk-builder (key)
+  ;; TODO: GLOBAL-TO-LOCAL
   (unless (occ-collections-map-get key)
     (occ-obj-collection-object))
   (if (occ-collections-map-get key)
@@ -259,11 +266,10 @@
             tsk))))
 
 (defun occ-obj-make-tsk-at-point (builder)
-  (let ((tsk nil)
-        (heading-with-string-prop
-         (if (org-before-first-heading-p)
-             'noheading
-           (org-get-heading 'notags))))
+  (let ((tsk                      nil)
+        (heading-with-string-prop (if (org-before-first-heading-p)
+                                      'noheading
+                                    (org-get-heading 'notags))))
        (let ((heading      (when heading-with-string-prop
                              (if (eq heading-with-string-prop 'noheading)
                                  heading-with-string-prop
@@ -313,7 +319,7 @@
            (progn "set :plist here"))
          (occ-obj-reread-props tsk)      ;reset list properties
          tsk)))
-       
+
 (defun occ-obj-builder-tsk-at-point (builder)
   #'(lambda ()
       (occ-obj-make-tsk-at-point builder)))

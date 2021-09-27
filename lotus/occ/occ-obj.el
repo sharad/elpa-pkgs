@@ -82,9 +82,9 @@
 ;;
 ;;                                                                                               obj
 ;;                                                                                                |
-;;                                       +--------------------------------------------------------+--------------------------------------------------------+---------------------------------------+-------------------------+
-;;                                       |                                                        |                                                        |                                       |                         |
-;;                                    obj-tsk                                                 obj-prop                                                  obj-ctx                                  filter                    action
+;;               +-----------------------+--------------------------------------------------------+--------------------------------------------------------+---------------------------------------+-------------------------+
+;;               |                       |                                                        |                                                        |                                       |                         |
+;;           collector                obj-tsk                                                 obj-prop                                                  obj-ctx                                  filter                    action
 ;;                                       |                                                        |                                                        |                                                                  |
 ;;          +----------------------------+----------------------------+                         prop                               +-----------------------+-----------------------+                               +----------+-----------+
 ;;          |                                                         |                                                            |                                               |                               |                      |
@@ -111,6 +111,13 @@
   variance)
 
 
+(cl-defstruct (occ-obj-collector (:include occ-obj))
+  alist)
+(cl-defstruct (occ-tree-collector (:include occ-obj-collector))
+  "occ-collector")
+(cl-defstruct (occ-list-collector (:include occ-obj-collector))
+  "occ-collector")
+
 (cl-defstruct (occ-obj-ctx (:include occ-obj))
   "Will hold ctx"
   filter-plist)
@@ -168,6 +175,7 @@
 
 (cl-defstruct (occ-collection (:include occ-obj-collection))
   "occ-collection"
+  spec
   roots
   files
   ;; TODO: implement it
