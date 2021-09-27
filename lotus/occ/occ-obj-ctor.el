@@ -80,23 +80,26 @@
   "run when occ-global-tsk-collection-change-hook get changed.")
 
 
+(defvar occ-global-collector nil)
 (defun occ-init-collector (type)
-  (let ((collector (cond
-                    ((eq type :tree) (make-occ-tree-collector))
-                    ((eq type :list) (make-occ-list-collector)))))
-    (defun occ-collector ()
-      collector)
-    (defun occ-collector-get (key)
-      (rest (assoc key (occ-obj-collector-alist collector))))
-    (defun occ-collector-set (key value)
-      (setcdr (assoc key (occ-obj-collector-alist collector))
-              value))
-    (defun occ-collector-root (key)
-      (let ((colection (occ-collector-get key)))
-        (occ-collection-root collection)))
-    (defun occ-collector-spec (key)
-      (let ((colection (occ-collector-get key)))
-        (occ-collection-spec collection)))))
+  (unless occ-global-collector
+    (let ((collector (cond
+                      ((eq type :tree) (make-occ-tree-collector))
+                      ((eq type :list) (make-occ-list-collector)))))
+      (setq occ-global-collector collector)
+      (defun occ-collector ()
+        collector)
+      (defun occ-collector-get (key)
+        (rest (assoc key (occ-obj-collector-alist collector))))
+      (defun occ-collector-set (key value)
+        (setcdr (assoc key (occ-obj-collector-alist collector))
+                value))
+      (defun occ-collector-root (key)
+        (let ((colection (occ-collector-get key)))
+          (occ-collection-root collection)))
+      (defun occ-collector-spec (key)
+        (let ((colection (occ-collector-get key)))
+          (occ-collection-spec collection))))))
 ;; (occ-init-collector :tree)
 ;; (occ-collector)
 
