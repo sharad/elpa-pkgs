@@ -97,7 +97,7 @@
     (defun occ-collector-spec (key)
       (let ((colection (occ-collector-get key)))
         (occ-collection-spec collection)))))
-(occ-init-collector :tree)
+;; (occ-init-collector :tree)
 ;; (occ-collector)
 
 
