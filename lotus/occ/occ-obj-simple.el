@@ -105,7 +105,7 @@
 
 
 (cl-defmethod occ-do-induct-child ((obj   occ-tree-tsk)
-                                (child occ-tree-tsk))
+                                   (child occ-tree-tsk))
   (occ-obj-set-property child 'subtree-level
                         (occ-obj-get-property obj 'subtree-level))
   (occ-insert-node-after-element child obj

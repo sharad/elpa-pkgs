@@ -667,18 +667,16 @@ pointing to it."
                                     &optional
                                     force)
   (unless (occ-tree-collection-tree collection)
-    (setf (occ-tree-collection-tree collection)
-          (remove nil (mapcar #'occ-tree-tsk-build
-                              (occ-tree-collection-roots collection)))))
+    (setf (occ-tree-collection-tree collection) (occ-obj-build-tsks collction)))
   (occ-tree-collection-tree collection))
 
 (cl-defmethod occ-obj-collect-tsks ((collection occ-list-collection)
                                     force)
   (unless (occ-list-collection-list collection)
-    (setf (occ-list-collection-list collection)
-          (append (remove nil (mapcar #'occ-list-tsk-build
-                                      (occ-list-collection-roots collection))))))
+    (setf (occ-list-collection-list collection) (occ-obj-build-tsks collction)))
   (occ-list-collection-list collection))
+
+
 
 
 (cl-defmethod occ-obj-collect-files ((collection occ-tree-collection)

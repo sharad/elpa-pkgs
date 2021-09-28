@@ -76,13 +76,12 @@
 ;; should work with any changes
 (defun occ-tree-tsk-build (&optional
                            file
-                           tsk-builder
+                           collection
                            subtree-level)
-  "Build recursive org tsks from org FILE (or current buffer) using TSK-BUILDER function e.g. occ-collect-tsk"
-  (let ((subtree-level (or subtree-level
-                           1))
-        (tsk-builder   (or tsk-builder
-                           #'occ-obj-make-tsk-at-point)))
+  "Build recursive org tsks from org FILE (or current buffer) using TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
+  (let ((subtree-level          (or subtree-level
+                                    1))
+        (tsk-builder-at-point   (occ-obj-tsk-builder-at-point collection)))
    (with-current-buffer (if file
                             (find-file-noselect file)
                           (current-buffer))
@@ -90,7 +89,7 @@
                 (> (buffer-size (current-buffer)) 30))
        (occ-setup-buffer)
        (if file (goto-char (point-min)))
-       (let ((entry         (funcall tsk-builder))
+       (let ((entry         (funcall tsk-builder-at-point))
              (subtree-level (if subtree-level subtree-level 1)))
          (when (numberp subtree-level)
            (occ-obj-set-property entry 'subtree-level
@@ -99,7 +98,7 @@
          (when entry
            (let* ((sub-tree (append (occ-org-map-subheading #'(lambda ()
                                                                 (occ-tree-tsk-build nil
-                                                                                    tsk-builder
+                                                                                    collection
                                                                                     subtree-level)))
                                     (let ((subtree-file-prop (occ-obj-get-property entry :SUBTREEFILE)))
                                       (when subtree-file-prop
@@ -114,14 +113,26 @@
                                           (if (and subtree-file
                                                    (file-readable-p subtree-file))
                                               (list (occ-tree-tsk-build subtree-file
-                                                                        tsk-builder
+                                                                        collection
                                                                         (+ 1
                                                                            (or (occ-obj-get-property entry
                                                                                                      'level)
                                                                                0)
                                                                            (or subtree-level
                                                                                0)))))))))))
-             (when sub-tree      (occ-obj-set-property entry 'subtree sub-tree))
+             (when sub-tree (occ-obj-set-property entry 'subtree
+                                                  sub-tree))
              entry)))))))
+
+(cl-defmethod occ-obj-tsk-builder ((collection occ-tree-collection))
+  #'(lambda (&optional file)
+      (occ-tree-tsk-build file
+                          collection
+                          1)))
+
+(cl-defmethod occ-obj-build-tsks ((collection occ-tree-collection))
+  (let ((builder (occ-obj-tsk-builder collection)))
+    (remove nil (mapcar builder
+                        (occ-tree-collection-roots collection)))))
 
 ;;; occ-tree-tsk.el ends here

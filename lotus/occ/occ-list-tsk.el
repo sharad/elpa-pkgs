@@ -33,9 +33,9 @@
 
 (defun occ-list-tsk-build (&optional
                            file
-                           tsk-builder)
-  "Build recursive org tsks from org FILE (or current buffer) using TSK-BUILDER function e.g. occ-collect-tsk"
-  (let ((tsk-builder   (or tsk-builder #'occ-obj-make-tsk-at-point)))
+                           collection)
+  "Build recursive org tsks from org FILE (or current buffer) using TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
+  (let ((tsk-builder-at-point   (occ-obj-tsk-builder-at-point collection)))
     (with-current-buffer (if file
                              (find-file-noselect file)
                            (current-buffer))
@@ -44,6 +44,17 @@
         (occ-setup-buffer)
         (if file (goto-char (point-min)))
         (cons entry
-              (org-map-entries tsk-builder t file))))))
+              (org-map-entries tsk-builder-at-point t file))))))
+
+(cl-defmethod occ-obj-tsk-builder ((collection occ-list-collection))
+  #'(lambda (&optional file)
+      (occ-list-tsk-build file
+                          collection)))
+
+
+(cl-defmethod occ-obj-build-tsks ((collection occ-list-collection))
+  (let ((builder (occ-obj-tsk-builder collection)))
+    (remove nil (mapcar builder
+                        (occ-list-collection-roots collection)))))
 
 ;;; occ-list-tsk.el ends here
