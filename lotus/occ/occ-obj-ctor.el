@@ -181,7 +181,7 @@
   #'make-occ-tsk)
 
 
-(defun occ-make-tsk-at-point-internal (collection)
+(defun occ-make-tsk-at-point (collection)
   (let ((builder (occ-obj-tsk-builder collection)))
     (let ((tsk                      nil)
           (heading-with-string-prop (if (org-before-first-heading-p)
@@ -238,10 +238,10 @@
             tsk))))
 
 (cl-defmethod occ-obj-make-tsk-at-point ((collection occ-obj-collection))
-  (occ-make-tsk-at-point-internal collection))
+  (occ-make-tsk-at-point collection))
 
 (cl-defmethod occ-obj-make-tsk-at-point ((collection null))
-  (occ-make-tsk-at-point-internal collection))
+  (occ-make-tsk-at-point collection))
 
 (cl-defmethod occ-obj-tsk-builder-at-point ((collection occ-obj-collection))
   #'(lambda ()
