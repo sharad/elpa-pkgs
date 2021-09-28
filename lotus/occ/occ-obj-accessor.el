@@ -643,17 +643,18 @@ pointing to it."
                    (occ-obj-make-tsk clock)))))))))
 
 
-(defun occ-obj-collection-object ()
-  (unless occ-global-tsk-collection
-    (if occ-global-tsk-collection-spec
+(defun occ-obj-collection-object (&optional key)
+  (let ((key (occ-collector-default-key)))
+    (unless (occ-collector-roots key)
+      (if (occ-collector-spec key)
+          (progn
+            ;; (occ-obj-make-collection (occ-collector-spec key))
+            (occ-obj-collect-tsks (occ-collector-get key) t))
         (progn
-          (occ-obj-make-collection occ-global-tsk-collection-spec)
-          (occ-obj-collect-tsks occ-global-tsk-collection t))
-      (progn
-        (occ-uninsinuate)
-        (occ-message "occ-global-tsk-collection-spec is nil, set it using M-x occ-obj-build-spec or set occ-global-tsk-collection-spec, disabled occ")
-        (occ-error "occ-global-tsk-collection-spec is nil, set it using M-x occ-obj-build-spec or set occ-global-tsk-collection-spec, disabled occ"))))
-  occ-global-tsk-collection)
+          (occ-uninsinuate)
+          (occ-message "(occ-collector-spec key) is nil, set it using M-x occ-obj-build-spec or set (occ-collector-spec key), disabled occ")
+          (occ-error "(occ-collector-spec key) is nil, set it using M-x occ-obj-build-spec or set (occ-collector-spec key), disabled occ"))))
+    (occ-collector-get key)))
 
 
 ;; global-object - accessors
@@ -731,17 +732,17 @@ pointing to it."
 
 
 (cl-defmethod occ-obj-collection ((collection occ-tree-collection))
-  (unless (occ-tree-collection-tree occ-global-tsk-collection)
-    (occ-obj-collect-tsks occ-global-tsk-collection nil)
+  (unless (occ-tree-collection-tree collection)
+    (occ-obj-collect-tsks collection nil)
     (run-hooks 'occ-global-tsk-collection-change-hook))
-  (occ-tree-collection-tree occ-global-tsk-collection))
+  (occ-tree-collection-tree collection))
 
 
 (cl-defmethod occ-obj-collection ((collection occ-list-collection))
-  (unless (occ-list-collection-list occ-global-tsk-collection)
-    (occ-obj-collect-tsks occ-global-tsk-collection nil)
+  (unless (occ-list-collection-list collection)
+    (occ-obj-collect-tsks collection nil)
     (run-hooks 'occ-global-tsk-collection-change-hook))
-  (occ-list-collection-list occ-global-tsk-collection))
+  (occ-list-collection-list collection))
 
 
 (cl-defmethod occ-obj-collection-obj-list ((collection occ-collection)

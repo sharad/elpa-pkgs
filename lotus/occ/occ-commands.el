@@ -180,19 +180,19 @@
 (defun occ-reset-spec (key)
   (interactive  (list (completing-read "key for spec: " (occ-collector-keys))))
   (occ-reset-collection-object key)
-  (setq occ-global-tsk-collection-spec nil))
+  (occ-collector-remove key))
 
 ;;;###autoload
 (defun occ-obj-make-spec (key)
   (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
-  (if occ-global-tsk-collection-spec
+  (if (occ-collector-spec key)
       (occ-message "spec: %s already present, first reset it with occ-reset-spec"
-                   occ-global-tsk-collection-spec)
+                   (occ-collector-spec key))
     (let ((spec (completing-read "Spec: " (occ-specs))))
       (when spec
         (occ-collector-get-create key (list (intern spec)))
         ;; (push (intern spec)
-        ;;       occ-global-tsk-collection-spec)
+        ;;       (occ-collector-spec key))
         (occ-reset-collection-object key)))))
 
 ;;;###autoload
@@ -200,20 +200,20 @@
   (interactive (list (completing-read "key for spec: " (occ-collector-keys))
                      (read-file-name "org file:")))
   ;; TODO: Improve to create direct tree from here rather than resetting whole occ-global-tsk-collection
-  (unless occ-global-tsk-collection-spec
+  (unless (occ-collector-spec key)
     (occ-obj-make-spec key))
-  (if occ-global-tsk-collection-spec
-    (unless (memq file (rest occ-global-tsk-collection-spec))
-      (let ((spec       (first occ-global-tsk-collection-spec))
-            (spec-files (rest occ-global-tsk-collection-spec)))
+  (if (occ-collector-spec key)
+    (unless (memq file (rest (occ-collector-spec key)))
+      (let ((spec       (first (occ-collector-spec key)))
+            (spec-files (rest (occ-collector-spec key))))
         (setq spec-files
              (if current-prefix-arg
                  (nconc (list file) spec-files)
                (nconc spec-files (list file))))
-        (setq occ-global-tsk-collection-spec (cons spec spec-files)))
+        (occ-collector-get-create (cons spec spec-files)))
       (prog1
-          occ-global-tsk-collection-spec
-        (occ-reset-collection-object)))))
+          (occ-collector-spec key)
+        (occ-reset-collection-object key)))))
 
 ;;;###autoload
 (defun occ-add-org-file (key buffer)
@@ -225,10 +225,10 @@
 (defun occ-obj-build-spec (key)
   (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
   (occ-obj-make-spec key)
-  (when (first occ-global-tsk-collection-spec)
+  (when (first (occ-collector-spec key))
         (occ-add-to-spec (read-file-name "Spec file: ")))
   (prog1
-      occ-global-tsk-collection-spec
+      (occ-collector-spec key)
     (occ-reset-collection-object key)))
 
 

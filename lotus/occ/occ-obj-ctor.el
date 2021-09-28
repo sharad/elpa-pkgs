@@ -155,18 +155,18 @@
     "TODO"))
 
 
-(defun occ-tsk-builder ()
-  (unless occ-global-tsk-collection (occ-obj-collection-object))
-  (if occ-global-tsk-collection
-      (let ((classname (occ-cl-inst-classname (occ-obj-collection-object))))
-        (cond
-         ((eq 'occ-list-collection classname)
-          #'make-occ-list-tsk)
-         ((eq 'occ-tree-collection classname)
-          #'make-occ-tree-tsk)
-         (t
-          #'make-occ-tsk)))
-    (occ-error "occ-global-tsk-collection is NIL not from occ-list-collection or occ-tree-collection class")))
+;; (defun occ-tsk-builder ()
+;;   (unless occ-global-tsk-collection (occ-obj-collection-object))
+;;   (if occ-global-tsk-collection
+;;       (let ((classname (occ-cl-inst-classname (occ-obj-collection-object))))
+;;         (cond
+;;          ((eq 'occ-list-collection classname)
+;;           #'make-occ-list-tsk)
+;;          ((eq 'occ-tree-collection classname)
+;;           #'make-occ-tree-tsk)
+;;          (t
+;;           #'make-occ-tsk)))
+;;     (occ-error "occ-global-tsk-collection is NIL not from occ-list-collection or occ-tree-collection class")))
 
 (cl-defmethod occ-obj-tsk-builder ((collection occ-tree-collection))
   #'make-occ-tree-tsk)
@@ -429,16 +429,12 @@
 
 
 (cl-defmethod occ-obj-make-collection ((file-spec (head :tree)))
-  (unless occ-global-tsk-collection
-    (let ((collection (make-occ-tree-collection :name  "tsk collection tree"
-                                                :roots (rest file-spec))))
-      (setf occ-global-tsk-collection collection))))
+  (make-occ-tree-collection :name  "tsk collection tree"
+                            :roots (rest file-spec)))
 
 (cl-defmethod occ-obj-make-collection ((file-spec (head :list)))
-  (unless occ-global-tsk-collection
-    (let ((collection (make-occ-list-collection :name  "tsk collection list"
-                                                :roots (rest dir-spec))))
-      (setf occ-global-tsk-collection collection))))
+  (make-occ-list-collection :name  "tsk collection list"
+                            :roots (rest dir-spec)))
 
 
 (defun occ-obj-make-return (label

@@ -84,7 +84,7 @@
 
 (defun occ-reset-global-tsk-collection ()
   (occ-debug "resetting global-tsk-collection")
-  (occ-reset-collection-object))
+  (occ-reset-collection-object (occ-collector-default-key)))
 
 
 ;;;###autoload
@@ -111,11 +111,11 @@
       (unless (member propstr org-use-property-inheritance)
         (push propstr org-use-property-inheritance))))
   (progn
-    (unless occ-global-tsk-collection-spec
+    (unless (occ-collector-spec (occ-collector-default-key))
       (if (occ-valid-spec-p spec)
-          (setq occ-global-tsk-collection-spec spec)
+          (occ-collector-get-create (occ-collector-default-key) spec)
         (when (called-interactively-p 'interactive)
-          (occ-obj-build-spec)))))
+          (occ-obj-build-spec (occ-collector-default-key))))))
   ;; newly added
   (org-clock-load))
 
