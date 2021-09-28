@@ -115,7 +115,21 @@
   "Will hold ctx"
   filter-plist)
 (cl-defstruct (occ-obj-collection (:include occ-obj-ctx))
-  "Will hold collection")
+  "Will hold collection"
+  spec
+  roots
+  files
+  ;; TODO: implement it
+  file-lcp)
+(cl-defstruct (occ-collection (:include occ-obj-collection))
+  "occ-collection"
+  )
+(cl-defstruct (occ-list-collection (:include occ-collection))
+  "occ-list-collection"
+  list)
+(cl-defstruct (occ-tree-collection (:include occ-list-collection))
+  "occ-tree-collection"
+  tree)
 
 
 ;; (cl-defstruct (occ-prop (:include occ-obj-prop))
@@ -164,20 +178,6 @@
   tsk)
 (cl-defstruct (occ-ctxual-tsk (:include occ-ctsk))
   rank)
-
-
-(cl-defstruct (occ-collection (:include occ-obj-collection))
-  "occ-collection"
-  roots
-  files
-  ;; TODO: implement it
-  file-lcp)
-(cl-defstruct (occ-list-collection (:include occ-collection))
-  "occ-list-collection"
-  list)
-(cl-defstruct (occ-tree-collection (:include occ-list-collection))
-  "occ-tree-collection"
-  tree)
 
 
 ;; TODO: need to add ability to be proxy object

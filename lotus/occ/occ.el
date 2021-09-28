@@ -37,6 +37,26 @@
 (require 'occ-config)
 
 
+(defvar *occ-collector* nil)
+(defvar *occ-collector-default-key* "default")
+
+(defun occ-collector-get (key)
+  (rest (assoc key *occ-collector*)))
+(defun occ-collector-set (key value)
+  (setcdr (assoc key *occ-collector*) value))
+(defun occ-collector-spec (key)
+  (let ((collection (occ-collector-get key)))
+    (when collection
+      (occ-obj-collection-spec collection))))
+(defun occ-collector-roots (key)
+  (let ((collection (occ-collector-get key)))
+    (when collection
+      (occ-obj-collection-roots collection))))
+(defun occ-collector-files (key)
+  (let ((collection (occ-collector-get key)))
+    (when collection
+      (occ-obj-collection-files collection))))
+
 ;; ;;;###autoload
 ;; (defun occ-switch-buffer-run-curr-ctx-timer-function (prev next)
 ;;   (occ-run-curr-ctx-timer))
