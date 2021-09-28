@@ -82,7 +82,7 @@
   (let ((subtree-level (or subtree-level
                            1))
         (tsk-builder   (or tsk-builder
-                           (occ-obj-builder-tsk-at-point #'make-occ-tree-tsk))))
+                           (occ-obj-make-tsk-at-point #'make-occ-tree-tsk))))
    (with-current-buffer (if file
                             (find-file-noselect file)
                           (current-buffer))

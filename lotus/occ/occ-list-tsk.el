@@ -36,7 +36,7 @@
                            tsk-builder)
   "Build recursive org tsks from org FILE (or current buffer) using TSK-BUILDER function e.g. occ-collect-tsk"
   (let ((tsk-builder   (or tsk-builder
-                           (occ-obj-builder-tsk-at-point #'make-occ-list-tsk))))
+                           (occ-obj-make-tsk-at-point #'make-occ-list-tsk))))
     (with-current-buffer (if file
                              (find-file-noselect file)
                            (current-buffer))

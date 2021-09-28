@@ -130,7 +130,7 @@
     (occ-error "(occ-collections-map-get key) is NIL not from occ-list-collection or occ-tree-collection class")))
 
 
-(defun occ-tsk-builder (key)
+(defun occ-tsk-builder ()
   ;; TODO: GLOBAL-TO-LOCAL
   (unless (occ-collections-map-get key)
     (occ-obj-collection-object))
@@ -142,7 +142,10 @@
          ((eq 'occ-tree-collection classname)
           #'make-occ-tree-tsk)
          (t
-          (occ-error "(occ-collections-map-get key) is not from occ-list-collection or occ-tree-collection class"))))
+          #'make-occ-tsk)
+         ;; (t
+         ;;  (occ-error "(occ-collections-map-get key) is not from occ-list-collection or occ-tree-collection class"))
+         ))
     (occ-error "(occ-collections-map-get key) is NIL not from occ-list-collection or occ-tree-collection class")))
 
 
@@ -335,7 +338,7 @@
       (save-restriction
         (save-excursion
           (goto-char obj)
-          (occ-obj-make-tsk-at-point (occ-tsk-builder (or key "default")))))))
+          (occ-obj-make-tsk-at-point (occ-tsk-builder t))))))
 
 (cl-defmethod occ-obj-make-tsk ((obj marker)
                                 &optional
