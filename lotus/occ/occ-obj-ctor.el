@@ -181,7 +181,7 @@
   #'make-occ-tsk)
 
 
-(cl-defmethod occ-obj-make-tsk-at-point ((collection occ-obj-collection))
+(defun occ-make-tsk-at-point-internal (collection)
   (let ((builder (occ-obj-tsk-builder collection)))
     (let ((tsk                      nil)
           (heading-with-string-prop (if (org-before-first-heading-p)
@@ -237,36 +237,38 @@
             (occ-obj-reread-props tsk)      ;reset list properties
             tsk))))
 
+(cl-defmethod occ-obj-make-tsk-at-point ((collection occ-obj-collection))
+  (occ-make-tsk-at-point-internal collection))
+
+(cl-defmethod occ-obj-make-tsk-at-point ((collection null))
+  (occ-make-tsk-at-point-internal collection))
+
 (cl-defmethod occ-obj-tsk-builder-at-point ((collection occ-obj-collection))
   #'(lambda ()
       (occ-obj-make-tsk-at-point collection)))
 
-(cl-defmethod occ-obj-make-tsk ((obj number)
-                                &optional builder)
+(cl-defmethod occ-obj-make-tsk ((obj number))
   (occ-debug "point %s" obj)
   (if (<= obj (point-max))
       (save-restriction
         (save-excursion
           (goto-char obj)
-          (occ-obj-make-tsk-at-point builder)))))
+          (occ-obj-make-tsk-at-point nil)))))
 
-(cl-defmethod occ-obj-make-tsk ((obj marker)
-                                &optional builder)
+(cl-defmethod occ-obj-make-tsk ((obj marker))
   (occ-debug "point %s" obj)
   (if (and
        (marker-buffer obj)
        (numberp       (marker-position obj)))
       (with-current-buffer (marker-buffer obj)
         (if (<= (marker-position obj) (point-max))
-            (occ-obj-make-tsk (marker-position obj) builder)))))
+            (occ-obj-make-tsk (marker-position obj))))))
 
-(cl-defmethod occ-obj-make-tsk ((obj null)
-                                &optional builder)
+(cl-defmethod occ-obj-make-tsk ((obj null))
   (occ-debug "current pos %s" (point-marker))
-  (occ-obj-make-tsk (point-marker) builder))
+  (occ-obj-make-tsk (point-marker)))
 
-(cl-defmethod occ-obj-make-tsk ((obj occ-tsk)
-                                &optional builder)
+(cl-defmethod occ-obj-make-tsk ((obj occ-tsk))
   obj)
 
 
