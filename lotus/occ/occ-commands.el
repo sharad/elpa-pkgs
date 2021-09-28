@@ -177,14 +177,14 @@
 
 
 ;;;###autoload
-(defun occ-reset-spec ()
-  (interactive)
-  (occ-reset-collection-object)
+(defun occ-reset-spec (key)
+  (interactive  (list (completing-read "key for spec: " (occ-collector-keys))))
+  (occ-reset-collection-object key)
   (setq occ-global-tsk-collection-spec nil))
 
 ;;;###autoload
-(defun occ-obj-make-spec ()
-  (interactive)
+(defun occ-obj-make-spec (key)
+  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
   (if occ-global-tsk-collection-spec
       (occ-message "spec: %s already present, first reset it with occ-reset-spec"
                    occ-global-tsk-collection-spec)
@@ -195,11 +195,12 @@
         (occ-reset-collection-object)))))
 
 ;;;###autoload
-(defun occ-add-to-spec (file)
-  (interactive "FSpec file: ")
+(defun occ-add-to-spec (key file)
+  (interactive (list (completing-read "key for spec: " (occ-collector-keys))
+                     (read-file-name "org file:")))
   ;; TODO: Improve to create direct tree from here rather than resetting whole occ-global-tsk-collection
   (unless occ-global-tsk-collection-spec
-    (occ-obj-make-spec))
+    (occ-obj-make-spec key))
   (if occ-global-tsk-collection-spec
     (unless (memq file (rest occ-global-tsk-collection-spec))
       (let ((spec       (first occ-global-tsk-collection-spec))
@@ -214,19 +215,20 @@
         (occ-reset-collection-object)))))
 
 ;;;###autoload
-(defun occ-add-org-file (buffer)
-  (interactive (list (current-buffer)))
+(defun occ-add-org-file (key buffer)
+  (interactive (list (completing-read "key for spec: " (occ-collector-keys))
+                     (current-buffer)))
   (occ-do-add-org-buffer buffer))
 
 ;;;###autoload
-(defun occ-obj-build-spec ()
-  (interactive)
-  (occ-obj-make-spec)
+(defun occ-obj-build-spec (key)
+  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+  (occ-obj-make-spec key)
   (when (first occ-global-tsk-collection-spec)
         (occ-add-to-spec (read-file-name "Spec file: ")))
   (prog1
       occ-global-tsk-collection-spec
-    (occ-reset-collection-object)))
+    (occ-reset-collection-object key)))
 
 
 ;; testing verification

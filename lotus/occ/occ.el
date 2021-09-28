@@ -56,6 +56,9 @@
   (let ((collection (occ-collector-get key)))
     (when collection
       (occ-obj-collection-files collection))))
+(defun occ-collector-keys ()
+  (append (list *occ-collector-default-key*)
+          (mapcar #'car *occ-collector*)))
 
 ;; ;;;###autoload
 ;; (defun occ-switch-buffer-run-curr-ctx-timer-function (prev next)
