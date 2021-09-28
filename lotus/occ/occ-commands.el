@@ -61,7 +61,7 @@
   (occ-obj-list-launch ctx))
 
 ;;;###autoload
-(defun occ-proprty-edit ()
+(defun occ-property-edit ()
   (interactive)
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (occ-do-properties-window-editor ctx
