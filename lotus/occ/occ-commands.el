@@ -257,10 +257,9 @@
 
 
 ;;;###autoload
-(defun occ-reset-collection-object ()
-  (interactive)
-  (setq occ-global-tsk-collection nil)
-  occ-global-tsk-collection)
+(defun occ-reset-collection-object (key)
+  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+  (occ-collector-remove key))
 
 ;;;###autoload
 (defun occ-insinuate (&optional spec)
