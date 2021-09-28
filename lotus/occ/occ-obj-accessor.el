@@ -734,14 +734,14 @@ pointing to it."
 (cl-defmethod occ-obj-collection ((collection occ-tree-collection))
   (unless (occ-tree-collection-tree collection)
     (occ-obj-collect-tsks collection nil)
-    (run-hooks 'occ-global-tsk-collection-change-hook))
+    (run-hooks '*occ-collection-change-hook*))
   (occ-tree-collection-tree collection))
 
 
 (cl-defmethod occ-obj-collection ((collection occ-list-collection))
   (unless (occ-list-collection-list collection)
     (occ-obj-collect-tsks collection nil)
-    (run-hooks 'occ-global-tsk-collection-change-hook))
+    (run-hooks '*occ-collection-change-hook*))
   (occ-list-collection-list collection))
 
 

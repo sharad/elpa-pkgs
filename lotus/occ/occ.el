@@ -1,4 +1,4 @@
-;;; occ.el --- occ               -*- lexical-binding: t; -*-
+\;;; occ.el --- occ               -*- lexical-binding: t; -*-
 ;; Copyright (C) 2016  sharad
 
 ;; Author: sharad <>
@@ -40,8 +40,10 @@
 (defvar *occ-collector* nil)
 (defvar *occ-collector-default-key* "default")
 
-(defun occ-collector-default-key ()
-  *occ-collector-default-key*)
+(defun occ-collector-default-key (&optional key)
+  (if key
+      (setq *occ-collector-default-key* key)
+    *occ-collector-default-key*))
 (defun occ-collector-get (key)
   (alist-get key *occ-collector*))
 (defun occ-collector-get-create (key spec)
@@ -78,12 +80,12 @@
 
 
 ;;;###autoload
-(defun occ-set-global-tsk-collection-spec (spec)
-  (setq occ-global-tsk-collection      nil
-        occ-global-tsk-collection-spec spec))
+(defun occ-set-deafult-tsk-collection-spec (spec)
+  (occ-collector-get-create (occ-collector-default-key)
+                            spec))
 
-(defun occ-reset-global-tsk-collection ()
-  (occ-debug "resetting global-tsk-collection")
+(defun occ-reset-deafult-tsk-collection ()
+  (occ-debug "resetting deafult-tsk-collection")
   (occ-reset-collection-object (occ-collector-default-key)))
 
 

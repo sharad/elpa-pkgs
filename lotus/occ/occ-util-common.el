@@ -231,8 +231,8 @@
                               (file-truename f2))))
           ;; TODO workaround do complete nil, later change it to optimized.
           ;; TODO update existing occ-collection.tree or occ-collection.list
-          (occ-reset-global-tsk-collection)
-        (occ-debug :debug "file %s not resetting global-tsk-collection" file)))))
+          (occ-reset-deafult-tsk-collection)
+        (occ-debug :debug "file %s not resetting deafult-tsk-collection" file)))))
 
 
 (defun occ-warn-on-buffer-kill ()
@@ -250,10 +250,10 @@
 
 
 ;;;###autoload
-(defun occ-run-with-global-tsk-collection (fn)
+(defun occ-run-with-deafult-tsk-collection (fn)
   (if (occ-obj-collection-object)
       (funcall fn)
-    (add-hook 'occ-global-tsk-collection-change-hook
+    (add-hook '*occ-collection-change-hook*
               fn)))
 
 

@@ -175,7 +175,10 @@
   (interactive)
   (occ-rl-unregister-resolve-clock))
 
-
+;;;###autoload
+(defun occ-switch-default-key (key)
+  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+  (occ-collector-default-key key))
 ;;;###autoload
 (defun occ-reset-spec (key)
   (interactive  (list (completing-read "key for spec: " (occ-collector-keys))))
