@@ -253,7 +253,8 @@
       (save-restriction
         (save-excursion
           (goto-char obj)
-          (occ-obj-make-tsk-at-point nil)))))
+          (let ((collection nil))
+            (occ-obj-make-tsk-at-point collection))))))
 
 (cl-defmethod occ-obj-make-tsk ((obj marker))
   (occ-debug "point %s" obj)
