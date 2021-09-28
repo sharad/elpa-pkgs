@@ -647,7 +647,7 @@ pointing to it."
   (unless occ-global-tsk-collection
     (if occ-global-tsk-collection-spec
         (progn
-          (occ-obj-make-tsk-collection occ-global-tsk-collection-spec)
+          (occ-obj-make-collection occ-global-tsk-collection-spec)
           (occ-obj-collect-tsks occ-global-tsk-collection t))
       (progn
         (occ-uninsinuate)

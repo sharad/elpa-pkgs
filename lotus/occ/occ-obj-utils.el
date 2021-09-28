@@ -92,7 +92,7 @@
 
 
 (defun occ-specs ()
-  (occ-cl-method-param-case '(occ-obj-make-tsk-collection (`((head ,val)) val))))
+  (occ-cl-method-param-case '(occ-obj-make-collection (`((head ,val)) val))))
 
 (defun occ-valid-spec-p (spec)
   t)

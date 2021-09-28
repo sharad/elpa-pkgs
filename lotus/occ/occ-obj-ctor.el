@@ -428,13 +428,13 @@
   (occ-obj-build-obj-with obj (occ-obj-make-ctx-at-point)))
 
 
-(cl-defmethod occ-obj-make-tsk-collection ((file-spec (head :tree)))
+(cl-defmethod occ-obj-make-collection ((file-spec (head :tree)))
   (unless occ-global-tsk-collection
     (let ((collection (make-occ-tree-collection :name  "tsk collection tree"
                                                 :roots (rest file-spec))))
       (setf occ-global-tsk-collection collection))))
 
-(cl-defmethod occ-obj-make-tsk-collection ((file-spec (head :list)))
+(cl-defmethod occ-obj-make-collection ((file-spec (head :list)))
   (unless occ-global-tsk-collection
     (let ((collection (make-occ-list-collection :name  "tsk collection list"
                                                 :roots (rest dir-spec))))

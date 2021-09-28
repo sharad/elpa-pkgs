@@ -190,9 +190,10 @@
                    occ-global-tsk-collection-spec)
     (let ((spec (completing-read "Spec: " (occ-specs))))
       (when spec
-        (push (intern spec)
-              occ-global-tsk-collection-spec)
-        (occ-reset-collection-object)))))
+        (occ-collector-get-create key (list (intern spec)))
+        ;; (push (intern spec)
+        ;;       occ-global-tsk-collection-spec)
+        (occ-reset-collection-object key)))))
 
 ;;;###autoload
 (defun occ-add-to-spec (key file)
@@ -218,7 +219,7 @@
 (defun occ-add-org-file (key buffer)
   (interactive (list (completing-read "key for spec: " (occ-collector-keys))
                      (current-buffer)))
-  (occ-do-add-org-buffer buffer))
+  (occ-do-add-org-buffer key buffer))
 
 ;;;###autoload
 (defun occ-obj-build-spec (key)

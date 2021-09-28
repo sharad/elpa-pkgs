@@ -40,7 +40,13 @@
 (defvar *occ-collector* nil)
 (defvar *occ-collector-default-key* "default")
 
+(defun occ-collector-default-key ()
+  *occ-collector-default-key*)
 (defun occ-collector-get (key)
+  (alist-get key *occ-collector*))
+(defun occ-collector-get-create (key spec)
+  (unless (alist-get key *occ-collector*)
+    (setf (alist-get key *occ-collector*) (occ-obj-make-collection spec)))
   (alist-get key *occ-collector*))
 (defun occ-collector-remove (key)
   (assoc-delete-all key *occ-collector*))

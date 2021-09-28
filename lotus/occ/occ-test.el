@@ -257,7 +257,7 @@
 (when nil
   (progn
     (setq occ-global-tsk-collection nil)
-    (occ-obj-make-tsk-collection occ-global-tsk-collection-spec)
+    (occ-obj-make-collection occ-global-tsk-collection-spec)
     (occ-tree-collection-tree occ-global-tsk-collection)
     (occ-obj-collect-tsks occ-global-tsk-collection t)
     (occ-tree-collection-roots occ-global-tsk-collection)

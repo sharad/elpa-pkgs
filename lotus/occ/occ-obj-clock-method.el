@@ -423,7 +423,8 @@
 (defvar occ-add-inquery        0)
 (defvar occ-add-org-file-timer nil)
 
-(cl-defmethod occ-do-add-org-buffer ((buff buffer))
+(cl-defmethod occ-do-add-org-buffer ((key  string)
+                                     (buff buffer))
   (if (eql buff (current-buffer))
     (when (< occ-add-inquery 3)
       (let ((file (buffer-file-name buff)))
@@ -438,16 +439,17 @@
                                        nil)
                 (progn
                   (setq occ-add-inquery 3)
-                  (occ-add-to-spec file))
+                  (occ-add-to-spec key file))
               (incf occ-add-inquery)))))))
-  (occ-add-org-file-timer buff))
+  (occ-add-org-file-timer key buff))
 
-(defun occ-add-org-file-timer (&optional buffer)
+(defun occ-add-org-file-timer (&optional key buffer)
   (occ-nodisplay "occ-add-org-file-timer: started for buff %s, occ-add-inquery %s, occ-add-org-file-timer %s"
                  buffer
                  occ-add-inquery
                  occ-add-org-file-timer)
-  (let ((buffer (or buffer (current-buffer))))
+  (let ((key    (occ-collector-default-key))
+        (buffer (or buffer (current-buffer))))
     (when (buffer-live-p buffer)
       (with-current-buffer buffer
         (make-local-variable 'occ-add-org-file-timer)
