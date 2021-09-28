@@ -41,9 +41,11 @@
 (defvar *occ-collector-default-key* "default")
 
 (defun occ-collector-get (key)
-  (rest (assoc key *occ-collector*)))
+  (alist-get key *occ-collector*))
+(defun occ-collector-remove (key)
+  (assoc-delete-all key *occ-collector*))
 (defun occ-collector-set (key value)
-  (setcdr (assoc key *occ-collector*) value))
+  (setcdr (alist-get key *occ-collector*) value))
 (defun occ-collector-spec (key)
   (let ((collection (occ-collector-get key)))
     (when collection
