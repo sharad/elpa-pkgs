@@ -177,7 +177,9 @@
 (cl-defmethod occ-obj-filter-min ((obj occ-ctx)
                                   sequence
                                   &key rank)
-  (remove-if-not #'(lambda (obj) (>= (funcall rank obj) occ-filter-min))
+  (remove-if-not #'(lambda (obj)
+                     (>= (funcall rank obj)
+                         occ-filter-min))
                  sequence))
 
 (occ-obj-filter-add :min "Minimum" #'occ-obj-filter-min)
