@@ -214,7 +214,7 @@
              (if current-prefix-arg
                  (nconc (list file) spec-files)
                (nconc spec-files (list file))))
-        (occ-collector-get-create (cons spec spec-files)))
+        (setf (occ-collection-spec (occ-collector-get key)) (cons spec spec-files)))
       (prog1
           (occ-collector-spec key)
         (occ-reset-collection-object key)))))
@@ -230,7 +230,7 @@
   (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
   (occ-obj-make-spec key)
   (when (first (occ-collector-spec key))
-        (occ-add-to-spec (read-file-name "Spec file: ")))
+        (occ-add-to-spec key (read-file-name "Spec file: ")))
   (prog1
       (occ-collector-spec key)
     (occ-reset-collection-object key)))

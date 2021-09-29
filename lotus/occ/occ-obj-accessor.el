@@ -668,13 +668,13 @@ pointing to it."
                                     &optional
                                     force)
   (unless (occ-tree-collection-tree collection)
-    (setf (occ-tree-collection-tree collection) (occ-obj-build-tsks collction)))
+    (setf (occ-tree-collection-tree collection) (occ-obj-build-tsks collection)))
   (occ-tree-collection-tree collection))
 
 (cl-defmethod occ-obj-collect-tsks ((collection occ-list-collection)
                                     force)
   (unless (occ-list-collection-list collection)
-    (setf (occ-list-collection-list collection) (occ-obj-build-tsks collction)))
+    (setf (occ-list-collection-list collection) (occ-obj-build-tsks collection)))
   (occ-list-collection-list collection))
 
 
