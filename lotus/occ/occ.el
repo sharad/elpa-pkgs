@@ -1,4 +1,4 @@
-\;;; occ.el --- occ               -*- lexical-binding: t; -*-
+;;; occ.el --- occ               -*- lexical-binding: t; -*-
 ;; Copyright (C) 2016  sharad
 
 ;; Author: sharad <>
@@ -70,7 +70,6 @@
   (append (list *occ-collector-default-key*)
           (mapcar #'car *occ-collector*)))
 
-;; ;;;###autoload
 ;; (defun occ-switch-buffer-run-curr-ctx-timer-function (prev next)
 ;;   (occ-run-curr-ctx-timer))
 
@@ -95,6 +94,7 @@
   (setq *occ-tsk-previous-ctx* (occ-obj-make-ctx-at-point))
   (progn
     (setq occ-mode t)
+    (occ-helm-config-initialize)
     (occ-enable-mode-map)
     (occ-register-resolve-clock)
     (occ-cancel-timer)

@@ -30,33 +30,28 @@
 (require 'occ-helm)
 
 
-;; TODO
-;;;###autoload
-(org-capture+-add-heading-template '(occ tsk clockable todo) "TODO"
-                                   "* TODO %? %^g\n %i\n [%a]\n")
-;;;###autoload
-(org-capture+-add-heading-template '(occ tsk clockable todo) "TODO"
-                                   "* MILESTONE %? %^g\n %i\n [%a]\n")
-;;;###autoload
-(org-capture+-add-heading-template '(occ tsk clockable meeting) "MEETING"
-                                   "* MEETING %? %^g\n %i\n [%a]\n")
-
-;; NOTE
-;;;###autoload
-(org-capture+-add-heading-template '(occ tsk unclockable note) "NOTE"
-                                   "* <NOTE> %? %^g\n %i\n [%a]\n")
-;; INFO
-;;;###autoload
-(org-capture+-add-heading-template '(occ tsk unclockable info) "INFO"
-                                   "* <INFO> %? %^g\n %i\n [%a]\n")
-;; EVENT
-;;;###autoload
-(org-capture+-add-heading-template '(occ tsk unclockable event) "EVENT"
-                                   "* <EVENT> %? %^g\n %i\n [%a]\n")
 
-
-(progn
+;;;###autoload
+(defun occ-helm-config-initialize ()
+  (interactive)
   (progn
+    (progn
+      ;; TODO
+      (org-capture+-add-heading-template '(occ tsk clockable todo) "TODO"
+                                         "* TODO %? %^g\n %i\n [%a]\n")
+      (org-capture+-add-heading-template '(occ tsk clockable todo) "TODO"
+                                         "* MILESTONE %? %^g\n %i\n [%a]\n")
+      (org-capture+-add-heading-template '(occ tsk clockable meeting) "MEETING"
+                                         "* MEETING %? %^g\n %i\n [%a]\n")
+      ;; NOTE
+      (org-capture+-add-heading-template '(occ tsk unclockable note) "NOTE"
+                                         "* <NOTE> %? %^g\n %i\n [%a]\n")
+      ;; INFO
+      (org-capture+-add-heading-template '(occ tsk unclockable info) "INFO"
+                                         "* <INFO> %? %^g\n %i\n [%a]\n")
+      ;; EVENT
+      (org-capture+-add-heading-template '(occ tsk unclockable event) "EVENT"
+                                         "* <EVENT> %? %^g\n %i\n [%a]\n"))
     (progn
       (setq occ-helm-callables nil)
       (occ-obj-build-callable-normal :ignore                   "Ignore"                   #'ignore)
@@ -81,44 +76,45 @@
       (occ-obj-build-callable-generator :edits-gen          "Simple Edit"     #'occ-obj-gen-simple-edits)
       (occ-obj-build-callable-generator :checkouts-gen      "Simple Checkout" #'occ-obj-gen-simple-checkouts)
       (occ-obj-build-callable-generator :fast-checkouts-gen "Fast Checkouts"  #'occ-obj-gen-each-prop-fast-checkouts)
-      (occ-obj-build-callable-generator :misc-gen           "Misc"            #'occ-obj-gen-misc)))
-
-  (progn
-    (setq occ-helm-actions-tree '(t))
+      (occ-obj-build-callable-generator :misc-gen           "Misc"            #'occ-obj-gen-misc))
     (progn
-      (occ-add-helm-actions '(actions select)
-                            "Select"
-                            :identity)
+     (setq occ-helm-actions-tree '(t))
+     (progn
+       (occ-add-helm-actions '(actions select)
+                             "Select"
+                             :identity)
 
-      (occ-add-helm-actions '(actions general)
-                            "Simple"
-                            :procreate-child
-                            :procreate-child-clock-in
-                            :call-with-obj
-                            :set-debug-obj
-                            :try-clock-in
-                            :goto
-                            :rank
-                            :tsk
-                            :describe)
+       (occ-add-helm-actions '(actions general)
+                             "Simple"
+                             :procreate-child
+                             :procreate-child-clock-in
+                             :call-with-obj
+                             :set-debug-obj
+                             :try-clock-in
+                             :goto
+                             :rank
+                             :tsk
+                             :describe)
 
-      (occ-add-helm-actions '(actions edit)
-                            "Editing"
-                            :property-window-edit
-                            :property-edit-combined))
-    (progn
-      (occ-add-helm-actions '(actions general)
-                            "General"
-                            :misc-gen)
+       (occ-add-helm-actions '(actions edit)
+                             "Editing"
+                             :property-window-edit
+                             :property-edit-combined))
+     (progn
+       (occ-add-helm-actions '(actions general)
+                             "General"
+                             :misc-gen)
 
-      (occ-add-helm-actions '(actions edit)
-                            "Editing"
-                            :fast-edits-gen
-                            :edits-gen)
+       (occ-add-helm-actions '(actions edit)
+                             "Editing"
+                             :fast-edits-gen
+                             :edits-gen)
 
-      (occ-add-helm-actions '(actions checkout)
-                            "Checkout"
-                            :fast-checkouts-gen
-                            :checkouts-gen))))
+       (occ-add-helm-actions '(actions checkout)
+                             "Checkout"
+                             :fast-checkouts-gen
+                             :checkouts-gen)))))
+
+  
 
 ;;; occ-helm-config.el ends here

@@ -30,6 +30,8 @@
 (require 'org-onchange) ;; for org-insert-log-note
 
 
+(require 'occ-obj-ctor)
+(require 'occ-helm)
 (require 'occ-obj-utils)
 (require 'occ-select)
 (require 'occ-prop)
