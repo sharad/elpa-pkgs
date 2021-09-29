@@ -109,11 +109,12 @@
   ;; https://www.merriam-webster.com/thesaurus/pack%20(up%20or%20off)
   (occ-error "Implement it."))
 
+
 ;; action
-(cl-defmethod occ-do-log-not ()
+(cl-defmethod occ-do-log-note ()
   (occ-error "Implement it."))
 
-(cl-defmethod occ-do-curr-tsk-log-not ()
+(cl-defmethod occ-do-curr-tsk-log-note ()
   (occ-error "Implement it."))
 
 
@@ -266,10 +267,10 @@
   (occ-collector-remove key))
 
 ;;;###autoload
-(defun occ-insinuate (&optional spec)
+(defun occ-insinuate (&optional key)
   (interactive)
   (occ-message "occ-insinuate: begin")
-  (occ-initialize spec)
+  (occ-initialize key)
   (occ-message "occ-insinuate: finish"))
 
 ;;;###autoload

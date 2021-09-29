@@ -29,6 +29,7 @@
 (require 'switch-buffer-functions)
 
 
+(require 'occ-obj-ctor)
 (require 'occ-main)
 (require 'occ-util-common)
 (require 'occ-commands)
@@ -38,7 +39,7 @@
 
 
 (defvar *occ-collector* nil)
-(defvar *occ-collector-default-key* "default")
+(defvar *occ-collector-default-key* 'default)
 
 (defun occ-collector-default-key (&optional key)
   (if key
@@ -89,7 +90,7 @@
 
 
 ;;;###autoload
-(defun occ-initialize (&optional spec)
+(defun occ-initialize (&optional key)
   "occ-initialize"
   (setq *occ-tsk-previous-ctx* (occ-obj-make-ctx-at-point))
   (progn
@@ -98,7 +99,7 @@
     (occ-enable-mode-map)
     (occ-register-resolve-clock)
     (occ-cancel-timer)
-    (occ-reset-collection-object)
+    (occ-reset-collection-object key)
     (occ-ctx-clrhash)
     ;; (add-hook 'buffer-list-update-hook     'occ-run-curr-ctx-timer t)
     ;; (add-hook 'elscreen-screen-update-hook 'occ-run-curr-ctx-timer t)
@@ -113,11 +114,11 @@
       (unless (member propstr org-use-property-inheritance)
         (push propstr org-use-property-inheritance))))
   (progn
-    (unless (occ-collector-spec (occ-collector-default-key))
-      (if (occ-valid-spec-p spec)
-          (occ-collector-get-create (occ-collector-default-key) spec)
+    (unless (occ-collector-spec key)
+      (if nil ;; (occ-valid-spec-p spec)
+          (occ-collector-get-create key spec)
         (when (called-interactively-p 'interactive)
-          (occ-obj-build-spec (occ-collector-default-key))))))
+          (occ-obj-build-spec key)))))
   ;; newly added
   (org-clock-load))
 
@@ -129,7 +130,7 @@
     (occ-disable-mode-map)
     (occ-unregister-resolve-clock)
     (occ-cancel-timer)
-    (occ-reset-collection-object)
+    (occ-reset-collection-object (occ-collector-default-key))
     (occ-ctx-clrhash)
     ;; (setq buffer-list-update-hook nil)
 

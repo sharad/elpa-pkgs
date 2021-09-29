@@ -407,7 +407,8 @@
 (cl-defmethod occ-obj-build-ctxual-tsk ((obj occ-ctsk)
                                         &optional
                                         rank)
-  (occ-obj-make-ctxual-tsk obj rank))
+  (occ-obj-make-ctxual-tsk obj
+                           rank))
 
 (cl-defmethod occ-obj-build-ctxual-tsk ((obj occ-ctxual-tsk)
                                         &optional
@@ -417,19 +418,23 @@
 
 (cl-defmethod occ-obj-build-obj-with ((obj occ-tsk)
                                       (ctx occ-ctx))
-   (occ-obj-build-ctxual-tsk-with obj ctx))
+  (occ-obj-build-ctxual-tsk-with obj
+                                 ctx))
 
 (cl-defmethod occ-obj-build-obj-with ((obj occ-tsk)
                                       (ctx null))
-  (occ-obj-build-obj-with obj (occ-obj-make-ctx-at-point)))
+  (occ-obj-build-obj-with obj
+                          (occ-obj-make-ctx-at-point)))
 
 
 (cl-defmethod occ-obj-make-collection ((file-spec (head :tree)))
   (make-occ-tree-collection :name  "tsk collection tree"
+                            :spec  file-spec
                             :roots (rest file-spec)))
 
 (cl-defmethod occ-obj-make-collection ((file-spec (head :list)))
   (make-occ-list-collection :name  "tsk collection list"
+                            :spec  file-spec
                             :roots (rest dir-spec)))
 
 

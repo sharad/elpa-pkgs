@@ -106,7 +106,7 @@
   :keymap occ-mode-main-keymap
   :group 'occ
   (if occ-mode
-      (occ-insinuate)
+      (occ-insinuate (occ-collector-default-key))
     (occ-uninsinuate)))
 
 ;;; occ-mode.el ends here
