@@ -214,7 +214,8 @@
              (if current-prefix-arg
                  (nconc (list file) spec-files)
                (nconc spec-files (list file))))
-        (setf (occ-collection-spec (occ-collector-get key)) (cons spec spec-files)))
+        (setf (occ-collection-spec (occ-collector-get key)) (cons spec spec-files)
+              (occ-collection-roots (occ-collector-get key)) spec-files))
       (prog1
           (occ-collector-spec key)
         (occ-reset-collection-object key)))))

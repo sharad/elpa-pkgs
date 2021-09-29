@@ -678,8 +678,6 @@ pointing to it."
   (occ-list-collection-list collection))
 
 
-
-
 (cl-defmethod occ-obj-collect-files ((collection occ-tree-collection)
                                      &optional
                                      force)
