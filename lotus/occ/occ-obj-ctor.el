@@ -163,7 +163,7 @@
 ;;          (t
 ;;           #'make-occ-tsk)))
 ;;     (occ-error "occ-global-tsk-collection is NIL not from occ-list-collection or occ-tree-collection class")))
-o
+
 (cl-defmethod occ-obj-tsk-builder ((collection occ-tree-collection))
   #'make-occ-tree-tsk)
 
