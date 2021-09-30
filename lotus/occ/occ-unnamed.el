@@ -90,14 +90,12 @@
   (let* ((unnamed-heading-marker (rest (org-without-org-clock-persist
                                          (lotus-org-create-unnamed-task))))
          (unnamed-tsk            (when unnamed-heading-marker
-                                   (occ-obj-make-tsk unnamed-heading-marker
-                                                     (occ-tsk-builder)))))
+                                   (occ-obj-make-tsk unnamed-heading-marker))))
     unnamed-tsk))
 
 (occ-testing
-  (occ-cl-inst-classname (occ-obj-make-tsk org-clock-hd-marker (occ-tsk-builder)))
-  (setq unnamed-test (occ-obj-make-tsk org-clock-hd-marker
-                                       (occ-tsk-builder)))
+  (occ-cl-inst-classname (occ-obj-make-tsk org-clock-hd-marker))
+  (setq unnamed-test (occ-obj-make-tsk org-clock-hd-marker))
   (occ-tsk-marker unnamed-test)
   (type-of (lotus-org-unnamed-task-clock-marker)))
 

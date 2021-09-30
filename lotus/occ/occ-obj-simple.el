@@ -197,9 +197,9 @@
  (occ-obj-list-debug-select (occ-obj-make-ctx-at-point)
                             :ap-normal '(t actions select)
                             :obtrusive nil)
-  (occ-obj-list-select (occ-obj-make-ctx-at-point)
-                   :ap-normal '(t actions select)
-                   :obtrusive nil)
+ (occ-obj-list-select (occ-obj-make-ctx-at-point)
+                      :ap-normal '(t actions select)
+                      :obtrusive nil)
 
 
   (occ-obj-list-debug-select (occ-obj-make-ctx-at-point)
@@ -257,8 +257,8 @@
                                    clock-in)
   (if (not (occ-obj-unnamed-p obj))
       (occ-do-capture obj
-                   :clock-in clock-in ;; helm-current-prefix-arg
-                   :template template)
+                      :clock-in clock-in ;; helm-current-prefix-arg
+                      :template template)
     (let ((title (occ-obj-title obj 'captilize)))
      (occ-error "%s is unnamed %s so can not create child "
            (occ-obj-format obj 'captilize)
@@ -292,9 +292,9 @@
                                             clock-in)
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (occ-do-capture nil
-                 :clock-in         clock-in ;; helm-current-prefix-arg
-                 :template         (occ-obj-tsk-txt ctx heading)
-                 :immediate-finish t)))
+                    :clock-in         clock-in ;; helm-current-prefix-arg
+                    :template         (occ-obj-tsk-txt ctx heading)
+                    :immediate-finish t)))
 
 (cl-defmethod occ-do-procreate-anonymous-child ((heading string)
                                                 &key
@@ -302,8 +302,8 @@
                                                 clock-in)
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (occ-do-capture nil
-                 :clock-in clock-in ;; helm-current-prefix-arg
-                 :template (occ-obj-tsk-txt ctx heading))))
+                    :clock-in clock-in ;; helm-current-prefix-arg
+                    :template (occ-obj-tsk-txt ctx heading))))
 
 
 (cl-defmethod occ-do-fast-procreate-anonymous-child ((heading string)
@@ -315,12 +315,11 @@
                                            ;; TODO: Implement it.
                                            (lotus-org-create-anonymous-task))))
           (anonymous-tsk (when anonymous-heading-marker
-                           (occ-obj-make-tsk anonymous-heading-marker
-                                         (occ-tsk-builder)))))
+                           (occ-obj-make-tsk anonymous-heading-marker))))
       (occ-do-capture anonymous-tsk
-                   :clock-in         clock-in ;; helm-current-prefix-arg
-                   :template         (occ-obj-tsk-txt ctx heading)
-                   :immediate-finish t))))
+                      :clock-in         clock-in ;; helm-current-prefix-arg
+                      :template         (occ-obj-tsk-txt ctx heading)
+                      :immediate-finish t))))
 
 
 (cl-defgeneric occ-do-procreate-child-clock-in (obj)

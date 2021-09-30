@@ -46,14 +46,14 @@
         (cons entry
               (org-map-entries tsk-builder-at-point t file))))))
 
-(cl-defmethod occ-obj-tsk-family-builder ((collection occ-list-collection))
+(cl-defmethod occ-obj-drived-tsk-builder ((collection occ-list-collection))
   #'(lambda (&optional file)
       (occ-list-tsk-build file
                           collection)))
 
 
 (cl-defmethod occ-obj-build-tsks ((collection occ-list-collection))
-  (let ((builder (occ-obj-tsk-family-builder collection)))
+  (let ((builder (occ-obj-drived-tsk-builder collection)))
     (remove nil (mapcar builder
                         (occ-list-collection-roots collection)))))
 

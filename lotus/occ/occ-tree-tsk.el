@@ -124,14 +124,14 @@
                                                   sub-tree))
              entry)))))))
 
-(cl-defmethod occ-obj-tsk-family-builder ((collection occ-tree-collection))
+(cl-defmethod occ-obj-drived-tsk-builder ((collection occ-tree-collection))
   #'(lambda (&optional file)
       (occ-tree-tsk-build file
                           collection
                           1)))
 
 (cl-defmethod occ-obj-build-tsks ((collection occ-tree-collection))
-  (let ((builder (occ-obj-tsk-family-builder collection)))
+  (let ((builder (occ-obj-drived-tsk-builder collection)))
     (remove nil (mapcar builder
                         (occ-tree-collection-roots collection)))))
 
