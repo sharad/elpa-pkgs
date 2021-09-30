@@ -116,19 +116,19 @@
           (seq-partition plist 2)))
 
 (defun occ-util-plist-value-mapcar (fun plist)
-  (apply #'append
-         (occ-plist-mapcar #'(lambda (c)
-                               (list (first c)
-                                     (funcall fun (nth 1 c))))
-                           plist)))
+  (mapcan #'identity
+          (occ-plist-mapcar #'(lambda (c)
+                                (list (first c)
+                                      (funcall fun (nth 1 c))))
+                            plist)))
 
 (defun occ-tsk-plist-from-org (plist)
-  (let ((ret-plist (apply #'append
-                          (occ-util-plist-mapcar #'(lambda (c)
-                                                     (list (first c)
-                                                           (occ-obj-prop-from-org (occ-util-keyword2sym (first c))
-                                                                                  (nth 1 c))))
-                                                 plist))))
+  (let ((ret-plist (mapcan #'identity
+                           (occ-util-plist-mapcar #'(lambda (c)
+                                                      (list (first c)
+                                                            (occ-obj-prop-from-org (occ-util-keyword2sym (first c))
+                                                                                   (nth 1 c))))
+                                                  plist))))
     (cl-assert (evenp (length     plist)))
     (occ-debug "occ-tsk-plist-from-org: plist %s" plist)
     (cl-assert (evenp (length ret-plist)))
@@ -138,7 +138,7 @@
  (eq (aref (symbol-name :test) 0) ?:)
  (list-utils-flatten '((a  b) (x)))
  (seq-partition (list :a 1 :b 2 :c 3 :more (list 4 5 6) :x nil) 2)
- (apply #'append (seq-partition (list :a 1 :b 2 :c 3 :more (list 4 5 6) :x nil) 2)))
+ (mapcan #'identity (seq-partition (list :a 1 :b 2 :c 3 :more (list 4 5 6) :x nil) 2)))
 
 
 ;; utils

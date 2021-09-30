@@ -425,7 +425,8 @@
 
 (cl-defmethod occ-do-add-org-buffer ((key  string)
                                      (buff buffer))
-  (if (eql buff (current-buffer))
+  (if (and (buffer-live-p buff)
+           (eql buff (current-buffer))())
     (when (< occ-add-inquery 3)
       (let ((file (buffer-file-name buff)))
         (unless (cl-member file (occ-obj-files) :key #'file-truename)

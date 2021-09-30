@@ -93,6 +93,18 @@
                                    (occ-obj-make-tsk unnamed-heading-marker))))
     unnamed-tsk))
 
+(defun occ-build-unnamed-collection ()
+  (let ((type (first (occ-collector-spec (occ-collector-default-key))))
+        (file (lotus-org-unnamed-task-file)))
+    (occ-collector-get-create 'unnamed (cons type (list file)))))
+
+(defun occ-unnamed-collection ()
+  (unless (and (occ-collector-get 'unnamed)
+               (eq (first (occ-collector-roots 'unnamed))
+                   (lotus-org-unnamed-task-file)))
+    (occ-build-unnamed-collection))
+  (occ-collector-get 'unnamed))
+
 (occ-testing
   (occ-cl-inst-classname (occ-obj-make-tsk org-clock-hd-marker))
   (setq unnamed-test (occ-obj-make-tsk org-clock-hd-marker))

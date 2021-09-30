@@ -240,10 +240,8 @@
               (occ-cl-method-param-case '(,method (,param-exp ,val))))))
 
 (defun occ-cl-collect-on-classes (fn inst)
-  (apply #'append
-         (mapcar #'(lambda (class)
-                     (funcall fn class))
-                 (occ-cl-inst-class-names inst))))
-
+  (mapcan #'(lambda (class)
+              (funcall fn class))
+          (occ-cl-inst-class-names inst)))
 
 ;;; occ-cl-utils.el ends here

@@ -55,33 +55,31 @@
   (push callable
         occ-helm-callables))
 (defun occ-helm-callables-get (keylist)
-  (apply #'append
-         (mapcar #'(lambda (key)
-                     (remove-if-not #'(lambda (callable)
-                                        (eq key
-                                            (occ-callable-keyword callable)))
-                                    occ-helm-callables))
-                 keylist)))
+  (mapcan #'(lambda (key)
+              (remove-if-not #'(lambda (callable)
+                                 (eq key
+                                     (occ-callable-keyword callable)))
+                             occ-helm-callables))
+          keylist))
 
 
 (cl-defmethod occ-obj-get-callables ((obj occ-obj-tsk)
                                      keylist)
   ;; TODO: do we require (apply #'append ...)
   (occ-message "(OCC-OBJ-GET-CALLABLES OCC-OBJ-TSK): called")
-  (apply #'append
-         (mapcar #'(lambda (callable)
-                     (occ-obj-callables callable
-                                        obj))
-                 (occ-helm-callables-get keylist))))
+  (mapcan #'(lambda (callable)
+              (occ-obj-callables callable
+                                 obj))
+          (occ-helm-callables-get keylist)))
+
 (cl-defmethod occ-obj-get-callables ((obj occ-obj)
                                      keylist)
   ;; TODO: do we require (apply #'append ...)
   (occ-message "(OCC-OBJ-GET-CALLABLES OCC-OBJ): called")
-  (apply #'append
-         (mapcar #'(lambda (callable)
-                     (occ-obj-callables callable
-                                        obj))
-                 (occ-helm-callables-get keylist))))
+  (mapcan #'(lambda (callable)
+              (occ-obj-callables callable
+                                 obj))
+          (occ-helm-callables-get keylist)))
 
 
 (defvar occ-helm-actions-tree '(t))
@@ -106,15 +104,15 @@
 
 (cl-defmethod occ-obj-get-helm-actions ((obj null) tree-keybranch)
   ;; (occ-message "occ-obj-get-helm-actions: called with obj = %s, tree-keybranch = %s" obj tree-keybranch)
-  (apply #'append
+  (mapcan #'identity
          (occ-obj-get-callables obj
                             (occ-get-keywords-list-from-tree tree-keybranch))))
 
 (cl-defmethod occ-obj-get-helm-actions ((obj occ-obj) tree-keybranch)
   ;; (occ-message "occ-obj-get-helm-actions: called with obj = %s, tree-keybranch = %s" obj tree-keybranch)
-  (apply #'append
-         (occ-obj-get-callables obj
-                            (occ-get-keywords-list-from-tree tree-keybranch))))
+  (mapcan #'identity
+          (occ-obj-get-callables obj
+                                 (occ-get-keywords-list-from-tree tree-keybranch))))
 
 (cl-defmethod occ-obj-get-helm-actions-genertator ((obj null) tree-keybranch)
   #'(lambda (action candidate)
@@ -172,9 +170,9 @@
  (occ-obj-get-helm-actions-plist nil
                              (first (occ-get-keywords-list-from-tree '(t actions general))))
 
- (apply #'append
-        (mapcar #'(lambda (name-action-key)
-                    (occ-obj-get-helm-actions-plist nil name-action-key))
-                (occ-get-keywords-list-from-tree '(t actions general)))))
+ (mapcan #'(lambda (name-action-key)
+             (occ-obj-get-helm-actions-plist nil
+                                             name-action-key))
+         (occ-get-keywords-list-from-tree '(t actions general))))
 
 ;;; occ-helm.el ends here

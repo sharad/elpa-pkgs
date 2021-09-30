@@ -802,9 +802,9 @@ pointing to it."
                                            obtrusive)
   "return CTSKs list"
   (occ-obj-collection-obj-list collection
-                           (occ-obj-make-ctx-at-point)
-                           :builder   builder
-                           :obtrusive obtrusive))
+                               (occ-obj-make-ctx-at-point)
+                               :builder   builder
+                               :obtrusive obtrusive))
 
 
 ;; http://sachachua.com/blog/2015/03/getting-helm-org-refile-clock-create-tasks/
@@ -820,10 +820,14 @@ pointing to it."
                             builder
                             obtrusive)
   "return CTXUAL-TSKs container"
-  (occ-obj-collection-obj-list (occ-obj-collection-object)
-                           obj
-                           :builder builder
-                           :obtrusive obtrusive))
+  (let ((collections (list (occ-obj-collection-object)
+                           (occ-unnamed-collection))))
+    (mapcan #'(lambda (collection)
+                (occ-obj-collection-obj-list collection
+                                             obj
+                                             :builder builder
+                                             :obtrusive obtrusive))
+            collections)))
 
 (cl-defmethod occ-obj-list ((obj null)
                             &key
