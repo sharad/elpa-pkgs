@@ -657,6 +657,16 @@ pointing to it."
     (occ-collector-get key)))
 
 
+(cl-defmethod occ-do-rest-tsks ((collection null))
+  nil)
+
+(cl-defmethod occ-do-rest-tsks ((collection occ-tree-collection))
+  (setf (occ-tree-collection-tree collection) nil))
+
+(cl-defmethod occ-do-rest-tsks ((collection occ-list-collection))
+  (setf (occ-list-collection-list collection) nil))
+
+
 ;; global-object - accessors
 (cl-defmethod occ-obj-collect-tsks (collection
                                     &optional

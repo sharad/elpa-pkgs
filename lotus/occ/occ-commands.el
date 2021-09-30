@@ -180,6 +180,7 @@
 (defun occ-switch-default-key (key)
   (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
   (occ-collector-default-key key))
+
 ;;;###autoload
 (defun occ-reset-spec (key)
   (interactive  (list (completing-read "key for spec: " (occ-collector-keys))))
@@ -262,23 +263,20 @@
 
 
 ;;;###autoload
-(defun occ-reset-collection-object (key)
-  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
-  (occ-collector-remove key))
-
-;;;###autoload
 (defun occ-insinuate (&optional key)
   (interactive)
   (occ-message "occ-insinuate: begin")
-  (occ-initialize key)
-  (occ-message "occ-insinuate: finish"))
+  (prog1
+      (occ-initialize key)
+    (occ-message "occ-insinuate: finish")))
 
 ;;;###autoload
 (defun occ-uninsinuate ()
   (interactive)
   (occ-message "occ-uninsinuate: begin")
-  (occ-uninitialize)
-  (occ-message "occ-uninsinuate: finish"))
+  (prog1
+      (occ-uninitialize)
+    (occ-message "occ-uninsinuate: finish")))
 
 
 ;;;###autoload

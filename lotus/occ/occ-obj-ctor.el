@@ -179,6 +179,7 @@
 
 (defun occ-make-tsk-at-point (collection)
   (let ((builder (occ-obj-tsk-builder collection)))
+    (occ-message "occ-make-tsk-at-point: Builder %s" builder)
     (let ((tsk                      nil)
           (heading-with-string-prop (if (org-before-first-heading-p)
                                         'noheading
@@ -238,6 +239,7 @@
 
 (cl-defmethod occ-obj-make-tsk-at-point ((collection null))
   (occ-make-tsk-at-point collection))
+
 
 (cl-defmethod occ-obj-tsk-builder-at-point ((collection occ-obj-collection))
   #'(lambda ()

@@ -95,6 +95,7 @@
   (occ-cl-method-param-case '(occ-obj-make-collection (`((head ,val)) val))))
 
 (defun occ-valid-spec-p (spec)
-  t)
+  (memq (first spec)
+        (list :tree :list)))
 
 ;;; occ-obj-utils.el ends here

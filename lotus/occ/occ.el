@@ -69,7 +69,7 @@
       (occ-obj-collection-files collection))))
 (defun occ-collector-keys ()
   (append (list *occ-collector-default-key*)
-          (mapcar #'car *occ-collector*)))
+          (mapcar #'first *occ-collector*)))
 
 ;; (defun occ-switch-buffer-run-curr-ctx-timer-function (prev next)
 ;;   (occ-run-curr-ctx-timer))
@@ -79,22 +79,49 @@
   (add-hook 'after-save-hook 'occ-after-save-hook-fun t t))
 
 
+(defun occ-reset-collection-spec (key)
+  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+  (setf (occ-collection-spec (occ-collector-get key)) nil))
+
+(defun occ-reset-collection-roots (key)
+  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+  (setf (occ-collection-roots (occ-collector-get key)) nil))
+
+(cl-defmethod occ-reset-collection-tsks (key)
+  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+  (occ-do-rest-tsks (occ-collector-get key)))
+
+
 ;;;###autoload
-(defun occ-set-deafult-tsk-collection-spec (spec)
+(defun occ-reset-collection-object (key)
+  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+  (occ-reset-collection-tsks key))
+
+
+;;;###autoload
+(defun occ-set-collection-spec (key spec)
+  (occ-collector-get-create key
+                            spec))
+
+(defun occ-reset-collection-spec ()
+  (occ-debug "resetting deafult-tsk-collection")
+  (occ-reset-collection-object (occ-collector-default-key)))
+
+;;;###autoload
+(defun occ-set-deafult-collection-spec (spec)
   (occ-collector-get-create (occ-collector-default-key)
                             spec))
 
-(defun occ-reset-deafult-tsk-collection ()
+(defun occ-reset-deafult-collection-object ()
   (occ-debug "resetting deafult-tsk-collection")
   (occ-reset-collection-object (occ-collector-default-key)))
 
 
 ;;;###autoload
-(defun occ-initialize (&optional key)
+(defun occ-initialize (key)
   "occ-initialize"
   (setq *occ-tsk-previous-ctx* (occ-obj-make-ctx-at-point))
   (progn
-    (setq occ-mode t)
     (occ-helm-config-initialize)
     (occ-enable-mode-map)
     (occ-register-resolve-clock)
@@ -113,12 +140,20 @@
                              (symbol-name prop)))))
       (unless (member propstr org-use-property-inheritance)
         (push propstr org-use-property-inheritance))))
-  (progn
-    (unless (occ-collector-spec key)
-      (if nil ;; (occ-valid-spec-p spec)
-          (occ-collector-get-create key spec)
-        (when (called-interactively-p 'interactive)
-          (occ-obj-build-spec key)))))
+  (let ((spec (occ-collector-spec key)))
+    (occ-message "init Test %s" key)
+    (unless spec
+      (if (occ-valid-spec-p spec)
+          (progn
+            (occ-collector-get-create key spec)
+            (setq occ-mode t))
+        (if (called-interactively-p 'interactive) ;; (called-interactively-p 'interactive)
+            (progn
+              (occ-message "init Test2")
+              (occ-obj-build-spec key)
+              (setq occ-mode t))
+          (occ-error "Not able to start occ")
+          nil))))
   ;; newly added
   (org-clock-load))
 
@@ -126,7 +161,6 @@
 (defun occ-uninitialize ()
   "occ-uninitialize"
   (progn
-    (setq occ-mode nil)
     (occ-disable-mode-map)
     (occ-unregister-resolve-clock)
     (occ-cancel-timer)
@@ -145,7 +179,8 @@
     (let ((propstr
            (upcase (if (keywordp prop) (substring (symbol-name prop) 1) (symbol-name prop)))))
       (unless (member propstr org-use-property-inheritance)
-        (delete propstr org-use-property-inheritance)))))
+        (delete propstr org-use-property-inheritance))))
+  (setq occ-mode nil))
 
 
 (defun occ-find-library-dir (library)
