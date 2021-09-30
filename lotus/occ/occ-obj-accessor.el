@@ -805,6 +805,15 @@ pointing to it."
                                (occ-obj-make-ctx-at-point)
                                :builder   builder
                                :obtrusive obtrusive))
+
+
+(cl-defmethod occ-obj-collection-obj-list ((collection null)
+                                           (obj occ-ctx)
+                                           &key
+                                           builder
+                                           obtrusive)
+  "return CTSKs list"
+  nil)
 
 
 ;; http://sachachua.com/blog/2015/03/getting-helm-org-refile-clock-create-tasks/
