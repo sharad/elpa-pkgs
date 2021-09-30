@@ -119,15 +119,11 @@
     (if (and override
              prompt)
         prompt
-      (progn
-        (occ-message "Test1")
-        (prog1
-            (format "Select matching %s(%d/%d)%s"
-                    (symbol-name (occ-cl-inst-classname (first candidates)))
-                    unfiltered-count
-                    filtered-count
-                    (format " %s" prompt))
-          (occ-message "Test2"))))))
+      (format "Select matching %s(%d/%d)%s"
+              (symbol-name (occ-cl-inst-classname (first candidates)))
+              unfiltered-count
+              filtered-count
+              (format " %s" prompt)))))
 
 (defun occ-gen-candidates-fun (obj
                                candidates
