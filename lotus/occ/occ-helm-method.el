@@ -140,12 +140,12 @@
                                     (progn
                                       (setq called-never nil)
                                       candidates)
-                                  (let* ((candidates-unfiltered (occ-obj-list obj :builder builder))
+                                  (let* ((candidates-unfiltered (occ-obj-list   obj :builder builder))
                                          (candidates-filtered   (occ-obj-filter obj filters candidates-unfiltered)))
-                                    (setq filtered-count
-                                          (length candidates-filtered))
+                                    (setq filtered-count (length candidates-filtered))
                                     candidates-filtered))))
-        (mapcar #'occ-obj-candidate candidates-visible))))
+        (mapcar #'occ-obj-candidate
+                candidates-visible))))
 
 (cl-defmethod occ-obj-helm-build-candidates-source ((obj        occ-ctx)
                                                     (candidates list)
