@@ -199,7 +199,7 @@
                                      :history                        'org-refile-history)))))))
 
 
-(defun occ-helm-build-ignore-ctx-buffer-source ()
+(defun occ-helm-build-extra-actions-ctx-buffer-source ()
   (occ-obj-helm-fun-action-function-call-source "Other Actions"
                                                 (list (cons (format "Add current buffer %s to ignore list" (current-buffer))
                                                             #'(lambda ()
@@ -234,7 +234,7 @@
                                                       :ap-transf        ap-transf
                                                       :prompt           prompt))
           (occ-helm-build-dummy-sources)
-          (list (occ-helm-build-ignore-ctx-buffer-source))))
+          (list (occ-helm-build-extra-actions-ctx-buffer-source))))
 
 
 

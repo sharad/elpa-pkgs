@@ -111,7 +111,7 @@
 (cl-defmethod occ-obj-buffer ((obj occ-obj-tsk))
   (occ-obj-buffer (occ-tsk-marker (occ-obj-tsk obj))))
 
-;; move to assessor
+
 (cl-defmethod occ-obj-callable ((callable occ-callable))
   callable)
 
