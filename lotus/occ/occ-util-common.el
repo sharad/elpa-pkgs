@@ -252,7 +252,7 @@
 ;;;###autoload
 (defun occ-run-with-deafult-tsk-collection (fn)
   (if (occ-obj-collection-object)
-      (when nil
+      (when t
         (funcall fn))
     (add-hook '*occ-collection-change-hook*
               fn)))
