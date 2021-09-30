@@ -196,12 +196,14 @@
 
 
 (defun occ-helm-build-extra-actions-ctx-buffer-source ()
-  (occ-obj-helm-fun-action-function-call-source "Other Actions"
-                                                (list (cons (format "Add current buffer %s to ignore list" (current-buffer))
-                                                            #'(lambda ()
-                                                                (let ((buff (buffer-name (current-buffer))))
-                                                                  (pushnew buff occ-ignore-buffer-names)
-                                                                  (occ-helm-null-candidate obj)))))))
+  (unless (member (buffer-name (current-buffer))
+                  occ-ignore-buffer-names)
+    (occ-obj-helm-fun-action-function-call-source "Other Actions"
+                                                  (list (cons (format "Add current buffer %s to ignore list" (current-buffer))
+                                                              #'(lambda ()
+                                                                  (let ((buff (buffer-name (current-buffer))))
+                                                                    (pushnew buff occ-ignore-buffer-names)
+                                                                    (occ-helm-null-candidate obj))))))))
 
 (defun occ-helm-build-dummy-sources ()
   (list (occ-obj-helm-build-dummy-source "Create (fast as child)"             #'occ-do-fast-procreate-child)
