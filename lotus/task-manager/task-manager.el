@@ -287,8 +287,8 @@
     (when (member party (mapcar 'car task-parties))
       (setq task-current-party party)
       (unless (eq task-current-party party)
-         (run-hooks 'task-current-party-change-hook))
-      task-current-party)))
+         (run-hooks 'task-current-party-change-hook)))
+    task-current-party))
 
 ;;;###autoload
 (defun task-current-party-select-set (&optional prompt)
