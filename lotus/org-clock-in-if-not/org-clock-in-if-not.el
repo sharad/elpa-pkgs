@@ -30,6 +30,9 @@
 (require 'lotus-misc-utils)
 (eval-when-compile
   '(require 'lotus-misc-utils))
+(require 'org-misc-utils-lotus)
+(eval-when-compile
+  '(require 'org-misc-utils-lotus))
 
 
 (defvar org-ci-if-not-debug nil "Debug org-ci-if-not")
@@ -67,6 +70,7 @@
   (when org-ci-if-not-debug-uncond
     (apply #'org-ci-if-not-message args)))
 
+
 ;; org-refile-targets is set in org-misc-utils-lotus package
 ;;;###autoload
 (defun org-clock-in-refile (refile-targets)
@@ -101,7 +105,7 @@
             (org-clock-in-refile nil))))))
   (org-ci-if-not-debug :debug "org-clock-in-if-not: finished")
   (org-ci-if-not-debug :debug "org-clock-in-if-not: finished"))
-
+
 
 (defvar org-clock-in-if-not-at-time-timer nil)
 
@@ -140,4 +144,5 @@
        (let (org-log-note-clock-out)
          (if (org-clock-is-active)
              (org-clock-out))))))
+
 ;;; org-clock-in-if-not.el ends here
