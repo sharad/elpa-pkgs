@@ -41,6 +41,33 @@
 (require 'occ-statistics)
 
 
+
+(defvar occ-obj-filters)
+(defun occ-obj-filter-add (filter)
+  (push filter
+        occ-obj-filters))
+(defun occ-obj-filter-get (key)
+  (first (remove-if-not #'(lambda (filter)
+                            (eq key
+                                (occ-filter-keyword filter)))
+                      occ-obj-filters)))
+(defun occ-obj-filters-get (keylist)
+  (mapcan #'(lambda (key)
+              (remove-if-not #'(lambda (filter)
+                                 (eq key
+                                     (occ-filter-keyword filter)))
+                             occ-obj-filters))
+          keylist))
+
+
+(cl-defmethod occ-obj-get-filters ((obj occ-obj-ctx)
+                                   keylist)
+  ;; TODO: do we require (apply #'append ...)
+  (occ-message "(OCC-OBJ-GET-FILTERS OCC-OBJ-TSK): called")
+  (occ-obj-filters-get keylist))
+
+
+
 (cl-defmethod occ-obj-average ((obj occ-stat) sequence)
   (unless (occ-stat-average obj)
     (setf (occ-stat-average obj) (apply #'occ-stats-average sequence)))
@@ -95,7 +122,7 @@
                          (nth 1 funkw-rank)
                        nil)))
           (when funkw
-            (let ((fun (or (occ-obj-filter-get funkw)
+            (let ((fun (or (occ-filter-fun (occ-obj-filter-get funkw))
                            funkw
                            #'identity)))
               (setf funs (nconc funs
@@ -105,18 +132,18 @@
     funs))
 
 
-(defun occ-internal-get-filter-method (methods)
-  (cond
-   ((functionp methods)
-    (occ-internal-get-filter-method (funcall methods)))
-   ((and (symbolp   methods)
-         (listp (symbol-value methods)))
-    (occ-internal-get-filter-method (symbol-value methods)))
-   ((and (symbolp   methods)
-         (functionp (symbol-value methods)))
-    (occ-internal-get-filter-method (functionp (symbol-value methods))))
-   ((listp methods) methods)
-   (t (occ-error "Wrong %s methods" methods))))
+;; (defun occ-internal-get-filter-method (methods)
+;;   (cond
+;;    ((functionp methods)
+;;     (occ-internal-get-filter-method (funcall methods)))
+;;    ((and (symbolp   methods)
+;;          (listp (symbol-value methods)))
+;;     (occ-internal-get-filter-method (symbol-value methods)))
+;;    ((and (symbolp   methods)
+;;          (functionp (symbol-value methods)))
+;;     (occ-internal-get-filter-method (functionp (symbol-value methods))))
+;;    ((listp methods) methods)
+;;    (t (occ-error "Wrong %s methods" methods))))
 
 
 (cl-defmethod occ-obj-apply-recursively ((obj occ-ctx)
@@ -128,7 +155,7 @@
           (rank       (if (consp funkw-rank) (nth 1 funkw-rank) rank)))
      ;; (occ-message "occ-obj-apply-recursively: trying funkw-rank= %s funkw= %s" funkw-rank funkw)
      (if funkw
-         (let ((fun  (or (rest (occ-obj-filter-get funkw))
+         (let ((fun  (or (occ-filter-fun (occ-obj-filter-get funkw))
                          funkw
                          #'identity)))
            (occ-obj-apply-recursively obj
@@ -166,7 +193,7 @@
                        sequence))
     (occ-error "(occ-obj-collection-object) returned nil")))
 
-(occ-obj-filter-add :mutual-deviation "Mutual Deviation" #'occ-obj-filter-mutual-deviation)
+(occ-obj-filter-add (occ-obj-build-filter :mutual-deviation "Mutual Deviation" #'occ-obj-filter-mutual-deviation))
 
 (cl-defmethod occ-obj-filter-positive ((obj occ-ctx)
                                        sequence
@@ -176,7 +203,7 @@
                         0))
                  sequence))
 
-(occ-obj-filter-add :positive "Positive" #'occ-obj-filter-positive)
+(occ-obj-filter-add (occ-obj-build-filter :positive "Positive" #'occ-obj-filter-positive))
 
 
 (cl-defmethod occ-obj-filter-nonnegative ((obj occ-ctx)
@@ -187,7 +214,7 @@
                          0))
                  sequence))
 
-(occ-obj-filter-add :nonnegative "Non negative" #'occ-obj-filter-nonnegative)
+(occ-obj-filter-add (occ-obj-build-filter :nonnegative "Non negative" #'occ-obj-filter-nonnegative))
 
 (defvar occ-filter-min 0)
 (cl-defmethod occ-obj-filter-min ((obj occ-ctx)
@@ -198,7 +225,7 @@
                          occ-filter-min))
                  sequence))
 
-(occ-obj-filter-add :min "Minimum" #'occ-obj-filter-min)
+(occ-obj-filter-add (occ-obj-build-filter :min "Minimum" #'occ-obj-filter-min))
 
 (defvar occ-filter-max 0)
 (cl-defmethod occ-obj-filter-max ((obj occ-ctx)
@@ -209,7 +236,7 @@
                          occ-filter-max))
                  sequence))
 
-(occ-obj-filter-add :max "Maximum" #'occ-obj-filter-max)
+(occ-obj-filter-add (occ-obj-build-filter :max "Maximum" #'occ-obj-filter-max))
 
 
 (defun occ-list-filters ()

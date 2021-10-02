@@ -205,6 +205,16 @@
   "occ-callable-generator")
 
 
+(cl-defstruct (occ-filter (:include occ-obj))
+  "occ-filter"
+  keyword
+  fun)
+;; (cl-defstruct (occ-callable-normal (:include occ-callable))
+;;   "occ-callable-normal")
+;; (cl-defstruct (occ-callable-generator (:include occ-callable))
+;;   "occ-callable-generator")
+
+
 (cl-defstruct (occ-ap (:include occ-obj))
   "AP stand for `actions pack'"
   tree-keybranch)
