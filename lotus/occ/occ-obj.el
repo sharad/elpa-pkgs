@@ -83,8 +83,8 @@
 ;;                                                                                               obj
 ;;                                                                                                |
 ;;                                       +--------------------------------------------------------+--------------------------------------------------------+---------------------------------------+-------------------------+
-;;                                       |                                                        |                                                        |                                       |                         |
-;;                                    obj-tsk                                                 obj-prop                                                  obj-ctx                                  filter                    action
+;;                                       |                                                        |                                                        |                                       |                          |
+;;                                    obj-tsk                                                 obj-prop                                                  obj-ctx                                   stat                      action
 ;;                                       |                                                        |                                                        |                                                                  |
 ;;          +----------------------------+----------------------------+                         prop                               +-----------------------+-----------------------+                               +----------+-----------+
 ;;          |                                                         |                                                            |                                               |                               |                      |
@@ -104,8 +104,8 @@
   "Object to hold ctsk occ-ctxual-tsk")
 ;; (cl-defstruct (occ-obj-prop (:include occ-obj))
 ;;   "Will hold prop")
-(cl-defstruct (occ-filter (:include occ-obj))
-  "occ-filter"
+(cl-defstruct (occ-stat (:include occ-obj))
+  "occ-stat"
   average
   stddev
   variance)
@@ -113,7 +113,7 @@
 
 (cl-defstruct (occ-obj-ctx (:include occ-obj))
   "Will hold ctx"
-  filter-plist)
+  stat-plist)
 (cl-defstruct (occ-obj-collection (:include occ-obj-ctx))
   "Will hold collection"
   spec

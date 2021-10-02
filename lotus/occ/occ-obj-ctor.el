@@ -275,8 +275,8 @@
  (hash-table-count occ-ctx-hash))
 
 
-(cl-defmethod occ-obj-make-filter (&key average stddev variance)
-  (make-occ-filter
+(cl-defmethod occ-obj-make-stat (&key average stddev variance)
+  (make-occ-stat
    :average  average
    :stddev   stddev
    :variance variance))

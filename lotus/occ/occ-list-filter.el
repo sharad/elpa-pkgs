@@ -41,26 +41,29 @@
 (require 'occ-statistics)
 
 
-(cl-defmethod occ-obj-average ((obj occ-filter) sequence)
-  (unless (occ-obj-filter-average obj)
-    (setf (occ-obj-filter-average obj) (apply #'occ-stats-average sequence)))
-  (occ-obj-filter-average obj))
+(cl-defmethod occ-obj-average ((obj occ-stat) sequence)
+  (unless (occ-stat-average obj)
+    (setf (occ-stat-average obj) (apply #'occ-stats-average sequence)))
+  (occ-stat-average obj))
 
-(cl-defmethod occ-obj-stddev ((obj occ-filter) sequence)
-  (unless (occ-obj-filter-stddev obj)
-    (setf (occ-obj-filter-stddev obj) (apply #'occ-stats-stddev sequence)))
-  (occ-obj-filter-stddev obj))
+(cl-defmethod occ-obj-stddev ((obj occ-stat) sequence)
+  (unless (occ-stat-stddev obj)
+    (setf (occ-stat-stddev obj) (apply #'occ-stats-stddev sequence)))
+  (occ-stat-stddev obj))
 
-(cl-defmethod occ-obj-variance ((obj occ-filter) sequence)
-  (unless (occ-obj-filter-variance obj)
-    (setf (occ-obj-filter-variance obj) (apply #'occ-stats-variance sequence)))
-  (occ-obj-filter-variance obj))
+(cl-defmethod occ-obj-variance ((obj occ-stat) sequence)
+  (unless (occ-stat-variance obj)
+    (setf (occ-stat-variance obj) (apply #'occ-stats-variance sequence)))
+  (occ-stat-variance obj))
 
 
-(cl-defmethod occ-obj-ctx-filter ((obj occ-obj-ctx) filter)
-  (unless (plist-get (occ-obj-ctx-filter-plist obj) filter)
-    (plist-put (occ-obj-ctx-filter-plist obj) filter (occ-obj-make-filter)))
-  (plist-get (occ-obj-ctx-filter-plist obj) filter))
+(cl-defmethod occ-obj-ctx-stat ((obj occ-obj-ctx)
+                                stat)
+  (unless (plist-get (occ-obj-ctx-stat-plist obj)
+                     stat)
+    (plist-put (occ-obj-ctx-stat-plist obj) stat
+               (occ-obj-make-stat)))
+  (plist-get (occ-obj-ctx-stat-plist obj) stat))
 
 
 (occ-generate-plist-functions occ-obj filter)
@@ -70,26 +73,35 @@
 ;; (defvar occ-obj-filters-plist nil)
 
 ;; (defun occ-filter-add (key fun)
-;;   (setq occ-filters-plist
+;;   (setq occ-obj-filters-plist
 ;;         (plist-put
 ;;          occ-filters-plist
 ;;          key fun)))
 
 ;; (defun occ-filter-get (key)
-;;   (plist-get occ-filters-plist key))
+;;   (plist-get occ-obj-filters-plist key))
+
+;; occ-obj-filter-add
+;; occ-obj-filter-set
+;; occ-obj-filter-get
 
 (defun occ-filters-get (&rest keys)
   (let ((funs nil))
     (dolist (key keys)
       (let ((funkw-rank keys))
-        (let ((funkw (or (car-safe funkw-rank) funkw-rank))
-              (rank  (if (consp funkw-rank) (nth 1 funkw-rank) nil)))
+        (let ((funkw (or (car-safe funkw-rank)
+                         funkw-rank))
+              (rank  (if (consp funkw-rank)
+                         (nth 1 funkw-rank)
+                       nil)))
           (when funkw
-              (let ((fun (or (occ-obj-filter-get funkw) funkw #'identity)))
-                (setf funs (nconc funs
-                                  (list (if rank ;; (consp funkw-rank)
-                                            (list fun rank)
-                                          fun)))))))))
+            (let ((fun (or (occ-obj-filter-get funkw)
+                           funkw
+                           #'identity)))
+              (setf funs (nconc funs
+                                (list (if rank ;; (consp funkw-rank)
+                                          (list fun rank)
+                                        fun)))))))))
     funs))
 
 
@@ -141,17 +153,17 @@
                                                &key rank) ;TODO: make it after method
   "Return matched Sequence for context CTX"
   (if (occ-obj-collection-object)
-      (let* ((rankslist  (mapcar #'occ-obj-rank sequence))
-             (avgrank    (apply #'occ-stats-average rankslist))
-             (varirank   (apply #'occ-stats-variance rankslist)))
+      (let* ((rankslist  (mapcar #'occ-obj-rank       sequence))
+             (avgrank    (apply  #'occ-stats-average  rankslist))
+             (varirank   (apply  #'occ-stats-variance rankslist)))
         ;; (occ-debug "occ-collection-obj-matches :around finish")
         (occ-debug "matched ctxtsks %s" (length sequence))
         (occ-debug "occ-filter-mutual-deviation: avgrank = %d varirank = %d"
                           avgrank varirank)
-        (remove-if-not
-         #'(lambda (obj)
-             (>= (funcall rank obj) avgrank))
-         sequence))
+        (remove-if-not #'(lambda (obj)
+                           (>= (funcall rank obj)
+                               avgrank))
+                       sequence))
     (occ-error "(occ-obj-collection-object) returned nil")))
 
 (occ-obj-filter-add :mutual-deviation "Mutual Deviation" #'occ-obj-filter-mutual-deviation)
@@ -159,7 +171,9 @@
 (cl-defmethod occ-obj-filter-positive ((obj occ-ctx)
                                        sequence
                                        &key rank)
-  (remove-if-not #'(lambda (obj) (> (funcall rank obj) 0))
+  (remove-if-not #'(lambda (obj)
+                     (> (funcall rank obj)
+                        0))
                  sequence))
 
 (occ-obj-filter-add :positive "Positive" #'occ-obj-filter-positive)
@@ -168,7 +182,9 @@
 (cl-defmethod occ-obj-filter-nonnegative ((obj occ-ctx)
                                           sequence
                                           &key rank)
-  (remove-if-not #'(lambda (obj) (>= (funcall rank obj) 0))
+  (remove-if-not #'(lambda (obj)
+                     (>= (funcall rank obj)
+                         0))
                  sequence))
 
 (occ-obj-filter-add :nonnegative "Non negative" #'occ-obj-filter-nonnegative)
