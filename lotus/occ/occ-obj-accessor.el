@@ -723,15 +723,14 @@ pointing to it."
 
 (cl-defmethod occ-obj-collect-list ((collection occ-tree-collection))
   (unless (occ-tree-collection-list collection)
-    (let ((tsks (occ-obj-collection collection))
+    (let ((tsks     (occ-obj-collection collection))
           (tsk-list '()))
       (mapc #'(lambda (tsk)
-                (occ-mapc-tree-tsks
-                 #'(lambda (subtsk args) (setf tsk-list (nconc tsk-list (list subtsk))))
-                 tsk
-                 nil))
+                (occ-mapc-tree-tsks #'(lambda (subtsk args)
+                                        (setf tsk-list (nconc tsk-list (list subtsk))))
+                                    tsk
+                                    nil))
             tsks)
-
       (setf (occ-tree-collection-list collection)
             tsk-list)))
   (occ-tree-collection-list collection))
@@ -761,7 +760,8 @@ pointing to it."
                                            builder
                                            obtrusive)
   "return CTSKs list"
-  (let ((builder (or builder #'occ-obj-build-ctsk-with)))
+  (let ((builder (or builder
+                     #'occ-obj-build-ctsk-with)))
     (let ((ctsks (occ-run-unobtrusively obtrusive
                                         (let ((tsks (occ-obj-collect-list collection))) ;;????TODO
                                           (when tsks
@@ -782,7 +782,8 @@ pointing to it."
                                            builder
                                            obtrusive)
   "return CTSKs list"
-  (let ((builder (or builder #'occ-obj-build-ctsk-with)))
+  (let ((builder (or builder
+                     #'occ-obj-build-ctsk-with)))
     (let ((ctsks (let ((tsks (occ-obj-collect-list collection))) ;;????TODO
                    (when tsks
                      (mapcar #'(lambda (tsk) (funcall builder tsk obj))
@@ -824,19 +825,29 @@ pointing to it."
                              obtrusive)
   "occ-obj-list")
 
+;; (cl-defmethod occ-obj-list ((obj occ-ctx)
+;;                             &key
+;;                             builder
+;;                             obtrusive)
+;;   "return CTXUAL-TSKs container"
+;;   (let ((collections (list (occ-obj-collection-object)
+;;                            (occ-unnamed-collection))))
+;;     (mapcan #'(lambda (collection)
+;;                 (occ-obj-collection-obj-list collection
+;;                                              obj
+;;                                              :builder builder
+;;                                              :obtrusive obtrusive))
+;;             collections)))
+
 (cl-defmethod occ-obj-list ((obj occ-ctx)
                             &key
                             builder
                             obtrusive)
   "return CTXUAL-TSKs container"
-  (let ((collections (list (occ-obj-collection-object)
-                           (occ-unnamed-collection))))
-    (mapcan #'(lambda (collection)
-                (occ-obj-collection-obj-list collection
-                                             obj
-                                             :builder builder
-                                             :obtrusive obtrusive))
-            collections)))
+  (occ-obj-collection-obj-list (occ-obj-collection-object)
+                               obj
+                               :builder   builder
+                               :obtrusive obtrusive))
 
 (cl-defmethod occ-obj-list ((obj null)
                             &key
@@ -847,7 +858,32 @@ pointing to it."
                 :builder   builder
                 :obtrusive obtrusive))
 
-(cl-defmethod occ-obj-length ()
-  (length (occ-obj-collect-list (occ-obj-collection-object))))
+;; (cl-defmethod occ-obj-length ()
+;;   (length (occ-obj-collect-list (occ-obj-collection-object))))
+
+
+(cl-defmethod occ-obj-list-with ((obj        occ-ctx)
+                                 (collection occ-collection)
+                                 &key
+                                 builder
+                                 obtrusive)
+  (occ-obj-collection-obj-list (occ-obj-collection-get collection)
+                               obj
+                               :builder   builder
+                               :obtrusive obtrusive))
+
+(cl-defmethod occ-obj-list-with ((obj null)
+                                 (collection occ-collection)
+                                 &key
+                                 builder
+                                 obtrusive)
+  "return TSKs container"
+  (occ-obj-list-with (occ-obj-make-ctx-at-point)
+                     (occ-obj-collection-get collection)
+                     :builder   builder
+                     :obtrusive obtrusive))
+
+(cl-defmethod occ-obj-length ((collection occ-collection))
+  (length (occ-obj-collect-list (occ-obj-collection-get collection))))
 
 ;;; occ-obj-accessor.el ends here

@@ -71,6 +71,14 @@
   (append (list *occ-collector-default-key*)
           (mapcar #'first *occ-collector*)))
 
+
+(cl-defmethod occ-obj-collection-get ((obj symbol))
+  (let ((key obj))
+    (occ-collector-get key)))
+
+(cl-defmethod occ-obj-collection-get ((obj occ-obj-collection))
+  obj)
+
 ;; (defun occ-switch-buffer-run-curr-ctx-timer-function (prev next)
 ;;   (occ-run-curr-ctx-timer))
 

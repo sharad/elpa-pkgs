@@ -432,4 +432,22 @@
 ;; (funcall #'occ-gen-helm-misc (occ-get-debug-obj) :param-only nil)
 ;; (funcall #'occ-gen-helm-checkouts (occ-get-debug-obj) :param-only nil)
 
+
+
+(occ-testing
+ (cl-defmethod test-method1 ((obj symbol))
+   (message "test-method1 ((obj symbol))"))
+
+ (cl-defmethod test-method1 ((obj symbol)
+                             (x number))
+   (message "test-method1 ((obj symbol) (x number))"))
+
+ (cl-defmethod test-method1 ((obj number)
+                             (m   marker))
+   (message "test-method1 ((obj number) (m   marker))"))
+
+ (test-method1 'a 1)
+
+ (test-method1 1))
+
 ;;; occ-test.el ends here

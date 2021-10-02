@@ -132,6 +132,9 @@
   tree)
 
 
+(cl-defmethod occ-collection-dyn ()
+  collection)
+
 ;; (cl-defstruct (occ-prop (:include occ-obj-prop))
 ;;   value)
 
