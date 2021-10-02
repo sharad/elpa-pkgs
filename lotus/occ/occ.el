@@ -84,7 +84,7 @@
           (mapcar #'occ-obj-collection-get keys)))
 
 (defun occ-collections-get-default ()
-  (occ-obj-collections-get (occ-collector-default-key)))
+  (occ-collections-get (occ-collector-default-key)))
 
 ;; (defun occ-switch-buffer-run-curr-ctx-timer-function (prev next)
 ;;   (occ-run-curr-ctx-timer))

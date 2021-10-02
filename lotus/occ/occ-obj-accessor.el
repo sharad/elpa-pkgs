@@ -883,6 +883,9 @@ pointing to it."
                      :builder   builder
                      :obtrusive obtrusive))
 
+(cl-defmethod occ-obj-length ((collection symbol))
+  (length (occ-obj-collect-list (occ-obj-collection-get collection))))
+
 (cl-defmethod occ-obj-length ((collection occ-collection))
   (length (occ-obj-collect-list (occ-obj-collection-get collection))))
 

@@ -108,9 +108,16 @@
                          fun))
 
 
-(defun occ-helm-build-collection-source-prompt (prompt
-                                                collection
-                                                unfiltered-count)
+(fmakunbound 'occ-helm-build-collection-source-prompt)
+
+(cl-defmethod occ-helm-build-collection-source-prompt ((obj        occ-ctx)
+                                                       ;; (candidates list)
+                                                       (collection occ-obj-collection)
+                                                       &key
+                                                       ;; unfiltered-count
+                                                       builder
+                                                       prompt
+                                                       unfiltered-count)
   (let ((override       (and prompt
                              (consp prompt)
                              (eq :overrride
@@ -186,7 +193,7 @@
                                                     auto-select-if-only
                                                     timeout
                                                     prompt)
-  (cl-assert candidates)
+  ;; (cl-assert candidates)
   (let ((unfiltered-count (occ-obj-length collection))
         (filtered-count 0)
         (called-never   t))
@@ -206,11 +213,13 @@
 
        (when (> unfiltered-count 0)
          (let ((gen-candidate-lambda #'(lambda () (funcall gen-candidates)))
-               (source-name          (occ-helm-build-collection-source-prompt prompt
+               (source-name          (occ-helm-build-collection-source-prompt obj
                                                                              ;; candidates
-                                                                             collection
-                                                                             ;; filtered-count
-                                                                             unfiltered-count)))
+                                                                              collection
+                                                                              :builder builder
+                                                                              :prompt prompt
+                                                                              ;; filtered-count
+                                                                              :unfiltered-count unfiltered-count)))
            (occ-debug "occ-obj-helm-build-collection-source: ap-normal: %s" ap-normal)
            (occ-debug "occ-obj-helm-build-collection-source: ap-transf: %s" ap-transf)
            (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
@@ -262,15 +271,13 @@
   (mapcar (lambda (collection)
             (occ-obj-helm-build-collection-source obj
                                                    collection
-                                                   :unfiltered-count unfiltered-count
+                                                   ;; :unfiltered-count unfiltered-count
                                                    :filters          filters
                                                    :builder          builder
                                                    :ap-normal        ap-normal
                                                    :ap-transf        ap-transf
                                                    :prompt           prompt))
           collections))
-
-
 
 (cl-defmethod occ-obj-helm-build-sources ((obj         occ-ctx)
                                           (collections list)
@@ -391,7 +398,7 @@
                                 auto-select-if-only
                                 timeout
                                 prompt)
-  (when candidates-filtered
+  (when collections ;; candidates-filtered
     (occ-debug "occ-obj-helm-act1: ap-normal: %s" ap-normal)
     (occ-debug "occ-obj-helm-act1: ap-transf: %s" ap-transf)
     (let* ((ap-normal (occ-obj-build-ap-normal ap-normal))
@@ -401,7 +408,8 @@
       (occ-debug "occ-obj-helm-act2: ap-transf: %s" ap-transf)
       (let* ((ap-normal (if return-transform (occ-obj-return-tranform ap-normal obj) ap-normal)) ;as return value is going to be used.
              (ap-transf (if return-transform (occ-obj-return-tranform ap-transf obj) ap-transf)))
-        (let ((helm-fun (if (and auto-select-if-only
+        (let ((helm-fun (if (and nil
+                                 auto-select-if-only
                                  (= 1 (length candidates-filtered)))
                             #'occ-obj-helm-act-on-single
                           #'occ-obj-helm-act-on-multiple)))

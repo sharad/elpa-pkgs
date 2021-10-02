@@ -69,7 +69,7 @@ ACTION "
         (let* ((timeout   (or timeout
                               occ-idle-timeout)))
           (let* ((candidates-unfiltered (occ-obj-list-with obj
-                                                           collection
+                                                           (first collections)
                                                            :builder   builder
                                                            :obtrusive obtrusive))
                  (unfiltered-count      (length candidates-unfiltered))
@@ -78,7 +78,7 @@ ACTION "
                                                         candidates-unfiltered)))
             (occ-obj-helm-act obj
                               ;; candidates-filtered
-                              collection
+                              collections
                               :unfiltered-count    unfiltered-count
                               :filters             filters
                               :builder             builder
@@ -168,7 +168,7 @@ ACTION "
   (unless builder (occ-error "Builder can not be nil"))
   (occ-debug "OCC-SELECT((OBJ OCC-CTX)): begin")
   (let* ((timeout (or timeout occ-idle-timeout)))
-    (let* ((unfiltered-count (occ-obj-length)))
+    (let* ((unfiltered-count (occ-obj-length (first collections))))
       (if (> unfiltered-count 0)
           (let ((retval (occ-obj-list-select obj
                                              collections

@@ -284,11 +284,14 @@
   (interactive)
   (occ-run-curr-ctx-timer))
 
+(defvar occ-reload t)
 ;;;###autoload
 (defun occ-reload (&optional uncompiled)
   (interactive "P")
-  (when t
-   (occ-reload-lib uncompiled)))
+  (when occ-reload
+    (setq occ-reload nil)
+    (occ-reload-lib uncompiled)
+    (setq occ-reload t)))
 
 (defun occ-version (&optional here full message)
   "Show the Occ version.
