@@ -111,7 +111,6 @@
 (fmakunbound 'occ-helm-build-collection-source-prompt)
 
 (cl-defmethod occ-helm-build-collection-source-prompt ((obj        occ-ctx)
-                                                       ;; (candidates list)
                                                        (collection occ-obj-collection)
                                                        &key
                                                        ;; unfiltered-count
@@ -182,7 +181,6 @@
                 candidates-visible))))
 
 (cl-defmethod occ-obj-helm-build-collection-source ((obj        occ-ctx)
-                                                    ;; (candidates list)
                                                     (collection occ-obj-collection)
                                                     &key
                                                     ;; unfiltered-count
@@ -194,15 +192,16 @@
                                                     timeout
                                                     prompt)
   ;; (cl-assert candidates)
-  (let ((unfiltered-count (occ-obj-length collection))
-        (filtered-count 0)
-        (called-never   t))
+  (let* ((candidates-unfiltered (occ-obj-list-with obj collection :builder builder))
+         (unfiltered-count      (occ-obj-length collection))
+         (filtered-count        0)
+         (called-never          t))
      (let ((gen-candidates #'(lambda ()
                                (let ((candidates-visible (if called-never
                                                              (progn
                                                                (setq called-never nil)
-                                                               candidates)
-                                                           (let* ((candidates-unfiltered (occ-obj-list-with obj collection :builder builder))
+                                                               candidates-unfiltered)
+                                                           (let* (;; (candidates-unfiltered (occ-obj-list-with obj collection :builder builder))
                                                                   (candidates-filtered   (occ-obj-filter obj filters candidates-unfiltered)))
                                                              (setq filtered-count
                                                                    (length candidates-filtered))
@@ -214,7 +213,6 @@
        (when (> unfiltered-count 0)
          (let ((gen-candidate-lambda #'(lambda () (funcall gen-candidates)))
                (source-name          (occ-helm-build-collection-source-prompt obj
-                                                                             ;; candidates
                                                                               collection
                                                                               :builder builder
                                                                               :prompt prompt
