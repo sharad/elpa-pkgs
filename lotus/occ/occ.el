@@ -78,6 +78,13 @@
 
 (cl-defmethod occ-obj-collection-get ((obj occ-obj-collection))
   obj)
+
+(defun occ-collections-get (&rest keys)
+  (remove nil
+          (mapcar #'occ-obj-collection-get keys)))
+
+(defun occ-collections-get-default ()
+  (occ-obj-collections-get (occ-collector-default-key)))
 
 ;; (defun occ-switch-buffer-run-curr-ctx-timer-function (prev next)
 ;;   (occ-run-curr-ctx-timer))

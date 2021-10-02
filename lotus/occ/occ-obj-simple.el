@@ -209,6 +209,7 @@
   ;;; Group2
   (let ((obj (occ-obj-make-ctx-at-point)))
     (occ-obj-select obj
+                    (occ-collections-get-default)
                     :filters            (occ-list-filters)
                     :builder            #'occ-obj-build-ctsk-with
                     :action             (occ-obj-get-helm-actions obj
@@ -232,6 +233,7 @@
         (occ-list-select-keys-1 '(t actions select))
         (occ-list-select-keys-2 '(t actions general)))
     (occ-obj-select obj
+                    (occ-collections-get-default)
                     :filters            (occ-list-filters)
                     :builder            #'occ-obj-build-ctsk-with
                     :action             (occ-obj-get-helm-actions obj

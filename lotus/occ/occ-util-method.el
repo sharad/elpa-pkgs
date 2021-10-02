@@ -52,6 +52,7 @@ be NIL, using (occ-match-filters) for FILTERS"
         (return-transform nil)
         (timeout          occ-idle-timeout))
     (occ-obj-select obj
+                    (occ-collections-get-default)
                     :filters          filters
                     :builder          builder
                     :ap-normal        ap-normal
@@ -79,6 +80,7 @@ be NIL, using (occ-list-filters) for FILTERS"
         (timeout          occ-idle-timeout))
       (occ-message "occ-list-select: ap-normal: %s" ap-normal)
       (occ-obj-select obj                   ;; TODO: passing ap-normal has no affect it show its own debug it ?
+                      (occ-collections-get-default)
                       :filters          filters
                       :builder          builder
                       :ap-normal        ap-normal
@@ -96,13 +98,14 @@ be NIL, using (occ-list-filters) for FILTERS"
 (occ-testing
  (let ((obj (occ-obj-make-ctx-at-point)))
    (occ-obj-select obj
-             :filters           (occ-list-filters)
-             :builder           #'occ-obj-build-ctsk-with
-             :ap-normal         occ-list-select-keys
-             :ap-transf         occ-list-select-keys
-             :return-transform  nil
-             :timeout           occ-idle-timeout
-             :obtrusive         t)))
+                   (occ-collections-get-default)
+                   :filters           (occ-list-filters)
+                   :builder           #'occ-obj-build-ctsk-with
+                   :ap-normal         occ-list-select-keys
+                   :ap-transf         occ-list-select-keys
+                   :return-transform  nil
+                   :timeout           occ-idle-timeout
+                   :obtrusive         t)))
 
 (cl-defmethod occ-obj-list-debug-select ((obj occ-obj-ctx)
                                          &key
@@ -121,14 +124,15 @@ for testing given ap-normal on selected tsk."
         (timeout          occ-idle-timeout))
       (occ-message "occ-obj-list-debug-select: ap-normal: %s" ap-normal)
       (let ((retval-ctx-tsk (occ-obj-select obj
-                                        :filters          filters
-                                        :builder          builder
-                                        :return-transform return-transform
-                                        :ap-normal        ap-normal
-                                        :ap-transf        ap-transf
-                                        :timeout          timeout
-                                        :obtrusive        obtrusive
-                                        :prompt           prompt)))
+                                            (occ-collections-get-default)
+                                            :filters          filters
+                                            :builder          builder
+                                            :return-transform return-transform
+                                            :ap-normal        ap-normal
+                                            :ap-transf        ap-transf
+                                            :timeout          timeout
+                                            :obtrusive        obtrusive
+                                            :prompt           prompt)))
         (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                           retval-ctx-tsk
                           (occ-obj-format (occ-obj-obj retval-ctx-tsk)
@@ -170,6 +174,7 @@ must be NIL, using (occ-list-filters) for FILTERS"
     (occ-message "occ-obj-list-launch: ap-normal: %s" ap-normal)
     (occ-message "occ-obj-list-launch: ap-transf: %s" ap-transf)
     (let ((retval-ctx-tsk (occ-obj-select obj
+                                          (occ-collections-get-default)
                                           :filters          filters
                                           :builder          builder
                                           :return-transform return-transform

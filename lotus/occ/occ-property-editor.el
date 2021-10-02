@@ -362,6 +362,7 @@
       (if (and (buffer-live-p buff)
                (not (occ-helm-buffer-p buff)))
           (let ((retval-ctx-tsk (occ-obj-select obj
+                                                (occ-collections-get-default)
                                                 :filters          filters
                                                 :builder          builder
                                                 :ap-normal        ap-normal
