@@ -287,7 +287,7 @@
 ;;;###autoload
 (defun occ-reload (&optional uncompiled)
   (interactive "P")
-  (when nil
+  (when t
    (occ-reload-lib uncompiled)))
 
 (defun occ-version (&optional here full message)

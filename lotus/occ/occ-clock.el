@@ -66,7 +66,8 @@
             (progn
               (occ-straight-org-clock-clock-in (list obj)))
             ((error)
-             (signal (first err) (rest err)))))))))
+             (signal (first err)
+                     (rest err)))))))))
 
 (cl-defmethod occ-do-clock-in ((obj occ-tsk)
                                &key
