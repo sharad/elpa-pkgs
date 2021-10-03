@@ -403,6 +403,7 @@
   (let ((rank (occ-tsk-rank obj)))
     (unless rank
       (setf (occ-tsk-rank obj) (occ-obj-calculate-rank obj)))
+    (occ-message "occ-obj-rank ((obj occ-tsk)): rank %s" rank)
     (occ-tsk-rank obj)))
 
 (cl-defmethod (setf occ-obj-rank) (value (obj occ-tsk))
@@ -428,6 +429,7 @@
   (let ((rank (occ-ctxual-tsk-rank obj)))
     (unless rank
       (setf (occ-ctxual-tsk-rank obj) (occ-obj-calculate-rank obj)))
+    (occ-message "occ-obj-rank ((obj occ-ctxual-tsk)): rank %s" rank)
     (occ-ctxual-tsk-rank obj)))
 
 (cl-defmethod (setf occ-obj-rank) (value (obj occ-ctxual-tsk))
@@ -438,7 +440,9 @@
 (cl-defmethod occ-obj-member-tsk-rank ((obj occ-ctxual-tsk))
   (occ-debug "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
-    (occ-obj-rank tsk)))
+    (let ((rank (occ-obj-rank tsk)))
+      (occ-message "occ-obj-member-tsk-rank ((obj occ-ctxual-tsk)): rank = %s" rank)
+      rank)))
 
 
 ;; occ-tsk - accessors

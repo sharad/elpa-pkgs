@@ -171,6 +171,7 @@
                                                              (setq filtered-count
                                                                    (length candidates-filtered))
                                                              candidates-filtered))))
+                                 (occ-message "gen-candidates: candidates-filtered = %s" candidates-visible)
                                  (cl-assert candidates-visible)
                                  (mapcar #'occ-obj-candidate candidates-visible)))))
 

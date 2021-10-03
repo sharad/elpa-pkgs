@@ -114,21 +114,27 @@
   (let* ((funkw-rank (first methods)))
     (let ((funkw      (or (car-safe funkw-rank) funkw-rank))
           (rank       (if (consp funkw-rank) (nth 1 funkw-rank) rank)))
-     ;; (occ-message "occ-obj-apply-recursively: trying funkw-rank= %s funkw= %s" funkw-rank funkw)
-     (if funkw
-         (let ((fun  (or (rest (occ-obj-filter-get funkw))
-                         funkw
-                         #'identity)))
-           (occ-obj-apply-recursively obj
-                                  (rest methods)
-                                  (funcall fun obj sequence :rank rank)
-                                  :rank rank))
-       sequence))))
+      (occ-message "occ-obj-apply-recursively: trying funkw-rank= %s funkw= %s" funkw-rank funkw)
+      (occ-message "occ-obj-apply-recursively: trying funkw-rank= %s funkw= %s (length sequence) = %d"
+                   funkw-rank funkw (length sequence))
+      (if funkw
+          (let ((fun  (or (rest (occ-obj-filter-get funkw))
+                          funkw
+                          #'identity)))
+            (occ-message "occ-obj-apply-recursively: fun = %s rank = %s (length sequence) = %d"
+                         fun rank (length sequence))
+            (occ-obj-apply-recursively obj
+                                       (rest methods)
+                                       (funcall fun obj sequence :rank rank)
+                                       :rank rank))
+        sequence))))
 
 (cl-defmethod occ-obj-filter ((obj occ-ctx)
                               methods
                               sequence
                               &key rank)
+  (occ-message "occ-obj-filter: (length sequence) = %d"
+               (length sequence))
   (let ((rank    (or rank #'occ-obj-rank)))
     (occ-obj-apply-recursively obj
                                methods
