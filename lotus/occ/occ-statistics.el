@@ -43,18 +43,16 @@
   (apply #'min nums))
 
 (defun occ-stats-range (&rest nums)
-  (-
-   (apply #'occ-stats-max nums)
-   (apply #'occ-stats-min nums)))
+  (- (apply #'occ-stats-max nums)
+     (apply #'occ-stats-min nums)))
 
 (defun occ-stats-aggregate (&rest nums)
   (apply #'+ nums))
 
 (defun occ-stats-mean (&rest nums)
   (if (> (length nums) 0)
-      (/
-       (apply #'occ-stats-aggregate nums)
-       (length nums))
+      (/ (apply #'occ-stats-aggregate nums)
+         (length nums))
     0))
 (defun occ-stats-average (&rest nums)
   (apply #'occ-stats-mean nums))
@@ -71,46 +69,48 @@
 (defun occ-stats-mode (&rest nums)
   ;; https://stackoverflow.com/questions/6050033/elegant-way-to-count-items
   (let ((num-pairs
-         (reduce
-          #'(lambda (r e)
-              (if (and r (= (first (first r)) e))
-                  (cons
-                   (cons (first (first r))
-                         (1+ (rest (first r))))
-                   (rest r))
-                (cons (cons e  1) r)))
-          (sort nums #'>)
-          :initial-value nil)))
-    (let ((num-pairs
-           (sort num-pairs
-                 #'(lambda (a b)
-                     (> (rest a) (rest b))))))
-      (mapcar
-       #'car
-       (remove-if-not
-        #'(lambda (pair)
-            (= (rest pair) (rest (first num-pairs))))
-        num-pairs)))))
+         (reduce #'(lambda (r e)
+                     (if (and r
+                              (= (first (first r))
+                                 e))
+                         (cons (cons (first (first r))
+                                     (1+ (rest (first r))))
+                               (rest r))
+                       (cons (cons e  1)
+                             r)))
+                 (sort nums #'>)
+                 :initial-value nil)))
+    (let ((num-pairs (sort num-pairs
+                           #'(lambda (a b)
+                               (> (rest a) (rest b))))))
+      (mapcar #'car
+              (remove-if-not #'(lambda (pair)
+                                 (= (rest pair)
+                                    (rest (first num-pairs))))
+                             num-pairs)))))
 
 (defun occ-stats-variance-internal (average &rest nums)
   (if (> (length nums) 0)
-      (sqrt
-       (/
-        (apply #'occ-stats-aggregate
-               (mapcar #'(lambda (rank) (expt (- rank average) 2)) nums))
-        (length nums)))
+      (sqrt (/ (apply #'occ-stats-aggregate
+                      (mapcar #'(lambda (rank) (expt (- rank average) 2))
+                              nums))
+               (length nums)))
     0))
 
 (defun occ-stats-variance (&rest nums)
-  (apply #'occ-stats-variance-internal (apply #'occ-stats-average nums) nums))
+  (apply #'occ-stats-variance-internal
+         (apply #'occ-stats-average
+                nums)
+         nums))
 
 (defun occ-stats-stddev-internal (average &rest nums)
   (if (> (length nums) 0)
-      (sqrt
-       (/
-        (apply #'occ-stats-aggregate
-               (mapcar #'(lambda (rank) (expt (- rank average) 2)) nums))
-        (length nums)))
+      (sqrt (/ (apply #'occ-stats-aggregate
+                      (mapcar #'(lambda (rank)
+                                  (expt (- rank average)
+                                        2))
+                              nums))
+               (length nums)))
     0))
 
 (defun occ-stats-stddev (&rest nums)

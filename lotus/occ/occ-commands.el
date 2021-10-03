@@ -318,6 +318,6 @@ FULL is given."
                            :action     (list (cons "run"
                                                    #'(lambda (candidate-fun)
                                                        (funcall candidate-fun)))))
-                       (occ-helm-build-ignore-ctx-buffer-source))))
+                       (occ-helm-build-extra-actions-ctx-buffer-source))))
 
 ;;; occ-commands.el ends here

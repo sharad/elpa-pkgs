@@ -436,7 +436,7 @@
   (make-occ-return :label label
                    :value value))
 
-;; ctors
+
 (defun occ-obj-make-callable-normal (keyword
                                      name
                                      fun)
@@ -473,7 +473,7 @@
     (occ-helm-callable-add callable)
     callable))
 
-;; ctors
+
 (defun occ-obj-make-filter (keyword
                             name
                             fun)
@@ -481,14 +481,6 @@
   (make-occ-filter :keyword keyword
                    :name    name
                    :fun     fun))
-
-;; (defun occ-obj-make-filter-generator (keyword
-;;                                       name
-;;                                       fun)
-;;   "Dynamic object"
-;;   (make-occ-filter-generator :keyword keyword
-;;                                :name    name
-;;                                :fun     fun))
 
 (defun occ-obj-build-filter (keyword
                              name
@@ -499,16 +491,6 @@
                                      fun)))
     (occ-obj-filter-add filter)
     filter))
-
-;; (defun occ-obj-build-filter-generator (keyword
-;;                                        name
-;;                                        fun)
-;;   "Filter creation and to be stored via (OCC-HELM-FILTER-ADD FILTER)"
-;;   (let ((filter (occ-obj-make-filter-generator keyword
-;;                                              name
-;;                                              fun)))
-;;     (occ-helm-filter-add filter)
-;;     filter))
 
 
 ;; ctors

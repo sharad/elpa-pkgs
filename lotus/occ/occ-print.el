@@ -216,8 +216,8 @@ pointing to it."
                            rank
                            no-curr-clock)
   (occ-obj-format obj 'capitalize
-              rank
-              no-curr-clock))
+                  rank
+                  no-curr-clock))
 
 (defun occ-obj-FORMAT (obj &optional
                            rank
