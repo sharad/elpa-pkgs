@@ -420,15 +420,35 @@
                           (occ-obj-make-ctx-at-point)))
 
 
-(cl-defmethod occ-obj-make-collection ((file-spec (head :tree)))
-  (make-occ-tree-collection :name  "tsk collection tree"
-                            :spec  file-spec
-                            :roots (rest file-spec)))
+(cl-defmethod occ-obj-make-collection ((key symbol)
+                                       (spec (eql :tree))
+                                       (files list))
+  (make-occ-tree-collection :name  (symbol-name key) ;; "tsk collection tree"
+                            :spec  spec
+                            :roots files))
 
-(cl-defmethod occ-obj-make-collection ((file-spec (head :list)))
-  (make-occ-list-collection :name  "tsk collection list"
-                            :spec  file-spec
-                            :roots (rest dir-spec)))
+(cl-defmethod occ-obj-make-collection ((key symbol)
+                                       (spec (eql :list))
+                                       (files list))
+  (make-occ-list-collection :name  (symbol-name key) ;; "tsk collection list"
+                            :spec  spec
+                            :roots files))
+
+
+
+(cl-defmethod occ-obj-build-collection ((key symbol)
+                                        (spec (eql :tree))
+                                        (files list))
+  (occ-obj-make-collection key
+                           spec
+                           files))
+
+(cl-defmethod occ-obj-build-collection ((key symbol)
+                                        (spec (eql :list))
+                                        (files list))
+  (occ-obj-make-collection key
+                           spec
+                           files))
 
 
 (defun occ-obj-make-return (label

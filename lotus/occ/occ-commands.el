@@ -195,7 +195,7 @@
                    (occ-collector-spec key))
     (let ((spec (completing-read "Spec: " (occ-specs))))
       (when spec
-        (occ-collector-get-create key (list (intern spec)))
+        (occ-collector-get-create key (intern spec) nil)
         ;; (push (intern spec)
         ;;       (occ-collector-spec key))
         (occ-reset-collection-object key)))))

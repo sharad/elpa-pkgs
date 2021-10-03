@@ -47,9 +47,9 @@
     *occ-collector-default-key*))
 (defun occ-collector-get (key)
   (alist-get key *occ-collector*))
-(defun occ-collector-get-create (key spec)
+(defun occ-collector-get-create (key spec files)
   (unless (alist-get key *occ-collector*)
-    (setf (alist-get key *occ-collector*) (occ-obj-make-collection spec)))
+    (setf (alist-get key *occ-collector*) (occ-obj-make-collection key spec files)))
   (alist-get key *occ-collector*))
 (defun occ-collector-remove (key)
   (assoc-delete-all key *occ-collector*))
@@ -115,18 +115,20 @@
 
 
 ;;;###autoload
-(defun occ-set-collection-spec (key spec)
+(defun occ-set-collection-spec (key spec files)
   (occ-collector-get-create key
-                            spec))
+                            spec
+                            files))
 
 (defun occ-reset-collection-spec ()
   (occ-debug "resetting deafult-tsk-collection")
   (occ-reset-collection-object (occ-collector-default-key)))
 
 ;;;###autoload
-(defun occ-set-deafult-collection-spec (spec)
+(defun occ-set-deafult-collection-spec (spec file)
   (occ-collector-get-create (occ-collector-default-key)
-                            spec))
+                            spec
+                            files))
 
 (defun occ-reset-deafult-collection-object ()
   (occ-debug "resetting deafult-tsk-collection")
