@@ -125,7 +125,7 @@
   (occ-reset-collection-object (occ-collector-default-key)))
 
 ;;;###autoload
-(defun occ-set-deafult-collection-spec (spec file)
+(defun occ-set-deafult-collection-spec (spec files)
   (occ-collector-get-create (occ-collector-default-key)
                             spec
                             files))
