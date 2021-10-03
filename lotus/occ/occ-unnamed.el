@@ -105,6 +105,11 @@
     (occ-build-unnamed-collection))
   (occ-collector-get 'unnamed))
 
+;;;###autoload
+(defun occ-unnamed-initialize ()
+  (interactive)
+  (occ-unnamed-collection))
+
 (occ-testing
   (occ-cl-inst-classname (occ-obj-make-tsk org-clock-hd-marker))
   (setq unnamed-test (occ-obj-make-tsk org-clock-hd-marker))

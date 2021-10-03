@@ -68,18 +68,19 @@ ACTION "
     (prog1
         (let* ((timeout   (or timeout
                               occ-idle-timeout)))
-          (let* ((candidates-unfiltered (occ-obj-list-with obj
-                                                           (first collections)
-                                                           :builder   builder
-                                                           :obtrusive obtrusive))
-                 (unfiltered-count      (length candidates-unfiltered))
-                 (candidates-filtered   (occ-obj-filter obj
-                                                        filters
-                                                        candidates-unfiltered)))
+          (progn
+           ;; let* ((candidates-unfiltered (occ-obj-list-with obj
+           ;;                                                 (first collections)
+           ;;                                                 :builder   builder
+           ;;                                                 :obtrusive obtrusive))
+           ;;       (unfiltered-count      (length candidates-unfiltered))
+           ;;       (candidates-filtered   (occ-obj-filter obj
+           ;;                                              filters
+           ;;                                              candidates-unfiltered)))
             (occ-obj-helm-act obj
                               ;; candidates-filtered
                               collections
-                              :unfiltered-count    unfiltered-count
+                              ;; :unfiltered-count    unfiltered-count
                               :filters             filters
                               :builder             builder
                               :ap-normal           ap-normal
