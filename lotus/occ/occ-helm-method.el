@@ -156,8 +156,16 @@
                                                     prompt)
   ;; (cl-assert candidates)
   (let* ((candidates-unfiltered (occ-obj-list-with obj collection :builder builder))
-         (unfiltered-count      (occ-obj-length collection))
-         (filtered-count        unfiltered-count)
+         ;; (unfiltered-count      (occ-obj-length collection))
+         (unfiltered-count      (length candidates-unfiltered))
+         (candidates-filtered   (occ-obj-filter obj
+                                                filters
+                                                candidates-unfiltered))
+         (filtered-count        (length candidates-filtered))
+         ;; (filtered-count        unfiltered-count)
+         candidates-new-unfiltered
+         candidates-new-filtered
+         (filtered-new-count 0)
          (called-never          t))
     (occ-message "occ-obj-helm-build-collection-source: (length candidates-unfiltered) = %d, called-never = %s"
                  (length candidates-unfiltered)
@@ -171,16 +179,18 @@
                                                             (progn
                                                               (setq called-never nil)
                                                               candidates-unfiltered)
-                                                          (let* ((candidates-filtered (occ-obj-filter obj
-                                                                                                      filters
-                                                                                                      candidates-unfiltered)))
-                                                            (setq filtered-count (length candidates-filtered))
-                                                            candidates-filtered))))
+                                                          (let* ((candidates-new-unfiltered (occ-obj-list-with obj collection
+                                                                                                               :builder builder))
+                                                                 (candidates-new-filtered (occ-obj-filter obj
+                                                                                                          filters
+                                                                                                          candidates-new-unfiltered)))
+                                                            (setq filtered-new-count (length candidates-new-filtered))
+                                                            candidates-new-filtered))))
                                 (cl-assert candidates-visible)
                                 (mapcar #'occ-obj-candidate
                                         candidates-visible)))))
 
-      (when (> unfiltered-count 0)
+      (when (> filtered-count 0) ;; (> unfiltered-count 0)
         (let ((gen-candidate-lambda #'(lambda () (funcall gen-candidates)))
               (source-name          (occ-helm-build-collection-source-prompt obj
                                                                              collection
@@ -336,22 +346,23 @@
                                           (occ-debug "Running occ-list-select-internal helm is gone"))))
            ;; :keymap occ-helm-map
            ;; (occ-debug "occ-obj-helm-act-on-multiple: ap-normal: %s" ap-normal)
-           (let ((candidates-sources (occ-obj-helm-build-collections-sources obj
-                                                                            ;; candidates-filtered
-                                                                            collections
-                                                                            :unfiltered-count unfiltered-count
-                                                                            :filters          filters
-                                                                            :builder          builder
-                                                                            :ap-normal        ap-normal
-                                                                            :ap-transf        ap-transf
-                                                                            :prompt           prompt)))
-             (occ-message "Hello")
-             (prog1
-                 (helm :sources candidates-sources
-                       :buffer  (occ-helm-select-buffer)
-                       :resume  'noresume)
-               (occ-message "Hi")
-               (setq in-occ-helm nil))))))
+           (let ((candidates-sources (occ-obj-helm-build-sources obj
+                                                                 ;; candidates-filtered
+                                                                 collections
+                                                                 :unfiltered-count unfiltered-count
+                                                                 :filters          filters
+                                                                 :builder          builder
+                                                                 :ap-normal        ap-normal
+                                                                 :ap-transf        ap-transf
+                                                                 :prompt           prompt)))
+             ;; (occ-message "Hello")
+             (when (first candidates-sources)
+               (prog1
+                   (helm :sources candidates-sources
+                         :buffer  (occ-helm-select-buffer)
+                         :resume  'noresume)
+                 ;; (occ-message "Hi")
+                 (setq in-occ-helm nil)))))))
 
 (cl-defmethod occ-obj-helm-act ((obj                 occ-ctx)
                                 ;; (candidates-filtered list)
