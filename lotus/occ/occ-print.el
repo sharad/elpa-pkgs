@@ -175,7 +175,7 @@ pointing to it."
                          (concat ":" (mapconcat #'identity tags ":") ":")
                        "")))
     (concat (when case (concat (occ-obj-title obj case) ": "))
-            (when rank (format "[%4d] " (or (occ-tsk-rank obj) -128)))
+            (when rank (format "[t%4d] " (or (occ-tsk-rank obj) -128)))
             (format (format (if tags "%%-%ds         %%s" "%%s")
                             align
                             (if (< headinglen align) (- align headinglen) 0))
@@ -206,7 +206,7 @@ pointing to it."
                                                    no-curr-clock)
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
     (concat (when case (concat (occ-obj-title obj case) ": "))
-            (when rank (format "[%4d] " (or (occ-obj-rank obj) -128)))
+            (when rank (format "[c%4d] " (or (occ-obj-rank obj) -128)))
             (format "%s" (occ-obj-format tsk case rank))
             (unless no-curr-clock
               (when (occ-obj-current-p obj) "          🕑")))))

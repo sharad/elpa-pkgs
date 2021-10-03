@@ -40,12 +40,15 @@
 (cl-defmethod occ-obj-calculate-rank ((obj occ-tsk))
   ;; too much output
   (occ-debug "occ-obj-calculate-rank((occ-tsk=%s))"
-             (occ-obj-format (occ-obj-tsk obj) 'capitalize))
-  (let ((rank
-         (reduce #'+
-                 (mapcar #'(lambda (slot)
-                             (occ-obj-rankprop obj (downcase-sym slot)))
-                         (occ-obj-properties-to-calculate-rank obj)))))
+             (occ-obj-Format (occ-obj-tsk obj)))
+  (occ-message "occ-obj-calculate-rank((occ-tsk=%s))"
+               (occ-obj-Format (occ-obj-tsk obj)))
+  (occ-message "occ-obj-calculate-rank(obj occ-tsk) %s" (occ-obj-properties-to-calculate-rank obj))
+  (let ((rank (reduce #'+
+                      (mapcar #'(lambda (slot)
+                                  (occ-obj-rankprop obj (downcase-sym slot)))
+                              (occ-obj-properties-to-calculate-rank obj)))))
+    (occ-message "occ-obj-calculate-rank(obj occ-tsk): rank = %d" rank)
     rank))
 
 
@@ -53,12 +56,15 @@
   ;; too much output
   ;; (occ-debug "occ-obj-calculate-rank((occ-obj-ctx-tsk=%s))"
   ;;            (occ-obj-format (occ-obj-tsk obj) 'capitalize))
+  (occ-message "occ-obj-calculate-rank(obj occ-obj-ctx-tsk) %s" (occ-obj-properties-to-calculate-rank obj))
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (reduce #'+
-            (mapcar #'(lambda (slot)
-                        (occ-obj-rankprop obj (downcase-sym slot)))
-                    (occ-obj-properties-to-calculate-rank obj)))))
+    (let ((rank (reduce #'+
+                        (mapcar #'(lambda (slot)
+                                    (occ-obj-rankprop obj (downcase-sym slot)))
+                                (occ-obj-properties-to-calculate-rank obj)))))
+      (occ-message "occ-obj-calculate-rank(obj occ-obj-ctx-tsk): rank = %d" rank)
+      rank)))
 
 
 (cl-defmethod occ-obj-calculate-avgrank ((obj occ-ctx))
