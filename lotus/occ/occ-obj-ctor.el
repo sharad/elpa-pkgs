@@ -497,7 +497,7 @@
   (let ((filter (occ-obj-make-filter keyword
                                      name
                                      fun)))
-    (occ-helm-filter-add filter)
+    (occ-obj-filter-add filter)
     filter))
 
 ;; (defun occ-obj-build-filter-generator (keyword

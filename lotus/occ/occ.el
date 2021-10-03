@@ -137,6 +137,7 @@
   "occ-initialize"
   (setq *occ-tsk-previous-ctx* (occ-obj-make-ctx-at-point))
   (progn
+    (occ-filter-config-initialize)
     (occ-helm-config-initialize)
     (occ-enable-mode-map)
     (occ-register-resolve-clock)
