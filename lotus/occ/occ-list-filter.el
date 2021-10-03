@@ -96,25 +96,6 @@
   (plist-get (occ-obj-ctx-stat-plist obj) stat))
 
 
-;; (occ-generate-plist-functions occ-obj filter)
-
-;; (occ-helm-actions-get )
-
-;; (defvar occ-obj-filters-plist nil)
-
-;; (defun occ-filter-add (key fun)
-;;   (setq occ-obj-filters-plist
-;;         (plist-put
-;;          occ-filters-plist
-;;          key fun)))
-
-;; (defun occ-filter-get (key)
-;;   (plist-get occ-obj-filters-plist key))
-
-;; occ-obj-filter-add
-;; occ-obj-filter-set
-;; occ-obj-filter-get
-
 (defun occ-filters-get (&rest keys)
   (let ((funs nil))
     (dolist (key keys)
