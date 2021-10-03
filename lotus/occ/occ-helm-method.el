@@ -161,19 +161,20 @@
   (cl-assert candidates)
   (let ((filtered-count (length candidates))
         (called-never   t))
-     (let ((gen-candidates #'(lambda ()
-                               (let ((candidates-visible (if called-never
-                                                             (progn
-                                                               (setq called-never nil)
-                                                               candidates)
-                                                           (let* ((candidates-unfiltered (occ-obj-list obj :builder builder))
-                                                                  (candidates-filtered   (occ-obj-filter obj filters candidates-unfiltered)))
-                                                             (setq filtered-count
-                                                                   (length candidates-filtered))
-                                                             candidates-filtered))))
-                                 (occ-message "gen-candidates: candidates-filtered = %s" candidates-visible)
-                                 (cl-assert candidates-visible)
-                                 (mapcar #'occ-obj-candidate candidates-visible)))))
+    (let ((gen-candidates #'(lambda ()
+                              (occ-message "gen-candidates: start (length candidates) = %s" (length candidates))
+                              (let ((candidates-visible (if called-never
+                                                            (progn
+                                                              (setq called-never nil)
+                                                              candidates)
+                                                          (let* ((candidates-unfiltered (occ-obj-list obj :builder builder))
+                                                                 (candidates-filtered   (occ-obj-filter obj filters candidates-unfiltered)))
+                                                            (setq filtered-count
+                                                                  (length candidates-filtered))
+                                                            candidates-filtered))))
+                                (occ-message "gen-candidates: candidates-filtered = %s" candidates-visible)
+                                (cl-assert candidates-visible)
+                                (mapcar #'occ-obj-candidate candidates-visible)))))
 
        (when (> unfiltered-count 0)
          (let ((gen-candidate-lambda #'(lambda () (funcall gen-candidates)))
