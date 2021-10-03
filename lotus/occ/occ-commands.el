@@ -188,14 +188,15 @@
   (occ-collector-remove key))
 
 ;;;###autoload
-(defun occ-obj-make-spec (key)
-  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+(defun occ-obj-make-spec (key desc)
+  (interactive (list (completing-read "key for spec: " (occ-collector-keys))
+                     (read-from-minibuffer "Desc: ")))
   (if (occ-collector-spec key)
       (occ-message "spec: %s already present, first reset it with occ-reset-spec"
                    (occ-collector-spec key))
     (let ((spec (completing-read "Spec: " (occ-specs))))
       (when spec
-        (occ-collector-get-create key (intern spec) nil)
+        (occ-collector-get-create key desc (intern spec) nil)
         ;; (push (intern spec)
         ;;       (occ-collector-spec key))
         (occ-reset-collection-object key)))))

@@ -116,6 +116,7 @@
   stat-plist)
 (cl-defstruct (occ-obj-collection (:include occ-obj-ctx))
   "Will hold collection"
+  desc
   spec
   roots
   files

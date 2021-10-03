@@ -420,33 +420,41 @@
                           (occ-obj-make-ctx-at-point)))
 
 
-(cl-defmethod occ-obj-make-collection ((key symbol)
+(cl-defmethod occ-obj-make-collection ((desc string)
+                                       (key symbol)
                                        (spec (eql :tree))
                                        (files list))
-  (make-occ-tree-collection :name  (symbol-name key) ;; "tsk collection tree"
+  (make-occ-tree-collection :desc desc
+                            :name  (symbol-name key) ;; "tsk collection tree"
                             :spec  spec
                             :roots files))
 
-(cl-defmethod occ-obj-make-collection ((key symbol)
+(cl-defmethod occ-obj-make-collection ((desc string)
+                                       (key symbol)
                                        (spec (eql :list))
                                        (files list))
-  (make-occ-list-collection :name  (symbol-name key) ;; "tsk collection list"
+  (make-occ-list-collection :desc desc
+                            :name  (symbol-name key) ;; "tsk collection list"
                             :spec  spec
                             :roots files))
 
 
 
-(cl-defmethod occ-obj-build-collection ((key symbol)
+(cl-defmethod occ-obj-build-collection ((desc string)
+                                        (key symbol)
                                         (spec (eql :tree))
                                         (files list))
-  (occ-obj-make-collection key
+  (occ-obj-make-collection desc
+                           key
                            spec
                            files))
 
-(cl-defmethod occ-obj-build-collection ((key symbol)
+(cl-defmethod occ-obj-build-collection ((desc string)
+                                        (key symbol)
                                         (spec (eql :list))
                                         (files list))
-  (occ-obj-make-collection key
+  (occ-obj-make-collection desc
+                           key
                            spec
                            files))
 

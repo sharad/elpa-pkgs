@@ -112,35 +112,29 @@
 
 (cl-defmethod occ-helm-build-collection-source-prompt ((obj        occ-ctx)
                                                        (collection occ-obj-collection)
+                                                       obj-class-name
+                                                       unfiltered-count
+                                                       filtered-count
                                                        &key
-                                                       ;; unfiltered-count
-                                                       builder
-                                                       prompt
-                                                       unfiltered-count)
-  (let ((override       (and prompt
-                             (consp prompt)
-                             (eq :overrride
-                                 (first prompt))))
-        (prompt         (when (consp prompt)
-                          (if (consp (rest prompt))
-                              (nth 1 prompt)
-                            (rest prompt))))
-        (candidates     (occ-obj-list-with  obj collection :builder builder))
-        (name           (occ-obj-collection-name collection)))
-        ;; (filtered-count (length candidates))
+                                                       prompt)
+  (let ((override        (and prompt
+                              (consp prompt)
+                              (eq :overrride
+                                  (first prompt))))
+        (prompt          (when (consp prompt)
+                           (if (consp (rest prompt))
+                               (nth 1 prompt)
+                             (rest prompt))))
+        (collection-name (occ-obj-collection-name collection))
+        (collection-desc (occ-obj-collection-desc collection)))
     (if (and override
              prompt)
         prompt
-      ;; (format "Select matching %s(%d/%d)%s"
-      ;;         (symbol-name (occ-cl-inst-classname (first candidates)))
-      ;;         unfiltered-count
-      ;;         filtered-count
-      ;;         (format " %s" prompt))
-      (format "Select matching %s(%d)[%s]%s"
-              (symbol-name (occ-cl-inst-classname (first candidates)))
+      (format "Select matching %s(%d/%d) [%s]%s"
+              obj-class-name
               unfiltered-count
-              ;; filtered-count
-              name
+              filtered-count
+              collection-name
               (format " %s" prompt)))))
 
 (cl-defmethod occ-obj-helm-build-collection-source ((obj        occ-ctx)
@@ -194,10 +188,10 @@
         (let ((gen-candidate-lambda #'(lambda () (funcall gen-candidates)))
               (source-name          (occ-helm-build-collection-source-prompt obj
                                                                              collection
-                                                                             :builder builder
-                                                                             :prompt prompt
-                                                                             ;; filtered-count
-                                                                             :unfiltered-count unfiltered-count)))
+                                                                             (symbol-name (occ-cl-inst-classname (first candidates-unfiltered)))
+                                                                             unfiltered-count
+                                                                             filtered-count
+                                                                             :prompt prompt)))
           (occ-debug "occ-obj-helm-build-collection-source: ap-normal: %s" ap-normal)
           (occ-debug "occ-obj-helm-build-collection-source: ap-transf: %s" ap-transf)
           (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))

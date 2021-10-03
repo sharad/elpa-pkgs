@@ -96,7 +96,7 @@
 (defun occ-build-unnamed-collection ()
   (let ((type (occ-collector-spec (occ-collector-default-key)))
         (file (lotus-org-unnamed-task-file)))
-    (occ-collector-get-create 'unnamed type (list file))))
+    (occ-collector-get-create 'unnamed "Unnamed" type (list file))))
 
 (defun occ-unnamed-collection ()
   (unless (and (occ-collector-get 'unnamed)

@@ -47,9 +47,9 @@
     *occ-collector-default-key*))
 (defun occ-collector-get (key)
   (alist-get key *occ-collector*))
-(defun occ-collector-get-create (key spec files)
+(defun occ-collector-get-create (key desc spec files)
   (unless (alist-get key *occ-collector*)
-    (setf (alist-get key *occ-collector*) (occ-obj-make-collection key spec files)))
+    (setf (alist-get key *occ-collector*) (occ-obj-build-collection desc key spec files)))
   (alist-get key *occ-collector*))
 (defun occ-collector-remove (key)
   (assoc-delete-all key *occ-collector*))
@@ -115,8 +115,9 @@
 
 
 ;;;###autoload
-(defun occ-set-collection-spec (key spec files)
+(defun occ-set-collection-spec (key desc spec files)
   (occ-collector-get-create key
+                            desc
                             spec
                             files))
 
@@ -126,9 +127,10 @@
 
 ;;;###autoload
 (defun occ-set-deafult-collection-spec (spec files)
-  (occ-collector-get-create (occ-collector-default-key)
-                            spec
-                            files))
+  (occ-set-collection-spec (occ-collector-default-key)
+                           "Default"
+                           spec
+                           files))
 
 (defun occ-reset-deafult-collection-object ()
   (occ-debug "resetting deafult-tsk-collection")
@@ -165,7 +167,7 @@
     (unless spec
       (if (occ-valid-spec-p spec)
           (progn
-            (occ-collector-get-create key spec)
+            (occ-collector-get-create key "Test" spec)
             (setq occ-mode t))
         (if (called-interactively-p 'interactive) ;; (called-interactively-p 'interactive)
             (progn
