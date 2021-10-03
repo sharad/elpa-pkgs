@@ -94,7 +94,7 @@
     unnamed-tsk))
 
 (defun occ-build-unnamed-collection ()
-  (let ((type (first (occ-collector-spec (occ-collector-default-key))))
+  (let ((type (occ-collector-spec (occ-collector-default-key)))
         (file (lotus-org-unnamed-task-file)))
     (occ-collector-get-create 'unnamed type (list file))))
 
