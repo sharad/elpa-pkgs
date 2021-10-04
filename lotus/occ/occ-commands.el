@@ -289,10 +289,8 @@
 ;;;###autoload
 (defun occ-reload (&optional uncompiled)
   (interactive "P")
-  (when occ-reload
-    (setq occ-reload nil)
-    (occ-reload-lib uncompiled)
-    (setq occ-reload t)))
+  (let ((occ-reload nil))
+    (occ-reload-lib uncompiled)))
 
 (defun occ-version (&optional here full message)
   "Show the Occ version.
