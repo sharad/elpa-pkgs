@@ -70,7 +70,9 @@
       (occ-obj-build-callable-normal :rank                     "Get Rank"                 #'occ-do-print-rank)
       (occ-obj-build-callable-normal :tsk                      "Get Task"                 #'occ-do-print-tsk)
       (occ-obj-build-callable-normal :describe                 "Describe object"          #'occ-do-describe-obj)
-      (occ-obj-build-callable-normal :checkout                 "Checkout"                 #'occ-do-checkout))
+      (occ-obj-build-callable-normal :checkout                 "Checkout"                 #'occ-do-checkout)
+      (occ-obj-build-callable-normal :close                    "Close"                    #'occ-do-close)
+      (occ-obj-build-callable-normal :force-clock-in           "Force Clock in"           #'occ-do-force-clockin))
     (progn
       (occ-obj-build-callable-generator :fast-edits-gen     "Fast Edits"      #'occ-obj-gen-each-prop-fast-edits)
       (occ-obj-build-callable-generator :edits-gen          "Simple Edit"     #'occ-obj-gen-simple-edits)
@@ -91,6 +93,8 @@
                              :call-with-obj
                              :set-debug-obj
                              :try-clock-in
+                             :close
+                             :force-clock-in
                              :goto
                              :rank
                              :tsk

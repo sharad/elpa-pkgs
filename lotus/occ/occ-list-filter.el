@@ -130,29 +130,11 @@
 ;;    (t (occ-error "Wrong %s methods" methods))))
 
 
-;; (cl-defmethod occ-apply-recursively ((obj occ-ctx)
-;;                                      methods
-;;                                      sequence
-;;                                      &key rank)
-;;   (let* ((funkw-rank (car methods)))
-;;     (let ((funkw      (or (car-safe funkw-rank) funkw-rank))
-;;           (rank       (if (consp funkw-rank) (cadr funkw-rank) rank)))
-;;       ;; (occ-message "occ-apply-recursively: trying funkw-rank= %s funkw= %s" funkw-rank funkw)
-;;       (if funkw
-;;           (let ((fun  (or (cdr (occ-filter-get funkw))
-;;                           funkw
-;;                           #'identity)))
-;;             (occ-apply-recursively obj
-;;                                    (cdr methods)
-;;                                    (funcall fun obj sequence :rank rank)
-;;                                    :rank rank))
-;;         sequence))))
-
-
 (cl-defmethod occ-obj-apply-recursively ((obj occ-ctx)
                                          methods
                                          sequence
                                          &key rank)
+  "Main engine it applies filters METHODS recursively to SEQUENCE"
   (let* ((funkw-rank (first methods)))
     (let ((funkw (or (car-safe funkw-rank)
                      funkw-rank))

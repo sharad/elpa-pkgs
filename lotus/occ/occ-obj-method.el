@@ -134,4 +134,16 @@
                (occ-obj-Format obj)
                (occ-obj-rank obj)))
 
+
+(cl-defmethod occ-do-close ((obj occ-obj-tsk))
+  (occ-message "ImplementIt: mark this %s %d tsk CLOSE "
+               (occ-obj-Format obj)
+               (occ-obj-rank obj)))
+
+
+(cl-defmethod occ-do-force-clockin ((obj occ-obj-tsk))
+  (occ-message "ImplementIt: Force this %s %d tsk clock-in for a PERIOD with period property"
+               (occ-obj-Format obj)
+               (occ-obj-rank obj)))
+
 ;;; occ-obj-method.el ends here
