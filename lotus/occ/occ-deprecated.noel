@@ -98,7 +98,7 @@
                            (and
                             marker
                             (marker-buffer marker))))
-                     (occ-matching-ctxual-tsks (occ-obj-collection-object) ctx)))))
+                     (occ-matching-ctxual-tsks (occ-default-collection) ctx)))))
             (unless (eq matched-ctxual-tsks t)
               (if matched-ctxual-tsks
                   (let* ((sel-ctxual-tsk

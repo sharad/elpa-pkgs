@@ -201,7 +201,7 @@
                                                sequence
                                                &key rank) ;TODO: make it after method
   "Return matched Sequence for context CTX"
-  (if (occ-obj-collection-object)
+  (if (occ-default-collection)
       (let* ((rankslist  (mapcar #'occ-obj-rank       sequence))
              (avgrank    (apply  #'occ-stats-average  rankslist))
              (varirank   (apply  #'occ-stats-variance rankslist)))
@@ -213,7 +213,7 @@
                            (>= (funcall rank obj)
                                avgrank))
                        sequence))
-    (occ-error "(occ-obj-collection-object) returned nil")))
+    (occ-error "(occ-default-collection) returned nil")))
 
 (cl-defmethod occ-obj-filter-positive ((obj occ-ctx)
                                        sequence

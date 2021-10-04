@@ -111,7 +111,8 @@
       org-cycle-subtree-status)))
 
 (defun org-flag-property-drawer (flag
-                                &optional force)
+                                 &optional
+                                 force)
   "NIL to open drawer T to close drawer"
   ;; https://orgmode.org/worg/org-hacks.html
   ;; https://orgmode.org/worg/org-hacks.html#org6d4906f
@@ -175,7 +176,8 @@
 
 
 (defun org-get-flag-property-drawer-at-marker (marker
-                                              &optional force)
+                                               &optional
+                                               force)
   (let ((buff (marker-buffer marker))
         (loc  (marker-position marker)))
     (when (and buff
@@ -185,8 +187,9 @@
           (org-get-flag-property-drawer force))))))
 
 (defun org-flag-property-drawer-at-marker (marker
-                                          flag
-                                          &optional force)
+                                           flag
+                                           &optional
+                                           force)
   "NIL to open drawer T to close drawer"
   ;; https://orgmode.org/worg/org-hacks.html
   ;; https://orgmode.org/worg/org-hacks.html#org6d4906f
@@ -362,7 +365,7 @@
       (if (and (buffer-live-p buff)
                (not (occ-helm-buffer-p buff)))
           (let ((retval-ctx-tsk (occ-obj-select obj
-                                                (occ-collections-get-default)
+                                                (occ-collections-default)
                                                 :filters          filters
                                                 :builder          builder
                                                 :ap-normal        ap-normal

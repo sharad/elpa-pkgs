@@ -81,7 +81,7 @@
 
 (defun occ-do-verify-objects ()
   (interactive)
-  (occ-do-verify (occ-obj-collection-object)))
+  (occ-do-verify (occ-default-collection)))
 ;; testing verification
 ;; occ-files-with-null-regex
 ;; occ-files-not-in-org-mode
@@ -93,20 +93,20 @@
 
   (length
    (occ-matching-ctxual-tsks
-    (occ-obj-collection-object)
+    (occ-default-collection)
     (occ-obj-make-ctx
      (find-file-noselect "/home/s/paradise/git/main/src/wnc/security/authenticator/accounting.cpp"))))
 
   (occ-ctxual-tsk-tsk
    (car
     (occ-matching-ctxual-tsks
-     (occ-obj-collection-object)
+     (occ-default-collection)
      (occ-obj-make-ctx
       (find-file-noselect "/home/s/paradise/git/main/src/wnc/security/authenticator/accounting.cpp")))))
 
   (length
    (occ-matching-ctxual-tsks
-    (occ-obj-collection-object)
+    (occ-default-collection)
     (occ-obj-make-ctx (current-buffer)))))
 
 (when nil                               ;occ-util-common.el
@@ -185,7 +185,7 @@
 
 (progn                                  ;method
   (when nil
-    (occ-tree-collection-files (occ-obj-collection-object))
+    (occ-tree-collection-files (occ-default-collection))
 
     (occ-tree-collection-files (make-occ-tree-collection))))
 
@@ -259,7 +259,7 @@
     (setq occ-global-tsk-collection nil)
     (occ-obj-make-collection occ-global-tsk-collection-spec)
     (occ-tree-collection-tree occ-global-tsk-collection)
-    (occ-obj-collect-tsks occ-global-tsk-collection t)
+    (occ-obj-tsks occ-global-tsk-collection t)
     (occ-tree-collection-roots occ-global-tsk-collection)
     (setf occ-gtree
           (occ-tree-collection-tree occ-global-tsk-collection)))
@@ -340,6 +340,7 @@
 ;; (helm :sources 'h-source)
 
 ;; (occ-obj-collect-list occ-global-tsk-collection)
+;; (occ-obj-list occ-global-tsk-collection)
 ;; (occ-tree-collection-list occ-global-tsk-collection)
 
 

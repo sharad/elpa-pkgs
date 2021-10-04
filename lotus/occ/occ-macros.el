@@ -276,6 +276,7 @@
        (when (eq retval t)
          (occ-debug "user input %s retval %s" last-input-event retval))
        retval)))
+(put 'occ-run-unobtrusively 'lisp-indent-function 1)
 
 
 (occ-testing

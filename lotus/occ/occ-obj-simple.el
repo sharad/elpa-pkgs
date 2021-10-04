@@ -109,22 +109,22 @@
   (occ-obj-set-property child 'subtree-level
                         (occ-obj-get-property obj 'subtree-level))
   (occ-insert-node-after-element child obj
-                                 (occ-tree-collection-list (occ-obj-collection-object)))
+                                 (occ-tree-collection-list (occ-default-collection)))
   (setf (occ-tree-tsk-subtree obj) (nconc (occ-tree-tsk-subtree obj)
                                           (list  child))))
 
-(cl-defmethod occ-do-induct-child ((obj   occ-list-tsk)
-                                (child occ-list-tsk))
+(cl-defmethod occ-do-induct-child ((obj   occ-list-tsk))
+                                (child occ-list-tsk)
   (occ-obj-set-property child 'subtree-level
                         (occ-obj-get-property obj 'subtree-level))
   (occ-insert-node-after-element child obj
-                                 (occ-tree-collection-list (occ-obj-collection-object))))
+                                 (occ-tree-collection-list (occ-default-collection))))
 
 
 (cl-defgeneric occ-do-capture (obj &key
                                 template
                                 clock-in
-                                immediate-finish )
+                                immediate-finish)
   "occ-do-capture")
 
 (cl-defmethod occ-do-capture ((obj marker) &key
@@ -199,7 +199,7 @@
                             :obtrusive nil)
  (occ-obj-list-select (occ-obj-make-ctx-at-point)
                       :ap-normal '(t actions select)
-                      :obtrusive nil)
+                      :obtrusive nil
 
 
   (occ-obj-list-debug-select (occ-obj-make-ctx-at-point)
@@ -209,7 +209,7 @@
   ;;; Group2
   (let ((obj (occ-obj-make-ctx-at-point)))
     (occ-obj-select obj
-                    (occ-collections-get-default)
+                    (occ-collections-default)
                     :filters            (occ-list-filters)
                     :builder            #'occ-obj-build-ctsk-with
                     :action             (occ-obj-get-helm-actions obj
@@ -233,7 +233,7 @@
         (occ-list-select-keys-1 '(t actions select))
         (occ-list-select-keys-2 '(t actions general)))
     (occ-obj-select obj
-                    (occ-collections-get-default)
+                    (occ-collections-default)
                     :filters            (occ-list-filters)
                     :builder            #'occ-obj-build-ctsk-with
                     :action             (occ-obj-get-helm-actions obj
@@ -247,16 +247,16 @@
 
 
 
-  ())
+  ()))
 
 
 (cl-defgeneric occ-do-procreate-child (obj)
   "occ-child")
 
-(cl-defmethod occ-do-procreate-child ((obj marker)
+(cl-defmethod occ-do-procreate-child ((obj marker))
                                    &key
                                    template
-                                   clock-in)
+                                   clock-in
   (if (not (occ-obj-unnamed-p obj))
       (occ-do-capture obj
                       :clock-in clock-in ;; helm-current-prefix-arg
@@ -267,10 +267,10 @@
            title
            title))))
 
-(cl-defmethod occ-do-procreate-child ((obj occ-obj-tsk)
+(cl-defmethod occ-do-procreate-child ((obj occ-obj-tsk))
                                    &key
                                    template
-                                   clock-in)
+                                   clock-in
   (if (not (occ-obj-unnamed-p obj))
       (occ-do-capture obj
                    :clock-in clock-in ;; helm-current-prefix-arg
@@ -282,16 +282,16 @@
              title))))
 
 
-(cl-defmethod occ-obj-tsk-txt ((obj occ-obj-ctx)
-                           (heading string))
+(cl-defmethod occ-obj-tsk-txt ((obj occ-obj-ctx))
+                           (heading string)
   "Build a task name description from OBJ occ-ctx"
   (concat "* " heading "\n"))
 
 
-(cl-defmethod occ-do-fast-procreate-child ((heading string)
+(cl-defmethod occ-do-fast-procreate-child ((heading string
                                             &key
                                             template
-                                            clock-in)
+                                            clock-in))
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (occ-do-capture nil
                     :clock-in         clock-in ;; helm-current-prefix-arg

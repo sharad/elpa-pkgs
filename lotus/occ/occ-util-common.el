@@ -251,7 +251,7 @@
 
 ;;;###autoload
 (defun occ-run-with-deafult-tsk-collection (fn)
-  (if (occ-obj-collection-object)
+  (if (occ-default-collection)
       (when t
         (funcall fn))
     (add-hook '*occ-collection-change-hook*

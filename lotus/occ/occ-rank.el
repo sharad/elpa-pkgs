@@ -90,22 +90,24 @@
   ;; too much output
   ;; (occ-debug "occ-obj-calculate-avgrank(occ-collection=%s)"
   ;;            obj)
-  (let* ((objs      (occ-obj-collect-list obj))
-         (rankslist (mapcar #'occ-obj-rank objs))
-         (avgrank   (occ-calculate-average rankslist)))
-    avgrank))
+  (let* (;; (objs      (occ-obj-collect-list obj))
+         (objs      (occ-obj-list obj))
+         (rankslist (mapcar #'occ-obj-rank objs)
+                  (avgrank   (occ-calculate-average rankslist))
+             avgrank))))
 
 (cl-defmethod occ-obj-calculate-varirank ((obj occ-collection))
   ;; too much output
   ;; (occ-debug "occ-obj-calculate-varirank(occ-collection=%s)"
   ;;            obj)
-  (let* ((objs      (occ-obj-collect-list obj))
-         (rankslist (mapcar #'occ-obj-rank objs))
-         (varirank  (occ-calculate-variance rankslist)))
-    varirank))
+  (let* (;; (objs      (occ-obj-collect-list obj))
+         (objs      (occ-obj-list obj))
+         (rankslist (mapcar #'occ-obj-rank objs)
+                  (varirank  (occ-calculate-variance rankslist))
+             varirank))))
 
 
-;; (occ-obj-avgrank (occ-obj-collection-object))
-;; (occ-obj-varirank (occ-obj-collection-object))
+;; (occ-obj-avgrank (occ-default-collection))
+;; (occ-obj-varirank (occ-default-collection))
 
 ;;; occ-rank.el ends here
