@@ -44,11 +44,12 @@
   (occ-message "occ-obj-calculate-rank((occ-tsk=%s))"
                (occ-obj-Format (occ-obj-tsk obj)))
   (occ-message "occ-obj-calculate-rank(obj occ-tsk) %s" (occ-obj-properties-to-calculate-rank obj))
-  (let ((rank (reduce #'+
-                      (mapcar #'(lambda (slot)
-                                  (occ-obj-rankprop obj (downcase-sym slot)))
-                              (occ-obj-properties-to-calculate-rank obj)))))
-    (occ-message "occ-obj-calculate-rank(obj occ-tsk): rank = %d" rank)
+  (let* ((props (occ-obj-properties-to-calculate-rank obj))
+         (rank  (reduce #'+
+                        (mapcar #'(lambda (slot)
+                                    (occ-obj-rankprop obj (downcase-sym slot)))
+                                props))))
+    ;; (occ-message "occ-obj-calculate-rank(obj occ-tsk): rank = %d" rank)
     rank))
 
 
@@ -63,7 +64,7 @@
                         (mapcar #'(lambda (slot)
                                     (occ-obj-rankprop obj (downcase-sym slot)))
                                 (occ-obj-properties-to-calculate-rank obj)))))
-      (occ-message "occ-obj-calculate-rank(obj occ-obj-ctx-tsk): rank = %d" rank)
+      ;; (occ-message "occ-obj-calculate-rank(obj occ-obj-ctx-tsk): rank = %d" rank)
       rank)))
 
 
@@ -71,8 +72,10 @@
   ;; too much output
   ;; (occ-debug "occ-obj-calculate-avgrank(occ-ctx=%s)"
   ;;            obj)
-  (let* ((objs      (occ-obj-list obj #'occ-obj-build-ctxual-tsk-with))
-         (rankslist (mapcar #'occ-obj-rank objs))
+  (let* ((objs      (occ-obj-list obj
+                                  :builder #'occ-obj-build-ctxual-tsk-with))
+         (rankslist (mapcar #'occ-obj-rank
+                            objs))
          (avgrank   (occ-calculate-average rankslist)))
     avgrank))
 
@@ -80,8 +83,10 @@
   ;; too much output
   (occ-debug "occ-obj-calculate-varirank(occ-ctx=%s)"
              obj)
-  (let* ((objs      (occ-obj-list obj #'occ-obj-build-ctxual-tsk-with))
-         (rankslist (mapcar #'occ-obj-rank objs))
+  (let* ((objs      (occ-obj-list obj
+                                  :builder #'occ-obj-build-ctxual-tsk-with))
+         (rankslist (mapcar #'occ-obj-rank
+                            objs))
          (varirank  (occ-calculate-variance rankslist)))
     varirank))
 
@@ -91,18 +96,20 @@
   ;; (occ-debug "occ-obj-calculate-avgrank(occ-collection=%s)"
   ;;            obj)
   (let* ((objs      (occ-obj-list obj))
-         (rankslist (mapcar #'occ-obj-rank objs)
-                  (avgrank   (occ-calculate-average rankslist))
-             avgrank))))
+         (rankslist (mapcar #'occ-obj-rank
+                            objs))
+         (avgrank   (occ-calculate-average rankslist)))
+       avgrank))
 
 (cl-defmethod occ-obj-calculate-varirank ((obj occ-collection))
   ;; too much output
   ;; (occ-debug "occ-obj-calculate-varirank(occ-collection=%s)"
   ;;            obj)
   (let* ((objs      (occ-obj-list obj))
-         (rankslist (mapcar #'occ-obj-rank objs)
-                  (varirank  (occ-calculate-variance rankslist))
-             varirank))))
+         (rankslist (mapcar #'occ-obj-rank
+                            objs))
+         (varirank  (occ-calculate-variance rankslist)))
+      varirank))
 
 
 ;; (occ-obj-avgrank (occ-default-collection))
