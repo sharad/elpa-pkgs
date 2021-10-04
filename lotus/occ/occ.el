@@ -101,7 +101,7 @@
 
 (defun occ-collections-default ()
   (occ-collections (occ-collector-default-key)
-                       'unnamed))
+                   'unnamed))
 
 ;; (defun occ-switch-buffer-run-curr-ctx-timer-function (prev next)
 ;;   (occ-run-curr-ctx-timer))
