@@ -134,8 +134,9 @@
               obj-class-name
               unfiltered-count
               filtered-count
-              collection-name
-              (format " %s" prompt)))))
+              (or collection-desc
+                  collection-name)
+              (format " %s" (or prompt ""))))))
 
 (cl-defmethod occ-obj-helm-build-collection-source ((obj        occ-ctx)
                                                     (collection occ-obj-collection)
