@@ -424,6 +424,10 @@
 (defvar occ-add-org-file-timer nil)
 
 (cl-defmethod occ-do-add-org-buffer ((key  string)
+                                     buff)
+  (occ-message "occ-do-add-org-buffer: ignoring buff %s" buff))
+
+(cl-defmethod occ-do-add-org-buffer ((key  string)
                                      (buff buffer))
   (if (and (buffer-live-p buff)
            (eql buff (current-buffer))())
