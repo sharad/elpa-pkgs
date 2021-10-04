@@ -290,7 +290,8 @@
 (defun occ-reload (&optional uncompiled)
   (interactive "P")
   (let ((occ-reload nil))
-    (occ-reload-lib uncompiled)))
+    (when occ-reload
+      (occ-reload-lib uncompiled))))
 
 (defun occ-version (&optional here full message)
   "Show the Occ version.
