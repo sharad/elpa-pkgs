@@ -79,7 +79,7 @@ TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
                                           :return-transform    return-transform
                                           :auto-select-if-only auto-select-if-only
                                           :timeout             timeout
-                                          :obtrusive           obtrusive
+                                          ;; :obtrusive           obtrusive
                                           :prompt              prompt)))
           (occ-debug "occ-list-select: selected = %s" selected)
           (if return-transform
