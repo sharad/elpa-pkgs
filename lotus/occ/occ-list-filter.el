@@ -172,10 +172,10 @@
                                           methods
                                           sequence
                                           :rank rank)))
-    (occ-message "occ-obj-filter: (length seq) = %d"
-                 (length seq))
-    (occ-message "occ-obj-filter: seq = %s"
-                 seq)
+    ;; (occ-message "occ-obj-filter: (length seq) = %d"
+    ;;              (length seq))
+    ;; (occ-message "occ-obj-filter: seq = %s"
+    ;;              seq)
     seq))
 
 
