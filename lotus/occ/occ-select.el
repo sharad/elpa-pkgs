@@ -45,52 +45,6 @@
 (defun occ-helm-select-buffer ()
   occ-helm-select-buffer-name)
 
-(cl-defmethod occ-obj-list-select-internal ((obj occ-ctx)
-                                            (collections list)
-                                            &key
-                                            filters
-                                            builder
-                                            ap-normal
-                                            ap-transf
-                                            return-transform
-                                            auto-select-if-only
-                                            timeout
-                                            obtrusive
-                                            prompt)
-  "Main Machinery, TODO: Document it, NOTE: ACTION-TRANSFORMER is
-superseding ACTION, As in helm ACTION-TRANSFORMER are superseding
-ACTION "
-  (progn ;; lotus-with-no-active-minibuffer-if
-    (occ-debug "Running occ-list-select-internal")
-    (occ-debug "occ-list-select-internal: [minibuffer-body] lotus-with-no-active-minibuffer-if")
-    (occ-debug "occ-list-select-internal: minibuffer already active quitting")
-    (occ-debug :debug nil)
-    (prog1
-        (let* ((timeout   (or timeout
-                              occ-idle-timeout)))
-          (progn
-           ;; let* ((candidates-unfiltered (occ-obj-list-with obj
-           ;;                                                 (first collections)
-           ;;                                                 :builder   builder
-           ;;                                                 :obtrusive obtrusive))
-           ;;       (unfiltered-count      (length candidates-unfiltered))
-           ;;       (candidates-filtered   (occ-obj-filter obj
-           ;;                                              filters
-           ;;                                              candidates-unfiltered)))
-            (occ-obj-helm-act obj
-                              ;; candidates-filtered
-                              collections
-                              ;; :unfiltered-count    unfiltered-count
-                              :filters             filters
-                              :builder             builder
-                              :ap-normal           ap-normal
-                              :ap-transf           ap-transf
-                              :return-transform    return-transform
-                              :auto-select-if-only auto-select-if-only
-                              :timeout             timeout
-                              :prompt              prompt)))
-      (occ-debug "Running occ-list-select-internal"))))
-
 (cl-defmethod occ-obj-list-select ((obj occ-ctx)
                                    (collections list)
                                    &key
@@ -103,25 +57,30 @@ ACTION "
                                    timeout
                                    obtrusive
                                    prompt)
-  "TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
+  "Main Machinery, TODO: Document it, NOTE: ACTION-TRANSFORMER is
+superseding ACTION, As in helm ACTION-TRANSFORMER are superseding
+ACTION
+TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
-  (let* ((timeout (or timeout occ-idle-timeout)))
+  (let* ((timeout (or timeout
+                      occ-idle-timeout)))
     (helm-timed timeout (occ-helm-select-buffer)
       (occ-debug "running occ-list-select")
       (progn
         (occ-message "occ-list-select: ap-normal: %s" ap-normal)
         (occ-message "occ-list-select: ap-transf: %s" ap-transf)
-        (let ((selected (occ-obj-list-select-internal obj
-                                                      collections
-                                                      :filters             filters
-                                                      :builder             builder
-                                                      :ap-normal           ap-normal
-                                                      :ap-transf           ap-transf
-                                                      :return-transform    return-transform
-                                                      :auto-select-if-only auto-select-if-only
-                                                      :timeout             timeout
-                                                      :obtrusive           obtrusive
-                                                      :prompt              prompt)))
+        ;; (occ-obj-list-select-internal obj
+        (let ((selected (occ-obj-helm-act obj
+                                          collections
+                                          :filters             filters
+                                          :builder             builder
+                                          :ap-normal           ap-normal
+                                          :ap-transf           ap-transf
+                                          :return-transform    return-transform
+                                          :auto-select-if-only auto-select-if-only
+                                          :timeout             timeout
+                                          :obtrusive           obtrusive
+                                          :prompt              prompt)))
           (occ-debug "occ-list-select: selected = %s" selected)
           (if return-transform
               ;; TODO: add cl-defmethod magic here
