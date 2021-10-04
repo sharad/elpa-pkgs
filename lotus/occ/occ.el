@@ -72,20 +72,20 @@
           (mapcar #'first *occ-collector*)))
 
 
-(cl-defmethod occ-obj-collection-get ((obj symbol))
-  (let ((key obj))
-    (occ-collector-get key)))
+;; (cl-defmethod occ-obj-collection-get ((obj symbol))
+;;   (let ((key obj))
+;;     (occ-collector-get key)))
 
-(cl-defmethod occ-obj-collection-get ((obj occ-obj-collection))
-  obj)
+;; (cl-defmethod occ-obj-collection-get ((obj occ-obj-collection))
+;;   obj)
 
-(defun occ-collections-get (&rest keys)
-  (remove nil
-          (mapcar #'occ-obj-collection-get keys)))
+;; (defun occ-collections-get (&rest keys)
+;;   (remove nil
+;;           (mapcar #'occ-obj-collection-get keys)))
 
-(defun occ-collections-get-default ()
-  (occ-collections-get (occ-collector-default-key)
-                       'unnamed))
+;; (defun occ-collections-get-default ()
+;;   (occ-collections-get (occ-collector-default-key)
+;;                        'unnamed))
 
 
 (cl-defmethod occ-obj-collection ((obj symbol))
