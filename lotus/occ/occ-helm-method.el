@@ -141,7 +141,6 @@
 (cl-defmethod occ-obj-helm-build-collection-source ((obj        occ-ctx)
                                                     (collection occ-obj-collection)
                                                     &key
-                                                    ;; unfiltered-count
                                                     filters
                                                     builder
                                                     ap-normal
@@ -151,13 +150,11 @@
                                                     prompt)
   ;; (cl-assert candidates)
   (let* ((candidates-unfiltered (occ-obj-list-with obj collection :builder builder))
-         ;; (unfiltered-count      (occ-obj-length collection))
          (unfiltered-count      (length candidates-unfiltered))
          (candidates-filtered   (occ-obj-filter obj
                                                 filters
                                                 candidates-unfiltered))
          (filtered-count        (length candidates-filtered))
-         ;; (filtered-count        unfiltered-count)
          candidates-new-unfiltered
          candidates-new-filtered
          (filtered-new-count 0)
@@ -243,13 +240,12 @@
   ;; (occ-debug "occ-obj-helm-build-collections-sources: ap-normal: %s" ap-normal)
   (mapcar (lambda (collection)
             (occ-obj-helm-build-collection-source obj
-                                                   collection
-                                                   ;; :unfiltered-count unfiltered-count
-                                                   :filters          filters
-                                                   :builder          builder
-                                                   :ap-normal        ap-normal
-                                                   :ap-transf        ap-transf
-                                                   :prompt           prompt))
+                                                  collection
+                                                  :filters          filters
+                                                  :builder          builder
+                                                  :ap-normal        ap-normal
+                                                  :ap-transf        ap-transf
+                                                  :prompt           prompt))
           collections))
 
 (cl-defmethod occ-obj-helm-build-sources ((obj         occ-ctx)
@@ -295,7 +291,6 @@
 
 
 (cl-defmethod occ-obj-helm-act-on-single ((obj                 occ-ctx)
-                                          ;; (candidates-filtered list)
                                           (collections list)
                                           &key
                                           unfiltered-count
@@ -308,8 +303,7 @@
                                           prompt)
   ;; OBJ ignored
   "OBJ ignored"
-  (let* (;; (candidate   (first candidates-filtered))
-         (candidate   (first (occ-get-candidates (first collections))))
+  (let* ((candidate   (first (occ-get-candidates (first collections))))
          (helm-action (occ-obj-get-first-helm-actions-for-obj obj
                                                               ap-normal
                                                               ap-transf)))
@@ -342,7 +336,6 @@
            ;; :keymap occ-helm-map
            ;; (occ-debug "occ-obj-helm-act-on-multiple: ap-normal: %s" ap-normal)
            (let ((candidates-sources (occ-obj-helm-build-sources obj
-                                                                 ;; candidates-filtered
                                                                  collections
                                                                  :unfiltered-count unfiltered-count
                                                                  :filters          filters
@@ -360,7 +353,6 @@
                  (setq in-occ-helm nil)))))))
 
 (cl-defmethod occ-obj-helm-act ((obj                 occ-ctx)
-                                ;; (candidates-filtered list)
                                 (collections list)
                                 &key
                                 unfiltered-count
@@ -372,7 +364,7 @@
                                 auto-select-if-only
                                 timeout
                                 prompt)
-  (when collections ;; candidates-filtered
+  (when collections
     (occ-debug "occ-obj-helm-act1: ap-normal: %s" ap-normal)
     (occ-debug "occ-obj-helm-act1: ap-transf: %s" ap-transf)
     (let* ((ap-normal (occ-obj-build-ap-normal ap-normal))
