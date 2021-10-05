@@ -93,10 +93,15 @@
                                    (occ-obj-make-tsk unnamed-heading-marker))))
     unnamed-tsk))
 
-(defun occ-build-unnamed-collection ()
+(defun occ-build-unnamed-collection (&optional force-error)
   (let ((type (occ-collector-spec (occ-collector-default-key)))
         (file (lotus-org-unnamed-task-file)))
-    (occ-collector-get-create 'unnamed "Unnamed" type (list file))))
+    (if (and type
+             file)
+        (occ-collector-get-create 'unnamed "Unnamed" type (list file))
+      (if force-error
+          (occ-error "error with type %s, file %s" type file)
+        (occ-warn "error with type %s, file %s" type file)))))
 
 (defun occ-unnamed-collection ()
   (unless (and (occ-collector-get 'unnamed)
