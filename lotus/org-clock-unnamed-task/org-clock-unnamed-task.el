@@ -225,5 +225,4 @@
 (defun lotus-org-clockin-last-time (min)
   )
 
-
 ;;; org-clock-unnamed-task.el ends here
