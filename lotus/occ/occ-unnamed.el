@@ -98,10 +98,15 @@
         (file (lotus-org-unnamed-task-file)))
     (if (and type
              file)
-        (occ-collector-get-create 'unnamed "Unnamed" type (list file))
-      (if force-error
-          (occ-error "error with type %s, file %s" type file)
-        (occ-warn "error with type %s, file %s" type file)))))
+        (progn
+          (when (occ-collector-get 'unnamed)
+            (unless (eq (first (occ-collector-roots 'unnamed))
+                        (lotus-org-unnamed-task-file))
+              (occ-collector-remove 'unnamed)))
+          (occ-collector-get-create 'unnamed "Unnamed" type (list file)))
+        (if force-error
+            (occ-error "error with type %s, file %s" type file)
+          (occ-warn "error with type %s, file %s" type file)))))
 
 (defun occ-unnamed-collection ()
   (unless (and (occ-collector-get 'unnamed)

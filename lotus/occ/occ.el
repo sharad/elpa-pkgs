@@ -52,7 +52,7 @@
     (setf (alist-get key *occ-collector*) (occ-obj-build-collection desc key spec files)))
   (alist-get key *occ-collector*))
 (defun occ-collector-remove (key)
-  (assoc-delete-all key *occ-collector*))
+  (setq *occ-collector* (assoc-delete-all key *occ-collector*)))
 (defun occ-collector-set (key value)
   (setcdr (alist-get key *occ-collector*) value))
 (defun occ-collector-spec (key)
