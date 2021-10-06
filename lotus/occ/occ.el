@@ -141,9 +141,9 @@
   (let ((spec (occ-collector-spec key)))
     (when (and spec
                (occ-valid-spec-p spec))
-      (add-hook 'buffer-list-update-hook     'occ-run-curr-ctx-timer t)
-      (add-hook 'elscreen-screen-update-hook 'occ-run-curr-ctx-timer t)
-      (add-hook 'elscreen-goto-hook          'occ-run-curr-ctx-timer t)
+      ;; (add-hook 'buffer-list-update-hook     'occ-run-curr-ctx-timer t)
+      ;; (add-hook 'elscreen-screen-update-hook 'occ-run-curr-ctx-timer t)
+      ;; (add-hook 'elscreen-goto-hook          'occ-run-curr-ctx-timer t)
       (add-hook 'switch-buffer-functions #'occ-switch-buffer-run-curr-ctx-timer-function)
       (add-hook 'org-mode-hook           #'occ-add-after-save-hook-fun-in-org-mode)
       (add-hook 'org-mode-hook           #'occ-add-org-file-timer))))
