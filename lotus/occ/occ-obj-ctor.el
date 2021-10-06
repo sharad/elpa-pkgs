@@ -276,17 +276,17 @@
 
 
 (cl-defmethod occ-obj-make-stat (&key average stddev variance)
-  (make-occ-stat
-   :average  average
-   :stddev   stddev
-   :variance variance))
+  (make-occ-stat :average  average
+                 :stddev   stddev
+                 :variance variance))
 
 
 (cl-defgeneric occ-obj-make-ctx (obj)
   "occ-obj-make-ctx")
 
 (cl-defmethod occ-obj-make-ctx-at-point (&optional mrk)
-  (let* ((mrk   (or mrk (point-marker)))
+  (let* ((mrk   (or mrk
+                    (point-marker)))
          (buff  (marker-buffer mrk))
          (buff  (if buff
                     (if (bufferp buff)
@@ -328,9 +328,9 @@
 (cl-defmethod occ-obj-make-ctsk-with ((tsk occ-tsk)
                                       (ctx occ-ctx))
   ;; use occ-obj-build-ctsk-with
-  (make-occ-ctsk :name    nil
-                 :tsk     tsk
-                 :ctx     ctx))
+  (make-occ-ctsk :name nil
+                 :tsk  tsk
+                 :ctx  ctx))
 
 (cl-defmethod occ-obj-make-ctsk ((obj occ-ctsk))
   obj)
@@ -339,13 +339,14 @@
   ;; use occ-obj-build-ctsk-with
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (make-occ-ctsk :name    nil
-                   :tsk     tsk
-                   :ctx     ctx)))
+    (make-occ-ctsk :name nil
+                   :tsk  tsk
+                   :ctx  ctx)))
 
 (cl-defmethod occ-obj-build-ctsk-with ((tsk occ-tsk) ;ctor
                                        (ctx occ-ctx))
-  (occ-obj-make-ctsk-with tsk ctx))
+  (occ-obj-make-ctsk-with tsk
+                          ctx))
 
 (cl-defmethod occ-obj-build-ctsk ((obj occ-ctxual-tsk))
   (occ-obj-make-ctsk obj))
@@ -365,14 +366,15 @@
                                             &optional
                                             rank)
   ;; use occ-obj-build-ctxual-tsk-with
-  (make-occ-ctxual-tsk :name    nil
-                       :tsk     tsk
-                       :ctx     ctx
-                       :rank    rank))
+  (make-occ-ctxual-tsk :name nil
+                       :tsk  tsk
+                       :ctx  ctx
+                       :rank rank))
 
 (cl-defmethod occ-obj-build-ctxual-tsk-with ((tsk occ-tsk) ;ctor
                                              (ctx occ-ctx))
-  (occ-obj-make-ctxual-tsk-with tsk ctx))
+  (occ-obj-make-ctxual-tsk-with tsk
+                                ctx))
 
 (cl-defmethod occ-obj-build-ctxual-tsk-with ((tsk occ-ctxual-tsk) ;ctor
                                              (ctx occ-ctx))
@@ -387,10 +389,10 @@
                                        rank)
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (make-occ-ctxual-tsk :name    nil
-                         :tsk     tsk
-                         :ctx     ctx
-                         :rank    rank)))
+    (make-occ-ctxual-tsk :name nil
+                         :tsk  tsk
+                         :ctx  ctx
+                         :rank rank)))
 
 (cl-defmethod occ-obj-make-ctxual-tsk ((obj occ-ctxual-tsk)
                                        &optional
@@ -424,7 +426,7 @@
                                        (key symbol)
                                        (spec (eql :tree))
                                        (files list))
-  (make-occ-tree-collection :desc desc
+  (make-occ-tree-collection :desc  desc
                             :name  (symbol-name key) ;; "tsk collection tree"
                             :spec  spec
                             :roots files))
@@ -433,7 +435,7 @@
                                        (key symbol)
                                        (spec (eql :list))
                                        (files list))
-  (make-occ-list-collection :desc desc
+  (make-occ-list-collection :desc  desc
                             :name  (symbol-name key) ;; "tsk collection list"
                             :spec  spec
                             :roots files))
@@ -486,8 +488,8 @@
                                       fun)
   "Callable creation and to be stored via (OCC-HELM-CALLABLE-ADD CALLABLE)"
   (let ((callable (occ-obj-make-callable-normal keyword
-                                            name
-                                            fun)))
+                                                name
+                                                fun)))
     (occ-helm-callable-add callable)
     callable))
 
@@ -496,8 +498,8 @@
                                          fun)
   "Callable creation and to be stored via (OCC-HELM-CALLABLE-ADD CALLABLE)"
   (let ((callable (occ-obj-make-callable-generator keyword
-                                               name
-                                               fun)))
+                                                   name
+                                                   fun)))
     (occ-helm-callable-add callable)
     callable))
 
@@ -523,27 +525,23 @@
 
 ;; ctors
 (cl-defmethod occ-obj-make-ap-normal ((ap-obj list))
-  (make-occ-ap-normal :tree-keybranch
-                      ap-obj))
+  (make-occ-ap-normal :tree-keybranch ap-obj))
 
 (cl-defmethod occ-obj-make-ap-normal ((ap-obj occ-ap-normal))
   ap-obj)
 
 (cl-defmethod occ-obj-make-ap-normal ((ap-obj (head :tree-keybranch)))
   (let ((tree-keybranch (rest ap-obj)))
-    (make-occ-ap-normal :tree-keybranch
-                        tree-keybranch)))
+    (make-occ-ap-normal :tree-keybranch tree-keybranch)))
 
 (cl-defmethod occ-obj-make-ap-normal ((ap-obj (head :callables)))
   (let ((callables (rest ap-obj)))
-    (make-occ-ap-normal :callables
-                        (occ-obj-callables callables nil))))
+    (make-occ-ap-normal :callables (occ-obj-callables callables nil))))
 
 (cl-defmethod occ-obj-make-ap-normal ((ap-obj (head :keywords)))
   (let* ((keywords  (rest ap-obj))
          (callables (occ-helm-callables-get keywords)))
-   (make-occ-ap-normal :callables
-                       callables)))
+   (make-occ-ap-normal :callables callables)))
 
 
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj list))
@@ -552,32 +550,27 @@
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj occ-ap-normal))
   (let ((callables (occ-ap-normal-callables ap-obj)))
     (cl-assert callables t "ap-obj should have callable")
-    (make-occ-ap-transf :callables
-                        (occ-obj-callables callables nil))))
+    (make-occ-ap-transf :callables (occ-obj-callables callables nil))))
 
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj occ-ap-transf))
   ap-obj)
 
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj (head :tree-keybranch)))
   (let ((tree-keybranch (rest ap-obj)))
-    (make-occ-ap-transf :tree-keybranch
-                        tree-keybranch)))
+    (make-occ-ap-transf :tree-keybranch tree-keybranch)))
 
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj (head :callables)))
   (let ((callables (rest ap-obj)))
-    (make-occ-ap-transf :callables
-                        callables)))
+    (make-occ-ap-transf :callables callables)))
 
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj (head :keywords)))
   (let* ((keywors   (rest ap-obj))
          (callables (occ-helm-callables-get keywords)))
-    (make-occ-ap-transf :callables
-                        callables)))
+    (make-occ-ap-transf :callables callables)))
 
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj (head :transform)))
   (let ((transform (rest ap-obj)))
-    (make-occ-ap-transf :transform
-                       transform)))
+    (make-occ-ap-transf :transform transform)))
 
 
 ;; ctors
@@ -691,8 +684,8 @@
         (name        (occ-callable-name callable))
         (keyword     (occ-callable-keyword callable)))
     (occ-obj-make-callable-normal keyword
-                              name
-                              newcallable)))
+                                  name
+                                  newcallable)))
 
 (cl-defmethod occ-obj-build-return-lambda ((callable occ-callable-generator)
                                            &optional
