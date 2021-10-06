@@ -137,6 +137,22 @@
   (occ-reset-collection-object (occ-collector-default-key)))
 
 
+(defun occ-initialize-hooks (key)
+  (let ((spec (occ-collector-spec key)))
+    (when (and spec
+               (occ-valid-spec-p spec))
+      (add-hook 'buffer-list-update-hook     'occ-run-curr-ctx-timer t)
+      (add-hook 'elscreen-screen-update-hook 'occ-run-curr-ctx-timer t)
+      (add-hook 'elscreen-goto-hook          'occ-run-curr-ctx-timer t)
+      (add-hook 'switch-buffer-functions #'occ-switch-buffer-run-curr-ctx-timer-function)
+      (add-hook 'org-mode-hook           #'occ-add-after-save-hook-fun-in-org-mode)
+      (add-hook 'org-mode-hook           #'occ-add-org-file-timer))))
+
+(defun occ-uninitialize-hooks ()
+  (remove-hook 'switch-buffer-functions #'occ-switch-buffer-run-curr-ctx-timer-function)
+  (remove-hook 'org-mode-hook           #'occ-add-after-save-hook-fun-in-org-mode)
+  (remove-hook 'org-mode-hook           #'occ-add-org-file-timer))
+
 ;;;###autoload
 (defun occ-initialize (key)
   "occ-initialize"
@@ -150,12 +166,7 @@
     (occ-cancel-timer)
     (occ-reset-collection-object key)
     (occ-ctx-clrhash)
-    ;; (add-hook 'buffer-list-update-hook     'occ-run-curr-ctx-timer t)
-    ;; (add-hook 'elscreen-screen-update-hook 'occ-run-curr-ctx-timer t)
-    ;; (add-hook 'elscreen-goto-hook          'occ-run-curr-ctx-timer t)
-    ;; (add-hook 'switch-buffer-functions #'occ-switch-buffer-run-curr-ctx-timer-function)
-    ;; (add-hook 'org-mode-hook           #'occ-add-after-save-hook-fun-in-org-mode)
-    ;; (add-hook 'org-mode-hook           #'occ-add-org-file-timer))
+    (occ-initialize-hooks key))
   (dolist (prop (occ-obj-properties-to-inherit nil))
     (let ((propstr (upcase (if (keywordp prop)
                                (substring (symbol-name prop) 1)
@@ -169,9 +180,7 @@
           (progn
             (occ-collector-get-create key "Test" spec)
             (setq occ-mode t)
-            (add-hook 'switch-buffer-functions #'occ-switch-buffer-run-curr-ctx-timer-function)
-            (add-hook 'org-mode-hook           #'occ-add-after-save-hook-fun-in-org-mode)
-            (add-hook 'org-mode-hook           #'occ-add-org-file-timer)))
+            (occ-initialize-hooks key))
         (if (called-interactively-p 'interactive) ;; (called-interactively-p 'interactive)
             (progn
               (occ-message "init Test2")
@@ -191,15 +200,7 @@
     (occ-cancel-timer)
     (occ-reset-collection-object (occ-collector-default-key))
     (occ-ctx-clrhash)
-    ;; (setq buffer-list-update-hook nil)
-
-    ;; (remove-hook 'buffer-list-update-hook     'occ-run-curr-ctx-timer)
-    ;; (remove-hook 'elscreen-screen-update-hook 'occ-run-curr-ctx-timer)
-    ;; (remove-hook 'elscreen-goto-hook          'occ-run-curr-ctx-timer)
-    ;; (remove-hook 'after-save-hook             'occ-after-save-hook-fun t)
-    (remove-hook 'switch-buffer-functions #'occ-switch-buffer-run-curr-ctx-timer-function)
-    (remove-hook 'org-mode-hook           #'occ-add-after-save-hook-fun-in-org-mode)
-    (remove-hook 'org-mode-hook           #'occ-add-org-file-timer))
+    (occ-uninitialize-hooks))
   (dolist (prop (occ-obj-properties-to-inherit nil))
     (let ((propstr
            (upcase (if (keywordp prop) (substring (symbol-name prop) 1) (symbol-name prop)))))
