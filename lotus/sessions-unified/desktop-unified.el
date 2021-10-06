@@ -86,7 +86,8 @@
               ;; (dolist (e l)
               ;;   (insert "\n  " (desktop-value-to-string e)))
               ,@(mapcar '(lambda (s)
-                           (read (desktop-value-to-string s))) l)))))))
+                           (read (desktop-value-to-string s)))
+                        l)))))))
 
   (defun desktop-make-create-buffer-list (buffer)
     (let ((l (desktop-buffer-info buffer))

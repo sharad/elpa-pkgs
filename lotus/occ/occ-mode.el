@@ -93,6 +93,15 @@
 (define-key occ-mode-keymap (kbd "v")  'occ-version)
 
 
+(defvar occ-mode-global-allowed nil)
+(defun occ-mode-global-allow ()
+  (interactive)
+  (setq occ-mode-global-allowed t))
+
+(defun occ-mode-global-disallow ()
+  (interactive)
+  (setq occ-mode-global-allowed nil))
+
 ;;;###autoload
 (define-minor-mode occ-mode
   "Toggle Occ mode.
@@ -105,8 +114,10 @@
   ;; The minor mode bindings.
   :keymap occ-mode-main-keymap
   :group 'occ
-  (if occ-mode
-      (occ-insinuate (occ-collector-default-key))
-    (occ-uninsinuate)))
+  (if occ-mode-global-allowed
+    (if occ-mode
+        (occ-insinuate (occ-collector-default-key))
+      (occ-uninsinuate))
+    (occ-warn "occ-mode-global-allowed is nil, not enabling occ-mode")))
 
 ;;; occ-mode.el ends here
