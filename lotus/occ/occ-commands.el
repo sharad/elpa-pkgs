@@ -265,7 +265,7 @@
 
 ;;;###autoload
 (defun occ-insinuate (&optional key)
-  (interactive)
+  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
   (occ-message "occ-insinuate: begin")
   (prog1
       (occ-initialize key)

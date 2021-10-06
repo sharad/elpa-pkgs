@@ -461,10 +461,11 @@
         (when occ-add-org-file-timer
           (cancel-timer occ-add-org-file-timer)
           (setq occ-add-org-file-timer nil))
-        (when (< occ-add-inquery 3)
-          (setq occ-add-org-file-timer
-                (run-with-idle-plus-timer (* (1+ occ-add-inquery) 20)
-                                          nil
-                                          #'occ-do-add-org-buffer (occ-collector-default-key) buffer)))))))
+        (when (fboundp 'occ-do-add-org-buffer)
+          (when (< occ-add-inquery 3)
+            (setq occ-add-org-file-timer
+                  (run-with-idle-plus-timer (* (1+ occ-add-inquery) 20)
+                                            nil
+                                            #'occ-do-add-org-buffer (occ-collector-default-key) buffer))))))))
 
 ;;; occ-obj-clock-method.el ends here
