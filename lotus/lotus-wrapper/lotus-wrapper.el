@@ -186,7 +186,7 @@ containing it, until no links are left at any level.
 
 
 ;;;###autoload
-(defun replace-erc-identd-start (&optional port)
+(defun around-erc-identd-start (&optional port)
   "Start an identd server listening to port 8113.
 Port 113 (auth) will need to be redirected to port 8113 on your
 machine -- using iptables, or a program like redir which can be
@@ -207,6 +207,42 @@ system."
                               :filter 'erc-identd-filter))
   (set-process-query-on-exit-flag erc-identd-process nil))
 
+
+(add-hook 'parinfer-rust-mode-hook (lambda ()
+                                     (when (seq-contains-p '("ede-projects.el")
+                                                           buffer-file-name)
+                                         (message "Disabling parinfer-rust-mode")
+                                         ;; Disables `parinfer-rust-mode'
+                                         (parinfer-rust-mode-disable))))
+                                         ;; Temporarily disables `parinfer-rust-mode' so you can can
+                                         ;; use a `parinfer-rust-mode-toggle' to enable it with a
+                                         ;; keychord. However, if one uses this approach they
+                                         ;; will have to also turn off the "Check Before Enable"
+                                         ;; feature as that uses parinfer-rust-toggle-disable
+                                         ;; internally
+                                         ;;
+                                         ;; (setq-local parinfer-rust-check-before-enable nil)
+                                         ;; (parinfer-rust-toggle-disable))))
+;;;###autoload
+(defun around-ede-save-cache (oldfun)
+  ;; https://github.com/justinbarclay/parinfer-rust-mode/issues/52
+  (let* ((old-parinfer-rust-mode      parinfer-rust-mode)
+         (old-parinfer-rust-mode-hook parinfer-rust-mode-hook)
+         (parinfer-rust-mode          nil))
+    (add-hook 'parinfer-rust-mode-hook
+              #'(lambda ()
+                  (when (string-match-p "ede-projects.el" buffer-file-name)
+                    (message "Disabling parinfer-rust-mode")
+                    ;; Disables `parinfer-rust-mode'
+                    (parinfer-rust-mode-disable))))
+    (prog1
+        (funcall oldfun)
+        (with-current-buffer (find-file-noselect ede-project-placeholder-cache-file t)
+          (save-buffer t))
+        (setq parinfer-rust-mode-hook old-parinfer-rust-mode-hook)
+        (when old-parinfer-rust-mode
+          (parinfer-rust-mode-enable)))))
+
 ;;;###autoload
 (defun lotus-wrapper-insinuate ()
   (interactive)
@@ -215,7 +251,10 @@ system."
    #'replace-file-truename)
   (add-function
    :override (symbol-function 'erc-identd-start)
-   #'replace-erc-identd-start))
+   #'replace-erc-identd-start)
+  (add-function
+   :around (symbol-function 'ede-save-cache)
+   #'around-ede-save-cache))
 
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
@@ -225,7 +264,10 @@ system."
    #'replace-file-truename)
   (remove-function
    (symbol-function 'erc-identd-start)
-   #'replace-erc-identd-start))
+   #'replace-erc-identd-start)
+  (remove-function
+   (symbol-function 'ede-save-cache)
+   #'around-ede-save-cache))
 
 
 ;; (file-truename "~/.mailbox")
