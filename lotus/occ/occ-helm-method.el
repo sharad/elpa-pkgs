@@ -324,7 +324,6 @@
     (funcall helm-action (occ-sel-obj source))))
 
 (cl-defmethod occ-obj-helm-act-on-multiple ((obj         occ-ctx)
-                                            ;; (candidates-filtered list)
                                             (collections list)
                                             &key
                                             filters
