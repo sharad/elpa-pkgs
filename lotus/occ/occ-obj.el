@@ -227,6 +227,8 @@
   transform)
 
 
+
+;; BUG: TODO - use other name then occ-select-... like occ-hselect-... as select is verb, while I need noun
 (cl-defstruct (occ-select (:include occ-obj))
   "helm select obj or source"
   obj)

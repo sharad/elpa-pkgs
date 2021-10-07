@@ -382,21 +382,15 @@
       (occ-debug "occ-obj-helm-act2: ap-transf: %s" ap-transf)
       (let* ((ap-normal (if return-transform (occ-obj-return-tranform ap-normal obj) ap-normal)) ;as return value is going to be used.
              (ap-transf (if return-transform (occ-obj-return-tranform ap-transf obj) ap-transf)))
-        (let ((helm-fun (if (and nil
-                                 auto-select-if-only
-                                 (= 1 (length candidates-filtered)))
-                            #'occ-obj-helm-act-on-single
-                          #'occ-obj-helm-act-on-multiple)))
-          (funcall helm-fun obj
-                   ;; candidates-filtered
-                   collections
-                   :filters             filters
-                   :builder             builder
-                   :ap-normal           ap-normal
-                   :ap-transf           ap-transf
-                   :auto-select-if-only auto-select-if-only
-                   :timeout             timeout
-                   :prompt              prompt))))))
+        (occ-obj-helm-act-on-multiple obj
+                                      collections
+                                      :filters             filters
+                                      :builder             builder
+                                      :ap-normal           ap-normal
+                                      :ap-transf           ap-transf
+                                      :auto-select-if-only auto-select-if-only
+                                      :timeout             timeout
+                                      :prompt              prompt)))))
 
 
 (defun occ-helm-select-XYZ (obj
