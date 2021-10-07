@@ -111,6 +111,45 @@ TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
 ;; Getting targets...done
 ;; Error running timer ‘occ-do-clock-in-curr-ctx-if-not’: (occ-error "Window #<window 12> too small for splitting")
 
+;; (cl-defmethod occ-obj-select ((obj occ-ctx)
+;;                               (collections list)
+;;                               &key
+;;                               filters
+;;                               builder
+;;                               ap-normal
+;;                               ap-transf
+;;                               return-transform
+;;                               auto-select-if-only
+;;                               timeout
+;;                               obtrusive
+;;                               prompt)
+;;   "return interactively selected TSK or NIL,   TODO: Document it."
+;;   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
+;;   (unless builder (occ-error "Builder can not be nil"))
+;;   (occ-debug "OCC-SELECT((OBJ OCC-CTX)): begin")
+;;   (let* ((timeout (or timeout occ-idle-timeout)))
+;;     (let* ((unfiltered-count (occ-obj-length (first collections))))
+;;       (if (> unfiltered-count 0)
+;;           (let ((retval (occ-obj-list-select obj
+;;                                              collections
+;;                                              :filters             filters
+;;                                              :builder             builder
+;;                                              :return-transform    return-transform
+;;                                              :ap-normal           ap-normal
+;;                                              :ap-transf           ap-transf
+;;                                              :auto-select-if-only auto-select-if-only
+;;                                              :timeout             timeout
+;;                                              :obtrusive           obtrusive
+;;                                              :prompt              prompt)))
+;;             (occ-message "OCC-OBJ-SELECT((OBJ OCC-CTX)): occ-list-select returned %s"
+;;                        (occ-obj-Format retval))
+;;             retval)
+;;         (prog1
+;;             (when return-transform
+;;               (occ-obj-make-return occ-return-nocndidate-label nil))
+;;           (occ-message "OCC-SELECT((OBJ OCC-CTX)): no candidates available from %d."
+;;                        unfiltered-count))))))
+
 (cl-defmethod occ-obj-select ((obj occ-ctx)
                               (collections list)
                               &key
@@ -127,28 +166,21 @@ TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
   (unless builder (occ-error "Builder can not be nil"))
   (occ-debug "OCC-SELECT((OBJ OCC-CTX)): begin")
-  (let* ((timeout (or timeout occ-idle-timeout)))
-    (let* ((unfiltered-count (occ-obj-length (first collections))))
-      (if (> unfiltered-count 0)
-          (let ((retval (occ-obj-list-select obj
-                                             collections
-                                             :filters             filters
-                                             :builder             builder
-                                             :return-transform    return-transform
-                                             :ap-normal           ap-normal
-                                             :ap-transf           ap-transf
-                                             :auto-select-if-only auto-select-if-only
-                                             :timeout             timeout
-                                             :obtrusive           obtrusive
-                                             :prompt              prompt)))
-            (occ-message "OCC-OBJ-SELECT((OBJ OCC-CTX)): occ-list-select returned %s"
-                       (occ-obj-Format retval))
-            retval)
-        (prog1
-            (when return-transform
-              (occ-obj-make-return occ-return-nocndidate-label nil))
-          (occ-message "OCC-SELECT((OBJ OCC-CTX)): no candidates available from %d."
-                       unfiltered-count))))))
+  (let ((retval (occ-obj-list-select obj
+                                     collections
+                                     :filters             filters
+                                     :builder             builder
+                                     :return-transform    return-transform
+                                     :ap-normal           ap-normal
+                                     :ap-transf           ap-transf
+                                     :auto-select-if-only auto-select-if-only
+                                     :timeout             timeout
+                                     :obtrusive           obtrusive
+                                     :prompt              prompt)))
+    (occ-message "OCC-OBJ-SELECT((OBJ OCC-CTX)): occ-list-select returned %s"
+                 (occ-obj-Format retval))
+    retval))
+    
 
 (cl-defmethod occ-obj-select ((obj null)
                               (collections list)
