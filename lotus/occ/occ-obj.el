@@ -226,4 +226,15 @@
   "AP stand for `actions pack'"
   transform)
 
+
+(cl-defstruct (occ-select (:include occ-obj))
+  "helm select obj or source"
+  obj)
+
+(cl-defstruct (occ-select-candidate (:include occ-select))
+  "helm select object")
+
+(cl-defstruct (occ-select-source (:include occ-select))
+  "helm select source")
+
 ;;; occ-obj.el ends here

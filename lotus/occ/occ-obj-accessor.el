@@ -1008,5 +1008,11 @@ pointing to it."
   "return CTSKs list"
   nil)
 
+
+(cl-defmethod occ-sel-obj ((source null))
+  nil)
+
+(cl-defmethod occ-sel-obj ((source occ-select))
+  (occ-select-obj source))
 
 ;;; occ-obj-accessor.el ends here

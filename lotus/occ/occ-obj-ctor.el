@@ -693,6 +693,14 @@
   (occ-error "Can not use occ-callable-transf %s" callable))
 
 
+(defun occ-build-select-candidate (candidate)
+  (make-occ-select-candidate :obj candidate))
+
+
+(defun occ-build-select-source (source)
+  (make-occ-select-source :obj source))
+
+
 (occ-testing
  (let* ((obj       (occ-obj-make-ctx-at-point))
         (ap-obj    (occ-obj-make-ap-transf '(t actions general)))
