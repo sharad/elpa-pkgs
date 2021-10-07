@@ -352,7 +352,14 @@
                                                            :prompt           prompt)))
              ;; (occ-message "Hello")
              (if (occ-select-candidate-p (first cand-sources))
-                 (occ-obj-helm-act-on-candidate (first cand-sources))
+                 (occ-obj-helm-act-on-candidate obj
+                                                (first cand-sources)
+                                                :filters          filters
+                                                :builder          builder
+                                                :ap-normal        ap-normal
+                                                :ap-transf        ap-transf
+                                                :auto-select-if-only auto-select-if-only
+                                                :prompt           prompt)
                (when (occ-sel-obj (first cand-sources))
                  (prog1
                      (helm :sources (mapcar #'occ-sel-obj cand-sources)
