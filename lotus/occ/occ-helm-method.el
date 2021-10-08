@@ -310,7 +310,6 @@
                                              auto-select-if-only
                                              timeout
                                              prompt)
-  ;; OBJ ignored
   "OBJ ignored"
   (let* ((helm-action (occ-obj-get-first-helm-actions-for-obj obj
                                                               ap-normal
@@ -321,7 +320,9 @@
     (occ-message "occ-obj-helm-act-on-single: (cons p (nth 1 helm-action)) %s, (functionp (nth 1 helm-action)) %s"
                  (consp (rest helm-action))
                  (functionp (rest helm-action)))
-    (funcall helm-action (occ-sel-obj source))))
+    (if (occ-sel-obj source)
+        (funcall helm-action (occ-sel-obj source))
+      (occ-warn "occ-obj-helm-act-on-candidate: wrong source"))))
 
 (cl-defmethod occ-obj-helm-act-on-multiple ((obj         occ-ctx)
                                             (collections list)

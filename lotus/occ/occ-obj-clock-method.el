@@ -423,7 +423,7 @@
 (defvar occ-add-inquery        0)
 (defvar occ-add-org-file-timer nil)
 
-(cl-defmethod occ-do-add-org-buffer ((key  string)
+(cl-defmethod occ-do-add-org-buffer ((key string)
                                      buff)
   (occ-message "occ-do-add-org-buffer: ignoring buff %s" buff))
 
@@ -448,24 +448,30 @@
               (incf occ-add-inquery)))))))
   (occ-add-org-file-timer key buff))
 
+(defun occ-add-org-buffer (key buf)
+  (if (and buff
+           (buffer-live-p buff))
+      (occ-do-add-org-buffer key buff)
+    (occ-warn "occ-add-org-buff: ignoring %s to add to %s" buff key)))
+
 (defun occ-add-org-file-timer (&optional key buffer)
   (occ-nodisplay "occ-add-org-file-timer: started for buff %s, occ-add-inquery %s, occ-add-org-file-timer %s"
                  buffer
                  occ-add-inquery
                  occ-add-org-file-timer)
   (let ((key    (occ-collector-default-key))
-        (buffer (or buffer (current-buffer))))
+        (buffer (or buffer
+                    (current-buffer))))
     (when (buffer-live-p buffer)
       (with-current-buffer buffer
         (make-local-variable 'occ-add-org-file-timer)
         (when occ-add-org-file-timer
           (cancel-timer occ-add-org-file-timer)
           (setq occ-add-org-file-timer nil))
-        (when (fboundp 'occ-do-add-org-buffer)
-          (when (< occ-add-inquery 3)
-            (setq occ-add-org-file-timer
-                  (run-with-idle-plus-timer (* (1+ occ-add-inquery) 20)
-                                            nil
-                                            #'occ-do-add-org-buffer (occ-collector-default-key) buffer))))))))
+        (when (< occ-add-inquery 3)
+          (setq occ-add-org-file-timer
+                (run-with-idle-plus-timer (* (1+ occ-add-inquery) 20)
+                                          nil
+                                          #'occ-add-org-buffer (occ-collector-default-key) buffer)))))))
 
 ;;; occ-obj-clock-method.el ends here
