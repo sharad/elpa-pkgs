@@ -448,7 +448,7 @@
               (incf occ-add-inquery)))))))
   (occ-add-org-file-timer key buff))
 
-(defun occ-add-org-buffer (key buf)
+(defun occ-add-org-buffer (key buff)
   (if (and buff
            (buffer-live-p buff))
       (occ-do-add-org-buffer key buff)
