@@ -309,7 +309,7 @@ FULL is given."
 
 (defun occ-run ()
   (interactive)
-  (helm :prompt "test"
+  (helm :prompt "Run Actions"
         :sources (list (helm-build-sync-source "Actions"
                            :candidates (list (cons "occ clock-in current context (force)"
                                                    #'(lambda () (occ-do-clock-in-curr-ctx t)))

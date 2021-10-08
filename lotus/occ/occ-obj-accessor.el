@@ -530,13 +530,15 @@
   "Insert a line for the clock selection menu.
 And return a cons cell with the selection character integer and the obj
 pointing to it."
-  (cons (occ-obj-format obj nil t) obj))
+  (cons (occ-obj-format obj nil t)
+        obj))
 
 (cl-defmethod occ-obj-candidate ((obj occ-obj-tsk))
   "Insert a line for the clock selection menu.
 And return a cons cell with the selection character integer and the marker
 pointing to it."
-  (cons (occ-obj-format obj nil t) obj))
+  (cons (occ-obj-format obj nil t)
+        obj))
 
 
 ;; find place to put these all function
