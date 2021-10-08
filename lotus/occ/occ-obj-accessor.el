@@ -1012,7 +1012,7 @@ pointing to it."
 (cl-defmethod occ-obj-select-obj ((source null))
   nil)
 
-(cl-defmethod occ-select-obj ((source occ-hsrc))
+(cl-defmethod occ-ob-select-obj ((source occ-hsrc))
   (occ-hsrc-obj source))
 
 (cl-defmethod occ-obj-obj ((source occ-hsrc))
