@@ -289,8 +289,8 @@
 ;;;###autoload
 (defun occ-reload (&optional uncompiled)
   (interactive "P")
-  (let ((occ-reload nil))
-    (when occ-reload
+  (when occ-reload
+    (let ((occ-reload nil))
       (occ-reload-lib uncompiled))))
 
 (defun occ-version (&optional here full message)
@@ -318,6 +318,6 @@ FULL is given."
                            :action     (list (cons "run"
                                                    #'(lambda (candidate-fun)
                                                        (funcall candidate-fun)))))
-                       (occ-select-obj (occ-helm-build-extra-actions-ctx-buffer-source)))))
+                       (occ-obj-obj (occ-helm-build-extra-actions-ctx-buffer-source)))))
 
 ;;; occ-commands.el ends here
