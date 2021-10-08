@@ -1009,10 +1009,13 @@ pointing to it."
   nil)
 
 
-(cl-defmethod occ-sel-obj ((source null))
+(cl-defmethod occ-obj-select-obj ((source null))
   nil)
 
-(cl-defmethod occ-sel-obj ((source occ-select))
-  (occ-select-obj source))
+(cl-defmethod occ-select-obj ((source occ-hsrc))
+  (occ-hsrc-obj source))
+
+(cl-defmethod occ-obj-obj ((source occ-hsrc))
+  (occ-hsrc-obj source))
 
 ;;; occ-obj-accessor.el ends here

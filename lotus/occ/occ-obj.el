@@ -228,15 +228,15 @@
 
 
 
-;; BUG: TODO - use other name then occ-select-... like occ-hselect-... as select is verb, while I need noun
-(cl-defstruct (occ-select (:include occ-obj))
+;; BUG: TODO - use other name then occ-hsrc-... like occ-hselect-... as select is verb, while I need noun
+(cl-defstruct (occ-hsrc (:include occ-obj))
   "helm select obj or source"
   obj)
 
-(cl-defstruct (occ-select-candidate (:include occ-select))
+(cl-defstruct (occ-hsrc-candidate (:include occ-hsrc))
   "helm select object")
 
-(cl-defstruct (occ-select-source (:include occ-select))
+(cl-defstruct (occ-hsrc-source (:include occ-hsrc))
   "helm select source")
 
 ;;; occ-obj.el ends here

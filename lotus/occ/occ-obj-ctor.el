@@ -693,12 +693,12 @@
   (occ-error "Can not use occ-callable-transf %s" callable))
 
 
-(defun occ-build-select-candidate (candidate)
-  (make-occ-select-candidate :obj candidate))
+(defun occ-build-hsrc-candidate (candidate)
+  (make-occ-hsrc-candidate :obj candidate))
 
 
-(defun occ-build-select-source (source)
-  (make-occ-select-source :obj source))
+(defun occ-build-hsrc-source (source)
+  (make-occ-hsrc-source :obj source))
 
 
 (occ-testing

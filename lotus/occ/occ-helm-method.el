@@ -106,7 +106,7 @@
                                                (fun    symbol))
   (let ((source (occ-helm-dummy-source prompt
                                        fun)))
-    (occ-build-select-source source)))
+    (occ-build-hsrc-source source)))
 
 
 (fmakunbound 'occ-helm-build-collection-source-prompt)
@@ -164,7 +164,7 @@
 
     (if (and auto-select-if-only
              (<= filtered-count 1))
-        (occ-build-select-candidate (first candidates-filtered))
+        (occ-build-hsrc-candidate (first candidates-filtered))
       (progn
         (occ-message "occ-obj-helm-build-collection-source: (length candidates-unfiltered) = %d, called-never = %s"
                      (length candidates-unfiltered)
@@ -215,7 +215,7 @@
                                 :action-transformer             helm-transfm
                                 :filtered-candidate-transformer nil
                                 :history                        'org-refile-history)))
-                  (occ-build-select-source source))))))))))
+                  (occ-build-hsrc-source source))))))))))
 
 
 (defun occ-helm-build-extra-actions-ctx-buffer-source ()
@@ -227,8 +227,8 @@
                                                                                 (let ((buff (buffer-name (current-buffer))))
                                                                                   (pushnew buff occ-ignore-buffer-names)
                                                                                   (occ-helm-null-candidate obj))))))))
-      (occ-build-select-source source))))
-    
+      (occ-build-hsrc-source source))))
+
 (defun occ-helm-build-dummy-sources ()
   (list (occ-obj-helm-build-dummy-source "Create (fast as child)"             #'occ-do-fast-procreate-child)
         (occ-obj-helm-build-dummy-source "Create Anonymous (fast as unnamed)" #'occ-do-fast-procreate-anonymous-child)
@@ -301,7 +301,7 @@
 
 
 (cl-defmethod occ-obj-helm-act-on-candidate ((obj    occ-ctx)
-                                             (source occ-select-candidate)
+                                             (source occ-hsrc-candidate)
                                              &key
                                              filters
                                              builder
@@ -320,8 +320,8 @@
     (occ-message "occ-obj-helm-act-on-single: (cons p (nth 1 helm-action)) %s, (functionp (nth 1 helm-action)) %s"
                  (consp (rest helm-action))
                  (functionp (rest helm-action)))
-    (if (occ-sel-obj source)
-        (funcall helm-action (occ-sel-obj source))
+    (if (occ-obj-obj source)
+        (funcall helm-action (occ-obj-obj source))
       (occ-warn "occ-obj-helm-act-on-candidate: wrong source"))))
 
 (cl-defmethod occ-obj-helm-act-on-multiple ((obj         occ-ctx)
@@ -351,7 +351,7 @@
                                                            :auto-select-if-only auto-select-if-only
                                                            :prompt           prompt)))
              ;; (occ-message "Hello")
-             (if (occ-select-candidate-p (first cand-sources))
+             (if (occ-hsrc-candidate-p (first cand-sources))
                  (occ-obj-helm-act-on-candidate obj
                                                 (first cand-sources)
                                                 :filters          filters
@@ -360,9 +360,9 @@
                                                 :ap-transf        ap-transf
                                                 :auto-select-if-only auto-select-if-only
                                                 :prompt           prompt)
-               (when (occ-sel-obj (first cand-sources))
+               (when (occ-obj-obj (first cand-sources))
                  (prog1
-                     (helm :sources (mapcar #'occ-sel-obj cand-sources)
+                     (helm :sources (mapcar #'occ-obj-obj cand-sources)
                            :buffer  (occ-helm-select-buffer)
                            :resume  'noresume)
                    ;; (occ-message "Hi")
