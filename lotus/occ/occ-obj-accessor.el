@@ -650,7 +650,7 @@ pointing to it."
                    (occ-obj-make-tsk clock)))))))))
 
 
-(defun occ-obj-collection-object (&optional key)
+(defun occ-default-collection (&optional noerror)
   (let ((key (occ-collector-default-key)))
     (unless (occ-collector-roots key)
       (if (occ-collector-spec key)
@@ -660,20 +660,8 @@ pointing to it."
         (progn
           (occ-uninsinuate)
           (occ-message "(occ-collector-spec key) is nil, set it using M-x occ-obj-build-spec or set (occ-collector-spec key), disabled occ")
-          (occ-error "(occ-collector-spec key) is nil, set it using M-x occ-obj-build-spec or set (occ-collector-spec key), disabled occ"))))
-    (occ-collector-get key)))
-
-(defun occ-default-collection ()
-  (let ((key (occ-collector-default-key)))
-    (unless (occ-collector-roots key)
-      (if (occ-collector-spec key)
-          (progn
-            ;; (occ-obj-make-collection (occ-collector-spec key))
-            (occ-obj-tsks (occ-collector-get key) t))
-        (progn
-          (occ-uninsinuate)
-          (occ-message "(occ-collector-spec key) is nil, set it using M-x occ-obj-build-spec or set (occ-collector-spec key), disabled occ")
-          (occ-error "(occ-collector-spec key) is nil, set it using M-x occ-obj-build-spec or set (occ-collector-spec key), disabled occ"))))
+          (unless noerror
+            (occ-error "(occ-collector-spec key) is nil, set it using M-x occ-obj-build-spec or set (occ-collector-spec key), disabled occ")))))
     (occ-collector-get key)))
 
 
