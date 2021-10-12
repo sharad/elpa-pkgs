@@ -213,11 +213,11 @@
       (occ-debug "occ-do-clock-in((obj occ-ctx)): begin")
       (let ((returned-ctxual-tsk (occ-obj-select obj ;TODO: if only one match then where it is selecting that.
                                                  (occ-collections-default)
-                                                 :filters          filters
-                                                 :builder          builder
-                                                 :return-transform t ;Here I know return value is going to be used, so passing t
-                                                 :ap-normal        ap-normal ;as return value is going to be used.
-                                                 :ap-transf        ap-transf
+                                                 :filters             filters
+                                                 :builder             builder
+                                                 :return-transform    t ;Here I know return value is going to be used, so passing t
+                                                 :ap-normal           ap-normal ;as return value is going to be used.
+                                                 :ap-transf           ap-transf
                                                  :auto-select-if-only auto-select-if-only
                                                  :timeout             timeout)))
         (occ-debug "occ-do-clock-in((obj occ-ctx)): selected  returned-ctxual-tsk=%s ret-label=%s value=%s"
@@ -273,7 +273,7 @@
                        :builder   builder
                        :ap-normal ap-normal
                        :ap-transf ap-transf
-                       :timeout            timeout))))
+                       :timeout   timeout))))
 
 
 (cl-defmethod occ-do-try-clock-in ((obj marker)
@@ -355,33 +355,6 @@
                    :ap-normal ap-normal
                    :ap-transf ap-transf
                    :timeout   timeout))
-
-
-;; (cl-defmethod occ-do-try-fast-clock-in ((obj occ-ctsk)
-;;                                         &key
-;;                                         filters
-;;                                         builder
-;;                                         ap-normal
-;;                                         ap-transf
-;;                                         timeout)
-;;   (let ((tsk (occ-obj-tsk obj))
-;;         (ctx (occ-obj-ctx obj))
-;;         (ctxtual-tsk (occ-obj-build-ctxual-tsk obj)))
-;;     (occ-try-until 3 (or (not (eq t retval))
-;;                          (occ-obj-associable-p obj))
-;;       ;; (helm (occ-obj-gen-edits-if-required obj nil nil))
-;;       ;; (setq retval
-;;       ;;       (occ-edit-properties obj '(timebeing add 10)))
-;;       (setq retval (occ-op-props-edit obj '(timebeing add 10))))
-;;     (unless (occ-do-clock-in-if-associable ctxtual-tsk
-;;                                            :filters   filters
-;;                                            :builder   builder
-;;                                            :ap-normal ap-normal
-;;                                            :ap-transf ap-transf
-;;                                            :timeout   timeout)
-;;       (occ-message "%s is not associable with %s not clocking-in."
-;;                    (occ-obj-Format tsk)
-;;                    (occ-obj-Format ctx)))))
 
 (cl-defmethod occ-do-try-fast-clock-in ((obj occ-ctsk)
                                         &key
