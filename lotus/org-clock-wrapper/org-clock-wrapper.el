@@ -148,45 +148,39 @@ using three `C-u' prefix arguments."
     (lwarn 'org-clock-wrapper :debug "replace-org-clock-select-task: lotus-with-other-frame-event-debug")
     (let ((helm-sources nil))
       (when (marker-buffer org-clock-default-task)
-        (push
-         (helm-build-sync-source "Default Task"
-           :candidates (list (lotus-org-marker-selection-line org-clock-default-task))
-           :action (list ;; (cons "Select" 'identity)
-                    (cons "Clock in and track" #'identity)))
-         helm-sources))
+        (push (helm-build-sync-source "Default Task"
+                :candidates (list (lotus-org-marker-selection-line org-clock-default-task))
+                :action (list ;; (cons "Select" 'identity)
+                         (cons "Clock in and track" #'identity)))
+              helm-sources))
 
       (when (marker-buffer org-clock-interrupted-task)
-        (push
-         (helm-build-sync-source "The task interrupted by starting the last one"
-           :candidates (list (lotus-org-marker-selection-line org-clock-interrupted-task))
-           :action (list ;; (cons "Select" 'identity)
-                    (cons "Clock in and track" #'identity)))
-         helm-sources))
+        (push (helm-build-sync-source "The task interrupted by starting the last one"
+                :candidates (list (lotus-org-marker-selection-line org-clock-interrupted-task))
+                :action (list ;; (cons "Select" 'identity)
+                         (cons "Clock in and track" #'identity)))
+              helm-sources))
 
-      (when (and
-             (org-clocking-p)
-             (marker-buffer org-clock-marker))
-        (push
-         (helm-build-sync-source "Current Clocking Task"
-           :candidates (list (lotus-org-marker-selection-line org-clock-marker))
-           :action (list ;; (cons "Select" 'identity)
-                    (cons "Clock in and track" #'identity)))
-         helm-sources))
+      (when (and (org-clocking-p)
+                 (marker-buffer org-clock-marker))
+        (push (helm-build-sync-source "Current Clocking Task"
+                :candidates (list (lotus-org-marker-selection-line org-clock-marker))
+                :action (list ;; (cons "Select" 'identity)
+                         (cons "Clock in and track" #'identity)))
+              helm-sources))
 
       (when org-clock-history
-        (push
-         (helm-build-sync-source "Recent Tasks"
-           :candidates (mapcar #'lotus-org-marker-selection-line org-clock-history)
-           :action (list ;; (cons "Select" 'identity)
-                    (cons "Clock in and track" #'identity)))
-         helm-sources))
+        (push (helm-build-sync-source "Recent Tasks"
+                :candidates (mapcar #'lotus-org-marker-selection-line org-clock-history)
+                :action (list ;; (cons "Select" 'identity)
+                         (cons "Clock in and track" #'identity)))
+              helm-sources))
 
       (condition-case nil
-          (helm
-           helm-sources)
+          (helm helm-sources
+                :buffer "*helm-org-clock-select-task*")
         ((quit error) (message "ignored")))))
   (lwarn 'org-clock-select-task :debug "%s: finisha replace-org-clock-select-task" (time-stamp-string)))
-
 
 ;;;###autoload
 (defun org-clock-wrapper-insinuate ()
