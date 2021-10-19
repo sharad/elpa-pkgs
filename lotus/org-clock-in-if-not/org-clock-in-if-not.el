@@ -86,23 +86,19 @@
   (org-ci-if-not-debug :debug "org-clock-in-if-not: begin")
   (org-ci-if-not-debug :debug "org-clock-in-if-not: begin")
   (lotus-run-unobtrusively                    ;heavy task
-    (lotus-with-no-active-minibuffer-if
-        (lotus-with-other-frame-event-debug "org-clock-in-if-not" :restart
-          (progn
-            (org-ci-if-not-debug :debug "org-clock-in-if-not: [minibuff body] lotus-with-no-active-minibuffer-if")
-            (org-ci-if-not-debug :debug "org-clock-in-if-not: not running as minibuffer is already active.")
-            (message "org-clock-in-if-not: not running as minibuffer is already active."))
-
-        (org-ci-if-not-debug :debug "org-clock-in-if-not: [body] lotus-with-no-active-minibuffer-if")
-        (unless (or org-donot-try-to-clock-in
-                    (org-clock-is-active))
-          ;; (org-clock-goto t)
-          (org-ci-if-not-debug :debug "org-clock-in-if-not: really calling")
-          (if org-clock-history
-              (let (buffer-read-only)
-                (org-clock-in '(4)))
-            ;; with-current-buffer should be some real file
-            (org-clock-in-refile nil))))))
+    (progn
+      (org-ci-if-not-debug :debug "org-clock-in-if-not: [body] lotus-with-no-active-minibuffer-if")
+      (unless (or org-donot-try-to-clock-in
+                  (org-clock-is-active))
+        ;; (org-clock-goto t)
+        (org-ci-if-not-debug :debug "org-clock-in-if-not: really calling")
+        (lotus-with-no-active-minibuffer-if
+            (lotus-with-other-frame-event-debug "org-clock-in-if-not" :restart
+              (if org-clock-history
+                  (let (buffer-read-only)
+                    (org-clock-in '(4)))
+                ;; with-current-buffer should be some real file
+                (org-clock-in-refile nil)))))))
   (org-ci-if-not-debug :debug "org-clock-in-if-not: finished")
   (org-ci-if-not-debug :debug "org-clock-in-if-not: finished"))
 
@@ -135,11 +131,10 @@
   (org-clock-in-if-not-at-time-delay))
 
 (defun org-clock-out-if-active ()
-  (if (and
-       (org-clock-is-active)
-       (y-or-n-p-with-timeout
-        (format "Do you want to clock out current task %s: " org-clock-heading)
-        7 nil))
+  (if (and (org-clock-is-active)
+           (y-or-n-p-with-timeout (format "Do you want to clock out current task %s: " org-clock-heading)
+                                  7
+                                  nil))
       (org-with-clock-writeable
        (let (org-log-note-clock-out)
          (if (org-clock-is-active)
