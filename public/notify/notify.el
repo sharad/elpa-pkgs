@@ -25,6 +25,11 @@
 ;; This provides a single function, notify, that will produce a notify
 ;; pop-up via DBus.
 
+
+
+
+;; Taken form: https://raw.githubusercontent.com/kurtharriger/emacs.d/master/elpa-to-submit/notify.el
+
 ;;; Code:
 
 (defvar notify-last '(0 0 0))
