@@ -24,6 +24,7 @@
 
 ;;; Code:
 
+(require 'basic-utils)
 (require 'lotus-misc-utils)
 (eval-when-compile
   (require 'lotus-misc-utils))
@@ -52,7 +53,7 @@ without prompting the user for a duration and automatically
 replace any running timer.
 
 By default, the timer duration will be set to the number of
-minutes in the Effort property, if any.  You can ignore this by
+minutes in the Effort property, if any.  You can ignore this byh
 using three `C-u' prefix arguments."
     (interactive "P")
     (when (and org-timer-start-time
@@ -142,6 +143,8 @@ using three `C-u' prefix arguments."
              ;; marker
              (cons task marker))))))))
 
+(defvar *org-clock-select-task-postpone-timer* nil)
+
 (defun replace-org-clock-select-task (&optional prompt)
   (lwarn 'org-clock-select-task :debug "%s: begin replace-org-clock-select-task" (time-stamp-string))
   (lotus-with-other-frame-event-debug "replace-org-clock-select-task" :restart
@@ -157,29 +160,37 @@ using three `C-u' prefix arguments."
       (when (marker-buffer org-clock-interrupted-task)
         (push (helm-build-sync-source "The task interrupted by starting the last one"
                 :candidates (list (lotus-org-marker-selection-line org-clock-interrupted-task))
-                :action (list ;; (cons "Select" 'identity)
-                         (cons "Clock in and track" #'identity)))
+                :action     (list (cons "Clock in and track" #'identity)))
               helm-sources))
 
       (when (and (org-clocking-p)
                  (marker-buffer org-clock-marker))
         (push (helm-build-sync-source "Current Clocking Task"
                 :candidates (list (lotus-org-marker-selection-line org-clock-marker))
-                :action (list ;; (cons "Select" 'identity)
-                         (cons "Clock in and track" #'identity)))
+                :action     (list (cons "Clock in and track" #'identity)))
               helm-sources))
 
       (when org-clock-history
         (push (helm-build-sync-source "Recent Tasks"
                 :candidates (mapcar #'lotus-org-marker-selection-line org-clock-history)
-                :action (list ;; (cons "Select" 'identity)
-                         (cons "Clock in and track" #'identity)))
+                :action     (list (cons "Clock in and track" #'identity)))
               helm-sources))
 
-      (condition-case nil
-          (helm helm-sources
-                :buffer "*helm-org-clock-select-task*")
-        ((quit error) (message "ignored")))))
+      ;; (condition-case nil
+      ;;     (helm helm-sources
+      ;;           :buffer "*helm-org-clock-select-task*")
+      ;;   ((quit error) (message "ignored")))
+
+      (lotus-with-no-active-minibuffer-if
+          (let ((postpone-secs 10))
+            (message "replace-org-clock-select-task: [minibuffer] lotus-with-no-active-minibuffer-if launching after %d seconds" postpone-secs)
+            (unless *org-clock-select-task-postpone-timer*
+              (setq *org-clock-select-task-postpone-timer*
+                    (run-at-time-or-now postpone-secs #'(lambda ()
+                                                          (setq *org-clock-select-task-postpone-timer* nil)
+                                                          (replace-org-clock-select-task prompt))))))
+        (helm helm-sources
+              :buffer "*helm-org-clock-select-task*"))))
   (lwarn 'org-clock-select-task :debug "%s: finisha replace-org-clock-select-task" (time-stamp-string)))
 
 ;;;###autoload
@@ -214,7 +225,7 @@ using three `C-u' prefix arguments."
         ;;   :action (helm-make-actions
         ;;            "Create task"
         ;;            'sacha/helm-org-create-task))
-        
+
   (progn
     (helm
      (list
@@ -228,7 +239,7 @@ using three `C-u' prefix arguments."
       ;;   :action (helm-make-actions
       ;;            "Create task"
       ;;            'sacha/helm-org-create-task))
-      
+
 
   (progn
     ;; http://kitchingroup.cheme.cmu.edu/blog/2015/01/30/More-adventures-in-helm-more-than-one-action/
@@ -269,6 +280,6 @@ move point to the subject."
                        ("send email" . open-email)))))
 
     (helm :sources '(some-helm-source some-other-helm-source))))
-    
+
 
 ;;; org-clock-wrapper.el ends here

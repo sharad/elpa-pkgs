@@ -27,6 +27,7 @@
 (provide 'org-clock-in-if-not)
 
 
+(require 'basic-utils)
 (require 'lotus-misc-utils)
 (eval-when-compile
   (require 'lotus-misc-utils))
@@ -86,21 +87,24 @@
   (org-ci-if-not-debug :debug "org-clock-in-if-not: begin")
   (org-ci-if-not-debug :debug "org-clock-in-if-not: begin")
   (lotus-run-unobtrusively                    ;heavy task
-    (progn
-      (org-ci-if-not-debug :debug "org-clock-in-if-not: [body] lotus-with-no-active-minibuffer-if")
-      (unless (or org-donot-try-to-clock-in
-                  (org-clock-is-active))
-        ;; (org-clock-goto t)
-        (org-ci-if-not-debug :debug "org-clock-in-if-not: really calling")
-        (lotus-with-no-active-minibuffer-if
-            (lotus-with-other-frame-event-debug "org-clock-in-if-not" :restart
-              (if org-clock-history
-                  (let (buffer-read-only)
-                    (org-clock-in '(4)))
-                ;; with-current-buffer should be some real file
-                (org-clock-in-refile nil)))))))
-  (org-ci-if-not-debug :debug "org-clock-in-if-not: finished")
-  (org-ci-if-not-debug :debug "org-clock-in-if-not: finished"))
+    (unless (or org-donot-try-to-clock-in
+                (org-clock-is-active))
+      ;; (org-clock-goto t)
+      (org-ci-if-not-debug :debug "org-clock-in-if-not: really calling")
+      (lotus-with-no-active-minibuffer-if
+          (let ((postpone-secs 10))
+            (org-ci-if-not-debug :debug "org-clock-in-if-not: [minibuffer] lotus-with-no-active-minibuffer-if launching after %d seconds" postpone-secs)
+            (unless org-clock-in-if-not-at-time-timer
+              (org-clock-in-if-not-at-time postpone-secs)))
+        (lotus-with-other-frame-event-debug "org-clock-in-if-not" :restart
+          (org-ci-if-not-debug :debug "org-clock-in-if-not: [body] lotus-with-no-active-minibuffer-if")
+          (if org-clock-history
+              (let (buffer-read-only)
+                (org-clock-in '(4)))
+            ;; with-current-buffer should be some real file
+            (org-clock-in-refile nil))
+          (org-ci-if-not-debug :debug "org-clock-in-if-not: finished")
+          (org-ci-if-not-debug :debug "org-clock-in-if-not: finished"))))))
 
 
 (defvar org-clock-in-if-not-at-time-timer nil)
