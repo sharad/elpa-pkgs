@@ -249,6 +249,19 @@
             'occ-warn-on-buffer-kill t t))
 
 
+(defun occ-find-file-noselect (file
+                               &optional
+                               nowarn
+                               rawfile
+                               wildcards)
+  (let ((org-clock-persist nil))
+    ;; To avoid (org-clock-load) via org-mode-hook
+    (find-file-noselect file
+                        nowarn
+                        rawfile
+                        wildcards)))
+
+
 ;;;###autoload
 (defun occ-run-with-deafult-tsk-collection (fn)
   (if (and (occ-collector-get (occ-collector-default-key))

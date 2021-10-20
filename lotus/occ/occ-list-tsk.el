@@ -37,7 +37,7 @@
   "Build recursive org tsks from org FILE (or current buffer) using TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
   (let ((tsk-builder-at-point   (occ-obj-tsk-builder-at-point collection)))
     (with-current-buffer (if file
-                             (find-file-noselect file)
+                             (occ-find-file-noselect file)
                            (current-buffer))
       (when (and (buffer-live-p (current-buffer))
                  (> (buffer-size (current-buffer)) 30))

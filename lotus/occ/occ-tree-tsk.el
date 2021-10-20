@@ -64,9 +64,11 @@
     (save-excursion
       (while (and (progn
                     (outline-next-heading)
-                    (> (funcall outline-level) level))
+                    (> (funcall outline-level)
+                       level))
                   (not (eobp)))
-        (if (= (funcall outline-level) (1+ level))
+        (if (= (funcall outline-level)
+               (1+ level))
             (setf collection
                   (nconc collection (list (funcall fun)))))))
     collection))
@@ -83,10 +85,11 @@
                                     1))
         (tsk-builder-at-point   (occ-obj-tsk-builder-at-point collection)))
    (with-current-buffer (if file
-                            (find-file-noselect file)
+                            (occ-find-file-noselect file)
                           (current-buffer))
      (when (and (buffer-live-p (current-buffer))
-                (> (buffer-size (current-buffer)) 30))
+                (> (buffer-size (current-buffer))
+                   30))
        (occ-setup-buffer)
        (if file (goto-char (point-min)))
        (let ((entry         (funcall tsk-builder-at-point))
