@@ -1,8 +1,8 @@
 ;;; angryfruitsalad.el --- http://www.emacswiki.org/emacs/AngryFruitSalad
 
-;; Copyright (C) 2012  Sharad Pratap
+;; Copyright (C) 2012  http://www.emacswiki.org/emacs/AngryFruitSalad
 
-;; Author: Sharad Pratap <sh4r4d _at_ _G-mail_>
+;; Author: http://www.emacswiki.org/emacs/AngryFruitSalad
 ;; Keywords: lisp
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,8 @@
 
 ;;; Code:
 
-
+(provide 'angryfruitsalad)
+
 
 ;;{{
 
@@ -52,46 +53,47 @@
 ;; ‘font-lock-warning-face’, however, remains as bright and
 ;; outstanding as before.
 
- (defun egoge-wash-out-colour (colour &optional degree)
+(defun egoge-wash-out-colour (colour &optional degree)
   "Return a colour string specifying a washed-out version of COLOUR."
   (let ((basec (color-values
-		(face-attribute 'default :foreground)))
-	(col (color-values colour))
-	(list nil))
+		            (face-attribute 'default :foreground)))
+	      (col (color-values colour))
+	      (list nil))
     (unless degree (setq degree 2))
     (while col
       (push (/ (/ (+ (pop col)
-		     (* degree (pop basec)))
-		  (1+ degree))
-	       256)
-	    list))
+		                 (* degree (pop basec)))
+		              (1+ degree))
+	             256)
+	          list))
     (apply 'format "#%02x%02x%02x" (nreverse list))))
 
- (defun egoge-wash-out-face (face &optional degree)
-   "Make the foreground colour of FACE appear a bit more pale."
-   (let ((colour (face-attribute face :foreground)))
-     (unless (eq colour 'unspecified)
-       (set-face-attribute face nil
- 			  :foreground (egoge-wash-out-colour colour degree)))))
+(defun egoge-wash-out-face (face &optional degree)
+  "Make the foreground colour of FACE appear a bit more pale."
+  (let ((colour (face-attribute face :foreground)))
+    (unless (eq colour 'unspecified)
+      (set-face-attribute face nil
+ 			                    :foreground (egoge-wash-out-colour colour degree)))))
 
- (defun egoge-find-faces (regexp)
-   "Return a list of all faces whose names match REGEXP."
-   (delq nil
- 	(mapcar (lambda (face)
- 		  (and (string-match regexp
- 				     (symbol-name face))
- 		       face))
- 		(face-list))))
+(defun egoge-find-faces (regexp)
+  "Return a list of all faces whose names match REGEXP."
+  (delq nil
+ 	      (mapcar (lambda (face)
+ 		              (and (string-match regexp
+ 				                             (symbol-name face))
+ 		                   face))
+ 		            (face-list))))
 
- (defun egoge-wash-out-fontlock-faces (&optional degree)
-   (interactive)
-   (mapc (lambda (elt)
- 	  (egoge-wash-out-face elt degree))
- 	(delq 'font-lock-warning-face
- 	      (egoge-find-faces "^font-lock"))))
+(defun egoge-wash-out-fontlock-faces (&optional degree)
+  (interactive)
+  (mapc (lambda (elt)
+ 	        (egoge-wash-out-face elt degree))
+ 	      (delq 'font-lock-warning-face
+ 	            (egoge-find-faces "^font-lock"))))
 
- (when (> (length (defined-colors)) 16)
-   (egoge-wash-out-fontlock-faces 2))
+(when (> (length (defined-colors))
+         16)
+  (egoge-wash-out-fontlock-faces 2))
 
 ;; Note that you can call ‘egoge-wash-out-fontlock-faces’ with a
 ;; numeric argument. The higher the argument DEGREE, the more washed
@@ -167,8 +169,11 @@
 ;; ;; Turn off all colors.
 ;; ;;   To turn on invoke emacs with --color=auto.
 
-(if (not (assoc 'tty-color-mode default-frame-alist))
-    (push (cons 'tty-color-mode 'never) default-frame-alist))
+(if (not (assoc 'tty-color-mode
+                default-frame-alist))
+    (push (cons 'tty-color-mode
+                'never)
+          default-frame-alist))
 
 ;; If you decide you want colors for a particular session run:
 
@@ -188,9 +193,5 @@
 ;; colors dynamically”, as you ask. TomBaker)
 
 ;;}}
-
-
-
-
-(provide 'angryfruitsalad)
+
 ;;; angryfruitsalad.el ends here
