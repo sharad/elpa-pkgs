@@ -133,6 +133,7 @@
   (message "%s: org-clock-in-if-not-at-time-delay-fn begin"
            (time-stamp-string))
   (org-clock-in-if-not-at-time-delay))
+
 
 (defun org-clock-out-if-active ()
   (if (and (org-clock-is-active)

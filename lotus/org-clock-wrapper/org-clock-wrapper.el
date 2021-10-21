@@ -24,12 +24,13 @@
 
 ;;; Code:
 
+(provide 'org-clock-wrapper)
+
+
 (require 'basic-utils)
 (require 'lotus-misc-utils)
 (eval-when-compile
   (require 'lotus-misc-utils))
-
-(provide 'org-clock-wrapper)
 (eval-when-compile
   (require 'org-macs))
 
@@ -117,6 +118,7 @@ using three `C-u' prefix arguments."
 ;; (advice-add 'org-timer-set-timer :around #'replace-org-timer-set-timer)
 
 ;; (add-function :override (symbol-function 'org-timer-set-timer) #'replace-org-timer-set-timer)
+
 
 (defun lotus-org-marker-selection-line (marker)
   "Insert a line for the clock selection menu.
@@ -206,6 +208,7 @@ using three `C-u' prefix arguments."
   (remove-function
    (symbol-function 'org-clock-select-task)
    #'replace-org-clock-select-task))
+
 
 ;; (replace-org-clock-select-task org-clock-history)
 ;; (org-clock-select-task org-clock-history)
@@ -280,6 +283,5 @@ move point to the subject."
                        ("send email" . open-email)))))
 
     (helm :sources '(some-helm-source some-other-helm-source))))
-
-
+
 ;;; org-clock-wrapper.el ends here
