@@ -120,6 +120,8 @@
   spec
   roots
   files
+  depth
+  limit
   ;; TODO: implement it
   file-lcp)
 (cl-defstruct (occ-collection (:include occ-obj-collection))

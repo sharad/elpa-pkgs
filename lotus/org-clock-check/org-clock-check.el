@@ -41,18 +41,19 @@
   "Attempt to clock-in when already not clock found."
   (interactive)
   (org-clock-stop-check-timer)
-  (setq
-   org-clock-check-long-timer
-   (run-with-nonobtrusive-aware-idle-timers
-    org-clock-check-long-timer-period
-    org-clock-check-long-timer-period
-    org-clock-check-short-timer-period
-    nil
-    #'(lambda (arg)
-        (unless (org-clock-is-active)
-          (org-clock-in-if-not)))
-    nil
-    nil)))
+  (setq org-clock-check-long-timer
+        (run-with-nonobtrusive-aware-idle-timers
+         org-clock-check-long-timer-period
+         org-clock-check-long-timer-period
+         org-clock-check-short-timer-period
+         nil
+         #'(lambda (arg)
+             (message "stop with org-clock-stop-check-timer")
+             (message "started with org-clock-start-check-timer")
+             (unless (org-clock-is-active)
+               (org-clock-in-if-not)))
+         nil
+         nil)))
 
 ;;;###autoload
 (defun org-clock-stop-check-timer ()
