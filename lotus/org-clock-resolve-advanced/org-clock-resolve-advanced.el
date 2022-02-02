@@ -106,15 +106,16 @@ so long."
                           (time-to-seconds (time-subtract (current-time) org-clock-last-idle-start-time)))
                       (org-user-idle-seconds))
 
-        (let* ((org-clock-user-idle-seconds                (floor (if org-clock-last-idle-start-time
-                                                                      (time-to-seconds (time-subtract (current-time)
-                                                                                                      org-clock-last-idle-start-time))
-                                                                    (org-user-idle-seconds))))
-               (org-clock-duration-in-seconds              (time-to-seconds (time-subtract (current-time) org-clock-start-time)))
-               (org-clock-user-idle-seconds                (if (>= org-clock-duration-in-seconds org-clock-user-idle-seconds) ;FIX
-                                                               (1- org-clock-duration-in-seconds)
-                                                             org-clock-user-idle-seconds))
-               (org-clock-user-idle-start                  (time-subtract (current-time) org-clock-user-idle-seconds))
+        (let* ((org-clock-user-idle-seconds   (floor (if org-clock-last-idle-start-time
+                                                         (time-to-seconds (time-subtract (current-time)
+                                                                                         org-clock-last-idle-start-time))
+                                                       (org-user-idle-seconds))))
+               (org-clock-duration-in-seconds (time-to-seconds (time-subtract (current-time) org-clock-start-time)))
+               (org-clock-user-idle-seconds   (if (>= (+ org-clock-duration-in-seconds 60)
+                                                      org-clock-user-idle-seconds) ;FIX
+                                                  (- org-clock-duration-in-seconds 60)
+                                                org-clock-user-idle-seconds))
+               (org-clock-user-idle-start     (time-subtract (current-time) org-clock-user-idle-seconds))
                (org-clock-resolving-clocks-due-to-idleness t))
 
           (message "org-rl-resolve-clocks-if-idle: org-clock-start-time           - %s" org-clock-start-time)
