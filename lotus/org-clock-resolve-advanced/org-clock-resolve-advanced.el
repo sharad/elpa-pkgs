@@ -130,7 +130,7 @@ so long."
 
           (if (> org-clock-user-idle-seconds
                  (* 60 org-clock-idle-time))
-            (org-rl-clock-resolve-internal (`org-rl-make-clock org-clock-marker
+            (org-rl-clock-resolve-internal (org-rl-make-clock org-clock-marker
                                                               org-clock-start-time
                                                               org-clock-user-idle-start
                                                               t) ;TODO: what important.
