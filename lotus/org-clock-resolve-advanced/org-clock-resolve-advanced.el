@@ -110,6 +110,10 @@ so long."
                                                                       (time-to-seconds (time-subtract (current-time)
                                                                                                       org-clock-last-idle-start-time))
                                                                     (org-user-idle-seconds))))
+               (org-clock-duration-in-seconds              (time-to-seconds (time-subtract (current-time) org-clock-start-time)))
+               (org-clock-user-idle-seconds                (if (>= org-clock-duration-in-seconds org-clock-user-idle-seconds) ;FIX
+                                                               (1- org-clock-duration-in-seconds)
+                                                             org-clock-user-idle-seconds))
                (org-clock-user-idle-start                  (time-subtract (current-time) org-clock-user-idle-seconds))
                (org-clock-resolving-clocks-due-to-idleness t))
 
@@ -126,7 +130,7 @@ so long."
 
           (if (> org-clock-user-idle-seconds
                  (* 60 org-clock-idle-time))
-            (org-rl-clock-resolve-internal (org-rl-make-clock org-clock-marker
+            (org-rl-clock-resolve-internal (`org-rl-make-clock org-clock-marker
                                                               org-clock-start-time
                                                               org-clock-user-idle-start
                                                               t) ;TODO: what important.
