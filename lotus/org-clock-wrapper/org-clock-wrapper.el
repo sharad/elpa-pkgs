@@ -191,7 +191,7 @@ using three `C-u' prefix arguments."
                     (run-at-time-or-now postpone-secs #'(lambda ()
                                                           (setq *org-clock-select-task-postpone-timer* nil)
                                                           (replace-org-clock-select-task prompt))))))
-        (helm helm-sources
+        (helm :sources helm-sources
               :buffer "*helm-org-clock-select-task*"))))
   (lwarn 'org-clock-select-task :debug "%s: finisha replace-org-clock-select-task" (time-stamp-string)))
 

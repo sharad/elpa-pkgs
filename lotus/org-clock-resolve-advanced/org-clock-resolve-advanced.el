@@ -112,10 +112,10 @@ so long."
                                                        (org-user-idle-seconds))))
                (org-clock-duration-in-seconds (floor (time-to-seconds (time-subtract (current-time)
                                                                                      org-clock-start-time))))
-               ;; (org-clock-user-idle-seconds   (if (>= (+ org-clock-duration-in-seconds 60)
-               ;;                                        org-clock-user-idle-seconds) ;FIX
-               ;;                                    (- org-clock-duration-in-seconds 60)
-               ;;                                  org-clock-user-idle-seconds))
+               (org-clock-user-idle-seconds   (if (>= (+ org-clock-duration-in-seconds 60)
+                                                      org-clock-user-idle-seconds) ;FIX
+                                                  (- org-clock-duration-in-seconds 60)
+                                                org-clock-user-idle-seconds))
                (org-clock-user-idle-start     (time-subtract (current-time)
                                                              org-clock-user-idle-seconds))
                (org-clock-resolving-clocks-due-to-idleness t))
