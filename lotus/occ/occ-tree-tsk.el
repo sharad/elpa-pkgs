@@ -151,7 +151,10 @@
                           1)))
 
 (cl-defmethod occ-obj-build-tsks ((collection occ-tree-collection))
-  (let ((builder (occ-obj-drived-tsk-builder collection)))
+  (let ((limit (occ-obj-collection-limit collection))
+        ;; TODO: use collection-limit to limit childs it can be null pr 0
+        ;; we have to use some beadth tree traversal to limit number of entries
+        (builder (occ-obj-drived-tsk-builder collection)))
     (remove nil (mapcar builder
                         (occ-tree-collection-roots collection)))))
 

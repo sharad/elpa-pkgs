@@ -50,10 +50,14 @@
   #'(lambda (&optional file)
       (occ-list-tsk-build file
                           collection)))
+    
 
 
 (cl-defmethod occ-obj-build-tsks ((collection occ-list-collection))
-  (let ((builder (occ-obj-drived-tsk-builder collection)))
+  (let ((limit (occ-obj-collection-limit collection))
+        ;; TODO: use collection-limit to limit childs it can be null pr 0
+        ;; we have to limit on return value of this function
+        (builder (occ-obj-drived-tsk-builder collection)))
     (remove nil (mapcar builder
                         (occ-list-collection-roots collection)))))
 

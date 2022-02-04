@@ -426,40 +426,56 @@
 (cl-defmethod occ-obj-make-collection ((desc string)
                                        (key symbol)
                                        (spec (eql :tree))
-                                       (files list))
+                                       (files list)
+                                       (depth integer)
+                                       (limit integer))
   (make-occ-tree-collection :desc  desc
                             :name  (symbol-name key) ;; "tsk collection tree"
                             :spec  spec
-                            :roots files))
+                            :roots files
+                            :depth depth
+                            :limit limit))
 
 (cl-defmethod occ-obj-make-collection ((desc string)
                                        (key symbol)
                                        (spec (eql :list))
-                                       (files list))
+                                       (files list)
+                                       (depth integer)
+                                       (limit integer))
   (make-occ-list-collection :desc  desc
                             :name  (symbol-name key) ;; "tsk collection list"
                             :spec  spec
-                            :roots files))
+                            :roots files
+                            :depth depth
+                            :limit limit))
 
 
 
 (cl-defmethod occ-obj-build-collection ((desc string)
                                         (key symbol)
                                         (spec (eql :tree))
-                                        (files list))
+                                        (files list)
+                                        (depth integer)
+                                        (limit integer))
   (occ-obj-make-collection desc
                            key
                            spec
-                           files))
+                           files
+                           depth
+                           limit))
 
 (cl-defmethod occ-obj-build-collection ((desc string)
                                         (key symbol)
                                         (spec (eql :list))
-                                        (files list))
+                                        (files list)
+                                        (depth integer)
+                                        (limit integer))
   (occ-obj-make-collection desc
                            key
                            spec
-                           files))
+                           files
+                           depth
+                           limit))
 
 
 (defun occ-obj-make-return (label

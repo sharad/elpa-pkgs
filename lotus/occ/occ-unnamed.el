@@ -34,6 +34,8 @@
   (require 'occ-macros))
 
 
+(defvar +occ-unnamed-collection-depth+ 0)
+(defvar +occ-unnamed-collection-limit+ 10)
 (defvar *occ-unassociate-ctx-start-time*         nil)
 (defvar *occ-swapen-unnamed-threashold-interval* (* 60 2)) ;2 mins
 
@@ -103,7 +105,12 @@
             (unless (eq (first (occ-collector-roots 'unnamed))
                         (lotus-org-unnamed-task-file))
               (occ-collector-remove 'unnamed)))
-          (occ-collector-get-create 'unnamed "Unnamed" type (list file)))
+          (occ-collector-get-create 'unnamed
+                                    "Unnamed"
+                                    type
+                                    (list file)
+                                    +occ-unnamed-collection-depth+
+                                    +occ-unnamed-collection-limit+))
         (if force-error
             (occ-error "error with type %s, file %s" type file)
           (occ-warn "error with type %s, file %s" type file)))))
