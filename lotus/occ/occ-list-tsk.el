@@ -54,7 +54,8 @@
 
 
 (cl-defmethod occ-obj-build-tsks ((collection occ-list-collection))
-  (let ((limit (occ-obj-collection-limit collection))
+  (let ((depth (occ-obj-collection-depth collection))
+        (limit (occ-obj-collection-limit collection))
         ;; TODO: use collection-limit to limit childs it can be null pr 0
         ;; we have to limit on return value of this function
         (builder (occ-obj-drived-tsk-builder collection)))
