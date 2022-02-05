@@ -79,7 +79,7 @@
   (occ-debug "occ-do-clock-in(occ-tsk=%s)" obj)
   (if (occ-config-clock-in)
       (occ-do-clock-in (occ-obj-marker obj))
-    (occ-message "occ-do-clock-in(obj occ-tsk): clock-in not allowed.")))
+    (occ-debug "occ-do-clock-in(obj occ-tsk): clock-in not allowed.")))
 
 (cl-defmethod occ-do-clock-in ((obj occ-ctsk)
                                &key
@@ -237,7 +237,7 @@
                                      :ap-normal ap-normal
                                      :ap-transf ap-transf
                                      :timeout   timeout)
-                  (occ-message "%s is not ctxual-tsk" (occ-obj-format ctxual-tsk 'capitalize)))))
+                  (occ-debug "%s is not ctxual-tsk" (occ-obj-format ctxual-tsk 'capitalize)))))
           (progn
             ;; here create unnamed tsk, no need
             (setq *occ-update-current-ctx-msg* "null clock")
@@ -247,7 +247,7 @@
             ;; (occ-delayed-select-obj-prop-edit-when-idle obj obj occ-idle-timeout)
             (occ-debug "occ-do-clock-in((obj occ-ctx)): calling occ-obj-safe-ignore-quit-properties-window-editor(obj[%s])"
                        (occ-obj-Format obj))
-            (occ-message "occ-do-clock-in: Edit properties of a tsk %s to make associable to current context."
+            (occ-debug "occ-do-clock-in: Edit properties of a tsk %s to make associable to current context."
                          (occ-obj-Format obj))
             (occ-obj-safe-ignore-quit-properties-window-editor obj
                                                                :filters          (occ-list-filters)
@@ -321,7 +321,7 @@
                                              :ap-normal ap-normal
                                              :ap-transf ap-transf
                                              :timeout   timeout)
-        (occ-message "%s is not associable with %s not clocking-in."
+        (occ-debug "%s is not associable with %s not clocking-in."
                      (occ-obj-Format tsk)
                      (occ-obj-Format ctx))))))
 
@@ -373,7 +373,7 @@
                                              :ap-normal ap-normal
                                              :ap-transf ap-transf
                                              :timeout   timeout)
-        (occ-message "%s is not associable with %s not clocking-in."
+        (occ-debug "%s is not associable with %s not clocking-in."
                      (occ-obj-Format tsk)
                      (occ-obj-Format ctx))))))
 

@@ -171,7 +171,7 @@
 (defun occ-make-tsk-at-point (collection)
   ;; (error "Helloo %s" (current-buffer))
   (let ((builder (occ-obj-tsk-builder collection)))
-    (occ-message "occ-make-tsk-at-point: Builder %s" builder)
+    (occ-debug "occ-make-tsk-at-point: Builder %s" builder)
     (let ((tsk                      nil)
           (heading-with-string-prop (if (org-before-first-heading-p)
                                         'noheading

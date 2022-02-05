@@ -176,7 +176,7 @@
       (unless (member propstr org-use-property-inheritance)
         (push propstr org-use-property-inheritance))))
   (let ((spec (occ-collector-spec key)))
-    (occ-message "init Test %s" key)
+    (occ-debug "init Test %s" key)
     (unless spec
       (if (occ-valid-spec-p spec)
           (progn
@@ -185,7 +185,7 @@
             (occ-initialize-hooks key))
         (if (called-interactively-p 'interactive) ;; (called-interactively-p 'interactive)
             (progn
-              (occ-message "init Test2")
+              (occ-debug "init Test2")
               (occ-obj-build-spec key)
               (setq occ-mode t))
           (occ-error "Not able to start occ")
@@ -252,7 +252,7 @@ FULL is given."
                               "occ-loaddefs.el can not be found!")))
            (version1 (if full version release)))
       (when here (insert version1))
-      ;; (when message (occ-message "%s" version1))
+      ;; (when message (occ-debug "%s" version1))
       version1)))
 
 ;;;###autoload
@@ -275,7 +275,7 @@ FULL is given."
     (dolist (ef (directory-files pkg-dir nil ".el$"))
       (let ((efile (expand-file-name ef pkg-dir)))
         (unless (string-match "pkg.el$" efile)
-          (occ-message "trying to load %s %s %s"
+          (occ-debug "trying to load %s %s %s"
                        pkg-str
                        ef
                        efile)
@@ -307,7 +307,7 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
                                                                  (if (and (string-match feature-re f)
                                                                           (not (string-match remove-re f)))
                                                                      (progn
-                                                                       (occ-message "%s matched." f)
+                                                                       (occ-debug "%s matched." f)
                                                                        f)
                                                                    nil))
                                                                feats)))
@@ -318,19 +318,19 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
          (load-uncore    nil)
          (load-misses    nil))
     (occ-add-deps-libs pkg)
-    (occ-message "working on %s" lfeat)
+    (occ-debug "working on %s" lfeat)
     (let ((load-missed-1 (mapcar #'occ-load-pkg
                                  lfeat)))
      (setq load-misses (delq 't load-missed-1)))
-    (occ-message "starting")
+    (occ-debug "starting")
     (when load-uncore
-      (occ-message "The following feature%s found in load-path, please check if that's correct:\n%s"
+      (occ-debug "The following feature%s found in load-path, please check if that's correct:\n%s"
                (if (> (length load-uncore) 1) "s were" " was") load-uncore))
     (if load-misses
-        (occ-message "Some error occurred while reloading Org feature%s\n%s\nPlease check *Messages*!\n%s"
+        (occ-debug "Some error occurred while reloading Org feature%s\n%s\nPlease check *Messages*!\n%s"
                      (if (> (length load-misses) 1) "s" "")
                      load-misses (occ-version nil 'full))
-      (occ-message "Successfully reloaded Org\n%s" (occ-version nil 'full)))))
+      (occ-debug "Successfully reloaded Org\n%s" (occ-version nil 'full)))))
 
 (when nil
   (let* ((occ-pkg-regexp (regexp-opt (cons "occ" (mapcar #'(lambda (x) (symbol-name (first x))) (package-desc-reqs (nth 1 (assoc 'occ package-alist)))))))

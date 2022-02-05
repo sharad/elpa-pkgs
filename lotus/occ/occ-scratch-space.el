@@ -558,19 +558,19 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
 
   (cl-defmethod occ-obj-display-number ((i number))
     ;; (cl-call-next-method)
-    (occ-message "plain i=%d" i))
+    (occ-debug "plain i=%d" i))
 
   (cl-defmethod occ-obj-display-number :extra "test0" ((i number))
                 (cl-call-next-method)
-                (occ-message "test0 i=%d" i))
+                (occ-debug "test0 i=%d" i))
 
   (cl-defmethod occ-obj-display-number :extra "test1" ((i number))
                 (cl-call-next-method)
-                (occ-message "test1 i=%d" i))
+                (occ-debug "test1 i=%d" i))
 
   (cl-defmethod occ-obj-display-number :extra "test2" ((i number))
                 (cl-call-next-method)
-                (occ-message "test2 i=%d" i))
+                (occ-debug "test2 i=%d" i))
 
   (occ-obj-display-number 1))
 

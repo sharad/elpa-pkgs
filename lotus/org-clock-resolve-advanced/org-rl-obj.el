@@ -228,15 +228,15 @@
 
 (cl-defmethod org-rl-clock-assert ((clock org-rl-clock))
   (let ((dur (org-rl-clock-duration clock)))
-   (message "org-rl-clock-assert: (org-rl-clock-duration clock) = %s"
-            dur)
+   (message "org-rl-clock-assert: clock=%s (org-rl-clock-duration clock) = %s"
+            (org-rl-format clock) dur)
    (unless (>= dur 0)
-     (message "org-rl-clock-assert: ASSERTION FAILURE (org-rl-clock-duration clock) = %s"
-              dur)
-     (message "org-rl-clock-assert: ASSERTION FAILURE (org-rl-clock-duration clock) = %s"
-              dur)
-     (message "org-rl-clock-assert: ASSERTION FAILURE (org-rl-clock-duration clock) = %s"
-              dur)))
+     (message "org-rl-clock-assert: ASSERTION FAILURE %s (org-rl-clock-duration clock) = %s"
+              (org-rl-format clock) dur)
+     (message "org-rl-clock-assert: ASSERTION FAILURE %s (org-rl-clock-duration clock) = %s"
+              (org-rl-format clock) dur)
+     (message "org-rl-clock-assert: ASSERTION FAILURE S (org-rl-clock-duration clock) = %s"
+              (org-rl-format clock) dur)))
   (cl-assert (>= (org-rl-clock-duration clock) 0)))
 
 

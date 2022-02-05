@@ -47,7 +47,7 @@
 (defmacro occ-debug-return (label &rest body)
   `(let ((retval
           (progn ,@body)))
-     (occ-message "%s: returns %s\n" ,label retval)))
+     (occ-debug "%s: returns %s\n" ,label retval)))
 (put 'occ-debug-return 'lisp-indent-function 1)
 
 (defmacro occ-debug-return (label &rest body)
@@ -173,11 +173,11 @@
          ,@body)
 
        (progn
-         (occ-message "Generated functions\n- %s\n- %s\n- %s\n- %s\n" ',enable ',disable ',toggle ',value)
+         (occ-debug "Generated functions\n- %s\n- %s\n- %s\n- %s\n" ',enable ',disable ',toggle ',value)
          (unless (fboundp ',enable-fun)
-           (occ-message "Define %s function" ',enable-fun))
+           (occ-debug "Define %s function" ',enable-fun))
          (unless (fboundp ',disable-fun)
-           (occ-message "Define %s function" ',disable-fun))))))
+           (occ-debug "Define %s function" ',disable-fun))))))
 
 
 (defmacro occ-gen-numeric-commands (prefix
@@ -220,11 +220,11 @@
          ,@body)
 
        (progn
-         (occ-message "Generated functions\n- %s\n- %s\n- %s\n- %s\n" ',enable ',disable ',toggle ',value)
+         (occ-debug "Generated functions\n- %s\n- %s\n- %s\n- %s\n" ',enable ',disable ',toggle ',value)
          (unless (fboundp ',enable-fun)
-           (occ-message "Define %s function" ',enable-fun))
+           (occ-debug "Define %s function" ',enable-fun))
          (unless (fboundp ',disable-fun)
-           (occ-message "Define %s function" ',disable-fun))))))
+           (occ-debug "Define %s function" ',disable-fun))))))
 
 
 (defun occ-get-location ())

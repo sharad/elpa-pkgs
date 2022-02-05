@@ -63,7 +63,7 @@
 (cl-defmethod occ-obj-get-filters ((obj occ-obj-ctx)
                                    keylist)
   ;; TODO: do we require (apply #'append ...)
-  (occ-message "(OCC-OBJ-GET-FILTERS OCC-OBJ-TSK): called")
+  (occ-debug "(OCC-OBJ-GET-FILTERS OCC-OBJ-TSK): called")
   (occ-obj-filters-get keylist))
 
 
@@ -141,16 +141,16 @@
           (rank  (if (consp funkw-rank)
                      (nth 1 funkw-rank)
                    rank)))
-      (occ-message "occ-obj-apply-recursively: trying funkw-rank = %s funkw = %s"
+      (occ-debug "occ-obj-apply-recursively: trying funkw-rank = %s funkw = %s"
                    funkw-rank
                    funkw)
-      (occ-message "occ-obj-apply-recursively: received (length sequence) = %d"
+      (occ-debug "occ-obj-apply-recursively: received (length sequence) = %d"
                    (length sequence))
       (if funkw
           (let ((fun (or (occ-filter-fun (occ-obj-filter-get funkw))
                          ;; funkw
                          #'identity)))
-            (occ-message "occ-obj-apply-recursively: calling fun = %s rank = %s with (length sequence) = %d"
+            (occ-debug "occ-obj-apply-recursively: calling fun = %s rank = %s with (length sequence) = %d"
                          fun
                          rank
                          (length sequence))
@@ -172,9 +172,9 @@
                                           methods
                                           sequence
                                           :rank rank)))
-    ;; (occ-message "occ-obj-filter: (length seq) = %d"
+    ;; (occ-debug "occ-obj-filter: (length seq) = %d"
     ;;              (length seq))
-    ;; (occ-message "occ-obj-filter: seq = %s"
+    ;; (occ-debug "occ-obj-filter: seq = %s"
     ;;              seq)
     seq))
 

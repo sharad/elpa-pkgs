@@ -78,7 +78,7 @@ be NIL, using (occ-list-filters) for FILTERS"
         (ap-transf        occ-list-select-keys)
         (return-transform nil)
         (timeout          occ-idle-timeout))
-      (occ-message "occ-list-select: ap-normal: %s" ap-normal)
+      (occ-debug "occ-list-select: ap-normal: %s" ap-normal)
       (occ-obj-select obj                   ;; TODO: passing ap-normal has no affect it show its own debug it ?
                       (occ-collections-default)
                       :filters          filters
@@ -122,7 +122,7 @@ for testing given ap-normal on selected tsk."
         (builder          #'occ-obj-build-ctsk-with)
         (return-transform t)
         (timeout          occ-idle-timeout))
-      (occ-message "occ-obj-list-debug-select: ap-normal: %s" ap-normal)
+      (occ-debug "occ-obj-list-debug-select: ap-normal: %s" ap-normal)
       (let ((retval-ctx-tsk (occ-obj-select obj
                                             (occ-collections-default)
                                             :filters          filters
@@ -171,8 +171,8 @@ must be NIL, using (occ-list-filters) for FILTERS"
         (ap-normal        occ-list-select-keys)
         (ap-transf        occ-list-select-ap-transf-keys)
         (timeout          occ-idle-timeout))
-    (occ-message "occ-obj-list-launch: ap-normal: %s" ap-normal)
-    (occ-message "occ-obj-list-launch: ap-transf: %s" ap-transf)
+    (occ-debug "occ-obj-list-launch: ap-normal: %s" ap-normal)
+    (occ-debug "occ-obj-list-launch: ap-transf: %s" ap-transf)
     (let ((retval-ctx-tsk (occ-obj-select obj
                                           (occ-collections-default)
                                           :filters          filters

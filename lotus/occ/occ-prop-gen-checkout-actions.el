@@ -60,7 +60,7 @@ only argument required for some other further processing"
 (cl-defmethod occ-obj-gen-checkout ((obj       occ-obj-tsk)
                                     (prop      symbol)
                                     &key param-only)
-  (occ-message "occ-obj-gen-checkout: checking prop %s" prop)
+  (occ-debug "occ-obj-gen-checkout: checking prop %s" prop)
   (let ((prompt  (occ-obj-gen-checkout-prompt obj
                                           prop
                                           :param-only param-only))
@@ -80,7 +80,7 @@ only argument required for some other further processing"
       (occ-obj-gen-checkout obj
                         prop
                         :param-only param-only)
-    (occ-message "occ-obj-gen-checkout-if-required: no value for prop %s present for %s"
+    (occ-debug "occ-obj-gen-checkout-if-required: no value for prop %s present for %s"
                  prop
                  (occ-obj-Format obj))))
 

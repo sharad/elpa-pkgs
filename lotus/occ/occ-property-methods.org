@@ -253,7 +253,7 @@
                (first-file (first files)))
              (if first-file
                  (find-file first-file)
-               (occ-message "occ-do-checkout-prop: %s value ruturned for prop %s" first-file prop))))
+               (occ-debug "occ-do-checkout-prop: %s value ruturned for prop %s" first-file prop))))
       ;;}}
       
       
@@ -324,7 +324,7 @@
                (first-dir (first dirs)))
           (if first-dir
               (find-file first-dir)
-            (occ-message "occ-do-checkout-prop: %s value ruturned for prop %s" first-dir prop))))
+            (occ-debug "occ-do-checkout-prop: %s value ruturned for prop %s" first-dir prop))))
       ;;}}
       
     #+end_src

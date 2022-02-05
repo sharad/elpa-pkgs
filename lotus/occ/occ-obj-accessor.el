@@ -270,7 +270,7 @@
   ;; this method is called.
   (unless (and (not (occ-ap-tree-keybranch ap-obj))
                (occ-ap-normal-callables ap-obj))
-    (occ-message "Called")
+    (occ-debug "Called")
     (let ((tree-keybranch (occ-obj-ap-tree-keybranch ap-obj obj)))
       (let* ((keywords-list (occ-get-keywords-list-from-tree tree-keybranch))
              (callables     (occ-obj-get-callables obj ;; ???
@@ -403,7 +403,7 @@
   (let ((rank (occ-tsk-rank obj)))
     (unless rank
       (setf (occ-tsk-rank obj) (occ-obj-calculate-rank obj)))
-    (occ-message "occ-obj-rank((obj occ-tsk)) rank = %s" rank)
+    (occ-debug "occ-obj-rank((obj occ-tsk)) rank = %s" rank)
     (occ-tsk-rank obj)))
 
 (cl-defmethod (setf occ-obj-rank) (value (obj occ-tsk))
@@ -429,7 +429,7 @@
   (let ((rank (occ-ctxual-tsk-rank obj)))
     (unless rank
       (setf (occ-ctxual-tsk-rank obj) (occ-obj-calculate-rank obj)))
-    (occ-message "occ-obj-rank((obj occ-ctxual-tsk)) rank = %s" rank)
+    (occ-debug "occ-obj-rank((obj occ-ctxual-tsk)) rank = %s" rank)
     (occ-ctxual-tsk-rank obj)))
 
 (cl-defmethod (setf occ-obj-rank) (value (obj occ-ctxual-tsk))
@@ -439,7 +439,7 @@
 
 (cl-defmethod occ-obj-member-tsk-rank ((obj occ-ctxual-tsk))
   (occ-debug "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-  (occ-message "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
+  (occ-debug "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
     (occ-obj-rank tsk)))
 
@@ -573,7 +573,7 @@ pointing to it."
 (let ((occ-debug-object nil))
   (cl-defmethod occ-do-set-debug-obj ((obj occ-obj-tsk))
     (setq occ-debug-object obj)
-    (occ-message "Use (occ-get-debug-obj) to access object."))
+    (occ-debug "Use (occ-get-debug-obj) to access object."))
   (defun occ-describe-debug-obj ()
     (interactive)
     (occ-do-describe-obj occ-debug-object))
@@ -659,7 +659,7 @@ pointing to it."
             (occ-obj-tsks (occ-collector-get key) t))
         (progn
           (occ-uninsinuate)
-          (occ-message "(occ-collector-spec key) is nil, set it using M-x occ-obj-build-spec or set (occ-collector-spec key), disabled occ")
+          (occ-debug "(occ-collector-spec key) is nil, set it using M-x occ-obj-build-spec or set (occ-collector-spec key), disabled occ")
           (unless noerror
             (occ-error "(occ-collector-spec key) is nil, set it using M-x occ-obj-build-spec or set (occ-collector-spec key), disabled occ")))))
     (occ-collector-get key)))
@@ -847,7 +847,7 @@ pointing to it."
                                tsks))))))
       (unless (eq t ctsks)
         ;; BUG: TODO: convey it tpo occ-select occ-do-clock-in
-        (occ-message "Busy user input `%s'"
+        (occ-debug "Busy user input `%s'"
                      (if (numberp last-input-event)
                          (single-key-description last-input-event)
                        last-input-event))
@@ -868,7 +868,7 @@ pointing to it."
                              tsks)))))
       (unless (eq t ctsks)
         ;; BUG: TODO: convey it top occ-select occ-do-clock-in
-        (occ-message "Busy user input `%s'"
+        (occ-debug "Busy user input `%s'"
                      (if (numberp last-input-event)
                          (single-key-description last-input-event)
                        last-input-event))
@@ -923,7 +923,7 @@ pointing to it."
 ;;                                tsks))))))
 ;;       (unless (eq t ctsks)
 ;;         ;; BUG: TODO: convey it tpo occ-select occ-do-clock-in
-;;         (occ-message "Busy user input `%s'"
+;;         (occ-debug "Busy user input `%s'"
 ;;                      (if (numberp last-input-event)
 ;;                          (single-key-description last-input-event)
 ;;                        last-input-event))
@@ -944,7 +944,7 @@ pointing to it."
 ;;                              tsks)))))
 ;;       (unless (eq t ctsks)
 ;;         ;; BUG: TODO: convey it top occ-select occ-do-clock-in
-;;         (occ-message "Busy user input `%s'"
+;;         (occ-debug "Busy user input `%s'"
 ;;                      (if (numberp last-input-event)
 ;;                          (single-key-description last-input-event)
 ;;                        last-input-event))

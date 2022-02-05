@@ -67,7 +67,7 @@
 ;;                                 (property symbol))
 ;;   "must return occ compatible value."
 ;;   ;; (occ-error "must return occ compatible value2.")
-;;   (occ-message "occ-obj-get-property: property %s obj %s" property obj)
+;;   (occ-debug "occ-obj-get-property: property %s obj %s" property obj)
 ;;   (occ-obj-get-property-value-from-ctx obj property))
 
 (cl-defmethod occ-obj-format-prop ((obj occ-obj-tsk)

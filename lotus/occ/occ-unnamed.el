@@ -163,7 +163,7 @@
                   (occ-do-clock-in unnamed-ctxual-tsk)
                 ;; id:x11 make org-ctx-clock version
                 (lotus-org-unnamed-task-clock-marker unnamed-marker)
-                (occ-message "clockin to unnnamed tsk.")
+                (occ-debug "clockin to unnnamed tsk.")
                 (occ-unassociate-ctx-start-time-reset))
               (occ-error "unnamed-marker is nil")))))))
 

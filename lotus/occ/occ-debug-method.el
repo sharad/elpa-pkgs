@@ -32,12 +32,12 @@
 
 (cl-defmethod occ-do-print-tsk ((obj occ-obj-tsk))
   "Dump tsk"
-  (occ-message "occ-do-print-tsk: %s" obj))
+  (occ-debug "occ-do-print-tsk: %s" obj))
 
 (cl-defmethod occ-do-print-tsk ((obj occ-obj-ctx-tsk))
   "Dump ctx-tsk"
   (let ((tsk (occ-obj-tsk obj)))
-    (occ-message "occ-do-print-tsk: %s" tsk)))
+    (occ-debug "occ-do-print-tsk: %s" tsk)))
 
 
 

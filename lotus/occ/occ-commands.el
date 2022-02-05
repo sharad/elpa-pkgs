@@ -75,7 +75,7 @@
   (let ((ctxual-tsk (occ-current-ctxual-tsk)))
     (if ctxual-tsk
         (occ-do-procreate-child ctxual-tsk)
-      (occ-message "No current task clocking-in"))))
+      (occ-debug "No current task clocking-in"))))
 
 ;;;###autoload
 (defun occ-curr-procreate-child-clock-in ()
@@ -83,7 +83,7 @@
   (let ((ctxual-tsk (occ-current-ctxual-tsk)))
     (if ctxual-tsk
         (occ-do-procreate-child-clock-in ctxual-tsk)
-      (occ-message "No current task clocking-in"))))
+      (occ-debug "No current task clocking-in"))))
 
 (defun occ-curr-tsk-continue-for (mins)
   (occ-error "Implement it."))
@@ -161,9 +161,9 @@
                         #'(lambda ()
                             (setq occ-keep-quiet-timer nil)
                             (occ-config-disable-quiet)
-                            (occ-message "OCC noise ahead %s." (occ-config-value-quiet)))))
+                            (occ-debug "OCC noise ahead %s." (occ-config-value-quiet)))))
   (occ-config-enable-quiet)
-  (occ-message "OCC Keeping quiet for %d mins" mins))
+  (occ-debug "OCC Keeping quiet for %d mins" mins))
 
 
 ;;;###autoload
@@ -192,7 +192,7 @@
   (interactive (list (completing-read "key for spec: " (occ-collector-keys))
                      (read-from-minibuffer "Desc: ")))
   (if (occ-collector-spec key)
-      (occ-message "spec: %s already present, first reset it with occ-reset-spec"
+      (occ-debug "spec: %s already present, first reset it with occ-reset-spec"
                    (occ-collector-spec key))
     (let ((spec (completing-read "Spec: " (occ-specs))))
       (when spec
@@ -245,7 +245,7 @@
                               (with-current-buffer (occ-find-file-noselect f)
                                 org-complex-heading-regexp))
                           (occ-obj-files))))
-    (occ-message "files with null regex %s" files)))
+    (occ-debug "files with null regex %s" files)))
 
 ;; testing verification
 (defun occ-files-not-in-org-mode ()
@@ -254,7 +254,7 @@
                               (with-current-buffer (occ-find-file-noselect f)
                                 (eq major-mode 'org-mode)))
                           (occ-obj-files))))
-    (occ-message "files not in org-mode %s" files)))
+    (occ-debug "files not in org-mode %s" files)))
 
 
 ;;;###autoload
@@ -266,18 +266,18 @@
 ;;;###autoload
 (defun occ-insinuate (&optional key)
   (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
-  (occ-message "occ-insinuate: begin")
+  (occ-debug "occ-insinuate: begin")
   (prog1
       (occ-initialize key)
-    (occ-message "occ-insinuate: finish")))
+    (occ-debug "occ-insinuate: finish")))
 
 ;;;###autoload
 (defun occ-uninsinuate ()
   (interactive)
-  (occ-message "occ-uninsinuate: begin")
+  (occ-debug "occ-uninsinuate: begin")
   (prog1
       (occ-uninitialize)
-    (occ-message "occ-uninsinuate: finish")))
+    (occ-debug "occ-uninsinuate: finish")))
 
 
 ;;;###autoload
@@ -302,7 +302,7 @@ FULL is given."
   (interactive (list current-prefix-arg
                      t
                      (not current-prefix-arg)))
-  (occ-message (occ-get-version here
+  (occ-debug (occ-get-version here
                                 full
                                 message)))
 

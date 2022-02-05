@@ -76,7 +76,7 @@
                                 (operation symbol)
                                 value
                                 &key param-only)
-  (occ-message "occ-obj-gen-edit: checking prop %s operation %s" prop operation)
+  (occ-debug "occ-obj-gen-edit: checking prop %s operation %s" prop operation)
   (let ((prompt  (occ-obj-gen-edit-prompt obj
                                           prop
                                           operation

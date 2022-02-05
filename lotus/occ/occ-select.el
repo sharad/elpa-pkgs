@@ -67,8 +67,8 @@ TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
     (helm-timed timeout (occ-helm-select-buffer)
       (occ-debug "running occ-list-select")
       (progn
-        (occ-message "occ-list-select: ap-normal: %s" ap-normal)
-        (occ-message "occ-list-select: ap-transf: %s" ap-transf)
+        (occ-debug "occ-list-select: ap-normal: %s" ap-normal)
+        (occ-debug "occ-list-select: ap-transf: %s" ap-transf)
         ;; (occ-obj-list-select-internal obj
         (let ((selected (occ-obj-helm-act obj
                                           collections
@@ -141,13 +141,13 @@ TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
 ;;                                              :timeout             timeout
 ;;                                              :obtrusive           obtrusive
 ;;                                              :prompt              prompt)))
-;;             (occ-message "OCC-OBJ-SELECT((OBJ OCC-CTX)): occ-list-select returned %s"
+;;             (occ-debug "OCC-OBJ-SELECT((OBJ OCC-CTX)): occ-list-select returned %s"
 ;;                        (occ-obj-Format retval))
 ;;             retval)
 ;;         (prog1
 ;;             (when return-transform
 ;;               (occ-obj-make-return occ-return-nocndidate-label nil))
-;;           (occ-message "OCC-SELECT((OBJ OCC-CTX)): no candidates available from %d."
+;;           (occ-debug "OCC-SELECT((OBJ OCC-CTX)): no candidates available from %d."
 ;;                        unfiltered-count))))))
 
 (cl-defmethod occ-obj-select ((obj occ-ctx)
@@ -177,7 +177,7 @@ TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
                                      :timeout             timeout
                                      :obtrusive           obtrusive
                                      :prompt              prompt)))
-    (occ-message "OCC-OBJ-SELECT((OBJ OCC-CTX)): occ-list-select returned %s"
+    (occ-debug "OCC-OBJ-SELECT((OBJ OCC-CTX)): occ-list-select returned %s"
                  (occ-obj-Format retval))
     retval))
     

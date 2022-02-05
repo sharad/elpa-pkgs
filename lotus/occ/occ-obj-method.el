@@ -65,7 +65,7 @@
 (let ((occ-debug-object nil))
   (cl-defmethod occ-do-set-debug-obj ((obj occ-obj-tsk))
     (setq occ-debug-object obj)
-    (occ-message "Use (occ-get-debug-obj) to access object."))
+    (occ-debug "Use (occ-get-debug-obj) to access object."))
   (defun occ-describe-debug-obj ()
     (interactive)
     (occ-do-describe-obj occ-debug-object))
@@ -130,19 +130,19 @@
 
 
 (cl-defmethod occ-do-print-rank ((obj occ-obj-tsk))
-  (occ-message "Rank for %s is %d"
+  (occ-debug "Rank for %s is %d"
                (occ-obj-Format obj)
                (occ-obj-rank obj)))
 
 
 (cl-defmethod occ-do-close ((obj occ-obj-tsk))
-  (occ-message "ImplementIt: mark this %s %d tsk CLOSE "
+  (occ-debug "ImplementIt: mark this %s %d tsk CLOSE "
                (occ-obj-Format obj)
                (occ-obj-rank obj)))
 
 
 (cl-defmethod occ-do-force-clockin ((obj occ-obj-tsk))
-  (occ-message "ImplementIt: Force this %s %d tsk clock-in for a PERIOD with period property"
+  (occ-debug "ImplementIt: Force this %s %d tsk clock-in for a PERIOD with period property"
                (occ-obj-Format obj)
                (occ-obj-rank obj)))
 

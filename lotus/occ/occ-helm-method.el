@@ -167,11 +167,11 @@
              (<= filtered-count 1))
         (occ-build-hsrc-candidate (first candidates-filtered))
       (progn
-        (occ-message "occ-obj-helm-build-collection-source: (length candidates-unfiltered) = %d, called-never = %s"
+        (occ-debug "occ-obj-helm-build-collection-source: (length candidates-unfiltered) = %d, called-never = %s"
                      (length candidates-unfiltered)
                      called-never)
         (let ((gen-candidates #'(lambda ()
-                                  (occ-message "occ-obj-helm-build-collection-source|lambda: (length candidates-unfiltered) = %d, called-never = %s, filters = %s"
+                                  (occ-debug "occ-obj-helm-build-collection-source|lambda: (length candidates-unfiltered) = %d, called-never = %s, filters = %s"
                                                (length candidates-unfiltered)
                                                called-never
                                                filters)
@@ -315,10 +315,10 @@
   (let* ((helm-action (occ-obj-get-first-helm-actions-for-obj obj
                                                               ap-normal
                                                               ap-transf)))
-    (occ-message "occ-obj-helm-act-on-single: (cons p helm-action) %s, (functionp helm-action) %s"
+    (occ-debug "occ-obj-helm-act-on-single: (cons p helm-action) %s, (functionp helm-action) %s"
                  (consp helm-action)
                  (functionp helm-action))
-    (occ-message "occ-obj-helm-act-on-single: (cons p (nth 1 helm-action)) %s, (functionp (nth 1 helm-action)) %s"
+    (occ-debug "occ-obj-helm-act-on-single: (cons p (nth 1 helm-action)) %s, (functionp (nth 1 helm-action)) %s"
                  (consp (rest helm-action))
                  (functionp (rest helm-action)))
     (if (occ-obj-obj source)
@@ -351,7 +351,7 @@
                                                            :ap-transf        ap-transf
                                                            :auto-select-if-only auto-select-if-only
                                                            :prompt           prompt)))
-             ;; (occ-message "Hello")
+             ;; (occ-debug "Hello")
              (if (occ-hsrc-candidate-p (first cand-sources))
                  (occ-obj-helm-act-on-candidate obj
                                                 (first cand-sources)
@@ -366,7 +366,7 @@
                      (helm :sources (mapcar #'occ-obj-obj cand-sources)
                            :buffer  (occ-helm-select-buffer)
                            :resume  'noresume)
-                   ;; (occ-message "Hi")
+                   ;; (occ-debug "Hi")
                    (setq in-occ-helm nil))))))))
 
 (cl-defmethod occ-obj-helm-act ((obj         occ-ctx)
