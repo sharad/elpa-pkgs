@@ -605,7 +605,7 @@
                                       last-input-event
                                       last-event-frame
                                       frame)
-                   (lotus-utils-debug 'event-input :debug "%s: %s: hookfn1: <%s> removing hook 1" (time-stamp-string) 'lotus-with-other-frame-event ,action )
+                   (lotus-utils-debug 'event-input :debug "%s: %s: hookfn1: <%s> removing hook 1" (time-stamp-string) 'lotus-with-other-frame-event ,action)
                    (lotus-utils-debug 'event-input :debug "%s: %s: hookfn1: <%s> 1 pre-command-hook %s" (time-stamp-string) 'lotus-with-other-frame-event ,action pre-command-hook)
                    (remove-hook 'pre-command-hook (lambda () (funcall hookfn1)))
                    (lotus-utils-debug 'event-input :debug "%s: %s: hookfn1: <%s> 2 pre-command-hook %s" (time-stamp-string) 'lotus-with-other-frame-event ,action pre-command-hook)
@@ -647,7 +647,8 @@
                          ;; (select-frame-set-input-enable-raise)
                          ;; (lotus-utils-debug 'event-input :debug "hookfn: removing hook 2")
                          ;; (remove-hook 'pre-command-hook (lambda () (funcall hookfn)))
-                         t)
+                         ;; t
+                         nil)
                      (with-selected-frame last-event-frame
                        (progn
                          (setq frame nil)
@@ -723,7 +724,8 @@
                          ;; (select-frame-set-input-enable-raise)
                          ;; (lotus-utils-debug 'event-input :debug "hookfn: removing hook 2")
                          ;; (remove-hook 'pre-command-hook (lambda () (funcall hookfn)))
-                         t)
+                         ;; t
+                         nil)
                      (with-selected-frame last-event-frame
                        (progn
                          (setq frame nil)
@@ -818,7 +820,8 @@
                          ;; (select-frame-set-input-enable-raise)
                          ;; (lotus-utils-debug 'event-input :debug "hookfn: removing hook 2")
                          ;; (remove-hook 'pre-command-hook (lambda () (funcall hookfn)))
-                         t)
+                         ;; t
+                         nil)
                      (with-selected-frame last-event-frame
                        (progn
                          (lotus-utils-debug 'event-input :debug "%s: %s: hookfn: %s <%s> running readfn from hookfn outside timer minibuffer<%s>" (time-stamp-string) 'lotus-with-other-frame-event-debug ,name ,action (lotus-active-recursive-edit))
@@ -960,8 +963,8 @@
 ;; CALL/CC
 
 ;;;###autoload
-(defun lotus-has-focus-p ()
-  )
+(defun lotus-has-focus-p ())
+
 
 (defmacro lotus-run-with-idle-timer-and-focus (sec repeat fn arg)
   ;; todo: how to cancel the timer later
@@ -998,18 +1001,18 @@
   (lotus-with-other-frame-event (message "Hi")
     (completing-read
      "test"
-     '("a" "b" "c")))
+     '("a" "b" "c"))))
 
 
 
-  )
+  
 
 (when nil
   (lotus-restart-with-other-frame-event
     (completing-read
      "test"
-     '("a" "b" "c")))
-  )
+     '("a" "b" "c"))))
+  
 
 (when nil
 
@@ -1029,11 +1032,11 @@
    '(lotus-with-other-frame-event (message "Hi")
       (completing-read
        "test"
-       '("a" "b" "c"))))
+       '("a" "b" "c")))))
 
 
 
-  )
+  
 
 (when nil
   (let ((a 1))                            ; binding (1)
@@ -1070,8 +1073,8 @@
 
   (select-frame-set-input-disable-raise)
 
-  (select-frame-set-input-focus-no-raise-p)
+  (select-frame-set-input-focus-no-raise-p))
 
-  )
+  
 
 ;;; lotus-misc-utils.el ends here
