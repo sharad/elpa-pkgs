@@ -112,10 +112,10 @@ so long."
                                                        (org-user-idle-seconds))))
                (org-clock-duration-in-seconds (floor (time-to-seconds (time-subtract (current-time)
                                                                                      org-clock-start-time))))
-               (org-clock-user-idle-seconds   (if (>= (+ org-clock-duration-in-seconds 60)
-                                                      org-clock-user-idle-seconds) ;FIX
-                                                  (- org-clock-duration-in-seconds 60)
-                                                org-clock-user-idle-seconds))
+               (org-clock-user-idle-seconds   (if (>= org-clock-user-idle-seconds
+                                                      org-clock-duration-in-seconds)
+                                                  org-clock-user-idle-seconds
+                                                org-clock-duration-in-seconds))
                (org-clock-user-idle-start     (time-subtract (current-time)
                                                              org-clock-user-idle-seconds))
                (org-clock-resolving-clocks-due-to-idleness t))
@@ -125,14 +125,21 @@ so long."
           (message "org-rl-resolve-clocks-if-idle: org-clock-last-idle-start-time - %s" org-clock-last-idle-start-time)
           (message "org-rl-resolve-clocks-if-idle: org-clock-user-idle-start      - %s" org-clock-user-idle-start)
 
+          (message "current time %s and time %s before 60 seconds"
+                   (format-time-string "<%Y-%m-%d %a %H:%M:%S>" (current-time))
+                   (format-time-string "<%Y-%m-%d %a %H:%M:%S>" (time-subtract (current-time) 60)))
+
           (if org-clock-last-idle-start-time
               (cl-assert (listp (rest org-clock-last-idle-start-time)))
             (cl-assert (listp (rest org-clock-user-idle-start))))
 
           (setq org-clock-last-idle-start-time org-clock-user-idle-start)
 
-          (if (> org-clock-user-idle-seconds
-                 (* 60 org-clock-idle-time))
+          (if (and (> org-clock-user-idle-seconds
+                      60)
+                   (>= (- org-clock-duration-in-seconds
+                          org-clock-user-idle-seconds)
+                       60))
             (org-rl-clock-resolve-internal (org-rl-make-clock org-clock-marker
                                                               org-clock-start-time
                                                               org-clock-user-idle-start
@@ -147,6 +154,8 @@ so long."
                           (org-user-idle-seconds)))))))
 
   (org-rl-debug nil "%s: org-rl-resolve-clocks-if-idle: finished" (time-stamp-string)))
+
+
 
 (defalias 'org-resolve-clocks-if-idle 'org-rl-resolve-clocks-if-idle)
 
