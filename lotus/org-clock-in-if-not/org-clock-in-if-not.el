@@ -98,13 +98,24 @@
               (org-clock-in-if-not-at-time postpone-secs)))
         (lotus-with-other-frame-event-debug "org-clock-in-if-not" :restart
           (org-ci-if-not-debug :debug "org-clock-in-if-not: [body] lotus-with-no-active-minibuffer-if")
-          (if org-clock-history
-              (let (buffer-read-only)
-                (org-clock-in '(4)))
-            ;; with-current-buffer should be some real file
-            (org-clock-in-refile nil))
+          (message "Enable Disabel with org-clock-in-if-not-enable org-clock-in-if-not-disable")
+          (condition-case e
+              (if org-clock-history
+                  (let (buffer-read-only)
+                    (org-clock-in '(4)))
+                ;; with-current-buffer should be some real file
+                (org-clock-in-refile nil))
+            ((quit (message "Enable Disabel with org-clock-in-if-not-enable org-clock-in-if-not-disable"))))
           (org-ci-if-not-debug :debug "org-clock-in-if-not: finished")
           (org-ci-if-not-debug :debug "org-clock-in-if-not: finished"))))))
+
+(defun org-clock-in-if-not-disable ()
+  (interactive)
+  (setq org-donot-try-to-clock-in t))
+
+(defun org-clock-in-if-not-enable ()
+  (interactive)
+  (setq org-donot-try-to-clock-in nil))
 
 
 (defvar org-clock-in-if-not-at-time-timer nil)
