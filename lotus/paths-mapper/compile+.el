@@ -28,32 +28,50 @@
 
 (provide 'compile+)
 
+(defcustom compile+-buffer-name " *compile multi cmds*" "compile+ buffer name")
 (defcustom compile+-comnit nil "compile+-comnit")
 (defcustom compile+-window-setup 'split-window-below "compile+-window-setup")
 (defcustom compile+-tmp-file "/tmp/compile" "compile+-tmp-file")
 
-(defun compile+-edit-abort ())
+
+(defvar-local compile+--source-buffer nil)
+(put 'compile+--source-buffer 'permanent-local t)
+
+(defvar-local compile+--run nil)
+(put 'compile+--run 'permanent-local t)
+
+
+(defun compile+-edit-abort ()
+  (interactive)
+  (let ((buffer (get-buffer-create compile+-buffer-name)))
+    (with-current-buffer buffer
+      (let ((compile+--run nil))
+        (compile+-edit-exit)))))
 (defun compile+-edit-exit ()
   "Kill current sub-editing buffer and return to source buffer."
   (interactive)
-  (write-region (format "cat %s; echo;\n" compile+-tmp-file)
-                t
-                compile+-tmp-file
-                nil)
-  (write-region nil
-                t
-                compile+-tmp-file
-                t)
-  (set-file-modes compile+-tmp-file
-			            (logior (file-modes compile+-tmp-file)
-                          #o100))
-  (when compile+--saved-temp-window-config
-    (unwind-protect
-	      (set-window-configuration compile+--saved-temp-window-config)
-	    (setq compile+--saved-temp-window-config nil)))
-  (compile (format "bash -c %s"
-                   compile+-tmp-file)
-           compile+-comnit))
+  ;; (set-buffer-modified-p nil)
+  (let ((edit-buffer (current-buffer))
+	      (source-buffer compile+--source-buffer))
+    (if compile+--run
+        (progn
+          (write-region nil
+                        t
+                        compile+-tmp-file
+                        nil)
+          (set-file-modes compile+-tmp-file
+			                    (logior (file-modes compile+-tmp-file)
+                                  #o100))
+          (when compile+--saved-temp-window-config
+            (unwind-protect
+	              (set-window-configuration compile+--saved-temp-window-config)
+	            (setq compile+--saved-temp-window-config nil)))
+          (org-src-switch-to-buffer source-buffer 'exit)
+          (compile (format "bash -c %s"
+                           compile+-tmp-file)
+                   compile+-comnit))
+      (org-src-switch-to-buffer source-buffer 'exit))))
+
 (defvar compile+-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-c'" 'compile+-edit-exit)o
@@ -62,9 +80,22 @@
     (define-key map "\C-x\C-s" 'compile+-edit-save)
     map))
 
+(defun compile+-hook (process)
+  (let ((buff (process-buffer process)))
+    (with-current-buffer buff
+      (let ((buffer-read-only nil)
+            (content (with-temp-buffer
+                       (insert-file-contents compile+-tmp-file)
+                       (buffer-string))))
+        (goto-line 1)
+        (replace-string (format "bash -c %s"
+                                compile+-tmp-file)
+                        (concat "*Running commands\n"
+                                content
+                                "\n*End of commands\n"))))))
+
 (define-minor-mode compile+-mode
-  nil " compile+" nil
-  )
+  nil " compile+" nil)
 
 
 (defun compile-switch-to-buffer-other-window (&rest args)
@@ -111,32 +142,45 @@
 	            compile+-window-setup)
      (pop-to-buffer-same-window buffer))))
 
-(defun compile+--edit (name &optional initialize)
+(defun compile+--edit (name source-buffer &optional initialize run)
   (when (memq compile+-window-setup '(reorganize-frame
 				                             split-window-below
 				                             split-window-right))
-    (setq compile+--saved-temp-window-config (current-window-configuration)))
-  (let ((buffer (get-buffer-create " *compile multi cmds*")))
+    (setq compile+--saved-temp-window-config
+          (current-window-configuration)))
+  (let ((buffer (get-buffer-create name)))
     (with-current-buffer buffer
-      (compile+-switch-to-buffer buffer 'edit)
       (when (functionp initialize)
         (funcall initialize))
       (compile+-mode)
       (use-local-map (copy-keymap compile+-mode-map))
-      (local-set-key "\C-c\C-c" 'compile+-edit-exit))))
+      (local-set-key "\C-c\C-c" 'compile+-edit-exit)
+      (setq compile+--source-buffer source-buffer)
+      (setq compile+--run run))
+    (compile+-switch-to-buffer buffer 'edit)))
 
 
 ;;;###autoload
 (defun compile+-edit-block ()
   (interactive)
-  (let ((mode #'shell-script-mode))
+  (let ((mode #'shell-script-mode)
+        (source-buffer (current-buffer)))
     (unless (functionp mode)
       (error "No such language mode: %s" mode))
-    (compile+--edit "*compile*" mode)))
+    (compile+--edit compile+-buffer-name source-buffer mode t)))
 
 (defalias 'compile+ #'compile+-edit-block)
+
 
 ;;;###autoload
-(define-key c-mode-base-map [remap compile] 'compile+)
+(defun compile+-insinuate ()
+  (interactive)
+  (define-key c-mode-base-map [remap compile] 'compile+)
+  (add-hook 'compilation-start-hook #'compile+-hook))
+;;;###autoload
+(defun compile+-uninsinuate ()
+  (interactive)
+  (define-key c-mode-base-map [remap compile] nil)
+  (remove-hook 'compilation-start-hook #'compile+-hook))
 
 ;;; compile+.el ends here
