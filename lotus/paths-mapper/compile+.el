@@ -28,34 +28,42 @@
 
 (provide 'compile+)
 
-
+(defcustom compile+-comnit nil "compile+-comnit")
 (defcustom compile+-window-setup 'split-window-below "compile+-window-setup")
+(defcustom compile+-tmp-file "/tmp/compile" "compile+-tmp-file")
 
-
+(defun compile+-edit-abort ())
 (defun compile+-edit-exit ()
   "Kill current sub-editing buffer and return to source buffer."
   (interactive)
-  (write-region nil t "/tmp/compile" nil)
-  (set-file-modes "/tmp/compile"
-			            (logior (file-modes "/tmp/compile") #o100))
+  (write-region (format "cat %s; echo;\n" compile+-tmp-file)
+                t
+                compile+-tmp-file
+                nil)
+  (write-region nil
+                t
+                compile+-tmp-file
+                t)
+  (set-file-modes compile+-tmp-file
+			            (logior (file-modes compile+-tmp-file)
+                          #o100))
   (when compile+--saved-temp-window-config
     (unwind-protect
 	      (set-window-configuration compile+--saved-temp-window-config)
 	    (setq compile+--saved-temp-window-config nil)))
-  (compile "bash -c /tmp/compile" t))
-
+  (compile (format "bash -c %s"
+                   compile+-tmp-file)
+           compile+-comnit))
 (defvar compile+-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "\C-c'" 'compile+-edit-exit)
-    (define-key map "\C-c\C-c" 'compile+)
+    (define-key map "\C-c'" 'compile+-edit-exit)o
+    (define-key map "\C-c\C-c" 'compile+-edit-exit)
     (define-key map "\C-c\C-k" 'compile+-edit-abort)
     (define-key map "\C-x\C-s" 'compile+-edit-save)
     map))
 
-;; (define-key compile+-mode-map (kbd "C-c C-c") nil)
-
 (define-minor-mode compile+-mode
-  nil " OrgSrc" nil
+  nil " compile+" nil
   )
 
 
@@ -108,25 +116,27 @@
 				                             split-window-below
 				                             split-window-right))
     (setq compile+--saved-temp-window-config (current-window-configuration)))
-  (let ((buffer (get-buffer-create "*compile*")))
-    (compile+-switch-to-buffer buffer 'edit)
+  (let ((buffer (get-buffer-create " *compile multi cmds*")))
     (with-current-buffer buffer
+      (compile+-switch-to-buffer buffer 'edit)
+      (when (functionp initialize)
+        (funcall initialize))
       (compile+-mode)
       (use-local-map (copy-keymap compile+-mode-map))
       (local-set-key "\C-c\C-c" 'compile+-edit-exit))))
-
-(define-key c-mode-base-map [remap compile] 'compile+)
 
 
+;;;###autoload
 (defun compile+-edit-block ()
   (interactive)
   (let ((mode #'shell-script-mode))
-    (unless (functionp mode) (error "No such language mode: %s" mode))
-    (compile+--edit
-     ;; element
-     "*compile*"
-     mode)))
+    (unless (functionp mode)
+      (error "No such language mode: %s" mode))
+    (compile+--edit "*compile*" mode)))
 
 (defalias 'compile+ #'compile+-edit-block)
+
+;;;###autoload
+(define-key c-mode-base-map [remap compile] 'compile+)
 
 ;;; compile+.el ends here
