@@ -74,7 +74,7 @@
 
 (defvar compile+-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "\C-c'" 'compile+-edit-exit)o
+    (define-key map "\C-c'" 'compile+-edit-exit)
     (define-key map "\C-c\C-c" 'compile+-edit-exit)
     (define-key map "\C-c\C-k" 'compile+-edit-abort)
     (define-key map "\C-x\C-s" 'compile+-edit-save)
@@ -94,8 +94,16 @@
                                 content
                                 "\n*End of commands\n"))))))
 
-(define-minor-mode compile+-mode
-  nil " compile+" nil)
+(define-minor-mode compile+-mode "compile+ mode" nil " compile+"
+  (let ((map (make-sparse-keymap)))
+    (define-key map "\C-c'" 'compile+-edit-exit)
+    (define-key map "\C-c\C-c" 'compile+-edit-exit)
+    (define-key map "\C-c\C-k" 'compile+-edit-abort)
+    (define-key map "\C-x\C-s" 'compile+-edit-save)
+    map)
+  (if compile+-mode
+      (message "enabled compile+-mode %s" compile+-mode)
+    (message "disabled compile+-mode %s" compile+-mode)))
 
 
 (defun compile-switch-to-buffer-other-window (&rest args)
