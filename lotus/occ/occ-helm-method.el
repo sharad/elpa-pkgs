@@ -31,22 +31,22 @@
   (require 'helm-source))
 
 
-;; (defvar occ-helm-map
-;;   (let ((map (make-sparse-keymap)))
-;;     (set-keymap-parent map helm-map)
-;;     ;; (define-key map (kbd "RET")           'helm-ff-RET)
-;;     (define-key map (kbd "C-]")           'helm-ff-run-toggle-basename)
-;;     (define-key map (kbd "S-RET")         'occ-helm-run-child-clock-in)
-;;     (helm-define-key-with-subkeys map
-;;       '((kbd "DEL") ?\d 'helm-ff-delete-char-backward
-;;         (C-backspace . helm-ff-run-toggle-auto-update)
-;;         ([C-c DEL] . helm-ff-run-toggle-auto-update
-;;          nil 'helm-ff-delete-char-backward--exit-fn)))
-;;     (when helm-ff-lynx-style-map
-;;       (define-key map (kbd "<left>")      'helm-find-files-up-one-level)
-;;       (define-key map (kbd "<right>")     'helm-execute-persistent-action))
-;;     (delq nil map))
-;;   "Keymap for `helm-find-files'.")
+(defvar occ-helm-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map helm-map)
+    ;; (define-key map (kbd "RET")           'helm-ff-RET)
+    (define-key map (kbd "C-]")           'helm-ff-run-toggle-basename)
+    (define-key map (kbd "S-RET")         'occ-helm-run-child-clock-in)
+    (helm-define-key-with-subkeys map
+      '((kbd "DEL") ?\d 'helm-ff-delete-char-backward
+        (C-backspace . helm-ff-run-toggle-auto-update)
+        ([C-c DEL] . helm-ff-run-toggle-auto-update
+         nil 'helm-ff-delete-char-backward--exit-fn)))
+    (when t ;; helm-ff-lynx-style-map
+      (define-key map (kbd "<left>")      'helm-find-files-up-one-level)
+      (define-key map (kbd "<right>")     'helm-execute-persistent-action))
+    (delq nil map))
+  "Keymap for `helm-find-files'.")
 
 (defvar occ-helm-doc-header " (\\<helm-find-files-map>\\[helm-find-files-up-one-level]: Go up one level)"
   "*The doc that is inserted in the Name header of a find-files or dired source.")
@@ -59,7 +59,50 @@
 (put 'occ-helm-run-child-clock-in 'helm-only t)
 ;; add occ-child-clock-in in action
 
-
+(defclass occ-helm-source-sync (helm-source-sync)
+  ((header-name
+    :initform (lambda (name)
+                (concat name (substitute-command-keys
+                              helm-find-files-doc-header))))
+   (init
+    :initform (lambda ()
+                (setq helm-ff-auto-update-flag
+                      helm-ff-auto-update-initial-value)
+                (setq helm-ff--auto-update-state
+                      helm-ff-auto-update-flag)
+                (helm-set-local-variable 'bookmark-make-record-function
+                                         #'helm-ff-make-bookmark-record)
+                (require 'helm-external)))
+   (candidates :initform 'helm-find-files-get-candidates)
+   (update :initform (lambda ()
+                       (remhash helm-ff-default-directory
+                                helm-ff--list-directory-cache)))
+   (match-on-real :initform t)
+   (filtered-candidate-transformer
+    :initform '(helm-ff-fct
+                helm-ff-maybe-show-thumbnails
+                ;; These next two have to be called after
+                ;; `helm-ff-fct' as they use only cons cell candidates.
+                helm-ff-directories-only
+                helm-ff-files-only
+                helm-ff-sort-candidates))
+   (persistent-action-if :initform 'helm-find-files-persistent-action-if)
+   (persistent-help :initform "Hit1 Expand Candidate, Hit2 or (C-u) Find file")
+   (help-message :initform 'helm-ff-help-message)
+   (mode-line :initform (list "File(s)" helm-mode-line-string))
+   (volatile :initform t)
+   (cleanup :initform 'helm-find-files-cleanup)
+   (migemo :initform t)
+   (nohighlight :initform t)
+   (keymap :initform 'occ-helm-map)
+   (candidate-number-limit :initform 'helm-ff-candidate-number-limit)
+   (action-transformer
+    :initform 'helm-find-files-action-transformer)
+   (action :initform 'helm-find-files-actions)
+   (before-init-hook :initform 'helm-find-files-before-init-hook)
+   (after-init-hook :initform 'helm-find-files-after-init-hook)
+   (group :initform 'helm-files)))
+
 ;; (fmakunbound 'occ-helm-null-candidate)
 
 (cl-defmethod occ-helm-null-candidate ((obj occ-ctx))
@@ -140,6 +183,9 @@
               (format " %s" (or prompt ""))))))
 
 
+;; * Dynamic Match based templates
+;; https://kitchingroup.cheme.cmu.edu/blog/2016/01/24/Modern-use-of-helm-sortable-candidates/
+
 (cl-defmethod occ-obj-helm-build-collection-source ((obj        occ-ctx)
                                                     (collection occ-obj-collection)
                                                     &key
@@ -170,25 +216,60 @@
         (occ-debug "occ-obj-helm-build-collection-source: (length candidates-unfiltered) = %d, called-never = %s"
                      (length candidates-unfiltered)
                      called-never)
-        (let ((gen-candidates #'(lambda ()
-                                  (occ-debug "occ-obj-helm-build-collection-source|lambda: (length candidates-unfiltered) = %d, called-never = %s, filters = %s"
-                                               (length candidates-unfiltered)
-                                               called-never
-                                               filters)
-                                  (let ((candidates-visible (if called-never
-                                                                (progn
-                                                                  (setq called-never nil)
-                                                                  candidates-unfiltered)
-                                                              (let* ((candidates-new-unfiltered (occ-obj-list-with obj collection
-                                                                                                                   :builder builder))
-                                                                     (candidates-new-filtered (occ-obj-filter obj
-                                                                                                              filters
-                                                                                                              candidates-new-unfiltered)))
-                                                                (setq filtered-new-count (length candidates-new-filtered))
-                                                                candidates-new-filtered))))
-                                    (cl-assert candidates-visible)
-                                    (mapcar #'occ-obj-candidate
-                                            candidates-visible)))))
+        (let* ((default-filters filters)
+               (filters         filters)
+               (gen-candidates #'(lambda ()
+                                   (occ-debug "occ-obj-helm-build-collection-source|lambda: (length candidates-unfiltered) = %d, called-never = %s, filters = %s"
+                                              (length candidates-unfiltered)
+                                              called-never
+                                              filters)
+                                   (let ((candidates-visible (if called-never
+                                                                 (progn
+                                                                   (setq called-never nil)
+                                                                   candidates-unfiltered)
+                                                               (let* ((candidates-new-unfiltered (occ-obj-list-with obj collection
+                                                                                                                    :builder builder))
+                                                                      (candidates-new-filtered (occ-obj-filter obj
+                                                                                                               filters
+                                                                                                               candidates-new-unfiltered)))
+                                                                 (setq filtered-new-count (length candidates-new-filtered))
+                                                                 candidates-new-filtered))))
+                                     (cl-assert candidates-visible)
+                                     (mapcar #'occ-obj-candidate
+                                             candidates-visible))))
+               (filter-manage-fn  #'(lambda ()
+                                      (interactive)
+                                      (with-helm-buffer
+                                        (progn ;; code to manager filters
+                                          (occ-message "Manage filters here.")
+                                          (setf filters default-filters)))
+                                      ;; (funcall gen-candidates)
+                                      (helm-refresh)))
+               (filter-reset-fn  #'(lambda ()
+                                    (interactive)
+                                    (setf filters default-filters)
+                                    ;; (funcall gen-candidates)
+                                    (helm-refresh)))
+               (filter-inc-fn    #'(lambda ()
+                                     (interactive)
+                                     ;; (setf level (1+ level))
+                                     (setf filters default-filters)
+                                     ;; (funcall gen-candidates)
+                                     (helm-refresh)))
+               (filter-dec-fn    #'(lambda ()
+                                     (interactive)
+                                     ;; (setf level (1- level))
+                                     (setf filters default-filters)
+                                     ;; (funcall gen-candidates)
+                                     (helm-refresh)))
+               (h-map
+                (let ((map (make-sparse-keymap)))
+                  (set-keymap-parent map helm-map)
+                  (define-key map (kbd "M-<up>")     filter-inc-fn)
+                  (define-key map (kbd "M-<down>")   filter-dec-fn)
+                  (define-key map (kbd "M-<space>")  filter-reset-fn)
+                  (define-key map (kbd "M-<return>") filter-manage-fn)
+                  map)))
 
           (when (> filtered-count 0) ;; (> unfiltered-count 0)
             (let ((gen-candidate-lambda #'(lambda () (funcall gen-candidates)))
@@ -202,19 +283,22 @@
               (occ-debug "occ-obj-helm-build-collection-source: ap-transf: %s" ap-transf)
               (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
                     (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
-                (occ-debug "occ-obj-helm-build-collection-source: helm-actions: %s" helm-actions)
                 (occ-debug "occ-obj-helm-build-collection-source: helm-transfm: %s" helm-transfm)
                 (progn
                   (occ-debug "occ-obj-helm-build-collection-source: helm-actions:")
                   (dolist (a helm-actions)
                     (occ-debug " occ-obj-helm-build-collection-source: helm-action: %s" a))
                   (occ-debug "occ-obj-helm-build-collection-source: helm-transfm: %s" helm-transfm))
+
+                ;; * Dynamic Match based templates
+                ;; https://kitchingroup.cheme.cmu.edu/blog/2016/01/24/Modern-use-of-helm-sortable-candidates/
                 (let ((source (helm-build-sync-source source-name
                                 :candidates                     gen-candidate-lambda
                                 ;; :header-name
+                                :keymap                         h-map
                                 :action                         helm-actions
                                 :action-transformer             helm-transfm
-                                :filtered-candidate-transformer nil
+                                :filtered-candidate-transformer nil ;; (lambda (candidates source) candidates)
                                 :history                        'org-refile-history)))
                   (occ-build-hsrc-source source))))))))))
 
@@ -417,25 +501,5 @@
               :action     (list (cons "Clock in and track" selector)))
             helm-sources))
     (funcall action (helm helm-sources))))
-
-
-;; (cl-defgeneric occ-obj-sacha-helm-action (ctxask clockin-fn)
-;;   "occ-obj-sacha-helm-action")
-
-;; (cl-defmethod occ-obj-sacha-helm-action ((ctxask occ-ctxual-tsk) clockin-fn)
-;;   ;; (occ-debug "sacha marker %s" (first dyntskpls))
-;;   ;; (setq sacha/helm-org-refile-locations tbl)
-;;   (progn
-;;     (helm
-;;      (list
-;;       (helm-build-sync-source "Select matching tsks"
-;;         :candidates (mapcar 'occ-obj-candidate ctxask)
-;;         :action (list ;; (cons "Select" 'identity)
-;;                  (cons "Clock in and track" #'(lambda (c) (funcall clockin-fn c))))
-;;         :history 'org-refile-history)))))
-;; ;; (helm-build-dummy-source "Create tsk"
-;; ;;   :action (helm-make-actions
-;; ;;            "Create tsk"
-;; ;;            'sacha/helm-org-create-tsk))
 
 ;;; occ-helm-method.el ends here

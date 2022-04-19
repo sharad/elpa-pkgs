@@ -144,6 +144,7 @@
             (set-keymap-parent map helm-map)
             (define-key map (kbd "M-<up>")     level-inc-fn)
             (define-key map (kbd "M-<down>")   level-dec-fn)
+            (define-key map (kbd "M-<space>")  level-reset-fn)
             map))
          (h-action-transformer    #'(lambda (actions candidate)
                                       (list (cons "Select" action))))
