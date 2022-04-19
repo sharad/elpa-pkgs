@@ -37,11 +37,11 @@
     ;; (define-key map (kbd "RET")           'helm-ff-RET)
     (define-key map (kbd "C-]")           'helm-ff-run-toggle-basename)
     (define-key map (kbd "S-RET")         'occ-helm-run-child-clock-in)
-    (helm-define-key-with-subkeys map
-      '((kbd "DEL") ?\d 'helm-ff-delete-char-backward
-        (C-backspace . helm-ff-run-toggle-auto-update)
-        ([C-c DEL] . helm-ff-run-toggle-auto-update
-         nil 'helm-ff-delete-char-backward--exit-fn)))
+    ;; (helm-define-key-with-subkeys map
+    ;;   '((kbd "DEL") ?\d 'helm-ff-delete-char-backward
+    ;;     (C-backspace . helm-ff-run-toggle-auto-update)
+    ;;     ([C-c DEL] . helm-ff-run-toggle-auto-update)
+    ;;     nil 'helm-ff-delete-char-backward--exit-fn))
     (when t ;; helm-ff-lynx-style-map
       (define-key map (kbd "<left>")      'helm-find-files-up-one-level)
       (define-key map (kbd "<right>")     'helm-execute-persistent-action))
@@ -59,11 +59,15 @@
 (put 'occ-helm-run-child-clock-in 'helm-only t)
 ;; add occ-child-clock-in in action
 
+
+;; checkout (defclass helm-source-ffiles (helm-source-sync) - in helm-files.el
+;; C-h C-f helm-source-ffiles
+;; C-h C-f helm-source
 (defclass occ-helm-source-sync (helm-source-sync)
   ((header-name
     :initform (lambda (name)
                 (concat name (substitute-command-keys
-                              helm-find-files-doc-header))))
+                              occ-helm-doc-header))))
    (init
     :initform (lambda ()
                 (setq helm-ff-auto-update-flag
@@ -241,6 +245,9 @@
                                       (interactive)
                                       (with-helm-buffer
                                         (progn ;; code to manager filters
+                                          ;; TODO: check https://github.com/emacsmirror/edit-list/blob/master/edit-list.el
+                                          ;; TODO: implement list editor
+                                          ;; TODO: search emacs elisp interactively modify list
                                           (occ-message "Manage filters here.")
                                           (setf filters default-filters)))
                                       ;; (funcall gen-candidates)
@@ -264,7 +271,7 @@
                                      (helm-refresh)))
                (h-map
                 (let ((map (make-sparse-keymap)))
-                  (set-keymap-parent map helm-map)
+                  (set-keymap-parent map occ-helm-map)
                   (define-key map (kbd "M-<up>")     filter-inc-fn)
                   (define-key map (kbd "M-<down>")   filter-dec-fn)
                   (define-key map (kbd "M-<space>")  filter-reset-fn)
@@ -290,9 +297,18 @@
                     (occ-debug " occ-obj-helm-build-collection-source: helm-action: %s" a))
                   (occ-debug "occ-obj-helm-build-collection-source: helm-transfm: %s" helm-transfm))
 
+                ;; (let ((source (helm-build-sync-source source-name
+                ;;                 :candidates                     gen-candidate-lambda
+                ;;                 ;; :header-name
+                ;;                 :keymap                         h-map
+                ;;                 :action                         helm-actions
+                ;;                 :action-transformer             helm-transfm
+                ;;                 :filtered-candidate-transformer nil ;; (lambda (candidates source) candidates)
+                ;;                 :history                        'org-refile-history)))
+                ;;   (occ-build-hsrc-source source))
                 ;; * Dynamic Match based templates
                 ;; https://kitchingroup.cheme.cmu.edu/blog/2016/01/24/Modern-use-of-helm-sortable-candidates/
-                (let ((source (helm-build-sync-source source-name
+                (let ((source (helm-make-source source-name 'occ-helm-source-sync ;; 'helm-source-sync
                                 :candidates                     gen-candidate-lambda
                                 ;; :header-name
                                 :keymap                         h-map
@@ -483,23 +499,5 @@
                                       :auto-select-if-only auto-select-if-only
                                       :timeout             timeout
                                       :prompt              prompt)))))
-
-
-(defun occ-helm-select-XYZ (obj
-                            selector
-                            action)
-  ;; here
-  ;; (occ-debug "sacha marker %s" (first ctxasks))
-  (let (helm-sources)
-    (push (occ-obj-helm-build-obj-source obj (list (cons "Clock in and track" selector)))
-          helm-sources)
-    (when (and (org-clocking-p)
-               (marker-buffer org-clock-marker))
-      (push (helm-build-sync-source "Current Clocking Tsk"
-              :candidates (list (occ-obj-candidate (occ-obj-build-obj-with (occ-current-tsk)
-                                                                           obj)))
-              :action     (list (cons "Clock in and track" selector)))
-            helm-sources))
-    (funcall action (helm helm-sources))))
 
 ;;; occ-helm-method.el ends here
