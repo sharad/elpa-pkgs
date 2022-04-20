@@ -35,6 +35,10 @@
 ;; https://www.emacswiki.org/emacs/PrefixKey
 ;; https://stackoverflow.com/questions/25524710/define-key-in-prefix-keymap-for-a-particular-mode
 
+;; TODO: spacemacs/set-leader-keys-for-minor-mode
+;; (spacemacs/set-leader-keys "O" 'occ-mode-keymap)
+;; check C-h C-f ipython-notebook/init-ein
+
 (define-prefix-command 'occ-mode-keymap)
 
 (defun occ-enable-mode-map ()
