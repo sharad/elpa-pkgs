@@ -7,7 +7,7 @@
 * Naming convention
 ** Naming generi function
 
-   for accessor or nousne
+   for accessor or nouns
 
    using prefix "occ-obj-"
 

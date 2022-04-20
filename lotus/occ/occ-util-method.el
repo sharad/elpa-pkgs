@@ -37,10 +37,38 @@
 ;; (setq occ-list-select-keys occ-list-select-ap-transf-keys)
 
 
-(cl-defmethod occ-obj-match-select ((obj occ-obj-ctx)
-                                    &key
-                                    obtrusive
-                                    prompt)
+(cl-defmethod occ-do-run-list-select ((obj occ-obj-ctx)
+                                      &key
+                                      ap-normal ;; TODO: -- newly added
+                                      obtrusive
+                                      prompt)
+  "Will open helm selection for tsk, here return-transform must
+be NIL, using (occ-list-filters) for FILTERS"
+
+  ;; NOTE: AP-TRANSF is superseding AP-NORMAL
+
+  (let ((filters          (occ-list-filters))
+        (builder          #'occ-obj-build-ctsk-with)
+        (ap-normal        occ-list-select-keys)
+        (ap-transf        occ-list-select-keys)
+        (return-transform nil)
+        (timeout          occ-idle-timeout))
+    (occ-debug "occ-do-run-list-select: ap-normal: %s" ap-normal)
+    (occ-obj-select obj                   ;; TODO: passing ap-normal has no affect it show its own debug it ?
+                    (occ-collections-default)
+                    :filters          filters
+                    :builder          builder
+                    :ap-normal        ap-normal
+                    :ap-transf        ap-transf
+                    :return-transform return-transform
+                    :timeout          timeout
+                    :obtrusive        obtrusive
+                    :prompt           prompt)))
+
+(cl-defmethod occ-do-run-match-select ((obj occ-obj-ctx)
+                                       &key
+                                       obtrusive
+                                       prompt)
   "Will open helm selection for tsk, here return-transform must
 be NIL, using (occ-match-filters) for FILTERS"
 
@@ -63,33 +91,6 @@ be NIL, using (occ-match-filters) for FILTERS"
                     :obtrusive        obtrusive
                     :prompt           prompt)))
 
-(cl-defmethod occ-obj-list-select ((obj occ-obj-ctx)
-                                   &key
-                                   ap-normal ;; TODO: -- newly added
-                                   obtrusive
-                                   prompt)
-  "Will open helm selection for tsk, here return-transform must
-be NIL, using (occ-list-filters) for FILTERS"
-
-  ;; NOTE: AP-TRANSF is superseding AP-NORMAL
-
-  (let ((filters          (occ-list-filters))
-        (builder          #'occ-obj-build-ctsk-with)
-        (ap-normal        occ-list-select-keys)
-        (ap-transf        occ-list-select-keys)
-        (return-transform nil)
-        (timeout          occ-idle-timeout))
-      (occ-debug "occ-list-select: ap-normal: %s" ap-normal)
-      (occ-obj-select obj                   ;; TODO: passing ap-normal has no affect it show its own debug it ?
-                      (occ-collections-default)
-                      :filters          filters
-                      :builder          builder
-                      :ap-normal        ap-normal
-                      :ap-transf        ap-transf
-                      :return-transform return-transform
-                      :timeout          timeout
-                      :obtrusive        obtrusive
-                      :prompt           prompt)))
 
 (occ-testing
  (occ-obj-list-debug-select (occ-obj-make-ctx-at-point)
@@ -108,7 +109,7 @@ be NIL, using (occ-list-filters) for FILTERS"
                    :timeout           occ-idle-timeout
                    :obtrusive         t)))
 
-(cl-defmethod occ-obj-list-debug-select ((obj occ-obj-ctx)
+(cl-defmethod occ-do-run-list-debug-select ((obj occ-obj-ctx)
                                          &key
                                          ap-normal
                                          obtrusive
@@ -123,7 +124,7 @@ for testing given ap-normal on selected tsk."
         (builder          #'occ-obj-build-ctsk-with)
         (return-transform t)
         (timeout          occ-idle-timeout))
-      (occ-debug "occ-obj-list-debug-select: ap-normal: %s" ap-normal)
+      (occ-debug "occ-do-run-list-debug-select: ap-normal: %s" ap-normal)
       (let ((retval-ctx-tsk (occ-obj-select obj
                                             (occ-collections-default)
                                             :filters          filters
@@ -157,7 +158,7 @@ for testing given ap-normal on selected tsk."
                       :ap-normal (occ-obj-get-helm-actions nil '(t actions select))
                       :obtrusive nil))
 
-(cl-defmethod occ-obj-list-launch ((obj occ-obj-ctx)
+(cl-defmethod occ-do-run-list-launch ((obj occ-obj-ctx)
                                    &key
                                    obtrusive
                                    prompt)
@@ -201,7 +202,7 @@ must be NIL, using (occ-list-filters) for FILTERS"
              (occ-debug-uncond "occ-helm-list-debug-select((obj occ-ctx)): No selection"))))))
 
 
-(cl-defmethod occ-obj-list-select-interactive ())
-(cl-defmethod occ-obj-list-select-get-obj ())
+(cl-defmethod occ-do-run-list-select-interactive ())
+(cl-defmethod occ-do-run-list-select-get-obj ())
 
 ;;; occ-util-method.el ends here

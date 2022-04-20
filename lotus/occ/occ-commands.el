@@ -43,22 +43,22 @@
 (defun occ-helm-match-select (ctx)
   (interactive
    (list (occ-obj-make-ctx-at-point)))
-  (occ-obj-match-select ctx))
+  (occ-do-run-match-select ctx))
 
 (defun occ-helm-list-select (ctx)
   (interactive
    (list (occ-obj-make-ctx-at-point)))
-  (occ-obj-list-select ctx))
+  (occ-do-run-list-select ctx))
 
 (defun occ-helm-list-debug-select (ctx)
   (interactive
    (list (occ-obj-make-ctx-at-point)))
-  (occ-obj-list-debug-select ctx))
+  (occ-do-run-list-debug-select ctx))
 
 (defun occ-helm-list-launch (ctx)
   (interactive
    (list (occ-obj-make-ctx-at-point)))
-  (occ-obj-list-launch ctx))
+  (occ-do-run-list-launch ctx))
 
 ;;;###autoload
 (defun occ-property-edit ()
