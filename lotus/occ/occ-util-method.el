@@ -37,6 +37,9 @@
 ;; (setq occ-list-select-keys occ-list-select-ap-transf-keys)
 
 
+;; NOTE: for naming check devel.org
+
+
 (cl-defmethod occ-do-run-list-select ((obj occ-obj-ctx)
                                       &key
                                       ap-normal ;; TODO: -- newly added
