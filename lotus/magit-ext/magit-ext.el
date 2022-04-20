@@ -1,0 +1,52 @@
+;;; magit-ext.el --- magit extentions                -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2022  sharad
+
+;; Author: sharad <>
+;; Keywords: convenience
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; 
+
+;;; Code:
+
+(defun magit-commit-amend-noedit ()
+  (interactive)
+  (magit-commit-amend '("--no-edit")))
+
+(defun magit-push-current-force (target args)
+  (interactive
+   (--if-let (magit-get-current-branch)
+       (list (magit-read-remote-branch (format "Push %s to" it)
+                                       nil nil it 'confirm)
+             (magit-push-arguments))
+     (user-error "No branch is checked out")))
+  (magit-push-current target (cons "-f" args)))
+
+
+(defun magit-commit-amend-push-current-force (target args)
+  (interactive
+   (--if-let (magit-get-current-branch)
+       (list (magit-read-remote-branch (format "Push %s to" it)
+                                       nil nil it 'confirm)
+             (magit-push-arguments))
+     (user-error "No branch is checked out")))
+  (magit-commit-amend-noedit)
+  (magit-push-current-force target args))
+
+(provide 'magit-ext)
+;;; magit-ext.el ends here
