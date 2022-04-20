@@ -33,7 +33,7 @@
 
 (require 'occ-filter-config)
 (require 'occ-helm)
-(require 'occ-helm-action-config)
+(require 'occ-helm-actions-config)
 
 
 ;; TODO:

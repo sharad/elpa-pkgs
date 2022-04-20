@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(provide 'occ-filter-bae)
+(provide 'occ-filter-base)
 
 
 (require 'occ-obj-common)
