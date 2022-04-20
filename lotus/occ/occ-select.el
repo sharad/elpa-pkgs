@@ -31,9 +31,9 @@
 (require 'org-misc-utils-lotus)
 
 
-(require 'occ-list-filter)
+(require 'occ-filter-config)
 (require 'occ-helm)
-(require 'occ-helm-config)
+(require 'occ-helm-action-config)
 
 
 ;; TODO:
@@ -180,7 +180,6 @@ TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
     (occ-debug "OCC-OBJ-SELECT((OBJ OCC-CTX)): occ-list-select returned %s"
                  (occ-obj-Format retval))
     retval))
-    
 
 (cl-defmethod occ-obj-select ((obj null)
                               (collections list)

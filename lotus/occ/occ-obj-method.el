@@ -31,7 +31,7 @@
 (require 'occ-tsk)
 (require 'occ-print)
 (require 'occ-obj-ctor)
-(require 'occ-helm-config)
+(require 'occ-helm-actions-config)
 (require 'occ-prop)
 (require 'occ-rank)
 

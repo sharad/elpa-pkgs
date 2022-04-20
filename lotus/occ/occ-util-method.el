@@ -29,6 +29,7 @@
 
 
 (require 'occ-util-common)
+(require 'occ-filter-config)
 
 
 (defvar occ-list-select-keys occ-list-select-ap-normal-keys)

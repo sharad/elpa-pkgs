@@ -1,4 +1,4 @@
-;;; occ-helm-config.el --- occ helm configurations   -*- lexical-binding: t; -*-
+;;; occ-helm-actions-config.el --- occ helm configurations   -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021  sharad
 
@@ -24,15 +24,13 @@
 
 ;;; Code:
 
-(provide 'occ-helm-config)
+(provide 'occ-helm-actions-config)
 
 
 (require 'occ-helm)
 
-
-
 ;;;###autoload
-(defun occ-helm-config-initialize ()
+(defun occ-helm-actions-config-initialize ()
   (interactive)
   (progn
     (progn
@@ -121,4 +119,4 @@
 
   
 
-;;; occ-helm-config.el ends here
+;;; occ-helm-actions-config.el ends here

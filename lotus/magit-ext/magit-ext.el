@@ -25,10 +25,12 @@
 ;;; Code:
 
 (defun magit-commit-amend-noedit ()
+  "Magit commit amend without editing."
   (interactive)
   (magit-commit-amend '("--no-edit")))
 
 (defun magit-push-current-force (target args)
+  "Magit force push."
   (interactive
    (--if-let (magit-get-current-branch)
        (list (magit-read-remote-branch (format "Push %s to" it)
@@ -37,16 +39,16 @@
      (user-error "No branch is checked out")))
   (magit-push-current target (cons "-f" args)))
 
-
-(defun magit-commit-amend-push-current-force (target args)
+(defun magit-commit-amend-noedit-push-current-force (target args)
+  "Magit commit amend without editing followed by force push."
   (interactive
    (--if-let (magit-get-current-branch)
        (list (magit-read-remote-branch (format "Push %s to" it)
                                        nil nil it 'confirm)
              (magit-push-arguments))
      (user-error "No branch is checked out")))
-  (magit-commit-amend-noedit)
-  (magit-push-current-force target args))
+  (and (magit-commit-amend-noedit)
+       (magit-push-current-force target args)))
 
 (provide 'magit-ext)
 ;;; magit-ext.el ends here

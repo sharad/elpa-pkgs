@@ -32,6 +32,7 @@
 (require 'occ-obj-ctor)
 (require 'occ-main)
 (require 'occ-util-common)
+(require 'occ-filter-config)
 ;; (require 'occ-commands)
 (require 'occ-resolve-clock)
 (require 'occ-test)
@@ -161,7 +162,7 @@
   (setq *occ-tsk-previous-ctx* (occ-obj-make-ctx-at-point))
   (progn
     (occ-filter-config-initialize)
-    (occ-helm-config-initialize)
+    (occ-helm-actions-config-initialize)
     (occ-unnamed-initialize)
     (occ-enable-mode-map)
     (occ-register-resolve-clock)

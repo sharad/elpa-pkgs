@@ -1,4 +1,4 @@
-;;; occ-list-filter.el --- list filter               -*- lexical-binding: t; -*-
+;;; occ-filter-base.el --- list filter               -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Sharad
 
@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(provide 'occ-list-filter)
+(provide 'occ-filter-bae)
 
 
 (require 'occ-obj-common)
@@ -116,20 +116,6 @@
     funs))
 
 
-;; (defun occ-internal-get-filter-method (methods)
-;;   (cond
-;;    ((functionp methods)
-;;     (occ-internal-get-filter-method (funcall methods)))
-;;    ((and (symbolp   methods)
-;;          (listp (symbol-value methods)))
-;;     (occ-internal-get-filter-method (symbol-value methods)))
-;;    ((and (symbolp   methods)
-;;          (functionp (symbol-value methods)))
-;;     (occ-internal-get-filter-method (functionp (symbol-value methods))))
-;;    ((listp methods) methods)
-;;    (t (occ-error "Wrong %s methods" methods))))
-
-
 (cl-defmethod occ-obj-apply-recursively ((obj occ-ctx)
                                          methods
                                          sequence
@@ -178,79 +164,4 @@
     ;;              seq)
     seq))
 
-
-(cl-defmethod occ-obj-filter-mutual-deviation ((obj occ-ctx)
-                                               sequence
-                                               &key rank) ;TODO: make it after method
-  "Return matched Sequence for context CTX"
-  (if (occ-default-collection)
-      (let* ((rankslist  (mapcar #'occ-obj-rank       sequence))
-             (avgrank    (apply  #'occ-stats-average  rankslist))
-             (varirank   (apply  #'occ-stats-variance rankslist)))
-        ;; (occ-debug "occ-collection-obj-matches :around finish")
-        (occ-debug "matched ctxtsks %s" (length sequence))
-        (occ-debug "occ-filter-mutual-deviation: avgrank = %d varirank = %d"
-                          avgrank varirank)
-        (remove-if-not #'(lambda (obj)
-                           (>= (funcall rank obj)
-                               avgrank))
-                       sequence))
-    (occ-error "(occ-default-collection) returned nil")))
-
-(cl-defmethod occ-obj-filter-positive ((obj occ-ctx)
-                                       sequence
-                                       &key rank)
-  (remove-if-not #'(lambda (obj)
-                     (> (funcall rank obj)
-                        0))
-                 sequence))
-
-(cl-defmethod occ-obj-filter-nonnegative ((obj occ-ctx)
-                                          sequence
-                                          &key rank)
-  (remove-if-not #'(lambda (obj)
-                     (>= (funcall rank obj)
-                         0))
-                 sequence))
-
-(defvar occ-filter-min 0)
-(cl-defmethod occ-obj-filter-min ((obj occ-ctx)
-                                  sequence
-                                  &key rank)
-  (remove-if-not #'(lambda (obj)
-                     (>= (funcall rank obj)
-                         occ-filter-min))
-                 sequence))
-
-(defvar occ-filter-max 0)
-(cl-defmethod occ-obj-filter-max ((obj occ-ctx)
-                                  sequence
-                                  &key rank)
-  (remove-if-not #'(lambda (obj)
-                     (>= (funcall rank obj)
-                         occ-filter-max))
-                 sequence))
-
-
-(defun occ-filter-config-initialize ()
-  (occ-obj-build-filter :mutual-deviation "Mutual Deviation" #'occ-obj-filter-mutual-deviation)
-  (occ-obj-build-filter :positive "Positive" #'occ-obj-filter-positive)
-  (occ-obj-build-filter :nonnegative "Non negative" #'occ-obj-filter-nonnegative)
-  (occ-obj-build-filter :min "Minimum" #'occ-obj-filter-min)
-  (occ-obj-build-filter :max "Maximum" #'occ-obj-filter-max))
-
-
-(defun occ-list-filters ()
-  '(:nonnegative))
-
-(defun occ-match-filters ()
-  (list :positive
-        :mutual-deviation
-        (list :positive #'occ-obj-member-tsk-rank)))
-        ;; (list :mutual-deviation #'occ-obj-member-tsk-rank)
-
-(defun occ-never-filters ()
-  "Used to filter mainly non-tsk"
-  '(:nonnegative))
-
-;;; occ-list-filter.el ends here
+;;; occ-filter-base.el ends here
