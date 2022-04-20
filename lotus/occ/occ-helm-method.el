@@ -313,6 +313,8 @@
                                 ;; :header-name
                                 :keymap                         h-map
                                 :action                         helm-actions
+                                :persistent-action              helm-actions
+                                :persistent-help                "I don't want this line here"
                                 :action-transformer             helm-transfm
                                 :filtered-candidate-transformer nil ;; (lambda (candidates source) candidates)
                                 :history                        'org-refile-history)))
