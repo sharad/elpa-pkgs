@@ -48,53 +48,86 @@
   (define-key occ-mode-main-keymap (kbd occ-prefix-key) nil))
 
 
-(define-key occ-mode-keymap (kbd "cr") 'occ-run)
-(define-key occ-mode-keymap (kbd "ms") 'occ-helm-match-select)
-(define-key occ-mode-keymap (kbd "ls") 'occ-helm-list-select)
-(define-key occ-mode-keymap (kbd "ld") 'occ-helm-list-debug-select)
-(define-key occ-mode-keymap (kbd "ll") 'occ-helm-list-launch)
-(define-key occ-mode-keymap (kbd "le") 'occ-property-edit)
+(let ((bindings '(("cr" occ-run)
+                  ("ms" occ-helm-match-select)
+                  ("ls" occ-helm-list-select)
+                  ("ld" occ-helm-list-debug-select)
+                  ("ll" occ-helm-list-launch)
+                  ("le" occ-property-edit)
 
 
-(define-key occ-mode-keymap (kbd "Cc") 'occ-curr-procreate-child)
-(define-key occ-mode-keymap (kbd "CC") 'occ-curr-procreate-child-clock-in)
-(define-key occ-mode-keymap (kbd "Ct") 'occ-curr-tsk-continue-for)
+                  ("Cc" occ-curr-procreate-child)
+                  ("CC" occ-curr-procreate-child-clock-in)
+                  ("Ct" occ-curr-tsk-continue-for)
 
-(define-key occ-mode-keymap (kbd "ds") 'occ-start-day)
-(define-key occ-mode-keymap (kbd "du") 'occ-show-up)
-(define-key occ-mode-keymap (kbd "do") 'occ-stop-day)
-(define-key occ-mode-keymap (kbd "dp") 'occ-pack-up)
+                  ("ds" occ-start-day)
+                  ("du" occ-show-up)
+                  ("do" occ-stop-day)
+                  ("dp" occ-pack-up)
 
-(define-key occ-mode-keymap (kbd "tif") 'occ-do-clock-in-force)
-(define-key occ-mode-keymap (kbd "tii") 'occ-interrupt-clock-in)
-(define-key occ-mode-keymap (kbd "to")  'occ-clock-out)
-(define-key occ-mode-keymap (kbd "tP")  'occ-continue-prev)
-(define-key occ-mode-keymap (kbd "ta")  'occ-obj-make-anonymous)
+                  ("tif" occ-do-clock-in-force)
+                  ("tii" occ-interrupt-clock-in)
+                  ("to"  occ-clock-out)
+                  ("tP"  occ-continue-prev)
+                  ("ta"  occ-obj-make-anonymous)
 
-(define-key occ-mode-keymap (kbd "q") 'occ-keep-quiet)
-(define-key occ-mode-keymap (kbd "Q") 'occ-keep-quiet-for)
+                  ("q" occ-keep-quiet)
+                  ("Q" occ-keep-quiet-for)
 
-(define-key occ-mode-keymap (kbd "rr") 'occ-register-resolve-clock)
-(define-key occ-mode-keymap (kbd "ru") 'occ-unregister-resolve-clock)
+                  ("rr" occ-register-resolve-clock)
+                  ("ru" occ-unregister-resolve-clock)
 
-(define-key occ-mode-keymap (kbd "sR") 'occ-reset-spec)
-(define-key occ-mode-keymap (kbd "sM") 'occ-obj-make-spec)
-(define-key occ-mode-keymap (kbd "sA") 'occ-add-to-spec)
-(define-key occ-mode-keymap (kbd "sO") 'occ-add-org-file)
-(define-key occ-mode-keymap (kbd "sB") 'occ-obj-build-spec)
+                  ("sR" occ-reset-spec)
+                  ("sM" occ-obj-make-spec)
+                  ("sA" occ-add-to-spec)
+                  ("sO" occ-add-org-file)
+                  ("sB" occ-obj-build-spec)
 
-(define-key occ-mode-keymap (kbd "Tr") 'occ-files-with-null-regex)
-(define-key occ-mode-keymap (kbd "To") 'occ-files-not-in-org-mode)
+                  ("Tr" occ-files-with-null-regex)
+                  ("To" occ-files-not-in-org-mode)
 
-(define-key occ-mode-keymap (kbd "Um") 'occ-merge-unamed-task)
+                  ("Um" occ-merge-unamed-task)
 
-(define-key occ-mode-keymap (kbd "OR") 'occ-reset-collection-object)
-(define-key occ-mode-keymap (kbd "Oi") 'occ-insinuate)
-(define-key occ-mode-keymap (kbd "Ou") 'occ-uninsinuate)
+                  ("OR" occ-reset-collection-object)
+                  ("Oi" occ-insinuate)
+                  ("Ou" occ-uninsinuate)
 
-(define-key occ-mode-keymap (kbd "oT") 'occ-run-timer)
-(define-key occ-mode-keymap (kbd "oR") 'occ-reload)
-(define-key occ-mode-keymap (kbd "v")  'occ-version)
+                  ("oT" occ-run-timer)
+                  ("oR" occ-reload)
+                  ("v"  occ-version))))
+        (apply #'spacemacs/set-leader-keys-for-minor-mode 'occ-mode
+               (cl-mapcan
+                (lambda (bind)
+                  (if (fboundp (cl-second bind))
+                      bind
+                    (prog1 nil
+                      (display-warning
+                       'warn (format "occ-mode: undefined %s"
+                                     (cl-second bind))))))
+                (copy-tree bindings)))
+
+        ;; (eval (append '(spacemacs|define-transient-state
+        ;;                    ipython-notebook
+        ;;                  :title "EIN Transient State"
+        ;;                  :evil-leader-for-mode (ein:notebook-mode . ".")
+        ;;                  :bindings
+        ;;                  ("q" nil :exit t))
+        ;;               bindings
+        ;;               `(:doc ,(ipython-notebook/transient-doc bindings))))
+
+        (dolist (it (copy-tree bindings))
+          (define-key occ-mode-keymap (kbd (car it)) (cadr it))))
+(dolist (it '(("l" . "format")
+              ("C" . "folder")
+              ("d" . "toggle")
+              ("t" . "goto")
+              ("r" . "help")
+              ("s" . "refactor")
+              ("T" . "workspace")
+              ("U" . "actions")
+              ("O" . "peek")
+              ("O" . "peek")))
+  (which-key-add-keymap-based-replacements spacemacs-occ-mode-map (car it) (cdr it)))
 
 
 (defvar occ-mode-global-allowed nil)
@@ -104,7 +137,7 @@
 
 (defun occ-mode-global-disallow ()
   (interactive)
-  (setq occ-mode-global-allowed nil))
+  (setq occ-mode-global-allowed nil))k
 
 ;;;###autoload
 (define-minor-mode occ-mode
