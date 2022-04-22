@@ -269,6 +269,7 @@
   (occ-debug "occ-insinuate: begin")
   (prog1
       (occ-initialize key)
+    (occ-set-bindings)
     (occ-debug "occ-insinuate: finish")))
 
 ;;;###autoload

@@ -48,86 +48,89 @@
   (define-key occ-mode-main-keymap (kbd occ-prefix-key) nil))
 
 
-(let ((bindings '(("cr" occ-run)
-                  ("ms" occ-helm-match-select)
-                  ("ls" occ-helm-list-select)
-                  ("ld" occ-helm-list-debug-select)
-                  ("ll" occ-helm-list-launch)
-                  ("le" occ-property-edit)
+(defun occ-set-bindings ()
+  (let ((bindings '(("cr" occ-run)
+                    ("ms" occ-helm-match-select)
+                    ("ls" occ-helm-list-select)
+                    ("ld" occ-helm-list-debug-select)
+                    ("ll" occ-helm-list-launch)
+                    ("le" occ-property-edit)
 
 
-                  ("Cc" occ-curr-procreate-child)
-                  ("CC" occ-curr-procreate-child-clock-in)
-                  ("Ct" occ-curr-tsk-continue-for)
+                    ("Cc" occ-curr-procreate-child)
+                    ("CC" occ-curr-procreate-child-clock-in)
+                    ("Ct" occ-curr-tsk-continue-for)
 
-                  ("ds" occ-start-day)
-                  ("du" occ-show-up)
-                  ("do" occ-stop-day)
-                  ("dp" occ-pack-up)
+                    ("ds" occ-start-day)
+                    ("du" occ-show-up)
+                    ("do" occ-stop-day)
+                    ("dp" occ-pack-up)
 
-                  ("tif" occ-do-clock-in-force)
-                  ("tii" occ-interrupt-clock-in)
-                  ("to"  occ-clock-out)
-                  ("tP"  occ-continue-prev)
-                  ("ta"  occ-obj-make-anonymous)
+                    ("tif" occ-do-clock-in-force)
+                    ("tii" occ-interrupt-clock-in)
+                    ("to"  occ-clock-out)
+                    ("tP"  occ-continue-prev)
+                    ("ta"  occ-obj-make-anonymous)
 
-                  ("q" occ-keep-quiet)
-                  ("Q" occ-keep-quiet-for)
+                    ("q" occ-keep-quiet)
+                    ("Q" occ-keep-quiet-for)
 
-                  ("rr" occ-register-resolve-clock)
-                  ("ru" occ-unregister-resolve-clock)
+                    ("rr" occ-register-resolve-clock)
+                    ("ru" occ-unregister-resolve-clock)
 
-                  ("sR" occ-reset-spec)
-                  ("sM" occ-obj-make-spec)
-                  ("sA" occ-add-to-spec)
-                  ("sO" occ-add-org-file)
-                  ("sB" occ-obj-build-spec)
+                    ("sR" occ-reset-spec)
+                    ("sM" occ-obj-make-spec)
+                    ("sA" occ-add-to-spec)
+                    ("sO" occ-add-org-file)
+                    ("sB" occ-obj-build-spec)
 
-                  ("Tr" occ-files-with-null-regex)
-                  ("To" occ-files-not-in-org-mode)
+                    ("Tr" occ-files-with-null-regex)
+                    ("To" occ-files-not-in-org-mode)
 
-                  ("Um" occ-merge-unamed-task)
+                    ("Um" occ-merge-unamed-task)
 
-                  ("OR" occ-reset-collection-object)
-                  ("Oi" occ-insinuate)
-                  ("Ou" occ-uninsinuate)
+                    ("OR" occ-reset-collection-object)
+                    ("Oi" occ-insinuate)
+                    ("Ou" occ-uninsinuate)
 
-                  ("oT" occ-run-timer)
-                  ("oR" occ-reload)
-                  ("v"  occ-version))
-        (apply #'spacemacs/set-leader-keys-for-minor-mode 'occ-mode
-               (cl-mapcan
-                (lambda (bind)
-                  (if (fboundp (cl-second bind))
-                      bind
-                    (prog1 nil
-                      (display-warning
-                       'warn (format "occ-mode: undefined %s"
-                                     (cl-second bind))))))
-                (copy-tree bindings)))
+                    ("oT" occ-run-timer)
+                    ("oR" occ-reload)
+                    ("v"  occ-version))))
+    (progn
+      (apply #'spacemacs/set-leader-keys-for-minor-mode 'occ-mode
+             (cl-mapcan
+              (lambda (bind)
+                (if (fboundp (cl-second bind))
+                    bind
+                  (prog1 nil
+                    (display-warning
+                     'warn (format "occ-mode: undefined %s"
+                                   (cl-second bind))))))
+              (copy-tree bindings)))
+      ;; (eval (append '(spacemacs|define-transient-state
+      ;;                    ipython-notebook
+      ;;                  :title "EIN Transient State"
+      ;;                  :evil-leader-for-mode (ein:notebook-mode . ".")
+      ;;                  :bindings
+      ;;                  ("q" nil :exit t))
+      ;;               bindings
+      ;;               `(:doc ,(ipython-notebook/transient-doc bindings))))
 
-        ;; (eval (append '(spacemacs|define-transient-state
-        ;;                    ipython-notebook
-        ;;                  :title "EIN Transient State"
-        ;;                  :evil-leader-for-mode (ein:notebook-mode . ".")
-        ;;                  :bindings
-        ;;                  ("q" nil :exit t))
-        ;;               bindings
-        ;;               `(:doc ,(ipython-notebook/transient-doc bindings))))
+      (dolist (it (copy-tree bindings))
+        (define-key occ-mode-keymap (kbd (car it)) (cadr it)))))
+  
+  (dolist (it '(("l" . "format")
+                ("C" . "folder")
+                ("d" . "toggle")
+                ("t" . "goto")
+                ("r" . "help")
+                ("s" . "refactor")
+                ("T" . "workspace")
+                ("U" . "actions")
+                ("O" . "peek")
+                ("O" . "peek")))
+    (which-key-add-keymap-based-replacements spacemacs-occ-mode-map (car it) (cdr it))))
 
-        (dolist (it (copy-tree bindings))
-          (define-key occ-mode-keymap (kbd (car it)) (cadr it))))))
-(dolist (it '(("l" . "format")
-              ("C" . "folder")
-              ("d" . "toggle")
-              ("t" . "goto")
-              ("r" . "help")
-              ("s" . "refactor")
-              ("T" . "workspace")
-              ("U" . "actions")
-              ("O" . "peek")
-              ("O" . "peek")))
-  (which-key-add-keymap-based-replacements spacemacs-occ-mode-map (car it) (cdr it)))
 
 
 (defvar occ-mode-global-allowed nil)
@@ -137,7 +140,7 @@
 
 (defun occ-mode-global-disallow ()
   (interactive)
-  (setq occ-mode-global-allowed nil))
+  (setq occ-mode-global-allowed nil))k
 
 ;;;###autoload
 (define-minor-mode occ-mode
