@@ -94,7 +94,7 @@
 
                   ("oT" occ-run-timer)
                   ("oR" occ-reload)
-                  ("v"  occ-version))))
+                  ("v"  occ-version))
         (apply #'spacemacs/set-leader-keys-for-minor-mode 'occ-mode
                (cl-mapcan
                 (lambda (bind)
@@ -116,7 +116,7 @@
         ;;               `(:doc ,(ipython-notebook/transient-doc bindings))))
 
         (dolist (it (copy-tree bindings))
-          (define-key occ-mode-keymap (kbd (car it)) (cadr it))))
+          (define-key occ-mode-keymap (kbd (car it)) (cadr it))))))
 (dolist (it '(("l" . "format")
               ("C" . "folder")
               ("d" . "toggle")
@@ -137,7 +137,7 @@
 
 (defun occ-mode-global-disallow ()
   (interactive)
-  (setq occ-mode-global-allowed nil))k
+  (setq occ-mode-global-allowed nil))
 
 ;;;###autoload
 (define-minor-mode occ-mode
