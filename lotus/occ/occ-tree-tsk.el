@@ -56,6 +56,10 @@
    'occ-tree-tsk-subtree fn tree args))
 
 
+(defun occ-tree-depth-trim (fn depth tree))
+  
+
+
 (defun occ-org-map-subheading (fun)
   "Call FUN for every heading underneath the current heading"
   ;; (org-back-to-heading)
@@ -83,7 +87,8 @@
   "Build recursive org tsks from org FILE (or current buffer) using TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
   (progn ;; save-excursion
     (progn  ;; save-restriction
-      (let ((curr-buff (if file
+      (let ((depth     (occ-obj-collection-depth collection))
+            (curr-buff (if file
                            (occ-find-file-noselect file)
                          (current-buffer))))
         (with-current-buffer curr-buff
@@ -116,32 +121,41 @@
                                         subtree-level))
                 (cl-assert (numberp subtree-level))
                 (when entry
-                  (let* ((sub-tree (append (occ-org-map-subheading #'(lambda ()
-                                                                       (occ-tree-tsk-build nil
-                                                                                           collection
-                                                                                           subtree-level)))
-                                           (let ((subtree-file-prop (occ-obj-get-property entry :SUBTREEFILE)))
-                                             (when subtree-file-prop
-                                               (let* ((file         (if file file (buffer-file-name)))
-                                                      (subtree-file (if (and subtree-file-prop
-                                                                             (file-relative-name subtree-file-prop))
-                                                                        (expand-file-name subtree-file-prop
-                                                                                          (if file
-                                                                                              (file-name-directory file)
-                                                                                            default-directory))
-                                                                      subtree-file)))
-                                                 (if (and subtree-file
-                                                          (file-readable-p subtree-file))
-                                                     (list (occ-tree-tsk-build subtree-file
-                                                                               collection
-                                                                               (+ 1
-                                                                                  (or (occ-obj-get-property entry
-                                                                                                            'level)
-                                                                                      0)
-                                                                                  (or subtree-level
-                                                                                      0)))))))))))
+                  (let* ((sub-tree (unless (and depth
+                                                (not (zerop depth))
+                                                (> subtree-level depth))
+                                     (append (occ-org-map-subheading #'(lambda ()
+                                                                         (occ-tree-tsk-build nil
+                                                                                             collection
+                                                                                             subtree-level))
+                                              (let ((subtree-file-prop (occ-obj-get-property entry :SUBTREEFILE)))
+                                                   (when subtree-file-prop
+                                                     (let* ((file         (if file file (buffer-file-name))
+                                                               (subtree-file (if (and subtree-file-prop
+                                                                                         (file-relative-name subtree-file-prop)
+                                                                                    (expand-file-name subtree-file-prop
+                                                                                                         (if file
+                                                                                                             (file-name-directory file)
+                                                                                                           default-directory))
+                                                                                  subtree-file)))))
+                                                       (if (and subtree-file
+                                                                   (file-readable-p subtree-file))
+                                                           (list (occ-tree-tsk-build subtree-file
+                                                                                        collection
+                                                                                        (+ 1
+                                                                                           (or (occ-obj-get-property entry
+                                                                                                                        'level)
+                                                                                               0)
+                                                                                           (or subtree-level
+                                                                                               0)))))))))))))
                     (when sub-tree (occ-obj-set-property entry 'subtree
                                                          sub-tree))
+                    (occ-obj-set-property entry 'sibling-count
+                                          (if sub-tree
+                                              (reduce #'+ sub-tree
+                                               :initial-value (length sub-tree)
+                                               :key #'occ-tsk-sibling-count)
+                                            0))
                     entry))))))))))
 
 (cl-defmethod occ-obj-drived-tsk-builder ((collection occ-tree-collection))
@@ -156,7 +170,18 @@
         ;; TODO: use collection-limit to limit childs it can be null pr 0
         ;; we have to use some beadth tree traversal to limit number of entries
         (builder (occ-obj-drived-tsk-builder collection)))
-    (remove nil (mapcar builder
-                        (occ-tree-collection-roots collection)))))
+    (let ((tree (remove nil (mapcar builder
+                                    (occ-tree-collection-roots collection)))))
+      (unless (zerop limit)
+        (setq tree (trim limit tree))))))
+
+
+(defun tree-trim (limit tree)
+  (let ((count (length tree)))
+    (if (> count limit)
+        (butlast tree (- count limit))
+        (let ((limit (/ limit count)))
+          (dolist (e tree)
+            (tree-trim limit e))))))
 
 ;;; occ-tree-tsk.el ends here

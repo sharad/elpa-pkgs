@@ -162,6 +162,7 @@
   plist
   format-file
   format-string
+  sibling-count
   ;; rank
   rank)
 (cl-defstruct (occ-tree-tsk (:include occ-tsk))

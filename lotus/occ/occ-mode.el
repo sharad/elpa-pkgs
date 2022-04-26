@@ -140,7 +140,7 @@
 
 (defun occ-mode-global-disallow ()
   (interactive)
-  (setq occ-mode-global-allowed nil))k
+  (setq occ-mode-global-allowed nil))
 
 ;;;###autoload
 (define-minor-mode occ-mode

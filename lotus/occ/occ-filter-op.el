@@ -31,6 +31,12 @@
 (require 'occ-filter-base)
 
 
+(cl-defmethod occ-obj-filter-mutual-deviation-points ((obj occ-ctx)
+                                                      sequence
+                                                      &key rank) ;TODO: make it after method
+  ())
+
+
 (cl-defmethod occ-obj-filter-mutual-deviation ((obj occ-ctx)
                                                sequence
                                                &key rank) ;TODO: make it after method
@@ -38,7 +44,7 @@
   (if (occ-default-collection)
       (let* ((rankslist  (mapcar #'occ-obj-rank       sequence))
              (avgrank    (apply  #'occ-stats-average  rankslist))
-             (varirank   (apply  #'occ-stats-variance rankslist)))
+             (varirank   (apply  #'occ-stats-variance avgrank rankslist)))
         ;; (occ-debug "occ-collection-obj-matches :around finish")
         (occ-debug "matched ctxtsks %s" (length sequence))
         (occ-debug "occ-filter-mutual-deviation: avgrank = %d varirank = %d"
