@@ -669,20 +669,32 @@ pointing to it."
   ;; (occ-message "null")
   nil)
 
+(cl-defmethod occ-do-reset-tsks ((collection occ-list-collection))
+  (setf (occ-list-collection-list collection) nil))
+
 (cl-defmethod occ-do-reset-tsks ((collection occ-tree-collection))
   ;; (occ-message "tree %s" (occ-tree-collection-list collection))
   (setf (occ-list-collection-list collection) nil)
   (setf (occ-tree-collection-tree collection) nil))
-
-(cl-defmethod occ-do-reset-tsks ((collection occ-list-collection))
-  (setf (occ-list-collection-list collection) nil))
 
 ;; To deprecate
 ;; global-object - accessors
+
+
+;; BUG (occ-obj-collect-tsks tree) method not called (occ-obj-collect-tsks list)
+;; is called and it is settign (occ-list-collection-list coll), need to be fixed
+
 (cl-defmethod occ-obj-collect-tsks (collection
                                     &optional
                                     force)
   (occ-error "first argument should be of type (or occ-tree-collection occ-list-collection)"))
+
+(cl-defmethod occ-obj-collect-tsks ((collection occ-list-collection)
+                                    force)
+  (unless (and (not force)
+               (occ-list-collection-list collection))
+    (setf (occ-list-collection-list collection) (occ-obj-build-tsks collection)))
+  (occ-list-collection-list collection))
 
 ;; FIND: what it mean by tsks collection-tree are same ?
 (cl-defmethod occ-obj-collect-tsks ((collection occ-tree-collection)
@@ -692,13 +704,6 @@ pointing to it."
                (occ-tree-collection-tree collection))
     (setf (occ-tree-collection-tree collection) (occ-obj-build-tsks collection)))
   (occ-tree-collection-tree collection))
-
-(cl-defmethod occ-obj-collect-tsks ((collection occ-list-collection)
-                                    force)
-  (unless (and (not force)
-               (occ-list-collection-list collection))
-    (setf (occ-list-collection-list collection) (occ-obj-build-tsks collection)))
-  (occ-list-collection-list collection))
 ;; To deprecate
 
 (cl-defmethod occ-obj-tsks (collection
@@ -813,26 +818,6 @@ pointing to it."
                             obtrusive)
   (let ((tsks (occ-obj-collection-tsks collection)))
     tsks))
-
-;; ;; to deprecate
-;; (cl-defmethod occ-obj-collect-list ((collection occ-tree-collection))
-;;   (unless (occ-tree-collection-list collection)
-;;     (let ((tsks     (occ-obj-collection-tsks collection))
-;;           (tsk-list '()))
-;;       (mapc #'(lambda (tsk)
-;;                 (occ-mapc-tree-tsks #'(lambda (subtsk args)
-;;                                         (setf tsk-list (nconc tsk-list (list subtsk))))
-;;                                     tsk
-;;                                     nil))
-;;             tsks)
-;;       (setf (occ-tree-collection-list collection) tsk-list)))
-;;   (occ-tree-collection-list collection))
-
-;; (cl-defmethod occ-obj-collect-list ((collection occ-list-collection))
-;;   (let ((tsks (occ-obj-collection-tsks collection)))
-;;     tsks))
-
-
 
 
 (cl-defmethod occ-obj-list-with ((obj        occ-ctx)
