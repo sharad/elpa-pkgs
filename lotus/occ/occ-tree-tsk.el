@@ -56,8 +56,29 @@
    'occ-tree-tsk-subtree fn tree args))
 
 
-(defun occ-tree-depth-trim (fn depth tree))
-  
+
+(defun occ-tree-trim (limit sub-tree)
+  (let ((count (length sub-tree)))
+    ;; (occ-message "occ-tree-trim limit %d count %d" limit count)
+    ;; (occ-message "occ-tree-trim (mapcar #'occ-tsk-sibling-count sub-tree) %s" (mapcar #'occ-tsk-sibling-count sub-tree))
+    (let ((limit (- limit count)))
+      (when sub-tree
+        (let ((sum (apply #'+ count (mapcar #'occ-tsk-sibling-count sub-tree))))
+          ;; (occ-message "occ-tree-trim sum %d" sum)
+          (dolist (e sub-tree)
+            ;; (occ-message "dolist")
+            (let ((limit (/ (* limit (1+ (occ-tsk-sibling-count e))) sum)))
+              (occ-obj-set-property e 'subtree
+                                    (occ-tree-trim limit
+                                                   (occ-obj-get-property e 'subtree))))))))
+    (if (> count limit)
+        (nthcdr (- count limit) sub-tree)
+      sub-tree)))
+
+;; (cl-defmethod occ-trim ((limit number) (tsk occ-tree-tsk))
+;;   ())
+
+;; (defun occ-tree-depth-trim (fn depth tree))  
 
 
 (defun occ-org-map-subheading (fun)
@@ -174,17 +195,8 @@
         (builder (occ-obj-drived-tsk-builder collection)))
     (let ((tree (remove nil (mapcar builder
                                     (occ-tree-collection-roots collection)))))
-      ;; (unless (zerop limit)
-      ;;   (setq tree (trim limit tree)))
-      tree)))
-
-
-(defun occ-tree-trim (limit tree)
-  (let ((count (length tree)))
-    (if (> count limit)
-        (butlast tree (- count limit))
-        (let ((limit (/ limit count)))
-          (dolist (e tree)
-            (occ-tree-trim limit e))))))
+      ;; (if (zerop limit)
+      ;;   (occ-tree-trim limit tree))
+      (occ-tree-trim limit tree))))
 
 ;;; occ-tree-tsk.el ends here

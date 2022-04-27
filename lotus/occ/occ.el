@@ -46,6 +46,9 @@
   (if key
       (setq *occ-collector-default-key* key)
     *occ-collector-default-key*))
+(defun occ-collector-read-key (&optional prompt keys)
+  (intern (completing-read (or prompt "key for spec: ")
+                           (or keys (occ-collector-keys)))))
 (defun occ-collector-get (key)
   (alist-get key *occ-collector*))
 (defun occ-collector-get-create (key desc spec files &optional depth limit)
@@ -99,21 +102,21 @@
 
 
 (defun occ-reset-collection-spec (key)
-  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+  (interactive (list (occ-collector-read-key "key for spec: ")))
   (setf (occ-collection-spec (occ-collector-get key)) nil))
 
 (defun occ-reset-collection-roots (key)
-  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+  (interactive (list (occ-collector-read-key "key for spec: ")))
   (setf (occ-collection-roots (occ-collector-get key)) nil))
 
 (cl-defmethod occ-reset-collection-tsks (key)
-  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
-  (occ-do-rest-tsks (occ-collector-get key)))
+  (interactive (list (occ-collector-read-key "key for spec: ")))
+  (occ-do-reset-tsks (occ-collector-get key)))
 
 
 ;;;###autoload
 (defun occ-reset-collection-object (key)
-  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+  (interactive (list (occ-collector-read-key "key for spec: ")))
   (occ-reset-collection-tsks key))
 
 

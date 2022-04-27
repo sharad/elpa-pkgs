@@ -178,7 +178,7 @@
 
 ;;;###autoload
 (defun occ-switch-default-key (key)
-  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+  (interactive (list (occ-collector-read-key "key for spec: ")))
   (occ-collector-default-key key))
 
 ;;;###autoload
@@ -229,7 +229,7 @@
 
 ;;;###autoload
 (defun occ-obj-build-spec (key)
-  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+  (interactive (list (occ-collector-read-key "key for spec: ")))
   (occ-obj-make-spec key)
   (when (first (occ-collector-spec key))
         (occ-add-to-spec key (read-file-name "Spec file: ")))
@@ -265,7 +265,7 @@
 
 ;;;###autoload
 (defun occ-insinuate (&optional key)
-  (interactive (list (completing-read "key for spec: " (occ-collector-keys))))
+  (interactive (list (occ-collector-read-key "key for spec: ")))
   (occ-debug "occ-insinuate: begin")
   (prog1
       (occ-initialize key)

@@ -665,13 +665,16 @@ pointing to it."
     (occ-collector-get key)))
 
 
-(cl-defmethod occ-do-rest-tsks ((collection null))
+(cl-defmethod occ-do-reset-tsks ((collection null))
+  ;; (occ-message "null")
   nil)
 
-(cl-defmethod occ-do-rest-tsks ((collection occ-tree-collection))
+(cl-defmethod occ-do-reset-tsks ((collection occ-tree-collection))
+  ;; (occ-message "tree %s" (occ-tree-collection-list collection))
+  (setf (occ-list-collection-list collection) nil)
   (setf (occ-tree-collection-tree collection) nil))
 
-(cl-defmethod occ-do-rest-tsks ((collection occ-list-collection))
+(cl-defmethod occ-do-reset-tsks ((collection occ-list-collection))
   (setf (occ-list-collection-list collection) nil))
 
 ;; To deprecate
