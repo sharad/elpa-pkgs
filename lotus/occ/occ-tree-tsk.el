@@ -57,30 +57,26 @@
 
 
 
-(defun occ-tree-trim (limit sub-tree)
-  (let ((count (length sub-tree)))
-    ;; (occ-message "occ-tree-trim limit %d count %d" limit count)
-    ;; (occ-message "occ-tree-trim (mapcar #'occ-tsk-sibling-count sub-tree) %s" (mapcar #'occ-tsk-sibling-count sub-tree))
+(defun occ-tree-trim (limit subtree)
+  (let ((count (length subtree)))
     (let ((limit (- limit count)))
-      (when sub-tree
-        (let ((sum (apply #'+ count (mapcar #'occ-tsk-sibling-count sub-tree))))
-          ;; (occ-message "occ-tree-trim sum %d" sum)
-          (dolist (e sub-tree)
-            ;; (occ-message "dolist")
-            (let* ((limit (/ (* limit (1+ (occ-tsk-sibling-count e))) sum))
-                   (sub-tree (occ-tree-trim limit
-                                            (occ-obj-get-property e 'subtree))))
-              (occ-obj-set-property e 'subtree
-                                    sub-tree)
-              (occ-obj-set-property e 'sibling-count
-                                    (if sub-tree
+      (when subtree
+        (let ((sum (apply #'+ count (mapcar #'occ-tsk-sibling-count subtree))))
+          (dolist (entry subtree)
+            (let* ((limit (/ (* limit (1+ (occ-tsk-sibling-count entry))) sum))
+                   (subtree (occ-tree-trim limit
+                                            (occ-obj-get-property entry 'subtree))))
+              (occ-obj-set-property entry 'subtree
+                                    subtree)
+              (occ-obj-set-property entry 'sibling-count
+                                    (if subtree
                                         (apply #'+
-                                               (length sub-tree)
-                                               (mapcar #'occ-tsk-sibling-count sub-tree))
+                                               (length subtree)
+                                               (mapcar #'occ-tsk-sibling-count subtree))
                                       0)))))))
     (if (> count limit)
-        (nthcdr (- count limit) sub-tree)
-      sub-tree)))
+        (nthcdr (- count limit) subtree)
+      subtree)))
 
 ;; (cl-defmethod occ-trim ((limit number) (tsk occ-tree-tsk))
 ;;   ())
@@ -149,7 +145,7 @@
                                         subtree-level))
                 (cl-assert (numberp subtree-level))
                 (when entry
-                  (let* ((sub-tree (unless (and depth
+                  (let* ((subtree (unless (and depth
                                                 (not (zerop depth))
                                                 (> subtree-level depth))
                                      (let ((buffer-local-list (occ-org-map-subheading #'(lambda ()
@@ -178,15 +174,15 @@
                                                                                                          0))))))))))
                                        (append buffer-local-list
                                                subtree-file-list)))))
-                    (when sub-tree (occ-obj-set-property entry 'subtree
-                                                         sub-tree))
+                    (when subtree (occ-obj-set-property entry 'subtree
+                                                         subtree))
                     (occ-obj-set-property entry 'sibling-count
-                                          (if sub-tree
+                                          (if subtree
                                               (apply #'+
-                                                     (length sub-tree)
-                                                     (mapcar #'occ-tsk-sibling-count sub-tree))
-                                              ;; (reduce #'+ sub-tree
-                                              ;;         :initial-value (length sub-tree)
+                                                     (length subtree)
+                                                     (mapcar #'occ-tsk-sibling-count subtree))
+                                              ;; (reduce #'+ subtree
+                                              ;;         :initial-value (length subtree)
                                               ;;         :key #'occ-tsk-sibling-count)
                                             0))
                     entry))))))))))
@@ -205,8 +201,6 @@
         (builder (occ-obj-drived-tsk-builder collection)))
     (let ((tree (remove nil (mapcar builder
                                     (occ-tree-collection-roots collection)))))
-      ;; (if (zerop limit)
-      ;;   (occ-tree-trim limit tree))
       (occ-tree-trim limit tree))))
 
 ;;; occ-tree-tsk.el ends here
