@@ -459,7 +459,8 @@
                                        :ap-transf        ap-transf
                                        :auto-select-if-only auto-select-if-only
                                        :prompt           prompt)
-      (occ-assert (first cand-sources))
+      ;; (occ-assert (first cand-sources)) -- can happen when no contxtual match found
+
       ;; Else all source will be passed to helm to be shown.
       (let* ((in-occ-helm t)
              (timer (run-with-timer 0.08 nil #'(lambda ()

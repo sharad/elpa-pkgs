@@ -97,7 +97,7 @@
 
 
 (cl-defstruct occ-obj
-  name)
+  (name "occ-obj"))
 (cl-defstruct (occ-obj-tsk (:include occ-obj))
   "Object to hold tsk ctx obj-ctx-tsk")
 (cl-defstruct (occ-obj-ctx-tsk (:include occ-obj-tsk))
@@ -116,23 +116,23 @@
   stat-plist)
 (cl-defstruct (occ-obj-collection (:include occ-obj-ctx))
   "Will hold collection"
-  desc
+  (desc "occ-obj-collection")
   spec
-  roots
-  files
-  depth
-  limit
+  (roots nil)
+  (files nil)
+  (depth 0)
+  (limit 0)
   ;; TODO: implement it
-  file-lcp)
+  (file-lcp nil))
 (cl-defstruct (occ-collection (:include occ-obj-collection))
   "occ-collection"
   )
 (cl-defstruct (occ-list-collection (:include occ-collection))
   "occ-list-collection"
-  list)
+  (list nil))
 (cl-defstruct (occ-tree-collection (:include occ-list-collection))
   "occ-tree-collection"
-  tree)
+  (tree nil))
 
 
 (cl-defmethod occ-collection-dyn ()

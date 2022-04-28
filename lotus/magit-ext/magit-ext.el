@@ -47,8 +47,8 @@
                                        nil nil it 'confirm)
              (magit-push-arguments))
      (user-error "No branch is checked out")))
-  (and (magit-commit-amend-noedit)
-       (magit-push-current-force target args)))
+  (progn (magit-commit-amend-noedit)
+         (magit-push-current-force target args)))
 
 (provide 'magit-ext)
 ;;; magit-ext.el ends here

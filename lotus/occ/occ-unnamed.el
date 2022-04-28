@@ -36,7 +36,7 @@
 
 
 (defvar +occ-unnamed-collection-depth+ 0)
-(defvar +occ-unnamed-collection-limit+ 10)
+(defvar +occ-unnamed-collection-limit+ 3)
 (defvar *occ-unassociate-ctx-start-time*         nil)
 (defvar *occ-swapen-unnamed-threashold-interval* (* 60 2)) ;2 mins
 
