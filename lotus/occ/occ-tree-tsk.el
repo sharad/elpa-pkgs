@@ -67,10 +67,17 @@
           ;; (occ-message "occ-tree-trim sum %d" sum)
           (dolist (e sub-tree)
             ;; (occ-message "dolist")
-            (let ((limit (/ (* limit (1+ (occ-tsk-sibling-count e))) sum)))
+            (let* ((limit (/ (* limit (1+ (occ-tsk-sibling-count e))) sum))
+                   (sub-tree (occ-tree-trim limit
+                                            (occ-obj-get-property e 'subtree))))
               (occ-obj-set-property e 'subtree
-                                    (occ-tree-trim limit
-                                                   (occ-obj-get-property e 'subtree))))))))
+                                    sub-tree)
+              (occ-obj-set-property e 'sibling-count
+                                    (if sub-tree
+                                        (apply #'+
+                                               (length sub-tree)
+                                               (mapcar #'occ-tsk-sibling-count sub-tree))
+                                      0)))))))
     (if (> count limit)
         (nthcdr (- count limit) sub-tree)
       sub-tree)))
@@ -78,7 +85,7 @@
 ;; (cl-defmethod occ-trim ((limit number) (tsk occ-tree-tsk))
 ;;   ())
 
-;; (defun occ-tree-depth-trim (fn depth tree))  
+;; (defun occ-tree-depth-trim (fn depth tree))
 
 
 (defun occ-org-map-subheading (fun)
@@ -175,9 +182,12 @@
                                                          sub-tree))
                     (occ-obj-set-property entry 'sibling-count
                                           (if sub-tree
-                                              (reduce #'+ sub-tree
-                                                      :initial-value (length sub-tree)
-                                                      :key #'occ-tsk-sibling-count)
+                                              (apply #'+
+                                                     (length sub-tree)
+                                                     (mapcar #'occ-tsk-sibling-count sub-tree))
+                                              ;; (reduce #'+ sub-tree
+                                              ;;         :initial-value (length sub-tree)
+                                              ;;         :key #'occ-tsk-sibling-count)
                                             0))
                     entry))))))))))
 
