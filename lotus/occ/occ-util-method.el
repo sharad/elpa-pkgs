@@ -125,6 +125,8 @@ for testing given ap-normal on selected tsk."
 
   (let ((filters          (occ-list-filters))
         (builder          #'occ-obj-build-ctsk-with)
+        (ap-normal        occ-list-select-keys)
+        (ap-transf        occ-list-select-ap-transf-keys)
         (return-transform t)
         (timeout          occ-idle-timeout))
       (occ-debug "occ-do-run-list-debug-select: ap-normal: %s" ap-normal)

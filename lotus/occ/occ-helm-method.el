@@ -459,22 +459,22 @@
                                        :ap-transf        ap-transf
                                        :auto-select-if-only auto-select-if-only
                                        :prompt           prompt)
+      (occ-assert (first cand-sources))
       ;; Else all source will be passed to helm to be shown.
-      (unwind-protect
-          (let* ((in-occ-helm t)
-                 (timer (run-with-timer 0.08 nil #'(lambda ()
-                                                     (if in-occ-helm
-                                                         (helm-refresh)
-                                                       (occ-debug "Running occ-list-select-internal helm is gone"))))))
-            (occ-assert (first cand-sources))
+      (let* ((in-occ-helm t)
+             (timer (run-with-timer 0.08 nil #'(lambda ()
+                                                 (if in-occ-helm
+                                                     (helm-refresh)
+                                                   (occ-debug "Running occ-list-select-internal helm is gone"))))))
+        (unwind-protect
             (when (occ-obj-obj (first cand-sources))
               (helm :sources (mapcar #'occ-obj-obj cand-sources)
                     :buffer  (occ-helm-select-buffer)
-                    :resume  'noresume)))
-        (progn
-          (setq in-occ-helm nil)
-          (cancel-timer timer))))))
-      
+                    :resume  'noresume))
+          (progn
+            (setq in-occ-helm nil)
+            (cancel-timer timer)))))))
+        
 (cl-defmethod occ-obj-helm-act ((obj         occ-ctx)
                                 (collections list)
                                 &key
