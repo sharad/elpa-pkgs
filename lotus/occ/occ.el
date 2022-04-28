@@ -47,8 +47,10 @@
       (setq *occ-collector-default-key* key)
     *occ-collector-default-key*))
 (defun occ-collector-read-key (&optional prompt keys)
-  (intern (completing-read (or prompt "key for spec: ")
-                           (or keys (occ-collector-keys)))))
+  (let ((symstr (completing-read (or prompt "key for spec: ")
+                                 (or keys (occ-collector-keys)))))
+    ;; (intern symstr)
+    symstr))
 (defun occ-collector-get (key)
   (alist-get key *occ-collector*))
 (defun occ-collector-get-create (key desc spec files &optional depth limit)
@@ -74,8 +76,8 @@
     (when collection
       (occ-obj-collection-files collection))))
 (defun occ-collector-keys ()
-  (append (list *occ-collector-default-key*)
-          (mapcar #'first *occ-collector*)))
+  (remove-duplicates (append (list *occ-collector-default-key*)
+                             (mapcar #'first *occ-collector*))))
 
 
 (cl-defmethod occ-obj-collection ((obj symbol))

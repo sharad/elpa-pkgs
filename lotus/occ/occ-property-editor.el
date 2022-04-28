@@ -52,6 +52,7 @@
 (require 'occ-obj-method)
 (require 'occ-obj-utils)
 (require 'occ-prop)
+(require 'occ-assert)
 
 
 (cl-defgeneric occ-do-select-propetry (obj
@@ -90,7 +91,7 @@
                        (key-val-collection (append key-val-collection
                                                    (mapcar #'(lambda (fk) (cons (symbol-name fk) fk))
                                                            fixed-keys))))
-                  (cl-assert key-val-collection)
+                  (occ-assert key-val-collection)
                   (if key-val-collection
                       (let* ((key-sel (occ-completing-read prompt
                                                            key-val-collection
@@ -252,7 +253,7 @@
                   prop)
         ;; TODO: handle (occ-do-select-propetry obj ctx) return NIL
         ;; No prop or NIL value can happen in CTX like *scratch*
-        ;; (cl-assert prop)
+        ;; (occ-assert prop)
         (let ((retval (occ-do-op-prop-edit obj
                                            prop)))
           (when retval

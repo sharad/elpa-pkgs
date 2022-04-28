@@ -50,8 +50,6 @@
   #'(lambda (&optional file)
       (occ-list-tsk-build file
                           collection)))
-    
-
 
 (cl-defmethod occ-obj-build-tsks ((collection occ-list-collection))
   (let ((depth (occ-obj-collection-depth collection))

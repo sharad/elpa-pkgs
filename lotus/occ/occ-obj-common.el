@@ -28,6 +28,7 @@
 
 (require 'occ-obj)
 (require 'occ-prop-intf)
+(require 'occ-assert)
 
 
 ;; TODO org-base-buffer
@@ -45,7 +46,7 @@
 
 (defmacro occ-plist-set (plist prop value)
   `(let ((key (sym2key ,prop)))
-     (cl-assert (evenp (length ,plist)))
+     (occ-assert (evenp (length ,plist)))
      (if key
          (plist-put ,plist ;TODO ??? (occ-cl-obj-plist-value obj)
                     key ,value)

@@ -32,6 +32,7 @@
 
 (eval-when-compile
   (require 'occ-macros))
+(require 'occ-assert)
 
 
 (defvar +occ-unnamed-collection-depth+ 0)
@@ -140,8 +141,8 @@
          (unnamed-ctxual-tsk (when unnamed-tsk
                                (occ-obj-build-ctxual-tsk-with unnamed-tsk
                                                               ctx))))
-    (assert unnamed-tsk)
-    (assert unnamed-ctxual-tsk)
+    (occ-assert unnamed-tsk)
+    (occ-assert unnamed-ctxual-tsk)
     unnamed-ctxual-tsk))
 
 (cl-defmethod occ-do-maybe-create-clockedin-unnamed-ctxual-tsk ((ctx occ-ctx))
@@ -156,8 +157,8 @@
                                      (occ-ctxual-tsk-tsk unnamed-ctxual-tsk)))
                (unnamed-marker     (when unnamed-tsk
                                      (occ-tsk-marker unnamed-tsk))))
-          (assert unnamed-ctxual-tsk)
-          (assert unnamed-tsk)
+          (occ-assert unnamed-ctxual-tsk)
+          (occ-assert unnamed-tsk)
           (if unnamed-marker
               (prog1
                   (occ-do-clock-in unnamed-ctxual-tsk)

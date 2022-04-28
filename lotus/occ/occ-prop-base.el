@@ -77,6 +77,7 @@
 (require 'occ-rank)
 (require 'occ-prop-intf)
 (require 'occ-prop-org)
+(require 'occ-assert)
 
 
 (require 'ert)
@@ -248,7 +249,7 @@ method provided."
 (cl-defmethod occ-obj-rereadprop-value ((prop symbol)
                                         value)
   "Read org string property PROP to occ representation."
-  (cl-assert (not (consp value)))
+  (occ-assert (not (consp value)))
   (if (occ-obj-list-p prop)
       (let* ((values (and value (split-string value))))
         (mapcar #'(lambda (v)

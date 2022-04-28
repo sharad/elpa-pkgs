@@ -32,6 +32,7 @@
 (require 'occ-helm-actions-config)
 (require 'occ-prop)
 (require 'occ-rank)
+(require 'occ-assert)
 
 
 (cl-defmethod occ-obj-class-name (obj)
@@ -179,13 +180,13 @@
   (let ((fun (occ-callable-fun callable)))
     (let ((callables (funcall fun obj
                               :param-only nil)))
-      ;; (cl-assert callables)
+      ;; (occ-assert callables)
       (dolist (x callables)
         (occ-debug "occ-obj-callables(callable occ-callable-generator): generated %s" (occ-callable-desc x)))
-      (cl-assert (cl-every #'occ-callable-p
-                           callables))
-      (cl-assert (cl-notany #'occ-callable-generator-p
+      (occ-assert (cl-every #'occ-callable-p
                             callables))
+      (occ-assert (cl-notany #'occ-callable-generator-p
+                             callables))
       callables)))
 
 ;; methods
@@ -201,8 +202,8 @@
                                              (obj occ-obj))
   "Return list of ((NAME . FUN) ...)"
   (let ((callables-list (occ-obj-callables callables obj)))
-    (cl-assert (cl-every #'occ-callable-normal-p callables-list))
-    (cl-assert (cl-notany #'occ-callable-generator-p callables-list))
+    (occ-assert (cl-every #'occ-callable-normal-p callables-list))
+    (occ-assert (cl-notany #'occ-callable-generator-p callables-list))
     (mapcar #'occ-obj-callable-helm-action
             callables-list)))
 
@@ -280,8 +281,8 @@
                      tree-keybranch
                      keywords-list))
         (when tree-keybranch
-          (cl-assert callables)
-          (cl-assert keywords-list))
+          (occ-assert callables)
+          (occ-assert keywords-list))
         (setf (occ-ap-normal-callables ap-obj) callables))))
   (occ-ap-normal-callables ap-obj))
 
@@ -294,7 +295,7 @@
                          (let* ((candidate-obj (occ-obj-obj candidate))
                                 (callables (occ-obj-ap-callables ap-obj
                                                                  (occ-obj-obj candidate-obj))))
-                           (cl-assert callables)
+                           (occ-assert callables)
                            (occ-debug "occ-obj-ap-transform: lambda: transform: callables = %s" callables)
                            (occ-obj-make-ap-normal (cons :callables callables))))))
       (occ-debug "occ-obj-ap-transform: setting transform tp %s" transform)
@@ -322,26 +323,26 @@
 
 (cl-defmethod occ-obj-ap-helm-transformation ((ap-obj occ-ap-transf))
   (let ((transform (occ-obj-ap-transform ap-obj)))
-    (cl-assert transform)
+    (occ-assert transform)
     #'(lambda (action
                candidate)
         (occ-debug "occ-obj-ap-helm-transformation: lambda: transform = %s" transform)
-        (cl-assert transform)
+        (occ-assert transform)
         (let* ((candidate-obj (occ-obj-obj candidate))
                (ap-normal-obj (funcall transform
                                        action
                                        candidate-obj)))
-          (cl-assert (occ-ap-normal-p ap-normal-obj))
+          (occ-assert (occ-ap-normal-p ap-normal-obj))
           (occ-debug "helm-transformation: got ap-normal-obj = %s" ap-normal-obj)
           (let ((helm-actions (occ-obj-ap-helm-actions ap-normal-obj
                                                        candidate-obj)))
-            (cl-assert helm-actions)
+            (occ-assert helm-actions)
             (dolist (a helm-actions)
               (occ-debug "occ-obj-ap-helm-transformation: helm-action: %s" (prin1-to-string a)))
             (when helm-actions
-              (cl-assert (cl-every #'(lambda (x)
-                                       (functionp (rest x)))
-                                   helm-actions)))
+              (occ-assert (cl-every #'(lambda (x)
+                                        (functionp (rest x)))
+                                    helm-actions)))
             (occ-debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
             helm-actions)))))
 

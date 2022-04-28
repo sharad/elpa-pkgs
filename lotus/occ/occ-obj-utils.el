@@ -28,6 +28,7 @@
 
 
 (require 'occ-obj)
+(require 'occ-assert)
 
 
 ;; method
@@ -48,7 +49,7 @@
                                                          ;; #'(lambda (c)
                                                          ;;     (occ-obj-build-return-lambda c occ-return-evaluate))
                                                          callables)))) ;;BUG to fix
-    (cl-assert callables)
+    (occ-assert callables)
     (occ-obj-build-ap-normal (cons :callables
                                    new-callables))))
 
@@ -58,7 +59,7 @@
   (let ((new-transform #'(lambda (action
                                   candidate)
                            (let ((transform (occ-obj-ap-transform ap-transf-obj)))
-                             (cl-assert transform)
+                             (occ-assert transform)
                              (let* ((candidate-obj (occ-obj-return-get-value candidate))
                                     (ap-normal-obj (funcall transform
                                                             action candidate-obj)))

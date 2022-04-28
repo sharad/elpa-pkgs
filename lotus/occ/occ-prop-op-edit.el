@@ -29,6 +29,7 @@
 
 (require 'occ-prop-base)
 (require 'occ-property-editor)
+(require 'occ-assert)
 
 
 (cl-defmethod occ-obj-operation ((obj       marker)
@@ -164,7 +165,7 @@
 ;; TODO: Add log not on property editing.
 (cl-defmethod occ-obj-select-operation ((obj  occ-obj-tsk)
                                         (prop symbol))
-  (cl-assert prop)
+  (occ-assert prop)
   (if (occ-obj-list-p prop)
       ;; TODO: where are generated actions?? (occ-obj-operations-for-prop 'occ-obj-tsk 'root)
       (let* ((operations (occ-obj-operations-for-prop obj
@@ -175,9 +176,9 @@
              (actions    (mapcar #'(lambda (op)
                                      (cons (symbol-name op) op))
                                  operations)))
-        (cl-assert actions)
+        (occ-assert actions)
         (let ((action  (completing-read (format "%s action: " prop) actions)))
-          (cl-assert action)
+          (occ-assert action)
           (rest (assoc action
                        actions))))
     'put))
@@ -198,13 +199,13 @@
   ;; TODO: change this to use OCC VALUE like with corresponding changes to occ-obj-readprop-from-user
   "Accept occ compatible VALUES"
   (occ-debug "occ-do-op-prop-edit: prop: %s, value: %s" prop value)
-  (cl-assert prop)
+  (occ-assert prop)
   (let ((operation  (or operation
                         (occ-obj-select-operation obj prop)))
         (prop-value (or value
                         (occ-obj-readprop-from-user obj
                                                     prop))))
-    (cl-assert operation)
+    (occ-assert operation)
     (occ-debug "(occ-do-op-prop-edit occ-obj-tsk): operation %s prop %s" operation prop)
     (occ-obj-call-operation obj
                             operation

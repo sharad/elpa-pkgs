@@ -1,8 +1,8 @@
-;;; occ-tsk.el --- tsk                               -*- lexical-binding: t; -*-
+;;; occ-assert.el --- occ assert                     -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2019  s
+;; Copyright (C) 2022  sharad
 
-;; Author: s <spratap@merunetworks.com>
+;; Author: sharad <spratap@merunetworks.com>
 ;; Keywords: convenience
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -16,21 +16,20 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
-;;
+;; 
 
 ;;; Code:
 
-(provide 'occ-tsk)
+(provide 'occ-assert)
 
 
-(cl-defgeneric occ-obj-build-tsks (collection)
-  (occ-error "occ-obj-build-tsks"))
-
-(require 'occ-list-tsk)
-(require 'occ-tree-tsk)
+(require 'cl-macs)
 
-;;; occ-tsk.el ends here
+
+(defalias 'occ-assert #'cl-assert)
+
+;;; occ-assert.el ends here

@@ -29,6 +29,7 @@
 
 (require 'occ-prop-base)
 (require 'occ-prop-op-checkout)
+(require 'occ-assert)
 
 
 (cl-defmethod occ-obj-gen-checkout-prompt ((obj  occ-obj-tsk)
@@ -97,7 +98,7 @@ only argument required for some other further processing"
                                                                  prop
                                                                  :param-only param-only))
                                props)))
-    (cl-assert props)
+    (occ-assert props)
     (remove nil
             checkout-ops)))
 

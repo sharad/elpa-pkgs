@@ -29,6 +29,7 @@
 
 (eval-when-compile
   (require 'helm-source))
+(require 'occ-assert)
 
 
 (defvar occ-helm-map
@@ -200,7 +201,7 @@
                                                     auto-select-if-only
                                                     timeout
                                                     prompt)
-  ;; (cl-assert candidates)
+  ;; (occ-assert candidates)
   (let* ((timeout               (or timeout occ-idle-timeout))
          (candidates-unfiltered (occ-obj-list-with obj collection :builder builder))
          (unfiltered-count      (length candidates-unfiltered))
@@ -238,7 +239,7 @@
                                                                                                                candidates-new-unfiltered)))
                                                                  (setq filtered-new-count (length candidates-new-filtered))
                                                                  candidates-new-filtered))))
-                                     (cl-assert candidates-visible)
+                                     (occ-assert candidates-visible)
                                      (mapcar #'occ-obj-candidate
                                              candidates-visible))))
                (filter-manage-fn  #'(lambda ()
@@ -437,40 +438,43 @@
                                             auto-select-if-only
                                             timeout
                                             prompt)
-    (let ((in-occ-helm t))
-         (progn
-           (run-with-timer 0.08 nil #'(lambda ()
-                                        (if in-occ-helm
-                                            (ignore-errors (helm-refresh))
-                                          (occ-debug "Running occ-list-select-internal helm is gone"))))
-           ;; :keymap occ-helm-map
-           ;; (occ-debug "occ-obj-helm-act-on-multiple: ap-normal: %s" ap-normal)
-           (let ((cand-sources (occ-obj-helm-build-sources obj
-                                                           collections
-                                                           :filters          filters
-                                                           :builder          builder
-                                                           :ap-normal        ap-normal
-                                                           :ap-transf        ap-transf
-                                                           :auto-select-if-only auto-select-if-only
-                                                           :prompt           prompt)))
-             ;; (occ-debug "Hello")
-             (if (occ-hsrc-candidate-p (first cand-sources))
-                 (occ-obj-helm-act-on-candidate obj
-                                                (first cand-sources)
-                                                :filters          filters
-                                                :builder          builder
-                                                :ap-normal        ap-normal
-                                                :ap-transf        ap-transf
-                                                :auto-select-if-only auto-select-if-only
-                                                :prompt           prompt)
-               (when (occ-obj-obj (first cand-sources))
-                 (prog1
-                     (helm :sources (mapcar #'occ-obj-obj cand-sources)
-                           :buffer  (occ-helm-select-buffer)
-                           :resume  'noresume)
-                   ;; (occ-debug "Hi")
-                   (setq in-occ-helm nil))))))))
-
+  (let ((cand-sources (occ-obj-helm-build-sources obj
+                                                  collections
+                                                  :filters          filters
+                                                  :builder          builder
+                                                  :ap-normal        ap-normal
+                                                  :ap-transf        ap-transf
+                                                  :auto-select-if-only auto-select-if-only
+                                                  :prompt           prompt)))
+    
+    (if (occ-hsrc-candidate-p (first cand-sources))
+        ;; Mean if first cand-sources has only one element then it will pack
+        ;; that element using `occ-build-hsrc-source' to be acted by default
+        ;; action.
+        (occ-obj-helm-act-on-candidate obj
+                                       (first cand-sources)
+                                       :filters          filters
+                                       :builder          builder
+                                       :ap-normal        ap-normal
+                                       :ap-transf        ap-transf
+                                       :auto-select-if-only auto-select-if-only
+                                       :prompt           prompt)
+      ;; Else all source will be passed to helm to be shown.
+      (unwind-protect
+          (let* ((in-occ-helm t)
+                 (timer (run-with-timer 0.08 nil #'(lambda ()
+                                                     (if in-occ-helm
+                                                         (helm-refresh)
+                                                       (occ-debug "Running occ-list-select-internal helm is gone"))))))
+            (occ-assert (first cand-sources))
+            (when (occ-obj-obj (first cand-sources))
+              (helm :sources (mapcar #'occ-obj-obj cand-sources)
+                    :buffer  (occ-helm-select-buffer)
+                    :resume  'noresume)))
+        (progn
+          (setq in-occ-helm nil)
+          (cancel-timer timer))))))
+      
 (cl-defmethod occ-obj-helm-act ((obj         occ-ctx)
                                 (collections list)
                                 &key

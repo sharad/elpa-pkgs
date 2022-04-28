@@ -30,6 +30,7 @@
 (require 'occ-util-common)
 (require 'occ-tree)
 (require 'occ-obj-ctor)
+(require 'occ-assert)
 
 
 (defun occ-tree-tsk-node-p (tx)
@@ -58,25 +59,29 @@
 
 
 (defun occ-tree-trim (limit subtree)
-  (let ((count (length subtree)))
-    (let ((limit (- limit count)))
-      (when subtree
-        (let ((sum (apply #'+ count (mapcar #'occ-tsk-sibling-count subtree))))
-          (dolist (entry subtree)
-            (let* ((limit (/ (* limit (1+ (occ-tsk-sibling-count entry))) sum))
-                   (subtree (occ-tree-trim limit
-                                            (occ-obj-get-property entry 'subtree))))
-              (occ-obj-set-property entry 'subtree
-                                    subtree)
-              (occ-obj-set-property entry 'sibling-count
-                                    (if subtree
-                                        (apply #'+
-                                               (length subtree)
-                                               (mapcar #'occ-tsk-sibling-count subtree))
-                                      0)))))))
-    (if (> count limit)
-        (nthcdr (- count limit) subtree)
-      subtree)))
+  (if (> limit 0)
+      (let ((count (length subtree)))
+        (occ-message "occ-tree-trim: limit %s, count %d" limit count)
+        (let ((limit (- limit count)))
+          (when subtree
+            (let ((sum (apply #'+ count (mapcar #'occ-tsk-sibling-count subtree))))
+              (dolist (entry subtree)
+                (let* ((limit (/ (* limit (1+ (occ-tsk-sibling-count entry))) sum))
+                       (subtree (occ-tree-trim limit
+                                                (occ-obj-get-property entry 'subtree))))
+                  (occ-obj-set-property entry 'subtree
+                                        subtree)
+                  (occ-obj-set-property entry 'sibling-count
+                                        (if subtree
+                                            (apply #'+
+                                                   (length subtree)
+                                                   (mapcar #'occ-tsk-sibling-count subtree))
+                                          0)))))))
+        (if (> count limit)
+            (nthcdr (- count limit) subtree)
+          subtree))
+    subtree))
+  
 
 ;; (cl-defmethod occ-trim ((limit number) (tsk occ-tree-tsk))
 ;;   ())
@@ -143,7 +148,7 @@
                 (when (numberp subtree-level)
                   (occ-obj-set-property entry 'subtree-level
                                         subtree-level))
-                (cl-assert (numberp subtree-level))
+                (occ-assert (numberp subtree-level))
                 (when entry
                   (let* ((subtree (unless (and depth
                                                 (not (zerop depth))
@@ -154,14 +159,14 @@
                                                                                                               subtree-level))))
                                            (subtree-file-list (let ((subtree-file-prop (occ-obj-get-property entry :SUBTREEFILE)))
                                                                 (when subtree-file-prop
-                                                                  (let* ((file         (if file file (buffer-file-name))
+                                                                  (let* ((file         (if file file (buffer-file-name)))
                                                                          (subtree-file (if (and subtree-file-prop
                                                                                                 (file-relative-name subtree-file-prop)
                                                                                                 (expand-file-name subtree-file-prop
                                                                                                                   (if file
                                                                                                                       (file-name-directory file)
                                                                                                                     default-directory))
-                                                                                                subtree-file)))))
+                                                                                                subtree-file))))
                                                                     (if (and subtree-file
                                                                              (file-readable-p subtree-file))
                                                                         (list (occ-tree-tsk-build subtree-file

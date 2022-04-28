@@ -70,6 +70,7 @@
 ;; (require 'occ-prop)
 (require 'occ-rank)
 (require 'occ-property-methods)
+(require 'occ-assert)
 
 
 (defvar *occ-collection-change-hook* nil
@@ -129,9 +130,9 @@
                                                             (occ-obj-prop-from-org (occ-util-keyword2sym (first c))
                                                                                    (nth 1 c))))
                                                   plist))))
-    (cl-assert (evenp (length     plist)))
+    (occ-assert (evenp (length     plist)))
     (occ-debug "occ-tsk-plist-from-org: plist %s" plist)
-    (cl-assert (evenp (length ret-plist)))
+    (occ-assert (evenp (length ret-plist)))
     ret-plist))
 
 (occ-testing
@@ -196,7 +197,7 @@
 
                ;; NOTE also these two are mixed in one list only
                (tsk-plist    (nth 1 (org-element-at-point))))
-           (cl-assert (evenp (length tsk-plist)))
+           (occ-assert (evenp (length tsk-plist)))
            (when heading
              (setf tsk
                    (funcall builder
@@ -566,7 +567,7 @@
 
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj occ-ap-normal))
   (let ((callables (occ-ap-normal-callables ap-obj)))
-    (cl-assert callables t "ap-obj should have callable")
+    (occ-assert callables t "ap-obj should have callable")
     (make-occ-ap-transf :callables (occ-obj-callables callables nil))))
 
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj occ-ap-transf))
@@ -673,16 +674,16 @@
 (defvar occ-return-false-label      :occ-false       "should not be null")
 (defvar occ-return-evaluate         :occ-eval        "should not be null")
 
-(cl-assert occ-return-select-label)
-(cl-assert occ-return-quit-label)
-(cl-assert occ-return-nocndidate-label)
-(cl-assert occ-return-true-label)
-(cl-assert occ-return-false-label)
+(occ-assert occ-return-select-label)
+(occ-assert occ-return-quit-label)
+(occ-assert occ-return-nocndidate-label)
+(occ-assert occ-return-true-label)
+(occ-assert occ-return-false-label)
 
 (defvar occ-return-select-function #'identity)
 (defvar occ-return-select-name     "Select")
-(cl-assert occ-return-select-function)
-(cl-assert occ-return-select-name)
+(occ-assert occ-return-select-function)
+(occ-assert occ-return-select-name)
 
 (fmakunbound 'occ-obj-build-return-lambda)
 (cl-defmethod occ-obj-build-return-lambda ((callable occ-callable-normal)
