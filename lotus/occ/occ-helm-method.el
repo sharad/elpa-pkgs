@@ -441,7 +441,7 @@
          (progn
            (run-with-timer 0.08 nil #'(lambda ()
                                         (if in-occ-helm
-                                            (helm-refresh)
+                                            (ignore-errors (helm-refresh))
                                           (occ-debug "Running occ-list-select-internal helm is gone"))))
            ;; :keymap occ-helm-map
            ;; (occ-debug "occ-obj-helm-act-on-multiple: ap-normal: %s" ap-normal)

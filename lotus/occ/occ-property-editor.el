@@ -436,7 +436,7 @@
                                                     timeout)
   "add-ctx-to-org-heading"
   ;; TODO: make helm conditional when it is used than only it should be handled.
-  (interactive '((occ-obj-make-ctx-at-point) occ-idle-timeout))
+  ;; (interactive '((occ-obj-make-ctx-at-point) occ-idle-timeout))
   (occ-debug "occ-do-safe-properties-window-editor((obj occ-ctx)): begin")
   (occ-debug "occ-do-safe-properties-window-editor((obj[%s] occ-ctx)): begin"
                (occ-obj-Format obj))

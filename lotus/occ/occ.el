@@ -109,7 +109,7 @@
   (interactive (list (occ-collector-read-key "key for spec: ")))
   (setf (occ-collection-roots (occ-collector-get key)) nil))
 
-(cl-defmethod occ-reset-collection-tsks (key)
+(defun occ-reset-collection-tsks (key)
   (interactive (list (occ-collector-read-key "key for spec: ")))
   (occ-do-reset-tsks (occ-collector-get key)))
 
