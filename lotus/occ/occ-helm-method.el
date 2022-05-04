@@ -61,6 +61,9 @@
 ;; add occ-child-clock-in in action
 
 
+(defvar occ-helm-before-init-hook nil)
+(defvar occ-helm-after-init-hook nil)
+(defun occ-helm-cleanup ())
 ;; checkout (defclass helm-source-ffiles (helm-source-sync) - in helm-files.el
 ;; C-h C-f helm-source-ffiles
 ;; C-h C-f helm-source
@@ -79,10 +82,9 @@
                                          #'helm-ff-make-bookmark-record)
                 (require 'helm-external)))
    (candidates :initform 'helm-find-files-get-candidates)
-   (update :initform (lambda ()
-                       (remhash helm-ff-default-directory
-                                helm-ff--list-directory-cache)))
-   (match-on-real :initform t)
+   (update :initform (lambda ()))
+                       
+   (match-on-real :initform nil)
    (filtered-candidate-transformer
     :initform '(helm-ff-fct
                 helm-ff-maybe-show-thumbnails
@@ -94,19 +96,19 @@
    (persistent-action-if :initform 'helm-find-files-persistent-action-if)
    (persistent-help :initform "Hit1 Expand Candidate, Hit2 or (C-u) Find file")
    (help-message :initform 'helm-ff-help-message)
-   (mode-line :initform (list "File(s)" helm-mode-line-string))
+   (mode-line :initform (list "Occ" helm-mode-line-string))
    (volatile :initform t)
-   (cleanup :initform 'helm-find-files-cleanup)
+   (cleanup :initform 'occ-helm-cleanup)
    (migemo :initform t)
    (nohighlight :initform t)
    (keymap :initform 'occ-helm-map)
-   (candidate-number-limit :initform 'helm-ff-candidate-number-limit)
-   (action-transformer
-    :initform 'helm-find-files-action-transformer)
-   (action :initform 'helm-find-files-actions)
-   (before-init-hook :initform 'helm-find-files-before-init-hook)
-   (after-init-hook :initform 'helm-find-files-after-init-hook)
-   (group :initform 'helm-files)))
+   ;; (candidate-number-limit :initform 'helm-ff-candidate-number-limit)
+   ;; (action-transformer
+   ;;  :initform 'helm-find-files-action-transformer)
+   ;; (action :initform 'helm-find-files-actions)
+   (before-init-hook :initform 'occ-helm-before-init-hook)
+   (after-init-hook :initform 'occ-helm-after-init-hook)
+   (group :initform 'occ-helm)))
 
 ;; (fmakunbound 'occ-helm-null-candidate)
 
