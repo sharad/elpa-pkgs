@@ -83,7 +83,6 @@
                 (require 'helm-external)))
    (candidates :initform 'helm-find-files-get-candidates)
    (update :initform (lambda ()))
-                       
    (match-on-real :initform nil)
    (filtered-candidate-transformer
     :initform '(helm-ff-fct
