@@ -127,7 +127,7 @@
       (with-current-buffer (find-buffer-visiting file)
         (save-excursion
           (save-restriction
-            (incf totalmins (org-clock-sum-today))))))
+            (cl-incf totalmins (org-clock-sum-today))))))
     totalmins))
 
 (defun org-clock-clocked-secs-today ()
@@ -264,7 +264,7 @@ If not, show simply the clocked time like 01:50."
 (defun org-clock-monitor-files-add-files (&rest monitor-files)
   ;; (interactive "Dadd org clock monitor files: ")
   (dolist (f monitor-files)
-    (pushnew f org-clock-monitor-files)))
+    (cl-pushnew f org-clock-monitor-files)))
 
 ;;;###autoload
 (defun org-clock-work-day-update-mode-line-internal (&optional force)

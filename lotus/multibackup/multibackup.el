@@ -78,7 +78,7 @@
           (if (string-equal (file-truename buffer-file-name) (file-truename file))
               (error "backup can not be same."))
           (make-local-variable 'buffer-linked-files)
-          (pushnew file buffer-linked-files))
+          (cl-pushnew file buffer-linked-files))
         (message "buffer is not associated with any file.")))
 
   (require 'desktop)

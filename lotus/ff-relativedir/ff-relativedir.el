@@ -77,7 +77,7 @@
                (lambda (c)
                  (prog1
                      (cons c count)
-                   (incf count)))
+                   (cl-incf count)))
                (split-string (if (file-directory-p filename)
                                  filename
                                  (dirname-of-file filename)) "/" t))))

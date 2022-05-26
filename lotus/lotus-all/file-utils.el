@@ -79,7 +79,7 @@ to do VC operation."
                  (string-match ignore f))
                 ; ignore
                 nil)
-                
+
                ((and
                  (file-regular-p f)
                  (file-readable-p f)
@@ -164,7 +164,7 @@ to do VC operation."
 
 
 
-(progn ;; "Tramp read-only file problem"
+(when nil ;; progn ;; "Tramp read-only file problem"
   (defun set-file-mode-to-truename (file)
     (interactive
      (list (ido-read-file-name "file: " default-directory buffer-file-name)))
@@ -225,7 +225,7 @@ to do VC operation."
                  (string-match ignore f))
                 ; ignore
                 nil)
-                
+
                ((and
                  (file-regular-p f)
                  (file-readable-p f)

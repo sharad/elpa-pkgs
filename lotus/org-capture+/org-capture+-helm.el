@@ -38,8 +38,8 @@
 
 (defun org-capture+-helm-template-add (scope heading template)
   (unless (assoc heading org-capture+-helm-templates-alist)
-    (pushnew (list heading) org-capture+-helm-templates-alist))
-  (pushnew template
+    (cl-pushnew (list heading) org-capture+-helm-templates-alist))
+  (cl-pushnew template
            (rest (assoc heading org-capture+-helm-templates-alist))))
 
 (org-capture+-helm-template-add 'test "TODO"    "* TODO %? %^g\n %i\n [%a]\n")

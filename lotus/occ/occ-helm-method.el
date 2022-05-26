@@ -330,7 +330,7 @@
                                                                 (list (cons (format "Add current buffer %s to ignore list" (current-buffer))
                                                                             #'(lambda ()
                                                                                 (let ((buff (buffer-name (current-buffer))))
-                                                                                  (pushnew buff occ-ignore-buffer-names)
+                                                                                  (cl-pushnew buff occ-ignore-buffer-names)
                                                                                   (occ-helm-null-candidate obj))))))))
       (occ-build-hsrc-source source))))
 

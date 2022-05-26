@@ -55,8 +55,8 @@
 
 (defun pushnew-alist (key value list)
   (unless (assoc key list)
-    (pushnew (cons key nil) list :key #'car))
-  (pushnew value (rest (assoc key list)) :test #'string-equal))
+    (cl-pushnew (cons key nil) list :key #'car))
+  (cl-pushnew value (rest (assoc key list)) :test #'string-equal))
 
 (defun task-status-map (sys status)
   (rest (assoc sys (rest (assoc status status-mappings)))))

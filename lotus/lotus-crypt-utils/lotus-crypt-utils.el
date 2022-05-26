@@ -209,7 +209,7 @@ Return the modified ALIST."
                      (file-truename (first f)))
                  epa-file-passphrase-cleanup-exceptitions-alist))
         (remove-alist 'epa-file-passphrase-cleanup-exceptitions-alist file))
-    (pushnew (cons file times) epa-file-passphrase-cleanup-exceptitions-alist)))
+    (cl-pushnew (cons file times) epa-file-passphrase-cleanup-exceptitions-alist)))
 
 ;;;###autoload
 (defun epa-remove-exception-for (file)
@@ -236,7 +236,7 @@ Return the modified ALIST."
           (count (read-number "How many times escape: " 6)))
      (list file count)))
   (if file
-      (pushnew (cons (expand-file-name file) count) epa-file-passphrase-cleanup-exceptitions-alist)))
+      (cl-pushnew (cons (expand-file-name file) count) epa-file-passphrase-cleanup-exceptitions-alist)))
 
 
 ;;;###autoload

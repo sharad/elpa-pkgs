@@ -183,13 +183,13 @@
 
 ;;;###autoload
 (defun occ-reset-spec (key)
-  (interactive  (list (completing-read "key for spec: " (occ-collector-keys))))
+  (interactive  (list (occ-collector-read-key "key for spec: ")))
   (occ-reset-collection-object key)
   (occ-collector-remove key))
 
 ;;;###autoload
 (defun occ-obj-make-spec (key desc)
-  (interactive (list (completing-read "key for spec: " (occ-collector-keys))
+  (interactive (list (occ-collector-read-key "key for spec: ")
                      (read-from-minibuffer "Desc: ")))
   (if (occ-collector-spec key)
       (occ-debug "spec: %s already present, first reset it with occ-reset-spec"
@@ -203,7 +203,7 @@
 
 ;;;###autoload
 (defun occ-add-to-spec (key file)
-  (interactive (list (completing-read "key for spec: " (occ-collector-keys))
+  (interactive (list (occ-collector-read-key "key for spec: ")
                      (read-file-name "org file:")))
   ;; TODO: Improve to create direct tree from here rather than resetting whole occ-global-tsk-collection
   (unless (occ-collector-spec key)
@@ -223,7 +223,7 @@
 
 ;;;###autoload
 (defun occ-add-org-file (key buffer)
-  (interactive (list (completing-read "key for spec: " (occ-collector-keys))
+  (interactive (list (occ-collector-read-key "key for spec: ")
                      (current-buffer)))
   (occ-do-add-org-buffer key buffer))
 

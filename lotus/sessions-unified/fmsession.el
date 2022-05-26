@@ -390,7 +390,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
 (defun fmsession-migration ()
   (interactive)
   (dolist (session (directory-files "~/.emacs.d/.cache/session-unified/session/frames/" nil "[a-zA-Z]+"))
-    (pushnew
+    (cl-pushnew
      (cons session
            (lotus-read-sexp
             (concat "~/.emacs.d/.cache/session-unified/session/frames/" session "/elscreen")))

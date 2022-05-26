@@ -58,7 +58,7 @@
         (when run-office-activate
           (if (< run-office-activate-failed run-office-activate-failed-max)
               (when (and file
-                         (with-timeout (4 (progn (incf run-office-activate-failed) nil)) (login-to-perforce)))
+                         (with-timeout (4 (progn (cl-incf run-office-activate-failed) nil)) (login-to-perforce)))
                 ad-do-it)
             (progn
               (message-notify
@@ -74,7 +74,7 @@
         (if (shell-command-no-output "timeout -k 3 2 p4 depots")
             t
           (progn
-            (incf run-office-activate-failed)
+            (cl-incf run-office-activate-failed)
             nil)))
 
       (defun login-to-perforce ()
@@ -96,9 +96,9 @@
         (progn
 
           (when nil
-            (with-timeout (4 (progn (incf run-office-activate-failed) nil))
+            (with-timeout (4 (progn (cl-incf run-office-activate-failed) nil))
               (login-to-perforce))
-            (with-timeout (4 (progn (incf run-office-activate-failed) nil))
+            (with-timeout (4 (progn (cl-incf run-office-activate-failed) nil))
               (vc-p4-registered file)))
 
           (or

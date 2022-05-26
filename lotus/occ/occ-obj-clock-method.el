@@ -423,29 +423,29 @@
 (defvar occ-add-inquery        0)
 (defvar occ-add-org-file-timer nil)
 
-(cl-defmethod occ-do-add-org-buffer ((key string)
+(cl-defmethod occ-do-add-org-buffer ((key symbol)
                                      buff)
   (occ-debug "occ-do-add-org-buffer: ignoring buff %s" buff))
 
-(cl-defmethod occ-do-add-org-buffer ((key  string)
+(cl-defmethod occ-do-add-org-buffer ((key  symbol)
                                      (buff buffer))
   (if (and (buffer-live-p buff)
            (eql buff (current-buffer))())
-    (when (< occ-add-inquery 3)
-      (let ((file (buffer-file-name buff)))
-        (unless (cl-member file (occ-obj-files) :key #'file-truename)
-          (when (and file
-                     (file-exists-p file)
-                     (eq major-mode 'org-mode))
-            (make-local-variable 'occ-add-inquery)
-            (if (y-or-n-p-with-timeout (format "Do you want to add %s to occ: "
-                                               (file-name-nondirectory file))
-                                       10
-                                       nil)
-                (progn
-                  (setq occ-add-inquery 3)
-                  (occ-add-to-spec key file))
-              (incf occ-add-inquery)))))))
+      (when (< occ-add-inquery 3)
+        (let ((file (buffer-file-name buff)))
+          (unless (cl-member file (occ-obj-files) :key #'file-truename)
+            (when (and file
+                       (file-exists-p file)
+                       (eq major-mode 'org-mode))
+              (make-local-variable 'occ-add-inquery)
+              (if (y-or-n-p-with-timeout (format "Do you want to add %s to occ: "
+                                                 (file-name-nondirectory file))
+                                         10
+                                         nil)
+                  (progn
+                    (setq occ-add-inquery 3)
+                    (occ-add-to-spec key file))
+                (cl-incf occ-add-inquery)))))))
   (occ-add-org-file-timer key buff))
 
 (defun occ-add-org-buffer (key buff)

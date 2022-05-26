@@ -67,7 +67,7 @@
 (defun org-rl-intf-register (tag plist)
   (org-rl-intf-unregister tag)
   (if org-rl-interfaces
-      (pushnew (cons tag plist)
+      (cl-pushnew (cons tag plist)
                org-rl-interfaces)
     (setq org-rl-interfaces (list (cons tag plist)))))
 
