@@ -85,22 +85,22 @@ Benefit with this timer is that it will very much ensure before running that use
           (run-with-idle-timer
            idledelay
            repeat
-           (lambda (func-arg2)
-             (let ((current-idle-sec (float-time (or (current-idle-time) '(0 0 0)))))
-               (if (>= current-idle-sec useridlesec-moving) ;NOTE
-                   (progn
-                     (debug-message "shortob running fun useridlesec-moving %s" useridlesec-moving)
-                     (funcall (first func-arg2) (rest func-arg2))
-                     (setq useridlesec-moving useridlesec)
-                     (when timer
-                       (cancel-timer timer)
-                       (setq timer nil))
-                     t)
-                   (progn
-                     (debug-message "shortob not running fun useridlesec-moving %s" useridlesec-moving)
-                     (unless (zerop useridlesec-moving)
-                       (decf useridlesec-moving))
-                     nil))))
+           #'(lambda (func-arg2)
+               (let ((current-idle-sec (float-time (or (current-idle-time) '(0 0 0)))))
+                 (if (>= current-idle-sec useridlesec-moving) ;NOTE
+                     (progn
+                       (debug-message "shortob running fun useridlesec-moving %s" useridlesec-moving)
+                       (funcall (first func-arg2) (rest func-arg2))
+                       (setq useridlesec-moving useridlesec)
+                       (when timer
+                         (cancel-timer timer)
+                         (setq timer nil))
+                       t)
+                     (progn
+                       (debug-message "shortob not running fun useridlesec-moving %s" useridlesec-moving)
+                       (unless (zerop useridlesec-moving)
+                         (cl-decf useridlesec-moving))
+                       nil))))
            (cons fn1 arg1)))))
 
 
@@ -134,10 +134,10 @@ Benefit with this timer is that it will very much ensure before running that use
     (if nonobtrusive-test-timer (cancel-timer nonobtrusive-test-timer))
     (setq nonobtrusive-test-timer
           (run-with-nonobtrusive-aware-idle-timers 4 4 2
-                                                   (lambda ()
-                                                     (debug-message "Hello Hi World")
-                                                     (if nonobtrusive-test-timer (cancel-timer nonobtrusive-test-timer))
-                                                     (setq nonobtrusive-test-timer nil))
+                                                   #'(lambda ()
+                                                       (debug-message "Hello Hi World")
+                                                       (if nonobtrusive-test-timer (cancel-timer nonobtrusive-test-timer))
+                                                       (setq nonobtrusive-test-timer nil))
                                                    nil
                                                    t))))
 
