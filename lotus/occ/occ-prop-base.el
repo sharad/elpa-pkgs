@@ -179,6 +179,7 @@
              prop-list))
 
 
+;; TODO: occ-prop-base.el: Warning: ‘cl-next-method-p’ is an obsolete macro (as of 25.1); make sure there’s always a next method, or catch ‘cl-no-next-method’ instead [7 times]
 (cl-defmethod occ-obj-properties-to-edit :around (obj)
   "return PROPERTIES list that can be edited."
   (if (cl-next-method-p)

@@ -413,12 +413,12 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
                   org-agenda-buffer))
           (org-compile-prefix-format nil)
           (setq result
-                (loop for date in (funcall enumerate-days begin end) append
-                      (loop for file in (org-agenda-files nil 'ifmode)
-                            append
-                            (progn
-                              (org-check-agenda-file file)
-                              (apply 'org-agenda-get-day-entries file date org-agenda-entry-types)))))
+                (cl-loop for date in (funcall enumerate-days begin end) append
+                         (cl-loop for file in (org-agenda-files nil 'ifmode)
+                                  append
+                                  (progn
+                                    (org-check-agenda-file file)
+                                    (apply 'org-agenda-get-day-entries file date org-agenda-entry-types)))))
           (unless (buffer-live-p (get-buffer org-agenda-buffer-name))
             (get-buffer-create org-agenda-buffer-name))
           (with-current-buffer (get-buffer org-agenda-buffer-name)
@@ -426,10 +426,9 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
             (setq buffer-read-only t)
             (let ((inhibit-read-only t))
               (erase-buffer))
-            (mapcar
-             (lambda (x)
-               (let ((inhibit-read-only t))
-                 (insert (format "%s" x) "\n")))
+            (mapcar #'(lambda (x)
+                        (let ((inhibit-read-only t))
+                          (insert (format "%s" x) "\n")))
              result))
           ;;    (display-buffer org-agenda-buffer-name t)
           result))
@@ -585,6 +584,7 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
    (append (list 'symbol)
            (when (cl-next-method-p)
              (cl-call-next-method))))
+ ;; TODO: occ-prop-base.el: Warning: ‘cl-next-method-p’ is an obsolete macro (as of 25.1); make sure there’s always a next method, or catch ‘cl-no-next-method’ instead [7 times]
 
  (cl-defmethod occ-test-combine ((x (head z)))
    (append (list 'z)
