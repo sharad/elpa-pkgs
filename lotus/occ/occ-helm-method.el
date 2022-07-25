@@ -447,7 +447,7 @@
                                                   :ap-transf        ap-transf
                                                   :auto-select-if-only auto-select-if-only
                                                   :prompt           prompt)))
-    
+
     (if (occ-hsrc-candidate-p (first cand-sources))
         ;; Mean if first cand-sources has only one element then it will pack
         ;; that element using `occ-build-hsrc-source' to be acted by default
@@ -476,7 +476,7 @@
           (progn
             (setq in-occ-helm nil)
             (cancel-timer timer)))))))
-        
+
 (cl-defmethod occ-obj-helm-act ((obj         occ-ctx)
                                 (collections list)
                                 &key
