@@ -85,7 +85,6 @@
 (defun org-clock-in-if-not ()
   (interactive)
   (org-ci-if-not-debug :debug "org-clock-in-if-not: begin")
-  (org-ci-if-not-debug :debug "org-clock-in-if-not: begin")
   (lotus-run-unobtrusively                    ;heavy task
     (unless (or org-donot-try-to-clock-in
                 (org-clock-is-active))
@@ -98,7 +97,7 @@
               (org-clock-in-if-not-at-time postpone-secs)))
         (lotus-with-other-frame-event-debug "org-clock-in-if-not" :restart
           (org-ci-if-not-debug :debug "org-clock-in-if-not: [body] lotus-with-no-active-minibuffer-if")
-          (message "Enable Disabel with org-clock-in-if-not-enable org-clock-in-if-not-disable")
+          ;; (message "Enable Disabel with org-clock-in-if-not-enable org-clock-in-if-not-disable")
           (condition-case e
               (if org-clock-history
                   (let (buffer-read-only)
@@ -107,7 +106,6 @@
                 (org-clock-in-refile nil))
             ((quit error)
              (message "Enable Disabel with org-clock-in-if-not-enable org-clock-in-if-not-disable")))
-          (org-ci-if-not-debug :debug "org-clock-in-if-not: finished")
           (org-ci-if-not-debug :debug "org-clock-in-if-not: finished"))))))
 
 (defun org-clock-in-if-not-disable ()
