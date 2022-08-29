@@ -151,8 +151,8 @@
                                   7
                                   nil))
       (org-with-clock-writeable
-       (let (org-log-note-clock-out)
-         (if (org-clock-is-active)
-             (org-clock-out))))))
+        (let (org-log-note-clock-out)
+          (if (org-clock-is-active)
+              (org-clock-out))))))
 
 ;;; org-clock-in-if-not.el ends here
