@@ -105,7 +105,7 @@
                 ;; with-current-buffer should be some real file
                 (org-clock-in-refile nil))
             ((quit error)
-             (message "Enable Disabel with org-clock-in-if-not-enable org-clock-in-if-not-disable")))
+             (message "Enable/Disable with org-clock-in-if-not-enable/org-clock-in-if-not-disable")))
           (org-ci-if-not-debug :debug "org-clock-in-if-not: finished"))))))
 
 (defun org-clock-in-if-not-disable ()
