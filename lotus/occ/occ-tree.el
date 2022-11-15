@@ -65,7 +65,7 @@
 
 (occ-testing
   (setq testxx-remove
-        (tree-remove-if-not-tsks
+        (tree-remove-if-not-nodes
            #'(lambda (e) (eq (plist-get e :pre-blank) 4)
                testxx)))
 
