@@ -470,7 +470,7 @@
                                                    (occ-debug "Running occ-list-select-internal helm is gone"))))))
         (unwind-protect
             (when (occ-obj-obj (first cand-sources))
-              (if nil
+              (if t
                   (condition-case e
                       (helm :sources (mapcar #'occ-obj-obj cand-sources)
                             :buffer  (occ-helm-select-buffer)
