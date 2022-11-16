@@ -284,7 +284,7 @@ so returns nil if pid is nil."
               (vc-checkout-file default-local-file)))
 
           (let ((file (read-file-name-timeout 20
-                                              prompt     ;promt
+                                              prompt     ;prompt
                                               desktop-dir ;dir
                                               default-local-file ;default file name
                                               'confirm           ;mustmatch

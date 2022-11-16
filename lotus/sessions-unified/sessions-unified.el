@@ -162,7 +162,7 @@
   (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-run"
            "running lotus-enable-desktop-restore-interrupting-feature-hook hook now.")
   (run-each-hooks 'lotus-enable-desktop-restore-interrupting-feature-hook)
-  (setq lotus-enable-desktop-restore-interrupting-feature-hook-old lotus-enable-desktop-restore-interrupting-feature-hook-old)
+  (setq lotus-enable-desktop-restore-interrupting-feature-hook-old lotus-enable-desktop-restore-interrupting-feature-hook)
   (setq lotus-enable-desktop-restore-interrupting-feature-hook nil))
 ;;;###autoload
 (defun desktop-restore-interrupting-feature-delay-run ()
