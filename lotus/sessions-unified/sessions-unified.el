@@ -155,7 +155,20 @@
     'lotus-disable-desktop-restore-interrupting-feature-hook
     fn
     local)))
-
+;;;###autoload
+(defun desktop-restore-interrupting-feature-run ()
+  "run hook"
+  (interactive)
+  (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-run"
+           "running lotus-enable-desktop-restore-interrupting-feature-hook hook now.")
+  (run-each-hooks 'lotus-enable-desktop-restore-interrupting-feature-hook)
+  (setq lotus-enable-desktop-restore-interrupting-feature-hook-old lotus-enable-desktop-restore-interrupting-feature-hook-old)
+  (setq lotus-enable-desktop-restore-interrupting-feature-hook nil))
+;;;###autoload
+(defun desktop-restore-interrupting-feature-delay-run ()
+  (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-delay-run"
+           "scheduled desktop-restore-interrupting-feature-run to run after sometime.")
+  (run-with-idle-timer 10 nil #'desktop-restore-interrupting-feature-run))
 
 
 ;; (require 'fmsession)

@@ -449,6 +449,6 @@
 
  (test-method1 'a 1)
 
- (test-method1 1))
+ (ignore-error (test-method1 1)))
 
 ;;; occ-test.el ends here

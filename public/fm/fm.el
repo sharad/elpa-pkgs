@@ -7,10 +7,11 @@
 ;; Created: 03 Jul 1997
 ;; Version: 1.0
 ;; Package-Version: 1.0pre0.20220801.164740
+;; Package-Desc: fm
 ;; Keywords: outlines
 ;; location: http://www.anc.ed.ac.uk/~stephen
 ;; RCS: $Id$
- 
+
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 2, or (at your option)
@@ -40,10 +41,10 @@
 ;; it to the mode hooks, e.g.:
 ;; (add-hook 'occur-mode-hook 'fm-start)
 ;; (add-hook 'compilation-mode-hook 'fm-start)
-;; 
+;;
 
 ;;; Examples:
-;;  
+;;
 ;; Do an occur for the word `package' in the NEWS file:
 ;; C-h n
 ;; M-x occur RTN package RTN
@@ -85,7 +86,7 @@
 ;; fm-highlight is currently used to highlight the regions of both
 ;; the source(0) and output(1) buffers.
 
-(defvar fm-modes 
+(defvar fm-modes
   '( (compilation-mode compile-goto-error)
      (occur-mode  occur-mode-goto-occurrence)
      (outlines-mode  outlines-goto-line) ;; sje hack
@@ -106,9 +107,9 @@ This should be added to buffers through hooks, such as
     (if (not (boundp 'fm-defun))
 	(progn
 	  (setq f (cdr (assoc major-mode fm-modes)))
-	  (if f 
+	  (if f
 	      (set (make-local-variable 'fm-defun) f))))
-    
+
     (if (boundp 'fm-defun)
 	(progn
 	  (make-local-hook 'post-command-hook)
@@ -117,7 +118,7 @@ This should be added to buffers through hooks, such as
 	  (setq pre-command-hook  '(fm-pre-command-hook))
 	  (local-set-key "f" 'fm-toggle)
 	  )
-      ;; else 
+      ;; else
       (error "Cannot use fm in this mode."))))
 
 (defun fm-pre-command-hook ()
@@ -137,8 +138,8 @@ This should be added to buffers through hooks, such as
 	(progn
 	  (let ((buf (buffer-name))
 		(f nil))
-	    
-	    
+
+
 	    ;; select current line.
 	    (if (not (boundp 'fm-defun))
 		(error "Cannot use fm in this buffer."))
@@ -156,18 +157,18 @@ This should be added to buffers through hooks, such as
 		    (fm-highlight 0
 				  (progn (beginning-of-line) (point))
 				  (progn (end-of-line) (point))))
-		
-		
-		  ;; make the highlight in the output buffer.    
+
+
+		  ;; make the highlight in the output buffer.
 		  (pop-to-buffer buf)
-		  (and (> (point) 1) 
+		  (and (> (point) 1)
 		       (save-excursion
-			 (fm-highlight 1 
+			 (fm-highlight 1
 				       (progn (beginning-of-line) (point))
 				       (progn (end-of-line) (point)))))
-		
+
 		  )
-	      ;; else there was an error 
+	      ;; else there was an error
 	      (progn
 		;; make sure we stay in output buffer.
 		(pop-to-buffer buf)
@@ -185,7 +186,7 @@ This should be added to buffers through hooks, such as
 (and (not (fboundp 'make-overlay))
      (condition-case nil
          (require 'overlay)
-       ('error 
+       ('error
         (error "Fm needs overlay emulation (available in XEmacs 19.15)"))))
 
 ;; We keep a vector with several different overlays to do our highlighting.

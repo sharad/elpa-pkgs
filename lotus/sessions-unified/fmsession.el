@@ -698,10 +698,12 @@ return a new alist whose car is the new pair and cdr is ALIST."
       (message "saved the session for %s" location)
       (fmsession-store location nframe))))
 
+;;;###autoload
 (defun save-all-frames-session ()
   (dolist (f (frame-list))
     (frame-session-save f)))
 
+;;;###autoload
 (defun frame-session-restore-hook-func ()
   "Add to hook"
   ;; (add-hook 'after-make-frame-functions 'frame-session-set-this-location t)
@@ -713,7 +715,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
              #'frame-session-restore-force t)
    (add-hook 'delete-frame-functions
              #'frame-session-save)))
-
+;;;###autoload
 (defun frame-session-restore-unhook-func ()
   "Add to hook"
   ;; (add-hook 'after-make-frame-functions 'frame-session-set-this-location t)
@@ -725,14 +727,17 @@ return a new alist whose car is the new pair and cdr is ALIST."
                #'frame-session-save))
 
 
+;;;###autoload
 (defun frame-session-restore-add-hooks ()
   (interactive)
   (frame-session-restore-hook-func))
 
+;;;###autoload
 (defun frame-session-restore-remove-hooks ()
   (interactive)
   (frame-session-restore-unhook-func))
 
+;;;###autoload
 (defun frame-session-name ()
   (interactive)
   (message "Session: %s"

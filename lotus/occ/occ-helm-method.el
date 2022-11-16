@@ -470,12 +470,16 @@
                                                    (occ-debug "Running occ-list-select-internal helm is gone"))))))
         (unwind-protect
             (when (occ-obj-obj (first cand-sources))
-              (condition-case e
-                  (helm :sources (mapcar #'occ-obj-obj cand-sources)
-                        :buffer  (occ-helm-select-buffer)
-                        :resume  'noresume)
-                ((quit error)
-                 (message "Enable Disable occ with occ-mode."))))
+              (if nil
+                  (condition-case e
+                      (helm :sources (mapcar #'occ-obj-obj cand-sources)
+                            :buffer  (occ-helm-select-buffer)
+                            :resume  'noresume)
+                    ((quit error)
+                     (occ-message "Enable Disable occ with occ-mode.")))
+                (helm :sources (mapcar #'occ-obj-obj cand-sources)
+                      :buffer  (occ-helm-select-buffer)
+                      :resume  'noresume)))
           (progn
             (setq in-occ-helm nil)
             (cancel-timer timer)))))))

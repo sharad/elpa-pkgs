@@ -63,22 +63,22 @@
             (plist-put tree :subtree subtree)))
     (if (funcall predicate tree args) tree)))
 
-(occ-testing
-  (setq testxx-remove
-        (tree-remove-if-not-nodes
-           #'(lambda (e) (eq (plist-get e :pre-blank) 4)
-               testxx)))
+;; (occ-testing
+;;   (setq testxx-remove
+;;         (tree-remove-if-not-nodes
+;;            #'(lambda (e) (eq (plist-get e :pre-blank) 4)
+;;                testxx)))
 
-  (setq testxxmapcar
-        (tree-mapcar-nodes #'(lambda (tx) (plist-get tx :subtree))
-                           #'(lambda (tx) (plist-get tx :title))
-                           ;; testxx
-                           (first (plist-get testxx :subtree))))
+;;   (setq testxxmapcar
+;;         (tree-mapcar-nodes #'(lambda (tx) (plist-get tx :subtree))
+;;                            #'(lambda (tx) (plist-get tx :title))
+;;                            ;; testxx
+;;                            (first (plist-get testxx :subtree))))
 
-  (setq testxxmapc
-        (tree-mapc-nodes #'(lambda (tx) (plist-get tx :subtree))
-                         #'(lambda (tx) (plist-get tx :title))
-                         ;; testxx
-                         (first (plist-get testxx :subtree)))))
+;;   (setq testxxmapc
+;;         (tree-mapc-nodes #'(lambda (tx) (plist-get tx :subtree))
+;;                          #'(lambda (tx) (plist-get tx :title))
+;;                          ;; testxx
+;;                          (first (plist-get testxx :subtree)))))
 
 ;;; occ-tree.el ends here
