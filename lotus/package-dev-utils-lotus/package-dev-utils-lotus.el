@@ -120,7 +120,7 @@ or nil if the version cannot be parsed."
                               (package--ac-desc-extras (rest package))))))
                ;; (existing-packages (assq name package-archive-contents))
                ;; (pinned-to-archive (assoc name package-pinned-packages))
-               
+
           pkg-desc)
         (error "not able to find package for %s" pkg-name))))
 
@@ -181,7 +181,7 @@ or nil if the version cannot be parsed."
                   (string-match "^\..*-pkg.el$" file))
         (message "loading file %s" file)
         (load-file file)))))
-        
+
 
 ;;;###autoload
 (defun package-build-package-from-dir (dir &optional update-source-pkg-desc)
@@ -304,7 +304,7 @@ or nil if the version cannot be parsed."
           (message "built package %s" pkg-name)
           (package-load-package-from-dir dir)
           pkg-tar-file-name)))))
-    
+
 
 ;;;###autoload
 (defun package-upload-package-from-dir (dir &optional archive)
@@ -446,7 +446,7 @@ or nil if the version cannot be parsed."
            ;; (dependencies-external
            ;;  (delete-dups
            ;;   dependencies-external))
-           
+
 
       ;; Than find all dependencies and install them
       ;; try to install dependencies first
@@ -598,8 +598,14 @@ will be deleted."
   ;; https://emacs.stackexchange.com/a/7589
   (interactive
    (list (read-directory-name "pacakages dir: ")))
-  (let ((tar-file "/tmp/x.tar"))
-    (when (shell-command (format "tar czf %s %s" tar-file dir))
-      (package-install-file tar-file))))
+  (let* ((basename (file-name-nondirectory dir))
+         (dirpath  (dirname-of-file dir))
+         (tar-file (format "/tmp/%s" basename)))
+    (when (shell-command (format "tar czf %s -C %s %s"
+                                 tar-file
+                                 dirpath
+                                 basename))
+      (when (package-install-file tar-file)
+        (delete-file tar-file)))))
 
 ;;; package-dev-utils-lotus.el ends here

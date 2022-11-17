@@ -562,13 +562,13 @@ so returns nil if pid is nil."
 
 
 (defun lotus-show-hook-member (fn hook)
-  (format
-   (if (or
-        (member fn (symbol-value hook))
-        (member (symbol-function fn) (symbol-value hook)))
-       "Yes %s is present in %s"
-     "No %s is present in %s")
-   fn hook))
+  (format "%s %s is present in %s"
+          (if (or (member fn (symbol-value hook))
+                  (member (symbol-function fn) (symbol-value hook)))
+              "Yes"
+            "No")
+          fn
+          hook))
 
 ;;;###autoload
 (defun lotus-check-session-saving ()
@@ -736,8 +736,8 @@ en all buffer were creaed idly."
           (funcall sessions-unified-utils-notify "lotus-desktop-session-restore" "desktop-get-desktop-save-filename failed")))
     (progn
       (lotus-enable-session-saving-immediately)
-      (message
-       "*session-unified-desktop-enabled* %s" *session-unified-desktop-enabled*)
+      (message "*session-unified-desktop-enabled* %s"
+               *session-unified-desktop-enabled*)
       t)))
 
 ;; ;; ask user whether to restore desktop at start-up
