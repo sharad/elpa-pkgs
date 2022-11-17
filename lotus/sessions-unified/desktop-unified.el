@@ -366,7 +366,7 @@ so returns nil if pid is nil."
          (desktop-base-file-name (file-name-nondirectory desktop-save-filename)))
     (prog1
         (setq *desktop-vc-read-inprogress* t)
-      (run-each-hooks 'lotus-disable-desktop-restore-interrupting-feature-hook)
+      (desktop-disable-restore-interrupting-feature-run)
 
       ;; (unless (desktop-owner)
       ;;   (condition-case nil
@@ -375,8 +375,6 @@ so returns nil if pid is nil."
       ;;                 (sit-for 1))))
 
       (if
-
-
           ;; // sharad
           ;; (unless (ignore-errors
           ;;           (save-window-excursion
@@ -613,14 +611,11 @@ en all buffer were creaed idly."
   (funcall sessions-unified-utils-notify "desktop-idle-create-buffers"
            "After desktop-idle-create-buffers (len desktop-buffer-args-list)=%d" (length desktop-buffer-args-list))
   (unless desktop-buffer-args-list
-    (funcall sessions-unified-utils-notify "desktop-idle-create-buffers"
-             "Enabled session saving")
-    (lotus-enable-session-saving-immediately)
     (progn
       (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
       (ad-update 'desktop-idle-create-buffers)
       (ad-activate 'desktop-idle-create-buffers))
-    (desktop-restore-interrupting-feature-delay-run)))
+    (desktop-enable-restore-interrupting-feature-delay-run)))
 
 ;; use session-restore to restore the desktop manually
 
@@ -677,7 +672,7 @@ en all buffer were creaed idly."
                         (funcall sessions-unified-utils-notify "lotus-desktop-session-restore" "lotus-desktop-session-restore")
                         (when (memq 'P4 vc-handled-backends)            ;remove P4
                           (setq vc-handled-backends (remove 'P4 vc-handled-backends))
-                          (add-hook 'lotus-enable-desktop-restore-interrupting-feature-hook
+                          (add-to-disable-desktop-restore-interrupting-feature-hook
                                     #'(lambda ()
                                         (when nil
                                           (add-to-list 'vc-handled-backends 'P4)))))
@@ -694,8 +689,7 @@ en all buffer were creaed idly."
                                         ;; as (defadvice desktop-idle-create-buffers) will not get chance to run it.
                                       (funcall sessions-unified-utils-notify "lotus-desktop-session-restore"
                                                "As no bufs to restore so running hook lotus-enable-desktop-restore-interrupting-feature-hook")
-                                      (desktop-restore-interrupting-feature-delay-run)
-                                      (lotus-enable-session-saving-immediately))
+                                      (desktop-enable-restore-interrupting-feature-delay-run))
                                     (lotus-enable-session-saving)
                                     (funcall sessions-unified-utils-notify "lotus-desktop-session-restore" "Do you want to set session of frame? [show-error=%s]" show-error)
                                     (when (y-or-n-p-with-timeout
@@ -728,14 +722,12 @@ en all buffer were creaed idly."
                         t)
                     (when (y-or-n-p
                            (funcall sessions-unified-utils-notify "lotus-desktop-session-restore"
-                                    "No desktop found. or you can check out old %s from VCS.\nShould I enable session saving in auto save, at kill-emacs ?"
+                                    "No desktop found. or you can check out old %s from VCS.\nShould I enable session saving in auto save and run hook, at kill-emacs ?"
                                     *desktop-save-filename*))
-                      (lotus-enable-session-saving-immediately)
-                      (progn
-                        ;; as (defadvice desktop-idle-create-buffers) will not get chance to run it.
-                        (funcall sessions-unified-utils-notify "lotus-desktop-session-restore"
-                                 "As no desktop file or (lotus-desktop-saved-session) is nil so running hook")
-                        (desktop-restore-interrupting-feature-delay-run))))
+                      ;; as (defadvice desktop-idle-create-buffers) will not get chance to run it.
+                      (funcall sessions-unified-utils-notify "lotus-desktop-session-restore"
+                               "As no desktop file or (lotus-desktop-saved-session) is nil so running hook")
+                      (desktop-enable-restore-interrupting-feature-delay-run)))
                   (let ((enable-recursive-minibuffers t))
                     (when t ; (y-or-n-p-with-timeout "Do you wato set session of frame? " 7 t) ;t
                       (let ((*frame-session-restore* t))
@@ -744,8 +736,7 @@ en all buffer were creaed idly."
 
           (funcall sessions-unified-utils-notify "lotus-desktop-session-restore" "desktop-get-desktop-save-filename failed")))
     (progn
-      (lotus-enable-session-saving-immediately)
-      (desktop-restore-interrupting-feature-delay-run)
+      (desktop-enable-restore-interrupting-feature-delay-run)
       (message
        "*session-unified-desktop-enabled* %s" *session-unified-desktop-enabled*)
       t)))

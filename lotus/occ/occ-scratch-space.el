@@ -30,7 +30,9 @@
 ;; check about function (org-refile-new-child)
 
 ;; org-capture-templates
-
+(eval-when-compile
+  (require 'occ-macros))
+
 
 (when nil
   (progn

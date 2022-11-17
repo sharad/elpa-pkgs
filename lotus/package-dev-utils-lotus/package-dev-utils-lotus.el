@@ -592,6 +592,14 @@ will be deleted."
     (dolist (p (reverse pkgs))
       (package-install p)))
   (message "finished package-resolve-org-plus-contrib-upgrade"))
-
+
+;;;###autoload
+(defun package-install-locally-from-dir (dir)
+  ;; https://emacs.stackexchange.com/a/7589
+  (interactive
+   (list (read-directory-name "pacakages dir: ")))
+  (let ((tar-file "/tmp/x.tar"))
+    (when (shell-command (format "tar czf %s %s" tar-file dir))
+      (package-install-file tar-file))))
 
 ;;; package-dev-utils-lotus.el ends here

@@ -31,6 +31,8 @@
 (require 'org-misc-utils-lotus)
 
 
+(eval-when-compile
+  (require 'occ-macros))
 (require 'occ-filter-config)
 (require 'occ-helm)
 (require 'occ-helm-actions-config)

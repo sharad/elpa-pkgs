@@ -28,6 +28,8 @@
 (provide 'occ-util-method)
 
 
+(eval-when-compile
+  (require 'occ-macros))
 (require 'occ-util-common)
 (require 'occ-filter-config)
 

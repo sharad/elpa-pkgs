@@ -28,6 +28,10 @@
 (provide 'occ-tree)
 
 
+(eval-when-compile
+  (require 'occ-macros))
+
+
 ;; tree api
 (defun tree-mapcar-nodes (subtreefn fn tree args)
   "Tree mapcar return result for FN for all TREE nodes with ARGS, function SUBTREEFN require to find nonleaf node"

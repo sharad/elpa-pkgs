@@ -28,6 +28,8 @@
 
 
 
+(eval-when-compile
+  (require 'occ-macros))
 (require 'ert)
 (require 'ert-x)
 (require 'el-mock)

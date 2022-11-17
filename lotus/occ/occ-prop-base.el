@@ -65,6 +65,8 @@
 (require 'org-misc-utils-lotus)
 
 
+(eval-when-compile
+  (require 'occ-macros))
 (require 'occ-cl-utils)
 (require 'occ-obj-common)
 (require 'occ-tree)

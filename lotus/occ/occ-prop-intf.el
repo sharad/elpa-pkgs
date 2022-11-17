@@ -28,6 +28,8 @@
 (provide 'occ-prop-intf)
 
 
+(eval-when-compile
+  (require 'occ-macros))
 (require 'occ-macros)
 (require 'occ-util-common)
 (require 'occ-obj)
