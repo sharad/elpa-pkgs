@@ -63,12 +63,11 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
       (while current-directory-list
         (let ((f (first current-directory-list)))
           (cond
-           ((and
-             (file-directory-p f)
-             (file-readable-p f)
-             (if include-directories (not (string-match regexp f)) t)
-             (not (string-equal ".." (substring f -2)))
-             (not (string-equal "." (substring f -1))))
+           ((and (file-directory-p f)
+                 (file-readable-p f)
+                 (if include-directories (not (string-match regexp f)) t)
+                 (not (string-equal ".." (substring f -2)))
+                 (not (string-equal "." (substring f -1))))
             ;; recurse only if necessary
             (setq files-list (append files-list (directory-files-recursively f regexp include-directories))))
            ((and
