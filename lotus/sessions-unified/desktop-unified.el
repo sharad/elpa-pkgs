@@ -515,6 +515,7 @@ so returns nil if pid is nil."
     (message
      "*session-unified-desktop-enabled*: %s"
      *session-unified-desktop-enabled*)))
+
 
 ;;;###autoload
 (defun lotus-disable-session-saving-immediately ()
@@ -526,14 +527,15 @@ so returns nil if pid is nil."
   (funcall sessions-unified-utils-notify "lotus-disable-session-saving"  "Removed save-all-sessions-auto-save from auto-save-hook and kill-emacs-hook"))
 
 ;;;###autoload
-(defun lotus-enable-session-saving-immediately ()
-  (interactive)
-  (add-hook 'auto-save-hook #'save-all-sessions-auto-save)
-  (add-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
-  (ignore-error (frame-session-restore-hook-func))
-  (ignore-error (desktop-enable-restore-interrupting-feature-delay-run))
-  (funcall sessions-unified-utils-notify "lotus-enable-session-saving" "Added save-all-sessions-auto-save to auto-save-hook and kill-emacs-hook"))
+(defun lotus-disable-session-saving ()
+  (lotus-disable-session-saving-immediately)
+  (progn
+    (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
+    (ad-update 'desktop-idle-create-buffers)
+    (ad-activate 'desktop-idle-create-buffers)))
+
 
+;;;###autoload
 (defun lotus-enable-session-saving ()
   ;; (if (or
   ;;      (eq desktop-restore-eager t)
@@ -549,12 +551,15 @@ so returns nil if pid is nil."
       (message "desktop file exists.")
     (message "desktop file do not exists.")))
 
-(defun lotus-disable-session-saving ()
-  (lotus-disable-session-saving-immediately)
-  (progn
-    (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
-    (ad-update 'desktop-idle-create-buffers)
-    (ad-activate 'desktop-idle-create-buffers)))
+;;;###autoload
+(defun lotus-enable-session-saving-immediately ()
+  (interactive)
+  (add-hook 'auto-save-hook #'save-all-sessions-auto-save)
+  (add-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
+  (ignore-error (frame-session-restore-hook-func))
+  (ignore-error (desktop-enable-restore-interrupting-feature-delay-run))
+  (funcall sessions-unified-utils-notify "lotus-enable-session-saving" "Added save-all-sessions-auto-save to auto-save-hook and kill-emacs-hook"))
+
 
 (defun lotus-show-hook-member (fn hook)
   (format
