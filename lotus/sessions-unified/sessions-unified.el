@@ -143,7 +143,6 @@
   (interactive)
   (funcall sessions-unified-utils-notify "desktop-idle-create-buffers"
            "Enabled session saving")
-  (lotus-enable-session-saving-immediately)
   (funcall sessions-unified-utils-notify "desktop-enable-restore-interrupting-feature-run"
            "running lotus-enable-desktop-restore-interrupting-feature-hook hook now.")
   (run-each-hooks 'lotus-enable-desktop-restore-interrupting-feature-hook)
