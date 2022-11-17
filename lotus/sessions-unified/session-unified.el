@@ -28,7 +28,7 @@
 
 
 
-(defvar session-unified-dir "~/.session-unified/")
+(defvar session-unified-dir "~/.emacs.d/.cache/session-unified/")
 
 (defvar session-unified-debug nil)
 

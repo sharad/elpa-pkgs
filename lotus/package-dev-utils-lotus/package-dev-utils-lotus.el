@@ -37,9 +37,8 @@
 
 
 (unless (assoc package-local-dev-archive package-archives)
-  (push
-   (cons package-local-dev-archive package-archive-upload-base)
-   package-archives))
+  (push (cons package-local-dev-archive package-archive-upload-base)
+        package-archives))
 
 
 (unless (functionp 'directory-files-recursively)
@@ -70,10 +69,9 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
                  (not (string-equal "." (substring f -1))))
             ;; recurse only if necessary
             (setq files-list (append files-list (directory-files-recursively f regexp include-directories))))
-           ((and
-             (file-regular-p f)
-             (file-readable-p f)
-             (string-match regexp f))
+           ((and (file-regular-p f)
+                 (file-readable-p f)
+                 (string-match regexp f))
             (setq files-list (cons f files-list)))
            (t)))
         (setq current-directory-list (rest current-directory-list)))

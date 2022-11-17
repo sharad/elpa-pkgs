@@ -540,16 +540,18 @@ so returns nil if pid is nil."
   ;; (if (or
   ;;      (eq desktop-restore-eager t)
   ;;      (null (lotus-desktop-saved-session)))
-  (if (or (eq desktop-restore-eager t)
-          (= session-unified-desktop-buffs-len 0))
-      (lotus-enable-session-saving-immediately)
-    (progn
-      (ad-enable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
-      (ad-update 'desktop-idle-create-buffers)
-      (ad-activate 'desktop-idle-create-buffers)))
-  (if (lotus-desktop-saved-session)
-      (message "desktop file exists.")
-    (message "desktop file do not exists.")))
+  (let ((session-unified-desktop-buffs-len (length desktop-buffer-args-list)))
+    (if (or (eq desktop-restore-eager t)
+            ;; (null (lotus-desktop-saved-session))
+            (= session-unified-desktop-buffs-len 0))
+        (lotus-enable-session-saving-immediately)
+      (progn
+        (ad-enable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
+        (ad-update 'desktop-idle-create-buffers)
+        (ad-activate 'desktop-idle-create-buffers)))
+    (if (lotus-desktop-saved-session)
+        (message "desktop file exists.")
+      (message "desktop file do not exists."))))
 
 ;;;###autoload
 (defun lotus-enable-session-saving-immediately ()
@@ -681,27 +683,20 @@ en all buffer were creaed idly."
                                         (when nil
                                           (add-to-list 'vc-handled-backends 'P4)))))
                         (if show-error
-
-                            (let ((session-unified-desktop-buffs-len (length desktop-buffer-args-list)))
-                              (when (= session-unified-desktop-buffs-len 0)
-                                (funcall sessions-unified-utils-notify "lotus-desktop-session-restore"
-                                         "As no bufs to restore will run hook lotus-enable-desktop-restore-interrupting-feature-hook"))
-                              (if (desktop-vc-read *desktop-save-filename*)
+                            (if (desktop-vc-read *desktop-save-filename*)
                                   (progn
                                     (funcall sessions-unified-utils-notify "lotus-desktop-session-restore" "desktop loaded successfully :) [show-error=%s]" show-error)
                                     (lotus-enable-session-saving)
                                     (funcall sessions-unified-utils-notify "lotus-desktop-session-restore" "Do you want to set session of frame? [show-error=%s]" show-error)
-                                    (when (y-or-n-p-with-timeout
-                                           (format "[show-error=%s] Do you want to set session of frame? " show-error)
-                                           10 t)
+                                    (when (y-or-n-p-with-timeout (format "[show-error=%s] Do you want to set session of frame? " show-error)
+                                                                 10 t)
                                       (let ((*frame-session-restore* t))
                                         (frame-session-restore (selected-frame)))))
                                 (progn
                                   (funcall sessions-unified-utils-notify "lotus-desktop-session-restore" "desktop loading failed :( [show-error=%s]" show-error)
                                   (run-at-time "1 sec" nil '(lambda () (insert "lotus-desktop-session-restore")))
                                   (execute-extended-command nil)
-                                  nil)))
-
+                                  nil))
                           (condition-case e
                               (if (let ((desktop-restore-in-progress t))
                                     (desktop-vc-read *desktop-save-filename*))
