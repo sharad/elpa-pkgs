@@ -28,6 +28,10 @@
 
 
 
+(eval-when-compile
+  (require 'elscreen))
+
+
 (require 'session-unified)
 
 

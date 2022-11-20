@@ -173,7 +173,7 @@
     fn
     local)))
 ;;;###autoload
-(defun desktop-disable-restore-interrupting-feature-run ()
+(defun sessions-unified-desktop-disable-restore-interrupting-feature-run ()
   "run hook"
   (interactive)
   (funcall sessions-unified-utils-notify "desktop-disable-restore-interrupting-feature-run"
