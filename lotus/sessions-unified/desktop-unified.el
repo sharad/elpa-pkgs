@@ -556,11 +556,13 @@ so returns nil if pid is nil."
 ;;;###autoload
 (defun lotus-enable-session-saving-immediately ()
   (interactive)
+  (funcall sessions-unified-utils-notify "lotus-enable-session-saving-immediately" "enter")
   (add-hook 'auto-save-hook #'save-all-sessions-auto-save)
   (add-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
   (ignore-error (frame-session-restore-hook-func))
   (ignore-error (desktop-enable-restore-interrupting-feature-delay-run))
-  (funcall sessions-unified-utils-notify "lotus-enable-session-saving" "Added save-all-sessions-auto-save to auto-save-hook and kill-emacs-hook"))
+  (funcall sessions-unified-utils-notify "lotus-enable-session-saving" "Added save-all-sessions-auto-save to auto-save-hook and kill-emacs-hook")
+  (funcall sessions-unified-utils-notify "lotus-enable-session-saving-immediately" "exit"))
 
 
 (defun lotus-show-hook-member (fn hook)

@@ -114,29 +114,24 @@
 
 ;;;###autoload
 (defun protable-display-graphic-p ()
-  (display-graphic-p))
-
-(when (< emacs-major-version 24)
-    (defun protable-display-graphic-p ()
-      (eq (frame-parameter (selected-frame) 'window-system) 'x)))
+  (if (< emacs-major-version 24)
+      (eq (frame-parameter (selected-frame) 'window-system)
+          'x)
+    (display-graphic-p)))
 
 ;;;###autoload
 (defun add-to-enable-desktop-restore-interrupting-feature-hook (fn &optional append local)
   (interactive)
-  (when t
-   (add-to-hook
-    'lotus-enable-desktop-restore-interrupting-feature-hook
-    fn
-    append
-    local)))
+  (add-to-hook 'lotus-enable-desktop-restore-interrupting-feature-hook
+               fn
+               append
+               local))
 ;;;###autoload
 (defun remove-from-enable-desktop-restore-interrupting-feature-hook (fn &optional local)
   (interactive)
-  (when t
-   (remove-hook
-    'lotus-enable-desktop-restore-interrupting-feature-hook
-    fn
-    local)))
+  (remove-hook 'lotus-enable-desktop-restore-interrupting-feature-hook
+               fn
+               local))
 ;;;###autoload
 (defun desktop-enable-restore-interrupting-feature-run ()
   "run hook"
@@ -149,10 +144,11 @@
   (setq lotus-enable-desktop-restore-interrupting-feature-hook-old lotus-enable-desktop-restore-interrupting-feature-hook)
   (setq lotus-enable-desktop-restore-interrupting-feature-hook nil))
 ;;;###autoload
-(defun desktop-enable-restore-interrupting-feature-delay-run ()
+(defun desktop-enable-restore-interrupting-feature-delay-run (sec)
   (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-delay-run"
            "scheduled desktop-enable-restore-interrupting-feature-run to run after sometime.")
-  (run-with-idle-timer 10 nil #'desktop-enable-restore-interrupting-feature-run))
+  (let ((sec-idle (+ (if idle-time (float-time idle-time) 0) secs)))
+    (run-with-idle-timer sec-idle nil #'desktop-enable-restore-interrupting-feature-run)))
 
 
 ;;;###autoload
