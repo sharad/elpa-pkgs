@@ -118,7 +118,7 @@
 
       (dolist (it (copy-tree bindings))
         (define-key occ-mode-keymap (kbd (car it)) (cadr it)))))
-  
+
   (dolist (it '(("l" . "format")
                 ("C" . "folder")
                 ("d" . "toggle")
