@@ -187,7 +187,7 @@
         (headlines (ptree-get ptree :target :headlines))
         (function  (ptree-get ptree :target :function))
         (marker    (ptree-get ptree :target :marker)))
-    (case name
+    (cl-case name
       (file              (list name file))
       (id                (list name id))
       (file+headline     (list name file (first (last headlines))))
@@ -258,7 +258,7 @@
 
 
 (defmacro define-org-capture+-filter (tree-keys &rest body)
-  (destructuring-bind (ptree . keys) tree-keys
+  (cl-destructuring-bind (ptree . keys) tree-keys
    `(let ((fn #'(lambda (,ptree) ,@body)))
       (org-capture+-meta-put fn ',keys :filter))))
 (put 'define-org-capture+-filter 'lisp-indent-function 1)

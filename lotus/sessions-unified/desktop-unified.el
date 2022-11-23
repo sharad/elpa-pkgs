@@ -523,7 +523,7 @@ so returns nil if pid is nil."
   (remove-hook 'auto-save-hook #'save-all-sessions-auto-save)
   (remove-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
   (frame-session-restore-unhook-func)
-  (desktop-disable-restore-interrupting-feature-run)
+  (sessions-unified-desktop-disable-restore-interrupting-feature-run)
   (funcall sessions-unified-utils-notify "lotus-disable-session-saving"  "Removed save-all-sessions-auto-save from auto-save-hook and kill-emacs-hook"))
 
 ;;;###autoload
@@ -560,7 +560,7 @@ so returns nil if pid is nil."
   (add-hook 'auto-save-hook #'save-all-sessions-auto-save)
   (add-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
   (ignore-error (frame-session-restore-hook-func))
-  (ignore-error (desktop-enable-restore-interrupting-feature-delay-run))
+  (ignore-error (sessions-unified-desktop-enable-restore-interrupting-feature-delay-run))
   (funcall sessions-unified-utils-notify "lotus-enable-session-saving" "Added save-all-sessions-auto-save to auto-save-hook and kill-emacs-hook")
   (funcall sessions-unified-utils-notify "lotus-enable-session-saving-immediately" "exit"))
 
