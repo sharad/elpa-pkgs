@@ -83,6 +83,7 @@
 
 (defvar *session-unified-desktop-enabled* t "Enable desktop restoration.")
 (defvar *session-unified-session-enabled* t "Enable session restoration.")
+(defvar *sessions-unified-desktop-enable-restore-interrupting-feature-delay-time* 10)
 
 
 (defvar lotus-disable-desktop-restore-interrupting-feature-hook nil
@@ -119,6 +120,83 @@
           'x)
     (display-graphic-p)))
 
+
+;;;###autoload
+(defun lotus-disable-session-saving-immediately ()
+  (interactive)
+  (remove-hook 'auto-save-hook #'save-all-sessions-auto-save)
+  (remove-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
+  (frame-session-restore-unhook-func)
+  (sessions-unified-desktop-disable-restore-interrupting-feature-run)
+  (funcall sessions-unified-utils-notify "lotus-disable-session-saving"  "Removed save-all-sessions-auto-save from auto-save-hook and kill-emacs-hook"))
+
+;;;###autoload
+(defun lotus-disable-session-saving ()
+  (lotus-disable-session-saving-immediately)
+  (progn
+    (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
+    (ad-update 'desktop-idle-create-buffers)
+    (ad-activate 'desktop-idle-create-buffers)))
+
+
+;;;###autoload
+(defun lotus-enable-session-saving ()
+  ;; (if (or
+  ;;      (eq desktop-restore-eager t)
+  ;;      (null (lotus-desktop-saved-session)))
+  (let ((session-unified-desktop-buffs-len (length desktop-buffer-args-list)))
+    (if (or (eq desktop-restore-eager t)
+            ;; (null (lotus-desktop-saved-session))
+            (= session-unified-desktop-buffs-len 0))
+        (lotus-enable-session-saving-immediately)
+      (progn
+        (ad-enable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
+        (ad-update 'desktop-idle-create-buffers)
+        (ad-activate 'desktop-idle-create-buffers)))
+    (if (lotus-desktop-saved-session)
+        (message "desktop file exists.")
+      (message "desktop file do not exists."))))
+
+;;;###autoload
+(defun lotus-enable-session-saving-immediately ()
+  (interactive)
+  (funcall sessions-unified-utils-notify "lotus-enable-session-saving-immediately" "enter")
+  (add-hook 'auto-save-hook #'save-all-sessions-auto-save)
+  (add-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
+  (ignore-error (frame-session-restore-hook-func))
+  (ignore-error (sessions-unified-desktop-enable-restore-interrupting-feature-delay-run *sessions-unified-desktop-enable-restore-interrupting-feature-delay-time*))
+  (funcall sessions-unified-utils-notify "lotus-enable-session-saving" "Added save-all-sessions-auto-save to auto-save-hook and kill-emacs-hook")
+  (funcall sessions-unified-utils-notify "lotus-enable-session-saving-immediately" "exit"))
+
+
+(defun lotus-show-hook-member (fn hook)
+  (format "%s %s is present in %s"
+          (if (or (member fn (symbol-value hook))
+                  (member (symbol-function fn) (symbol-value hook)))
+              "Yes"
+            "No")
+          fn
+          hook))
+
+;;;###autoload
+(defun lotus-check-session-saving ()
+  (interactive)
+  (if (called-interactively-p 'interactive)
+      (message "%s, %s, %s, %s"
+               (lotus-show-hook-member 'save-all-sessions-auto-save 'auto-save-hook)
+               (lotus-show-hook-member 'save-all-sessions-auto-save-immediately 'kill-emacs-hook)
+               (lotus-show-hook-member 'frame-session-restore-force 'after-make-frame-functions)
+               (lotus-show-hook-member 'frame-session-save 'delete-frame-functions))
+    (and
+     (member #'save-all-sessions-auto-save auto-save-hook)
+     (member #'save-all-sessions-auto-save-immediately kill-emacs-hook)
+     (member #'frame-session-restore-force after-make-frame-functions)
+     (member #'frame-session-save delete-frame-functions))))
+
+;; (member 'save-all-sessions-auto-save-immediately
+;;         (symbol-value 'kill-emacs-hook))
+
+
 ;;;###autoload
 (defun add-to-enable-desktop-restore-interrupting-feature-hook (fn &optional append local)
   (interactive)
@@ -151,17 +229,20 @@
    (funcall sessions-unified-utils-notify "sessions-unified-desktop-enable-restore-interrupting-feature-run" "already triggered")))
 (defvar *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer* nil)
 ;;;###autoload
-(defun sessions-unified-desktop-enable-restore-interrupting-feature-delay-run (sec)
+(defun sessions-unified-desktop-enable-restore-interrupting-feature-delay-run (&optional sec)
   (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-delay-run"
            "scheduled sessions-unified-desktop-enable-restore-interrupting-feature-run to run after sometime.")
-  (let ((sec-idle (+ (if idle-time (float-time idle-time) 0) secs)))
-    (setq  *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
-           ;; (run-with-idle-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run)
-           (run-with-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run))))
+  (let* ((sec (or sec 10))
+         (sec-idle (+ (if idle-time (float-time idle-time) 0) secs)))
+    (setq *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
+          ;; (run-with-idle-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run)
+          (run-with-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run))))
 (defun sessions-unified-desktop-enable-restore-interrupting-feature-run-info ()
   (interactive)
   (let ((type (timer--idle-delay *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
-        (timesec (cadr (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))))
+        (timesec (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
+                     (cadr (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
+                   0)))
     (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-delay-run" "hooks will run %sly after %d" type timesec)))
 
 

@@ -231,7 +231,8 @@
                               (file-truename f2))))
           ;; TODO workaround do complete nil, later change it to optimized.
           ;; TODO update existing occ-collection.tree or occ-collection.list
-          (occ-reset-deafult-tsk-collection)
+          ;; (occ-reset-deafult-tsk-collection)
+          (occ-reset-deafult-collection-object)
         (occ-debug :debug "file %s not resetting deafult-tsk-collection" file)))))
 
 

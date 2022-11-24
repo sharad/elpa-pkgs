@@ -517,83 +517,6 @@ so returns nil if pid is nil."
      *session-unified-desktop-enabled*)))
 
 
-;;;###autoload
-(defun lotus-disable-session-saving-immediately ()
-  (interactive)
-  (remove-hook 'auto-save-hook #'save-all-sessions-auto-save)
-  (remove-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
-  (frame-session-restore-unhook-func)
-  (sessions-unified-desktop-disable-restore-interrupting-feature-run)
-  (funcall sessions-unified-utils-notify "lotus-disable-session-saving"  "Removed save-all-sessions-auto-save from auto-save-hook and kill-emacs-hook"))
-
-;;;###autoload
-(defun lotus-disable-session-saving ()
-  (lotus-disable-session-saving-immediately)
-  (progn
-    (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
-    (ad-update 'desktop-idle-create-buffers)
-    (ad-activate 'desktop-idle-create-buffers)))
-
-
-;;;###autoload
-(defun lotus-enable-session-saving ()
-  ;; (if (or
-  ;;      (eq desktop-restore-eager t)
-  ;;      (null (lotus-desktop-saved-session)))
-  (let ((session-unified-desktop-buffs-len (length desktop-buffer-args-list)))
-    (if (or (eq desktop-restore-eager t)
-            ;; (null (lotus-desktop-saved-session))
-            (= session-unified-desktop-buffs-len 0))
-        (lotus-enable-session-saving-immediately)
-      (progn
-        (ad-enable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
-        (ad-update 'desktop-idle-create-buffers)
-        (ad-activate 'desktop-idle-create-buffers)))
-    (if (lotus-desktop-saved-session)
-        (message "desktop file exists.")
-      (message "desktop file do not exists."))))
-
-;;;###autoload
-(defun lotus-enable-session-saving-immediately ()
-  (interactive)
-  (funcall sessions-unified-utils-notify "lotus-enable-session-saving-immediately" "enter")
-  (add-hook 'auto-save-hook #'save-all-sessions-auto-save)
-  (add-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
-  (ignore-error (frame-session-restore-hook-func))
-  (ignore-error (sessions-unified-desktop-enable-restore-interrupting-feature-delay-run))
-  (funcall sessions-unified-utils-notify "lotus-enable-session-saving" "Added save-all-sessions-auto-save to auto-save-hook and kill-emacs-hook")
-  (funcall sessions-unified-utils-notify "lotus-enable-session-saving-immediately" "exit"))
-
-
-(defun lotus-show-hook-member (fn hook)
-  (format "%s %s is present in %s"
-          (if (or (member fn (symbol-value hook))
-                  (member (symbol-function fn) (symbol-value hook)))
-              "Yes"
-            "No")
-          fn
-          hook))
-
-;;;###autoload
-(defun lotus-check-session-saving ()
-  (interactive)
-  (if (called-interactively-p 'interactive)
-      (message
-       "%s, %s, %s, %s"
-       (lotus-show-hook-member 'save-all-sessions-auto-save 'auto-save-hook)
-       (lotus-show-hook-member 'save-all-sessions-auto-save-immediately 'kill-emacs-hook)
-       (lotus-show-hook-member 'frame-session-restore-force 'after-make-frame-functions)
-       (lotus-show-hook-member 'frame-session-save 'delete-frame-functions))
-    (and
-     (member #'save-all-sessions-auto-save auto-save-hook)
-     (member #'save-all-sessions-auto-save-immediately kill-emacs-hook)
-     (member #'frame-session-restore-force after-make-frame-functions)
-     (member #'frame-session-save delete-frame-functions))))
-
-;; (member 'save-all-sessions-auto-save-immediately
-;;         (symbol-value 'kill-emacs-hook))
-
-
 (defun desktop-idle-create-buffers ()
   "Create buffers until the user does something, then stop.
  there are no buffers left to create, kill the timer."
@@ -619,6 +542,8 @@ en all buffer were creaed idly."
   (funcall sessions-unified-utils-notify "desktop-idle-create-buffers"
            "After desktop-idle-create-buffers (len desktop-buffer-args-list)=%d" (length desktop-buffer-args-list))
   (unless desktop-buffer-args-list
+    (funcall sessions-unified-utils-notify "desktop-idle-create-buffers"
+             "Now removing advice and running lotus-enable-session-saving-immediately")
     (progn
       (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
       (ad-update 'desktop-idle-create-buffers)
