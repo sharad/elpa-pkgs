@@ -134,10 +134,11 @@
 
 
 (defvar occ-mode-global-allowed nil)
+;;;###autoload
 (defun occ-mode-global-allow ()
   (interactive)
   (setq occ-mode-global-allowed t))
-
+;;;###autoload
 (defun occ-mode-global-disallow ()
   (interactive)
   (setq occ-mode-global-allowed nil))

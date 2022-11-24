@@ -140,15 +140,28 @@
            "Enabled session saving")
   (funcall sessions-unified-utils-notify "sessions-unified-desktop-enable-restore-interrupting-feature-run"
            "running lotus-enable-desktop-restore-interrupting-feature-hook hook now.")
-  (run-each-hooks 'lotus-enable-desktop-restore-interrupting-feature-hook)
-  (setq lotus-enable-desktop-restore-interrupting-feature-hook-old lotus-enable-desktop-restore-interrupting-feature-hook)
-  (setq lotus-enable-desktop-restore-interrupting-feature-hook nil))
+  (when *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
+    (cancel-timer *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
+  (setq *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer* nil)
+  (if lotus-enable-desktop-restore-interrupting-feature-hook
+   (progn
+     (run-each-hooks 'lotus-enable-desktop-restore-interrupting-feature-hook)
+     (setq lotus-enable-desktop-restore-interrupting-feature-hook-old lotus-enable-desktop-restore-interrupting-feature-hook)
+     (setq lotus-enable-desktop-restore-interrupting-feature-hook nil))
+   (funcall sessions-unified-utils-notify "sessions-unified-desktop-enable-restore-interrupting-feature-run" "already triggered")))
+(defvar *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer* nil)
 ;;;###autoload
 (defun sessions-unified-desktop-enable-restore-interrupting-feature-delay-run (sec)
   (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-delay-run"
            "scheduled sessions-unified-desktop-enable-restore-interrupting-feature-run to run after sometime.")
   (let ((sec-idle (+ (if idle-time (float-time idle-time) 0) secs)))
-    (run-with-idle-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run)))
+    (setq  *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
+           (run-with-idle-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run))))
+(defun sessions-unified-desktop-enable-restore-interrupting-feature-run-info ()
+  (interactive)
+  (let ((type (timer--idle-delay *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
+        (timesec (cadr (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))))
+    (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-delay-run" "hooks will run %sly after %d" type timesec)))
 
 
 ;;;###autoload
