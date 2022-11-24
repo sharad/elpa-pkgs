@@ -192,7 +192,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
                                                      (window-buffer window))
                                                    (window-list))))
                                        screen-list))))
-         ;; (message "desktop-buffers: %s" desktop-buffers)
+         ;; (session-unfiy-notify "desktop-buffers: %s" desktop-buffers)
          (when desktop-buffers
            (remove nil
                    (mapcar #'desktop-make-create-buffer-list desktop-buffers))))))))
@@ -246,9 +246,9 @@ return a new alist whose car is the new pair and cdr is ALIST."
                     (cl-rest (assoc 'current-buffer-file session-list))))
               ;; (when t
               (when session-unified-debug
-               (message "Bstart: session-current-screen-buffers %s" session-current-screen-buffers)
-               (message "Astart: screen-to-name-alist %s" session-list)
-               (message "Cstart: desktop-buffers %s" desktop-buffers))
+               (session-unfiy-notify "Bstart: session-current-screen-buffers %s" session-current-screen-buffers)
+               (session-unfiy-notify "Astart: screen-to-name-alist %s" session-list)
+               (session-unfiy-notify "Cstart: desktop-buffers %s" desktop-buffers))
 
               ;; ready file for buffer in session-list, using desktop-restore methods
               (if desktop-buffers
@@ -256,39 +256,37 @@ return a new alist whose car is the new pair and cdr is ALIST."
                   (let ((bufs (mapcar
                                '(lambda (bl) (nth 2 bl))
                                desktop-buffers)))
-                    (funcall sessions-unified-utils-notify "elscreen-session-session-list-set"
-                             "Please wait I am busy to restore %d\nbuffers %s"
-                             (length desktop-buffers) bufs)
+                    (session-unfiy-notify "Please wait I am busy to restore %d\nbuffers %s"
+                                          (length desktop-buffers) bufs)
                     (let ((desktop-buffer-ok-count 0)
                           (desktop-buffer-fail-count 0)
                           desktop-first-buffer)
                       (dolist (desktop-buffer-args desktop-buffers)
                         (let ((bufname (nth 2 desktop-buffer-args))
                               (file-path (nth 1 desktop-buffer-args)))
-                          (message "restoring %s" bufname)
+                          (session-unfiy-notify "restoring %s" bufname)
                           (if (find-buffer-visiting file-path)
-                              (message "buffer %s already here" bufname)
+                              (session-unfiy-notify "buffer %s already here" bufname)
                             (if (stringp bufname)
                                 (if (get-buffer bufname)
-                                    (message "buffer %s already here" bufname)
+                                    (session-unfiy-notify "buffer %s already here" bufname)
                                   (let ()
-                                    (message "Hello 1")
-                                    (message "elscreen-session-session-list-set: Desktop lazily opening %s" bufname)
+                                    (session-unfiy-notify "Hello 1")
+                                    (session-unfiy-notify "Desktop lazily opening %s" bufname)
                                     (unless (ignore-errors
                                               (save-window-excursion
                                                 (apply 'desktop-create-buffer desktop-buffer-args)))
-                                      (message "elscreen-session-session-list-set: Desktop lazily opening Failed."))
-                                    (message "Hello 2")
-                                    (message "restored %s" bufname)))
-                              (message "bufname: %s is not string" bufname))))))
-                    (funcall sessions-unified-utils-notify "elscreen-session-session-list-set"
-                             "Restored %d\nbuffers %s"
-                             (length desktop-buffers) bufs))
-                (message "No desktop-buffers"))
+                                      (session-unfiy-notify "Desktop lazily opening Failed."))
+                                    (session-unfiy-notify "Hello 2")
+                                    (session-unfiy-notify "restored %s" bufname)))
+                              (session-unfiy-notify "bufname: %s is not string" bufname))))))
+                    (session-unfiy-notify "Restored %d\nbuffers %s"
+                                          (length desktop-buffers) bufs))
+                (session-unfiy-notify "No desktop-buffers"))
 
               ;; setup elscreens with buffers
               (while screens
-                (message "while screen: %s" screens)
+                (session-unfiy-notify "while screen: %s" screens)
                 ;; (setq screen (cl-first (cl-first screens)))
                 ;; (setq buff-files (cl-rest  (cl-first screens)))
                 (let* ((screen         (cl-first (cl-first screens)))
@@ -314,7 +312,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
                                                 (cl-first buff-file)
                                               buff-file)))))
                                (minibuff-name " *Minibuf"))
-                         (message "  while buff: %s file-path: %s" buff file-path)
+                         (session-unfiy-notify "  while buff: %s file-path: %s" buff file-path)
                          (when (and buff
                                     (bufferp buff)
                                     (not
@@ -325,17 +323,17 @@ return a new alist whose car is the new pair and cdr is ALIST."
                                (switch-to-buffer-other-window buff)
                              (switch-to-buffer buff)
                              (setq not-first-buff t)))
-                         (message "test4")))
+                         (session-unfiy-notify "test4")))
                       (error "3 Screen is not active for frame %s" nframe))
 
                     (setq buff-files (cl-rest buff-files))
 
-                    (message "progn buff-files: %s" buff-files)
-                    (when session-unified-debug (message "else"))))
+                    (session-unfiy-notify "progn buff-files: %s" buff-files)
+                    (when session-unified-debug (session-unfiy-notify "else"))))
 
                 (setq screens (cl-rest screens))
-                (message "while screen: %s" screens)
-                (message "test5")) ;; (while screens
+                (session-unfiy-notify "while screen: %s" screens)
+                (session-unfiy-notify "test5")) ;; (while screens
 
               ;; (when elscreen-session-restore-create-scratch-buffer
               ;;   (elscreen-find-and-goto-by-buffer (get-buffer-create "*scratch*") t t))
@@ -364,11 +362,11 @@ return a new alist whose car is the new pair and cdr is ALIST."
 
         ;; (let* ((desktop-buffers
         (when session-unified-debug
-         (message "elscreen-notify-screen-modification"))
+         (session-unfiy-notify "elscreen-notify-screen-modification"))
         (elscreen-notify-screen-modification 'force-immediately)
-        (message "elscreen-session-session-list-set: DONE."))
+        (session-unfiy-notify "elscreen-session-session-list-set: DONE."))
 
-    (message "elscreen-session-session-list-set: Error: Session do not exists.")))
+    (session-unfiy-notify "elscreen-session-session-list-set: Error: Session do not exists.")))
 
 (defvar *frames-elscreen-session* nil "Stores all elscreen sessions here.")
 (defvar *frames-elscreen-session-old* nil "Stores all discarded elscreen sessions here.")
@@ -417,7 +415,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
               (remove* session *frames-elscreen-session*
                        :key 'car
                        :test 'string-equal)))
-    (message "Not deleting screen \"%s\" session: " session)))
+    (session-unfiy-notify "Not deleting screen \"%s\" session: " session)))
 
 
 (defun fmsession-modify-element (fun)
@@ -463,16 +461,16 @@ return a new alist whose car is the new pair and cdr is ALIST."
   (interactive
    (list
     (fmsession-read-location)))
-  (message "elscreen-session-restore: start")
+  (session-unfiy-notify "start")
   (if elscreen-session
       (let ((elscreen-session-list
              (cl-rest (assoc elscreen-session *frames-elscreen-session*))))
         (when session-unified-debug
-         (message "Nstart: session-session %s" elscreen-session))
+         (session-unfiy-notify "Nstart: session-session %s" elscreen-session))
         (if elscreen-session-list
             (elscreen-session-session-list-set elscreen-session-list (or nframe (selected-frame)))
-          (message "elscreen-session-restore: Error: elscreen-session-list %s" elscreen-session-list)))
-    (message "elscreen-session-restore: Error: elscreen-session is %s" elscreen-session)))
+          (session-unfiy-notify "Error: elscreen-session-list %s" elscreen-session-list)))
+    (session-unfiy-notify "Error: elscreen-session is %s" elscreen-session)))
 
 (defun fmsession-read-location-internal (&optional initial-input)
   (condition-case terr
@@ -520,13 +518,11 @@ return a new alist whose car is the new pair and cdr is ALIST."
   "Restore the elscreen tab configuration."
   (interactive
    (list (fmsession-read-location)))
-  (message "fmsession-restore: start")
+  (session-unfiy-notify "start")
   (if (and (fboundp 'elscreen-get-conf-list)
            (elscreen-get-conf-list 'screen-history))
       (elscreen-session-restore session-name nframe)
-    (funcall sessions-unified-utils-notify
-             "fmsession-restore"
-             "Error: not restoring screen session as screen-history config not found.")))
+    (session-unfiy-notify "Error: not restoring screen session as screen-history config not found.")))
 
 ;; (elscreen-restore)
 ;;}}
@@ -596,7 +592,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
         (funcall session-unified-utils-select-frame-fn nframe)
       (error "nframe is nil"))
 
-    (message "in frame-session-set-this-location")
+    (session-unfiy-notify "in frame-session-set-this-location")
 
     (let* ((xwin-enabled (protable-display-graphic-p))
            (wm-hints
@@ -610,22 +606,22 @@ return a new alist whose car is the new pair and cdr is ALIST."
                               (member desktop-name
                                       (mapcar #'car *frames-elscreen-session*)))
                          (progn
-                           (message "frame-session-set-this-location: NO need to call interactive (fmsession-read-location desktop-name[%s])"
+                           (session-unfiy-notify "NO need to call interactive (fmsession-read-location desktop-name[%s])"
                                     desktop-name)
                            desktop-name)
                        (progn
                          (if (eq try-guessing 'only)
-                             (message "frame-session-set-this-location: could not guess will return nil as try-guessing = %s set."
+                             (session-unfiy-notify "could not guess will return nil as try-guessing = %s set."
                                       try-guessing)
-                           (message "frame-session-set-this-location: NEED to call interactive (fmsession-read-location desktop-name[%s])"
+                           (session-unfiy-notify "NEED to call interactive (fmsession-read-location desktop-name[%s])"
                                     desktop-name))
                          ;; BUG: causing first emacsclient frame to be jammed which require pkill -USR2 emacs
                          (unless (eq try-guessing 'only)
                            (fmsession-read-location desktop-name))))))
       (if xwin-enabled
           (unless wm-hints
-            (message "Some error in wm-hints")))
-      (message "frame-session-set-this-location: %s" location)
+            (session-unfiy-notify "Some error in wm-hints")))
+      (session-unfiy-notify "%s" location)
       (when location
         (set-frame-parameter nframe 'frame-spec-id location))
       location))
@@ -635,12 +631,12 @@ return a new alist whose car is the new pair and cdr is ALIST."
 
 (defun frame-session-restore (nframe &optional try-guessing)
   (when t
-    (message "in frame-session-restore")
+    (session-unfiy-notify "in frame-session-restore")
     (if (and
          *frame-session-restore*
          (null *desktop-vc-read-inprogress*))
         (progn
-          (message "pass in frame-session-restore")
+          (session-unfiy-notify "pass in frame-session-restore")
           (if nframe
               (funcall session-unified-utils-select-frame-fn nframe)
             (error "nframe is nil"))
@@ -661,30 +657,24 @@ return a new alist whose car is the new pair and cdr is ALIST."
             (funcall *frame-session-restore-screen-display-function*))
           nframe)
       (progn
-        (funcall sessions-unified-utils-notify
-                 "frame-session-restore"
-                 "not restoring screen session.")
+        (session-unfiy-notify "not restoring screen session.")
         (if *desktop-vc-read-inprogress*
-            (funcall sessions-unified-utils-notify
-                     "frame-session-restore"
-                     "as desktop restore is in progress *desktop-vc-read-inprogress* %s"
-                     *desktop-vc-read-inprogress*))
+            (session-unfiy-notify "as desktop restore is in progress *desktop-vc-read-inprogress* %s"
+                                  *desktop-vc-read-inprogress*))
         (if (null *frame-session-restore*)
-            (funcall sessions-unified-utils-notify
-                     "frame-session-restore"
-                     "as another frame session restore in progress *frame-session-restore* %s"
-                     *frame-session-restore*))))))
+            (session-unfiy-notify "as another frame session restore in progress *frame-session-restore* %s"
+                                  *frame-session-restore*))))))
 
 (defun frame-session-restore-force (nframe)
   (let ((location (frame-parameter (selected-frame) 'frame-spec-id)))
     (if location
-        (message "already location %s set" location))
+        (session-unfiy-notify "already location %s set" location))
     (frame-session-restore nframe t)))
 
 (defun frame-session-restore-uninteractive (nframe)
   (let ((location (frame-parameter (selected-frame) 'frame-spec-id)))
     (if location
-        (message "already location %s set" location))
+        (session-unfiy-notify "already location %s set" location))
     (frame-session-restore nframe 'only)))
 
 (defun frame-session-apply (nframe)
@@ -696,10 +686,10 @@ return a new alist whose car is the new pair and cdr is ALIST."
     (fmsession-restore (fmsession-read-location) nframe)))
 
 (defun frame-session-save (nframe)
-  (message "in frame-session-save:")
+  (session-unfiy-notify "in frame-session-save:")
   (let ((location (frame-parameter nframe 'frame-spec-id)))
     (when location
-      (message "saved the session for %s" location)
+      (session-unfiy-notify "saved the session for %s" location)
       (fmsession-store location nframe))))
 
 ;;;###autoload
@@ -711,7 +701,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
 (defun frame-session-restore-hook-func ()
   "Add to hook"
   ;; (add-hook 'after-make-frame-functions 'frame-session-set-this-location t)
-  (message "adding frame-session-restore-hook-func hooks")
+  (session-unfiy-notify "adding frame-session-restore-hook-func hooks")
   (when t
     (add-hook 'after-make-frame-functions
               #'frame-session-restore-uninteractive)

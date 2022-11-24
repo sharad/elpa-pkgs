@@ -31,6 +31,7 @@
 (defvar session-unified-dir "~/.emacs.d/.cache/session-unified/")
 
 (defvar session-unified-debug nil)
+
 
 (defun make-session-unified-dir (&optional path)
   (let ((dir (if path
@@ -41,6 +42,7 @@
 
 (make-session-unified-dir)
 (setq session-save-file (expand-file-name "session/session.el" session-unified-dir))
+
 
 (defun lotus-session-saved-session ()
   (if (file-exists-p session-save-file) session-save-file))
@@ -123,6 +125,5 @@
                    (< (length (frame-list)) 3)
                    (functionp 'session-save-sessoin))
                   (session-save-sessoin))))
-
-
+
 ;;; session-unified.el ends here
