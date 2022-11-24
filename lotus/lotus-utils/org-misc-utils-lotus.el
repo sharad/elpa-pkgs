@@ -120,6 +120,261 @@
          (error "can not open file %s" ,file))))
 (put 'org-with-file-heading 'lisp-indent-function 2)
 
+
+(defmacro org-with-narrow-to-marker (marker &rest body)
+  `(if ,marker
+       (with-current-buffer (marker-buffer ,marker)
+         (goto-char ,marker)
+         (save-excursion
+           (save-restriction
+             (org-narrow-to-subtree)
+             (progn
+               ,@body))))
+       (error "marker is nil")))
+(put 'org-with-narrow-to-marker 'lisp-indent-function 1)
+
+(defmacro org-with-narrow-to-heading-subtree (heading create &rest body)
+  `(let ((marker (org-find-heading-marker ,heading ,create)))
+     (when marker
+       (org-with-narrow-to-marker marker ,@body))))
+(put 'org-with-narrow-to-heading-subtree 'lisp-indent-function 2)
+
+(defmacro org-with-narrow-to-file-heading-subtree (file heading create &rest body)
+  `(let ((marker
+          (with-current-buffer (find-file-noselect ,file)
+            (org-find-heading-marker ,heading ,create))))
+     (when marker
+       (org-with-narrow-to-marker marker ,@body))))
+(put 'org-with-narrow-to-file-heading-subtree 'lisp-indent-function 3)
+
+(defmacro org-with-cloned-buffer (buff clone &rest body)
+  `(with-current-buffer ,buff
+     (let ((buff (or ,buff (current-buffer)))
+           (clone-name (concat (or ,clone "<clone>") "-" (buffer-name))))
+       (let ((pos (point)))
+         (unwind-protect
+              (progn
+                (clone-indirect-buffer clone-name nil t)
+                ;; (set-buffer clone-name)
+                (with-current-buffer (get-buffer clone-name)
+                  (widen)
+                  (show-all)
+                  ;; (org-mode)
+                  ,@body))
+           (when buff
+             (setq pos (point))
+             (set-buffer buff)
+             (goto-char pos))
+           (kill-buffer clone-name))))))
+(put 'org-with-cloned-buffer 'lisp-indent-function 2)
+
+(defmacro org-with-cloned-marker-widen (marker clone &rest body)
+  `(with-current-buffer (marker-buffer ,marker)
+     (let ((clone-name (concat (or ,clone "<clone>") "-" (buffer-name)))
+           (marker ,marker)
+           (buff (marker-buffer ,marker)))
+       (let ((pos (point)))
+         (unwind-protect
+              (progn
+                (clone-indirect-buffer clone-name nil t)
+                ;; (set-buffer clone-name)
+                (with-current-buffer (get-buffer clone-name)
+                  (goto-char (point-min))
+                  (widen)
+                  (show-all)
+                  (goto-char (marker-position-nonil marker))
+                  ;; (org-mode)
+                  ,@body))
+           (setq pos (point))
+           (when buff
+             (setq pos (point))
+             (set-buffer buff)
+             (goto-char pos))
+           (kill-buffer clone-name))))))
+(put 'org-with-cloned-marker-widen 'lisp-indent-function 2)
+
+
+(defmacro org-with-cloned-marker (marker clone &rest body)
+  `(with-current-buffer (marker-buffer ,marker)
+     (let ((clone-name (concat (or ,clone "<clone>") "-" (buffer-name)))
+           (marker ,marker)
+           (buff (marker-buffer ,marker)))
+       (let ((pos (point)))
+         (unwind-protect
+             (progn
+               (clone-indirect-buffer clone-name nil t)
+               ;; (set-buffer clone-name)
+               (with-current-buffer (get-buffer clone-name)
+                 (goto-char (point-min))
+                 (widen)
+                 (show-all)
+                 (goto-char (marker-position-nonil marker))
+                 ;; (org-mode)
+                 ,@body))
+           (setq pos (point))
+           (when buff
+             (setq pos (point))
+             (set-buffer buff)
+             (goto-char pos))
+           (kill-buffer clone-name))))))
+(put 'org-with-cloned-marker 'lisp-indent-function 2)
+
+(defmacro org-with-cloned-marker-plain (marker clone &rest body)
+  `(with-current-buffer (marker-buffer ,marker)
+     (let ((clone-name (concat (or ,clone "<clone>") "-" (buffer-name)))
+           (marker ,marker)
+           (buff (marker-buffer ,marker)))
+       (let ((pos (point)))
+         (unwind-protect
+             (progn
+               (clone-indirect-buffer clone-name nil t)
+               ;; (set-buffer clone-name)
+               (with-current-buffer (get-buffer clone-name)
+                 ;; (goto-char (point-min))
+                 ;; (widen)
+                 ;; (show-all)
+                 ;; (goto-char (marker-position-nonil marker))
+                 ;; (org-mode)
+                 ,@body))
+           (setq pos (point))
+           (when buff
+             (setq pos (point))
+             (set-buffer buff)
+             (goto-char pos))
+           (kill-buffer clone-name))))))
+(put 'org-with-cloned-marker-plain 'lisp-indent-function 2)
+
+;; TODO (replace-buffer-in-windows)
+(defmacro helm-timed (timeout win-buff &rest body)
+  (let ((temp-win-config (make-symbol "test-helm-timed")))
+    `(let* ((,temp-win-config (lotus-current-window-configuration))
+            (current-command (or
+                              (helm-this-command)
+                              this-command))
+            (str-command     (helm-symbol-name current-command))
+            (buf-name        (or ,win-buff (format "*helm-mode-%s*" str-command)))
+            (timer (run-with-idle-plus-timer ,timeout nil
+                                             #'(lambda (buffname)
+                                                 (let* ((buff (or
+                                                               (get-buffer buffname)
+                                                               (get-buffer "*helm*")))
+                                                        (w (if buff (get-buffer-window buff))))
+                                                   (message "helm-timed: triggered timer for new-win %s" w)
+                                                   ;; TODO: open emacs why SIGABRT triggered on pressin C-g three time when struck.
+                                                   ;;       with below line.
+                                                   (discard-input)
+                                                   (when (and w (windowp w) (window-valid-p w))
+                                                     (safe-delete-window w)
+                                                     (safe-exit-recursive-edit-if-active)
+                                                     (select-frame-set-input-enable-raise)
+                                                     (when ,temp-win-config
+                                                       (lotus-set-window-configuration ,temp-win-config)
+                                                       (setq ,temp-win-config nil)))))
+                                             buf-name)))
+       (unwind-protect
+           (progn
+             (select-frame-set-input-disable-raise)
+             (progn
+               ,@body))
+         (select-frame-set-input-enable-raise)
+         (cancel-timer timer)))))
+(put 'helm-timed 'lisp-indent-function 2)
+
+(defmacro org-with-refile (file pos refile-targets prompt &rest body)
+  "Refile the active region.
+If no region is active, refile the current paragraph.
+With prefix arg C-u, copy region instad of killing it."
+  ;; mark paragraph if no region is set
+  `(let* ((org-refile-targets (or ,refile-targets org-refile-targets))
+          (target (save-excursion (safe-org-refile-get-location ,prompt)))
+          (,file (nth 1 target))
+          (,pos (nth 3 target)))
+     (with-current-buffer (find-file-noselect ,file)
+       (save-excursion
+         (goto-char ,pos)
+         ,@body))))
+(put 'org-with-refile 'lisp-indent-function 4)
+
+(defmacro org-file-loc-with-refile (file pos refile-targets prompt &rest body)
+  "Refile run body with file and loc set."
+  ;; mark paragraph if no region is set
+  `(let* ((org-refile-targets (or ,refile-targets org-refile-targets))
+          (target (save-excursion (safe-org-refile-get-location ,prompt)))
+          (,file (nth 1 target))
+          (,pos (nth 3 target)))
+     (lotus-with-file-pos ,file ,pos
+                          ,@body)))
+(put 'org-file-loc-with-refile 'lisp-indent-function 4)
+
+;; (defmacro org-timed-file-loc-with-refile (file pos timeout refile-targets prompt &rest body)
+(defmacro org-with-file-loc-timed-refile (file pos timeout refile-targets prompt &rest body)
+  "Refile run body with file and loc set."
+  ;; mark paragraph if no region is set
+  `(let* ((org-refile-targets (or ,refile-targets org-refile-targets))
+          (target (save-excursion (safe-timed-org-refile-get-location ,timeout ,prompt)))
+          (,file (nth 1 target))
+          (,pos (nth 3 target)))
+     (assert ,file)
+     (assert ,pos)
+     (lotus-with-file-pos ,file ,pos
+                          ,@body)))
+(put 'org-with-file-loc-timed-refile 'lisp-indent-function 5)
+
+;; TODO: org-fit-window-to-buffer
+;; (defmacro org-miniwin-file-loc-with-refile (win file pos refile-targets prompt &rest body)
+(defmacro org-with-file-loc-refile-new-win (file pos refile-targets newwin prompt &rest body)
+  `(org-file-loc-with-refile
+       ,file ,pos ,refile-targets ,prompt
+       (lotus-with-file-pos-new-win
+           ,file ,pos ,newwin
+           ,@body)))
+(put 'org-miniwin-file-loc-with-refile 'lisp-indent-function 5)
+
+;; TODO: org-fit-window-to-buffer
+;; (defmacro org-timed-miniwin-file-loc-with-refile (win file pos timeout refile-targets prompt &rest body)
+(defmacro org-with-file-loc-timed-refile-new-win (file pos timeout refile-targets newwin prompt &rest body)
+  `(org-with-file-loc-timed-refile
+       ,file ,pos ,timeout
+       (show-all
+        (read-only-mode)
+        (org-previous-visible-heading 1)
+        (let ((info (org-context-clock-collect-task))) ;BUG???
+          info) ,refile-targets) ,prompt
+       (lotus-with-file-pos-new-win
+           ,file ,pos ,newwin
+           ,@body)))
+(put 'org-with-file-loc-timed-refile-new-win 'lisp-indent-function 6)
+
+;; TODO: org-fit-window-to-buffer
+;; (defmacro org-timed-miniwin-file-loc-with-refile (win file pos timeout refile-targets prompt &rest body)
+(defmacro org-with-file-loc-timed-refile-timed-new-win (file pos
+                                                        timeout-refile refile-targets
+                                                        timeout-newwin timer-newwin
+                                                        cleanupfn-newwin cleanupfn-local
+                                                        newwin prompt
+                                                        &rest body)
+  `(org-with-file-loc-timed-refile
+     ,file ,pos ,timeout-refile ,refile-targets ,prompt
+     (lotus-with-file-pos-timed-new-win
+      ,file ,pos ,timeout-newwin ,timer-newwin ,cleanupfn-newwin ,cleanupfn-local ,newwin ,@body)))
+(put 'org-with-file-loc-timed-refile-timed-new-win 'lisp-indent-function 10)
+
+;; e.g.
+;; (org-miniwin-file-loc-with-refile nil nil)
+;;)
+;; Refile macros Ends
+
+
+(defmacro org-with-file-loc-timed-refile (marker timeout &rest body)
+  "Refile run body with file and loc set."
+  ;; mark paragraph if no region is set
+  `(let* ((marker ,marker))
+     (lotus-with-marker marker
+       ,@body)))
+(put 'org-with-file-loc-timed-refile 'lisp-indent-function 5)
+
+
+
 (setq org-refile-targets
       '((nil :maxlevel . 3)           ; only the current file
         (org-agenda-files :maxlevel . 3) ; all agenda files, 1st/2nd level
@@ -208,130 +463,6 @@ With prefix arg C-u, copy region instad of killing it."
     (org-mode)
     ;; (with-current-buffer (find-file-noselect file)
     (org-find-heading-marker heading create)))
-
-(defmacro org-with-narrow-to-marker (marker &rest body)
-  `(if ,marker
-       (with-current-buffer (marker-buffer ,marker)
-         (goto-char ,marker)
-         (save-excursion
-           (save-restriction
-             (org-narrow-to-subtree)
-             (progn
-               ,@body))))
-       (error "marker is nil")))
-(put 'org-with-narrow-to-marker 'lisp-indent-function 1)
-
-(defmacro org-with-narrow-to-heading-subtree (heading create &rest body)
-  `(let ((marker (org-find-heading-marker ,heading ,create)))
-     (when marker
-       (org-with-narrow-to-marker marker ,@body))))
-(put 'org-with-narrow-to-heading-subtree 'lisp-indent-function 2)
-
-(defmacro org-with-narrow-to-file-heading-subtree (file heading create &rest body)
-  `(let ((marker
-          (with-current-buffer (find-file-noselect ,file)
-            (org-find-heading-marker ,heading ,create))))
-     (when marker
-       (org-with-narrow-to-marker marker ,@body))))
-(put 'org-with-narrow-to-file-heading-subtree 'lisp-indent-function 3)
-
-(defmacro org-with-cloned-buffer (buff clone &rest body)
-  `(with-current-buffer ,buff
-     (let ((buff (or ,buff (current-buffer)))
-           (clone-name (concat (or ,clone "<clone>") "-" (buffer-name))))
-       (let ((pos (point)))
-         (unwind-protect
-              (progn
-                (clone-indirect-buffer clone-name nil t)
-                ;; (set-buffer clone-name)
-                (with-current-buffer (get-buffer clone-name)
-                  (widen)
-                  (show-all)
-                  ;; (org-mode)
-                  ,@body))
-           (when buff
-             (setq pos (point))
-             (set-buffer buff)
-             (goto-char pos))
-           (kill-buffer clone-name))))))
-(put 'org-with-cloned-buffer 'lisp-indent-function 2)
-
-
-(defmacro org-with-cloned-marker-widen (marker clone &rest body)
-  `(with-current-buffer (marker-buffer ,marker)
-     (let ((clone-name (concat (or ,clone "<clone>") "-" (buffer-name)))
-           (marker ,marker)
-           (buff (marker-buffer ,marker)))
-       (let ((pos (point)))
-         (unwind-protect
-              (progn
-                (clone-indirect-buffer clone-name nil t)
-                ;; (set-buffer clone-name)
-                (with-current-buffer (get-buffer clone-name)
-                  (goto-char (point-min))
-                  (widen)
-                  (show-all)
-                  (goto-char (marker-position-nonil marker))
-                  ;; (org-mode)
-                  ,@body))
-           (setq pos (point))
-           (when buff
-             (setq pos (point))
-             (set-buffer buff)
-             (goto-char pos))
-           (kill-buffer clone-name))))))
-(put 'org-with-cloned-marker-widen 'lisp-indent-function 2)
-
-
-(defmacro org-with-cloned-marker (marker clone &rest body)
-  `(with-current-buffer (marker-buffer ,marker)
-     (let ((clone-name (concat (or ,clone "<clone>") "-" (buffer-name)))
-           (marker ,marker)
-           (buff (marker-buffer ,marker)))
-       (let ((pos (point)))
-         (unwind-protect
-             (progn
-               (clone-indirect-buffer clone-name nil t)
-               ;; (set-buffer clone-name)
-               (with-current-buffer (get-buffer clone-name)
-                 (goto-char (point-min))
-                 (widen)
-                 (show-all)
-                 (goto-char (marker-position-nonil marker))
-                 ;; (org-mode)
-                 ,@body))
-           (setq pos (point))
-           (when buff
-             (setq pos (point))
-             (set-buffer buff)
-             (goto-char pos))
-           (kill-buffer clone-name))))))
-(put 'org-with-cloned-marker 'lisp-indent-function 2)
-
-(defmacro org-with-cloned-marker-plain (marker clone &rest body)
-  `(with-current-buffer (marker-buffer ,marker)
-     (let ((clone-name (concat (or ,clone "<clone>") "-" (buffer-name)))
-           (marker ,marker)
-           (buff (marker-buffer ,marker)))
-       (let ((pos (point)))
-         (unwind-protect
-             (progn
-               (clone-indirect-buffer clone-name nil t)
-               ;; (set-buffer clone-name)
-               (with-current-buffer (get-buffer clone-name)
-                 ;; (goto-char (point-min))
-                 ;; (widen)
-                 ;; (show-all)
-                 ;; (goto-char (marker-position-nonil marker))
-                 ;; (org-mode)
-                 ,@body))
-           (setq pos (point))
-           (when buff
-             (setq pos (point))
-             (set-buffer buff)
-             (goto-char pos))
-           (kill-buffer clone-name))))))
-(put 'org-with-cloned-marker-plain 'lisp-indent-function 2)
 
 (defun org-heading-has-child-p ()
   (save-excursion
@@ -600,42 +731,6 @@ With prefix arg C-u, copy region instad of killing it."
           (set-marker marker pos (find-file-noselect file))
           marker)))))
 
-;; TODO (replace-buffer-in-windows)
-(defmacro helm-timed (timeout win-buff &rest body)
-  (let ((temp-win-config (make-symbol "test-helm-timed")))
-    `(let* ((,temp-win-config (lotus-current-window-configuration))
-            (current-command (or
-                              (helm-this-command)
-                              this-command))
-            (str-command     (helm-symbol-name current-command))
-            (buf-name        (or ,win-buff (format "*helm-mode-%s*" str-command)))
-            (timer (run-with-idle-plus-timer ,timeout nil
-                                             #'(lambda (buffname)
-                                                 (let* ((buff (or
-                                                               (get-buffer buffname)
-                                                               (get-buffer "*helm*")))
-                                                        (w (if buff (get-buffer-window buff))))
-                                                   (message "helm-timed: triggered timer for new-win %s" w)
-                                                   ;; TODO: open emacs why SIGABRT triggered on pressin C-g three time when struck.
-                                                   ;;       with below line.
-                                                   (discard-input)
-                                                   (when (and w (windowp w) (window-valid-p w))
-                                                     (safe-delete-window w)
-                                                     (safe-exit-recursive-edit-if-active)
-                                                     (select-frame-set-input-enable-raise)
-                                                     (when ,temp-win-config
-                                                       (lotus-set-window-configuration ,temp-win-config)
-                                                       (setq ,temp-win-config nil)))))
-                                             buf-name)))
-       (unwind-protect
-           (progn
-             (select-frame-set-input-disable-raise)
-             (progn
-               ,@body))
-         (select-frame-set-input-enable-raise)
-         (cancel-timer timer)))))
-(put 'helm-timed 'lisp-indent-function 2)
-
 (defun safe-timed-org-refile-get-location (timeout &optional prompt)
   ;; TODO: org-fit-window-to-buffer
   ;; TODO: as clean up reset newwin configuration
@@ -688,127 +783,7 @@ With prefix arg C-u, copy region instad of killing it."
          (marker          (safe-org-refile-get-marker prompt)))
     (lotus-with-first-idle-timed-transient-buffer-window timeout buf-name marker)))
 
-(defmacro org-with-refile (file pos refile-targets prompt &rest body)
-  "Refile the active region.
-If no region is active, refile the current paragraph.
-With prefix arg C-u, copy region instad of killing it."
-  ;; mark paragraph if no region is set
-  `(let* ((org-refile-targets (or ,refile-targets org-refile-targets))
-          (target (save-excursion (safe-org-refile-get-location ,prompt)))
-          (,file (nth 1 target))
-          (,pos (nth 3 target)))
-     (with-current-buffer (find-file-noselect ,file)
-       (save-excursion
-         (goto-char ,pos)
-         ,@body))))
-(put 'org-with-refile 'lisp-indent-function 4)
-
-(defmacro org-file-loc-with-refile (file pos refile-targets prompt &rest body)
-  "Refile run body with file and loc set."
-  ;; mark paragraph if no region is set
-  `(let* ((org-refile-targets (or ,refile-targets org-refile-targets))
-          (target (save-excursion (safe-org-refile-get-location ,prompt)))
-          (,file (nth 1 target))
-          (,pos (nth 3 target)))
-     (lotus-with-file-pos ,file ,pos
-                          ,@body)))
-(put 'org-file-loc-with-refile 'lisp-indent-function 4)
-
-;; (defmacro org-timed-file-loc-with-refile (file pos timeout refile-targets prompt &rest body)
-(defmacro org-with-file-loc-timed-refile (file pos timeout refile-targets prompt &rest body)
-  "Refile run body with file and loc set."
-  ;; mark paragraph if no region is set
-  `(let* ((org-refile-targets (or ,refile-targets org-refile-targets))
-          (target (save-excursion (safe-timed-org-refile-get-location ,timeout ,prompt)))
-          (,file (nth 1 target))
-          (,pos (nth 3 target)))
-     (assert ,file)
-     (assert ,pos)
-     (lotus-with-file-pos ,file ,pos
-                          ,@body)))
-(put 'org-with-file-loc-timed-refile 'lisp-indent-function 5)
-
-;; TODO: org-fit-window-to-buffer
-;; (defmacro org-miniwin-file-loc-with-refile (win file pos refile-targets prompt &rest body)
-(defmacro org-with-file-loc-refile-new-win (file pos refile-targets newwin prompt &rest body)
-  `(org-file-loc-with-refile
-       ,file ,pos ,refile-targets ,prompt
-       (lotus-with-file-pos-new-win
-           ,file ,pos ,newwin
-           ,@body)))
-(put 'org-miniwin-file-loc-with-refile 'lisp-indent-function 5)
-
-;; TODO: org-fit-window-to-buffer
-;; (defmacro org-timed-miniwin-file-loc-with-refile (win file pos timeout refile-targets prompt &rest body)
-(defmacro org-with-file-loc-timed-refile-new-win (file pos timeout refile-targets newwin prompt &rest body)
-  `(org-with-file-loc-timed-refile
-       ,file ,pos ,timeout
-       (show-all
-        (read-only-mode)
-        (org-previous-visible-heading 1)
-        (let ((info (org-context-clock-collect-task))) ;BUG???
-          info) ,refile-targets) ,prompt
-       (lotus-with-file-pos-new-win
-           ,file ,pos ,newwin
-           ,@body)))
-(put 'org-with-file-loc-timed-refile-new-win 'lisp-indent-function 6)
-
-;; TODO: org-fit-window-to-buffer
-;; (defmacro org-timed-miniwin-file-loc-with-refile (win file pos timeout refile-targets prompt &rest body)
-(defmacro org-with-file-loc-timed-refile-timed-new-win (file pos
-                                                        timeout-refile refile-targets
-                                                        timeout-newwin timer-newwin
-                                                        cleanupfn-newwin cleanupfn-local
-                                                        newwin prompt
-                                                        &rest body)
-  `(org-with-file-loc-timed-refile
-     ,file ,pos ,timeout-refile ,refile-targets ,prompt
-     (lotus-with-file-pos-timed-new-win
-      ,file ,pos ,timeout-newwin ,timer-newwin ,cleanupfn-newwin ,cleanupfn-local ,newwin ,@body)))
-(put 'org-with-file-loc-timed-refile-timed-new-win 'lisp-indent-function 10)
-
-;; e.g.
-;; (org-miniwin-file-loc-with-refile nil nil)
-;;)
-;; Refile macros Ends
 
-
-(defmacro org-with-file-loc-timed-refile (marker timeout &rest body)
-  "Refile run body with file and loc set."
-  ;; mark paragraph if no region is set
-  `(let* ((marker ,marker))
-     (lotus-with-marker marker
-       ,@body)))
-(put 'org-with-file-loc-timed-refile 'lisp-indent-function 5)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ;; (progn ;; "move org"
 
