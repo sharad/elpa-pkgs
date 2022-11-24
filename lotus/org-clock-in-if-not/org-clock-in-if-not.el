@@ -52,10 +52,10 @@
 
 (defun org-ci-if-not-debug (level &rest args)
   (when org-ci-if-not-debug
-    (when (first args)
-      (let* ((fmt (first args))
+    (when (cl-first args)
+      (let* ((fmt (cl-first args))
              (fmt (format "%s: %s" (time-stamp-string) fmt))
-             (args (cons fmt (rest args))))
+             (args (cons fmt (cl-rest args))))
         (apply #'format args)
         (when (member level '(:emergency :error :warning :debug))
           ;; (apply #'lwarn 'org-ci-if-not level args)

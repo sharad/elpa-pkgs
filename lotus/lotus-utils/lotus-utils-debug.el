@@ -40,7 +40,7 @@
 ;;;###autoload
 (defun lotus-utils-debug (type level &rest args)
   (when lotus-utils-debug
-    (when (first args)
+    (when (cl-first args)
       (apply #'format args)
       (when (member level '(:emergency :error :warning :debug))
         ;; (apply #'lwarn 'lotus-utils level args)

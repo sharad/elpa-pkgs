@@ -56,7 +56,7 @@
 ;;;###autoload
 (defun yas/expandable-at-point ()
   "Return non-nil if a snippet can be expanded here."
-  ;; (first (yas/current-key))
+  ;; (cl-first (yas/current-key))
   (yas/current-key-1))
 
 (defvar yas-overlays nil)
@@ -79,8 +79,8 @@ the template of a snippet in the current snippet-table."
         templates)
     ;; (message "xstart %d end %d" start end)
     (while (and (not done) syntaxes)
-      (setq syntax   (first syntaxes))
-      (setq syntaxes (rest syntaxes))
+      (setq syntax   (cl-first syntaxes))
+      (setq syntaxes (cl-rest syntaxes))
       (save-excursion
         (backward-char)
         (skip-syntax-backward syntax)
@@ -110,8 +110,8 @@ the template of a snippet in the current snippet-table."
         done
         templates)
     (while (and (not done) syntaxes)
-      (setq syntax   (first syntaxes))
-      (setq syntaxes (rest syntaxes))
+      (setq syntax   (cl-first syntaxes))
+      (setq syntaxes (cl-rest syntaxes))
       (save-excursion
         (skip-syntax-backward syntax)
         (setq start (point))
@@ -146,7 +146,7 @@ Mostly we check word delimiters."
        (and pc
             (char-isalnum-p pc)))
      (let ((con (yas/current-key-0)))
-       (when (consp con) (rest con))))))
+       (when (consp con) (cl-rest con))))))
 
 (defun yas-post-command-hook ()
   "The `post-command-hook' used by flyspell to check a word on-the-fly."

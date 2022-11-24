@@ -33,7 +33,7 @@ If CREATE is non-nil, create the section if it is not found.
 Return non-nil if SECTION was found."
   (interactive "MSection: ")
   (unless (stringp section)
-    (setq section (rest (assoc section planner-sections))))
+    (setq section (cl-rest (assoc section planner-sections))))
   (widen)
   (goto-char (point-min))
   (planner-narrow-to-section section create)
@@ -51,7 +51,7 @@ Return non-nil if SECTION was found."
   (unless (planner-derived-mode-p 'planner-mode)
     (error "This is not a planner buffer"))
   (unless (stringp section)
-    (setq section (rest (assoc section planner-sections))))
+    (setq section (cl-rest (assoc section planner-sections))))
   (widen)
   (goto-char (point-min))
   (when (re-search-forward (concat "^\\*\\s-+" section "\\(\\s-*\\)$") nil t)
@@ -66,7 +66,7 @@ Return non-nil if SECTION was found."
   (unless (planner-derived-mode-p 'planner-mode)
     (error "This is not a planner buffer"))
   (unless (stringp section)
-    (setq section (rest (assoc section planner-sections))))
+    (setq section (cl-rest (assoc section planner-sections))))
   (widen)
   (goto-char (point-min))
   (when (re-search-forward (concat "^\\*\\s-+" section "\\(\\s-*\\)$") nil t)
@@ -83,7 +83,7 @@ Return non-nil if SECTION was found."
   (unless section
     (setq section planner-default-section))
   (unless (stringp section)
-    (setq section (rest (assoc section planner-sections))))
+    (setq section (cl-rest (assoc section planner-sections))))
 
   (widen)
   (goto-char (point-min))

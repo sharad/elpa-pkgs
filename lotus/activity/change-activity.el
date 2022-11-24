@@ -118,29 +118,29 @@
        (setq minimal-char-changes 10))
      (let ((char-changes 0)
            (undo-list (if lotus-last-buffer-undo-list-pos
-                          (rest (memq lotus-last-buffer-undo-list-pos buffer-undo-list))
+                          (cl-rest (memq lotus-last-buffer-undo-list-pos buffer-undo-list))
                           buffer-undo-list))
            undo)
        (while (and undo-list
-                   (first undo-list)
+                   (cl-first undo-list)
                    (< char-changes minimal-char-changes))
-         (setq undo (first undo-list))
+         (setq undo (cl-first undo-list))
          (cond
-           ((and (consp undo) (integerp (first undo)) (integerp (rest undo)))
+           ((and (consp undo) (integerp (cl-first undo)) (integerp (cl-rest undo)))
             ;; (BEG . END)
-            (setq char-changes (+ char-changes (abs (- (first undo) (rest undo))))))
-           ((and (consp undo) (stringp (first undo))) ; (TEXT . POSITION)
-            (setq char-changes (+ char-changes (length (first undo)))))
-           ((and (consp undo) (eq (first undo) t))) ; (t HIGH . LOW)
-           ((and (consp undo) (null (first undo)))
+            (setq char-changes (+ char-changes (abs (- (cl-first undo) (cl-rest undo))))))
+           ((and (consp undo) (stringp (cl-first undo))) ; (TEXT . POSITION)
+            (setq char-changes (+ char-changes (length (cl-first undo)))))
+           ((and (consp undo) (eq (cl-first undo) t))) ; (t HIGH . LOW)
+           ((and (consp undo) (null (cl-first undo)))
             ;; (nil PROPERTY VALUE BEG . END)
-            ;; (setq position (rest (last undo)))
+            ;; (setq position (cl-rest (last undo)))
             )
-           ((and (consp undo) (markerp (first undo)))) ; (MARKER . DISTANCE)
+           ((and (consp undo) (markerp (cl-first undo)))) ; (MARKER . DISTANCE)
            ((integerp undo))		; POSITION
            ((null undo))		; nil
            (t (error "Invalid undo entry: %s" undo)))
-         (setq undo-list (rest undo-list)))
+         (setq undo-list (cl-rest undo-list)))
 
        (cond
          ((>= char-changes minimal-char-changes)
@@ -161,7 +161,7 @@
   (let ((win-timeout (or win-timeout 7)))
     (if (and
          (consp buffer-undo-list)
-         (first buffer-undo-list))
+         (cl-first buffer-undo-list))
         (lotus-action-on-buffer-undo-list-change #'org-clock-lotus-log-note-current-clock-with-timed-new-win  lotus-minimum-char-changes win-timeout)
         (lotus-action-on-buffer-undo-tree-change #'org-clock-lotus-log-note-current-clock-with-timed-new-win lotus-minimum-changes win-timeout))))
 

@@ -53,7 +53,7 @@
                                                      (copy-sequence headings)
                                                      timelst)))))
                (setq tmphd (org-heading-components)
-                     lvl (first tmphd)
+                     lvl (cl-first tmphd)
                      title (nth 4 tmphd)
                      timelst nil)
                ;; maintain a list of the current heading hierarchy
@@ -115,7 +115,7 @@
     (cl-loop for iv in intvls
              collect (list
                       iv
-                      (let* ((cutstart (first iv))
+                      (let* ((cutstart (cl-first iv))
                              (cutend (nth 1 iv))
                              (tmsum 0.0)
                              headings trlst)
@@ -123,7 +123,7 @@
                         (cl-loop
                          for item in struct
                          do (progn
-                              (setq headings (first item)
+                              (setq headings (cl-first item)
                                     trlst (nth 1 item)
                                     ;; sum up the parts of the time
                                     ;; ranges falling into this
@@ -132,7 +132,7 @@
                                            #'+
                                            (mapcar
                                             (lambda (tr)
-                                              (dfeich/org-slice-tr (first tr)
+                                              (dfeich/org-slice-tr (cl-first tr)
                                                                    (nth 1 tr)
                                                                    cutstart
                                                                    cutend))
@@ -155,20 +155,20 @@
     (insert "|Time|Customer| Task |Minutes|\n|------\n")
     (cl-loop
      for item in table
-     do (let ((ivl (first item))
+     do (let ((ivl (cl-first item))
               (entries (nth 1 item)))
           (cl-loop for e in entries
-                   do (let ((headings (first e))
+                   do (let ((headings (cl-first e))
                             (minutes (nth 1 e)))
                         (insert (concat
                                  "|"
                                  (format-time-string "%H:%M" (seconds-to-time
-                                                              (first ivl)))
+                                                              (cl-first ivl)))
                                  "-"
                                  (format-time-string "%H:%M" (seconds-to-time
                                                               (nth 1 ivl)))
                                  "|" (nth 1 headings)
-                                 "|" (first (last headings))
+                                 "|" (cl-first (last headings))
                                  "|" (format "%d" minutes)
                                  "|\n"))))))
     (insert "|----\n|TOTAL||||\n#+TBLFM: @>$>=vsum(@I..@II)")

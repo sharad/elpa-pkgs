@@ -91,7 +91,7 @@
 (defun org-context-clock-list-matching-dyntaskpls (context)
   (lexical-let ((tasks (org-context-clock-entry-list-update-tasks))
                 (context context))
-    (remove-if-not #'(lambda (dyntaskpl) (> (first dyntaskpl) 0))
+    (remove-if-not #'(lambda (dyntaskpl) (> (cl-first dyntaskpl) 0))
                    (mapcar #'(lambda (task)
                                (org-context-clock-build-dyntaskpl task context))
                            tasks))))

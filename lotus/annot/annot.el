@@ -245,7 +245,7 @@ If a marked region is present, highlight it."
   (if (and window-system (display-images-p))
       (let ((image-filename
              (or image-filename
-                 (first (let ((default-directory
+                 (cl-first (let ((default-directory
                               (or (and (file-directory-p annot-image-directory)
                                        annot-image-directory)
                                   default-directory)))
@@ -298,10 +298,10 @@ If a regioin is specified, remove all annotations and highlights within it."
           (message "Annotation removed.")))
       (while (and annot-broader-removal-p
                  (setq ov (or
-                           (first (overlays-in (setq p (point)) p))
+                           (cl-first (overlays-in (setq p (point)) p))
                            ;; relax finding of an overlay
-                           (first (overlays-in (max (point-min) (1- p)) p))
-                           (first (overlays-in p (min (point-max) (1+ p)))))))
+                           (cl-first (overlays-in (max (point-min) (1- p)) p))
+                           (cl-first (overlays-in p (min (point-max) (1+ p)))))))
         (delete-overlay ov)))))
 
 
@@ -379,7 +379,7 @@ captured."
                 (while (< (point-min)
                           (setq pt (previous-overlay-change (point))))
                   (goto-char pt)
-                  (setq ov (first (annot-overlays-in pt (1+ pt))))
+                  (setq ov (cl-first (annot-overlays-in pt (1+ pt))))
                   (when (and ov
                              (member (overlay-get ov :type)
                                      (or (and (listp annot-types) annot-types)
@@ -404,7 +404,7 @@ captured."
                 (while (< (setq pt (next-overlay-change (point)))
                           (point-max))
                   (goto-char pt)
-                  (setq ov (first (annot-overlays-in pt (1+ pt))))
+                  (setq ov (cl-first (annot-overlays-in pt (1+ pt))))
                   (when (and ov
                              (member (overlay-get ov :type)
                                      (or (and (listp annot-types) annot-types)
@@ -507,7 +507,7 @@ If `annot-md5-max-chars' is nil, no limit is imposed."
 
 
 (defsubst annot-argmax (L fn)
-  (let* ((best (first L))
+  (let* ((best (cl-first L))
          (best-score (funcall fn best)) score)
     (dolist (e L)
       (when (> (setq score (funcall fn e))
@@ -565,8 +565,8 @@ the region ends."
       (unless (zerop (length (annot-trim text/image)))
         (list (annot-create-overlay (point) text/image)))))
    ((listp text/image/region)
-    (let ((beg (first text/image/region))
-          (end (rest text/image/region))
+    (let ((beg (cl-first text/image/region))
+          (end (cl-rest text/image/region))
           (modtime (float-time))
           ov-list a b)
       (save-excursion
@@ -612,7 +612,7 @@ the region ends."
 (defun annot-get-annotation-at-point ()
   "Get annotation or highlight \(equiv. overlay) at point."
   (let ((p (point)))
-    (or (first (annot-overlays-in p p))
+    (or (cl-first (annot-overlays-in p p))
         ;; Relax by 1 point for highlights
         (annot-find-highlight (annot-overlays-in (max (point-min) (1- p)) p))
         (annot-find-highlight (annot-overlays-in p (min (point-max) (1+ p)))))))

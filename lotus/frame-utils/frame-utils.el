@@ -46,13 +46,13 @@
 ;;   (set symbol (elscreen--put-alist key value (symbol-value symbol))))
 
 (defun get-alist (key alist)
-  (rest (assoc key alist)))
+  (cl-rest (assoc key alist)))
 
 (defun get-frame-name (&optional frame)
   "Return the string that names FRAME (a frame).  Default is selected frame."
   (unless frame (setq frame  (selected-frame)))
   (if (framep frame)
-      (rest (assq 'name (frame-parameters frame)))
+      (cl-rest (assq 'name (frame-parameters frame)))
       (error "Function `get-frame-name': Argument not a frame: `%s'" frame)))
 
 (defun elscreen--del-alist (key alist)
@@ -172,7 +172,7 @@ Return the modified ALIST."
 (defun x-wm-hints (frame &optional source)
   (mapcar #'(lambda (field)
               (if (consp field)
-                  (+ (lsh (first field) 16) (rest field))
+                  (+ (lsh (cl-first field) 16) (cl-rest field))
                 field))
           (x-window-property
            "WM_HINTS" frame "WM_HINTS"
@@ -184,7 +184,7 @@ Return the modified ALIST."
 ;;;###autoload
 (defun x-urgency-hinthf (frame arg)
   (let* ((wm-hints (x-wm-hints frame))
-         (flags (first wm-hints)))
+         (flags (cl-first wm-hints)))
     (setcar wm-hints (if arg
                          (logior flags #x00000100)
                        (logand flags #xFFFFFEFF)))
@@ -211,7 +211,7 @@ If you unset the urgency, you still have to visit the frame to make the urgency 
   (let* ((wm-hints (append (x-window-property
                             "WM_HINTS" frame "WM_HINTS"
                             source nil t) nil))
-         (flags (first wm-hints)))
+         (flags (cl-first wm-hints)))
                                         ; (message flags)
     (setcar wm-hints
             (if arg
@@ -225,7 +225,7 @@ If you unset the urgency, you still have to visit the frame to make the urgency 
 
 With a prefix argument which does not equal a boolean value of nil, remove the urgency flag (which might or might not change display, depending on the window manager)."
   (interactive "P")
-  (let (frame (first (first (rest (current-frame-configuration)))))
+  (let (frame (cl-first (cl-first (cl-rest (current-frame-configuration)))))
     (x-urgency-hint frame (not arg))))
 
 

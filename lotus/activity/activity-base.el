@@ -45,9 +45,9 @@
 
 (defmacro @extend-object (object &rest body)
   `(with-@@ object
-     ,@(if (stringp (first body))
-           `((setf @:doc ,(first body))))
-     ,@(if (stringp (first body)) (rest body) body)))
+     ,@(if (stringp (cl-first body))
+           `((setf @:doc ,(cl-first body))))
+     ,@(if (stringp (cl-first body)) (cl-rest body) body)))
 (put '@extend-object 'lisp-indent-function 1)
 
 (defmacro @drive-object (object name &rest body)
@@ -56,9 +56,9 @@
                    :name ,name)))
 
      (with-@@ drived-obj
-              ,@(if (stringp (first body))
-                    `((setf @:doc ,(first body))))
-              ,@(if (stringp (first body)) (rest body) body))
+              ,@(if (stringp (cl-first body))
+                    `((setf @:doc ,(cl-first body))))
+              ,@(if (stringp (cl-first body)) (cl-rest body) body))
 
      drived-obj))
 (put '@drive-object 'lisp-indent-function 2)
@@ -66,11 +66,11 @@
 (defmacro defobjgen@ (object gen-method params &rest body )
   `(progn
      (def@ ,object ,gen-method (name ,@params)
-       ,@(if (stringp (first body))
-             (list (first body)) ())
+       ,@(if (stringp (cl-first body))
+             (list (cl-first body)) ())
 
        (@drive-object ,object name
-         ,@(if (stringp (first body)) (rest body) body)))))
+         ,@(if (stringp (cl-first body)) (cl-rest body) body)))))
 (put 'defobjgen@ 'lisp-indent-function 3)
 
 (progn
@@ -116,7 +116,7 @@
 
                        (def@ @@ :debug (level &rest args)
                          (when @:activity-debug
-                           (when (first args)
+                           (when (cl-first args)
                              (apply #'format args)
                              (when (member level '(:emergency :error :warning :debug))
                                (apply #'lwarn 'activity level args))

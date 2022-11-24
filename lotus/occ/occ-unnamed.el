@@ -84,13 +84,13 @@
     (let ((org-log-note-clock-out nil))
       (if (occ-clock-marker-unnamed-clock-p)
           (occ-debug "occ-maybe-create-unnamed-tsk: Already clockin unnamed tsk")
-        (rest (org-without-org-clock-persist
+        (cl-rest (org-without-org-clock-persist
                 (lotus-org-create-unnamed-task)))))))
 
 (defun occ-maybe-create-unnamed-tsk ()
   ;; back
   (occ-debug "occ-maybe-create-unnamed-tsk: begin")
-  (let* ((unnamed-heading-marker (rest (org-without-org-clock-persist
+  (let* ((unnamed-heading-marker (cl-rest (org-without-org-clock-persist
                                          (lotus-org-create-unnamed-task))))
          (unnamed-tsk            (when unnamed-heading-marker
                                    (occ-obj-make-tsk unnamed-heading-marker))))
@@ -103,7 +103,7 @@
              file)
         (progn
           (when (occ-collector-get 'unnamed)
-            (unless (eq (first (occ-collector-roots 'unnamed))
+            (unless (eq (cl-first (occ-collector-roots 'unnamed))
                         (lotus-org-unnamed-task-file))
               (occ-collector-remove 'unnamed)))
           (occ-collector-get-create 'unnamed
@@ -118,7 +118,7 @@
 
 (defun occ-unnamed-collection ()
   (unless (and (occ-collector-get 'unnamed)
-               (eq (first (occ-collector-roots 'unnamed))
+               (eq (cl-first (occ-collector-roots 'unnamed))
                    (lotus-org-unnamed-task-file)))
     (occ-build-unnamed-collection))
   (occ-collector-get 'unnamed))

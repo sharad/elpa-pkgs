@@ -48,10 +48,10 @@
 
 (defun tagging-tags-to-string (tags) ;(tagging-tags-to-string '((t . "foo") (nil . "bar")))
   (apply #'concat (mapcar (lambda (tag)
-			    (concat (if (first tag)
+			    (concat (if (cl-first tag)
 					""
 					"-")
-				    (rest tag)
+				    (cl-rest tag)
 				    " "))
 			  tags)))
 
@@ -63,8 +63,8 @@
 	  (progn
 	    (beginning-of-line)
 	    (mapc (lambda (tag)
-		    (when (let ((x (re-search-forward (concat tagging-tagline-indicator "\\(.* \\)?" (rest tag) "\\( .*\\)?$") (point-at-eol) t)))
-			    (or (and (first tag) (not x)) (and (not (first tag)) x)))
+		    (when (let ((x (re-search-forward (concat tagging-tagline-indicator "\\(.* \\)?" (cl-rest tag) "\\( .*\\)?$") (point-at-eol) t)))
+			    (or (and (cl-first tag) (not x)) (and (not (cl-first tag)) x)))
 		      (setq fails t))
 		    (beginning-of-line))
 		  tags)

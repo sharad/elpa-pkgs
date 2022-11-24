@@ -46,22 +46,22 @@
   (when path
     (let* ((matched-paths (mapcar
                            #'(lambda (p)
-                               (when (s-starts-with? (first p) path)
-                                 (if (string-equal (first p) path)
-                                     (rest p)
+                               (when (s-starts-with? (cl-first p) path)
+                                 (if (string-equal (cl-first p) path)
+                                     (cl-rest p)
                                    (when (file-name-directory path)
                                     (expand-file-name
-                                     (s-chop-prefix (concat (first p) "/") path) ;fixit
-                                     (rest p))))))
+                                     (s-chop-prefix (concat (cl-first p) "/") path) ;fixit
+                                     (cl-rest p))))))
                            paths-mapper-map))
            (existing-matched-paths (remove-if-not #'file-exists-p (remove nil matched-paths))))
       (message "filering [%s] for %s" existing-matched-paths path)
       (if existing-matched-paths
-          (first existing-matched-paths)
+          (cl-first existing-matched-paths)
         path))))
 
 (defun rl-string-len-compare (s1 s2)
-  (> (length (first s1)) (length (first s2))))
+  (> (length (cl-first s1)) (length (cl-first s2))))
 
 (defun paths-mapper-add-replacement (path replacement)
   (message "paths-mapper-add-replacement: path=%s replacement=%s"

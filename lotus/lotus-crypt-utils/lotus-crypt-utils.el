@@ -41,7 +41,7 @@
 (defvar epa-file-passphrase-cleanup-timer nil "epa file passphrase cleanup timer")
 
 (defun get-alist (key alist)
-  (rest (assoc key alist)))
+  (cl-rest (assoc key alist)))
 
 (defun del-alist (key alist)
   "Delete an element whose car equals KEY from ALIST.
@@ -111,7 +111,7 @@ Return the modified ALIST."
     (when file-name
       (setq epa-file-passphrase-alist
             (remove-if #'(lambda (filename-pass)
-                           (let ((filename (first filename-pass)))
+                           (let ((filename (cl-first filename-pass)))
                              (string-equal (file-truename filename)
                                            (file-truename file-name))))
                        epa-file-passphrase-alist)
@@ -129,18 +129,18 @@ Return the modified ALIST."
   (when  epa-file-passphrase-alist
     (let* ((exceptitions-alist (mapcar
                                 #'(lambda (p)
-                                    (cons (file-truename (first p)) (rest p)))
+                                    (cons (file-truename (cl-first p)) (cl-rest p)))
                                 epa-file-passphrase-cleanup-exceptitions-alist))
            (exceptitions (mapcar #'car exceptitions-alist)))
       (dolist (a epa-file-passphrase-alist)
-        (let* ((file-name (file-truename (first a)))
+        (let* ((file-name (file-truename (cl-first a)))
                (buffer-of-file (find file-name (buffer-list) :key #'(lambda (f)
                                                                       (if (stringp f) (file-truename (buffer-file-name f))))
                                      :test #'string-equal)))
           (unless (member file-name exceptitions)
             (setq epa-file-passphrase-alist
                   (remove-if #'(lambda (filename-pass)
-                                 (let ((filename (first filename-pass)))
+                                 (let ((filename (cl-first filename-pass)))
                                    (string-equal (file-truename filename)
                                                  (file-truename file-name))))
                              epa-file-passphrase-alist)
@@ -161,7 +161,7 @@ Return the modified ALIST."
             ;; (message "killed %s" buff)
             (setq epa-file-passphrase-alist
                   (remove-if #'(lambda (filename-pass)
-                                 (let ((filename (first filename-pass)))
+                                 (let ((filename (cl-first filename-pass)))
                                    (string-equal (file-truename filename)
                                                  (file-truename buff-file))))
                              epa-file-passphrase-alist)
@@ -169,9 +169,9 @@ Return the modified ALIST."
                   )))))
 
     (dolist (v epa-file-passphrase-cleanup-exceptitions-alist)
-      (if (<= (rest v) 0)
-          (remove-alist 'epa-file-passphrase-cleanup-exceptitions-alist (first v))
-        (decf (rest v))))
+      (if (<= (cl-rest v) 0)
+          (remove-alist 'epa-file-passphrase-cleanup-exceptitions-alist (cl-first v))
+        (decf (cl-rest v))))
     ;; (setq epa-file-passphrase-cleanup-exceptitions-alist exceptitions-alist)
     ))
 
@@ -206,7 +206,7 @@ Return the modified ALIST."
     (if (member tfile
                 (mapcar
                  #'(lambda (f)
-                     (file-truename (first f)))
+                     (file-truename (cl-first f)))
                  epa-file-passphrase-cleanup-exceptitions-alist))
         (remove-alist 'epa-file-passphrase-cleanup-exceptitions-alist file))
     (cl-pushnew (cons file times) epa-file-passphrase-cleanup-exceptitions-alist)))
@@ -218,7 +218,7 @@ Return the modified ALIST."
     (if (member tfile
                 (mapcar
                  #'(lambda (f)
-                     (file-truename (first f)))
+                     (file-truename (cl-first f)))
                  epa-file-passphrase-cleanup-exceptitions-alist))
         (remove-alist 'epa-file-passphrase-cleanup-exceptitions-alist file))))
 
@@ -254,7 +254,7 @@ Return the modified ALIST."
 (defun epa-pop-last-passphrase ()
   (interactive)
   (when (y-or-n-p
-         (format "remove %s: " (first (first epa-file-passphrase-alist))))
+         (format "remove %s: " (cl-first (cl-first epa-file-passphrase-alist))))
     (pop epa-file-passphrase-alist)))
 
 (defun epa-delete-passphrase ()
@@ -282,7 +282,7 @@ characters like \"l\" and \"1\", \"O\" and \"0\"."
                    password (concat password (string (nth position char-list)))))
     (if (called-interactively-p)
         (let* ((strength (make-password-strength length upper lower number symbol ambiguous))
-               (bits (first strength))
+               (bits (cl-first strength))
                (number (nth 1 strength)))
           (message "The password \"%s\" is one of 10^%d possible and has a bit equivalence of %d"
                    password (round number) (round bits)))

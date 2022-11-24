@@ -95,7 +95,7 @@
                  (if debug-prompt
                      (format "%s [%s] how many minutes? [%d] "
                              (org-rl-clock-time-debug-prompt prev next)
-                             (if (consp opt) (first opt) opt)
+                             (if (consp opt) (cl-first opt) opt)
                              maxtimelen-mins)
                    (format "[%s] how many minutes? [%d] " opt maxtimelen-mins))))
            opt
@@ -107,7 +107,7 @@
   (org-rl-debug nil "org-rl-helm-sync-source-on-option: name %s" name)
   (org-rl-debug nil "org-rl-helm-sync-source-on-option: list %s" list)
   (let* ((candidates list)
-         ;; (options    (rest list))
+         ;; (options    (cl-rest list))
          ;; (multiline (plist-get options :multiple))
          (action (list
                   (cons "Select" #'org-rl-clock-cps-process-helm-option)))
@@ -128,18 +128,18 @@
 (defun org-rl-helm-sync-source-on-option-tree (name list)
   (org-rl-debug nil "org-rl-helm-sync-source-on-option-tree: name: %s" name)
   (org-rl-debug nil "org-rl-helm-sync-source-on-option-tree: list: %s" list)
-  (let ((helm-options (remove-if-not #'(lambda (opt) (eq (first opt) :helm)) list))
-        (options (remove-if-not #'(lambda (opt) (member (first opt) '(:option))) list))
-        (rec-options (remove-if #'(lambda (opt) (member (first opt) '(:option :helm) )) list)))
+  (let ((helm-options (remove-if-not #'(lambda (opt) (eq (cl-first opt) :helm)) list))
+        (options (remove-if-not #'(lambda (opt) (member (cl-first opt) '(:option))) list))
+        (rec-options (remove-if #'(lambda (opt) (member (cl-first opt) '(:option :helm) )) list)))
     (let ((options-helm     (org-rl-helm-sync-source-on-option name
                                                                (mapcar #'cdr options)
                                                                (apply #'append (mapcar #'cdr helm-options))))
           (rec-options-helm (mapcar
                              #'(lambda (recopt)
                                  (org-rl-debug nil "org-rl-helm-sync-source-on-option-tree: map name %s" name)
-                                 (org-rl-debug nil "org-rl-helm-sync-source-on-option-tree: map (first recopt) %s" (first recopt))
-                                 (org-rl-debug nil "org-rl-helm-sync-source-on-option-tree: map (rest recopt) %s" (rest recopt))
-                                 (org-rl-helm-sync-source-on-option-tree (concat name " " (first recopt)) (rest recopt)))
+                                 (org-rl-debug nil "org-rl-helm-sync-source-on-option-tree: map (cl-first recopt) %s" (cl-first recopt))
+                                 (org-rl-debug nil "org-rl-helm-sync-source-on-option-tree: map (cl-rest recopt) %s" (cl-rest recopt))
+                                 (org-rl-helm-sync-source-on-option-tree (concat name " " (cl-first recopt)) (cl-rest recopt)))
                              rec-options)))
       (org-rl-debug nil "org-rl-helm-sync-source-on-option-tree: name = %s rec-options = %d rec-options-helm = %d" name (length rec-options) (length rec-options-helm))
       (org-rl-debug nil "org-rl-helm-sync-source-on-option-tree: name = %s options = %d options-helm = %d" name (length options) (length options-helm))
@@ -165,7 +165,7 @@
      (mapcar
       #'(lambda (list)
           (org-rl-debug nil "org-rl-helm-build-options: map lambda %s" list)
-          (org-rl-helm-sync-source-on-option-tree (first list) (rest list)))
+          (org-rl-helm-sync-source-on-option-tree (cl-first list) (cl-rest list)))
       options))))
 
 (defun org-rl-clock-cps-read-option (interval prompt-fn options-fn default-fn)
@@ -234,7 +234,7 @@
                  maxtimelen-mins-fn)))))))
 
           ;; (barely-started-p (< (- (float-time last-valid)
-          ;;                         (float-time (rest clock))) 45))
+          ;;                         (float-time (cl-rest clock))) 45))
           ;; (start-over-p (and subtractp barely-started-p))
           ;; cancel prev and add to time
 

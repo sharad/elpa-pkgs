@@ -79,21 +79,21 @@
   (-slice plist 0 nil 2))
 
 (defun ptree-get (tree &rest keys)
-  (let ((key (first keys)))
+  (let ((key (cl-first keys)))
     (if (and key
              (consp tree))
-        (apply #'ptree-get (plist-get tree key) (rest keys))
-      (unless (rest keys) tree))))
+        (apply #'ptree-get (plist-get tree key) (cl-rest keys))
+      (unless (cl-rest keys) tree))))
 
 (defun ptree-put (tree value &rest keys)
-  (let ((key (first keys)))
+  (let ((key (cl-first keys)))
     (if (and key
              (or (null tree)
                  (consp tree)))
         (setq tree
               (plist-put tree key
-                         (if (rest keys)
-                             (apply #'ptree-put (plist-get tree key) value (rest keys))
+                         (if (cl-rest keys)
+                             (apply #'ptree-put (plist-get tree key) value (cl-rest keys))
                            value))))))
 
 (defun ptree-keys (tree)
@@ -101,17 +101,17 @@
               (let ((subtree (plist-get tree key)))
                 (message "key: %s subtree: %s" key subtree)
                 (if (and (consp subtree)
-                         (keywordp (first subtree)))
+                         (keywordp (cl-first subtree)))
                     (cons key (ptree-keys subtree))
                   (list key))))
           (plist-keys tree)))
 
 (defun ptree-key-lists-keys (ptree-keys)
   (letrec ((dfs #'(lambda (tree)
-                    (if (rest tree)
+                    (if (cl-rest tree)
                         (mapcar #'(lambda (l)
-                                    (cons (first tree) (first (funcall dfs l))))
-                                (rest tree))
+                                    (cons (cl-first tree) (cl-first (funcall dfs l))))
+                                (cl-rest tree))
                       (list tree)))))
     (mapcan dfs ptree-keys)))
 
@@ -177,7 +177,7 @@
 
 (defun org-select-targets (&rest targets)
   (remove-if-not #'(lambda (trg)
-                     (memq (rest trg) targets))
+                     (memq (cl-rest trg) targets))
                  org-capture+-target-names))
 
 
@@ -190,7 +190,7 @@
     (cl-case name
       (file              (list name file))
       (id                (list name id))
-      (file+headline     (list name file (first (last headlines))))
+      (file+headline     (list name file (cl-first (last headlines))))
       (file+olp          (append (list name file) headlines))
       (file+olp+datetree (append (list name file) headlines))
       (file+function     (list name function))
@@ -362,8 +362,8 @@
 (defun org-captue+-drive-prompt (ptree)
   (if ptree
       (let* ((description (ptree-get ptree :description))
-             (type        (first (rassoc (ptree-get ptree :type) org-capture+-types)))
-             (target      (first (rassoc (ptree-get ptree :target :name) org-capture+-target-names)))
+             (type        (cl-first (rassoc (ptree-get ptree :type) org-capture+-types)))
+             (target      (cl-first (rassoc (ptree-get ptree :target :name) org-capture+-target-names)))
              (headlines   (ptree-get ptree :target :headlines))
              (file        (org-capture+-file-strip-lcp (ptree-get ptree :target :file)))
              (filename    (if file (file-name-nondirectory file)))

@@ -53,7 +53,7 @@
             org-capture+-helm-templates-tree))
 
 (defun org-capture+-template-p (template)
-  (eql :template (first template)))
+  (eql :template (cl-first template)))
 
 (defun org-capture+-tree-gen-predicate (predicate arg)
   #'(lambda (key)
@@ -92,7 +92,7 @@
                                                 0)))
 
 (defun org-capture+-tree-predicate (key-tree arg)
-  (memq (first key-tree) arg))
+  (memq (cl-first key-tree) arg))
 
 
 ;;;###autoload
@@ -118,9 +118,9 @@
                               #'(lambda ()
                                   (let ((xlist (org-capture+-collect-templates-alist predicate arg level)))
                                     (if list
-                                        (when (first xlist)
-                                          (setcar list (first xlist))
-                                          (setcdr list (rest xlist)))
+                                        (when (cl-first xlist)
+                                          (setcar list (cl-first xlist))
+                                          (setcdr list (cl-rest xlist)))
                                       (setq list xlist))))))
 
          (predicate       (or predicate #'org-capture+-tree-predicate))
@@ -154,8 +154,8 @@
                               list)
                         #'(lambda ()
                             (funcall calculate-list)
-                            (let* ((name        (rest (assoc 'name source)))
-                                   (ncandidates (rest (assoc name list))))
+                            (let* ((name        (cl-rest (assoc 'name source)))
+                                   (ncandidates (cl-rest (assoc name list))))
                               ncandidates))))
          ;; (h-candidate-transformer (if noclass
          ;;                              #'(lambda (candidates source)
@@ -178,7 +178,7 @@
                                     :keymap                         h-map
                                     ;; :requires-pattern t
                                     ;; :match (list #'(lambda (c) t))
-                                    :candidates                     #'(lambda () (rest (assoc class list)))
+                                    :candidates                     #'(lambda () (cl-rest (assoc class list)))
                                     :multiline                      t
                                     ;; :filtered-candidate-transformer h-candidate-transformer
                                     ;; :filter-one-by-one #'h-candidate-transformer

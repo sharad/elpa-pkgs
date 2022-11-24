@@ -116,7 +116,7 @@
 
 (defun lotus-read-sexp (filename)
   (when (file-exists-p filename)
-    (first (read-from-string (lotus-read-file filename)))))
+    (cl-first (read-from-string (lotus-read-file filename)))))
 
 
 (defun lotus-write-file (filename content)
@@ -293,8 +293,8 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
                                       (format
                                        "%x%x"
                                        ; "%x00%x"
-                                       (first active-window)
-                                       (rest active-window)) 16)))
+                                       (cl-first active-window)
+                                       (cl-rest active-window)) 16)))
                (emacs-window-id (string-to-number
                                  (frame-parameter nil 'outer-window-id))))
           ;; (message "emacs-window-id %d active-window-id %d" emacs-window-id active-window-id)
@@ -349,15 +349,15 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 Return the modified alist.
 Elements of ALIST that are not conses are ignored."
   (let ((testf (or testf 'eq)))
-    (while (and (consp (first alist))
-                (funcall testf (first (first alist)) key))
-      (setq alist (rest alist)))
+    (while (and (consp (cl-first alist))
+                (funcall testf (cl-first (cl-first alist)) key))
+      (setq alist (cl-rest alist)))
     (let ((tail alist)
           tail-cdr)
-      (while (setq tail-cdr (rest tail))
-        (if (and (consp (first tail-cdr))
-                 (funcall testf (first (first tail-cdr)) key))
-            (setcdr tail (rest tail-cdr))
+      (while (setq tail-cdr (cl-rest tail))
+        (if (and (consp (cl-first tail-cdr))
+                 (funcall testf (cl-first (cl-first tail-cdr)) key))
+            (setcdr tail (cl-rest tail-cdr))
             (setq tail tail-cdr))))
     alist))
 
@@ -366,14 +366,14 @@ Elements of ALIST that are not conses are ignored."
 Return the modified alist.
 Elements of ALIST that are not conses are ignored."
   (let ((testf (or testf 'eq)))
-    (while (and (consp (first alist))
-                (funcall testf (rest (first alist)) value))
-      (setq alist (rest alist)))
+    (while (and (consp (cl-first alist))
+                (funcall testf (cl-rest (cl-first alist)) value))
+      (setq alist (cl-rest alist)))
     (let ((tail alist) tail-cdr)
-      (while (setq tail-cdr (rest tail))
-        (if (and (consp (first tail-cdr))
-                 (eq (rest (first tail-cdr)) value))
-            (setcdr tail (rest tail-cdr))
+      (while (setq tail-cdr (cl-rest tail))
+        (if (and (consp (cl-first tail-cdr))
+                 (eq (cl-rest (cl-first tail-cdr)) value))
+            (setcdr tail (cl-rest tail-cdr))
             (setq tail tail-cdr))))
     alist))
 

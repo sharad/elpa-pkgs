@@ -272,16 +272,16 @@ MOVEFUNC and MOVEARG."
                           (if forward
                               (progn
                                 (set-match-data
-                                 (if (< (first forward) (first backward))
-                                     (rest forward)
-                                   (rest backward)))
+                                 (if (< (cl-first forward) (cl-first backward))
+                                     (cl-rest forward)
+                                   (cl-rest backward)))
                                 t)
 
-                            (set-match-data  (rest backward))
+                            (set-match-data  (cl-rest backward))
                             t)
 
                         (when forward
-                          (set-match-data  (rest forward))
+                          (set-match-data  (cl-rest forward))
                           t)))
 
                   (save-excursion

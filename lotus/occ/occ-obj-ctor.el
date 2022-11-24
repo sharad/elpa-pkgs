@@ -119,15 +119,15 @@
 (defun occ-util-plist-value-mapcar (fun plist)
   (mapcan #'identity
           (occ-plist-mapcar #'(lambda (c)
-                                (list (first c)
+                                (list (cl-first c)
                                       (funcall fun (nth 1 c))))
                             plist)))
 
 (defun occ-tsk-plist-from-org (plist)
   (let ((ret-plist (mapcan #'identity
                            (occ-util-plist-mapcar #'(lambda (c)
-                                                      (list (first c)
-                                                            (occ-obj-prop-from-org (occ-util-keyword2sym (first c))
+                                                      (list (cl-first c)
+                                                            (occ-obj-prop-from-org (occ-util-keyword2sym (cl-first c))
                                                                                    (nth 1 c))))
                                                   plist))))
     (occ-assert (evenp (length     plist)))
@@ -549,15 +549,15 @@
   ap-obj)
 
 (cl-defmethod occ-obj-make-ap-normal ((ap-obj (head :tree-keybranch)))
-  (let ((tree-keybranch (rest ap-obj)))
+  (let ((tree-keybranch (cl-rest ap-obj)))
     (make-occ-ap-normal :tree-keybranch tree-keybranch)))
 
 (cl-defmethod occ-obj-make-ap-normal ((ap-obj (head :callables)))
-  (let ((callables (rest ap-obj)))
+  (let ((callables (cl-rest ap-obj)))
     (make-occ-ap-normal :callables (occ-obj-callables callables nil))))
 
 (cl-defmethod occ-obj-make-ap-normal ((ap-obj (head :keywords)))
-  (let* ((keywords  (rest ap-obj))
+  (let* ((keywords  (cl-rest ap-obj))
          (callables (occ-helm-callables-get keywords)))
    (make-occ-ap-normal :callables callables)))
 
@@ -574,20 +574,20 @@
   ap-obj)
 
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj (head :tree-keybranch)))
-  (let ((tree-keybranch (rest ap-obj)))
+  (let ((tree-keybranch (cl-rest ap-obj)))
     (make-occ-ap-transf :tree-keybranch tree-keybranch)))
 
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj (head :callables)))
-  (let ((callables (rest ap-obj)))
+  (let ((callables (cl-rest ap-obj)))
     (make-occ-ap-transf :callables callables)))
 
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj (head :keywords)))
-  (let* ((keywors   (rest ap-obj))
+  (let* ((keywors   (cl-rest ap-obj))
          (callables (occ-helm-callables-get keywords)))
     (make-occ-ap-transf :callables callables)))
 
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj (head :transform)))
-  (let ((transform (rest ap-obj)))
+  (let ((transform (cl-rest ap-obj)))
     (make-occ-ap-transf :transform transform)))
 
 

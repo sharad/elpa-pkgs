@@ -198,15 +198,15 @@
 (defun find-file-wizard ()
   (interactive)
   (let ((wizard-alist *find-file-wizard-alist*)
-        (plist (rest (first *find-file-wizard-alist*)))
+        (plist (cl-rest (cl-first *find-file-wizard-alist*)))
         ;; (file 'fallback-wizard)
         (retval '(next))
         initial-string)
     (while (and wizard-alist ;; (eq file 'fallback-wizard)
-                (and (consp retval) (eq 'next (first retval))))
+                (and (consp retval) (eq 'next (cl-first retval))))
       ;; (message "fileB: %s" file)
-      (letf ((plist (rest (first wizard-alist)))
-             (initial-string (plist-get (rest retval) :initial-string)))
+      (letf ((plist (cl-rest (cl-first wizard-alist)))
+             (initial-string (plist-get (cl-rest retval) :initial-string)))
         (let ((failval  (plist-get plist :failval))
               (ffretval (catch 'nextff
                           (condition-case e
@@ -214,7 +214,7 @@
                             (error '(next))))))
           (if (eq failval ffretval)
               (setq retval '(next)))
-          (setq wizard-alist (or (rest wizard-alist)
+          (setq wizard-alist (or (cl-rest wizard-alist)
                                  (setq wizard-alist *find-file-wizard-alist*))))))))
 
 

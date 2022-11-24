@@ -29,6 +29,7 @@
 
 (eval-when-compile
   (require 'helm-source))
+(require 'helm-files)
 (require 'occ-assert)
 
 
@@ -170,11 +171,11 @@
   (let ((override        (and prompt
                               (consp prompt)
                               (eq :overrride
-                                  (first prompt))))
+                                  (cl-first prompt))))
         (prompt          (when (consp prompt)
-                           (if (consp (rest prompt))
+                           (if (consp (cl-rest prompt))
                                (nth 1 prompt)
-                             (rest prompt))))
+                             (cl-rest prompt))))
         (collection-name (occ-obj-collection-name collection))
         (collection-desc (occ-obj-collection-desc collection)))
     (if (and override
@@ -217,7 +218,7 @@
 
     (if (and auto-select-if-only
              (<= filtered-count 1))
-        (occ-build-hsrc-candidate (first candidates-filtered))
+        (occ-build-hsrc-candidate (cl-first candidates-filtered))
       (progn
         (occ-debug "occ-obj-helm-build-collection-source: (length candidates-unfiltered) = %d, called-never = %s"
                      (length candidates-unfiltered)
@@ -284,7 +285,7 @@
             (let ((gen-candidate-lambda #'(lambda () (funcall gen-candidates)))
                   (source-name          (occ-helm-build-collection-source-prompt obj
                                                                                  collection
-                                                                                 (symbol-name (occ-cl-inst-classname (first candidates-unfiltered)))
+                                                                                 (symbol-name (occ-cl-inst-classname (cl-first candidates-unfiltered)))
                                                                                  unfiltered-count
                                                                                  filtered-count
                                                                                  :prompt prompt)))
@@ -391,18 +392,18 @@
 (cl-defmethod occ-obj-get-first-helm-actions-for-obj ((obj occ-obj)
                                                       (apn occ-ap-normal)
                                                       (apt null))
-  (let ((act (first (occ-obj-ap-helm-get-actions obj
+  (let ((act (cl-first (occ-obj-ap-helm-get-actions obj
                                                  apn
                                                  apt))))
-    (rest act)))
+    (cl-rest act)))
 
 (cl-defmethod occ-obj-get-first-helm-actions-for-obj ((obj occ-obj)
                                                       (apn occ-ap-normal)
                                                       (apt occ-ap-transf))
-  (let ((act (first (occ-obj-ap-helm-get-actions obj
+  (let ((act (cl-first (occ-obj-ap-helm-get-actions obj
                                                  apn
                                                  apt))))
-    (rest act)))
+    (cl-rest act)))
 
 
 (cl-defmethod occ-obj-helm-act-on-candidate ((obj    occ-ctx)
@@ -423,8 +424,8 @@
                  (consp helm-action)
                  (functionp helm-action))
     (occ-debug "occ-obj-helm-act-on-single: (cons p (nth 1 helm-action)) %s, (functionp (nth 1 helm-action)) %s"
-                 (consp (rest helm-action))
-                 (functionp (rest helm-action)))
+                 (consp (cl-rest helm-action))
+                 (functionp (cl-rest helm-action)))
     (if (occ-obj-obj source)
         (funcall helm-action (occ-obj-obj source))
       (occ-warn "occ-obj-helm-act-on-candidate: wrong source"))))
@@ -448,19 +449,19 @@
                                                   :auto-select-if-only auto-select-if-only
                                                   :prompt           prompt)))
 
-    (if (occ-hsrc-candidate-p (first cand-sources))
+    (if (occ-hsrc-candidate-p (cl-first cand-sources))
         ;; Mean if first cand-sources has only one element then it will pack
         ;; that element using `occ-build-hsrc-source' to be acted by default
         ;; action.
         (occ-obj-helm-act-on-candidate obj
-                                       (first cand-sources)
+                                       (cl-first cand-sources)
                                        :filters          filters
                                        :builder          builder
                                        :ap-normal        ap-normal
                                        :ap-transf        ap-transf
                                        :auto-select-if-only auto-select-if-only
                                        :prompt           prompt)
-      ;; (occ-assert (first cand-sources)) -- can happen when no contxtual match found
+      ;; (occ-assert (cl-first cand-sources)) -- can happen when no contxtual match found
 
       ;; Else all source will be passed to helm to be shown.
       (let* ((in-occ-helm t)
@@ -469,8 +470,8 @@
                                                      (helm-refresh)
                                                    (occ-debug "Running occ-list-select-internal helm is gone"))))))
         (unwind-protect
-            (when (occ-obj-obj (first cand-sources))
-              (if t
+            (when (occ-obj-obj (cl-first cand-sources))
+              (if nil
                   (condition-case e
                       (helm :sources (mapcar #'occ-obj-obj cand-sources)
                             :buffer  (occ-helm-select-buffer)

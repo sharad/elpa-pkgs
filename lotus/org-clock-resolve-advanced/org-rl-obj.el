@@ -51,7 +51,7 @@
 (defun assert-time (time)
   (message "assert-time: time = %s" time)
   (cl-assert (or (eql time 'now)
-                 (listp (rest time)))))
+                 (listp (cl-rest time)))))
 
 
 (cl-defstruct org-rl-time
@@ -130,11 +130,11 @@
   (org-rl-clock-marker clock))
 
 (cl-defmethod org-rl-format (time)
-  (let ((fmt (rest org-time-stamp-formats)))
+  (let ((fmt (cl-rest org-time-stamp-formats)))
     (format-time-string fmt (time-get-time time))))
 
 (cl-defmethod org-rl-format ((time org-rl-time))
-  (let ((fmt (rest org-time-stamp-formats)))
+  (let ((fmt (cl-rest org-time-stamp-formats)))
     (format-time-string fmt (org-rl-time-get-time time))))
 
 ;; (cl-defmethod org-rl-clock-heading ((clock org-rl-clock))
@@ -145,7 +145,7 @@
   (format "null"))
 
 (cl-defmethod org-rl-format ((clock org-rl-clock))
-  (let ((fmt (rest org-time-stamp-formats)))
+  (let ((fmt (cl-rest org-time-stamp-formats)))
     (let* ((marker (org-rl-clock-marker clock))
            (heading (org-rl-clock-heading clock))
            (start (format-time-string fmt (org-rl-clock-start-time clock)))
@@ -266,7 +266,7 @@
           (re-search-forward clock-reg end t))))))
 
 (cl-defmethod org-rl-clock-insert-range ((clock org-rl-clock))
-  (let ((fmt (rest org-time-stamp-formats)))
+  (let ((fmt (cl-rest org-time-stamp-formats)))
     (let ((start (format-time-string fmt (org-rl-clock-start-time clock)))
           (stop  (format-time-string fmt (org-rl-clock-stop-time clock))))
       (setf (org-rl-clock-marker clock) (point-marker))
@@ -401,7 +401,7 @@
                                               fail-quietly
                                               (org-rl-clock-stop-time clock))
                         (setf (org-rl-clock-current clock) nil)
-                        (setf (org-rl-clock-marker clock) (first org-clock-history)))
+                        (setf (org-rl-clock-marker clock) (cl-first org-clock-history)))
                     (org-rl-org-clock-clock-out (org-rl-clock-for-clock-out clock)
                                                 fail-quietly
                                                 (org-rl-clock-stop-time clock)))
@@ -617,8 +617,8 @@
                                                     resume-clocks)
   (remove nil
           (mapcar #'(lambda (file-heading)
-                      (let* ((file    (first file-heading))
-                             (heading (rest file-heading))
+                      (let* ((file    (cl-first file-heading))
+                             (heading (cl-rest file-heading))
                              (marker  (org-rl-find-heading-marker file heading)))
                         (when marker
                           (list
@@ -647,7 +647,7 @@
 
   (mapcar #'(lambda (list)
               (cons
-               (first list)
+               (cl-first list)
                (append
                 (list (list :helm :multiline t))
                 (mapcar #'(lambda (template)
@@ -656,7 +656,7 @@
                              (format "%s" template)
                              (cons 'include-in-new template)
                              prev next maxtimelen-secs resume fail-quietly resume-clocks))
-                        (rest list)))))
+                        (cl-rest list)))))
 
           (org-rl-org-capture+-helm-templates-alist (org-rl-marker (some #'org-rl-clock-real-p
                                                                          (list prev next))))))
@@ -832,9 +832,9 @@
 (defun org-rl-clock-read-option (interval-secs prompt-fn options-fn default-fn)
   (let* ((options (if (functionp options-fn) (funcall options-fn) options-fn))
          (desopt (assoc (time-aware-completing-read interval-secs prompt-fn options-fn) options))
-         (des (first desopt))
-         (opt (rest desopt)))
-    (org-rl-debug :warning "Selected option is %s[ %s ]" des (first opt))
+         (des (cl-first desopt))
+         (opt (cl-rest desopt)))
+    (org-rl-debug :warning "Selected option is %s[ %s ]" des (cl-first opt))
     opt))
 
 (defvar org-rl-clock-time-direction-reverse nil)

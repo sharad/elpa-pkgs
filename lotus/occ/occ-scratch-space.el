@@ -306,9 +306,9 @@ captured %<%y-%m-%d %h:%m>
                           "?\\([ggttuuclp]\\)?\\|"
                           "%\\\\\\([1-9][0-9]*\\)"
                           "\\)") nil t)
-            (if (first values)
-                (replace-match (first values) nil t))
-            (setq values (rest values)))
+            (if (cl-first values)
+                (replace-match (cl-first values) nil t))
+            (setq values (cl-rest values)))
           (buffer-string)))
 
       (defun my/org-get-current-refile-location ()
@@ -335,7 +335,7 @@ captured %<%y-%m-%d %h:%m>
                   (my/org-capture-prefill-template (org-capture-get :template)
                                                    candidate)))
                 (org-capture-place-template
-                 (equal (first (org-capture-get :target)) 'function))
+                 (equal (cl-first (org-capture-get :target)) 'function))
                 (setq org-refile-target-table (org-refile-get-targets))
                 ;; return the new location
                 (my/org-get-current-refile-location))
@@ -440,14 +440,14 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
         (helm
          (list
           ;; (helm-build-sync-source "today's tasks"
-          ;;   :candidates (mapcar (lambda (a) (cons (first a) a))
+          ;;   :candidates (mapcar (lambda (a) (cons (cl-first a) a))
           ;;                       (my/org-get-todays-items-as-refile-candidates))
           ;;   :action '(("select" . identity)
           ;;             ("clock in and track" . my/helm-org-clock-in-and-track-from-refile)
           ;;             ("draw index card" . my/helm-org-prepare-index-card-for-subtree))
           ;;   :history 'org-refile-history)
           (helm-build-sync-source "refile targets"
-            :candidates (mapcar (lambda (a) (cons (first a) a)) tbl)
+            :candidates (mapcar (lambda (a) (cons (cl-first a) a)) tbl)
             :action '(("select" . identity)
                       ("clock in and track" . my/helm-org-clock-in-and-track-from-refile)
                       ("draw index card" . my/helm-org-prepare-index-card-for-subtree))
@@ -494,16 +494,16 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
                        (if (and (not (member org-refile-use-outline-path
                                              '(file full-file-path)))
                                 (not (equal filename (nth 1 x))))
-                           (cons (concat (first x) extra " ("
+                           (cons (concat (cl-first x) extra " ("
                                          (file-name-nondirectory (nth 1 x)) ")")
-                                 (rest x))
-                         (cons (concat (first x) extra) (rest x))))
+                                 (cl-rest x))
+                         (cons (concat (cl-first x) extra) (cl-rest x))))
                      org-refile-target-table))
                (completion-ignore-case t)
                cdef
                (prompt (concat prompt
-                               (or (and (first org-refile-history)
-                                        (concat " (default " (first org-refile-history) ")"))
+                               (or (and (cl-first org-refile-history)
+                                        (concat " (default " (cl-first org-refile-history) ")"))
                                    (and (assoc cbnex tbl) (setq cdef cbnex)
                                         (concat " (default " cbnex ")"))) ": "))
                pa answ parent-target child parent old-hist)
@@ -516,12 +516,12 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
             (org-refile-check-position pa)
             (when (or (not org-refile-history)
                       (not (eq old-hist org-refile-history))
-                      (not (equal (first pa) (first org-refile-history))))
+                      (not (equal (cl-first pa) (cl-first org-refile-history))))
               (setq org-refile-history
-                    (cons (first pa) (if (assoc (first org-refile-history) tbl)
+                    (cons (cl-first pa) (if (assoc (cl-first org-refile-history) tbl)
                                          org-refile-history
-                                       (rest org-refile-history))))
-              (if (equal (first org-refile-history) (nth 1 org-refile-history))
+                                       (cl-rest org-refile-history))))
+              (if (equal (cl-first org-refile-history) (nth 1 org-refile-history))
                   (pop org-refile-history)))
             (setq my/org-refile-last-location pa)
             pa)

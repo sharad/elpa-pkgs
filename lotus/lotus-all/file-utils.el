@@ -72,7 +72,7 @@ to do VC operation."
                 (directory-files directory t)))
           ;; while we are in the current directory
           (while current-directory-list
-            (let ((f (first current-directory-list)))
+            (let ((f (cl-first current-directory-list)))
               (cond
                ((and
                  ignore ;; make sure it is not nil
@@ -102,7 +102,7 @@ to do VC operation."
                   (setq
                    files-list (cons f files-list))))
                (t)))
-            (setq current-directory-list (rest current-directory-list)))
+            (setq current-directory-list (cl-rest current-directory-list)))
           files-list)))
 
 ;; (defun dirname-of-file (file &optional final-slash)
@@ -218,7 +218,7 @@ to do VC operation."
                 (directory-files directory t)))
           ;; while we are in the current directory
           (while current-directory-list
-            (let ((f (first current-directory-list)))
+            (let ((f (cl-first current-directory-list)))
               (cond
                ((and
                  ignore ;; make sure it is not nil
@@ -248,7 +248,7 @@ to do VC operation."
                   (setq
                    files-list (cons f files-list))))
                (t)))
-            (setq current-directory-list (rest current-directory-list)))
+            (setq current-directory-list (cl-rest current-directory-list)))
           files-list)))
 
 (when nil

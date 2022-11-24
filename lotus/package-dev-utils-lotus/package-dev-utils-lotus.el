@@ -60,7 +60,7 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
             (directory-files directory t)))
       ;; while we are in the current directory
       (while current-directory-list
-        (let ((f (first current-directory-list)))
+        (let ((f (cl-first current-directory-list)))
           (cond
            ((and (file-directory-p f)
                  (file-readable-p f)
@@ -74,7 +74,7 @@ argument INCLUDE-DIRECTORIES is non-nil, they are included"
                  (string-match regexp f))
             (setq files-list (cons f files-list)))
            (t)))
-        (setq current-directory-list (rest current-directory-list)))
+        (setq current-directory-list (cl-rest current-directory-list)))
       files-list)))
 
 
@@ -101,20 +101,20 @@ or nil if the version cannot be parsed."
                           (contents (package--read-archive-file contents-file)))
                      contents))))
     (if package
-        (let* ((name (first package))
-               (version (package--ac-desc-version (rest package)))
+        (let* ((name (cl-first package))
+               (version (package--ac-desc-version (cl-rest package)))
                (pkg-desc
                 (package-desc-create
                  :name name
                  :version version
-                 :reqs (package--ac-desc-reqs (rest package))
-                 :summary (package--ac-desc-summary (rest package))
-                 :kind (package--ac-desc-kind (rest package))
+                 :reqs (package--ac-desc-reqs (cl-rest package))
+                 :summary (package--ac-desc-summary (cl-rest package))
+                 :kind (package--ac-desc-kind (cl-rest package))
                  :archive archive
-                 :extras (and (> (length (rest package)) 4)
+                 :extras (and (> (length (cl-rest package)) 4)
                               ;; Older archive-contents files have only 4
                               ;; elements here.
-                              (package--ac-desc-extras (rest package))))))
+                              (package--ac-desc-extras (cl-rest package))))))
                ;; (existing-packages (assq name package-archive-contents))
                ;; (pinned-to-archive (assoc name package-pinned-packages))
 
@@ -263,7 +263,7 @@ or nil if the version cannot be parsed."
           (when nil
             (unless (nth 4 pkg-def)
               (let ((dep
-                     (first (read-from-string (read-from-minibuffer (format "package %s dependency: " pkg-name))))))
+                     (cl-first (read-from-string (read-from-minibuffer (format "package %s dependency: " pkg-name))))))
                 (setcar (nthcdr 4 pkg-def) dep))))))
 
       (let ((pkgdir-def-file (expand-file-name (format "%s-pkg.el" pkg-name) pkg-dir)))
@@ -450,7 +450,7 @@ or nil if the version cannot be parsed."
       (progn
         (message "depecdencies to be installed %s" dependencies-external)
         (dolist (dep dependencies-external)
-          (let ((dep-sym  (first (assoc dep package-archive-contents)))
+          (let ((dep-sym  (cl-first (assoc dep package-archive-contents)))
                 (dep-desc (nth 1 (assoc dep package-archive-contents))))
             (if (package-installed-p dep-sym)
                 (message "dependency package %s already installed." dep)
@@ -495,8 +495,8 @@ or nil if the version cannot be parsed."
                     "Install package: "
                     (delq nil
                           (mapcar (lambda (elt)
-                                    (when (package-installed-p (first elt))
-                                      (symbol-name (first elt))))
+                                    (when (package-installed-p (cl-first elt))
+                                      (symbol-name (cl-first elt))))
                                   ;; package-archive-contents
                                   package-alist))
                     nil t)))))
@@ -556,8 +556,8 @@ will be deleted."
 ;; package-compute-transaction
 
 (when nil
-  (package-desc-p (rest (first package-archive-contents)))
-  (first (first package-archive-contents))
+  (package-desc-p (cl-rest (cl-first package-archive-contents)))
+  (cl-first (cl-first package-archive-contents))
   (assoc
    'yasnippet-classic-snippets
    package-archive-contents))

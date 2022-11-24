@@ -490,7 +490,7 @@ With prefix arg C-u, copy region instad of killing it."
   (let ((element (org-element-at-point)))
     (if (and
          element
-         (eq (first element) 'heading))
+         (eq (cl-first element) 'heading))
         (let ((begin (plist-get (nth 1 element) :begin))
               (level (plist-get (nth 1 element) :level))
               (title (plist-get (nth 1 element) :title)))
@@ -664,7 +664,7 @@ With prefix arg C-u, copy region instad of killing it."
         desc)
     (with-current-buffer (or default-buffer (current-buffer))
       (dolist (entry entries)
-        (setq files (first entry) desc (rest entry))
+        (setq files (cl-first entry) desc (cl-rest entry))
         (cond
          ((null files) (setq files (list (current-buffer))))
          ((eq files 'org-agenda-files)
@@ -707,7 +707,7 @@ With prefix arg C-u, copy region instad of killing it."
     (let ((org-refile-targets
            (if (safe-org-refile-get-location-p)
                org-refile-targets
-             (remove-if '(lambda (e) (null (first e))) org-refile-targets))))
+             (remove-if '(lambda (e) (null (cl-first e))) org-refile-targets))))
       (org-refile-target-check org-refile-targets)
       (org-refile-get-location prompt))))
 
@@ -721,7 +721,7 @@ With prefix arg C-u, copy region instad of killing it."
     (let ((org-refile-targets
            (if (safe-org-refile-get-location-p)
                org-refile-targets
-             (remove-if '(lambda (e) (null (first e))) org-refile-targets))))
+             (remove-if '(lambda (e) (null (cl-first e))) org-refile-targets))))
       (org-refile-target-check org-refile-targets)
       (let* ((marker (make-marker))
              (target (org-refile-get-location prompt))
@@ -826,7 +826,7 @@ With prefix arg C-u, copy region instad of killing it."
 ;;         (org-log-note-purpose 'clock-out)
 ;;         (org-log-note-effective-time (org-current-effective-time)))
 ;;     ;; (kill-buffer (current-buffer))
-;;     (let ((note (rest (assq org-log-note-purpose org-log-note-headings)))
+;;     (let ((note (cl-rest (assq org-log-note-purpose org-log-note-headings)))
 ;;           lines)
 ;;       ;; (while (string-match "\\`# .*\n[ \t\n]*" txt)
 ;;       ;;   (setq txt (replace-match "" t t txt)))

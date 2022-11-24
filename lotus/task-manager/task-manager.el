@@ -131,7 +131,7 @@
              ;; (if (goto-char (point-min))
              ;;     (insert "# -*-  -*-\n"))
              (dolist (pv task-file-properties)
-               (add-file-local-variable-prop-line (first pv) (rest pv)))
+               (add-file-local-variable-prop-line (cl-first pv) (cl-rest pv)))
            (goto-char (point-max))
            (insert (reduce '(lambda (a b) (concat a "\n" b)) task-org-headers))
            (goto-char (point-max))
@@ -326,7 +326,7 @@
          (party-dir             (expand-file-name party (task-party-base-dir)))
          (org-master-file       (nth 1
                                  (assoc 'org-master-file
-                                        (rest (assoc party task-parties)))))
+                                        (cl-rest (assoc party task-parties)))))
          (org-master-file-path (expand-file-name org-master-file party-dir)))
     (if (not (member party (mapcar 'car task-parties)))
         (error "task-party-org-master-file: party `%s' is not from task-parties" party)
@@ -348,7 +348,7 @@
          (party-dir             (expand-file-name party (task-party-base-dir)))
          (org-master-file       (nth 1
                                  (assoc 'org-master-file
-                                        (rest (assoc party task-parties)))))
+                                        (cl-rest (assoc party task-parties)))))
          (org-master-file-path (expand-file-name org-master-file party-dir)))
     (if (not (member party (mapcar 'car task-parties)))
         (error "task-party-org-master-file: party `%s' is not from task-parties" party)
@@ -395,7 +395,7 @@
     (if (member party (mapcar 'car task-parties))
         (nth 1
              (assoc 'org-heading
-                    (rest (assoc party task-parties))))
+                    (cl-rest (assoc party task-parties))))
       (error "task-party-org-heading: party `%s' is not from task-parties" party))))
 
 ;;;###autoload
@@ -404,7 +404,7 @@
     (if (member party (mapcar 'car task-parties))
         (nth 1
              (assoc 'bugz-url
-                    (rest (assoc party task-parties))))
+                    (cl-rest (assoc party task-parties))))
         (error "task-party-bugz-url: party `%s' is not from task-parties" party))))
 
 ;;;###autoload
@@ -431,8 +431,8 @@
 (defun task-org-master-file (task-type)
   (if (member task-type
               (mapcar 'car *task-type-config*))
-      (rest (assoc 'org-master-file
-                   (rest (assoc task-type *task-type-config*))))
+      (cl-rest (assoc 'org-master-file
+                   (cl-rest (assoc task-type *task-type-config*))))
     (error "task-type is not from *task-type-config*")))
 
 ;;;###autoload
@@ -440,7 +440,7 @@
   (if (member task-type
               (mapcar 'car *task-type-config*))
       (nth 1 (assoc 'org-master-file
-                    (rest (assoc task-type *task-type-config*))))
+                    (cl-rest (assoc task-type *task-type-config*))))
     (error "task-type is not from *task-type-config*")))
 
 ;;;###autoload
@@ -448,15 +448,15 @@
   (if (member task-type
               (mapcar 'car *task-type-config*))
       (nth 1 (assoc 'org-todo-file
-                    (rest (assoc task-type *task-type-config*))))
+                    (cl-rest (assoc task-type *task-type-config*))))
     (error "task-type is not from *task-type-config*")))
 
 ;;;###autoload
 (defun task-org-files (task-type)
   (if (member task-type
               (mapcar 'car *task-type-config*))
-      (rest (assoc 'org-files
-                   (rest (assoc task-type *task-type-config*))))
+      (cl-rest (assoc 'org-files
+                   (cl-rest (assoc task-type *task-type-config*))))
     (error "task-type is not from *task-type-config*")))
 ;;  )
 ;;
@@ -470,7 +470,7 @@
                      nil
                      (not new))))
     (if new
-        (let* ((predicate (nth 1 (assoc 'name (rest (assoc task-type *task-type-config*)))))
+        (let* ((predicate (nth 1 (assoc 'name (cl-rest (assoc task-type *task-type-config*)))))
                (task-name-match
                 (cond
                   ((stringp predicate)
@@ -498,7 +498,7 @@
                             (task-party-bugz-url party))
                          ('error (progn (message "bugzilla some problem is there.") nil))))))
              (desc (if bug
-                       (rest (assoc "summary" bug))
+                       (cl-rest (assoc "summary" bug))
                        (read-from-minibuffer (format "Desc of %s: " name)))))
         desc)
       (let* ((task-dir       (task-get-task-dir (task-current-party) task-type name))
@@ -775,14 +775,14 @@
                                         (org-entry-put nil "SubtreeFile" sfile)))))))
 
       ;; links
-      (dolist (lp (rest (assoc 'links (rest (assoc task-type *task-type-config*)))))
+      (dolist (lp (cl-rest (assoc 'links (cl-rest (assoc task-type *task-type-config*)))))
         (make-symbolic-link
-         (first lp) ;; (expand-file-name (first lp) (concat task-dir "/"))
-         (expand-file-name (rest lp) (concat task-dir "/"))))
+         (cl-first lp) ;; (expand-file-name (cl-first lp) (concat task-dir "/"))
+         (expand-file-name (cl-rest lp) (concat task-dir "/"))))
       ;; dirs
       (dolist
           (dname
-            (rest (assoc 'dirs (rest (assoc task-type *task-type-config*))))
+            (cl-rest (assoc 'dirs (cl-rest (assoc task-type *task-type-config*))))
            t)
         (make-directory (concat task-dir "/" dname) t)))))
 

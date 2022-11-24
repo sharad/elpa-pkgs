@@ -81,7 +81,7 @@ which other peoples are also working."
 
 ;;;###autoload
 (defun office-file-p (file)
-  (let ((remote-repo (first (remove-if-not #'(lambda (s)
+  (let ((remote-repo (cl-first (remove-if-not #'(lambda (s)
                                                (when s
                                                  (string-match-p "^origin" s)))
                                            (magit-git-lines "remote" "-v")))))

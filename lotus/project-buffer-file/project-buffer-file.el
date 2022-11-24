@@ -77,7 +77,7 @@ May either be a string or a list of strings.")
 
 (defun pbm-file-name-regexp-update ()
   (interactive)
-  (unless (equal (first pbm-file-handler) pbm-file-name-regexp)
+  (unless (equal (cl-first pbm-file-handler) pbm-file-name-regexp)
     (setcar pbm-file-handler pbm-file-name-regexp)))
 
 (defun pbm-file-find-file-hook ()
@@ -193,7 +193,7 @@ reloaded through `project-buffer-raw-load' function."
 		   buf-dir) (current-buffer))
       ;; Save the hooks:
       (mapc
-       (lambda (item) (when (rest item) (project-buffer-raw-print-hooks (first item) (rest item))))
+       (lambda (item) (when (cl-rest item) (project-buffer-raw-print-hooks (cl-first item) (cl-rest item))))
        hooks-list)
       ;; Save the locals:
       (project-buffer-raw-print-locals locals-list)
@@ -216,7 +216,7 @@ reloaded through `project-buffer-raw-load' function."
 	(setq node (ewoc-next status node)))
       (print (list 'end 'node-list) (current-buffer))
       ;; Save the master project:
-      (print (list 'one-line 'master-project (first (buffer-local-value 'project-buffer-master-project project-buffer)))
+      (print (list 'one-line 'master-project (cl-first (buffer-local-value 'project-buffer-master-project project-buffer)))
 	     (current-buffer))
       ;; End of file:
       (print 'eof (current-buffer))
@@ -275,7 +275,7 @@ reloaded through `project-buffer-raw-load' function."
            ;;       	 'pbm-file--find-file-not-found-function
            ;;       	 nil t))
            ;;    (signal 'file-error
-           ;;            (cons "Opening input file" (rest error)))))
+           ;;            (cons "Opening input file" (cl-rest error)))))
 
            ;; (make-local-variable 'pbm-file-encrypt-to)
 
@@ -372,7 +372,7 @@ reloaded through `project-buffer-raw-load' function."
 ;;       (error
 ;;        (if (setq entry (assoc file pbm-file-passphrase-alist))
 ;; 	   (setcdr entry nil))
-;;        (signal 'file-error (cons "Opening output file" (rest error)))))
+;;        (signal 'file-error (cons "Opening output file" (cl-rest error)))))
 
     ;; (pbm-file-run-real-handler
     ;;  #'write-region

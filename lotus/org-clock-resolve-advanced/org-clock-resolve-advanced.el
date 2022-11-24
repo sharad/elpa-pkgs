@@ -40,7 +40,7 @@
 (defun org-clock-resolve-reset-last-idle-start-time ()
   (interactive)
   (let* ((old org-clock-last-idle-start-time)
-         (fmt (rest org-time-stamp-formats))
+         (fmt (cl-rest org-time-stamp-formats))
          (time-string (format-time-string fmt org-clock-last-idle-start-time)))
     (setq org-clock-last-idle-start-time nil)
     (message "%s" time-string)))
@@ -130,8 +130,8 @@ so long."
                    (format-time-string "<%Y-%m-%d %a %H:%M:%S>" (time-subtract (current-time) 60)))
 
           (if org-clock-last-idle-start-time
-              (cl-assert (listp (rest org-clock-last-idle-start-time)))
-            (cl-assert (listp (rest org-clock-user-idle-start))))
+              (cl-assert (listp (cl-rest org-clock-last-idle-start-time)))
+            (cl-assert (listp (cl-rest org-clock-user-idle-start))))
 
           (setq org-clock-last-idle-start-time org-clock-user-idle-start)
 
@@ -198,9 +198,9 @@ If `only-dangling-p' is non-nil, only ask to resolve dangling
         (let ((clocks (org-find-open-clocks file)))
           (dolist (clock clocks)
             (let ((dangling (or (not (org-clock-is-active))
-                                (/= (first clock) org-clock-marker))))
+                                (/= (cl-first clock) org-clock-marker))))
               (when (or (not only-dangling-p) dangling)
-                (org-rl-clock-resolve-internal (org-rl-make-clock (first clock) (rest clock) (rest clock))
+                (org-rl-clock-resolve-internal (org-rl-make-clock (cl-first clock) (cl-rest clock) (cl-rest clock))
                                                (org-rl-make-clock 'imaginary 'now 'now)
                                                nil
                                                nil

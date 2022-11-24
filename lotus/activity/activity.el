@@ -111,7 +111,7 @@
                            (when c
                              (progn
                                (push key @:active)
-                               (funcall (rest c)))))))
+                               (funcall (cl-rest c)))))))
 
                      (def@ @@ :deactivate (key)
                        (let ((c (assoc key @:uninsinuate)))
@@ -122,24 +122,24 @@
                                 @:active
                                 (remove key @:active))
                                (@:debug :warning "a key %s not active %s" key @:active)
-                               (funcall (rest c)))
+                               (funcall (cl-rest c)))
                            (@:debug :warning "key %s not active" key))))
 
 
                      (def@ @@ :activate-all ()
                        (dolist (act @:insinuate)
-                         (@:activate (first act))))
+                         (@:activate (cl-first act))))
 
                      (def@ @@ :deactivate-all ()
                        (dolist (act @:uninsinuate)
-                         (@:deactivate (first act))))
+                         (@:deactivate (cl-first act))))
 
                      (def@ @@ :add (key active deactive)
                        (if (assoc key @:insinuate)
-                           (setf (rest (assoc key @:insinuate)) active)
+                           (setf (cl-rest (assoc key @:insinuate)) active)
                          (push (cons key active) @:insinuate))
                        (if (assoc key @:uninsinuate)
-                           (setf (rest (assoc key @:uninsinuate)) deactive)
+                           (setf (cl-rest (assoc key @:uninsinuate)) deactive)
                          (push (cons key deactive) @:uninsinuate)))
 
                      (def@ @@ :inspect ()

@@ -184,10 +184,10 @@
 so returns nil if pid is nil."
   (when pid
     (let* ((attributes (process-attributes pid))
-           (cmd        (rest (assoc "comm" attributes #'string=))))
+           (cmd        (cl-rest (assoc "comm" attributes #'string=))))
       ;; (dolist (attr attributes)
-      ;;   (if (string= "comm" (first attr))
-      ;;       (setq cmd (rest attr))))
+      ;;   (if (string= "comm" (cl-first attr))
+      ;;       (setq cmd (cl-rest attr))))
       (and cmd
            (or (string= "emacs"     cmd)
                (string= "emacs.exe" cmd)
@@ -696,11 +696,11 @@ is function is a no-op when Emacs is running in batch mode.
              (let ((dirs desktop-path))
                (while (and dirs
                            (not (file-exists-p
-                                 (desktop-full-file-name (first dirs)))))
-                 (setq dirs (rest dirs)))
-               (and dirs (first dirs)))
+                                 (desktop-full-file-name (cl-first dirs)))))
+                 (setq dirs (cl-rest dirs)))
+               (and dirs (cl-first dirs)))
              ;; If not found and `desktop-path' is non-nil, use its first element.
-             (and desktop-path (first desktop-path))
+             (and desktop-path (cl-first desktop-path))
              ;; Default: Home directory.
              "~"))))
     (if (file-exists-p (desktop-full-file-name))
@@ -740,8 +740,8 @@ is function is a no-op when Emacs is running in batch mode.
             ;; not reused) to be placed at the end of the buffer list, so we
             ;; move them here.
             (mapc 'bury-buffer
-                  (nreverse (rest (memq desktop-first-buffer (nreverse (buffer-list))))))
-            (switch-to-buffer (first (buffer-list)))
+                  (nreverse (cl-rest (memq desktop-first-buffer (nreverse (buffer-list))))))
+            (switch-to-buffer (cl-first (buffer-list)))
             (run-hooks 'desktop-delay-hook)
             (setq desktop-delay-hook nil)
             (run-hooks 'desktop-after-read-hook)

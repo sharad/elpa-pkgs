@@ -33,19 +33,19 @@
         (name-string (symbol-name name)))
     (dolist (binding bindings)
       (message "binding %s" binding)
-      (let* ((operation (first binding))
+      (let* ((operation (cl-first binding))
              (fn (intern (concat name-string "-" (symbol-name operation)))))
         (message "fn %s" fn)
         (push
          `(progn
             (defun ,fn (key ,@args)
-              ,@(rest binding))
+              ,@(cl-rest binding))
             (unless (assoc ,key org-context-clock-key-operation-functions)
               (push (cons ,key nil) org-context-clock-key-operation-functions))
             (setf
-             (rest (assoc ,key org-context-clock-key-operation-functions))
+             (cl-rest (assoc ,key org-context-clock-key-operation-functions))
              (plist-put
-              (rest (assoc ,key org-context-clock-key-operation-functions))
+              (cl-rest (assoc ,key org-context-clock-key-operation-functions))
               ,(intern (concat ":" (symbol-name operation)))
               #',fn)))
          binds)))
@@ -55,7 +55,7 @@
 
 (defun org-context-clock-key-fun (key operation)
   (let ((keyfns (assoc key org-context-clock-key-operation-functions)))
-    (plist-get (rest keyfns) operation)))
+    (plist-get (cl-rest keyfns) operation)))
 
 (defun org-context-clock-keys-with-operation (operation context)
   (remove-if-not

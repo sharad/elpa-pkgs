@@ -142,7 +142,7 @@
 (defun s-lcp (&rest strings)
   (if (null strings)
       ""
-    (-reduce-from #'s-shared-start (first strings) (rest strings))))
+    (-reduce-from #'s-shared-start (cl-first strings) (cl-rest strings))))
 
 
 ;;;###autoload

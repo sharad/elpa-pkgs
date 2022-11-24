@@ -77,7 +77,7 @@
 ;;;###autoload
 (defun occ-lwarn (level &rest args)
   (when occ-debug
-    (when (first args)
+    (when (cl-first args)
       (apply #'format args)
       (when (member level '(:emergency :error :warning :debug))
         (apply #'lwarn 'occ level args))
@@ -201,7 +201,7 @@
           (let ((tail (nthcdr (1- pos) list)))
             (when (null tail)
               (occ-error "There is no position ~D in ~S." pos list))
-            (push node (rest tail))
+            (push node (cl-rest tail))
             list)))))
 (defun occ-insert-node-after-element (node element list)
   ;; https://groups.google.com/forum/#!topic/comp.lang.lisp/83g9zkq_CQY
@@ -211,7 +211,7 @@
             (cons node list) ;There's no way to be destructive in this case, so just cons.
           (let ((tail (nthcdr pos list)))
             (if (null tail) (occ-error "There is no position ~D in ~S." pos list))
-            (push node (rest tail))
+            (push node (cl-rest tail))
             list)))))
 
 

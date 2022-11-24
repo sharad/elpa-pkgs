@@ -40,7 +40,7 @@
             tree-helm-items-tree))
 
 (defun stree-item-p (item)
-  (eql :item (first item)))
+  (eql :item (cl-first item)))
 
 (defun stree-tree-gen-predicate (predicate arg)
   #'(lambda (key)
@@ -78,19 +78,19 @@
                                     0)))
 
 (defun stree-tree-predicate (key-tree arg)
-  (memq (first key-tree)
+  (memq (cl-first key-tree)
         arg))
 
 
 (defun tree-item-p (item)
-  (eql :item (first item)))
+  (eql :item (cl-first item)))
 
 (defun tree-tree-gen-predicate (predicate arg)
   #'(lambda (key)
       (funcall predicate key arg)))
 
 (defun tree-add-class-item (tree keys class &rest item)
-  (unless (eq t (first tree))
+  (unless (eq t (cl-first tree))
     (push t tree))
   (tree-add keys
             (list :item (cons class item))
@@ -129,7 +129,7 @@
                                     0)))
 
 (defun tree-tree-predicate (key-tree arg)
-  (memq (first key-tree)
+  (memq (cl-first key-tree)
         arg))
 
 

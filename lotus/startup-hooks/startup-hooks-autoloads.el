@@ -1,7 +1,7 @@
 ;;; startup-hooks-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-(add-to-list 'load-path (directory-file-name (or (file-name-directory #$) (first load-path))))
+(add-to-list 'load-path (directory-file-name (or (file-name-directory #$) (cl-first load-path))))
 
 ;;;### (autoloads nil "startup-hooks" "startup-hooks.el" (23980 19891
 ;;;;;;  6707 502000))

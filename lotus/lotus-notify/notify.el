@@ -126,7 +126,7 @@ May be overridden with key-value additional arguments to `notify'.")
   (when (consp defaults)
     (keywords-to-properties symbol defaults))
   (while args
-    (put symbol (first args) (nth 1 args))
+    (put symbol (cl-first args) (nth 1 args))
     (setq args (nthcdr 2 args))))
 
 

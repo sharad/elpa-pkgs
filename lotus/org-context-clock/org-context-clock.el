@@ -104,7 +104,7 @@
 (defun custom-plist-keys (in-plist)
   (if (null in-plist)
       in-plist
-      (cons (first in-plist) (custom-plist-keys (nthcdr 2 in-plist)))))
+      (cons (cl-first in-plist) (custom-plist-keys (nthcdr 2 in-plist)))))
 ;; Simple function:1 ends here
 
 ;; Disable for some time
@@ -263,13 +263,13 @@
     (let ((org-log-note-clock-out nil))
       (if (org-clock-marker-is-unnamed-clock-p)
           (org-context-clock-debug :debug "org-context-clock-maybe-create-unnamed-task: Already clockin unnamed task")
-          (rest (lotus-org-create-unnamed-task))))))
+          (cl-rest (lotus-org-create-unnamed-task))))))
 
 
 (defun org-context-clock-maybe-create-unnamed-task ()
   ;; back
   (let* ((unnamed-heading-marker
-         (rest (lotus-org-create-unnamed-task)))
+         (cl-rest (lotus-org-create-unnamed-task)))
         (unnamed-task
          (when unnamed-heading-marker
            (with-current-buffer (marker-buffer unnamed-heading-marker)
@@ -421,7 +421,7 @@
   ;;TODO add org-insert-log-not
   (org-context-clock-debug :debug "org-context-clock-clockin-marker %s" new-dyntaskpl)
   (let* (retval
-         (old-dyntaskpl (first *org-context-clock-clocked-dyntaskpl-context-history*))
+         (old-dyntaskpl (cl-first *org-context-clock-clocked-dyntaskpl-context-history*))
          (old-task    (plist-get old-dyntaskpl :task))
          (old-marker  (or (if old-task (plist-get old-task :task-clock-marker)) org-clock-hd-marker))
          (old-heading (if old-task (plist-get old-task :task-clock-heading)))
@@ -467,7 +467,7 @@
               ((error)
                (progn
                  (setq retval nil)
-                 (signal (first err) (rest err)))))))
+                 (signal (cl-first err) (cl-rest err)))))))
         (if old-buff
             (with-current-buffer old-buff
               (setq buffer-read-only old-buff-read-only)))
@@ -495,7 +495,7 @@
           (let* ((sel-dyntaskpl
                   (if (> (length matched-dyntaskpls) 1)
                       (sacha/helm-select-dyntaskpl-timed matched-dyntaskpls)
-                      (first matched-dyntaskpls)))
+                      (cl-first matched-dyntaskpls)))
                  ;; (sel-task   (if sel-dyntaskpl (plist-get sel-dyntaskpl :task)))
                  ;; (sel-marker (if sel-task      (plist-get sel-task      :task-clock-marker)))
                  )
@@ -606,7 +606,7 @@ pointing to it."
 ;; [[file:org-context-clock.org::*function to setup context clock timer][function to setup context clock timer:3]]
 ;; rank based
   (defun sacha/helm-select-dyntaskpl (dyntaskpls)
-    ;; (org-context-clock-debug :debug "sacha marker %s" (first dyntaskpls))
+    ;; (org-context-clock-debug :debug "sacha marker %s" (cl-first dyntaskpls))
     (helm
      (list
       (helm-build-sync-source "Select matching tasks"
@@ -626,7 +626,7 @@ pointing to it."
       (sacha/helm-select-dyntaskpl dyntaskpls)))
 
   (defun sacha/helm-dyntaskpl-action (dyntaskpls clockin-fn)
-    ;; (message "sacha marker %s" (first dyntaskpls))
+    ;; (message "sacha marker %s" (cl-first dyntaskpls))
     ;; (setq sacha/helm-org-refile-locations tbl)
     (progn
       (helm
@@ -779,16 +779,16 @@ pointing to it."
    (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
 
   (org-context-clock-task-get-property
-   (first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
+   (cl-first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
    :task-clock-marker)
 
   (org-context-clock-clockin-marker
    (org-context-clock-task-get-property
-    (first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
+    (cl-first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
     :task-clock-marker))
 
   (org-context-clock-task-associated-to-context-by-keys-p
-   (first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
+   (cl-first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
    (org-context-clock-build-context))
 
   (length

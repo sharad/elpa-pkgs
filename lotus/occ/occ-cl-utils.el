@@ -79,9 +79,9 @@
   "Converts a list to single level."
   (if (null L)
       nil
-    (if (atom (first L))
-        (cons (first L) (occ-flatten (rest L)))
-      (append (occ-flatten (first L)) (occ-flatten (rest L))))))
+    (if (atom (cl-first L))
+        (cons (cl-first L) (occ-flatten (cl-rest L)))
+      (append (occ-flatten (cl-first L)) (occ-flatten (cl-rest L))))))
 
 
 ;; (setq test-xyz (make-occ-ctx))

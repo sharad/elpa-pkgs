@@ -31,8 +31,8 @@
 (defun collect-carlist (alist)
   (let ((ulist nil))
     (dolist (pair (copy-tree alist))
-      (if (assoc (first pair) ulist)
-          (nconc (assoc (first pair) ulist) (rest pair))
+      (if (assoc (cl-first pair) ulist)
+          (nconc (assoc (cl-first pair) ulist) (cl-rest pair))
         (setf ulist (append ulist (list pair)))))
     ulist))
 
@@ -40,34 +40,34 @@
 (defun collect-carlist (alist)
   (let ((ulist nil))
     (dolist (pair alist)
-      (unless (assoc (first pair) ulist)
-        (when (first pair)
-          (push (list (first pair)) ulist)))
-      (let ((ef (first pair)))
-        (let ((xulist (assoc (first pair) ulist))
+      (unless (assoc (cl-first pair) ulist)
+        (when (cl-first pair)
+          (push (list (cl-first pair)) ulist)))
+      (let ((ef (cl-first pair)))
+        (let ((xulist (assoc (cl-first pair) ulist))
               (tlist  nil)
-              (ilist  (rest pair)))
+              (ilist  (cl-rest pair)))
           (dolist (i ilist)
-            (unless (member i (rest xulist))
+            (unless (member i (cl-rest xulist))
               (push i tlist)))
           (setq tlist (nreverse tlist))
-          (nconc (assoc (first pair) ulist) tlist))))
+          (nconc (assoc (cl-first pair) ulist) tlist))))
     (setq ulist (nreverse ulist))))
 
 
 (defun collect-alist (alist)
   (let ((ulist nil))
     (dolist (pair alist)
-      (unless (assoc (first pair) ulist)
-        (when (first pair)
-          (push (list (first pair)) ulist)))
-      (nconc (assoc (first pair) ulist) (list (rest pair))))
+      (unless (assoc (cl-first pair) ulist)
+        (when (cl-first pair)
+          (push (list (cl-first pair)) ulist)))
+      (nconc (assoc (cl-first pair) ulist) (list (cl-rest pair))))
     (setq ulist (nreverse ulist))))
 
 
 (defun delete-dups-alist (alist)
   (dolist (pair alist)
-    (setcdr pair (delete-dups (rest pair))))
+    (setcdr pair (delete-dups (cl-rest pair))))
   alist)
 
 
@@ -89,7 +89,7 @@
       (remove nil
               (mapcar #'(lambda (subtree)
                           (collect-elem-cond subtree nodep predicate))
-                      (rest tree))))))
+                      (cl-rest tree))))))
 
 (defun collect-elem-cond-depth (tree nodep predicate depth)
   (collect-elem-cond tree
@@ -104,47 +104,47 @@
                            #'(lambda (x)
                                (not (listp x)))
                            #'(lambda (subtree)
-                               (memq (first subtree) '(t)))
+                               (memq (cl-first subtree) '(t)))
                            depth))
 
 
 (defun tree-add (keys item list)
-  (let ((key (first keys)))
-    (if (rest list)
+  (let ((key (cl-first keys)))
+    (if (cl-rest list)
         (if key
             (progn
-              (unless (assoc key (rest list))
-                (nconc (rest list) (list (list key))))
-              (tree-add (rest keys) item (assoc key (rest list))))
-          (unless (memq item (rest list))
-            (nconc (rest list) (list item))))
+              (unless (assoc key (cl-rest list))
+                (nconc (cl-rest list) (list (list key))))
+              (tree-add (cl-rest keys) item (assoc key (cl-rest list))))
+          (unless (memq item (cl-rest list))
+            (nconc (cl-rest list) (list item))))
       (progn
         (when key
           (nconc list (list (list key))))
-        (if (rest keys)
-            (tree-add (rest keys) item (assoc key (rest list)))
+        (if (cl-rest keys)
+            (tree-add (cl-rest keys) item (assoc key (cl-rest list)))
           (if key
-              (nconc (assoc key (rest list)) (list item))
+              (nconc (assoc key (cl-rest list)) (list item))
             (nconc list (list item))))))))
 
 ;;;###autoload
 (defun tree-add (keys item list)
-  (let ((key (first keys)))
-    (if (rest list)
+  (let ((key (cl-first keys)))
+    (if (cl-rest list)
         (if key
             (progn
-              (unless (assoc key (rest list))
-                (nconc (rest list) (list (list key))))
-              (tree-add (rest keys) item (assoc key (rest list))))
-          (unless (member item (rest list))
-            (nconc (rest list) (list item))))
+              (unless (assoc key (cl-rest list))
+                (nconc (cl-rest list) (list (list key))))
+              (tree-add (cl-rest keys) item (assoc key (cl-rest list))))
+          (unless (member item (cl-rest list))
+            (nconc (cl-rest list) (list item))))
       (progn
         (when key
           (nconc list (list (list key))))
-        (if (rest keys)
-            (tree-add (rest keys) item (assoc key (rest list)))
+        (if (cl-rest keys)
+            (tree-add (cl-rest keys) item (assoc key (cl-rest list)))
           (if key
-              (nconc (assoc key (rest list)) (list item))
+              (nconc (assoc key (cl-rest list)) (list item))
             (nconc list (list item))))))))
 
 
@@ -155,11 +155,11 @@
   (let ((predicate (or predicate #'atom)))
    (if (null L)
        nil
-     (if (funcall predicate (first L))
-         (cons (first L)
-               (tree-flatten predicate (rest L)))
-       (append (tree-flatten predicate (first L))
-               (tree-flatten predicate (rest L)))))))
+     (if (funcall predicate (cl-first L))
+         (cons (cl-first L)
+               (tree-flatten predicate (cl-rest L)))
+       (append (tree-flatten predicate (cl-first L))
+               (tree-flatten predicate (cl-rest L)))))))
 
 
 (when nil

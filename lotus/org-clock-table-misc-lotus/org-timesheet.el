@@ -60,7 +60,7 @@ If TYPE is non-nil get next parent of that type."
          (parent (plist-get props :parent)))
     (if type
         (when parent
-          (if (eq (first parent) type)
+          (if (eq (cl-first parent) type)
               parent
               (org-element-parent parent type)))
         parent)))
@@ -69,13 +69,13 @@ If TYPE is non-nil get next parent of that type."
   "Non-nil if timestamp TS1 is less than timestamp TS2.
 TS1 and TS2 is timestamp data as returned by `org-element-timestamp-parser'.
 If end is non-nil the end-time of TS1 and TS2 is compared else the start time."
-  (cl-assert (eq (first ts1) 'timestamp) "TS1 is not a timestamp")
-  (cl-assert (eq (first ts2) 'timestamp) "TS2 is not a timestamp")
+  (cl-assert (eq (cl-first ts1) 'timestamp) "TS1 is not a timestamp")
+  (cl-assert (eq (cl-first ts2) 'timestamp) "TS2 is not a timestamp")
   (let ((p1 (nth 1 ts1))
         (p2 (nth 1 ts2))
         (tests '("year" "month" "day" "hour" "minute"))
         ret)
-    (while (and (let* ((what (intern-soft (concat ":" (first tests) (if end "-end" "-start"))))
+    (while (and (let* ((what (intern-soft (concat ":" (cl-first tests) (if end "-end" "-start"))))
                        (t1 (plist-get p1 what))
                        (t2 (plist-get p2 what)))
                   (cond
@@ -83,7 +83,7 @@ If end is non-nil the end-time of TS1 and TS2 is compared else the start time."
                      (setq ret t)
                      nil)
                     ((= t1 t2) t)))
-                (setq tests (rest tests))))
+                (setq tests (cl-rest tests))))
     ret))
 
 (defun time-day-month-year (time)
@@ -98,13 +98,13 @@ TIME may be the time as returned by `current-time' or by `decode-time'."
 to time format as defined in the documentation of `decode-time'.
 START/END is either the symbol 'start or 'end or nil which is equivalent to 'start.
 If ENCODE is non-nil the return value is encoded as described in the documentation for `current-time'."
-  (cl-assert (eq (first timestamp) 'timestamp) "Argument is not a timestamp")
+  (cl-assert (eq (cl-first timestamp) 'timestamp) "Argument is not a timestamp")
   (unless start/end (setq start/end 'start))
   (let* ((p (nth 1 timestamp))
          (ret (append
                '(0)
                (mapcar (lambda (what) (plist-get p (intern-soft (concat ":" what "-" (symbol-name start/end))))) '("minute" "hour" "day" "month" "year"))
-               (list 0 nil (first (current-time-zone))))))
+               (list 0 nil (cl-first (current-time-zone))))))
     (if encode
         (apply #'encode-time ret)
         ret)))
@@ -158,7 +158,7 @@ for clocked items with start time within the range from tStart to tEnd."
          ;; get the relevant data of the clocks
          (let* ((timestamp (plist-get (nth 1 clock) :value))
                 (parent clock)
-                (headers (nreverse (cl-loop while (setq parent (org-element-parent parent 'headline)) collect (first (plist-get (nth 1 parent) :title))))))
+                (headers (nreverse (cl-loop while (setq parent (org-element-parent parent 'headline)) collect (cl-first (plist-get (nth 1 parent) :title))))))
            (cl-assert timestamp nil "Clock line without timestamp")
            (when (and (or (null tStart) (null (time-less-p (org-element-timestamp-to-time timestamp 'start t) tStart)))
                       (or (null tEnd) (time-less-p (org-element-timestamp-to-time timestamp 'end t) tEnd)))
@@ -167,7 +167,7 @@ for clocked items with start time within the range from tStart to tEnd."
                    headers))
            )))
      #'time-less-p
-     :key (lambda (clock) (apply 'encode-time (first clock))))))
+     :key (lambda (clock) (apply 'encode-time (cl-first clock))))))
 
 (defun org-time-sheet-shedule (clocks &optional interactive dont-sum)
   "Creates time sheet shedule from ordered time sheet clock collection (see `org-time-sheet-collect')."
@@ -178,7 +178,7 @@ for clocked items with start time within the range from tStart to tEnd."
            (day-month-year (time-day-month-year start))
            (shedule (list (list (apply org-time-sheet-date-formatter day-month-year)))))
       (setf (nth 1 start) 0) ;; clear minutes
-      (while (rest clocks)
+      (while (cl-rest clocks)
         (let ((end (decoded-time-advance start '(0 0 1 0 0 0)))
               project-alist
               (iter clocks))
@@ -194,21 +194,21 @@ for clocked items with start time within the range from tStart to tEnd."
                   (setcdr project (list (+ (nth 1 project) minutes) minutes-start minutes-end))
                   (setq project-alist (cons (list headlines minutes minutes-start minutes-end) project-alist)))
               (if (decoded-time-less-p end end-time)
-                  (setq iter (rest iter))
+                  (setq iter (cl-rest iter))
                   ;; delete clock that also finishes in this hour:
                   (setcdr iter (nthcdr 2 iter))) ;; delete clock entry
               ))
           (setq project-alist (nreverse project-alist))
           ;; Compose shedule for hour:
           (while project-alist
-            (let ((headlines (first (first project-alist)))
-                  (minutes (nth 1 (first project-alist)))
-                  (minutes-start (nth 2 (first project-alist)))
-                  (minutes-end (nth 3 (first project-alist))))
+            (let ((headlines (cl-first (cl-first project-alist)))
+                  (minutes (nth 1 (cl-first project-alist)))
+                  (minutes-start (nth 2 (cl-first project-alist)))
+                  (minutes-end (nth 3 (cl-first project-alist))))
               (setq shedule (cons (funcall org-time-sheet-time-formatter minutes-start minutes-end (nth 2 start) minutes headlines) shedule)))
-            (setq project-alist (rest project-alist)))
+            (setq project-alist (cl-rest project-alist)))
           ;; calculate new time:
-          (when (rest clocks)
+          (when (cl-rest clocks)
             (let ((next-hour-start-time (decoded-time-advance start '(0 0 1 0 0 0)))
                   (next-hour-end-time (decoded-time-advance start '(0 0 2 0 0 0))))
               (setq start (copy-sequence (caadr clocks)))

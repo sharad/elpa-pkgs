@@ -55,15 +55,15 @@ directory, select directory. Lastly the file is opened."
   (let* ((file (file-cache-iswitchb-read "File: "
                                          (mapcar
                                           (lambda (x)
-                                            (first x))
+                                            (cl-first x))
                                           file-cache-alist)))
          (record (assoc file file-cache-alist)))
     (find-file
      (concat
       (if (= (length record) 2)
-          (first (rest record))
+          (cl-first (cl-rest record))
           (file-cache-iswitchb-read
-           (format "Find %s in dir: " file) (rest record))) file))))
+           (format "Find %s in dir: " file) (cl-rest record))) file))))
 
 (defun file-cache-iswitchb-read (prompt choices)
   (let ((iswitchb-make-buflist-hook

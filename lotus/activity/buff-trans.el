@@ -60,7 +60,7 @@
                 (with-current-buffer curr
                   major-mode))
                (transition (or
-                            (rest (assq mjmode @:mode-transition))
+                            (cl-rest (assq mjmode @:mode-transition))
                             @:transition)))
           (@! transition :dispatch prev curr time-spent)))))
 

@@ -152,10 +152,10 @@
 ;;;###autoload
 (defun afind-if (fun list) ;; anaphoric
   (let ((result
-         (funcall fun (first list))))
+         (funcall fun (cl-first list))))
     (if result
         result
-      (if list (afind-if fun (rest list))))))
+      (if list (afind-if fun (cl-rest list))))))
 
 (eval-when-compile
   '(when (featurep 'notify)
@@ -246,9 +246,9 @@
   (let ((fdef (assoc fnsym *undefine-function-alist*)))
     (if fdef
         (progn
-          (fset fnsym (rest fdef))
+          (fset fnsym (cl-rest fdef))
           (setq *undefine-function-alist*
-                (del-alist (first fdef) *undefine-function-alist*)))
+                (del-alist (cl-first fdef) *undefine-function-alist*)))
       (message "def for %s function is not available." fnsym))))
 
 
@@ -464,7 +464,7 @@
   "Run FN with ARG at TIME if numeric is otherwise run now only."
   (if (numberp time)
       (run-with-timer time nil
-                      (lambda (a) (funcall (first a) (rest a)))
+                      (lambda (a) (funcall (cl-first a) (cl-rest a)))
                       (cons fn arg))
     (funcall fn arg)))
 
@@ -636,10 +636,10 @@
 ;;;###autoload
 (defun afind-if (fun list) ;; anaphoric
   (let ((result
-         (funcall fun (first list))))
+         (funcall fun (cl-first list))))
     (if result
         result
-      (if list (afind-if fun (rest list))))))
+      (if list (afind-if fun (cl-rest list))))))
 
 (eval-when-compile
   '(when (featurep 'notify)
@@ -746,9 +746,9 @@
   (let ((fdef (assoc fnsym *undefine-function-alist*)))
     (if fdef
         (progn
-          (fset fnsym (rest fdef))
+          (fset fnsym (cl-rest fdef))
           (setq *undefine-function-alist*
-                (del-alist (first fdef) *undefine-function-alist*)))
+                (del-alist (cl-first fdef) *undefine-function-alist*)))
       (message "def for %s function is not available." fnsym))))
 
 
@@ -964,7 +964,7 @@
   "Run FN with ARG at TIME if numeric is otherwise run now only."
   (if (numberp time)
       (run-with-timer time nil
-                      (lambda (a) (funcall (first a) (rest a)))
+                      (lambda (a) (funcall (cl-first a) (cl-rest a)))
                       (cons fn arg))
     (funcall fn arg)))
 

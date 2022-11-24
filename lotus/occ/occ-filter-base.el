@@ -47,7 +47,7 @@
   (push filter
         occ-obj-filters))
 (defun occ-obj-filter-get (key)
-  (first (remove-if-not #'(lambda (filter)
+  (cl-first (remove-if-not #'(lambda (filter)
                             (eq key
                                 (occ-filter-keyword filter)))
                       occ-obj-filters)))
@@ -121,7 +121,7 @@
                                          sequence
                                          &key rank)
   "Main engine it applies filters METHODS recursively to SEQUENCE"
-  (let* ((funkw-rank (first methods)))
+  (let* ((funkw-rank (cl-first methods)))
     (let ((funkw (or (car-safe funkw-rank)
                      funkw-rank))
           (rank  (if (consp funkw-rank)
@@ -141,7 +141,7 @@
                          rank
                          (length sequence))
             (occ-obj-apply-recursively obj
-                                       (rest methods)
+                                       (cl-rest methods)
                                        (funcall fun obj
                                                 sequence
                                                 :rank rank)

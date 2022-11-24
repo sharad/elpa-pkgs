@@ -63,7 +63,7 @@ Benefit with this timer is that it will very much ensure before running that use
                                                                          #'(lambda (func-arg1)
                                                                              (progn
                                                                                (debug-message "shortdelay %s running fun" shortdelay)
-                                                                               (if (funcall (first func-arg1) (rest func-arg1))
+                                                                               (if (funcall (cl-first func-arg1) (cl-rest func-arg1))
                                                                                    (when (and cancel timer)
                                                                                      (cancel-timer timer)
                                                                                      (setq timer nil)))
@@ -90,7 +90,7 @@ Benefit with this timer is that it will very much ensure before running that use
                  (if (>= current-idle-sec useridlesec-moving) ;NOTE
                      (progn
                        (debug-message "shortob running fun useridlesec-moving %s" useridlesec-moving)
-                       (funcall (first func-arg2) (rest func-arg2))
+                       (funcall (cl-first func-arg2) (cl-rest func-arg2))
                        (setq useridlesec-moving useridlesec)
                        (when timer
                          (cancel-timer timer)
@@ -117,7 +117,7 @@ Benefit with this timer is that it will very much ensure before running that use
                                          (progn
                                            (unless repeat
                                              (cancel-timer idle-timer))
-                                           (funcall (first fnarg) (rest fnarg)))
+                                           (funcall (cl-first fnarg) (cl-rest fnarg)))
                                        (setq idle-timer nil))))
                                (cons fn arg)))
     (message "started time idle-timer=%s, utiliz stepsec=%s later"

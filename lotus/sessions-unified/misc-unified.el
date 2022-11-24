@@ -88,7 +88,7 @@
     (let ((tap (tapestry)))
       (with-temp-buffer
         (let ((standard-output (current-buffer)))
-          (setcar tap (make-list (length (first tap)) nil))
+          (setcar tap (make-list (length (cl-first tap)) nil))
           (print tap)
           (write-region (point-min) (point-max) my-tapestry-file)))))
 

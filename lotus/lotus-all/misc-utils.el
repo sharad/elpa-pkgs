@@ -537,8 +537,8 @@ The indirect buffer can have another major mode."
               (let ((symbol (intern-soft name))
                     (search (lambda (fun sym)
                               (let* ((r (save-excursion (funcall fun sym)))
-                                     (buffer (first r))
-                                     (point (rest r)))
+                                     (buffer (cl-first r))
+                                     (point (cl-rest r)))
                                 (cond ((not point)
                                        (error "Found no definition for %s in %s"
                                               name buffer))
@@ -583,7 +583,7 @@ The indirect buffer can have another major mode."
            ((kbd "C-c <")   'list-callers)))
 
        (dolist (binding elisp-extra-keys)
-         (let ((key (eval (first binding))) (val (eval (nth 1 binding))))
+         (let ((key (eval (cl-first binding))) (val (eval (nth 1 binding))))
            (define-key emacs-lisp-mode-map key val)
            (define-key lisp-interaction-mode-map key val))))
 

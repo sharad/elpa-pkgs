@@ -203,7 +203,7 @@
     (org-back-to-heading t)
     (let ((element (org-element-at-point)))
       (if (and element
-               (eq (first element) 'headline))
+               (eq (cl-first element) 'headline))
           (let (;; (begin (plist-get (nth 1 element) :begin))
                 ;; (level (plist-get (nth 1 element) :level))
                 (title (plist-get (nth 1 element) :title)))

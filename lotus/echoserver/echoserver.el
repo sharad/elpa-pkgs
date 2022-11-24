@@ -41,8 +41,8 @@
   "stop an emacs echo server"
   (interactive)
   (while  echo-server-clients
-    (delete-process (first (first echo-server-clients)))
-    (setq echo-server-clients (rest echo-server-clients)))
+    (delete-process (cl-first (cl-first echo-server-clients)))
+    (setq echo-server-clients (cl-rest echo-server-clients)))
   (delete-process "echo-server"))
 
 (defun echo-server-filter (proc string)
@@ -53,7 +53,7 @@
     (unless pending
       (setq echo-server-clients (cons (cons proc "") echo-server-clients))
       (setq pending  (assoc proc echo-server-clients)))
-    (setq message (concat (rest pending) string))
+    (setq message (concat (cl-rest pending) string))
     (while (setq index (string-match "\n" message))
       (setq index (1+ index))
       (process-send-string proc (substring message 0 index))

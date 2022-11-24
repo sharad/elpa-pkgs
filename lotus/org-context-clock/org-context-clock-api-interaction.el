@@ -75,7 +75,7 @@
                       (append
                        (org-context-clock-keys-with-operation :getter context)
                        '(edit done)))))
-    (rest (assoc (org-context-clock-completing-read prompt keys  nil t) keys))))
+    (cl-rest (assoc (org-context-clock-completing-read prompt keys  nil t) keys))))
 
 (defun org-context-clock-test (context timeout)
   (interactive '(nil nil))
@@ -98,7 +98,7 @@
             (setq org-cycle-subtree-status 'children))
           ;; show expand property if flag is nil, else hide
           (when range
-            (goto-char (1- (first range)))
+            (goto-char (1- (cl-first range)))
             (message "reached to drawer")
             (if (org-at-drawer-p)
                 ;; show drawer
@@ -204,7 +204,7 @@
                           (progn
                             (funcall cleanup win local-cleanup)
                             (if timer (cancel-timer timer))
-                            (signal (first err) (rest err))))))))))
+                            (signal (cl-first err) (cl-rest err))))))))))
        (progn
          (org-context-clock-message 6 "not running add-context-to-org-heading 1 %s, 2 %s 3 %s"
                                     (eq (current-buffer) buff)
@@ -232,7 +232,7 @@
 ;;;###autoload
 (defun org-context-clock-helm-select-dyntaskpl (selector action)
   ;; here
-  ;; (org-context-clock-debug :debug "sacha marker %s" (first dyntaskpls))
+  ;; (org-context-clock-debug :debug "sacha marker %s" (cl-first dyntaskpls))
   (let (helm-sources
         (context (org-context-clock-build-context)))
 

@@ -208,8 +208,8 @@ inside loops."
 ;; (defun org-context-clock-rankmarkers-associated-to-context (context)
 ;;   (mapcar #'(lambda (e)
 ;;               (cons
-;;                (first e)
-;;                (org-context-clock-task-get-property (rest e) :task-clock-marker)))
+;;                (cl-first e)
+;;                (org-context-clock-task-get-property (cl-rest e) :task-clock-marker)))
 ;;           (org-context-clock-ranktasks-associated-to-context context)))
 
 ;; Dynamic plist task format

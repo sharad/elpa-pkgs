@@ -104,8 +104,8 @@
 (defun org-rl-debug (level &rest args)
   (let* ((ilevel (or level :debug))
          (ts (time-stamp-string))
-         (fmt (format "%s: %s" ts (first args)))
-         (args (append (list fmt) (rest args))))
+         (fmt (format "%s: %s" ts (cl-first args)))
+         (args (append (list fmt) (cl-rest args))))
     (when org-rl-debug
       (apply #'lwarn 'org-rl-clock ilevel args)
       (when level
@@ -168,7 +168,7 @@
     heading))
 
 (defun org-get-heading-from-clock (clock)
-  (let ((mrk (first clock)))
+  (let ((mrk (cl-first clock)))
     (org-get-heading-from-marker mrk)))
 
 ;;; org-rl-utils.el ends here

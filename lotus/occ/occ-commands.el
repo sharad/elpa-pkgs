@@ -209,9 +209,9 @@
   (unless (occ-collector-spec key)
     (occ-obj-make-spec key))
   (if (occ-collector-spec key)
-    (unless (memq file (rest (occ-collector-spec key)))
-      (let ((spec       (first (occ-collector-spec key)))
-            (spec-files (rest (occ-collector-spec key))))
+    (unless (memq file (cl-rest (occ-collector-spec key)))
+      (let ((spec       (cl-first (occ-collector-spec key)))
+            (spec-files (cl-rest (occ-collector-spec key))))
         (setq spec-files
              (if current-prefix-arg
                  (nconc (list file) spec-files)
@@ -231,7 +231,7 @@
 (defun occ-obj-build-spec (key)
   (interactive (list (occ-collector-read-key "key for spec: ")))
   (occ-obj-make-spec key)
-  (when (first (occ-collector-spec key))
+  (when (cl-first (occ-collector-spec key))
         (occ-add-to-spec key (read-file-name "Spec file: ")))
   (prog1
       (occ-collector-spec key)

@@ -72,14 +72,14 @@
            "Muse Project Directory: "
            (muse-publishing-generated-contents-path
                    (replace-regexp-in-string (muse-publishing-created-contents-path) ""
-                                             (if (consp muse-dirs) (first muse-dirs) muse-dirs)))))
+                                             (if (consp muse-dirs) (cl-first muse-dirs) muse-dirs)))))
          (publishing-style
            (ido-completing-read "Muse Publishing Style: " (mapcar 'car muse-publishing-styles)))
          (publishing-url (read-from-minibuffer "Publishing Base URL: "))
          (publishing-options nil))
     `(,name
       ,@(make-muse-style-spec
-         (if (consp muse-dirs) (first muse-dirs) muse-dirs)
+         (if (consp muse-dirs) (cl-first muse-dirs) muse-dirs)
          publishing-path
          publishing-style
          publishing-url
@@ -93,10 +93,10 @@
            (read-muse-project-spec)))))
 
   (when (and
-         (member (first project-spec)
+         (member (cl-first project-spec)
                  (mapcar 'car muse-project-alist))
          (or (not (called-interactively-p 'interactive))
-             (y-or-n-p (format "project %s already present, do you want to overwrite it?: " (first project-spec)))))
+             (y-or-n-p (format "project %s already present, do you want to overwrite it?: " (cl-first project-spec)))))
     (remove-muse-project project-spec))
   (add-to-list 'muse-project-alist project-spec))
 
@@ -111,8 +111,8 @@
   (let ((project
           (cond
             ((and (consp project-spec)
-                  (stringp (first project-spec)))
-             (first project-spec))
+                  (stringp (cl-first project-spec)))
+             (cl-first project-spec))
             ((stringp project-spec)
              project-spec)
             (t nil))))
@@ -158,7 +158,7 @@
             "Muse Project Directory: "
             (muse-publishing-generated-contents-path
                     (replace-regexp-in-string (muse-publishing-created-contents-path) ""
-                                              (if (consp muse-dirs) (first muse-dirs) muse-dirs)))))
+                                              (if (consp muse-dirs) (cl-first muse-dirs) muse-dirs)))))
           (publishing-style
            (ido-completing-read "Muse Publishing Style: " (mapcar 'car muse-publishing-styles)))
           (publishing-url (read-from-minibuffer "Publishing Base URL: "))
@@ -166,7 +166,7 @@
      (list name muse-dirs publishing-path publishing-style publishing-url publishing-options)))
   `(,name
     ,@(make-muse-style-spec
-       (if (consp muse-dirs) (first muse-dirs) muse-dirs)
+       (if (consp muse-dirs) (cl-first muse-dirs) muse-dirs)
        publishing-path
        publishing-style
        publishing-url
@@ -203,7 +203,7 @@
 ;;   (let* ((style (plist-get muse-publishing-current-style :base))
 ;;          (dir (if (stringp dir)
 ;;                      (concat
-;;                       (if (consp dir) (first dir) dir)
+;;                       (if (consp dir) (cl-first dir) dir)
 ;;                       "/styles/"
 
 ;;                       (unless (string-equal
@@ -217,7 +217,7 @@
 (defun muse-meta-style-dirname (dir style)
   (let* ((dir (if (stringp dir)
                   (concat
-                   (if (consp dir) (first dir) dir)
+                   (if (consp dir) (cl-first dir) dir)
                    "/styles/"
                    (unless (string-equal
                             style
@@ -296,7 +296,7 @@
                        (if (and (muse-project)
                                 muse-publishing-current-style)
                            (let* ((project-dir (nth 1 (muse-project)))
-                                  (project-dir (if (consp project-dir) (first project-dir) project-dir)))
+                                  (project-dir (if (consp project-dir) (cl-first project-dir) project-dir)))
                              ;; (message "(nth 1 (muse-project)) %s" project-dir)
                              (muse-meta-style-dirname project-dir (plist-get muse-publishing-current-style :base)))
                            'pass))))
@@ -348,8 +348,8 @@
   "sdfds"
   ;; (message "calling lotus-muse-find-or-create-meta-file-main filename %s dirfnslist %s (cadar dirfnslist) %s" filename dirfnslist (cadar dirfnslist))
   (if dirfnslist
-      (let* ((style-dirname-list (first dirfnslist))
-             (style-name (first style-dirname-list))
+      (let* ((style-dirname-list (cl-first dirfnslist))
+             (style-name (cl-first style-dirname-list))
              (strorfn (plist-get (nth 1 style-dirname-list) :path-function)))
         (let ((dirpath
                (cond
@@ -378,7 +378,7 @@
                    ;; (message "Xfilepath: %s" filepath)
                    (if (file-exists-p filepath)
                        filepath
-                       (let ((parent-filepath (lotus-muse-find-or-create-meta-file-main filename (rest dirfnslist))))
+                       (let ((parent-filepath (lotus-muse-find-or-create-meta-file-main filename (cl-rest dirfnslist))))
                          ;; (message "Have come here")
                          (if parent-filepath
                              (if (file-exists-p parent-filepath)
@@ -390,7 +390,7 @@
                                (message "You need to create %s file manually" filepath)
                                (error "Can not file futher %s file now." filename))))))))
             ((eq dirpath 'pass)
-             (lotus-muse-find-or-create-meta-file-main filename (rest dirfnslist)))
+             (lotus-muse-find-or-create-meta-file-main filename (cl-rest dirfnslist)))
             (t (error "can not get dirpath %s from style %s" dirpath style-name)))))
       (error "can not get parent file for %s" filename)))
 
@@ -400,10 +400,10 @@
   (interactive)
   (let ((dirfnslist (or dirfnslist *muse-meta-style-dirname-fns*)))
     (remove-if-not '(lambda (c)
-                     (stringp (rest c)))
+                     (stringp (cl-rest c)))
                    (mapcar
                     (lambda (fn-list)
-                      (let ((name (first fn-list))
+                      (let ((name (cl-first fn-list))
                             (strfn (plist-get (nth 1 fn-list) :path-function)))
                         (cons name
                               (cond
@@ -422,7 +422,7 @@
          (name
           (funcall muse-completing-read-function
                    "Get dir: " path-alist nil t))
-         (path (rest (assoc name path-alist))))
+         (path (cl-rest (assoc name path-alist))))
     (ido-find-file-in-dir path)))
 
 ;;;###autoload
@@ -432,7 +432,7 @@
          (name
           (funcall muse-completing-read-function
                    "Get dir: " path-alist nil t))
-         (path (rest (assoc name path-alist)))
+         (path (cl-rest (assoc name path-alist)))
          (delete-file (ido-read-file-name "delete muse meta file: " path)))
     (when (y-or-n-p (format "really delete %s :" delete-file))
       (delete-file delete-file)
@@ -623,7 +623,7 @@ If FILE is not specified, use the published version of the current file."
      (list
       (expand-file-name (concat (muse-page-name) muse-blosxom-extension)
                         (muse-style-element
-                         :path (first (muse-project-applicable-styles
+                         :path (cl-first (muse-project-applicable-styles
                                      buffer-file-name
                                      (nthcdr 2 (muse-project-of-file))))))))
     (save-match-data
@@ -833,7 +833,7 @@ between the two tags."
 
     (defun muse-publish-classify-url (target)
       "Transform anchors and get published name, if TARGET is a page.
-The return value is two linked cons cells.  The (first target) is the type
+The return value is two linked cons cells.  The (cl-first target) is the type
 of link, the (nth 1 target) is the page name, and the (nthcdr 2 target) is the anchor."
       (save-match-data
         (cond ((or (null target) (string= target ""))
@@ -910,8 +910,8 @@ FILE and any extensions that are in `muse-ignored-extensions'."
                     (muse-style-element :suffix style))))
 
 
-      (muse-style-element :link-suffix (first muse-publishing-styles))
-      (muse-style-element :suffix (first muse-publishing-styles))
+      (muse-style-element :link-suffix (cl-first muse-publishing-styles))
+      (muse-style-element :suffix (cl-first muse-publishing-styles))
 
       (muse-publish-link-name "xx.org"
                               (muse-style
@@ -988,7 +988,7 @@ FILE and any extensions that are in `muse-ignored-extensions'."
 
   (defun muse-publish-classify-url (target)
     "Transform anchors and get published name, if TARGET is a page.
-The return value is two linked cons cells.  The (first target) is the type
+The return value is two linked cons cells.  The (cl-first target) is the type
 of link, the (nth 1 target) is the page name, and the (nthcdr 2 target) is the anchor."
     (save-match-data
       (cond ((or (null target) (string= target ""))
@@ -1065,8 +1065,8 @@ FILE and any extensions that are in `muse-ignored-extensions'."
                   (muse-style-element :suffix style))))
 
 
-    (muse-style-element :link-suffix (first muse-publishing-styles))
-    (muse-style-element :suffix (first muse-publishing-styles))
+    (muse-style-element :link-suffix (cl-first muse-publishing-styles))
+    (muse-style-element :suffix (cl-first muse-publishing-styles))
 
     (muse-publish-link-name "xx.org"
                             (muse-style

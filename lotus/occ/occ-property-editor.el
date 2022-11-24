@@ -83,10 +83,10 @@
             (if key-vals
                 (let* ((key-val-collection (mapcar #'(lambda (key-val)
                                                        (cons
-                                                        (if (rest key-val)
-                                                            (format "%s: %s" (first key-val) (rest key-val))
-                                                          (symbol-name (first key-val)))
-                                                        (first key-val)))
+                                                        (if (cl-rest key-val)
+                                                            (format "%s: %s" (cl-first key-val) (cl-rest key-val))
+                                                          (symbol-name (cl-first key-val)))
+                                                        (cl-first key-val)))
                                                    key-vals))
                        (key-val-collection (append key-val-collection
                                                    (mapcar #'(lambda (fk) (cons (symbol-name fk) fk))
@@ -100,7 +100,7 @@
                              (sel (assoc key-sel
                                          key-val-collection)))
                         (occ-debug "selected option %s" sel)
-                        (rest sel))
+                        (cl-rest sel))
                     (occ-error "Not Keys Vals Collection %s for %s" key-val-collection (occ-obj-Format tsk))))
               (occ-error "Not Keys Vals for %s" (occ-obj-Format tsk))))
         (occ-debug "Not Keys for %s" (occ-obj-Format tsk))))))
@@ -141,7 +141,7 @@
     (let* ((prop-range (org-get-property-block (point)
                                                force))
            (prop-loc   (when (consp prop-range)
-                         (1- (first prop-range)))))
+                         (1- (cl-first prop-range)))))
       (when prop-range
         (occ-debug "pos %d before jumping to %s drawer, will jump to pos %d"
                    (point)
@@ -227,7 +227,7 @@
             (set-marker mrk (point))
             (recenter-top-bottom 2)
             (let* ((prop-range (org-flag-property-drawer-at-marker mrk nil))
-                   (prop-loc   (when (consp prop-range) (1- (first prop-range)))))
+                   (prop-loc   (when (consp prop-range) (1- (cl-first prop-range)))))
               (show-all)
               (if (numberp prop-loc)
                   (goto-char prop-loc)
@@ -338,8 +338,8 @@
                           local-cleanup)
                  (if timer
                      (cancel-timer timer))
-                 (signal (first err)
-                         (rest  err))
+                 (signal (cl-first err)
+                         (cl-rest  err))
                  (occ-debug "occ-do-properties-window-editor(obj occ-obj-ctx-tsk) quit: label %s value %s"
                             occ-return-quit-label
                             nil)
