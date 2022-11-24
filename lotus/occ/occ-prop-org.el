@@ -28,6 +28,11 @@
 (provide 'occ-prop-org)
 
 
+
+(eval-when-compile
+  (require 'lotus-misc-utils))
+
+
 (defun occ-org-entry-get (pom
                           prop)
   (lotus-org-with-safe-modification

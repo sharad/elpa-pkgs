@@ -97,7 +97,7 @@
 
 
 (defun sessions-unified-utils-notify-default (title fmt &rest args)
-  (message  "%s: $s" title (format fmt args)))
+  (message  "%s: %s" title (apply #'format fmt args)))
 
 (defun sessions-unified-utils-notify-set-default ()
   (setq *sessions-unified-utils-notify* #'sessions-unified-utils-notify-default))
@@ -128,10 +128,14 @@
          (funname (if (symbolp fun)
                       (symbol-name fun)
                     (format "%s" fun))))
+    ;; (message "test")
     (unless (eq *sessions-unified-utils-notify*
-                sessions-unified-utils-notify-default)
+                #'sessions-unified-utils-notify-default)
       (apply sessions-unified-utils-notify-default funname fmt args))
     (apply *sessions-unified-utils-notify* funname fmt args)))
+
+;; (session-unfiy-notify "Enabled session saving")
+;; (apply *sessions-unified-utils-notify* "test" "fmt" '())
 
 
 ;;;###autoload
