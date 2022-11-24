@@ -38,7 +38,7 @@
 ;;      t)
 ;;     (add-hook ;; 'after-init-hook
 ;;      'lotus-enable-startup-interrupting-feature-hook
-;;      '(lambda ()
+;;      #'(lambda ()
 ;;         (run-at-time-or-now 7 'lotus-desktop-session-restore)))))
 
 ;; function frame-session-restore-hook-func
@@ -48,7 +48,7 @@
 
 ;; (add-hook ;; 'after-init-hook
 ;;  'lotus-enable-startup-interrupting-feature-hook
-;;  '(lambda ()
+;;  #'(lambda ()
 ;;    (run-at-time-or-now 7 'lotus-desktop-session-restore)))
 
 ;;; Code:
@@ -94,23 +94,21 @@
 
 (defvar session-unified-save-all-sessions-before-hook nil "Hook run before saving all session")
 (defvar session-unified-save-all-sessions-after-hook nil "Hook run after saving all session")
+
+
+(defun sessions-unified-utils-notify-default (title fmt &rest args)
+  (message  "%s: $s" title (format fmt args)))
+
+(defun sessions-unified-utils-notify-set-default ()
+  (setq sessions-unified-utils-notify #'sessions-unified-utils-notify-default))
 
 (eval-when-compile
  (defvar sessions-unified-utils-notify nil)
  (unless (null 'sessions-unified-utils-notify)
-   (setq sessions-unified-utils-notify
-         (lambda (title fmt &rest args)
-           (concat title ": "
-                   (apply 'message fmt args))))))
+   (sessions-unified-utils-notify-set-default)))
 
 (defvar sessions-unified-utils-notify nil)
-
-
-(unless (null 'sessions-unified-utils-notify)
-  (setq sessions-unified-utils-notify
-        (lambda (title fmt &rest args)
-          (concat title ": "
-                  (apply 'message fmt args)))))
+(sessions-unified-utils-notify-set-default)
 
 
 ;; https://emacs.stackexchange.com/questions/2310/can-functions-access-their-name
@@ -315,7 +313,7 @@
 ;;      t)
 ;;     (add-hook ;; 'after-init-hook
 ;;      'lotus-enable-startup-interrupting-feature-hook
-;;      '(lambda ()
+;;      #'(lambda ()
 ;;         (run-at-time-or-now 7 'lotus-desktop-session-restore)))))
 
 ;; (toggle-debug-on-error)

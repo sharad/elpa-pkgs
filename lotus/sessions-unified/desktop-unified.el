@@ -85,8 +85,8 @@
               ;;   (setcar (nthcdr 1 l) base))
               ;; (dolist (e l)
               ;;   (insert "\n  " (desktop-value-to-string e)))
-              ,@(mapcar '(lambda (s)
-                           (read (desktop-value-to-string s)))
+              ,@(mapcar #'(lambda (s)
+                            (read (desktop-value-to-string s)))
                         l)))))))
 
   (defun desktop-make-create-buffer-list (buffer)
@@ -104,8 +104,8 @@
           ;;   ;;   (setcar (nthcdr 1 l) base))
           ;;   ;; (dolist (e l)
           ;;   ;;   (insert "\n  " (desktop-value-to-string e)))
-          ;;   ,@(mapcar '(lambda (s)
-          ;;               (read (desktop-value-to-string s))) l))
+          ;;   ,@(mapcar #'(lambda (s)
+          ;;                (read (desktop-value-to-string s))) l))
           (cons (string-to-number desktop-file-version)
                 l))))))
 
@@ -621,7 +621,7 @@ en all buffer were creaed idly."
                                         (frame-session-restore (selected-frame)))))
                                 (progn
                                   (session-unfiy-notify "lotus-desktop-session-restore" "desktop loading failed :( [show-error=%s]" show-error)
-                                  (run-at-time "1 sec" nil '(lambda () (insert "lotus-desktop-session-restore")))
+                                  (run-at-time "1 sec" nil #'(lambda () (insert "lotus-desktop-session-restore")))
                                   (execute-extended-command nil)
                                   nil))
                           (condition-case e
@@ -636,7 +636,7 @@ en all buffer were creaed idly."
                             ('error
                              (session-unfiy-notify "lotus-desktop-session-restore" "Error in desktop-read: %s\n not adding save-all-sessions-auto-save to auto-save-hook" e)
                              (session-unfiy-notify "lotus-desktop-session-restore" "Error in desktop-read: %s try it again by running M-x lotus-desktop-session-restore" e)
-                             (run-at-time "1 sec" nil '(lambda () (insert "lotus-desktop-session-restore")))
+                             (run-at-time "1 sec" nil #'(lambda () (insert "lotus-desktop-session-restore")))
                              (condition-case e
                                  (execute-extended-command nil)
                                ('error (message "M-x lotus-desktop-session-restore %s" e))))))
@@ -666,8 +666,8 @@ en all buffer were creaed idly."
 (when nil
   (add-hook ;; 'after-init-hook
    'lotus-enable-startup-interrupting-feature-hook
-   '(lambda ()
-      (run-at-time-or-now 7 'lotus-desktop-session-restore))))
+   #'(lambda ()
+       (run-at-time-or-now 7 'lotus-desktop-session-restore))))
 
 ;; Then type ‘M-x session-save’, or ‘M-x session-restore’ whenever you want to save or restore a desktop. Restored desktops are deleted from disk.
 
@@ -762,16 +762,13 @@ is function is a no-op when Emacs is running in batch mode.
         (run-hooks 'desktop-no-desktop-file-hook))
       (message "desktop-read-alternate: No desktop file.")
       nil)))
-
-
-(progn ;; "desktop-settings"
-
-  (defmacro desktop-get-readonly-proof-mode (modefn)
-    `'(lambda (desktop-buffer-locals)
-        (unless (or desktop-buffer-read-only buffer-read-only)
-          (condition-case e
-              (,modefn 1)
-            ('error (message "%s: %s" ,modefn e)))))))
 
 
+(defmacro desktop-get-readonly-proof-mode (modefn)
+  `#'(lambda (desktop-buffer-locals)
+       (unless (or desktop-buffer-read-only buffer-read-only)
+         (condition-case e
+             (,modefn 1)
+           ('error (message "%s: %s" ,modefn e))))))
+
 ;;; desktop-unified.el ends here

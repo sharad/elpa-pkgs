@@ -182,15 +182,15 @@ return a new alist whose car is the new pair and cdr is ALIST."
      (let* ((screen-list (sort (elscreen-get-screen-list) '<))
             screen-name)
        (let ((desktop-buffers (elscreen-save-screen-excursion
-                               (mapcan (lambda (screen)
-                                         ;; If nickname exists, use it.
-                                         (setq screen-name (elscreen-get-screen-nickname screen))
-                                         ;; Nickname does not exist, so examine major-mode and buffer-name.
-                                         (when (null screen-name)
-                                           (elscreen-goto-internal screen)
-                                           (mapcar (lambda (window)
-                                                     (window-buffer window))
-                                                   (window-list))))
+                               (mapcan #'(lambda (screen)
+                                           ;; If nickname exists, use it.
+                                           (setq screen-name (elscreen-get-screen-nickname screen))
+                                           ;; Nickname does not exist, so examine major-mode and buffer-name.
+                                           (when (null screen-name)
+                                             (elscreen-goto-internal screen)
+                                             (mapcar #'(lambda (window)
+                                                         (window-buffer window))
+                                                     (window-list))))
                                        screen-list))))
          ;; (session-unfiy-notify "desktop-buffers: %s" desktop-buffers)
          (when desktop-buffers
@@ -254,7 +254,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
               (if desktop-buffers
                   ;; recreate desktop buffer if not present.
                   (let ((bufs (mapcar
-                               '(lambda (bl) (nth 2 bl))
+                               #'(lambda (bl) (nth 2 bl))
                                desktop-buffers)))
                     (session-unfiy-notify "Please wait I am busy to restore %d\nbuffers %s"
                                           (length desktop-buffers) bufs)
@@ -423,9 +423,9 @@ return a new alist whose car is the new pair and cdr is ALIST."
           (copy-tree *frames-elscreen-session*)))
 
 (defun fmsession-modify-name (fun)
-  (mapcar (lambda (x)
-            (setcar x (funcall fun (cl-first x)))
-            x)
+  (mapcar #'(lambda (x)
+              (setcar x (funcall fun (cl-first x)))
+              x)
           (copy-tree *frames-elscreen-session*)))
 
 (defun fmsession-store-to-file (file)
@@ -444,7 +444,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
 
 (defun fmsession-get-locations ()
   (remove-if #'null
-             (mapcar (lambda (f) (frame-parameter f 'frame-spec-id))
+             (mapcar #'(lambda (f) (frame-parameter f 'frame-spec-id))
                      (frame-list))))
 
 
