@@ -236,8 +236,8 @@
          (secs (or secs 10))
          (sec-idle (+ (if idle-time (float-time idle-time) 0) secs)))
     (setq *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
-          ;; (run-with-idle-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run)
-          (run-with-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run))))
+          ;; (run-with-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run)
+          (run-with-idle-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run))))
 (defun sessions-unified-desktop-enable-restore-interrupting-feature-run-info ()
   (interactive)
   (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
