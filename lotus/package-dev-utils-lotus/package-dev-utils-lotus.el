@@ -153,16 +153,13 @@ or nil if the version cannot be parsed."
          (pkg-def
           (let ((pkg-def-file currdir-pkg-def-file))
             (if (file-exists-p pkg-def-file)
-                (car
-                 (read-from-string
-                  (with-temp-buffer
-                    (insert-file-contents-literally pkg-def-file)
-                    (let ((contents
-                           (condition-case e
-                               ;; (read (current-buffer))
-                               (buffer-string)
-                             ('end-of-file nil))))
-                      contents))))
+                (car (read-from-string (with-temp-buffer
+                                         (insert-file-contents-literally pkg-def-file)
+                                         (let ((contents (condition-case e
+                                                             ;; (read (current-buffer))
+                                                             (buffer-string)
+                                                           ('end-of-file nil))))
+                                           contents))))
                 `(define-package ,pkg-name ,version ,(format "%s" pkg-name) nil)))))
     (nth 1 (nth 4 pkg-def))))
 
@@ -187,39 +184,30 @@ or nil if the version cannot be parsed."
      (list dir)))
   ;; version is today date
   (let* ((dir-of-current-file (directory-file-name dir))
-         (pkg-name-version
-          (file-name-nondirectory dir-of-current-file))
-         (pkg-name
-          (replace-regexp-in-string
-           "-[0-9\.]\*\$" "" pkg-name-version))
-         (version
-          (package-version-join
-           (package-dev-build--valid-version
-            (format-time-string "%Y%m%d.%H%M"))))
-         (currdir-pkg-def-file
-          (expand-file-name
-           (format "%s-pkg.el" pkg-name)
-           dir-of-current-file))
+         (pkg-name-version (file-name-nondirectory dir-of-current-file))
+         (pkg-name (replace-regexp-in-string "-[0-9\.]\*\$" "" pkg-name-version))
+         (version(package-version-join
+                  (package-dev-build--valid-version
+                   (format-time-string "%Y%m%d.%H%M"))))
+         (currdir-pkg-def-file (expand-file-name
+                                (format "%s-pkg.el" pkg-name)
+                                dir-of-current-file))
          (pkg-def-exists (file-exists-p currdir-pkg-def-file))
-         (pkg-def
-          (let ((pkg-def-file currdir-pkg-def-file))
-            (if (file-exists-p pkg-def-file)
-                (car
-                 (read-from-string
-                  (with-temp-buffer
-                    (insert-file-contents-literally pkg-def-file)
-                    (let ((contents
-                           (condition-case e
-                               ;; (read (current-buffer))
-                               (buffer-string)
-                             ('end-of-file nil))))
-                      contents))))
-              `(define-package ,pkg-name ,version ,(format "%s" pkg-name) nil))))
+         (pkg-def (let ((pkg-def-file currdir-pkg-def-file))
+                    (if (file-exists-p pkg-def-file)
+                        (car (read-from-string
+                              (with-temp-buffer
+                                (insert-file-contents-literally pkg-def-file)
+                                (let ((contents
+                                       (condition-case e
+                                           ;; (read (current-buffer))
+                                           (buffer-string)
+                                         ('end-of-file nil))))
+                                  contents))))
+                      `(define-package ,pkg-name ,version ,(format "%s" pkg-name) nil))))
          (tmp-dir (expand-file-name "elpa" (or (getenv "TMP") "~/tmp/")))
-         (pkg-dir
-          (expand-file-name
-           (format "%s-%s" pkg-name version)
-           tmp-dir)))
+         (pkg-dir (expand-file-name (format "%s-%s" pkg-name version)
+                                    tmp-dir)))
 
     ;; (package-load-package-from-dir dir)
     (message "building package %s" pkg-name)
@@ -247,10 +235,9 @@ or nil if the version cannot be parsed."
                              (regexp-quote
                               (file-truename package-source-path)))
                      (file-truename dir-of-current-file))
-              (copy-directory
-               dir-of-current-file
-               (expand-file-name pkg-name package-source-path)
-               nil t t))
+              (copy-directory dir-of-current-file
+                              (expand-file-name pkg-name package-source-path)
+                              nil t t))
           (error "package-source-path do ot exists.")))
       (setcar (nthcdr 2 pkg-def) version)
       (unless pkg-def-exists ;; version exist mean file -pkg.el was there presently, so need to ask any question.
@@ -277,8 +264,13 @@ or nil if the version cannot be parsed."
                'utf-8-emacs
              'emacs-mule))
           (erase-buffer)
-          (insert (pp-to-string pkg-def))
-          (write-file pkgdir-def-file))
+          (let ((content
+                 (let ((print-length nil)
+                       (print-level nil))
+                  (pp-to-string pkg-def))))
+            ;; (message "TEST: %s" content)
+            (insert content)
+            (write-file pkgdir-def-file)))
 
         (when (or (not pkg-def-exists)
                   update-source-pkg-desc)

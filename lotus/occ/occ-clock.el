@@ -28,6 +28,8 @@
 
 
 (require 'org-onchange) ;; for org-insert-log-note
+(eval-when-compile
+  (require 'org-misc-utils-lotus))
 
 
 (require 'occ-obj-ctor)

@@ -244,7 +244,8 @@
       (let ((type (or (timer--idle-delay *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*)
                       "definite"))
             (timesec (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
-                         (cadr (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
+                         (- (float-time (current-time))
+                            (float-time (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*)))
                        0)))
         (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-delay-run" "hooks will run %sly after %d" type timesec))
     (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-delay-run" "No timer present")))

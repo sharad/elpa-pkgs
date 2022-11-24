@@ -27,6 +27,10 @@
 
 
 (eval-when-compile
+  (require 'org-misc-utils-lotus))
+
+
+(eval-when-compile
   (require 'occ-macros))
 
 
