@@ -266,12 +266,13 @@
   (session-unfiy-notify "enter")
   (add-hook 'auto-save-hook #'save-all-sessions-auto-save)
   (add-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
-  (progn (frame-session-restore-hook-func))
+  (ignore-errors (frame-session-restore-hook-func))
   (progn
-    (session-unfiy-notify "running sessions-unified-desktop-enable-restore-interrupting-feature-delay-run with %d"
+    (session-unfiy-notify "running sessions-unified-desktop-enable-restore-interrupting-feature-run after %d seconds idleness"
                           *sessions-unified-desktop-enable-restore-interrupting-feature-delay-time*)
     (sessions-unified-desktop-enable-restore-interrupting-feature-delay-run *sessions-unified-desktop-enable-restore-interrupting-feature-delay-time*))
   (session-unfiy-notify "Added save-all-sessions-auto-save to auto-save-hook and kill-emacs-hook")
+  (sessions-unified-desktop-enable-restore-interrupting-feature-run-info)
   (session-unfiy-notify "exit"))
 
 
