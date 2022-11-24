@@ -229,21 +229,25 @@
    (funcall sessions-unified-utils-notify "sessions-unified-desktop-enable-restore-interrupting-feature-run" "already triggered")))
 (defvar *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer* nil)
 ;;;###autoload
-(defun sessions-unified-desktop-enable-restore-interrupting-feature-delay-run (&optional sec)
+(defun sessions-unified-desktop-enable-restore-interrupting-feature-delay-run (&optional secs)
   (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-delay-run"
            "scheduled sessions-unified-desktop-enable-restore-interrupting-feature-run to run after sometime.")
-  (let* ((sec (or sec 10))
+  (let* ((idle-time (current-idle-time))
+         (secs (or secs 10))
          (sec-idle (+ (if idle-time (float-time idle-time) 0) secs)))
     (setq *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
           ;; (run-with-idle-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run)
           (run-with-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run))))
 (defun sessions-unified-desktop-enable-restore-interrupting-feature-run-info ()
   (interactive)
-  (let ((type (timer--idle-delay *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
-        (timesec (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
-                     (cadr (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
-                   0)))
-    (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-delay-run" "hooks will run %sly after %d" type timesec)))
+  (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
+      (let ((type (or (timer--idle-delay *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*)
+                      "definite"))
+            (timesec (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
+                         (cadr (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
+                       0)))
+        (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-delay-run" "hooks will run %sly after %d" type timesec))
+    (funcall sessions-unified-utils-notify "desktop-restore-interrupting-feature-delay-run" "No timer present")))
 
 
 ;;;###autoload
