@@ -61,7 +61,7 @@
       (cl-defmethod occ-obj-get-property-value-from-ctx ((obj occ-ctx)
                                                      (prop (eql _template1_)))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
-      
+
       (cl-defmethod occ-obj-format-prop ((obj occ-obj-tsk)
                                          (property symbol)
                                          value)
@@ -106,7 +106,7 @@
     #+end_src
 *** Template property of task
     #+begin_src emacs-lisp :tangle no
-      
+
       (cl-defmethod occ-obj-rankprop ((obj occ-tsk)
                                       (prop (eql _template2_)))
         "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE2_"
@@ -121,7 +121,7 @@
       (cl-defmethod occ-obj-get-property-value-from-ctx ((obj occ-ctx)
                                                          (prop (eql _template2_)))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
-      
+
       (cl-defmethod occ-obj-format-prop ((obj occ-obj-tsk)
                                          (property symbol)
                                          value)
@@ -131,21 +131,21 @@
         "Is the property _TEMPLATE2_ has VALUES in list, Method tell
          property represent list or not."
         nil)
-      
+
       (cl-defmethod occ-obj-prop-to-org ((prop (eql _template2_))
                                          value)
         "Return string representation for property _TEMPLATE2_, Method
       convert value VALUE of property PROPERTY from occ to org string
       representation."
         nil)
-      
+
       (cl-defmethod occ-obj-prop-from-org ((prop (eql _template2_))
                                            value)
         "Return the Actual Object representation for property
       _TEMPLATE2_, Method convert value VALUE of property PROPERTY from
       org string to occ representation."
         nil)
-      
+
       (cl-defmethod occ-obj-readprop-from-user ((obj occ-tsk)
                                                 (prop (eql _template2_)))
         "READ the value for property _TEMPLATE2_, Read value of element
@@ -155,7 +155,7 @@
           (let* ((prompt     (concat (symbol-name prop)
                                      ": ")))
             (read-number (format "%s: " prompt)))))
-      
+
       (cl-defmethod occ-obj-require-p ((obj occ-obj-tsk)
                                        (operation (eql _operation_))
                                        (prop (eql _template2_))
@@ -163,7 +163,7 @@
         "Used by OCC-OBJ-GEN-EDIT-IF-REQUIRED to decide for this property
       _TEMPLATE2_ if CALLABLE (helm method) should be generated."
         (occ-obj-current-p obj))
-      
+
       (cl-defmethod occ-obj-prop-default-value ((obj occ-obj-tsk)
                                                 (prop (eql _template2_))
                                                 (operation (eql _operation_)))
@@ -171,7 +171,7 @@
         (if (occ-obj-current-p obj)
             10
           0))
-      
+
       (cl-defmethod occ-obj-operation ((obj occ-obj-tsk)
                                        (operation (eql _operation_))
                                        (prop (eql _template2_))
@@ -181,18 +181,18 @@
           (if (occ-obj-list-p prop)
               (occ-error "Implement it.")
             (occ-error "Implement it."))))
-      
+
       (cl-defmethod occ-do-checkout-prop ((obj occ-obj-tsk)
                                           (prop (eql _template2_)))
         "Checkout property _TEMPLATE2_ in case of force clock-in.")
       
-      
+
     #+end_src
 
 ** Read Write properties of task
 *** Current File property of task
     #+begin_src emacs-lisp
-      
+
       ;;{{ currfile
       (cl-defmethod occ-obj-rankprop ((obj occ-obj-ctx-tsk)
                                       (prop (eql currfile))) ;; do not use (prop (eql file)) that is another property which represent file in which task defined.
@@ -216,25 +216,25 @@
                        (string= tsk-currfile ctx-file))
                   (* 2 (length tsk-currfile))     ;as exact match to files giving double matching points.
                 0)))))
-      
+
       (cl-defmethod occ-obj-get-property-value-from-ctx ((ctx occ-ctx)
                                                          (prop (eql currfile)))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
         (occ-debug "calling occ-obj-get-property-value-from-ctx(ctx occ-ctx)")
         (let ((currfile (occ-ctx-file ctx)))
           currfile))
-      
+
       (cl-defmethod occ-obj-list-p ((prop (eql currfile)))
         t)
-      
+
       (cl-defmethod occ-obj-prop-to-org ((prop (eql currfile))
                                          value)
         value)
-      
+
       (cl-defmethod occ-obj-prop-from-org ((prop (eql currfile))
                                            value)
         value)
-      
+
       (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-ctx-tsk)
                                                 (prop (eql currfile)))
         "currfile property for tsk aka org entry"
@@ -245,7 +245,7 @@
                                  (file-name-directory ctx-currfile)))
                  (prompt       (concat (symbol-name prop) ": ")))
             (ido-read-file-name prompt ctx-dir ctx-currfile))))
-      
+
       (cl-defmethod occ-do-checkout-prop ((obj occ-obj-tsk)
                                           (prop (eql currfile)))
         (let* ((tsk        (occ-obj-tsk      obj))
@@ -256,12 +256,12 @@
                (occ-debug "occ-do-checkout-prop: %s value ruturned for prop %s" first-file prop))))
       ;;}}
       
-      
+
     #+end_src
 
 *** Root dir property of task
     #+begin_src emacs-lisp
-      
+
       ;;{{ root
       (cl-defmethod occ-obj-rankprop ((obj occ-obj-ctx-tsk)
                                       (prop (eql root)))
@@ -289,24 +289,24 @@
                        (string-match tsk-root ctx-dir))
                   (length tsk-root)
                 0)))))
-      
+
       (cl-defmethod occ-obj-get-property-value-from-ctx ((ctx occ-ctx)
                                                          (prop (eql root)))
         "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
         (let ((file (occ-ctx-file ctx)))
           (when file (dirname-of-file file))))
-      
+
       (cl-defmethod occ-obj-list-p ((prop (eql root)))
         t)
-      
+
       (cl-defmethod occ-obj-prop-to-org ((prop (eql root))
                                          value)
         value)
-      
+
       (cl-defmethod occ-obj-prop-from-org ((prop (eql root))
                                            value)
         value)
-      
+
       (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-ctx-tsk)
                                                 (prop (eql root)))
         "READ"
@@ -316,7 +316,7 @@
                  (ctx-dir    (when (stringp ctx-file) (file-name-directory ctx-file)))
                  (prompt     (concat (symbol-name prop) ": ")))
             (ido-read-directory-name prompt ctx-dir ctx-dir))))
-      
+
       (cl-defmethod occ-do-checkout-prop ((obj occ-obj-tsk)
                                           (prop (eql root)))
         (let* ((tsk       (occ-obj-tsk      obj))
@@ -331,7 +331,7 @@
 
 *** Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time
     #+begin_src emacs-lisp
-      
+
       (cl-defmethod occ-obj-rankprop ((obj occ-tsk)
                                       (prop (eql timebeing)))
         (let ((tsk (occ-obj-tsk obj)))
@@ -348,23 +348,23 @@
                   (- timebeing-time
                      clocked-time)
                 0)))))
-      
+
       (cl-defmethod occ-obj-list-p ((prop (eql timebeing)))
          nil)
-      
+
       (cl-defmethod occ-obj-prop-to-org ((prop (eql timebeing))
                                          value)
         (if (numberp value)
             (number-to-string value)
           ""))
-      
+
       (cl-defmethod occ-obj-prop-from-org ((prop (eql timebeing))
                                            value)
         (if (stringp value)
             (or (string-to-number value)
                 0)
           0))
-      
+
       (cl-defmethod occ-obj-readprop-from-user ((obj occ-tsk)
                                                 (prop (eql timebeing)))
         "READ"
@@ -372,19 +372,19 @@
           (let* ((prompt     (concat (symbol-name prop)
                                      ": ")))
             (read-number "Timebeing mins: "))))
-      
+
       (cl-defmethod occ-obj-require-p ((obj occ-obj-tsk)
                                        (operation (eql increment))
                                        (prop (eql timebeing))
                                        values)
         (occ-obj-current-p obj))
-      
+
       (cl-defmethod occ-obj-prop-default-value ((obj occ-obj-tsk)
                                                 (prop (eql timebeing))
                                                 (operation (eql increment)))
         (when (occ-obj-current-p obj)
           10))
-      
+
       (cl-defmethod occ-obj-operation ((obj occ-obj-tsk)
                                        (operation (eql increment))
                                        (prop (eql timebeing))
@@ -393,7 +393,7 @@
           (if (occ-obj-list-p prop)
               (occ-error "Implement it.")
             (occ-error "Implement it."))))
-      
+
       (cl-defmethod occ-do-org-operation ((obj occ-obj-tsk)
                                           (operation (eql increment))
                                           (prop (eql timebeing))
@@ -402,19 +402,19 @@
           (if (occ-obj-list-p prop)
               (occ-error "Implement it.")
             (occ-error "Implement it."))))
-      
-      
+
+
       (cl-defmethod occ-obj-valid-p ((prop      (eql timebeing))
                                      (operation (eql increment)))
         t)
       
-      
+
     #+end_src
 
 ** Read only properties
 *** Git branch property of task
     #+begin_src emacs-lisp
-      
+
       ;;{{ git-branch
       (cl-defmethod occ-obj-get-property-value-from-ctx ((ctx occ-ctx)
                                                          (prop (eql git-branch)))
@@ -426,7 +426,7 @@
 
 *** STATUS property of task
     #+begin_src emacs-lisp
-      
+
       (cl-defmethod occ-obj-rankprop ((obj  occ-tsk)
                                       (prop (eql status)))
         "Predicate funtion to check if ctx matches to tsk's status attribute."
@@ -442,7 +442,7 @@
 
 *** Key property of task for setting arbitrary rank
     #+begin_src emacs-lisp
-      
+
       (cl-defmethod occ-obj-rankprop ((obj  occ-tsk)
                                       (prop (eql key)))
         "Predicate funtion to check if ctx matches to tsk's file attribute."
@@ -453,7 +453,7 @@
 
 *** COMMENT Heading level property of task
     #+begin_src emacs-lisp
-      
+
       (cl-defmethod occ-obj-rankprop ((obj  occ-tsk)
                                       (prop (eql heading-level)))
         "Predicate funtion to check if ctx matches to tsk's file attribute."
@@ -476,7 +476,7 @@
 ** Special properties
 *** SubtreeFile property of task
     #+begin_src emacs-lisp
-      
+
       ;;{{ sub-tree
       (cl-defmethod occ-obj-readprop ((obj occ-obj-ctx-tsk)
                                       (prop (eql subtree)))

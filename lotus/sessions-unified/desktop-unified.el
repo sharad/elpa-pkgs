@@ -38,21 +38,37 @@
                                                 &optional
                                                 dir default-filename mustmatch initial predicate)
     (if default-initial-input
-        (with-timeout (seconds
-                       (progn
-                         (when (active-minibuffer-window)
-                           (abort-recursive-edit))
-                         initial))
-          (read-file-name prompt dir default-filename mustmatch initial predicate))
-      (read-file-name prompt dir default-filename mustmatch initial predicate)))
+        (with-timeout
+            (seconds
+             (progn
+               (when (active-minibuffer-window)
+                 (abort-recursive-edit))
+               initial))
+          (read-file-name prompt
+                          dir
+                          default-filename
+                          mustmatch
+                          initial predicate))
+      (read-file-name prompt
+                      dir
+                      default-filename
+                      mustmatch
+                      initial
+                      predicate)))
 
 (defun read-file-name-timeout (seconds prompt &optional dir default-filename mustmatch initial predicate)
-  (with-timeout (seconds
-                 (progn
-                   (when (active-minibuffer-window)
-                     (abort-recursive-edit))
-                   initial))
-    (read-file-name prompt dir default-filename mustmatch initial predicate)))
+  (with-timeout
+      (seconds
+       (progn
+         (when (active-minibuffer-window)
+           (abort-recursive-edit))
+         initial))
+    (read-file-name prompt
+                    dir
+                    default-filename
+                    mustmatch
+                    initial
+                    predicate)))
 
 
 (setq desktop-io-file-version 208)
