@@ -100,21 +100,20 @@
   (message  "%s: $s" title (format fmt args)))
 
 (defun sessions-unified-utils-notify-set-default ()
-  (setq sessions-unified-utils-notify #'sessions-unified-utils-notify-default))
+  (setq *sessions-unified-utils-notify* #'sessions-unified-utils-notify-default))
 
 (eval-when-compile
- (defvar sessions-unified-utils-notify nil)
- (unless (null 'sessions-unified-utils-notify)
+ (defvar *sessions-unified-utils-notify* nil)
+ (unless (null '*sessions-unified-utils-notify*)
    (sessions-unified-utils-notify-set-default)))
 
-(defvar sessions-unified-utils-notify nil)
+(defvar *sessions-unified-utils-notify* nil)
 (sessions-unified-utils-notify-set-default)
-
 
 ;; https://emacs.stackexchange.com/questions/2310/can-functions-access-their-name
 (defun get-current-func-name ()
   "Get the symbol of the function this function is called from."
-  ;; 5 is the magic number that makes us look 
+  ;; 5 is the magic number that makes us look
   ;; above this function
   (let* ((index 4)
          (frame (backtrace-frame index)))
@@ -125,9 +124,14 @@
     (second frame)))
 
 (defun session-unfiy-notify (fmt &rest args)
-  (let ((fun (get-current-func-name)))
-    (apply sessions-unified-utils-notify (symbol-name fun) fmt args)))
-
+  (let* ((fun (get-current-func-name))
+         (funname (if (symbolp fun)
+                      (symbol-name fun)
+                    (format "%s" fun))))
+    (unless (eq *sessions-unified-utils-notify*
+                sessions-unified-utils-notify-default)
+      (apply sessions-unified-utils-notify-default funname fmt args))
+    (apply *sessions-unified-utils-notify* funname fmt args)))
 
 
 ;;;###autoload

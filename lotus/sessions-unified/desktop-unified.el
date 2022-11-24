@@ -658,8 +658,8 @@ en all buffer were creaed idly."
           (session-unfiy-notify "lotus-desktop-session-restore" "desktop-get-desktop-save-filename failed")))
     (progn
       (lotus-enable-session-saving-immediately)
-      (message "*session-unified-desktop-enabled* %s"
-               *session-unified-desktop-enabled*)
+      (session-unfiy-notify "*session-unified-desktop-enabled* %s"
+                            *session-unified-desktop-enabled*)
       t)))
 
 ;; ;; ask user whether to restore desktop at start-up
@@ -722,7 +722,7 @@ is function is a no-op when Emacs is running in batch mode.
                 (setq desktop-dirname nil)
                 (run-hooks 'desktop-not-loaded-hook)
                 (unless desktop-dirname
-                  (message "Desktop file in use; not loaded.")))
+                  (session-unfiy-notify "Desktop file in use; not loaded.")))
             (desktop-lazy-abort)
             ;; Evaluate desktop buffer and remember when it was modified.
             (load (desktop-full-file-name) t t t)
@@ -732,7 +732,7 @@ is function is a no-op when Emacs is running in batch mode.
             (if t ;; unless owner
               (condition-case nil
                   (desktop-claim-lock)
-                (file-error (message "Couldn't record use of desktop file")
+                (file-error (session-unfiy-notify "Couldn't record use of desktop file")
                             (sit-for 1))))
 
             ;; `desktop-create-buffer' puts buffers at end of the buffer list.
@@ -745,22 +745,22 @@ is function is a no-op when Emacs is running in batch mode.
             (run-hooks 'desktop-delay-hook)
             (setq desktop-delay-hook nil)
             (run-hooks 'desktop-after-read-hook)
-            (message "Desktop: %d buffer%s restored%s%s."
-                     desktop-buffer-ok-count
-                     (if (= 1 desktop-buffer-ok-count) "" "s")
-                     (if (< 0 desktop-buffer-fail-count)
-                         (format ", %d failed to restore" desktop-buffer-fail-count)
-                       "")
-                     (if desktop-buffer-args-list
-                         (format ", %d to restore lazily"
-                                 (length desktop-buffer-args-list))
-                       ""))
+            (session-unfiy-notify "Desktop: %d buffer%s restored%s%s."
+                                  desktop-buffer-ok-count
+                                  (if (= 1 desktop-buffer-ok-count) "" "s")
+                                  (if (< 0 desktop-buffer-fail-count)
+                                      (format ", %d failed to restore" desktop-buffer-fail-count)
+                                    "")
+                                  (if desktop-buffer-args-list
+                                      (format ", %d to restore lazily"
+                                              (length desktop-buffer-args-list))
+                                    ""))
             t))
       ;; No desktop file found.
       (desktop-clear)
       (let ((default-directory desktop-dirname))
         (run-hooks 'desktop-no-desktop-file-hook))
-      (message "desktop-read-alternate: No desktop file.")
+      (session-unfiy-notify "desktop-read-alternate: No desktop file.")
       nil)))
 
 
@@ -769,6 +769,6 @@ is function is a no-op when Emacs is running in batch mode.
        (unless (or desktop-buffer-read-only buffer-read-only)
          (condition-case e
              (,modefn 1)
-           ('error (message "%s: %s" ,modefn e))))))
+           ('error (session-unfiy-notify "%s: %s" ,modefn e))))))
 
 ;;; desktop-unified.el ends here
