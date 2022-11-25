@@ -482,11 +482,17 @@
                                       (prop (eql subtree)))
         (let ((tsk (occ-obj-tsk obj))
               (ctx (occ-obj-ctx obj)))
-          (let ((prompt (concat (symbol-name prop) ": ")))
-            (file-relative-name
-             (ido-read-file-name ;; org-iread-file-name
-              prompt
-              default-directory default-directory)))))
+          (let* ((prompt (concat (symbol-name prop) ": "))
+                 ;; org-iread-file-name
+                 (filename (ido-read-file-name prompt
+                                               default-directory ;DIR
+                                               nil               ;DEFAULT-FILENAME
+                                               t                 ;MUSTMATCH
+                                               nil               ;PREDICATE
+                                               #'(lambda (f)     ;INITIAL
+                                                   (string-match "\.\+.org" f)))))
+            (file-relative-name filename
+                                default-directory))))
       ;;}}
       
     #+end_src

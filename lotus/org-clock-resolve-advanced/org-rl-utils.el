@@ -57,12 +57,11 @@
   org-rl-capture+-helm-templates-alist)
 
 (org-rl-intf-register 'default
-                      (list
-                       :org-rl-clock-p                       #'org-default-rl-clock-p
-                       :org-rl-clock-clock-in                #'org-default-rl-clock-clock-in
-                       :org-rl-clock-out                     #'org-default-rl-clock-out
-                       :org-rl-select-other-clock            #'org-default-rl-select-other-clock
-                       :org-rl-capture+-helm-templates-alist #'org-default-rl-capture+-helm-templates-alist))
+                      (list :org-rl-clock-p                       #'org-default-rl-clock-p
+                            :org-rl-clock-clock-in                #'org-default-rl-clock-clock-in
+                            :org-rl-clock-out                     #'org-default-rl-clock-out
+                            :org-rl-select-other-clock            #'org-default-rl-select-other-clock
+                            :org-rl-capture+-helm-templates-alist #'org-default-rl-capture+-helm-templates-alist))
 
 
 (defvar org-rl-org-clock-persist nil "Control org-clock-persist at time of org-resolve clock-in")
@@ -108,17 +107,15 @@
 
 (defun org-rl-debug (level &rest args)
   (let* ((ilevel (or level :debug))
-         (ts (time-stamp-string))
-         (fmt (format "%s: %s" ts (cl-first args)))
-         (args (append (list fmt) (cl-rest args))))
+         (ts     (time-stamp-string))
+         (fmt    (format "%s: %s" ts (cl-first args)))
+         (args   (append (list fmt) (cl-rest args))))
     (when org-rl-debug
       (apply #'lwarn 'org-rl-clock ilevel args)
       (when level
-        (message
-         "%s"
-         (concat
-          (format "org-rl-clock %s: " ilevel)
-          (apply #'format args)))))))
+        (message "%s"
+                 (concat (format "org-rl-clock %s: " ilevel)
+                         (apply #'format args)))))))
 
 
 (defun time-aware-completing-read (interval prompt-fn options-fn &optional default-fn)
