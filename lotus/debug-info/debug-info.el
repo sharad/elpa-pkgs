@@ -148,4 +148,82 @@
   `(notify-memory-usage ,tag #'message ,@body))
 (put 'notify-memory-usage-message 'lisp-indent-function 1)
 
+;; (defmacro __test_mac (fun)
+;;   `(message "%s" ,fun))
+;; (__test_mac 'x)
+
+;; (defmacro install-debug-on-macro (fun)
+;;   `(defun ,fun (&rest args)
+;;      (message "running %s" ',fun)
+;;      (debug)))
+
+(defvar debug-replaced-functions nil)
+
+(defun debug-replace-on (fun)
+  "Installed debug function, can later be removed by uninstall-debug-on"
+  (interactive "afunction name: ")
+  (message "installing %s" fun)
+
+  (let ((def (if (fboundp fun)
+                 (symbol-function fun))))
+    (push (cons fun def) debug-replaced-functions)
+    (eval `(defun ,fun (&rest args)
+             (message "running %s" ',fun)
+             (debug)))))
+(defun debug-uninstall-on (fun)
+  (interactive
+   (list (let* ((funs (mapcar #'car debug-replaced-functions))
+                (funname (completing-read "function name: "
+                                          funs
+                                          #'(lambda (s) (memq s funs))
+                                          t)))
+           (intern funname nil))))
+  (let* ((fundef (assoc fun debug-replaced-functions))
+         (fun (car fundef))
+         (def (cdr fundef)))
+    (setq debug-replaced-functions
+          (delete* fun debug-replaced-functions :key #'car))
+    (fmakunbound fun)
+    (if def
+        (progn
+          (message "setting %s" def)
+          (fset fun def))
+      (message "def is null"))))
+
+;; (defun __test__ (x) x)
+;; (__test__ 1)
+;; (symbol-function '__test__)
+
+;; (cdr (assoc '__test__ debug-replaced-functions))
+;; (assoc y'__test__ debug-replaced-functions)
+
+
+(defvar debug-instrumented-functions nil)
+
+(defun debug-instrument-on (fun)
+  "Installed debug function, can later be removed by uninstall-debug-on"
+  (interactive "afunction name: ")
+  (message "installing %s" fun)
+
+  (let ((def (if (fboundp fun)
+                 (symbol-function fun))))
+    ;; add-advice
+    ))
+(defun debug-uninstall-on (fun)
+  (interactive
+   (list (let* ((funs (mapcar #'car debug-instrumented-functions))
+                (funname (completing-read "function name: "
+                                          funs
+                                          #'(lambda (s) (memq s funs))
+                                          t)))
+           (intern funname nil))))
+  (let* ((fundef (assoc fun debug-instrumented-functions))
+         (fun (car fundef))
+         (def (cdr fundef)))
+    (setq debug-instrumented-functions
+          (delete* fun debug-instrumented-functions :key #'car))
+    ;; remove-advice
+    ))
+
+
 ;;; debug-info.el ends here

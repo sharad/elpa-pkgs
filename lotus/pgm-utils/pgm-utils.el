@@ -58,6 +58,7 @@ which other peoples are also working."
             (setq show-trailing-whitespace nil)
             (set (make-local-variable 'before-save-hook) before-save-hook)
             (remove-hook 'before-save-hook 'delete-trailing-whitespace t)
+            (remove-hook 'write-file-hooks 'delete-trailing-whitespace t)
             (run-with-timer
              7 nil
              #'(lambda (buff)
@@ -76,12 +77,13 @@ which other peoples are also working."
           (setq show-trailing-whitespace 1)
           (set (make-local-variable 'before-save-hook) before-save-hook)
           (add-hook 'before-save-hook 'delete-trailing-whitespace t)
+          (add-hook 'write-file-hook 'delete-trailing-whitespace t)
           (message "called disable office mode")))
     (error (message "Error: %s" e))))
 
 ;;;###autoload
 (defun office-file-p (file)
-  (let ((remote-repo (cl-first (remove-if-not #'(lambda (s)
+  (let ((remote-repo (first (remove-if-not #'(lambda (s)
                                                (when s
                                                  (string-match-p "^origin" s)))
                                            (magit-git-lines "remote" "-v")))))
