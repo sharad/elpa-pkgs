@@ -181,10 +181,11 @@
   (session-unfiy-notify "scheduled sessions-unified-desktop-enable-restore-interrupting-feature-run to run after sometime.")
   (let* ((idle-time (current-idle-time))
          (secs (or secs 10))
-         (sec-idle (+ (if idle-time (float-time idle-time) 0) secs)))
+         (secs-idle (+ (if idle-time (float-time idle-time) 0) secs)))
+    (session-unfiy-notify "Setting timer time %d" secs-idle)
     (setq *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
-          ;; (run-with-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run)
-          (run-with-idle-timer sec-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run))))
+          ;; (run-with-timer secs-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run)
+          (run-with-idle-timer secs-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run))))
 (defun sessions-unified-desktop-enable-restore-interrupting-feature-run-info ()
   (interactive)
   (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
