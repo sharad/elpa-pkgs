@@ -27,6 +27,11 @@
 (provide 'org-rl-utils)
 
 
+(eval-when-compile
+  (require 'lotus-misc-utils)
+  (require 'org-misc-utils-lotus))
+
+
 (require 'org-rl-intf)
 
 
