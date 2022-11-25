@@ -190,13 +190,13 @@
 (defun sessions-unified-desktop-enable-restore-interrupting-feature-run-info ()
   (interactive)
   (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
-      (let ((type (timer--idle-delay *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
-            (timesec (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
-                         (if type
-                             (- (float-time (current-time))
-                                (float-time (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*)))
-                           (float-time (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*)))
-                       0)))
+      (let* ((type (timer--idle-delay *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
+             (timesec (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
+                          (if type
+                              (- (float-time (current-time))
+                                 (float-time (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*)))
+                            (float-time (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*)))
+                        0)))
         (session-unfiy-notify "hooks will run %sly after %d" (or type "definite") timesec))
     (session-unfiy-notify "No timer present")))
 
