@@ -179,9 +179,10 @@
 (defun sessions-unified-desktop-enable-restore-interrupting-feature-delay-run (&optional secs)
   (interactive "nsecs: ")
   (session-unfiy-notify "scheduled sessions-unified-desktop-enable-restore-interrupting-feature-run to run after sometime.")
-  (let* ((idle-time (current-idle-time))
+  (let* (;; (idle-time (current-idle-time))
          (secs (or secs 10))
-         (secs-idle (+ (if idle-time (float-time idle-time) 0) secs)))
+         ;; (secs-idle (+ (if idle-time (float-time idle-time) 0) secs))
+         (secs-idle secs))
     (session-unfiy-notify "Setting timer time %d" secs-idle)
     (setq *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
           ;; (run-with-timer secs-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run)
@@ -189,13 +190,14 @@
 (defun sessions-unified-desktop-enable-restore-interrupting-feature-run-info ()
   (interactive)
   (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
-      (let ((type (or (timer--idle-delay *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*)
-                      "definite"))
+      (let ((type (timer--idle-delay *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
             (timesec (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
-                         (- (float-time (current-time))
-                            (float-time (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*)))
+                         (if type
+                             (- (float-time (current-time))
+                                (float-time (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*)))
+                           (float-time (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*)))
                        0)))
-        (session-unfiy-notify "hooks will run %sly after %d" type timesec))
+        (session-unfiy-notify "hooks will run %sly after %d" (or type "definite") timesec))
     (session-unfiy-notify "No timer present")))
 
 
