@@ -27,7 +27,7 @@
 (provide 'lotus-wrapper)
 
 
-(defvar replace-file-truename-link-cycle-counter 300)
+(defvar overrride--file-truename-link-cycle-counter 300)
 
 (defvar file-truename-do-caching t)
 
@@ -47,7 +47,7 @@
   (interactive)
   (setq file-truename-do-caching (not file-truename-do-caching)))
 
-(defun replace-file-truename (filename &optional counter prev-dirs)
+(defun overrride--file-truename (filename &optional counter prev-dirs)
   "Return the truename of FILENAME.
 If FILENAME is not absolute, first expands it against `default-directory'.
 The truename of a file name is found by chasing symbolic links
@@ -84,7 +84,7 @@ containing it, until no links are left at any level.
                      (cl-rest (substring filename (match-end 0))))
                  (setq filename (concat (expand-file-name first-part) rest)))))
 
-        (or counter (setq counter (list replace-file-truename-link-cycle-counter)))
+        (or counter (setq counter (list overrride--file-truename-link-cycle-counter)))
         (let (done
               ;; For speed, remove the ange-ftp completion handler from the list.
               ;; We know it's not needed here.
@@ -186,7 +186,7 @@ containing it, until no links are left at any level.
 
 
 ;;;###autoload
-(defun around-erc-identd-start (&optional port)
+(defun overrride--erc-identd-start (&optional port)
   "Start an identd server listening to port 8113.
 Port 113 (auth) will need to be redirected to port 8113 on your
 machine -- using iptables, or a program like redir which can be
@@ -206,30 +206,75 @@ system."
                               :server t :noquery t :nowait nil
                               :filter 'erc-identd-filter))
   (set-process-query-on-exit-flag erc-identd-process nil))
+
+;; from compile.el
+(defun around--compilation-find-file (oldfun &rest r)
+  (flet ((file-truename (&rest args)
+                        (identity (car args))))
+    (apply oldfun r)))
+(defun around--compilation-get-file-structure (oldfun &rest r)
+  (flet ((file-truename (&rest args)
+                        (identity (car args))))
+    (apply oldfun r)))
+
 
-;;;###autoload
+(defvar lotus-around--projectile-file-truename-callers '(projectile-cache-current-file
+                                                         delete-file-projectile-remove-from-cache
+                                                         projectile-project-root
+                                                         projectile-project-buffer-p
+                                                         projectile-select-files
+                                                         projectile-compilation-dir))
+(defun lotus-around--projectile-file-truename-callers-define-around-advice ()
+  (dolist (f lotus-around--projectile-file-truename-callers)
+    (let ((fun (intern (concat "around--" (symbol-name f)))))
+      (eval `(defun ,fun (oldfun &rest r)
+               (flet ((file-truename (&rest args)
+                                     (identity (car args))))
+                 (apply oldfun r)))))))
+(defun lotus-around--projectile-file-truename-callers-add-around-advice ()
+  (dolist (f lotus-around--projectile-file-truename-callers)
+    (let ((fun (intern (concat "around--" (symbol-name f)))))
+      (eval `(add-function :around
+                           (symbol-function ',f)
+                           #',fun)))))
+(defun lotus-around--projectile-file-truename-callers-remove-around-advice ()
+  (dolist (f lotus-around--projectile-file-truename-callers)
+    (let ((fun (intern (concat "around--" (symbol-name f)))))
+      (eval `(remove-function (symbol-function ',f)
+                              #',fun)))))
+;;;###autoload
 (defun lotus-wrapper-insinuate ()
   (interactive)
-  (add-function
-   :override (symbol-function 'file-truename)
-   #'replace-file-truename)
-  (add-function
-   :override (symbol-function 'erc-identd-start)
-   #'replace-erc-identd-start))
+  (add-function :override
+                (symbol-function 'file-truename)
+                #'overrride--file-truename)
+  (add-function :override
+                (symbol-function 'erc-identd-start)
+                #'override-erc-identd-start)
+  (add-function :around
+                (symbol-function 'compilation-find-file)
+                #'around--compilation-find-file)
+  (add-function :around
+                (symbol-function 'compilation-get-file-structure)
+                #'around--compilation-get-file-structure)
+  (lotus-around--projectile-file-truename-callers-add-around-advice))
 
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
   (interactive)
-  (remove-function
-   (symbol-function 'file-truename)
-   #'replace-file-truename)
-  (remove-function
-   (symbol-function 'erc-identd-start)
-   #'replace-erc-identd-start))
-
+  (remove-function (symbol-function 'file-truename)
+                   #'overrride--file-truename)
+  (remove-function (symbol-function 'erc-identd-start)
+                   #'override-erc-identd-start)
+  (remove-function (symbol-function 'compilation-find-file)
+                   #'around--compilation-find-file)
+  (remove-function (symbol-function 'compilation-get-file-structure)
+                   #'around--compilation-get-file-structure)
+  (lotus-around--projectile-file-truename-callers-remove-around-advice))
+
 
 ;; (file-truename "~/.mailbox")
-
+
 ;;; lotus-wrapper.el ends here
 
 
@@ -239,8 +284,8 @@ system."
 (when nil
   (setq file-truename-do-caching nil)
   (setq file-truename-do-caching t)
-  (replace-file-truename "~/.mailbox")
-  (replace-file-truename "/home/s/hell/.fa/rc")
+  (overrride--file-truename "~/.mailbox")
+  (overrride--file-truename "/home/s/hell/.fa/rc")
 
 
   (setq file-truename-do-caching nil)
@@ -249,11 +294,11 @@ system."
 
   (cl-first (cl-first file-truename-cache-dependency-list)))
 
-;; (replace-file-truename "~/.mailbox")
+;; (overrride--file-truename "~/.mailbox")
 
-;; (replace-file-truename "/home/s/hell/.fa/rc")
+;; (overrride--file-truename "/home/s/hell/.fa/rc")
 
-;; (replace-file-truename
+;; (overrride--file-truename
 ;;  "/home/s/hell/.setup"
 ;;  (181)
 ;;  (
@@ -270,88 +315,80 @@ system."
 ;;    ("/home/s/hell/" . "/home/s/hell/")
 ;;    ("/home/s/" . "/home/s/")
 ;;    ("/home/" . "/home/"))))
-
-
-
-
 
 
+;; (define-minor-mode semantic-mode
+;;   "Toggle parser features (Semantic mode).
 
+;; In Semantic mode, Emacs parses the buffers you visit for their
+;; semantic content.  This information is used by a variety of
+;; auxiliary minor modes, listed in `semantic-default-submodes';
+;; all the minor modes in this list are also enabled when you enable
+;; Semantic mode.
 
+;; \\{semantic-mode-map}"
+;;   :global t
+;;   :group 'semantic
+;;   (if semantic-mode
+;;       ;; Turn on Semantic mode
+;;       (progn
+;; 	;; Enable all the global auxiliary minor modes in
+;; 	;; `semantic-submode-list'.
+;; 	(dolist (mode semantic-submode-list)
+;; 	  (and (memq mode semantic-default-submodes)
+;; 	       (fboundp mode)
+;; 	       (funcall mode 1)))
+;; 	(unless semantic-load-system-cache-loaded
+;; 	  (setq semantic-load-system-cache-loaded t)
+;; 	  (when (and (boundp 'semanticdb-default-system-save-directory)
+;; 		     (stringp semanticdb-default-system-save-directory)
+;; 		     (file-exists-p semanticdb-default-system-save-directory))
+;; 	    (require 'semantic/db-ebrowse)
+;; 	    (semanticdb-load-ebrowse-caches)))
+;; 	(add-hook 'mode-local-init-hook 'semantic-new-buffer-fcn)
+;; 	;; Add semantic-ia-complete-symbol to
+;; 	;; completion-at-point-functions, so that it is run from
+;; 	;; M-TAB.
+;; 	;;
+;; 	;; Note: The first entry added is the last entry run, so the
+;; 	;;       most specific entry should be last.
+;; 	(add-hook 'completion-at-point-functions
+;; 		  'semantic-analyze-nolongprefix-completion-at-point-function)
+;; 	(add-hook 'completion-at-point-functions
+;; 		  'semantic-analyze-notc-completion-at-point-function)
+;; 	(add-hook 'completion-at-point-functions
+;; 		  'semantic-analyze-completion-at-point-function)
 
+;; 	(if (bound-and-true-p global-ede-mode)
+;; 	    (define-key cedet-menu-map [cedet-menu-separator] '("--")))
+;; 	(dolist (b (buffer-list))
+;; 	  (when (buffer-live-p b)
+;;       (with-current-buffer b
+;; 	      (semantic-new-buffer-fcn)))))
+;;     ;; Disable Semantic features.  Removing everything Semantic has
+;;     ;; introduced in the buffer is pretty much futile, but we have to
+;;     ;; clean the hooks and delete Semantic-related overlays, so that
+;;     ;; Semantic can be re-activated cleanly.
+;;     (remove-hook 'mode-local-init-hook 'semantic-new-buffer-fcn)
+;;     (remove-hook 'completion-at-point-functions
+;; 		 'semantic-analyze-completion-at-point-function)
+;;     (remove-hook 'completion-at-point-functions
+;; 		 'semantic-analyze-notc-completion-at-point-function)
+;;     (remove-hook 'completion-at-point-functions
+;; 		 'semantic-analyze-nolongprefix-completion-at-point-function)
 
-(define-minor-mode semantic-mode
-  "Toggle parser features (Semantic mode).
-
-In Semantic mode, Emacs parses the buffers you visit for their
-semantic content.  This information is used by a variety of
-auxiliary minor modes, listed in `semantic-default-submodes';
-all the minor modes in this list are also enabled when you enable
-Semantic mode.
-
-\\{semantic-mode-map}"
-  :global t
-  :group 'semantic
-  (if semantic-mode
-      ;; Turn on Semantic mode
-      (progn
-	;; Enable all the global auxiliary minor modes in
-	;; `semantic-submode-list'.
-	(dolist (mode semantic-submode-list)
-	  (and (memq mode semantic-default-submodes)
-	       (fboundp mode)
-	       (funcall mode 1)))
-	(unless semantic-load-system-cache-loaded
-	  (setq semantic-load-system-cache-loaded t)
-	  (when (and (boundp 'semanticdb-default-system-save-directory)
-		     (stringp semanticdb-default-system-save-directory)
-		     (file-exists-p semanticdb-default-system-save-directory))
-	    (require 'semantic/db-ebrowse)
-	    (semanticdb-load-ebrowse-caches)))
-	(add-hook 'mode-local-init-hook 'semantic-new-buffer-fcn)
-	;; Add semantic-ia-complete-symbol to
-	;; completion-at-point-functions, so that it is run from
-	;; M-TAB.
-	;;
-	;; Note: The first entry added is the last entry run, so the
-	;;       most specific entry should be last.
-	(add-hook 'completion-at-point-functions
-		  'semantic-analyze-nolongprefix-completion-at-point-function)
-	(add-hook 'completion-at-point-functions
-		  'semantic-analyze-notc-completion-at-point-function)
-	(add-hook 'completion-at-point-functions
-		  'semantic-analyze-completion-at-point-function)
-
-	(if (bound-and-true-p global-ede-mode)
-	    (define-key cedet-menu-map [cedet-menu-separator] '("--")))
-	(dolist (b (buffer-list))
-	  (when (buffer-live-p b)
-      (with-current-buffer b
-	      (semantic-new-buffer-fcn)))))
-    ;; Disable Semantic features.  Removing everything Semantic has
-    ;; introduced in the buffer is pretty much futile, but we have to
-    ;; clean the hooks and delete Semantic-related overlays, so that
-    ;; Semantic can be re-activated cleanly.
-    (remove-hook 'mode-local-init-hook 'semantic-new-buffer-fcn)
-    (remove-hook 'completion-at-point-functions
-		 'semantic-analyze-completion-at-point-function)
-    (remove-hook 'completion-at-point-functions
-		 'semantic-analyze-notc-completion-at-point-function)
-    (remove-hook 'completion-at-point-functions
-		 'semantic-analyze-nolongprefix-completion-at-point-function)
-
-    (remove-hook 'after-change-functions
-		 'semantic-change-function)
-    (define-key cedet-menu-map [cedet-menu-separator] nil)
-    (define-key cedet-menu-map [semantic-options-separator] nil)
-    ;; FIXME: handle semanticdb-load-ebrowse-caches
-    (dolist (mode semantic-submode-list)
-      (if (and (boundp mode) (eval mode))
-	  (funcall mode -1)))
-    ;; Unlink buffer and clear cache
-    (semantic--tag-unlink-cache-from-buffer)
-    (setq semantic--buffer-cache nil)
-    ;; Make sure we run the setup function if Semantic gets
-    ;; re-activated.
-    (setq semantic-new-buffer-fcn-was-run nil)))
+;;     (remove-hook 'after-change-functions
+;; 		 'semantic-change-function)
+;;     (define-key cedet-menu-map [cedet-menu-separator] nil)
+;;     (define-key cedet-menu-map [semantic-options-separator] nil)
+;;     ;; FIXME: handle semanticdb-load-ebrowse-caches
+;;     (dolist (mode semantic-submode-list)
+;;       (if (and (boundp mode) (eval mode))
+;; 	  (funcall mode -1)))
+;;     ;; Unlink buffer and clear cache
+;;     (semantic--tag-unlink-cache-from-buffer)
+;;     (setq semantic--buffer-cache nil)
+;;     ;; Make sure we run the setup function if Semantic gets
+;;     ;; re-activated.
+;;     (setq semantic-new-buffer-fcn-was-run nil)))
 
