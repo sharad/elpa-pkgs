@@ -284,9 +284,12 @@ system."
   (add-function :around
                 (symbol-function 'compilation-get-file-structure)
                 #'around--compilation-get-file-structure)
-  ;; (lotus-around--projectile-file-truename-callers-define-around-advice)
-  ;; (lotus-around--projectile-file-truename-callers-add-around-advice)
-  )
+  (use-package projectile
+    :defer t
+    :config
+    (progn
+      (lotus-around--projectile-file-truename-callers-define-around-advice)
+      (lotus-around--projectile-file-truename-callers-add-around-advice))))
 
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
