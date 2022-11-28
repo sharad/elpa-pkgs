@@ -27,7 +27,7 @@
 (provide 'lotus-wrapper)
 
 
-(defvar overrride--file-truename-link-cycle-counter 300)
+(defvar override--file-truename-link-cycle-counter 300)
 
 (defvar file-truename-do-caching t)
 
@@ -47,7 +47,7 @@
   (interactive)
   (setq file-truename-do-caching (not file-truename-do-caching)))
 
-(defun overrride--file-truename (filename &optional counter prev-dirs)
+(defun override--file-truename (filename &optional counter prev-dirs)
   "Return the truename of FILENAME.
 If FILENAME is not absolute, first expands it against `default-directory'.
 The truename of a file name is found by chasing symbolic links
@@ -88,7 +88,7 @@ containing it, until no links are left at any level.
                  (setq filename (concat (expand-file-name first-part) rest)))))
 
         (or counter
-            (setq counter (list overrride--file-truename-link-cycle-counter)))
+            (setq counter (list override--file-truename-link-cycle-counter)))
         (let (done
               ;; For speed, remove the ange-ftp completion handler from the list.
               ;; We know it's not needed here.
@@ -190,7 +190,7 @@ containing it, until no links are left at any level.
 
 
 ;;;###autoload
-(defun overrride--erc-identd-start (&optional port)
+(defun override--erc-identd-start (&optional port)
   "Start an identd server listening to port 8113.
 Port 113 (auth) will need to be redirected to port 8113 on your
 machine -- using iptables, or a program like redir which can be
@@ -246,30 +246,51 @@ system."
     (let ((fun (intern (concat "around--" (symbol-name f)))))
       (eval `(remove-function (symbol-function ',f)
                               #',fun)))))
+
+
+
+(defun override--pm--run-other-hooks (allow syms hook &rest args)
+  (when (and allow polymode-mode pm/polymode)
+    (save-excursion
+      (dolist (sym syms)
+        (dolist (buf (eieio-oref pm/polymode '-buffers))
+          (when (buffer-live-p buf)
+            (unless (eq buf (current-buffer))
+              (with-current-buffer buf
+                (when (memq sym (symbol-value hook))
+                  (if args
+                      (apply sym args)
+                    (funcall sym)))))))))))
 ;;;###autoload
 (defun lotus-wrapper-insinuate ()
   (interactive)
   (add-function :override
                 (symbol-function 'file-truename)
-                #'overrride--file-truename)
+                #'override--file-truename)
   (add-function :override
                 (symbol-function 'erc-identd-start)
-                #'override-erc-identd-start)
+                #'override--erc-identd-start)
+  (add-function :override
+                (symbol-function 'pm--run-other-hooks)
+                #'override--pm--run-other-hooks)
   (add-function :around
                 (symbol-function 'compilation-find-file)
                 #'around--compilation-find-file)
   (add-function :around
                 (symbol-function 'compilation-get-file-structure)
                 #'around--compilation-get-file-structure)
-  (lotus-around--projectile-file-truename-callers-add-around-advice))
+  (lotus-around--projectile-file-truename-callers-add-around-advice)
+  )
 
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
   (interactive)
   (remove-function (symbol-function 'file-truename)
-                   #'overrride--file-truename)
+                   #'override--file-truename)
   (remove-function (symbol-function 'erc-identd-start)
-                   #'override-erc-identd-start)
+                   #'override--erc-identd-start)
+  (remove-function (symbol-function 'pm--run-other-hooks)
+                   #'override--pm--run-other-hooks)
   (remove-function (symbol-function 'compilation-find-file)
                    #'around--compilation-find-file)
   (remove-function (symbol-function 'compilation-get-file-structure)
@@ -288,8 +309,8 @@ system."
 (when nil
   (setq file-truename-do-caching nil)
   (setq file-truename-do-caching t)
-  (overrride--file-truename "~/.mailbox")
-  (overrride--file-truename "/home/s/hell/.fa/rc")
+  (override--file-truename "~/.mailbox")
+  (override--file-truename "/home/s/hell/.fa/rc")
 
 
   (setq file-truename-do-caching nil)
@@ -298,11 +319,11 @@ system."
 
   (cl-first (cl-first file-truename-cache-dependency-list)))
 
-;; (overrride--file-truename "~/.mailbox")
+;; (override--file-truename "~/.mailbox")
 
-;; (overrride--file-truename "/home/s/hell/.fa/rc")
+;; (override--file-truename "/home/s/hell/.fa/rc")
 
-;; (overrride--file-truename
+;; (override--file-truename
 ;;  "/home/s/hell/.setup"
 ;;  (181)
 ;;  (
