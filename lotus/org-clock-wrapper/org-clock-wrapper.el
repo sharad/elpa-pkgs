@@ -147,6 +147,7 @@ using three `C-u' prefix arguments."
 
 (defvar *org-clock-select-task-postpone-timer* nil)
 
+;;;###autoload
 (defun replace-org-clock-select-task (&optional prompt)
   (lwarn 'org-clock-select-task :debug "%s: begin replace-org-clock-select-task" (time-stamp-string))
   (prog1
@@ -195,13 +196,11 @@ using three `C-u' prefix arguments."
 ;;;###autoload
 (defun org-clock-wrapper-insinuate ()
   (interactive)
-  ;; (use-package org-clock
-  ;;  :defer t
-  ;;   :config
-  ;;   (progn
-  ;;     (add-function :override (symbol-function 'org-clock-select-task)
-  ;;                   #'replace-org-clock-select-task)
-  ;;     (message "calling org-clock-wrapper-insinuate"))))
+  (with-eval-after-load "org-clock"
+    (progn
+      (add-function :override (symbol-function 'org-clock-select-task)
+                    #'replace-org-clock-select-task)
+      (message "calling org-clock-wrapper-insinuate"))))
 
 ;;;###autoload
 (defun org-clock-wrapper-uninsinuate ()

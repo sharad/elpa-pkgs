@@ -212,15 +212,17 @@ system."
                               :server t :noquery t :nowait nil
                               :filter 'erc-identd-filter))
   (set-process-query-on-exit-flag erc-identd-process nil))
-
+;;;###autoload
 (defun override--erc-identd-start (&rest r)
   (apply #'alternate--erc-identd-start r))
 
 ;; from compile.el
+;;;###autoload
 (defun around--compilation-find-file (oldfun &rest r)
   (cl-letf ((file-truename (&rest args)
                         (identity (car args))))
     (apply oldfun r)))
+;;;###autoload
 (defun around--compilation-get-file-structure (oldfun &rest r)
   (cl-letf ((file-truename (&rest args)
                         (identity (car args))))
@@ -233,6 +235,8 @@ system."
                                                          projectile-project-buffer-p
                                                          projectile-select-files
                                                          projectile-compilation-dir))
+
+;;;###autoload
 (defun lotus-around--projectile-file-truename-callers-define-around-advice ()
   (dolist (f lotus-around--projectile-file-truename-callers)
     (let ((fun (intern (concat "around--" (symbol-name f)))))
@@ -240,12 +244,14 @@ system."
                (cl-letf ((file-truename (&rest args)
                                      (identity (car args))))
                  (apply oldfun r)))))))
+;;;###autoload
 (defun lotus-around--projectile-file-truename-callers-add-around-advice ()
   (dolist (f lotus-around--projectile-file-truename-callers)
     (let ((fun (intern (concat "around--" (symbol-name f)))))
       (eval `(add-function :around
                            (symbol-function ',f)
                            #',fun)))))
+;;;###autoload
 (defun lotus-around--projectile-file-truename-callers-remove-around-advice ()
   (dolist (f lotus-around--projectile-file-truename-callers)
     (let ((fun (intern (concat "around--" (symbol-name f)))))
@@ -253,8 +259,8 @@ system."
                               #',fun)))))
 
 
-
-(defun override--pm--run-other-hooks (allow syms hook &rest args)
+;;;###autoload
+(defun fixed--pm--run-other-hooks (allow syms hook &rest args)
   (when (and allow polymode-mode pm/polymode)
     (save-excursion
       (dolist (sym syms)
@@ -266,7 +272,12 @@ system."
                   (if args
                       (apply sym args)
                     (funcall sym)))))))))))
-;;;###autoload
+;;;###autoload
+(defun override--pm--run-other-hooks (&rest r)
+  (apply fixed--pm--run-other-hooks r))
+
+
+;;;###autoload
 (defun lotus-wrapper-insinuate ()
   (interactive)
   (add-function :override
@@ -284,13 +295,10 @@ system."
   (add-function :around
                 (symbol-function 'compilation-get-file-structure)
                 #'around--compilation-get-file-structure)
-  ;; (use-package projectile
-  ;;   :defer t
-  ;;   :config
-  ;;   (progn
-  ;;     (lotus-around--projectile-file-truename-callers-define-around-advice)
-  ;;     (lotus-around--projectile-file-truename-callers-add-around-advice))))
-  )
+  (with-eval-after-load "projectile"
+    (progn
+      (lotus-around--projectile-file-truename-callers-define-around-advice)
+      (lotus-around--projectile-file-truename-callers-add-around-advice))))
 
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
@@ -305,8 +313,7 @@ system."
                    #'around--compilation-find-file)
   (remove-function (symbol-function 'compilation-get-file-structure)
                    #'around--compilation-get-file-structure)
-  ;; (lotus-around--projectile-file-truename-callers-remove-around-advice)
-  )
+  (lotus-around--projectile-file-truename-callers-remove-around-advice))
 
 
 ;; (file-truename "~/.mailbox")
