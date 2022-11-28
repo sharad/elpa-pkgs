@@ -6,10 +6,11 @@
 ;; Maintainer: Stephen Eglen <stephen@anc.ed.ac.uk>
 ;; Created: 03 Jul 1997
 ;; Version: 1.0
-;; Package-Version: 1.0pre0.20220801.164740
+;; Package-Version: 20221128.2254
 ;; Package-Desc: fm
 ;; Keywords: outlines
 ;; location: http://www.anc.ed.ac.uk/~stephen
+;; Org-Package-Version: 1.0pre0.20220801.164740
 ;; RCS: $Id$
 
 ;; This program is free software; you can redistribute it and/or modify

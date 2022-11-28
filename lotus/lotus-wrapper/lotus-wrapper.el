@@ -27,7 +27,7 @@
 (provide 'lotus-wrapper)
 
 
-(defvar override--file-truename-link-cycle-counter 300)
+(defvar caching--file-truename-link-cycle-counter 300)
 
 (defvar file-truename-do-caching t)
 
@@ -47,7 +47,7 @@
   (interactive)
   (setq file-truename-do-caching (not file-truename-do-caching)))
 
-(defun override--file-truename (filename &optional counter prev-dirs)
+(defun caching--file-truename (filename &optional counter prev-dirs)
   "Return the truename of FILENAME.
 If FILENAME is not absolute, first expands it against `default-directory'.
 The truename of a file name is found by chasing symbolic links
@@ -84,11 +84,11 @@ containing it, until no links are left at any level.
                (let ((first-part (substring filename
                                             0
                                             (match-end 0)))
-                     (cl-rest (substring filename (match-end 0))))
-                 (setq filename (concat (expand-file-name first-part) rest)))))
+                     (rest-part  (substring filename (match-end 0))))
+                 (setq filename (concat (expand-file-name first-part) rest-part)))))
 
         (or counter
-            (setq counter (list override--file-truename-link-cycle-counter)))
+            (setq counter (list caching--file-truename-link-cycle-counter)))
         (let (done
               ;; For speed, remove the ange-ftp completion handler from the list.
               ;; We know it's not needed here.
@@ -188,9 +188,11 @@ containing it, until no links are left at any level.
               (push (cons original-filename filename) file-truename-cache)))
           filename)))))
 
+(defun override--file-truename (&rest r)
+  (apply #'caching--file-truename r))
 
 ;;;###autoload
-(defun override--erc-identd-start (&optional port)
+(defun alternate--erc-identd-start (&optional port)
   "Start an identd server listening to port 8113.
 Port 113 (auth) will need to be redirected to port 8113 on your
 machine -- using iptables, or a program like redir which can be
@@ -210,6 +212,9 @@ system."
                               :server t :noquery t :nowait nil
                               :filter 'erc-identd-filter))
   (set-process-query-on-exit-flag erc-identd-process nil))
+
+(defun override--erc-identd-start (&rest r)
+  (apply #'alternate--erc-identd-start r))
 
 ;; from compile.el
 (defun around--compilation-find-file (oldfun &rest r)
@@ -279,14 +284,15 @@ system."
   (add-function :around
                 (symbol-function 'compilation-get-file-structure)
                 #'around--compilation-get-file-structure)
-  (lotus-around--projectile-file-truename-callers-add-around-advice)
+  ;; (lotus-around--projectile-file-truename-callers-define-around-advice)
+  ;; (lotus-around--projectile-file-truename-callers-add-around-advice)
   )
 
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
   (interactive)
   (remove-function (symbol-function 'file-truename)
-                   #'override--file-truename)
+                   #'caching--file-truename)
   (remove-function (symbol-function 'erc-identd-start)
                    #'override--erc-identd-start)
   (remove-function (symbol-function 'pm--run-other-hooks)
@@ -295,7 +301,8 @@ system."
                    #'around--compilation-find-file)
   (remove-function (symbol-function 'compilation-get-file-structure)
                    #'around--compilation-get-file-structure)
-  (lotus-around--projectile-file-truename-callers-remove-around-advice))
+  ;; (lotus-around--projectile-file-truename-callers-remove-around-advice)
+  )
 
 
 ;; (file-truename "~/.mailbox")
@@ -309,8 +316,8 @@ system."
 (when nil
   (setq file-truename-do-caching nil)
   (setq file-truename-do-caching t)
-  (override--file-truename "~/.mailbox")
-  (override--file-truename "/home/s/hell/.fa/rc")
+  (caching--file-truename "~/.mailbox")
+  (caching--file-truename "/home/s/hell/.fa/rc")
 
 
   (setq file-truename-do-caching nil)
@@ -319,11 +326,11 @@ system."
 
   (cl-first (cl-first file-truename-cache-dependency-list)))
 
-;; (override--file-truename "~/.mailbox")
+;; (caching--file-truename "~/.mailbox")
 
-;; (override--file-truename "/home/s/hell/.fa/rc")
+;; (caching--file-truename "/home/s/hell/.fa/rc")
 
-;; (override--file-truename
+;; (caching--file-truename
 ;;  "/home/s/hell/.setup"
 ;;  (181)
 ;;  (
