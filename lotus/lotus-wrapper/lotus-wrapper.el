@@ -218,11 +218,11 @@ system."
 
 ;; from compile.el
 (defun around--compilation-find-file (oldfun &rest r)
-  (flet ((file-truename (&rest args)
+  (cl-letf ((file-truename (&rest args)
                         (identity (car args))))
     (apply oldfun r)))
 (defun around--compilation-get-file-structure (oldfun &rest r)
-  (flet ((file-truename (&rest args)
+  (cl-letf ((file-truename (&rest args)
                         (identity (car args))))
     (apply oldfun r)))
 
@@ -237,7 +237,7 @@ system."
   (dolist (f lotus-around--projectile-file-truename-callers)
     (let ((fun (intern (concat "around--" (symbol-name f)))))
       (eval `(defun ,fun (oldfun &rest r)
-               (flet ((file-truename (&rest args)
+               (cl-letf ((file-truename (&rest args)
                                      (identity (car args))))
                  (apply oldfun r)))))))
 (defun lotus-around--projectile-file-truename-callers-add-around-advice ()
@@ -284,12 +284,13 @@ system."
   (add-function :around
                 (symbol-function 'compilation-get-file-structure)
                 #'around--compilation-get-file-structure)
-  (use-package projectile
-    :defer t
-    :config
-    (progn
-      (lotus-around--projectile-file-truename-callers-define-around-advice)
-      (lotus-around--projectile-file-truename-callers-add-around-advice))))
+  ;; (use-package projectile
+  ;;   :defer t
+  ;;   :config
+  ;;   (progn
+  ;;     (lotus-around--projectile-file-truename-callers-define-around-advice)
+  ;;     (lotus-around--projectile-file-truename-callers-add-around-advice))))
+  )
 
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()

@@ -195,13 +195,13 @@ using three `C-u' prefix arguments."
 ;;;###autoload
 (defun org-clock-wrapper-insinuate ()
   (interactive)
-  (use-package org-clock
-    :defer t
-    :config
-    (progn
-      (add-function :override (symbol-function 'org-clock-select-task)
-                    #'replace-org-clock-select-task)
-      (message "calling org-clock-wrapper-insinuate"))))
+  ;; (use-package org-clock
+  ;;  :defer t
+  ;;   :config
+  ;;   (progn
+  ;;     (add-function :override (symbol-function 'org-clock-select-task)
+  ;;                   #'replace-org-clock-select-task)
+  ;;     (message "calling org-clock-wrapper-insinuate"))))
 
 ;;;###autoload
 (defun org-clock-wrapper-uninsinuate ()
