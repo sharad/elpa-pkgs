@@ -219,12 +219,12 @@ system."
 ;; from compile.el
 ;;;###autoload
 (defun around--compilation-find-file (oldfun &rest r)
-  (cl-letf ((file-truename (&rest args)
+  (cl-flet ((file-truename (&rest args)
                         (identity (car args))))
     (apply oldfun r)))
 ;;;###autoload
 (defun around--compilation-get-file-structure (oldfun &rest r)
-  (cl-letf ((file-truename (&rest args)
+  (cl-flet ((file-truename (&rest args)
                         (identity (car args))))
     (apply oldfun r)))
 
@@ -241,7 +241,7 @@ system."
   (dolist (f lotus-around--projectile-file-truename-callers)
     (let ((fun (intern (concat "around--" (symbol-name f)))))
       (eval `(defun ,fun (oldfun &rest r)
-               (cl-letf ((file-truename (&rest args)
+               (cl-flet ((file-truename (&rest args)
                                      (identity (car args))))
                  (apply oldfun r)))))))
 ;;;###autoload
