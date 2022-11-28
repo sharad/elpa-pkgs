@@ -61,9 +61,9 @@ containing it, until no links are left at any level.
   ;; PREV-DIRS can be a cons cell whose car is an alist
   ;; of truenames we've just recently computed.
   (let* ((original-filename filename)
-         (found-filename (and
-                          file-truename-do-caching
-                          (cl-rest (assoc original-filename file-truename-cache)))))
+         (found-filename (and file-truename-do-caching
+                              (cl-rest (assoc original-filename
+                                              file-truename-cache)))))
 
     ;; (when file-truename-do-caching
     ;;   (message "filename %s by cache: %s"
@@ -77,14 +77,18 @@ containing it, until no links are left at any level.
                (setq filename (expand-file-name filename))
                (if (string= filename "")
                    (setq filename "/")))
-              ((and (string= (substring filename 0 1) "~")
-                    (string-match "~[^/]*/?" filename))
-               (let ((first-part
-                      (substring filename 0 (match-end 0)))
+              ((and (string= (substring filename 0 1)
+                             "~")
+                    (string-match "~[^/]*/?"
+                                  filename))
+               (let ((first-part (substring filename
+                                            0
+                                            (match-end 0)))
                      (cl-rest (substring filename (match-end 0))))
                  (setq filename (concat (expand-file-name first-part) rest)))))
 
-        (or counter (setq counter (list overrride--file-truename-link-cycle-counter)))
+        (or counter
+            (setq counter (list overrride--file-truename-link-cycle-counter)))
         (let (done
               ;; For speed, remove the ange-ftp completion handler from the list.
               ;; We know it's not needed here.
