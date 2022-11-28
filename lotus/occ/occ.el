@@ -217,6 +217,10 @@
 
 
 (defun occ-find-library-dir (library)
+  (unless occ-dev-dir
+    (occ-set-dev-dir (read-directory-name "occ src dir: " nil nil t)))
+  (unless occ-dev-dir
+    (occ-error "occ-dev-dir is NIL"))
   (progn
      (delete* (expand-file-name occ-dev-dir library) load-path)
      (push (concat occ-dev-dir library) load-path)
@@ -262,11 +266,18 @@ FULL is given."
 
 ;;;###autoload
 (defun occ-set-dev-dir (dirpath)
+  (interactive
+   (list (read-directory-name "occ src dir: " nil nil t)))
   (setq occ-dev-dir dirpath))
 
 ;;;###autoload
 (defun occ-add-deps-libs (pkg)
-  (let ((deps (cons (symbol-name pkg) (mapcar #'(lambda (x) (symbol-name (cl-first x))) (package-desc-reqs (nth 1 (assoc 'occ package-alist)))))))
+  (let ((deps (cons (symbol-name pkg)
+                    (mapcar #'(lambda (x)
+                                (symbol-name (cl-first x)))
+                            (package-desc-reqs (nth 1
+                                                    (assoc 'occ
+                                                           package-alist)))))))
     (if occ-dev-dir
         (dolist (lib deps)
           (delete* (concat occ-dev-dir lib) load-path)

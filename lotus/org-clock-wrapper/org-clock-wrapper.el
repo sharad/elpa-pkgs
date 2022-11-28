@@ -195,9 +195,9 @@ using three `C-u' prefix arguments."
 ;;;###autoload
 (defun org-clock-wrapper-insinuate ()
   (interactive)
-  (add-function
-   :override (symbol-function 'org-clock-select-task)
-   #'replace-org-clock-select-task))
+  (add-function :override (symbol-function 'org-clock-select-task)
+                #'replace-org-clock-select-task)
+  (debug))
 
 ;;;###autoload
 (defun org-clock-wrapper-uninsinuate ()
