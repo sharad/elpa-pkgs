@@ -230,7 +230,7 @@
                occ-dev-dir
              (push occ-dev-dir load-path))
          (file-name-directory (or (locate-library library)
-                                  "~/.xemacs/elpa/pkgs/occ/occ.el"
+                                  "~/.fa/src/elisp/elpa/elpa-pkgs/lotus/occ/occ.el"
                                   ""))))))
 
 (defun occ-get-version (here full message)
