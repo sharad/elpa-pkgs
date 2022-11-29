@@ -187,9 +187,9 @@ containing it, until no links are left at any level.
                 (setcdr (assoc original-filename file-truename-cache) filename)
               (push (cons original-filename filename) file-truename-cache)))
           filename)))))
-
-(defun override--file-truename (&rest r)
-  (apply #'caching--file-truename r))
+;;;###autoload
+(defalias 'override--file-truename #'caching--file-truename)
+
 
 ;;;###autoload
 (defun alternate--erc-identd-start (&optional port)
@@ -273,8 +273,7 @@ system."
                       (apply sym args)
                     (funcall sym)))))))))))
 ;;;###autoload
-(defun override--pm--run-other-hooks (&rest r)
-  (apply fixed--pm--run-other-hooks r))
+(defalias 'override--pm--run-other-hooks #'fixed--pm--run-other-hooks)
 
 
 ;;;###autoload
