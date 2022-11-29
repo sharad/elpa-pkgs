@@ -200,16 +200,15 @@ using three `C-u' prefix arguments."
 (defun org-clock-wrapper-insinuate ()
   (interactive)
   (with-eval-after-load "org-clock"
-    (progn
-      (add-function :override (symbol-function 'org-clock-select-task)
-                    #'override--org-clock-select-task)
-      (message "calling org-clock-wrapper-insinuate"))))
+    (add-function :override (symbol-function 'org-clock-select-task)
+                  #'override--org-clock-select-task)
+    (message "calling org-clock-wrapper-insinuate")))
 
 ;;;###autoload
 (defun org-clock-wrapper-uninsinuate ()
   (interactive)
   (remove-function (symbol-function 'org-clock-select-task)
-                   #'replace-org-clock-select-task)
+                   #'override--org-clock-select-task)
   (message "calling org-clock-wrapper-uninsinuate"))
 
 

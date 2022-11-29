@@ -305,7 +305,7 @@ system."
 (defun lotus-wrapper-uninsinuate ()
   (interactive)
   (remove-function (symbol-function 'file-truename)
-                   #'caching--file-truename)
+                   #'override--file-truename)
   (remove-function (symbol-function 'erc-identd-start)
                    #'override--erc-identd-start)
   (remove-function (symbol-function 'pm--run-other-hooks)
