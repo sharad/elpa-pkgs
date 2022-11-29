@@ -218,16 +218,17 @@
 
 (defun occ-find-library-dir (library)
   (unless occ-dev-dir
-    (occ-set-dev-dir (read-directory-name "occ src dir: " nil nil t)))
+    (occ-set-dev-dir))
   (unless occ-dev-dir
     (occ-error "occ-dev-dir is NIL"))
   (progn
      (delete* (expand-file-name occ-dev-dir library) load-path)
-     (push (concat occ-dev-dir library) load-path)
      (let ((libpath (expand-file-name (concat library ".el")
                                       occ-dev-dir)))
        (if (file-exists-p libpath)
-           occ-dev-dir
+           (prog1
+               occ-dev-dir
+             (push occ-dev-dir load-path))
          (file-name-directory (or (locate-library library)
                                   "~/.xemacs/elpa/pkgs/occ/occ.el"
                                   ""))))))
@@ -265,10 +266,12 @@ FULL is given."
       version1)))
 
 ;;;###autoload
-(defun occ-set-dev-dir (dirpath)
+(defun occ-set-dev-dir (&optional dirpath)
   (interactive
    (list (read-directory-name "occ src dir: " nil nil t)))
-  (setq occ-dev-dir dirpath))
+  (let ((dirpath (or dirpath
+                     (read-directory-name "occ src dir: " nil nil t))))
+   (setq occ-dev-dir dirpath)))
 
 ;;;###autoload
 (defun occ-add-deps-libs (pkg)
@@ -333,6 +336,10 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
          (load-suffixes  (if uncompiled (reverse load-suffixes) load-suffixes))
          (load-uncore    nil)
          (load-misses    nil))
+    (unless occ-dev-dir
+      (occ-set-dev-dir))
+    (unless occ-dev-dir
+      (occ-error "occ-dev-dir is NIL"))
     (occ-add-deps-libs pkg)
     (occ-debug "working on %s" lfeat)
     (let ((load-missed-1 (mapcar #'occ-load-pkg

@@ -194,12 +194,15 @@ using three `C-u' prefix arguments."
     (lwarn 'org-clock-select-task :debug "%s: finisha replace-org-clock-select-task" (time-stamp-string))))
 
 ;;;###autoload
+(defalias 'override--org-clock-select-task #'replace-org-clock-select-task)
+
+;;;###autoload
 (defun org-clock-wrapper-insinuate ()
   (interactive)
   (with-eval-after-load "org-clock"
     (progn
       (add-function :override (symbol-function 'org-clock-select-task)
-                    #'replace-org-clock-select-task)
+                    #'override--org-clock-select-task)
       (message "calling org-clock-wrapper-insinuate"))))
 
 ;;;###autoload

@@ -213,8 +213,7 @@ system."
                               :filter 'erc-identd-filter))
   (set-process-query-on-exit-flag erc-identd-process nil))
 ;;;###autoload
-(defun override--erc-identd-start (&rest r)
-  (apply #'alternate--erc-identd-start r))
+(defalias 'override--erc-identd-start #'alternate--erc-identd-start)
 
 ;; from compile.el
 ;;;###autoload
@@ -279,25 +278,28 @@ system."
 ;;;###autoload
 (defun lotus-wrapper-insinuate ()
   (interactive)
-  (add-function :override
-                (symbol-function 'file-truename)
-                #'override--file-truename)
-  (add-function :override
-                (symbol-function 'erc-identd-start)
-                #'override--erc-identd-start)
-  (add-function :override
-                (symbol-function 'pm--run-other-hooks)
-                #'override--pm--run-other-hooks)
-  (add-function :around
-                (symbol-function 'compilation-find-file)
-                #'around--compilation-find-file)
-  (add-function :around
-                (symbol-function 'compilation-get-file-structure)
-                #'around--compilation-get-file-structure)
+  (with-eval-after-load "files"
+    (add-function :override
+                  (symbol-function 'file-truename)
+                  #'override--file-truename))
+  (with-eval-after-load "erc"
+    (add-function :override
+                  (symbol-function 'erc-identd-start)
+                  #'override--erc-identd-start))
+  (with-eval-after-load "polymode-core"
+    (add-function :override
+                  (symbol-function 'pm--run-other-hooks)
+                  #'override--pm--run-other-hooks))
+  (with-eval-after-load "compile"
+    (add-function :around
+                  (symbol-function 'compilation-find-file)
+                  #'around--compilation-find-file)
+    (add-function :around
+                  (symbol-function 'compilation-get-file-structure)
+                  #'around--compilation-get-file-structure))
   (with-eval-after-load "projectile"
-    (progn
-      (lotus-around--projectile-file-truename-callers-define-around-advice)
-      (lotus-around--projectile-file-truename-callers-add-around-advice))))
+    (lotus-around--projectile-file-truename-callers-define-around-advice)
+    (lotus-around--projectile-file-truename-callers-add-around-advice)))
 
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
