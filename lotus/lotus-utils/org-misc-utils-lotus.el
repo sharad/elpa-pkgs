@@ -285,10 +285,11 @@
 If no region is active, refile the current paragraph.
 With prefix arg C-u, copy region instad of killing it."
   ;; mark paragraph if no region is set
-  `(let* ((org-refile-targets (or ,refile-targets org-refile-targets))
+  `(let* ((org-refile-targets (or ,refile-targets
+                                  org-refile-targets))
           (target (save-excursion (safe-org-refile-get-location ,prompt)))
           (,file (nth 1 target))
-          (,pos (nth 3 target)))
+          (,pos  (nth 3 target)))
      (with-current-buffer (find-file-noselect ,file)
        (save-excursion
          (goto-char ,pos)

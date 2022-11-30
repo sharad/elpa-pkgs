@@ -75,9 +75,15 @@
 ;; org-refile-targets is set in org-misc-utils-lotus package
 ;;;###autoload
 (defun org-clock-in-refile (refile-targets)
+  ;; using plain competing-read not helm
+  ;; for helm use below
+  ;; https://sachachua.com/blog/2015/03/getting-helm-org-refile-clock-create-tasks/
+  ;; done in safe-org-refile-get-location in org-misc-utils-lotus
   (org-with-refile file loc (or refile-targets org-refile-targets) "Refile clock-in"
     (let ((buffer-read-only nil))
       (org-clock-in))))
+;; testing
+;; (org-clock-in-refile nil)
 (defvar org-clock-in-if-not-delay 100 "org-clock-in-if-not-delay")
 (defvar org-donot-try-to-clock-in nil
   "Not try to clock-in, require for properly creating frame especially for frame-launcher function.")

@@ -27,6 +27,7 @@
 (provide 'occ-mode)
 
 
+(require 'occ)
 (require 'occ-config)
 
 
