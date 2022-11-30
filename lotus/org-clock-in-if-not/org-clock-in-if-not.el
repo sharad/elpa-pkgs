@@ -28,12 +28,12 @@
 
 
 (require 'basic-utils)
-(require 'lotus-misc-utils)
 (eval-when-compile
   (require 'lotus-misc-utils))
-(require 'org-misc-utils-lotus)
+(require 'lotus-misc-utils)
 (eval-when-compile
   (require 'org-misc-utils-lotus))
+(require 'org-misc-utils-lotus)
 
 
 (defvar org-ci-if-not-debug nil "Debug org-ci-if-not")

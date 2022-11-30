@@ -39,7 +39,6 @@
 (eval-when-compile
   '(require 'org-misc-utils-lotus))
 (require 'org-misc-utils-lotus)
-
 
 (defvar lotus-straight-org-clock-persist nil "Control org-clock-persist at time of lotus-straight clock-in")
 (defvar lotus-straight-org-clock-auto-clock-resolution nil "Control occ-org-clock-auto-clock-resolution at time of lotus-straight clock-in")
@@ -211,9 +210,6 @@
 ;; (org-clock-get-nth-clock-times org-clock-marker 1)
 
 
-
-(eval-when-compile
-  (require 'org-misc-utils-lotus))
 
 (progn
 

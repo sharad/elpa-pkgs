@@ -24,15 +24,15 @@
 
 ;;; Code:
 
-(provide 'misc-lib)
+(provide 'lotus-misc-lib)
 
 
 ;;;###autoload
-(defun misc-set-old-search-key ()
+(defun lotus-misc-set-old-search-key ()
   (interactive)
   (define-key global-map [remap swiper] 'isearch-forward))
 ;;;###autoload
-(defun misc-unset-old-search-key ()
+(defun lotus-misc-unset-old-search-key ()
   (interactive)
   (define-key global-map [remap swiper] nil))
 

@@ -248,17 +248,16 @@
 (defmacro helm-timed (timeout win-buff &rest body)
   (let ((temp-win-config (make-symbol "test-helm-timed")))
     `(let* ((,temp-win-config (lotus-current-window-configuration))
-            (current-command (or
-                              (helm-this-command)
-                              this-command))
+            (current-command (or (helm-this-command)
+                                 this-command))
             (str-command     (helm-symbol-name current-command))
-            (buf-name        (or ,win-buff (format "*helm-mode-%s*" str-command)))
+            (buf-name        (or ,win-buff
+                                 (format "*helm-mode-%s*" str-command)))
             (timer (run-with-idle-plus-timer ,timeout nil
                                              #'(lambda (buffname)
-                                                 (let* ((buff (or
-                                                               (get-buffer buffname)
-                                                               (get-buffer "*helm*")))
-                                                        (w (if buff (get-buffer-window buff))))
+                                                 (let* ((buff (or (get-buffer buffname)
+                                                                  (get-buffer "*helm*")))
+                                                        (w    (if buff (get-buffer-window buff))))
                                                    (message "helm-timed: triggered timer for new-win %s" w)
                                                    ;; TODO: open emacs why SIGABRT triggered on pressin C-g three time when struck.
                                                    ;;       with below line.
@@ -679,14 +678,11 @@ With prefix arg C-u, copy region instad of killing it."
 ;; (org-refile-target-files '((occ-included-files :maxlevel . 4)))
 
 (defun org-refile-target-check (org-refile-targets &optional default-buffer)
-  (let* ((files
-          (org-refile-target-files org-refile-targets default-buffer))
-         (files
-          (remove-if
-           #'(lambda (f)
-               (with-current-buffer (find-file-noselect f)
-                 (eq 'org-mode major-mode)))
-           files)))
+  (let* ((files (org-refile-target-files org-refile-targets default-buffer))
+         (files (remove-if #'(lambda (f)
+                               (with-current-buffer (find-file-noselect f)
+                                 (eq 'org-mode major-mode)))
+                           files)))
     (when files
       (error "org-refile-target: files %s not in org-mode for org-refile-targets %s"
              files
@@ -696,38 +692,41 @@ With prefix arg C-u, copy region instad of killing it."
 
 ;; Refile macros Starts
 (defun safe-org-refile-get-location-p ()
-  (member major-mode safe-org-refile-get-location-modes))
+  (member major-mode
+          safe-org-refile-get-location-modes))
 
 (defun safe-org-refile-get-location (&optional prompt)
-  (let* ((current-command (or
-                           (helm-this-command)
-                           this-command))
+  (let* ((current-command (or (helm-this-command)
+                              this-command))
          (str-command     (helm-symbol-name current-command))
-         (prompt          (or prompt str-command))
+         (prompt          (or prompt
+                              str-command))
          (buf-name        (format "*helm-mode-%s*" str-command)))
     (let ((org-refile-targets
            (if (safe-org-refile-get-location-p)
                org-refile-targets
-             (remove-if '(lambda (e) (null (cl-first e))) org-refile-targets))))
+             (remove-if #'(lambda (e) (null (cl-first e)))
+                        org-refile-targets))))
       (org-refile-target-check org-refile-targets)
       (org-refile-get-location prompt))))
 
 (defun safe-org-refile-get-marker (&optional prompt)
-  (let* ((current-command (or
-                           (helm-this-command)
-                           this-command))
+  (let* ((current-command (or (helm-this-command)
+                              this-command))
          (str-command     (helm-symbol-name current-command))
-         (prompt          (or prompt str-command))
+         (prompt          (or prompt
+                              str-command))
          (buf-name        (format "*helm-mode-%s*" str-command)))
     (let ((org-refile-targets
            (if (safe-org-refile-get-location-p)
                org-refile-targets
-             (remove-if '(lambda (e) (null (cl-first e))) org-refile-targets))))
+             (remove-if #'(lambda (e) (null (cl-first e)))
+                        org-refile-targets))))
       (org-refile-target-check org-refile-targets)
       (let* ((marker (make-marker))
              (target (org-refile-get-location prompt))
-             (file (nth 1 target))
-             (pos  (nth 3 target)))
+             (file   (nth 1 target))
+             (pos    (nth 3 target)))
         (when (file-exists-p file)
           (set-marker marker pos (find-file-noselect file))
           marker)))))
