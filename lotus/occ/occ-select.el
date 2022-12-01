@@ -83,7 +83,8 @@ TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
                                           :timeout             timeout
                                           ;; :obtrusive           obtrusive
                                           :prompt              prompt)))
-          (occ-debug "occ-list-select: selected = %s" selected)
+          (occ-message "occ-list-select: selected = %s" selected)
+          (occ-debug   "occ-list-select: selected = %s" selected)
           (if return-transform
               ;; TODO: add cl-defmethod magic here
               (or selected ;as return value is going to be used.
