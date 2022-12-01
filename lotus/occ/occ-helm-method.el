@@ -216,8 +216,13 @@
          (filtered-new-count 0)
          (called-never          t))
 
+    (occ-message "occ-obj-helm-build-collection-source: len candidates-filtered %d" filtered-count)
+    (when (<= filtered-count 3)
+      (occ-message "occ-obj-helm-build-collection-source: candidates-filtered = %s" candidates-filtered))
     (if (and auto-select-if-only
-             (<= filtered-count 1))
+             ;; (/= 0 filtered-count)
+             ;; (<= filtered-count 1)
+             (= filtered-count 1))
         (occ-build-hsrc-candidate (cl-first candidates-filtered))
       (progn
         (occ-debug "occ-obj-helm-build-collection-source: (length candidates-unfiltered) = %d, called-never = %s"
