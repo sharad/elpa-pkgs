@@ -374,6 +374,11 @@ if here is more than one filtered candidates then it make a helm-source and retu
                                                       timeout
                                                       prompt)
   ;; (occ-debug "occ-obj-helm-build-collections-sources: ap-normal: %s" ap-normal)
+
+  ;; BUG: return list of occ-hsrc-candidates/occ-hsrc-sources/NIL also
+  ;; TODO need to handle NIL
+
+
   (mapcar (lambda (collection)
             (occ-obj-helm-build-collection-source obj
                                                   collection ;; (nth 0 (occ-collections-default))
