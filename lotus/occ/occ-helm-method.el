@@ -50,7 +50,7 @@
     (delq nil map))
   "Keymap for `helm-find-files'.")
 
-(defvar occ-helm-doc-header " (\\<helm-find-files-map>\\[helm-find-files-up-one-level]: Go up one level)"
+(defvar occ-helm-doc-header " (\\<occ-helm-map>\\[helm-find-files-up-one-level]: Go up one level)"
   "*The doc that is inserted in the Name header of a find-files or dired source.")
 
 (defun occ-helm-run-child-clock-in ()
@@ -377,7 +377,6 @@ if here is more than one filtered candidates then it make a helm-source and retu
 
   ;; BUG: return list of occ-hsrc-candidates/occ-hsrc-sources/NIL also
   ;; TODO need to handle NIL
-
 
   (mapcar (lambda (collection)
             (occ-obj-helm-build-collection-source obj
