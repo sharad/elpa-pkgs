@@ -223,6 +223,7 @@ if here is more than one filtered candidates then it make a helm-source and retu
 
     (occ-message "occ-obj-helm-build-collection-source: len candidates-unfiltered %d" unfiltered-count)
     (occ-message "occ-obj-helm-build-collection-source: len candidates-filtered %d" filtered-count)
+
     (when (<= filtered-count 3)
       (occ-message "occ-obj-helm-build-collection-source: candidates-filtered = %s" candidates-filtered))
     ;; BUG: TODO: filtered-count == 0 not handled properly
@@ -231,7 +232,16 @@ if here is more than one filtered candidates then it make a helm-source and retu
              ;; (<= filtered-count 1)
              (= filtered-count 1))
         (occ-build-hsrc-candidate (cl-first candidates-filtered))
-      (progn
+
+      ;; TODO: TODO: TODO: TODO:
+      ;; TODO: Here we have to decide for two cases one when filtered-count == 0, or candidates-filtered == NIL
+      ;; we can not return a helm-source for it.
+      ;; may be we need to passed key/value pair let used of
+      ;; (cons (occ-collection-name collection) RETVAL )    ----- ;; (occ-collection-name (cl-first (occ-collections-default)))
+      ;; let used decide which (occ-collection-name collection) it will consider as primary
+      ;; if that is NIL what he wanted to do i that case.
+
+      (progn                            ;; TODO: make a separate function for it.
         (occ-debug "occ-obj-helm-build-collection-source: (length candidates-unfiltered) = %d, called-never = %s"
                      (length candidates-unfiltered)
                      called-never)
