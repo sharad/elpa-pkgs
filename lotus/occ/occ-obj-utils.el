@@ -93,7 +93,25 @@
 
 
 (defun occ-specs ()
-  (occ-cl-method-param-case '(occ-obj-make-collection (`((head ,val)) val))))
+  ;; (occ-cl-method-param-case '(occ-obj-make-collection (`((head ,val)) val)))
+  (occ-cl-method-param-case '(occ-obj-make-collection (`(string symbol (eql ,val) list integer integer) val))))
+
+
+(when nil                               ;testing
+  (occ-cl-method-param-signs 'occ-obj-make-collection)
+  (car (occ-cl-method-param-signs 'occ-obj-make-collection) ) (string symbol (eql :list) list integer integer)
+  (occ-cl-method-param-case '(occ-obj-make-collection (`((string symbol (eql ,val))) val)))
+
+  (pcase '((head :list))
+    (`((head ,val)) val)
+    (_ nil))
+
+  (pcase '((string symbol (eql :list) list integer integer))
+    (`((string symbol (eql ,val) list integer integer)) val)
+    (_ nil))
+
+  (occ-cl-method-param-case '(occ-obj-make-collection (`(string symbol (eql ,val) list integer integer) val)))
+  )
 
 (defun occ-valid-spec-p (spec)
   (memq spec (list :tree :list)))

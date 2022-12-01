@@ -53,11 +53,13 @@
     (intern symstr)))
 (defun occ-collector-get (key)
   (alist-get key *occ-collector*))
-(defun occ-collector-get-create (key desc spec files &optional depth limit)
+(defun occ-collector-get-create (key desc spec files &optional depth limit rank level)
   (let ((depth (or depth 0))
-        (limit (or limit 0)))
+        (limit (or limit 0))
+        (rank  (or rank 0))
+        (level (or level :optional)))
    (unless (alist-get key *occ-collector*)
-     (setf (alist-get key *occ-collector*) (occ-obj-build-collection desc key spec files depth limit))))
+     (setf (alist-get key *occ-collector*) (occ-obj-build-collection desc key spec files depth limit rank level))))
   (alist-get key *occ-collector*))
 (defun occ-collector-remove (key)
   (setq *occ-collector* (assoc-delete-all key *occ-collector*)))
@@ -123,11 +125,15 @@
 
 
 ;;;###autoload
-(defun occ-set-collection-spec (key desc spec files)
-  (occ-collector-get-create key
-                            desc
-                            spec
-                            files))
+(defun occ-set-collection-spec (key desc spec files rank level)
+  (let ((rank  (or rank 0))
+        (level (or level :optional)))
+    (occ-collector-get-create key
+                              desc
+                              spec
+                              files
+                              rank
+                              level)))
 
 (defun occ-reset-collection-spec ()
   (occ-debug "resetting deafult-tsk-collection")

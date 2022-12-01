@@ -123,8 +123,8 @@
   (depth 0)
   (limit 0)
   ;; BUG: TODO: implement it for occ-obj-helm-build-collection-source issue
-  (level :optional)
   (rank  0)
+  (level :optional)
   ;; TODO: implement it
   (file-lcp nil))
 (cl-defstruct (occ-collection (:include occ-obj-collection))

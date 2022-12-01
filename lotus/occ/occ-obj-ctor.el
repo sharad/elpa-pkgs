@@ -457,26 +457,34 @@
                                         (spec (eql :tree))
                                         (files list)
                                         (depth integer)
-                                        (limit integer))
+                                        (limit integer)
+                                        (rank  integer)
+                                        (level symbol))
   (occ-obj-make-collection desc
                            key
                            spec
                            files
                            depth
-                           limit))
+                           limit
+                           rank
+                           level))
 
 (cl-defmethod occ-obj-build-collection ((desc string)
                                         (key symbol)
                                         (spec (eql :list))
                                         (files list)
                                         (depth integer)
-                                        (limit integer))
+                                        (limit integer)
+                                        (rank  integer)
+                                        (level symbol))
   (occ-obj-make-collection desc
                            key
                            spec
                            files
                            depth
-                           limit))
+                           limit
+                           rank
+                           level))
 
 
 (defun occ-obj-make-return (label
