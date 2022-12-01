@@ -41,10 +41,10 @@
 ;; check C-h C-f ipython-notebook/init-ein
 
 (define-prefix-command 'occ-mode-keymap)
-
+;;;###autoload
 (defun occ-enable-mode-map ()
   (define-key occ-mode-main-keymap (kbd occ-prefix-key) 'occ-mode-keymap))
-
+;;;###autoload
 (defun occ-disable-mode-map ()
   (define-key occ-mode-main-keymap (kbd occ-prefix-key) nil))
 
