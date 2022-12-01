@@ -420,12 +420,15 @@
   (let* ((helm-action (occ-obj-get-first-helm-actions-for-obj obj
                                                               ap-normal
                                                               ap-transf)))
+    (occ-debug "occ-obj-helm-act-on-candidate: helm-action %s listp %s" helm-action (consp helm-action))
     (occ-debug "occ-obj-helm-act-on-single: (cons p helm-action) %s, (functionp helm-action) %s"
                  (consp helm-action)
                  (functionp helm-action))
+    (occ-debug "occ-obj-helm-act-on-candidate: helm-action1 %s" helm-action)
     (occ-debug "occ-obj-helm-act-on-single: (cons p (nth 1 helm-action)) %s, (functionp (nth 1 helm-action)) %s"
                  (consp (cl-rest helm-action))
                  (functionp (cl-rest helm-action)))
+    (occ-debug "occ-obj-helm-act-on-candidate: helm-action2 %s" helm-action)
     (if (occ-obj-obj source)
         (funcall helm-action (occ-obj-obj source))
       (occ-warn "occ-obj-helm-act-on-candidate: wrong source"))))

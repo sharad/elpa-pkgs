@@ -471,7 +471,9 @@
                                                          :ap-transf        ap-transf
                                                          :return-transform return-transform
                                                          :timeout          timeout))
-                   (occ-debug "context is not for current buffer.")))
+                   (progn
+                     (occ-debug "context is not for current buffer.")
+                     nil)))
               (occ-debug "finished occ-do-safe-properties-window-editor"))))))))
 
 (cl-defmethod occ-do-safe-properties-window-editor ((obj marker)

@@ -86,7 +86,8 @@
       (when (member level '(:emergency :error :warning :debug))
         (apply #'lwarn 'occ level args))
       (unless (eq level :nodisplay)
-        (apply #'message args)))))
+        (apply #'message args))))
+  nil)
 
 (defun occ-critical (fmt &rest args)
   (apply #'occ-lwarn :critical fmt args)

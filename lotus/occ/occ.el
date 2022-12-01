@@ -37,6 +37,7 @@
 (require 'occ-resolve-clock)
 (require 'occ-test)
 (require 'occ-config)
+(require 'occ-mode)
 
 
 (defvar *occ-collector* nil)
