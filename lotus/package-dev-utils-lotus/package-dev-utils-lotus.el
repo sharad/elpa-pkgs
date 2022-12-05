@@ -30,8 +30,8 @@
 (require 'package-build "~/.emacs.d/core/libs/package-build.el")
 
 
-(defvar package-source-path "~/../paradise/Projects/Emacs/elpa-pkgs/lotus" "Source code path for packages.")
-(defvar package-archive-upload-base "~/.xemacs/elpa/upload")
+(defvar package-source-path "~/.fa/src/elisp/elpa/elpa-pkgs/lotus" "Source code path for packages.")
+(defvar package-archive-upload-base "~/.fa/src/elisp/elpa/upload")
 (defvar package-local-dev-archive "local" "Local archive specified in package-archives")
 (defvar *package-install-packages-wait-secs-in-install* 7)
 
