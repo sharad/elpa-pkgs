@@ -29,7 +29,7 @@
 
 (defvar unintrusive-elscreen-display-tab-idle-sec 8 "unintrusive-elscreen-display-tab-idle-sec")
 (defvar unintrusive-elscreen-display-tab-on-for-cmd-secs 2 "unintrusive-elscreen-display-tab-on-for-cmd-secs")
-(defvar unintrusive-elscreen-display-tab-on-for-all-secs 1 "unintrusive-elscreen-display-tab-on-for-all-secs")
+(defvar unintrusive-elscreen-display-tab-on-for-all-secs 2 "unintrusive-elscreen-display-tab-on-for-all-secs")
 (defvar unintrusive-elscreen-display-tab-on-for-show-tab-secs 10 "unintrusive-elscreen-display-tab-on-for-show-tab-secs")
 (defvar unintrusive-elscreen-display-tab-on-for-functions '(elscreen-next
                                                             elscreen-previous
