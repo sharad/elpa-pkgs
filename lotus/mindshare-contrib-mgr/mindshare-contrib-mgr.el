@@ -24,7 +24,8 @@
 
 ;;; Code:
 
-
+(provide 'mindshare-contrib-mgr)
+
 ;; mindshare-contrib-mgr for all
 
 
@@ -32,6 +33,14 @@
 ;; orgmode[restructuring,refactoring]), and see in real time what are
 ;; difficulties and pattern of problems and solutions, and use the experience in
 ;; this project.
+
+(cl-defstruct ms-descriptor             ;wfm (water fall model)
+  name
+  rfi
+  rfc
+  design
+  implementation
+  bug)
 
 (defun find-file-project ()
   )
@@ -41,6 +50,5 @@
 
 (defun submit-patch ()
   )
-
-(provide 'mindshare-contrib-mgr)
+
 ;;; mindshare-contrib-mgr.el ends here
