@@ -135,32 +135,26 @@ or nil if the version cannot be parsed."
     (package-make-package-desc pkg-name package-local-dev-archive)))
 
 (defun package-requirements-package-from-dir (dir)
-  (let* ((dir-of-current-file (directory-file-name dir))
-         (pkg-name-version
-          (file-name-nondirectory dir-of-current-file))
-         (pkg-name
-          (replace-regexp-in-string
-           "-[0-9\.]\*\$" "" pkg-name-version))
-         (version
-          (package-version-join
-           (package-dev-build--valid-version
-            (format-time-string "%Y%m%d.%H%M"))))
-         (currdir-pkg-def-file
-          (expand-file-name
-           (format "%s-pkg.el" pkg-name)
-           dir-of-current-file))
-         (pkg-def-exists (file-exists-p currdir-pkg-def-file))
-         (pkg-def
-          (let ((pkg-def-file currdir-pkg-def-file))
-            (if (file-exists-p pkg-def-file)
-                (car (read-from-string (with-temp-buffer
-                                         (insert-file-contents-literally pkg-def-file)
-                                         (let ((contents (condition-case e
-                                                             ;; (read (current-buffer))
-                                                             (buffer-string)
-                                                           ('end-of-file nil))))
-                                           contents))))
-                `(define-package ,pkg-name ,version ,(format "%s" pkg-name) nil)))))
+  (let* ((dir-of-current-file  (directory-file-name dir))
+         (pkg-name-version     (file-name-nondirectory dir-of-current-file))
+         (pkg-name             (replace-regexp-in-string "-[0-9\.]\*\$"
+                                                        ""
+                                                        pkg-name-version))
+         (version              (package-version-join (package-dev-build--valid-version
+                                                     (format-time-string "%Y%m%d.%H%M"))))
+         (currdir-pkg-def-file (expand-file-name (format "%s-pkg.el" pkg-name)
+                                                 dir-of-current-file))
+         (pkg-def-exists       (file-exists-p currdir-pkg-def-file))
+         (pkg-def              (let ((pkg-def-file currdir-pkg-def-file))
+                                 (if (file-exists-p pkg-def-file)
+                                     (car (read-from-string (with-temp-buffer
+                                                              (insert-file-contents-literally pkg-def-file)
+                                                              (let ((contents (condition-case e
+                                                                                  ;; (read (current-buffer))
+                                                                                  (buffer-string)
+                                                                                ('end-of-file nil))))
+                                                                contents))))
+                                   `(define-package ,pkg-name ,version ,(format "%s" pkg-name) nil)))))
     (nth 1 (nth 4 pkg-def))))
 
 
@@ -178,44 +172,43 @@ or nil if the version cannot be parsed."
 
 
 ;;;###autoload
-(defun package-build-package-from-dir (dir &optional update-source-pkg-desc)
-  (interactive
-   (let ((dir (read-directory-name "package directory: ")))
-     (list dir)))
+(defun package-build-package-from-dir (dir &optional force update-source-pkg-desc)
+  (interactive (let ((dir (read-directory-name "package directory: ")))
+                 (message "package-build-package-from-dir: current-prefix-arg %s" current-prefix-arg)
+                 (list dir current-prefix-arg)))
   ;; version is today date
-  (let* ((dir-of-current-file (directory-file-name dir))
-         (pkg-name-version (file-name-nondirectory dir-of-current-file))
-         (pkg-name (replace-regexp-in-string "-[0-9\.]\*\$" "" pkg-name-version))
-         (version(package-version-join
-                  (package-dev-build--valid-version
-                   (format-time-string "%Y%m%d.%H%M"))))
-         (currdir-pkg-def-file (expand-file-name
-                                (format "%s-pkg.el" pkg-name)
-                                dir-of-current-file))
-         (pkg-def-exists (file-exists-p currdir-pkg-def-file))
-         (pkg-def (let ((pkg-def-file currdir-pkg-def-file))
-                    (if (file-exists-p pkg-def-file)
-                        (car (read-from-string
-                              (with-temp-buffer
-                                (insert-file-contents-literally pkg-def-file)
-                                (let ((contents
-                                       (condition-case e
-                                           ;; (read (current-buffer))
-                                           (buffer-string)
-                                         ('end-of-file nil))))
-                                  contents))))
-                      `(define-package ,pkg-name ,version ,(format "%s" pkg-name) nil))))
-         (tmp-dir (expand-file-name "elpa" (or (getenv "TMP") "~/tmp/")))
-         (pkg-dir (expand-file-name (format "%s-%s" pkg-name version)
-                                    tmp-dir)))
+  (let* ((dir-of-current-file  (directory-file-name dir))
+         (pkg-name-version     (file-name-nondirectory dir-of-current-file))
+         (pkg-name             (replace-regexp-in-string "-[0-9\.]\*\$" "" pkg-name-version))
+         (version              (package-version-join (package-dev-build--valid-version
+                                                      (format-time-string "%Y%m%d.%H%M"))))
+         (currdir-pkg-def-file (expand-file-name (format "%s-pkg.el" pkg-name)
+                                                 dir-of-current-file))
+         (pkg-def-exists       (file-exists-p currdir-pkg-def-file))
+         (pkg-def              (let ((pkg-def-file currdir-pkg-def-file))
+                                 (if (file-exists-p pkg-def-file)
+                                     (car (read-from-string
+                                           (with-temp-buffer
+                                             (insert-file-contents-literally pkg-def-file)
+                                             (let ((contents
+                                                    (condition-case e
+                                                        ;; (read (current-buffer))
+                                                        (buffer-string)
+                                                      ('end-of-file nil))))
+                                               contents))))
+                                   `(define-package ,pkg-name ,version ,(format "%s" pkg-name) nil))))
+         (tmp-dir              (expand-file-name "elpa" (or (getenv "TMP") "~/tmp/")))
+         (pkg-dir              (expand-file-name (format "%s-%s" pkg-name version)
+                                                 tmp-dir)))
 
     ;; (package-load-package-from-dir dir)
     (message "building package %s" pkg-name)
     (when (or (file-exists-p currdir-pkg-def-file)
-              (y-or-n-p
-               (format "Do you want to make package of %s from %s: "
-                       pkg-name
-                       dir-of-current-file)))
+              (or force
+                  (y-or-n-p (format "Do you want to make package of %s from %s (force %s): "
+                                    pkg-name
+                                    dir-of-current-file
+                                    force))))
       ;; add org-tangle-file here
       (let ((default-directory dir-of-current-file))
         (dolist (org-file (directory-files dir-of-current-file t "'\*\.org$"))
@@ -255,19 +248,17 @@ or nil if the version cannot be parsed."
 
       (let ((pkgdir-def-file (expand-file-name (format "%s-pkg.el" pkg-name) pkg-dir)))
         (with-current-buffer
+            ;; NOTE: don't use find-file-noselect -- it will bring autoinsert even if find-file-hook made to be NIL.
             (or (find-buffer-visiting pkgdir-def-file)
-                (find-file-noselect pkgdir-def-file)
                 (find-file-literally pkgdir-def-file))
-          ;; (expand-file-name (format "%s-pkg.el" pkg-name) pkg-dir)
           (set-buffer-file-coding-system
            (if (coding-system-p 'utf-8-emacs)
                'utf-8-emacs
              'emacs-mule))
           (erase-buffer)
-          (let ((content
-                 (let ((print-length nil)
-                       (print-level nil))
-                  (pp-to-string pkg-def))))
+          (let ((content (let ((print-length nil)
+                               (print-level nil))
+                           (pp-to-string pkg-def))))
             ;; (message "TEST: %s" content)
             (insert content)
             (write-file pkgdir-def-file)))
@@ -294,13 +285,12 @@ or nil if the version cannot be parsed."
           (package-load-package-from-dir dir)
           pkg-tar-file-name)))))
 
-
 ;;;###autoload
-(defun package-upload-package-from-dir (dir &optional archive)
+(defun package-upload-package-from-dir (dir &optional force archive)
   (interactive
    (let ((dir (read-directory-name "package directory: ")))
-     (list dir)))
-  (let* ((pkg-tar (package-build-package-from-dir dir))
+     (list dir current-prefix-arg)))
+  (let* ((pkg-tar (package-build-package-from-dir dir force))
          (pkg-name
           (replace-regexp-in-string
            "-[0-9\.]\*\.tar\\(\.gz\\)?\$" ""
@@ -332,11 +322,11 @@ or nil if the version cannot be parsed."
     (package-make-package-desc pkg-name (or archive package-local-dev-archive))))
 
 ;;;###autoload
-(defun package-install-package-from-dir (dir)
+(defun package-install-package-from-dir (dir &optional force)
   (interactive
    (let ((dir (read-directory-name "package directory: ")))
-     (list dir)))
-  (let* ((pkg-desc (package-upload-package-from-dir dir))
+     (list dir current-prefix-arg)))
+  (let* ((pkg-desc (package-upload-package-from-dir dir force))
          (pkg-sym  (package-desc-name pkg-desc))
          (pkg-name (symbol-name pkg-sym)))
     (when (package-installed-p pkg-sym)
@@ -357,31 +347,34 @@ or nil if the version cannot be parsed."
     (message "installed package %s" pkg-sym)))
 
 ;;;###autoload
-(defun package-build-packages-from-source-path (&optional base)
+(defun package-build-packages-from-source-path (&optional base force)
   (interactive
-   (list (read-directory-name "pacakages dir: ")))
+   (list (read-directory-name "pacakages dir: ")
+         current-prefix-arg))
   (let ((base (or base package-source-path)))
     (dolist (f (directory-files base))
       (let ((pkgdir (expand-file-name f base)))
         (when (and (file-directory-p pkgdir)
                    (not (equal f ".."))
                    (not (equal f ".")))
-          (package-build-package-from-dir pkgdir))))))
+          (package-build-package-from-dir pkgdir force))))))
 ;;;###autoload
-(defun package-upload-packages-from-source-path (&optional base)
+(defun package-upload-packages-from-source-path (&optional base force)
   (interactive
-   (list (read-directory-name "pacakages dir: ")))
+   (list (read-directory-name "pacakages dir: ")
+         current-prefix-arg))
   (let ((base (or base package-source-path)))
     (dolist (f (directory-files base))
       (let ((pkgdir (expand-file-name f base)))
         (when (and (file-directory-p pkgdir)
                    (not (equal f ".."))
                    (not (equal f ".")))
-          (package-upload-package-from-dir pkgdir))))))
+          (package-upload-package-from-dir pkgdir force))))))
 ;;;###autoload
-(defun package-install-packages-from-source-path (&optional base)
+(defun package-install-packages-from-source-path (&optional base force)
   (interactive
-   (list (read-directory-name "pacakages dir: ")))
+   (list (read-directory-name "pacakages dir: ")
+         current-prefix-arg))
   (let ((base (or base package-source-path)))
     (dolist (f (directory-files base))
       (let ((pkgdir (expand-file-name f base)))
@@ -390,7 +383,7 @@ or nil if the version cannot be parsed."
                    (not (equal f ".."))
                    (not (equal f ".")))
           (ignore-errors
-            (package-install-package-from-dir pkgdir))
+            (package-install-package-from-dir pkgdir force))
           (message "Installed %s" pkgdir))))
     (message "Installed all packages from %s" base)))
 

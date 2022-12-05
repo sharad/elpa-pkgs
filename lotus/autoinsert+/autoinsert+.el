@@ -254,29 +254,27 @@ thus, on a GNU or Unix system, it must end in a slash."
 Matches the visited file name against the elements of `auto-insert+-alist'."
   (interactive "P")
   ;; (message "in auto-insert+")
-  (when
-      (and
-       (not buffer-read-only)
-       (or (eq this-command 'auto-insert+)
-           (and auto-insert+
-                (or force (and (bobp) (eobp)))))
-       ;; no action test
-       (let ((alist auto-noinsert+-alist)
-             noaction-alist cond)
-         (while alist
-           (setq cond (cl-first (cl-first alist)))
-           (if (if (symbolp cond)
-                   (let ((cond-major-mode cond))
-                     (eq cond-major-mode major-mode))
-                 (let ((file-regex-cond cond))
-                   (and buffer-file-name
-                        (string-match file-regex-cond buffer-file-name))))
-               (setq
-                noaction-alist (append noaction-alist (cl-first (cl-first alist)))
-                alist nil))
-           (setq alist (cl-rest alist)))
-         ;; (message "noaction-alist %s" noaction-alist)
-         (not noaction-alist)))
+  (when (and (not buffer-read-only)
+             (or (eq this-command 'auto-insert+)
+                 (and auto-insert+
+                      (or force (and (bobp) (eobp)))))
+             ;; no action test
+             (let ((alist auto-noinsert+-alist)
+                   noaction-alist cond)
+               (while alist
+                 (setq cond (cl-first (cl-first alist)))
+                 (if (if (symbolp cond)
+                         (let ((cond-major-mode cond))
+                           (eq cond-major-mode major-mode))
+                       (let ((file-regex-cond cond))
+                         (and buffer-file-name
+                              (string-match file-regex-cond buffer-file-name))))
+                     (setq
+                      noaction-alist (append noaction-alist (cl-first (cl-first alist)))
+                      alist nil))
+                 (setq alist (cl-rest alist)))
+               ;; (message "noaction-alist %s" noaction-alist)
+               (not noaction-alist)))
 
     ;; all actions test and accumulation
     (let ((alist auto-insert+-alist)
