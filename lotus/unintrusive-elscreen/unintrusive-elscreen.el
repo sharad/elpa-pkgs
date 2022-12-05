@@ -28,8 +28,8 @@
 
 
 (defvar unintrusive-elscreen-display-tab-idle-sec 8 "unintrusive-elscreen-display-tab-idle-sec")
-(defvar unintrusive-elscreen-display-tab-on-for-cmd-secs 3 "unintrusive-elscreen-display-tab-on-for-cmd-secs")
-(defvar unintrusive-elscreen-display-tab-on-for-all-secs 3 "unintrusive-elscreen-display-tab-on-for-all-secs")
+(defvar unintrusive-elscreen-display-tab-on-for-cmd-secs 2 "unintrusive-elscreen-display-tab-on-for-cmd-secs")
+(defvar unintrusive-elscreen-display-tab-on-for-all-secs 1 "unintrusive-elscreen-display-tab-on-for-all-secs")
 (defvar unintrusive-elscreen-display-tab-on-for-show-tab-secs 10 "unintrusive-elscreen-display-tab-on-for-show-tab-secs")
 (defvar unintrusive-elscreen-display-tab-on-for-functions '(elscreen-next
                                                             elscreen-previous
@@ -42,6 +42,8 @@
   "unintrusive-elscreen-display-tab-on-for-functions")
 (defvar unintrusive-original-header-line-format nil)
 (make-variable-buffer-local 'unintrusive-original-header-line-format)
+(defvar unintrusive-elscreen-display-tab-timer nil)
+(defvar unintrusive-elscreen-original-elscreen-display-tab nil "previous value of elscreen-display-tab.")
 
 
 (defun unintrusive-elscreen-display-tab-on (&optional secs)
@@ -52,7 +54,9 @@
       (setq unintrusive-original-header-line-format header-line-format)
       (setq elscreen-display-tab t)
       (if secs
-          (run-at-time secs nil #'add-hook 'pre-command-hook #'unintrusive-elscreen-display-tab-off)
+          (run-at-time secs
+                       nil
+                       #'add-hook 'pre-command-hook #'unintrusive-elscreen-display-tab-off)
         (add-hook 'pre-command-hook #'unintrusive-elscreen-display-tab-off))
       (elscreen-notify-screen-modification 'force-immediately))))
 
@@ -68,13 +72,16 @@
 (defun unintrusive-elscreen-display-tab-on-for-sometime (&rest r)
   ;; ignore r
   (unintrusive-elscreen-display-tab-on unintrusive-elscreen-display-tab-on-for-cmd-secs))
+
 
 ;;;###autoload
 (defun elscreen-show-tab (&optional secs)
   (interactive)
   (when unintrusive-elscreen-display-tab-mode
-    (let ((secs (or secs unintrusive-elscreen-display-tab-on-for-show-tab-secs)))
+    (let ((secs (or secs
+                    unintrusive-elscreen-display-tab-on-for-show-tab-secs)))
      (unintrusive-elscreen-display-tab-on unintrusive-elscreen-display-tab-on-for-show-tab-secs))))
+
 
 ;;;###autoload
 (define-minor-mode unintrusive-elscreen-display-tab-mode
@@ -83,6 +90,7 @@
   :global t
   (if unintrusive-elscreen-display-tab-mode
       (progn
+        (setq unintrusive-elscreen-original-elscreen-display-tab elscreen-display-tab )
         (dolist (f unintrusive-elscreen-display-tab-on-for-functions)
           (when (symbol-function f)
             (add-function :before (symbol-function f)
@@ -103,7 +111,9 @@
       (when unintrusive-elscreen-display-tab-timer
         (cancel-timer unintrusive-elscreen-display-tab-timer)
         (setq unintrusive-elscreen-display-tab-timer nil))
-      (unintrusive-elscreen-display-tab-on)
+      (if unintrusive-elscreen-original-elscreen-display-tab
+          (unintrusive-elscreen-display-tab-on)
+        (unintrusive-elscreen-display-tab-off))
       (define-key elscreen-map (kbd "<up>") nil)
       (global-set-key (kbd "C-z <up>") nil))))
 

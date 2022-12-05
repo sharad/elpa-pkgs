@@ -224,6 +224,22 @@
           (delete* fun debug-instrumented-functions :key #'car))
     ;; remove-advice
     ))
+
 
+(when nil
+  (defvar custom-record-command-error-list nil
+    "custom-record-command-error-list")
+
+  (defun custom-record-command-error (data context signal)
+    (push (list data context signal)
+          custom-record-command-error-list)
+    (nbutlast custom-record-command-error-list
+              (- (length custom-record-command-error-list) 8)))
+
+  (add-function :before command-error-function
+                #'custom-record-command-error)
+
+  (remove-function command-error-function
+                   #'custom-record-command-error))
 
 ;;; debug-info.el ends here
