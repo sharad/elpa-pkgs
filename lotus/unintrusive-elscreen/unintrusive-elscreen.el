@@ -30,6 +30,7 @@
 (defvar unintrusive-elscreen-display-tab-idle-sec 8 "unintrusive-elscreen-display-tab-idle-sec")
 (defvar unintrusive-elscreen-display-tab-on-for-cmd-secs 3 "unintrusive-elscreen-display-tab-on-for-cmd-secs")
 (defvar unintrusive-elscreen-display-tab-on-for-all-secs 3 "unintrusive-elscreen-display-tab-on-for-all-secs")
+(defvar unintrusive-elscreen-display-tab-on-for-show-tab-secs 10 "unintrusive-elscreen-display-tab-on-for-show-tab-secs")
 (defvar unintrusive-elscreen-display-tab-on-for-functions '(elscreen-next
                                                             elscreen-previous
                                                             elscreen-kill
@@ -69,6 +70,13 @@
   (unintrusive-elscreen-display-tab-on unintrusive-elscreen-display-tab-on-for-cmd-secs))
 
 ;;;###autoload
+(defun elscreen-show-tab (&optional secs)
+  (interactive)
+  (when unintrusive-elscreen-display-tab-mode
+    (let ((secs (or secs unintrusive-elscreen-display-tab-on-for-show-tab-secs)))
+     (unintrusive-elscreen-display-tab-on unintrusive-elscreen-display-tab-on-for-show-tab-secs))))
+
+;;;###autoload
 (define-minor-mode unintrusive-elscreen-display-tab-mode
   "unintrusive-elscreen-display-tab-mode"
   :init-value nil
@@ -83,7 +91,9 @@
         (setq unintrusive-elscreen-display-tab-timer
               (run-with-idle-timer unintrusive-elscreen-display-tab-idle-sec
                                    unintrusive-elscreen-display-tab-idle-sec
-                                   #'unintrusive-elscreen-display-tab-on)))
+                                   #'unintrusive-elscreen-display-tab-on))
+        (define-key elscreen-map (kbd "<up>") 'elscreen-show-tab)
+        (global-set-key (kbd "C-z <up>") 'elscreen-show-tab))
     (progn
       (dolist (f unintrusive-elscreen-display-tab-on-for-functions)
         (when (symbol-function f)
@@ -93,6 +103,8 @@
       (when unintrusive-elscreen-display-tab-timer
         (cancel-timer unintrusive-elscreen-display-tab-timer)
         (setq unintrusive-elscreen-display-tab-timer nil))
-      (unintrusive-elscreen-display-tab-on))))
+      (unintrusive-elscreen-display-tab-on)
+      (define-key elscreen-map (kbd "<up>") nil)
+      (global-set-key (kbd "C-z <up>") nil))))
 
 ;;; unintrusive-elscreen.el ends here
