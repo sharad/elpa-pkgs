@@ -27,18 +27,18 @@
 (provide 'unintrusive-elscreen)
 
 
-(defvar unintrusive-elscreen-display-tab-idle-sec 3 "unintrusive-elscreen-display-tab-idle-sec")
+(defvar unintrusive-elscreen-display-tab-idle-sec 8 "unintrusive-elscreen-display-tab-idle-sec")
 (defvar unintrusive-elscreen-display-tab-on-for-cmd-secs 3 "unintrusive-elscreen-display-tab-on-for-cmd-secs")
 (defvar unintrusive-elscreen-display-tab-on-for-all-secs 3 "unintrusive-elscreen-display-tab-on-for-all-secs")
-(defvar unintrusive-elscreen-display-tab-on-for-functions
-  '(elscreen-next
-    elscreen-previous
-    elscreen-kill
-    elscreen-create
-    elscreen-goto
-    elscreen-jump
-    elscreen-swap
-    elscreen-clone))
+(defvar unintrusive-elscreen-display-tab-on-for-functions '(elscreen-next
+                                                            elscreen-previous
+                                                            elscreen-kill
+                                                            elscreen-create
+                                                            elscreen-goto
+                                                            elscreen-jump
+                                                            elscreen-swap
+                                                            elscreen-clone)
+  "unintrusive-elscreen-display-tab-on-for-functions")
 (defvar unintrusive-original-header-line-format nil)
 (make-variable-buffer-local 'unintrusive-original-header-line-format)
 
