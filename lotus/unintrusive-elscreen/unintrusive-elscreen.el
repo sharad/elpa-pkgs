@@ -45,24 +45,23 @@
 
 (defun unintrusive-elscreen-display-tab-on (&optional secs)
   "Toggle the tab on the top of screen."
-  (let ((secs (or secs unintrusive-elscreen-display-tab-on-for-all-secs)))
-   (unless elscreen-display-tab
-    (setq unintrusive-original-header-line-format header-line-format)
-    (setq elscreen-display-tab t)
-    (when secs
-      (remove-hook 'pre-command-hook #'unintrusive-elscreen-display-tab-off)
-      (run-at-time secs nil
-                   #'(lambda ()
-                       (add-hook 'pre-command-hook #'unintrusive-elscreen-display-tab-off))))
-    (elscreen-notify-screen-modification 'force-immediately))))
+  (let ((secs (or secs
+                  unintrusive-elscreen-display-tab-on-for-all-secs)))
+    (unless elscreen-display-tab
+      (setq unintrusive-original-header-line-format header-line-format)
+      (setq elscreen-display-tab t)
+      (if secs
+          (run-at-time secs nil #'add-hook 'pre-command-hook #'unintrusive-elscreen-display-tab-off)
+        (add-hook 'pre-command-hook #'unintrusive-elscreen-display-tab-off))
+      (elscreen-notify-screen-modification 'force-immediately))))
 
 
 (defun unintrusive-elscreen-display-tab-off ()
   "Toggle the tab on the top of screen."
   (when elscreen-display-tab
     (setq header-line-format unintrusive-original-header-line-format)
-    (setq elscreen-display-tab nil)
     (remove-hook 'pre-command-hook #'unintrusive-elscreen-display-tab-off)
+    (setq elscreen-display-tab nil)
     (elscreen-notify-screen-modification 'force)))
 
 (defun unintrusive-elscreen-display-tab-on-for-sometime (&rest r)
