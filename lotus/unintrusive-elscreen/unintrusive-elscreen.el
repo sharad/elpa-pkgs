@@ -28,7 +28,8 @@
 
 
 (defvar unintrusive-elscreen-display-tab-idle-sec 3 "unintrusive-elscreen-display-tab-idle-sec")
-(defvar unintrusive-elscreen-display-tab-on-for-secs 3 "unintrusive-elscreen-display-tab-on-for-secs")
+(defvar unintrusive-elscreen-display-tab-on-for-cmd-secs 3 "unintrusive-elscreen-display-tab-on-for-cmd-secs")
+(defvar unintrusive-elscreen-display-tab-on-for-all-secs 3 "unintrusive-elscreen-display-tab-on-for-all-secs")
 (defvar unintrusive-elscreen-display-tab-on-for-functions
   '(elscreen-next
     elscreen-previous
@@ -44,7 +45,8 @@
 
 (defun unintrusive-elscreen-display-tab-on (&optional secs)
   "Toggle the tab on the top of screen."
-  (unless elscreen-display-tab
+  (let ((secs (or secs unintrusive-elscreen-display-tab-on-for-all-secs)))
+   (unless elscreen-display-tab
     (setq unintrusive-original-header-line-format header-line-format)
     (setq elscreen-display-tab t)
     (when secs
@@ -52,7 +54,7 @@
       (run-at-time secs nil
                    #'(lambda ()
                        (add-hook 'pre-command-hook #'unintrusive-elscreen-display-tab-off))))
-    (elscreen-notify-screen-modification 'force-immediately)))
+    (elscreen-notify-screen-modification 'force-immediately))))
 
 
 (defun unintrusive-elscreen-display-tab-off ()
@@ -60,10 +62,12 @@
   (when elscreen-display-tab
     (setq header-line-format unintrusive-original-header-line-format)
     (setq elscreen-display-tab nil)
+    (remove-hook 'pre-command-hook #'unintrusive-elscreen-display-tab-off)
     (elscreen-notify-screen-modification 'force)))
 
-(defun unintrusive-elscreen-display-tab-on-for-sometime ()
-  (unintrusive-elscreen-display-tab-on unintrusive-elscreen-display-tab-on-for-secs))
+(defun unintrusive-elscreen-display-tab-on-for-sometime (&rest r)
+  ;; ignore r
+  (unintrusive-elscreen-display-tab-on unintrusive-elscreen-display-tab-on-for-cmd-secs))
 
 ;;;###autoload
 (define-minor-mode unintrusive-elscreen-display-tab-mode
