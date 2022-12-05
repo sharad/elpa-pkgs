@@ -225,7 +225,17 @@
     ;; remove-advice
     ))
 
-
+;;;###autoload
+(defun add-to-debug-ignore-errors(errstr)
+  (interactive "serror string: ")
+  (unless (member errstr debug-ignored-errors)
+    (push errstr debug-ignored-errors)))
+(progn
+  (add-to-debug-ignore-errors "Nothing to complete")
+  (add-to-debug-ignore-errors "Unmatched Text during Lexical Analysis")
+  (add-to-debug-ignore-errors "‘global’ non-zero exit: global: GTAGS not found.")
+  (add-to-debug-ignore-errors "‘global’ non-zero exit: global: only name char is allowed with -c option."))
+
 (when nil
   (defvar custom-record-command-error-list nil
     "custom-record-command-error-list")
