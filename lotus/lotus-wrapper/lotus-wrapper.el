@@ -26,253 +26,9 @@
 
 (provide 'lotus-wrapper)
 
-
-(defvar caching--file-truename-link-cycle-counter 300)
-
-(defvar file-truename-do-caching t)
-
-(defvar file-truename-cache nil)
-
-(defvar file-truename-cache-dependency-list nil)
-
-(defun enable-file-truename-cache ()
-  (interactive)
-  (setq file-truename-do-caching t))
-
-(defun disable-file-truename-cache ()
-  (interactive)
-  (setq file-truename-do-caching nil))
-
-(defun toggle-file-truename-cache ()
-  (interactive)
-  (setq file-truename-do-caching (not file-truename-do-caching)))
-
-(defun caching--file-truename (filename &optional counter prev-dirs)
-  "Return the truename of FILENAME.
-If FILENAME is not absolute, first expands it against `default-directory'.
-The truename of a file name is found by chasing symbolic links
-both at the level of the file and at the level of the directories
-containing it, until no links are left at any level.
-
-\(fn FILENAME)"  ;; Don't document the optional arguments.
-  ;; COUNTER and PREV-DIRS are only used in recursive calls.
-  ;; COUNTER can be a cons cell whose car is the count of how many
-  ;; more links to chase before getting an error.
-  ;; PREV-DIRS can be a cons cell whose car is an alist
-  ;; of truenames we've just recently computed.
-  (let* ((original-filename filename)
-         (found-filename (and file-truename-do-caching
-                              (cl-rest (assoc original-filename
-                                              file-truename-cache)))))
-
-    ;; (when file-truename-do-caching
-    ;;   (message "filename %s by cache: %s"
-    ;;            original-filename
-    ;;            (cl-rest (assoc original-filename file-truename-cache))))
-
-    (if found-filename
-        found-filename
-      (progn
-        (cond ((or (string= filename "") (string= filename "~"))
-               (setq filename (expand-file-name filename))
-               (if (string= filename "")
-                   (setq filename "/")))
-              ((and (string= (substring filename 0 1)
-                             "~")
-                    (string-match "~[^/]*/?"
-                                  filename))
-               (let ((first-part (substring filename
-                                            0
-                                            (match-end 0)))
-                     (rest-part  (substring filename (match-end 0))))
-                 (setq filename (concat (expand-file-name first-part) rest-part)))))
-
-        (or counter
-            (setq counter (list caching--file-truename-link-cycle-counter)))
-        (let (done
-              ;; For speed, remove the ange-ftp completion handler from the list.
-              ;; We know it's not needed here.
-              ;; For even more speed, do this only on the outermost call.
-              (file-name-handler-alist
-               (if prev-dirs file-name-handler-alist
-                 (let ((tem (copy-sequence file-name-handler-alist)))
-                   (delq (rassq 'ange-ftp-completion-hook-function tem) tem)))))
-          (or prev-dirs (setq prev-dirs (list nil)))
-
-          ;; andrewi@harlequin.co.uk - on Windows, there is an issue with
-          ;; case differences being ignored by the OS, and short "8.3 DOS"
-          ;; name aliases existing for all files.  (The short names are not
-          ;; reported by directory-files, but can be used to refer to files.)
-          ;; It seems appropriate for file-truename to resolve these issues in
-          ;; the most natural way, which on Windows is to call the function
-          ;; `w32-long-file-name' - this returns the exact name of a file as
-          ;; it is stored on disk (expanding short name aliases with the full
-          ;; name in the process).
-          (if (eq system-type 'windows-nt)
-              (unless (string-match "[[*?]" filename)
-                ;; If filename exists, use its long name.  If it doesn't
-                ;; exist, the recursion below on the directory of filename
-                ;; will drill down until we find a directory that exists,
-                ;; and use the long name of that, with the extra
-                ;; non-existent path components concatenated.
-                (let ((longname (w32-long-file-name filename)))
-                  (if longname
-                      (setq filename longname)))))
-
-          ;; If this file directly leads to a link, process that iteratively
-          ;; so that we don't use lots of stack.
-          (while (not done)
-            (setcar counter (1- (cl-first counter)))
-            (if (< (cl-first counter) 0)
-                (error "Apparent cycle of symbolic links for %s" filename))
-            (let ((handler (find-file-name-handler filename 'file-truename)))
-              ;; For file name that has a special handler, call handler.
-              ;; This is so that ange-ftp can save time by doing a no-op.
-              (if handler
-                  (setq filename (funcall handler 'file-truename filename)
-                        done t)
-                (let ((dir (or (file-name-directory filename) default-directory))
-                      target dirfile)
-                  ;; Get the truename of the directory.
-                  (setq dirfile (directory-file-name dir))
-                  ;; If these are equal, we have the (or a) root directory.
-                  (or (string= dir dirfile)
-                      (and (memq system-type '(windows-nt ms-dos cygwin nacl))
-                           (eq (compare-strings dir 0 nil dirfile 0 nil t) t))
-                      ;; If this is the same dir we last got the truename for,
-                      ;; save time--don't recalculate.
-                      (if (assoc dir (cl-first prev-dirs))
-                          (setq dir (cl-rest (assoc dir (cl-first prev-dirs))))
-                        (let ((old dir)
-                              (new (file-name-as-directory (file-truename dirfile counter prev-dirs))))
-                          (setcar prev-dirs (cons (cons old new) (cl-first prev-dirs)))
-                          (setq dir new))))
-                  (if (equal ".." (file-name-nondirectory filename))
-                      (setq filename
-                            (directory-file-name (file-name-directory (directory-file-name dir)))
-                            done t)
-                    (if (equal "." (file-name-nondirectory filename))
-                        (setq filename (directory-file-name dir)
-                              done t)
-                      ;; Put it back on the file name.
-                      (setq filename (concat dir (file-name-nondirectory filename)))
-                      ;; Is the file name the name of a link?
-                      (setq target (file-symlink-p filename))
-                      (if target
-                          ;; Yes => chase that link, then start all over
-                          ;; since the link may point to a directory name that uses links.
-                          ;; We can't safely use expand-file-name here
-                          ;; since target might look like foo/../bar where foo
-                          ;; is itself a link.  Instead, we handle . and .. above.
-                          (setq filename
-                                (if (file-name-absolute-p target)
-                                    target
-                                  (concat dir target))
-                                done nil)
-                        ;; No, we are done!
-                        (setq done t))))))))
-
-          (when file-truename-do-caching
-
-            (dolist (dirpair (cl-first prev-dirs))
-              (let ((dir (cl-first dirpair)))
-                (if (assoc dir file-truename-cache-dependency-list)
-                    (unless (member
-                             original-filename
-                             (cl-rest (assoc dir file-truename-cache-dependency-list)))
-                      (push original-filename (cdr (assoc dir file-truename-cache-dependency-list))))
-                  (push (list dir original-filename) file-truename-cache-dependency-list))))
-
-            (if (assoc original-filename file-truename-cache)
-                (setcdr (assoc original-filename file-truename-cache) filename)
-              (push (cons original-filename filename) file-truename-cache)))
-          filename)))))
-;;;###autoload
-(defalias 'override--file-truename #'caching--file-truename)
-
-
-;;;###autoload
-(defun alternate--erc-identd-start (&optional port)
-  "Start an identd server listening to port 8113.
-Port 113 (auth) will need to be redirected to port 8113 on your
-machine -- using iptables, or a program like redir which can be
-run from inetd.  The idea is to provide a simple identd server
-when you need one, without having to install one globally on your
-system."
-  (interactive (list (read-string "Serve identd requests on port: " "8113")))
-  (unless port (setq port erc-identd-port))
-  (when (stringp port)
-    (setq port (string-to-number port)))
-  (when erc-identd-process
-    (delete-process erc-identd-process))
-  (setq erc-identd-process
-        (make-network-process :name "identd"
-                              :buffer nil
-                              :host 'local :service port
-                              :server t :noquery t :nowait nil
-                              :filter 'erc-identd-filter))
-  (set-process-query-on-exit-flag erc-identd-process nil))
-;;;###autoload
-(defalias 'override--erc-identd-start #'alternate--erc-identd-start)
-
-;; from compile.el
-;;;###autoload
-(defun around--compilation-find-file (oldfun &rest r)
-  (cl-flet ((file-truename (&rest args)
-                        (identity (car args))))
-    (apply oldfun r)))
-;;;###autoload
-(defun around--compilation-get-file-structure (oldfun &rest r)
-  (cl-flet ((file-truename (&rest args)
-                        (identity (car args))))
-    (apply oldfun r)))
-
-
-(defvar lotus-around--projectile-file-truename-callers '(projectile-cache-current-file
-                                                         delete-file-projectile-remove-from-cache
-                                                         projectile-project-root
-                                                         projectile-project-buffer-p
-                                                         projectile-select-files
-                                                         projectile-compilation-dir))
-
-;;;###autoload
-(defun lotus-around--projectile-file-truename-callers-define-around-advice ()
-  (dolist (f lotus-around--projectile-file-truename-callers)
-    (let ((fun (intern (concat "around--" (symbol-name f)))))
-      (eval `(defun ,fun (oldfun &rest r)
-               (cl-flet ((file-truename (&rest args)
-                                     (identity (car args))))
-                 (apply oldfun r)))))))
-;;;###autoload
-(defun lotus-around--projectile-file-truename-callers-add-around-advice ()
-  (dolist (f lotus-around--projectile-file-truename-callers)
-    (let ((fun (intern (concat "around--" (symbol-name f)))))
-      (eval `(add-function :around
-                           (symbol-function ',f)
-                           #',fun)))))
-;;;###autoload
-(defun lotus-around--projectile-file-truename-callers-remove-around-advice ()
-  (dolist (f lotus-around--projectile-file-truename-callers)
-    (let ((fun (intern (concat "around--" (symbol-name f)))))
-      (eval `(remove-function (symbol-function ',f)
-                              #',fun)))))
-
-
-;;;###autoload
-(defun fixed--pm--run-other-hooks (allow syms hook &rest args)
-  (when (and allow polymode-mode pm/polymode)
-    (save-excursion
-      (dolist (sym syms)
-        (dolist (buf (eieio-oref pm/polymode '-buffers))
-          (when (buffer-live-p buf)
-            (unless (eq buf (current-buffer))
-              (with-current-buffer buf
-                (when (memq sym (symbol-value hook))
-                  (if args
-                      (apply sym args)
-                    (funcall sym)))))))))))
-;;;###autoload
-(defalias 'override--pm--run-other-hooks #'fixed--pm--run-other-hooks)
+(require 'caching-file-truename-advice)
+(require 'disable-file-truname-advices)
+(require 'lotus-misc-advices)
 
 
 ;;;###autoload
@@ -290,16 +46,26 @@ system."
     (add-function :override
                   (symbol-function 'pm--run-other-hooks)
                   #'override--pm--run-other-hooks))
-  (with-eval-after-load "compile"
-    (add-function :around
-                  (symbol-function 'compilation-find-file)
-                  #'around--compilation-find-file)
-    (add-function :around
-                  (symbol-function 'compilation-get-file-structure)
-                  #'around--compilation-get-file-structure))
-  (with-eval-after-load "projectile"
-    (lotus-around--projectile-file-truename-callers-define-around-advice)
-    (lotus-around--projectile-file-truename-callers-add-around-advice)))
+
+  (disable-file-truename-ad--set-advices "compile"
+                                         '(compilation-find-file
+                                           compilation-find-file))
+
+  (disable-file-truename-ad--set-advices "projectile"
+                                         '(projectile-cache-current-file
+                                           delete-file-projectile-remove-from-cache
+                                           projectile-project-root
+                                           projectile-project-buffer-p
+                                           projectile-select-files
+                                           projectile-compilation-dir))
+
+  (disable-file-truename-ad--set-advices "lsp-mode"
+                                         '(
+                                           lsp--all-watchable-directories
+                                           lsp-watch-root-folder
+                                           lsp--server-register-capability
+                                           lsp--folder-watch-callback
+                                           )))
 
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
@@ -310,12 +76,32 @@ system."
                    #'override--erc-identd-start)
   (remove-function (symbol-function 'pm--run-other-hooks)
                    #'override--pm--run-other-hooks)
-  (remove-function (symbol-function 'compilation-find-file)
-                   #'around--compilation-find-file)
-  (remove-function (symbol-function 'compilation-get-file-structure)
-                   #'around--compilation-get-file-structure)
-  (lotus-around--projectile-file-truename-callers-remove-around-advice))
+  (disable-file-truename-ad--unset-advices "compile"
+                                           '(compilation-find-file
+                                             compilation-find-file))
+
+  (disable-file-truename-ad--unset-advices "projectile"
+                                           '(projectile-cache-current-file
+                                             delete-file-projectile-remove-from-cache
+                                             projectile-project-root
+                                             projectile-project-buffer-p
+                                             projectile-select-files
+                                             projectile-compilation-dir))
+
+  (disable-file-truename-ad--unset-advices "lsp-mode"
+                                           '(
+                                             lsp--all-watchable-directories
+                                             lsp-watch-root-folder
+                                             lsp--server-register-capability
+                                             lsp--folder-watch-callback
+                                             )))
 
+
+;; from lsp-mode.el
+;; lsp--all-watchable-directories
+;; lsp-watch-root-folder
+;; lsp--server-register-capability
+;; lsp--folder-watch-callback
 
 ;; (file-truename "~/.mailbox")
 
