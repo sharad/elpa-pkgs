@@ -26,6 +26,7 @@
 
 (provide 'lotus-wrapper)
 
+
 (require 'caching-file-truename-advice)
 (require 'disable-file-truname-advices)
 (require 'lotus-misc-advices)
