@@ -27,11 +27,11 @@
 (provide 'disable-file-truname-advices)
 
 
-(defvar file-truname-advice-prefix "file-truname-diable--")
+(defvar disable-file-truname-advice-prefix "file-truname-diable--")
 
 ;;;###autoload
-(defun file-truename-ad--callers-define-around-advice (f)
-  (let ((fun (intern (concat file-truname-advice-prefix (symbol-name f)))))
+(defun disable-file-truename-ad--callers-define-around-advice (f)
+  (let ((fun (intern (concat disable-file-truname-advice-prefix (symbol-name f)))))
     (unless (fboundp fun)
       (eval `(defun ,fun (oldfun &rest r)
                (cl-flet ((file-truename (&rest args)
@@ -39,13 +39,13 @@
                  (apply oldfun r)))))))
 ;;;###autoload
 (defun disable-file-truename-ad--callers-add-around-advice (f)
-  (let ((fun (intern (concat file-truname-advice-prefix (symbol-name f)))))
+  (let ((fun (intern (concat disable-file-truname-advice-prefix (symbol-name f)))))
     (eval `(add-function :around
                          (symbol-function ',f)
                          #',fun))))
 ;;;###autoload
 (defun disable-file-truename-ad--callers-remove-around-advice (f)
-  (let ((fun (intern (concat file-truname-advice-prefix (symbol-name f)))))
+  (let ((fun (intern (concat disable-file-truname-advice-prefix (symbol-name f)))))
     (eval `(remove-function (symbol-function ',f)
                             #',fun))))
 
