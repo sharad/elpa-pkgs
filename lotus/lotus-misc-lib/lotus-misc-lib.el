@@ -36,6 +36,12 @@
   (interactive)
   (define-key global-map [remap swiper] nil))
 
-;;; misc-lib.el ends here
+
+(defun cleanup-recentf-list ()
+  (interactive "ss:")
+  (recentf-list))
+
+;; /srv/volumes/local/z7mp9s/vg01/lv01/users/s/common/data/main/preserved/Fortinet /home/s/paradise/Projects/Fortinet
+;;; misc-lib.el ends here
 
 
