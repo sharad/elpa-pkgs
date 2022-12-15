@@ -39,6 +39,7 @@
 
 (defun cleanup-recentf-list ()
   (interactive "ss:")
+  (query-replace s1 replacement)
   (recentf-list))
 
 ;; /srv/volumes/local/z7mp9s/vg01/lv01/users/s/common/data/main/preserved/Fortinet /home/s/paradise/Projects/Fortinet
