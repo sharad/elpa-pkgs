@@ -54,7 +54,7 @@
 
   (disable-file-truename-ad--set-advices "compile"
                                          '(compilation-find-file
-                                           compilation-find-file))
+                                           compilation-get-file-structure))
 
   (disable-file-truename-ad--set-advices "projectile"
                                          '(projectile-cache-current-file
@@ -70,7 +70,11 @@
                                            lsp-watch-root-folder
                                            lsp--server-register-capability
                                            lsp--folder-watch-callback
-                                           )))
+                                           ))
+
+  (disable-file-truename-ad--set-advices "ggtags"
+                                         '(ggtags-create-tags
+                                           ggtags-find-project)))
 
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
@@ -85,7 +89,7 @@
                    #'around--semantic-mode)
   (disable-file-truename-ad--unset-advices "compile"
                                            '(compilation-find-file
-                                             compilation-find-file))
+                                             compilation-get-file-structure))
 
   (disable-file-truename-ad--unset-advices "projectile"
                                            '(projectile-cache-current-file
@@ -101,7 +105,11 @@
                                              lsp-watch-root-folder
                                              lsp--server-register-capability
                                              lsp--folder-watch-callback
-                                             )))
+                                             ))
+
+  (disable-file-truename-ad--unset-advices "ggtags"
+                                           '(ggtags-create-tags
+                                             ggtags-find-project)))
 
 ;;; lotus-wrapper.el ends here
 

@@ -27,7 +27,7 @@
 (provide 'disable-file-truname-advices)
 
 
-(defvar disable-file-truname-advice-prefix "file-truname-diable--")
+(defvar disable-file-truname-advice-prefix "file-truname-disable--")
 
 ;;;###autoload
 (defun disable-file-truename-ad--callers-define-around-advice (f)
