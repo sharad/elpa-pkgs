@@ -45,7 +45,7 @@
 
       (defun org-capture+-debug (level &rest args)
         (when org-capture+-debug
-          (when (first args)
+          (when (cl-first args)
             (apply #'format args)
             (when (member level '(:emergency :error :warning :debug))
               ;; (apply #'lwarn 'occ level args)
@@ -87,7 +87,7 @@
 *** org-capture-plus-finalize
 
     #+begin_src emacs-lisp
-      
+
       (defun org-capture-plus-finalize (&optional stay-with-capture)
         (interactive "P")
         (let ((before-finalize (org-capture-get :before-finalize))
@@ -95,7 +95,7 @@
               (buff            (org-base-buffer (current-buffer)))
               (pos             (point-min))
               (marker          (make-marker)))
-      
+
           (set-marker marker pos buff)
           ;; (buffer-base-buffer (current-buffer))
           (if (or (null before-finalize)
@@ -140,13 +140,13 @@
 *** Providing log note function for capture
 
 #+BEGIN_SRC emacs-lisp
-  
+
   ;; check org-store-log-note
   ;; check org-add-log-note
   ;; check org-add-log-setup
   ;;
   ;; effective-time
-  
+
   (defun org-capture-place-log-note ()
     "Place the template plainly.
   If the target locator points at an Org node, place the template into
@@ -179,7 +179,7 @@
       ;;   (t
       ;;    ;; beginning or end of file
       ;;    (goto-char (if (org-capture-get :prepend) (point-min) (point-max)))))
-  
+
       (if (and (org-capture-get :target-entry-p)
                 (bolp)
                 (looking-at org-outline-regexp))
@@ -227,14 +227,14 @@
                                                note-previous-state)))))))
                 (when lines (setq note (concat note " \\\\")))
                 (push note lines)))
-  
+
             (when lines ;; (and lines (not (or current-prefix-arg org-note-abort)))
               (progn ;; with-current-buffer (marker-buffer note-marker)
                 (progn ;; org-with-wide-buffer
                  ;; Find location for the new note.
                  ;; (goto-char note-marker)
                  ;; (set-marker note-marker nil)
-  
+
                  ;; Note associated to a clock is to be located right after
                  ;; the clock.  Do not move point.
                  (unless (eq note-purpose 'clock-out)
@@ -251,7 +251,7 @@
                                         (goto-char itemp) (org-list-struct))))
                           (org-list-get-ind (org-list-get-top-point struct) struct)))
                      (org-indent-line)))
-  
+
                  ;; (or (bolp) (newline))
                  ;; (org-capture-empty-lines-before)
                  (setq beg (point))
@@ -450,7 +450,7 @@
                                 (org-at-heading-p)))))
                (error "No running clock that could be used as capture target"))))
           (target (error "Invalid capture target specification: %S" target)))
-  
+
         (org-capture-put :buffer         (current-buffer)
                          :pos            (point)
                          :target-entry-p target-entry-p
@@ -461,18 +461,18 @@
                                                  (and
                                                   (org-back-to-heading t)
                                                   (point)))))))))
-  
+
 #+END_SRC
 *** new capture
 #+BEGIN_SRC emacs-lisp
-  
+
   (defun org-capture-plus-get-template (template)
     (cond
      ((stringp template) template)
      ((fboundp template) (funcall template))
      ((symbolp template) (symbol-value template))
      (t                  template)))
-  
+
   ;;;###autoload
   (defun org-capture-run (type target template &rest plist)
     "Capture something.
@@ -483,36 +483,36 @@
   you can edit it.  Pressing `\\[org-capture-plus-finalize]' brings you back to the \
   previous
   state of Emacs, so that you can continue your work.
-  
+
   When called interactively with a `\\[universal-argument]' prefix argument \
   GOTO, don't
   capture anything, just go to the file/headline where the selected
   template stores its notes.
-  
+
   With a `\\[universal-argument] \\[universal-argument]' prefix argument, go to \
   the last note stored.
-  
+
   When called with a `C-0' (zero) prefix, insert a template at point.
-  
+
   When called with a `C-1' (one) prefix, force prompting for a date when
   a datetree entry is made.
-  
+
   ELisp programs can set KEYS to a string associated with a template
   in `org-capture-templates'.  In this case, interactive selection
   will be bypassed.
-  
+
   If `org-capture-use-agenda-date' is non-nil, capturing from the
   agenda will use the date at point as the default date.  Then, a
   `C-1' prefix will tell the capture process to use the HH:MM time
   of the day at point (if any) or the current HH:MM time."
     ;; (interactive "P")
-  
+
     (when (and org-capture-use-agenda-date
                (eq major-mode 'org-agenda-mode))
       (setq org-overriding-default-time
             (org-get-cursor-date t ;; (equal goto 1)
                                  )))
-  
+
     (let* ((orig-buf   (current-buffer))
            (annotation (if (and (boundp 'org-capture-link-is-already-stored)
                                 org-capture-link-is-already-stored)
@@ -535,16 +535,16 @@
                                 (length annotation)
                                 '(read-only t)
                                 annotation))
-  
-  
-  
+
+
+
       ;; (org-capture-set-plist template)
-  
+
       (setq org-capture-plist plist)
-      (org-capture-put ;; :key (first entry)
+      (org-capture-put ;; :key (cl-first entry)
                        ;; :description (nth 1 entry)
                        :target target)
-  
+
       (let ((txt template)
             (type (or type
                       'entry)))
@@ -560,13 +560,13 @@
            ((member type '(nil entry)) (setq txt "* %?\n  %a"))))
         (org-capture-put :template txt
                          :type     type))
-  
+
       (org-capture-get-template)
-  
+
       (org-capture-put :original-buffer            orig-buf
                        :original-file              (or (buffer-file-name orig-buf)
                                                        (and (featurep 'dired)
-                                                            (first (rassq orig-buf
+                                                            (cl-first (rassq orig-buf
                                                                         dired-buffers))))
                        :original-file-nondirectory (and (buffer-file-name orig-buf)
                                                         (file-name-nondirectory
@@ -576,23 +576,23 @@
                        :return-to-wconf            (current-window-configuration)
                        :default-time               (or org-overriding-default-time
                                                        (org-current-time)))
-  
+
       (org-capture-set-target-location-improved)
-  
+
       (condition-case error
           (org-capture-put :template (org-capture-fill-template))
         ((error quit)
          (if (get-buffer "*Capture*") (kill-buffer "*Capture*"))
          (error "Capture abort: %s" error)))
-  
+
       (setq org-capture-clock-keep (org-capture-get :clock-keep))
       (if (and (not (org-capture-get :target))
                (eq 'immdediate
-                   (first (org-capture-get :target)))) ;; (equal goto 0)
+                   (cl-first (org-capture-get :target)))) ;; (equal goto 0)
           ;;insert at point
           (org-capture-insert-template-here)
         (condition-case error
-            (org-capture-place-template (eq (first (org-capture-get :target))
+            (org-capture-place-template (eq (cl-first (org-capture-get :target))
                                             'function))
           ((error quit)
            (if (and (buffer-base-buffer (current-buffer))
@@ -615,13 +615,17 @@
                "Could not start the clock in this capture buffer")))
         (if (org-capture-get :immediate-finish)
             (org-capture-plus-finalize)))))
-  
+
   ;; (defalias 'org-capture-run 'org-capture-plus)
-  
+
 #+END_SRC
+
+
 *** Application
+
+
 #+BEGIN_SRC emacs-lisp
-  
+
   (defun org-goto-refile (&optional refile-targets)
     "Refile goto."
     ;; mark paragraph if no region is set
@@ -632,7 +636,7 @@
            (pos                (nth 3 target)))
       (when (set-buffer (find-file-noselect file)) ;; (switch-to-buffer (find-file-noselect file) 'norecord)
         (goto-char pos))))
-  
+
   (defun org-create-new-task ()
     (interactive)
     (org-capture-run
@@ -640,23 +644,23 @@
      '(function org-goto-refile)
      "* TODO %? %^g\n %i\n [%a]\n"
      :empty-lines 1))
-  
-  
+
+
   (when nil
-  
+
     (org-capture-run
      'log-note
      '(clock)
      "* TODO %? %^g\n %i\n [%a]\n"
      :empty-lines 1)
-  
+
     (org-capture-run
      'log-note
      '(clock)
      "Test\n"
      :unnarrowed nil
      :empty-lines 1)
-  
+
     ;; https://orgmode.org/manual/Template-elements.html#Template-elements
     ;; template expansion properties
     (org-capture-run
@@ -665,49 +669,49 @@
      "Hello"
      :unnarrowed nil
      :empty-lines 1)
-  
+
     (org-capture-run
      'log-note
      '(marker testmrkr)
      "Test Hello 1"
      ;; :immediate-finish t
      :empty-lines 1)
-  
+
     (org-capture-run
      'entry
      '(marker testmrkr)
      "* Hello"
      ;; :immediate-finish t
      :empty-lines 1)
-  
+
     (org-capture-run
      'entry
      '(clock)
      "* Hello"
      ;; :immediate-finish t
      :empty-lines 1)
-  
-  
+
+
     (org-capture-run
      'entry
      '(function org-goto-refile)
      "* TODO %? %^g\n %i\n [%a]\n"
      :empty-lines 1)
-  
-  
-  
-  
-  
+
+
+
+
+
     (org-capture-run
      'log-note
      '(marker testmrkr)
      "Test Hello 1"
      ;; :immediate-finish t
      :empty-lines 1)
-  
-  
+
+
    )
-  
+
   (when nil
     (let (helm-sources)
       ;; (when (marker-buffer org-clock-default-task)
@@ -717,7 +721,7 @@
       ;;     :action (list ;; (cons "Select" 'identity)
       ;;              (cons "Clock in and track" #'identity)))
       ;;    helm-sources))
-  
+
       ;; (when (marker-buffer org-clock-interrupted-task)
       ;;   (push
       ;;    (helm-build-sync-source "The task interrupted by starting the last one"
@@ -725,7 +729,7 @@
       ;;      :action (list ;; (cons "Select" 'identity)
       ;;               (cons "Clock in and track" #'identity)))
       ;;    helm-sources))
-  
+
       (when (and
              (org-clocking-p)
              (marker-buffer org-clock-marker))
@@ -735,7 +739,7 @@
            :action (list ;; (cons "Select" 'identity)
                     (cons "Clock in and track" #'identity)))
          helm-sources))
-  
+
       ;; (when org-clock-history
       ;;   (push
       ;;    (helm-build-sync-source "Recent Tasks"
@@ -743,10 +747,10 @@
       ;;      :action (list ;; (cons "Select" 'identity)
       ;;               (cons "Clock in and track" #'(lambda (dyntaskpl) (plist-get dyntaskpl ))))
       ;;    helm-sources)))
-  
+
       (helm helm-sources)))
-  
-  
+
+
 #+END_SRC
 ** Provide this file
 #+BEGIN_SRC emacs-lisp
