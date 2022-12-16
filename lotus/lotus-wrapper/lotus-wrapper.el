@@ -48,6 +48,10 @@
                   (symbol-function 'pm--run-other-hooks)
                   #'override--pm--run-other-hooks))
 
+  (with-eval-after-load "semantic"
+    (add-function :around (symbol-function 'semantic-mode)
+                  #'around--semantic-mode))
+
   (disable-file-truename-ad--set-advices "compile"
                                          '(compilation-find-file
                                            compilation-find-file))
@@ -77,6 +81,8 @@
                    #'override--erc-identd-start)
   (remove-function (symbol-function 'pm--run-other-hooks)
                    #'override--pm--run-other-hooks)
+  (remove-function (symbol-function 'semantic-mode)
+                   #'around--semantic-mode)
   (disable-file-truename-ad--unset-advices "compile"
                                            '(compilation-find-file
                                              compilation-find-file))

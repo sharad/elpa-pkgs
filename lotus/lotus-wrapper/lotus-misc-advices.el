@@ -68,4 +68,13 @@ system."
 ;;;###autoload
 (defalias 'override--pm--run-other-hooks #'fixed--pm--run-other-hooks)
 
+
+;;;###autoload
+(defun fixed--semantic-mode (oldfun &rest r)
+  (cl-flet ((buffer-list ()
+                         (remove-if-not #'buffer-live-p (buffer-list))))
+    (apply oldfun r)))
+;;;###autoload
+(defalias 'around--semantic-mode #'fixed--semantic-mode)
+
 ;;; lotus-misc-advices.el ends here
