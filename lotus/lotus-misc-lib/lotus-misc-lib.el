@@ -43,6 +43,49 @@
   (recentf-list))
 
 ;; /srv/volumes/local/z7mp9s/vg01/lv01/users/s/common/data/main/preserved/Fortinet /home/s/paradise/Projects/Fortinet
-;;; misc-lib.el ends here
+
+
+(defun xcopy-as-html (beg end)
+  (interactive "r")
+  ;; Don't let zmacs region highlighting end up in HTML.
+  (if (fboundp 'zmacs-deactivate-region)
+      (zmacs-deactivate-region)
+    (deactivate-mark))
+  (let ((htmlbuf (save-restriction
+		               (narrow-to-region beg end)
+		               (htmlize-buffer-1))))
+    (with-current-buffer htmlbuf
+      (call-process-region nil nil "xclip" nil nil nil
+                           "-i" "-selection" "clipboard" "-t" "text/html"))))
+
+(defun xcopy-as-html (beg end)
+  (interactive "r")
+  (deactivate-mark)
+  (let ((html (htmlize-region-for-paste beg end)))
+    (with-temp-buffer
+      (insert html)
+      (call-process-region nil nil "xclip" nil nil nil
+                           "-i" "-selection" "clipboard" "-t" "text/html"))))
+
+(defun xcopy-as-html (beg end)
+  (interactive "r")
+  (deactivate-mark)
+  (let ((html (copy-as-format--html (buffer-substring beg end) t)))
+    (with-temp-buffer
+      (insert html)
+      (call-process-region nil nil "xclip" nil nil nil
+                           "-i" "-selection" "clipboard" "-t" "text/html"))))
+
+(defun xcopy-as-html (beg end)
+  (interactive "r")
+  (deactivate-mark)
+  (let* ((htmlize-pre-style t)
+         (html (htmlize-region-for-paste beg end)))
+    (with-temp-buffer
+      (insert html)
+      (call-process-region nil nil "xclip" nil nil nil
+                           "-i" "-selection" "clipboard" "-t" "text/html"))))
+
+;;; misc-lib.el ends here
 
 
