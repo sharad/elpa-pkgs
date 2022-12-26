@@ -37,7 +37,7 @@
 (defvar resume-workdir "/home/s/paradise/Projects/doc/resume" "resume work dir.")
 
 (defvar tags-from-resume nil "Tags from resume")
-
+;;;###autoload
 (defun tags-from-resume (prompt)
   (if tags-from-resume
       tags-from-resume
@@ -45,7 +45,7 @@
         (read-string prompt (shell-command-to-string resume-make-keys)))))
 
 
-
+;;;###autoload
 (defun insert-reply-object (resume object &optional keys attachment type discription)
   "Prepare reply object"
   (interactive
@@ -113,12 +113,12 @@
                  (buffer-string)
                ('end-of-file nil))))
         contents))))
-
+;;;###autoload
 (defun lotus-read-sexp (filename)
   (when (file-exists-p filename)
     (cl-first (read-from-string (lotus-read-file filename)))))
 
-
+;;;###autoload
 (defun lotus-write-file (filename content)
   (with-current-buffer (or (find-buffer-visiting filename)
                            (find-file-noselect filename))
@@ -129,7 +129,7 @@
     (erase-buffer)
     (insert content)
     (write-file filename)))
-
+;;;###autoload
 (defun lotus-write-append-file (filename content)
   (when (file-exists-p filename)
     (write-region content nil filename t)
@@ -147,7 +147,7 @@
 ;;     (start-file-process . tramp-handle-start-file-process)
 
 
-
+;;;###autoload
 (defun shell-command-no-output (command)
   ;; (interactive "scommand: ")
   (let ((handler
@@ -175,7 +175,7 @@
                      ;; (start-file-process "shcommand1" nil shell-file-name "-c" command)
                      (process-file shell-file-name nil nil nil shell-command-switch command)
                      (call-process shell-file-name nil nil nil shell-command-switch command)))))))
-
+;;;###autoload
 (defun shell-command-local-no-output (cmd)
   ;; (interactive "scmd: ")
   (let ((default-directory "~/"))
@@ -185,7 +185,7 @@
 ;;   ;; (interactive "scmd: ")
 ;;   (equal 0 (call-process shell-file-name nil nil nil "-c" cmd)))
 
-
+;;;###autoload
 (defun messageto (buf &rest text)
   (with-current-buffer (get-buffer-create buf)
     (funcall 'message (concat
