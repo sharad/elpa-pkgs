@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2022  sharad
 
-;; Author: sharad <spratap@merunetworks.com>
+;; Author: sharad <>
 ;; Keywords: convenience
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@
     (unless (fboundp fun)
       (eval `(defun ,fun (oldfun &rest r)
                (cl-flet ((file-truename (&rest args)
-                                        (identity (car args))))
+                                        (apply #'identity args)))
                  (apply oldfun r)))))))
 ;;;###autoload
 (defun disable-file-truename-ad--callers-add-around-advice (f)
