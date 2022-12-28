@@ -1,4 +1,4 @@
-;;; disable-file-truname-advices.el --- file truename advices  -*- lexical-binding: t; -*-
+;;; disable-file-truename-advices.el --- file truename advices  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022  sharad
 
@@ -24,14 +24,14 @@
 
 ;;; Code:
 
-(provide 'disable-file-truname-advices)
+(provide 'disable-file-truename-advices)
 
 
-(defvar disable-file-truname-advice-prefix "file-truname-disable--")
+(defvar disable-file-truename-advice-prefix "disable-file-truename--")
 
 ;;;###autoload
 (defun disable-file-truename-ad--callers-define-around-advice (f)
-  (let ((fun (intern (concat disable-file-truname-advice-prefix (symbol-name f)))))
+  (let ((fun (intern (concat disable-file-truename-advice-prefix (symbol-name f)))))
     (unless (fboundp fun)
       (eval `(defun ,fun (oldfun &rest r)
                (cl-flet ((file-truename (&rest args)
@@ -39,13 +39,13 @@
                  (apply oldfun r)))))))
 ;;;###autoload
 (defun disable-file-truename-ad--callers-add-around-advice (f)
-  (let ((fun (intern (concat disable-file-truname-advice-prefix (symbol-name f)))))
+  (let ((fun (intern (concat disable-file-truename-advice-prefix (symbol-name f)))))
     (eval `(add-function :around
                          (symbol-function ',f)
                          #',fun))))
 ;;;###autoload
 (defun disable-file-truename-ad--callers-remove-around-advice (f)
-  (let ((fun (intern (concat disable-file-truname-advice-prefix (symbol-name f)))))
+  (let ((fun (intern (concat disable-file-truename-advice-prefix (symbol-name f)))))
     (eval `(remove-function (symbol-function ',f)
                             #',fun))))
 
@@ -63,4 +63,4 @@
     (dolist (fn fns)
       (disable-file-truename-ad--callers-remove-around-advice fn))))
 
-;;; disable-file-truname-advices.el ends here
+;;; disable-file-truename-advices.el ends here
