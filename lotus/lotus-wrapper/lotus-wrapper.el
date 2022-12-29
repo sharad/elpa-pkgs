@@ -28,7 +28,6 @@
 
 
 (require 'caching-file-truename-advice)
-(require 'disable-file-truneame-advices)
 (require 'lotus-misc-advices)
 
 
