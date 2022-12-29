@@ -190,6 +190,7 @@
   (when (not (emacs-process-p ad-return-value))
     (setq ad-return-value nil)))
 ;; desktop-override-stale-locks.el ends here
+;; (ad-disable-advice 'desktop-owner 'after 'pry-from-cold-dead-hands)
 
 ;; If anyone has a more robust implementation of `emacs-process-p,’ feel free to provide it.
 
@@ -421,9 +422,13 @@ so returns nil if pid is nil."
 (defun my-desktop-save ()
   (interactive)
   ;; Don't call desktop-save-in-desktop-dir, as it prints a message.
-  (let ((owner (or (desktop-vc-owner) -1)))
+  (let ((owner (or (desktop-vc-owner)
+                   (if (file-exists-p (desktop-full-lock-name desktop-dirname))
+                       -1
+                     0))))
     (when t ;;condition-case e
       (if (or (eq owner (emacs-pid))
+              (eq owner 0)
               ;; TODO: it was mean to be used as non-obtrusive and non-interctive
               (y-or-n-p (format "Your pid %d are not same as the desktop owner pid %d\nOverwrite existing desktop (might be it was not restore properly at startup)? "
                                 (emacs-pid) owner)))
