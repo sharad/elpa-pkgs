@@ -228,24 +228,24 @@ so returns nil if pid is nil."
 ;; (make-directory (expand-file-name "autoconfig/desktop/" user-emacs-directory) t)
 ;; (setq todoo-file-name (expand-file-name "autoconfig/desktop/" user-emacs-directory))
 
-(setq desktop-path (expand-file-name "desktop/" session-unified-dir))
+(setq desktop-path (expand-file-name "desktop/"
+                                     session-unified-dir))
 
-(setq desktop-dirname (expand-file-name "desktop/" session-unified-dir))
+(setq desktop-dirname (expand-file-name "desktop/"
+                                        session-unified-dir))
 
 (setq desktop-base-lock-name
-      (concat
-       ".emacs.desktop"
-       (if (boundp 'server-name)
-           (concat "-" server-name))
-       ".lock"))
+      (concat ".emacs.desktop"
+              (if (boundp 'server-name)
+                  (concat "-" server-name))
+              ".lock"))
 
 ;; (debug)
 
 (setq desktop-base-file-name
-      (concat
-       "emacs-desktop"
-       (if (boundp 'server-name)
-           (concat "-" server-name))))
+      (concat "emacs-desktop"
+              (if (boundp 'server-name)
+                  (concat "-" server-name))))
 
 ;; Since all lists will be truncated when saved, it is important to
 ;; have a high default history length, for example. If that is not
@@ -344,9 +344,8 @@ so returns nil if pid is nil."
 
 (defun desktop-vc-owner (&optional desktop-save-filename)
   (interactive "fdesktop file: ")
-  (let* ((desktop-save-filename  (or desktop-save-filename *desktop-save-filename*))
-         ;; (desktop-dirname        (file-name-directory desktop-save-filename))
-         ;; (desktop-base-file-name (file-name-nondirectory desktop-save-filename))
+  (let* ((desktop-save-filename  (or desktop-save-filename
+                                     *desktop-save-filename*))
          (retval                 (desktop-owner (dirname-of-file desktop-save-filename))))
     (when (emacs-process-p retval)
       retval)))
@@ -354,12 +353,14 @@ so returns nil if pid is nil."
 (defun desktop-vc-save (&optional desktop-save-filename)
   (interactive "Fdesktop file: ")
   (make-session-unified-dir "desktop")
-  (let* ((desktop-save-filename (or desktop-save-filename *desktop-save-filename*))
+  (let* ((desktop-save-filename (or desktop-save-filename
+                                    *desktop-save-filename*))
          (desktop-base-file-name (file-name-nondirectory desktop-save-filename)))
     (desktop-save (dirname-of-file desktop-save-filename))
     (if (file-exists-p desktop-save-filename)
         (put-file-in-rcs desktop-save-filename))
-    (setq desktop-file-modtime (nth 5 (file-attributes desktop-save-filename)))))
+    (setq desktop-file-modtime (nth 5
+                                    (file-attributes desktop-save-filename)))))
 ;; (desktop-full-file-name)
 
 ;; NOTE:
@@ -422,12 +423,10 @@ so returns nil if pid is nil."
   ;; Don't call desktop-save-in-desktop-dir, as it prints a message.
   (let ((owner (or (desktop-vc-owner) -1)))
     (when t ;;condition-case e
-      (if (or
-           (eq owner (emacs-pid))
-           ;; TODO: it was mean to be used as non-obtrusive and non-interctive
-           (y-or-n-p (format
-                      "Your pid %d are not same as the desktop owner pid %d\nOverwrite existing desktop (might be it was not restore properly at startup)? "
-                      (emacs-pid) owner)))
+      (if (or (eq owner (emacs-pid))
+              ;; TODO: it was mean to be used as non-obtrusive and non-interctive
+              (y-or-n-p (format "Your pid %d are not same as the desktop owner pid %d\nOverwrite existing desktop (might be it was not restore properly at startup)? "
+                                (emacs-pid) owner)))
           (if *desktop-save-filename*
               (desktop-vc-save *desktop-save-filename*)
             (error "my-desktop-save: *desktop-save-filename* is nil, run M-x desktop-get-desktop-save-filename"))
