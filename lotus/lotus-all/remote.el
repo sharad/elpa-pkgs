@@ -710,7 +710,7 @@
   "Get a list of hosts for tramp method found in `helm-pattern'.
 Argument PATTERN default to `helm-pattern'.  It is here only for
 debugging purpose."
-  (with-helm-in-frame
+  (with-helm-buffer
     (when (string-match helm-tramp-file-name-regexp pattern)
     (let* ((mh-method (helm-ff--previous-mh-tramp-method pattern))
            (method    (or (cadr mh-method) (match-string 1 pattern))))
