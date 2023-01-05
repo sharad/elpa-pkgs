@@ -105,9 +105,13 @@
 
 ;;;###autoload
 (defun lotus-active-recursive-edit ()
-  (or
-   (active-minibuffer-window)
-   (> (recursion-depth) 0)))
+  (or (active-minibuffer-window)
+      (> (recursion-depth) 0)))
+
+;;;###autoload
+(defun lotus-active-recursive-edit-p ()
+  (or (active-minibuffer-window)
+      (> (recursion-depth) 0)))
 
 ;;;###autoload
 (defun safe-exit-recursive-edit ()
