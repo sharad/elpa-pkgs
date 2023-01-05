@@ -468,7 +468,7 @@
       (defun update-ssh-agent (&optional force)
         (interactive "P")
         ;; (message "update-ssh-agent called")
-        (debug)
+        ;; (debug)
         (if (< (length (frame-list)) 2)
             (backtrace-to-buffer "*plan-ssh-key-trace*"))
         (when (or force
@@ -703,31 +703,31 @@
 ;;; config.el ends here
 
 
-
+;; (setq enable-recursive-minibuffers t)
 ;; debug-on-entry (epa-file-insert-file-content)
 ;; debug it
 (cl-defun helm-ff--tramp-hostnames (&optional (pattern helm-pattern))
   "Get a list of hosts for tramp method found in `helm-pattern'.
 Argument PATTERN default to `helm-pattern'.  It is here only for
 debugging purpose."
-  (with-helm-buffer
+  (progn
     (when (string-match helm-tramp-file-name-regexp pattern)
-    (let* ((mh-method (helm-ff--previous-mh-tramp-method pattern))
-           (method    (or (cadr mh-method) (match-string 1 pattern))))
-      (cl-loop with all-methods = (helm-ff--get-tramp-methods)
-               for (f . h) in (tramp-get-completion-function method)
-               append (cl-loop for e in (funcall f (car h))
-                               for host = (and (consp e) (cadr e))
-                               ;; On emacs-27 host may be
-                               ;; ("root" t) in sudo method.
-                               when (and (stringp host)
-                                         (not (member host all-methods)))
-                               collect (helm-ff-filter-candidate-one-by-one
-                                        (concat (or (car mh-method) "/")
-                                                method ":" host)))
-               into comps
-               finally return
-               (helm-fast-remove-dups comps :test 'equal))))))
+      (let* ((mh-method (helm-ff--previous-mh-tramp-method pattern))
+             (method    (or (cadr mh-method) (match-string 1 pattern))))
+        (cl-loop with all-methods = (helm-ff--get-tramp-methods)
+                 for (f . h) in (tramp-get-completion-function method)
+                 append (cl-loop for e in (funcall f (car h))
+                                 for host = (and (consp e) (cadr e))
+                                 ;; On emacs-27 host may be
+                                 ;; ("root" t) in sudo method.
+                                 when (and (stringp host)
+                                           (not (member host all-methods)))
+                                 collect (helm-ff-filter-candidate-one-by-one
+                                          (concat (or (car mh-method) "/")
+                                                  method ":" host)))
+                 into comps
+                 finally return
+                 (helm-fast-remove-dups comps :test 'equal))))))
 
 
 ;;; remote.el ends here
