@@ -120,7 +120,7 @@
     ;; from what I can tell, top level function call frames
     ;; start with t and the second value is the symbol of the function
     (while (not (equal t (first frame)))
-      (setq frame (backtrace-frame (incf index))))
+      (setq frame (backtrace-frame (cl-incf index))))
     (second frame)))
 
 (defun session-unfiy-notify (fmt &rest args)
