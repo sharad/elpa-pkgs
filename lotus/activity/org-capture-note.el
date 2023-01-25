@@ -34,6 +34,7 @@
 ;;; Code:
 
 (provide 'org-capture-note)
+
 
 (require 'org-capture+)
 (require 'activity-base)
@@ -43,11 +44,10 @@
 (defobjgen@ @dest-class :gen-org-capture-dest ()
   "Capture Dest class"
 
-  (setf
-   @:type nil
-   @:target nil
-   @:template nil
-   @:capture-plist nil)
+  (setf @:type nil
+        @:target nil
+        @:template nil
+        @:capture-plist nil)
 
   (def@ @@ :dispatch (marker)
     (@:init)
@@ -57,7 +57,7 @@
     (cond
      ((markerp @:marker) @:marker)
      ((functionp @:marker)
-      (let ((m (funcall @:marker))
+      (let ((m  (funcall @:marker))
             (if (markerp m) m))))
      ((symbolp @:marker)
       (let ((m (symbol-value @:marker))
@@ -85,8 +85,8 @@
     ;; add necessary code for interactive note.
     (@:message "Test %s %s %s %s" type target template capture-plist)
     (apply #'org-capture-run
-           (or type @:type)
-           (or target @:target)
+           (or type     @:type)
+           (or target   @:target)
            (or template @:template)
            (if capture-plist
                (if (evenp (length capture-plist))
@@ -99,19 +99,14 @@
 
 (setf @org-capture-immediate-dest
       (@drive-object @org-capture-dest "Non-Interactive capture"
-                     (setf @:capture-plist (append
-                                            (list
-                                             :immediate-finish t)
-                                            @:capture-plist))))
+                     (setf @:capture-plist (append (list :immediate-finish t :no-save t)
+                                                   @:capture-plist))))
 
 (setf @org-capture-edit-dest
   (@drive-object @org-capture-dest "Interactive capture"
                  "Interactive capture"
-                 (setf @:capture-plist (append
-                                        (list
-                                         :immediate-finish t)
-                                        @:capture-plist))))
-
+                 (setf @:capture-plist (append (list :immediate-finish t :no-save t)
+                                               @:capture-plist))))
 
 (defobjgen@ @org-capture-edit-dest :gen-capture-edit-dest-with-type (value)
   (setf (@ @@ :type) value)
@@ -123,46 +118,53 @@
     (@:message "%s %s" target template)))
 
 
-(setf
- @org-capture-edit-entry-dest
- (@! @org-capture-edit-dest :gen-capture-edit-dest-with-type "org-capture-edit-entry-dest" 'entry))
-
-
+(setf @org-capture-edit-entry-dest
+      (@! @org-capture-edit-dest :gen-capture-edit-dest-with-type "org-capture-edit-entry-dest" 'entry))
 
 ;; (@! @org-capture-edit-entry-dest :receive '(clock) "* Hello")
-
 
 
 (defobjgen@ @note-class :gen-org-capture-edit-entry-dest-note ()
   "Generator for org note message"
-  (push
-   @org-capture-edit-entry-dest
-   @:dests))
+  (push @org-capture-edit-entry-dest
+        @:dests))
 
 
-(setf
- @org-capture-edit-entry-dest-note
- (@! @note-class :gen-org-capture-edit-entry-dest-note "org-capture-edit-entry-dest-note"))
+(setf @org-capture-edit-entry-dest-note
+      (@! @note-class :gen-org-capture-edit-entry-dest-note "org-capture-edit-entry-dest-note"))
 
 ;; (@! @org-capture-edit-entry-dest-note :send '(clock) "* Hello")
-
+
 
 (when nil ;;https://orgmode.org/manual/Template-expansion.html#Template-expansion
 
   ;;TODO: Will be required later.
 
-  (org-capture-run
-   'entry
-   '(marker org-clock-marker)
-   "* Hello %^{PROMPT}"
-   ;; :immediate-finish t
-   :empty-lines 1)
+  (org-capture-run 'entry
+                   '(marker org-clock-marker)
+                   "* Hello %^{PROMPT}"
+                   ;; :immediate-finish t
+                   :empty-lines 1)
 
-  (org-capture-run
-   'entry
-   '(marker org-clock-marker)
-   "* Hello %^{PROMPT}"
-   :immediate-finish t
-   :empty-lines 1))
+  (org-capture-run 'entry
+                   '(clock)
+                   "* Hello %^{PROMPT}"
+                   ;; :immediate-finish t
+                   :empty-lines 1
+                   :immediate-finish t)
 
+  (org-capture-run 'entry
+                   '(clock)
+                   "* Hello Test"
+                   ;; :immediate-finish t
+                   :empty-lines 1
+                   :immediate-finish t
+                   :no-save t)
+
+  (org-capture-run 'entry
+                   '(marker org-clock-marker)
+                   "* Hello %^{PROMPT}"
+                   :immediate-finish t
+                   :empty-lines 1))
+
 ;;; org-capture-note.el ends here

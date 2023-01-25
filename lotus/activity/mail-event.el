@@ -56,45 +56,40 @@
              msgid))
 
 (defun lotus-plist-get-members (plist keys)
-  (mapcar
-   #'(lambda (k)
-       (plist-get plist k))
-   keys))
+  (mapcar #'(lambda (k)
+              (plist-get plist k))
+          keys))
 
 (defobjgen@ @event-dectector-class :gen-mail-read-event-detector ()
 
   (def@ @@ :make-message ()
-    (let* ((msgid (message-fetch-field "Message-ID" t))
+    (let* ((msgid   (message-fetch-field "Message-ID" t))
            (subject (message-fetch-field "Subject" t))
-           (from (message-fetch-field "From" t))
-           (to (message-fetch-field "To" t))
-           (link (concat "mu4e:msgid:" (activity~wipe-brackets msgid))))
-      (list
-       :subject subject
-       :from from
-       :to to)))
+           (from    (message-fetch-field "From" t))
+           (to      (message-fetch-field "To" t))
+           (link    (concat "mu4e:msgid:" (activity~wipe-brackets msgid))))
+      (list :subject subject
+            :from from
+            :to to)))
 
   (def@ @@ :make-event ()
     "Make mail read event."
-    (let ((note (@! @:note :new)))
-      (@:message "Helloooo")
-      (@:message "Helloo %s" (@:make-message))
+    (let* ((note (@! @:note :new))
+           (message (@:make-message)))
+      (@:message "processing %s" message)
       (funcall (@ note :send)
                note
                '(clock)
                (apply #'format
                       (string-join '("* Reading mail subject: %s" "from: %s" "to: %s") "\n")
-                      (lotus-plist-get-members
-                       (@:make-message)
-                       '(:subject :from :to))))))
+                      (lotus-plist-get-members message
+                                               '(:subject :from :to))))))
 
   (def@ @@ :make-event-gnus ()
-    (when (and
-           gnus-article-buffer
-           (get-buffer gnus-article-buffer))
+    (when (and gnus-article-buffer
+               (get-buffer gnus-article-buffer))
       (with-current-buffer (get-buffer gnus-article-buffer)
-        (let ((subject
-               (message-fetch-field "Subject" t)))
+        (let ((subject (message-fetch-field "Subject" t)))
           (@:message "checking: %s" subject)
           (@:make-event)))))
 
@@ -113,11 +108,11 @@
 
 (defobjgen@ @event-dectector-class :gen-mail-send-event-detector ()
   (def@ @@ :make-message ()
-    (let* ((msgid (message-fetch-field "Message-ID" t))
+    (let* ((msgid   (message-fetch-field "Message-ID" t))
            (subject (message-fetch-field "Subject" t))
-           (from (message-fetch-field "From" t))
-           (to (message-fetch-field "To" t))
-           (link (concat "mu4e:msgid:" (activity~wipe-brackets msgid))))
+           (from    (message-fetch-field "From" t))
+           (to      (message-fetch-field "To" t))
+           (link    (concat "mu4e:msgid:" (activity~wipe-brackets msgid))))
       (list :subject subject
             :from    from
             :to      to)))
