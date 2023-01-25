@@ -257,7 +257,7 @@
 (defalias 'org-capture-plue-place-table-line #'org-capture-place-table-line)
 (defalias 'org-capture-plue-place-plain-text #'org-capture-place-plain-text)
 (defalias 'org-capture-plue-place-item #'org-capture-place-item)
-(defalias 'org-capture-placelog-note #'org-capture-plue-placelog-note)
+(defalias 'org-capture-place-log-note #'org-capture-plue-place-log-note)
 
 
 #+END_SRC
@@ -522,7 +522,7 @@
              (eq major-mode 'org-agenda-mode))
     (setq org-overriding-default-time
           (org-get-cursor-date t))) ;; (equal goto 1)
-                                 
+
 
   (let* ((orig-buf   (current-buffer))
          (annotation (if (and (boundp 'org-capture-link-is-already-stored)
