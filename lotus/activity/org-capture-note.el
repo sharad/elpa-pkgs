@@ -159,7 +159,8 @@
                    ;; :immediate-finish t
                    :empty-lines 1
                    :immediate-finish t
-                   :no-save t)
+                   :no-save t
+                   :nodisplay t)
 
   (org-capture-run 'entry
                    '(marker org-clock-marker)

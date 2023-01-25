@@ -74,15 +74,14 @@
 
   (def@ @@ :make-event ()
     "Make mail read event."
-    (let* ((note (@! @:note :new))
-           (message (@:make-message)))
-      (@:message "processing %s" message)
+    (let* ((note (@! @:note :new)))
+      (@:message "processing %s" (@:make-message))
       (funcall (@ note :send)
                note
                '(clock)
                (apply #'format
                       (string-join '("* Reading mail subject: %s" "from: %s" "to: %s") "\n")
-                      (lotus-plist-get-members message
+                      (lotus-plist-get-members (@:make-message)
                                                '(:subject :from :to))))))
 
   (def@ @@ :make-event-gnus ()
