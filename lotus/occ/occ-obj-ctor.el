@@ -429,26 +429,34 @@
                                        (spec (eql :tree))
                                        (files list)
                                        (depth integer)
-                                       (limit integer))
+                                       (limit integer)
+                                       (rank  integer)
+                                       (level symbol))
   (make-occ-tree-collection :desc  desc
                             :name  (symbol-name key) ;; "tsk collection tree"
                             :spec  spec
                             :roots files
                             :depth depth
-                            :limit limit))
+                            :limit limit
+                            :rank  rank
+                            :level level))
 
 (cl-defmethod occ-obj-make-collection ((desc string)
                                        (key symbol)
                                        (spec (eql :list))
                                        (files list)
                                        (depth integer)
-                                       (limit integer))
+                                       (limit integer)
+                                       (rank  integer)
+                                       (level symbol))
   (make-occ-list-collection :desc  desc
                             :name  (symbol-name key) ;; "tsk collection list"
                             :spec  spec
                             :roots files
                             :depth depth
-                            :limit limit))
+                            :limit limit
+                            :rank  rank
+                            :level level))
 
 
 
@@ -719,21 +727,21 @@
   (occ-error "Can not use occ-callable-transf %s" callable))
 
 
-(defun occ-build-hsrc-null (candidate &key rank level)
+(defun* occ-build-hsrc-null (candidate &key rank level)
   (let ((rank  (or rank 0))
         (level (or level :optional)))
     (make-occ-hsrc-null :obj nil ;; candidate
                         :rank rank
                         :level level)))
 
-(defun occ-build-hsrc-candidate (candidate &key rank level)
+(defun* occ-build-hsrc-candidate (candidate &key rank level)
   (let ((rank  (or rank 0))
         (level (or level :optional)))
     (make-occ-hsrc-candidate :obj candidate
                              :rank rank
                              :level level)))
 
-(defun occ-build-hsrc-source (source &key rank level)
+(defun* occ-build-hsrc-source (source &key rank level)
   (let ((rank  (or rank 0))
         (level (or level :optional)))
     (make-occ-hsrc-source :obj source

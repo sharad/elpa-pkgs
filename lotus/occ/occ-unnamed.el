@@ -110,8 +110,8 @@
                                     "Unnamed"
                                     type
                                     (list file)
-                                    +occ-unnamed-collection-depth+
-                                    +occ-unnamed-collection-limit+))
+                                    :depth +occ-unnamed-collection-depth+
+                                    :limit +occ-unnamed-collection-limit+))
         (if force-error
             (occ-error "error with type %s, file %s" type file)
           (occ-warn "error with type %s, file %s" type file)))))

@@ -250,11 +250,11 @@
                                       (setf filters default-filters)))
                                   ;; (funcall gen-candidates)
                                   (helm-refresh)))
-           (filter-reset-fn  #'(lambda ())
-                             (interactive
-                               (setf filters default-filters)
-                               ;; (funcall gen-candidates)
-                               (helm-refresh)))
+           (filter-reset-fn  #'(lambda ()
+                                 (interactive)
+                                 (setf filters default-filters)
+                                 ;; (funcall gen-candidates)
+                                 (helm-refresh)))
            (filter-inc-fn    #'(lambda ()
                                  (interactive)
                                  ;; (setf level (1+ level))
@@ -335,8 +335,8 @@ if only one filtered candidate present in passed COLLECTION then it return that 
 if here is more than one filtered candidates then it make a helm-source and returned as occ-hsrc-source which will be used to select candidate from it."
 
   ;; (occ-assert candidates)
-  (let* ((rank (occ-obj-collect-rank collection))
-         (level (occ-obj-collect-level collection))
+  (let* ((rank (occ-obj-collection-rank collection))
+         (level (occ-obj-collection-level collection))
          (timeout               (or timeout occ-idle-timeout))
          (candidates-unfiltered (occ-obj-list-with obj collection :builder builder)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
          (unfiltered-count      (length candidates-unfiltered))
@@ -490,10 +490,29 @@ if here is more than one filtered candidates then it make a helm-source and retu
         (funcall helm-action (occ-obj-obj source))
       (occ-warn "occ-obj-helm-act-on-candidate: wrong source"))))
 
-(cl-defmethod occ-cand-source-main-p ((source occ-hsrc))
+(cl-defmethod occ-candidate-main-p ((source occ-hsrc))
   (and (> (occ-obj-rank source) 10)
        (not (eq (occ-obj-level source) :optional))
-       (not (occ-hsrc-null-p source))))
+       ;; (not (occ-hsrc-null-p source))
+       (occ-hsrc-candidate-p source)))
+
+(cl-defmethod occ-source-main-p ((source occ-hsrc))
+  (and (> (occ-obj-rank source) 10)
+       (not (eq (occ-obj-level source) :optional))
+       ;; (not (occ-hsrc-null-p source))
+       (occ-hsrc-source-p source)))
+
+(cl-defmethod occ-candidate-compare ((s1 occ-hsrc)
+                                       (s2 occ-hsrc))
+  ;; prefer candidate than source
+  ;; prefer non-optional level
+  (let (;; (s1-cand (if (occ-hsrc-candidate-p s1) 1 0)
+        ;; (s2-cand (if (occ-hsrc-candidate-p s2) 1 0))
+        (s1-level (if (eq (occ-obj-level s1) :optional) 0 1))
+        (s2-level (if (eq (occ-obj-level s2) :optional) 0 1)))
+      (and ;; (> s1-cand s2-cand)
+           (> (occ-obj-rank s1) (occ-obj-rank s2))
+           (> s1-level s2-level))))
 
 (cl-defmethod occ-obj-helm-act-on-multiple ((obj         occ-ctx)
                                             (collections list) ;; (occ-collections-default)
@@ -519,15 +538,18 @@ if here is more than one filtered candidates then it make a helm-source and retu
                  (length cand-sources))
 
     ;; TODO: here decide what to do with cand-sources all has rank and level
-    (let ((main-cand-sources (cl-remove-if-not #'occ-cand-source-main-p
-                                               cand-sources)))
-      (if (and main-cand-sources
-               (occ-hsrc-candidate-p (cl-first main-cand-sources)))
-          ;; Mean if first cand-sources has only one element then it will pack
-          ;; that element using `occ-build-hsrc-source' to be acted by default
-          ;; action.
+    (let* ((candidates        (cl-remove-if-not #'occ-candidate-main-p
+                                                cand-sources))
+           (sorted-candidates (sort candidates #'occ-candidate-compare)))
+      (occ-message "candidates: %s" candidates)
+      (occ-message "sorted-candidates: %s" sorted-candidates)
+      (if (and sorted-candidates
+               (occ-hsrc-candidate-p (cl-first sorted-candidates)))
+                    ;; Mean if first cand-sources has only one element then it will pack
+                    ;; that element using `occ-build-hsrc-source' to be acted by default
+                    ;; action.
           (occ-obj-helm-act-on-candidate obj
-                                         (cl-first main-cand-sources)
+                                         (cl-first sorted-candidates)
                                          :filters          filters
                                          :builder          builder
                                          :ap-normal        ap-normal
@@ -536,22 +558,27 @@ if here is more than one filtered candidates then it make a helm-source and retu
                                          :prompt           prompt)
         ;; (occ-assert (cl-first cand-sources)) -- can happen when no contxtual match found
         ;; Else all source will be passed to helm to be shown.
-        (let* ((in-occ-helm t)
-               (timer (run-with-timer 0.08 nil #'(lambda ()
-                                                   (if in-occ-helm
-                                                       (helm-refresh)
-                                                     (occ-debug "Running occ-list-select-internal helm is gone"))))))
-          (unwind-protect
-              (when (occ-obj-obj (cl-first cand-sources))
-                (condition-case e
-                    (helm :sources (mapcar #'occ-obj-obj cand-sources)
-                          :buffer  (occ-helm-select-buffer)
-                          :resume  'noresume)
-                  ((quit error)
-                   (occ-message "Enable Disable occ with occ-mode."))))
-            (progn
-              (setq in-occ-helm nil)
-              (cancel-timer timer))))))))
+        (let ((helm-main-cand-sources (cl-remove-if-not #'occ-hsrc-source-p
+                                                        cand-sources)))
+          (when (cl-remove-if-not #'occ-source-main-p
+                                  helm-main-cand-sources)
+            (occ-message "len helm-main-cand-sources %s" (lenngth helm-main-cand-sources))
+            (let* ((in-occ-helm t)
+                   (timer (run-with-timer 0.08 nil #'(lambda ()
+                                                       (if in-occ-helm
+                                                           (helm-refresh)
+                                                         (occ-debug "Running occ-list-select-internal helm is gone"))))))
+              (unwind-protect
+                  (when (occ-obj-obj (cl-first helm-main-cand-sources))
+                    (condition-case e
+                        (helm :sources (mapcar #'occ-obj-obj helm-main-cand-sources)
+                              :buffer  (occ-helm-select-buffer)
+                              :resume  'noresume)
+                      ((quit error)
+                       (occ-message "Enable Disable occ with occ-mode."))))
+                (progn
+                  (setq in-occ-helm nil)
+                  (cancel-timer timer))))))))))
 
 (cl-defmethod occ-obj-helm-act ((obj         occ-ctx)
                                 (collections list) ;; (occ-collections-default)
