@@ -352,7 +352,7 @@ if here is more than one filtered candidates then it make a helm-source and retu
       (occ-message "occ-obj-helm-build-collection-source: candidates-filtered = %s" candidates-filtered))
 
     (if (= filtered-count 0)
-        (occ-build-hsrc-null (cl-first candidates-filtered)
+        (occ-build-hsrc-null nil ;; (cl-first candidates-filtered)
                              :rank rank
                              :level level)
       (if (and auto-select-if-only
