@@ -65,6 +65,10 @@
                                            lsp-watch-root-folder
                                            lsp--server-register-capability
                                            lsp--folder-watch-callback))
+
+  (disable-file-truename-ad--set-advices "lsp-headerline"
+                                         '(lsp-headerline--build-path-up-to-project-string))
+
   (disable-file-truename-ad--set-advices "ggtags"
                                          '(ggtags-create-tags
                                            ggtags-find-project))
@@ -102,6 +106,10 @@
                                              lsp--server-register-capability
                                              lsp--folder-watch-callback
                                              ))
+
+  (disable-file-truename-ad--unset-advices "lsp-headerline"
+                                         '(lsp-headerline--build-path-up-to-project-string))
+
   (disable-file-truename-ad--unset-advices "ggtags"
                                            '(ggtags-create-tags
                                              ggtags-find-project))
@@ -230,7 +238,6 @@ attempts to find a file whose name is produced by (format FMT FILENAME)."
     buffer))
 
 
-
 (defun ggtags-find-project ()
   ;; See https://github.com/leoliu/ggtags/issues/42
   ;;
@@ -242,7 +249,7 @@ attempts to find a file whose name is produced by (format FMT FILENAME)."
     (if (ggtags-project-p project)
         (if (ggtags-project-expired-p project)
             (progn
-              (remhash  ggtags-projects)
+              (remhash ggtags-project-root ggtags-projects)
               (ggtags-find-project))
           project)
       (setq ggtags-last-default-directory default-directory)
@@ -271,5 +278,4 @@ attempts to find a file whose name is produced by (format FMT FILENAME)."
         (if (gethash ggtags-project-root ggtags-projects)
             (ggtags-find-project)
           (ggtags-make-project ggtags-project-root))))))
-
 
