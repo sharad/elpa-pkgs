@@ -27,6 +27,8 @@
 (provide 'occ-normalize-ineqs)
 
 
+(defun occ-add-ineq (ineq))
 
+(defun occ-normalize-ineqs (ineqs))
 
 ;;; occ-normalize-ineqs.el ends here
