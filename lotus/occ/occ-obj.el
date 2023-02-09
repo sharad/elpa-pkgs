@@ -237,7 +237,12 @@
 ;; BUG: TODO - use other name then occ-hsrc-... like occ-hselect-... as select is verb, while I need noun
 (cl-defstruct (occ-hsrc (:include occ-obj))
   "helm select obj or source"
-  obj)
+  obj
+  (rank  0)
+  (level :optional))
+
+(cl-defstruct (occ-hsrc-null (:include occ-hsrc))
+  "helm select object")
 
 (cl-defstruct (occ-hsrc-candidate (:include occ-hsrc))
   "helm select object")

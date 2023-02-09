@@ -903,4 +903,24 @@ pointing to it."
 (cl-defmethod occ-obj-obj ((source occ-hsrc))
   (occ-hsrc-obj source))
 
+
+(cl-defmethod occ-obj-rank ((obj null))
+  nil)
+
+(cl-defmethod occ-ob-rank ((obj occ-obj-collection))
+  (occ-obj-collection-rank obj))
+
+(cl-defmethod occ-obj-rank ((obj occ-hsrc))
+  (occ-hsrc-rank obj))
+
+
+(cl-defmethod occ-obj-level ((obj null))
+  nil)
+
+(cl-defmethod occ-ob-rank ((obj occ-obj-collection))
+  (occ-obj-collection-level obj))
+
+(cl-defmethod occ-obj-level ((obj occ-hsrc))
+  (occ-hsrc-level obj))
+
 ;;; occ-obj-accessor.el ends here

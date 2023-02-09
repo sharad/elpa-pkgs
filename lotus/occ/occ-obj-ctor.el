@@ -719,12 +719,26 @@
   (occ-error "Can not use occ-callable-transf %s" callable))
 
 
-(defun occ-build-hsrc-candidate (candidate)
-  (make-occ-hsrc-candidate :obj candidate))
+(defun occ-build-hsrc-null (candidate &key rank level)
+  (let ((rank  (or rank 0))
+        (level (or level :optional)))
+    (make-occ-hsrc-null :obj nil ;; candidate
+                        :rank rank
+                        :level level)))
 
+(defun occ-build-hsrc-candidate (candidate &key rank level)
+  (let ((rank  (or rank 0))
+        (level (or level :optional)))
+    (make-occ-hsrc-candidate :obj candidate
+                             :rank rank
+                             :level level)))
 
-(defun occ-build-hsrc-source (source)
-  (make-occ-hsrc-source :obj source))
+(defun occ-build-hsrc-source (source &key rank level)
+  (let ((rank  (or rank 0))
+        (level (or level :optional)))
+    (make-occ-hsrc-source :obj source
+                          :rank rank
+                          :level level)))
 
 
 (occ-testing
