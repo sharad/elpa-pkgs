@@ -283,16 +283,16 @@
                                                                              unfiltered-count
                                                                              filtered-count
                                                                              :prompt prompt)))
-          (occ-debug "occ-obj-helm-build-collection-source: ap-normal: %s" ap-normal)
-          (occ-debug "occ-obj-helm-build-collection-source: ap-transf: %s" ap-transf)
+          ;; (occ-debug "occ-obj-helm-build-collection-source: ap-normal: %s" ap-normal)
+          ;; (occ-debug "occ-obj-helm-build-collection-source: ap-transf: %s" ap-transf)
           (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
                 (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
-            (occ-debug "occ-obj-helm-build-collection-source: helm-transfm: %s" helm-transfm)
-            (progn
-              (occ-debug "occ-obj-helm-build-collection-source: helm-actions:")
-              (dolist (a helm-actions)
-                (occ-debug " occ-obj-helm-build-collection-source: helm-action: %s" a))
-              (occ-debug "occ-obj-helm-build-collection-source: helm-transfm: %s" helm-transfm))
+            ;; (progn
+            ;;   (occ-debug "occ-obj-helm-build-collection-source: helm-transfm: %s" helm-transfm)
+            ;;   (occ-debug "occ-obj-helm-build-collection-source: helm-actions:")
+            ;;   (dolist (a helm-actions)
+            ;;     (occ-debug " occ-obj-helm-build-collection-source: helm-action: %s" a))
+            ;;   (occ-debug "occ-obj-helm-build-collection-source: helm-transfm: %s" helm-transfm))
 
             ;; * Dynamic Match based templates
             ;; https://kitchingroup.cheme.cmu.edu/blog/2016/01/24/Modern-use-of-helm-sortable-candidates/
@@ -336,11 +336,11 @@ if here is more than one filtered candidates then it make a helm-source and retu
                                                 candidates-unfiltered))
          (filtered-count        (length candidates-filtered)))
 
-    (occ-dmessage "occ-obj-helm-build-collection-source: len candidates-unfiltered %d" unfiltered-count)
-    (occ-dmessage "occ-obj-helm-build-collection-source: len candidates-filtered %d" filtered-count)
+    ;; (occ-dmessage "occ-obj-helm-build-collection-source: len candidates-unfiltered %d" unfiltered-count)
+    ;; (occ-dmessage "occ-obj-helm-build-collection-source: len candidates-filtered %d" filtered-count)
 
-    (when (<= filtered-count 3)
-      (occ-dmessage "occ-obj-helm-build-collection-source: candidates-filtered = %s" candidates-filtered))
+    ;; (when (<= filtered-count 3)
+    ;;   (occ-dmessage "occ-obj-helm-build-collection-source: candidates-filtered = %s" candidates-filtered))
 
     (if (= filtered-count 0)
         (occ-build-hsrc-null nil ;; (cl-first candidates-filtered)
@@ -468,16 +468,16 @@ if here is more than one filtered candidates then it make a helm-source and retu
   (let* ((helm-action (occ-obj-get-first-helm-actions-for-obj obj
                                                               ap-normal
                                                               ap-transf)))
-    (progn ;; debugs
-      (occ-dmessage "occ-obj-helm-act-on-candidate: helm-action %s listp %s" helm-action (consp helm-action))
-      (occ-debug "occ-obj-helm-act-on-single: (cons p helm-action) %s, (functionp helm-action) %s"
-                 (consp helm-action)
-                 (functionp helm-action))
-      (occ-dmessage "occ-obj-helm-act-on-candidate: helm-action1 %s" helm-action)
-      (occ-debug "occ-obj-helm-act-on-single: (cons p (nth 1 helm-action)) %s, (functionp (nth 1 helm-action)) %s"
-                 (consp (cl-rest helm-action))
-                 (functionp (cl-rest helm-action)))
-      (occ-dmessage "occ-obj-helm-act-on-candidate: helm-action2 %s" helm-action))
+    ;; (progn ;; debugs
+    ;;   (occ-dmessage "occ-obj-helm-act-on-candidate: helm-action %s listp %s" helm-action (consp helm-action))
+    ;;   (occ-debug "occ-obj-helm-act-on-single: (cons p helm-action) %s, (functionp helm-action) %s"
+    ;;              (consp helm-action)
+    ;;              (functionp helm-action))
+    ;;   (occ-dmessage "occ-obj-helm-act-on-candidate: helm-action1 %s" helm-action)
+    ;;   (occ-debug "occ-obj-helm-act-on-single: (cons p (nth 1 helm-action)) %s, (functionp (nth 1 helm-action)) %s"
+    ;;              (consp (cl-rest helm-action))
+    ;;              (functionp (cl-rest helm-action)))
+    ;;   (occ-dmessage "occ-obj-helm-act-on-candidate: helm-action2 %s" helm-action))
 
     (if (occ-obj-obj source)
         (funcall helm-action (occ-obj-obj source))
@@ -537,8 +537,9 @@ if here is more than one filtered candidates then it make a helm-source and retu
                                                   cand-sources))
            (preferred-candidate (cl-first (sort candidates
                                                 #'occ-candidate-compare))))
-      (occ-dmessage "occ-obj-helm-act-on-multiple: candidates: %s" candidates)
-      (occ-dmessage "occ-obj-helm-act-on-multiple: preferred-candidate: %s" preferred-candidate)
+      ;; (occ-dmessage "occ-obj-helm-act-on-multiple: candidates: %s" candidates)
+      ;; (occ-dmessage "occ-obj-helm-act-on-multiple: preferred-candidate: %s" preferred-candidate)
+
       (if preferred-candidate
                     ;; Mean if first cand-sources has only one element then it will pack
                     ;; that element using `occ-build-hsrc-source' to be acted by default
@@ -555,12 +556,12 @@ if here is more than one filtered candidates then it make a helm-source and retu
         ;; Else all source will be passed to helm to be shown.
         (let ((helm-sources (cl-remove-if-not #'occ-hsrc-source-p
                                                    cand-sources)))
-          (occ-dmessage "occ-obj-helm-act-on-multiple:: len helm-sources %s" (length helm-sources))
-          (occ-dmessage "occ-obj-helm-act-on-multiple:: some helm-sources %s" (cl-some #'occ-source-main-p
-                                                                                      helm-sources))
+          ;; (occ-dmessage "occ-obj-helm-act-on-multiple:: len helm-sources %s" (length helm-sources))
+          ;; (occ-dmessage "occ-obj-helm-act-on-multiple:: some helm-sources %s" (cl-some #'occ-source-main-p
+          ;;                                                                              helm-sources))
           (when (cl-some #'occ-source-main-p
                          helm-sources)
-            (occ-dmessage "occ-obj-helm-act-on-multiple:: len helm-sources %s" (length helm-sources))
+            ;; (occ-dmessage "occ-obj-helm-act-on-multiple:: len helm-sources %s" (length helm-sources))
             (let* ((in-occ-helm t)
                    (timer (run-with-timer 0.08 nil #'(lambda ()
                                                        (if in-occ-helm
@@ -573,7 +574,7 @@ if here is more than one filtered candidates then it make a helm-source and retu
                               :buffer  (occ-helm-select-buffer)
                               :resume  'noresume)
                       ((quit error)
-                       (occ-dmessage "Enable Disable occ with occ-mode."))))
+                       (occ-message "Enable Disable occ with occ-mode."))))
                 (progn
                   (setq in-occ-helm nil)
                   (cancel-timer timer))))))))))
@@ -590,13 +591,13 @@ if here is more than one filtered candidates then it make a helm-source and retu
                                 timeout
                                 prompt)
   (when collections
-    (occ-debug "occ-obj-helm-act1: ap-normal: %s" ap-normal)
-    (occ-debug "occ-obj-helm-act1: ap-transf: %s" ap-transf)
+    ;; (occ-debug "occ-obj-helm-act1: ap-normal: %s" ap-normal)
+    ;; (occ-debug "occ-obj-helm-act1: ap-transf: %s" ap-transf)
     (let* ((ap-normal (occ-obj-build-ap-normal ap-normal))
            (ap-transf (occ-obj-build-ap-transf ap-transf
                                                (occ-obj-ap-base ap-normal))))
-      (occ-debug "occ-obj-helm-act2: ap-normal: %s" ap-normal)
-      (occ-debug "occ-obj-helm-act2: ap-transf: %s" ap-transf)
+      ;; (occ-debug "occ-obj-helm-act2: ap-normal: %s" ap-normal)
+      ;; (occ-debug "occ-obj-helm-act2: ap-transf: %s" ap-transf)
       (let* ((ap-normal (if return-transform (occ-obj-return-tranform ap-normal obj) ap-normal)) ;as return value is going to be used.
              (ap-transf (if return-transform (occ-obj-return-tranform ap-transf obj) ap-transf)))
         (occ-obj-helm-act-on-multiple obj
