@@ -30,6 +30,113 @@
 (require 'occ-util-common)
 (require 'occ-obj)
 
+
+(defvar occ-debug nil "Debug occ")
+(defvar occ-debug-uncond nil "occ-debug-uncond")
+
+
+;; https://emacs.stackexchange.com/questions/2310/can-functions-access-their-name
+(defun occ-get-current-func-name (&optional index)
+  "Get the symbol of the function this function is called from."
+  ;; 5 is the magic number that makes us look
+  ;; above this function
+  (let* ((index (+ 4 (or index 0)))
+         (frame (backtrace-frame index)))
+    ;; from what I can tell, top level function call frames
+    ;; start with t and the second value is the symbol of the function
+    (while (not (equal t (first frame)))
+      (setq frame (backtrace-frame (cl-incf index))))
+    (let ((fun (second frame)))
+      (if (symbolp fun)
+          (symbol-name fun)
+        (format "%s" fun)))))
+
+;;;###autoload
+(defun occ-enable-debug ()
+  (interactive)
+  (setq occ-debug t))
+;;;###autoload
+(defun occ-disable-debug ()
+  (interactive)
+  (setq occ-debug nil))
+
+;;;###autoload
+(defun occ-enable-debug-uncond ()
+  (interactive)
+  (setq occ-debug-uncond t))
+;;;###autoload
+(defun occ-disable-debug-uncond ()
+  (interactive)
+  (setq occ-debug-uncond nil))
+
+(defun occ-debug-index (index fmt &rest args)
+  (let* ((strfmtp (stringp fmt))
+         (fmt (if strfmtp fmt (car args)))
+         (args (if strfmtp args (cdr args)))
+         (index   (or index 0))
+         (funname (occ-get-current-func-name index)))
+    ;; (message "ftm: %s, funname %s" fmt funname)
+    (apply #'occ-lwarn :debug (concat funname ": " fmt) args)))
+
+(defun occ-dmessage-index (index fmt &rest args)
+  (let* ((index   (or index 0))
+         (funname (occ-get-current-func-name index)))
+    (apply #'message (concat funname ": " fmt)  args)
+    (apply #'occ-debug-index 4 fmt args)))
+
+(defun occ-debug (fmt &rest args)
+  (apply #'occ-debug-index 3 fmt args))
+
+;;;###autoload
+(defun occ-dmessage (fmt &rest args)
+  (apply #'occ-dmessage-index 3 fmt args))
+
+
+;;;###autoload
+(defun occ-lwarn (level &rest args)
+  (when occ-debug
+    (when (cl-first args)
+      (apply #'format args)
+      (when (member level '(:emergency :error :warning :debug))
+        (apply #'lwarn 'occ level args))
+      (unless (eq level :nodisplay)
+        (apply #'message args))))
+  nil)
+
+(defun occ-critical (fmt &rest args)
+  (apply #'occ-lwarn :critical fmt args)
+  (apply #'error fmt args))
+
+(defun occ-emergency (fmt &rest args)
+  (apply #'occ-lwarn :emergency fmt args)
+  (apply #'error fmt args))
+
+(defun occ-error (fmt &rest args)
+  (apply #'occ-lwarn :error fmt args)
+  (apply #'error fmt args))
+
+(defun occ-warn (fmt &rest args)
+  (apply #'occ-lwarn :warning fmt args))
+
+(defun occ-info (fmt &rest args)
+ (apply #'occ-lwarn :info fmt args))
+
+(defun occ-nodisplay (fmt &rest args)
+  (apply #'occ-lwarn :nodisplay fmt args))
+
+
+;;;###autoload
+(defun occ-message (fmt &rest args)
+  (apply #'message fmt args)
+  (apply #'occ-debug :debug fmt args))
+
+;;;###autoload
+(defun occ-debug-uncond (&rest args)
+  (apply #'occ-debug-index 2 args)
+  (when occ-debug-uncond
+    (apply #'occ-dmessage 2 args)))
+
+
 (cl-defmethod occ-do-print-tsk ((obj occ-obj-tsk))
   "Dump tsk"
   (occ-debug "occ-do-print-tsk: %s" obj))

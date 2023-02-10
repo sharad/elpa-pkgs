@@ -923,4 +923,26 @@ pointing to it."
 (cl-defmethod occ-obj-level ((obj occ-hsrc))
   (occ-hsrc-level obj))
 
-;;; occ-obj-accessor.el ends here
+
+(cl-defgeneric occ-name (obj)
+  "Return name")
+
+(cl-defmethod occ-name ((obj null))
+  "return NIL"
+  "NIL")
+
+(cl-defmethod occ-name ((obj occ-obj))
+  "return name"
+  (occ-obj-name obj))
+
+(cl-defmethod occ-name ((obj list))
+  "return name"
+  (cond ((assoc 'name) (cdr (assoc 'name)))
+        ((assoc :name) (cdr (assoc :name)))
+        ((assoc "name") (cdr (assoc "name")))
+        ((plist-get 'name) (plist-get 'name))
+        ((plist-get :name) (plist-get :name))
+        ((plist-get "name") (plist-get "name"))))
+
+
+;;; occ-obj-accessor.el ends here

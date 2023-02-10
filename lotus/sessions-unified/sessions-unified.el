@@ -121,13 +121,13 @@
     ;; start with t and the second value is the symbol of the function
     (while (not (equal t (first frame)))
       (setq frame (backtrace-frame (cl-incf index))))
-    (second frame)))
+    (let ((fun (second frame)))
+      (if (symbolp fun)
+          (symbol-name fun)
+        (format "%s" fun)))))
 
 (defun session-unfiy-notify (fmt &rest args)
-  (let* ((fun (get-current-func-name))
-         (funname (if (symbolp fun)
-                      (symbol-name fun)
-                    (format "%s" fun))))
+  (let ((funname (get-current-func-name)))
     ;; (message "test")
     (unless (eq *sessions-unified-utils-notify*
                 #'sessions-unified-utils-notify-default)

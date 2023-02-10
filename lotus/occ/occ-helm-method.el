@@ -246,7 +246,7 @@
                                       ;; TODO: check https://github.com/emacsmirror/edit-list/blob/master/edit-list.el
                                       ;; TODO: implement list editor
                                       ;; TODO: search emacs elisp interactively modify list
-                                      (occ-message "Manage filters here.")
+                                      (occ-dmessage "Manage filters here.")
                                       (setf filters default-filters)))
                                   ;; (funcall gen-candidates)
                                   (helm-refresh)))
@@ -294,15 +294,6 @@
                 (occ-debug " occ-obj-helm-build-collection-source: helm-action: %s" a))
               (occ-debug "occ-obj-helm-build-collection-source: helm-transfm: %s" helm-transfm))
 
-            ;; (let ((source (helm-build-sync-source source-name
-            ;;                 :candidates                     gen-candidate-lambda
-            ;;                 ;; :header-name
-            ;;                 :keymap                         h-map
-            ;;                 :action                         helm-actions
-            ;;                 :action-transformer             helm-transfm
-            ;;                 :filtered-candidate-transformer nil ;; (lambda (candidates source) candidates)
-            ;;                 :history                        'org-refile-history)))
-            ;;   (occ-build-hsrc-source source))
             ;; * Dynamic Match based templates
             ;; https://kitchingroup.cheme.cmu.edu/blog/2016/01/24/Modern-use-of-helm-sortable-candidates/
             (helm-make-source source-name 'occ-helm-source-sync ;; 'helm-source-sync
@@ -345,11 +336,11 @@ if here is more than one filtered candidates then it make a helm-source and retu
                                                 candidates-unfiltered))
          (filtered-count        (length candidates-filtered)))
 
-    (occ-message "occ-obj-helm-build-collection-source: len candidates-unfiltered %d" unfiltered-count)
-    (occ-message "occ-obj-helm-build-collection-source: len candidates-filtered %d" filtered-count)
+    (occ-dmessage "occ-obj-helm-build-collection-source: len candidates-unfiltered %d" unfiltered-count)
+    (occ-dmessage "occ-obj-helm-build-collection-source: len candidates-filtered %d" filtered-count)
 
     (when (<= filtered-count 3)
-      (occ-message "occ-obj-helm-build-collection-source: candidates-filtered = %s" candidates-filtered))
+      (occ-dmessage "occ-obj-helm-build-collection-source: candidates-filtered = %s" candidates-filtered))
 
     (if (= filtered-count 0)
         (occ-build-hsrc-null nil ;; (cl-first candidates-filtered)
@@ -477,15 +468,17 @@ if here is more than one filtered candidates then it make a helm-source and retu
   (let* ((helm-action (occ-obj-get-first-helm-actions-for-obj obj
                                                               ap-normal
                                                               ap-transf)))
-    (occ-message "occ-obj-helm-act-on-candidate: helm-action %s listp %s" helm-action (consp helm-action))
-    (occ-debug "occ-obj-helm-act-on-single: (cons p helm-action) %s, (functionp helm-action) %s"
+    (progn ;; debugs
+      (occ-dmessage "occ-obj-helm-act-on-candidate: helm-action %s listp %s" helm-action (consp helm-action))
+      (occ-debug "occ-obj-helm-act-on-single: (cons p helm-action) %s, (functionp helm-action) %s"
                  (consp helm-action)
                  (functionp helm-action))
-    (occ-message "occ-obj-helm-act-on-candidate: helm-action1 %s" helm-action)
-    (occ-debug "occ-obj-helm-act-on-single: (cons p (nth 1 helm-action)) %s, (functionp (nth 1 helm-action)) %s"
+      (occ-dmessage "occ-obj-helm-act-on-candidate: helm-action1 %s" helm-action)
+      (occ-debug "occ-obj-helm-act-on-single: (cons p (nth 1 helm-action)) %s, (functionp (nth 1 helm-action)) %s"
                  (consp (cl-rest helm-action))
                  (functionp (cl-rest helm-action)))
-    (occ-message "occ-obj-helm-act-on-candidate: helm-action2 %s" helm-action)
+      (occ-dmessage "occ-obj-helm-act-on-candidate: helm-action2 %s" helm-action))
+
     (if (occ-obj-obj source)
         (funcall helm-action (occ-obj-obj source))
       (occ-warn "occ-obj-helm-act-on-candidate: wrong source"))))
@@ -502,16 +495,12 @@ if here is more than one filtered candidates then it make a helm-source and retu
        ;; (not (occ-hsrc-null-p source))
        (occ-hsrc-source-p source)))
 
-(cl-defmethod occ-candidate-compare ((s1 occ-hsrc)
-                                       (s2 occ-hsrc))
-  ;; prefer candidate than source
+(cl-defmethod occ-candidate-compare ((s1 occ-hsrc-candidate)
+                                     (s2 occ-hsrc-candidate))
   ;; prefer non-optional level
-  (let (;; (s1-cand (if (occ-hsrc-candidate-p s1) 1 0)
-        ;; (s2-cand (if (occ-hsrc-candidate-p s2) 1 0))
-        (s1-level (if (eq (occ-obj-level s1) :optional) 0 1))
+  (let ((s1-level (if (eq (occ-obj-level s1) :optional) 0 1))
         (s2-level (if (eq (occ-obj-level s2) :optional) 0 1)))
-      (and ;; (> s1-cand s2-cand)
-           (> (occ-obj-rank s1) (occ-obj-rank s2))
+      (and (> (occ-obj-rank s1) (occ-obj-rank s2))
            (> s1-level s2-level))))
 
 (cl-defmethod occ-obj-helm-act-on-multiple ((obj         occ-ctx)
@@ -532,24 +521,30 @@ if here is more than one filtered candidates then it make a helm-source and retu
                                                   :ap-transf        ap-transf
                                                   :auto-select-if-only auto-select-if-only
                                                   :prompt           prompt)))
-    (occ-message "occ-obj-helm-act-on-multiple: got (len collections) = %d"
-                 (length collections))
-    (occ-message "occ-obj-helm-act-on-multiple: got (len cand-sources) = %d"
-                 (length cand-sources))
+    ;; (occ-dmessage "occ-obj-helm-act-on-multiple: %s"
+    ;;              (mapcar #'(lambda (c)
+    ;;                          (list (occ-name (occ-obj-obj c))
+    ;;                                (occ-hsrc-level c)
+    ;;                                (occ-hsrc-rank c)))
+    ;;                      cand-sources))
+    ;; (occ-dmessage "occ-obj-helm-act-on-multiple: got (len collections) = %d"
+    ;;              (length collections))
+    ;; (occ-dmessage "occ-obj-helm-act-on-multiple: got (len cand-sources) = %d"
+    ;;              (length cand-sources))
 
     ;; TODO: here decide what to do with cand-sources all has rank and level
-    (let* ((candidates        (cl-remove-if-not #'occ-candidate-main-p
-                                                cand-sources))
-           (sorted-candidates (sort candidates #'occ-candidate-compare)))
-      (occ-message "candidates: %s" candidates)
-      (occ-message "sorted-candidates: %s" sorted-candidates)
-      (if (and sorted-candidates
-               (occ-hsrc-candidate-p (cl-first sorted-candidates)))
+    (let* ((candidates          (cl-remove-if-not #'occ-candidate-main-p
+                                                  cand-sources))
+           (preferred-candidate (cl-first (sort candidates
+                                                #'occ-candidate-compare))))
+      (occ-dmessage "occ-obj-helm-act-on-multiple: candidates: %s" candidates)
+      (occ-dmessage "occ-obj-helm-act-on-multiple: preferred-candidate: %s" preferred-candidate)
+      (if preferred-candidate
                     ;; Mean if first cand-sources has only one element then it will pack
                     ;; that element using `occ-build-hsrc-source' to be acted by default
                     ;; action.
           (occ-obj-helm-act-on-candidate obj
-                                         (cl-first sorted-candidates)
+                                         preferred-candidate
                                          :filters          filters
                                          :builder          builder
                                          :ap-normal        ap-normal
@@ -558,24 +553,27 @@ if here is more than one filtered candidates then it make a helm-source and retu
                                          :prompt           prompt)
         ;; (occ-assert (cl-first cand-sources)) -- can happen when no contxtual match found
         ;; Else all source will be passed to helm to be shown.
-        (let ((helm-main-cand-sources (cl-remove-if-not #'occ-hsrc-source-p
-                                                        cand-sources)))
-          (when (cl-remove-if-not #'occ-source-main-p
-                                  helm-main-cand-sources)
-            (occ-message "len helm-main-cand-sources %s" (lenngth helm-main-cand-sources))
+        (let ((helm-sources (cl-remove-if-not #'occ-hsrc-source-p
+                                                   cand-sources)))
+          (occ-dmessage "occ-obj-helm-act-on-multiple:: len helm-sources %s" (length helm-sources))
+          (occ-dmessage "occ-obj-helm-act-on-multiple:: some helm-sources %s" (cl-some #'occ-source-main-p
+                                                                                      helm-sources))
+          (when (cl-some #'occ-source-main-p
+                         helm-sources)
+            (occ-dmessage "occ-obj-helm-act-on-multiple:: len helm-sources %s" (length helm-sources))
             (let* ((in-occ-helm t)
                    (timer (run-with-timer 0.08 nil #'(lambda ()
                                                        (if in-occ-helm
                                                            (helm-refresh)
                                                          (occ-debug "Running occ-list-select-internal helm is gone"))))))
               (unwind-protect
-                  (when (occ-obj-obj (cl-first helm-main-cand-sources))
+                  (when (occ-obj-obj (cl-first helm-sources))
                     (condition-case e
-                        (helm :sources (mapcar #'occ-obj-obj helm-main-cand-sources)
+                        (helm :sources (mapcar #'occ-obj-obj helm-sources)
                               :buffer  (occ-helm-select-buffer)
                               :resume  'noresume)
                       ((quit error)
-                       (occ-message "Enable Disable occ with occ-mode."))))
+                       (occ-dmessage "Enable Disable occ with occ-mode."))))
                 (progn
                   (setq in-occ-helm nil)
                   (cancel-timer timer))))))))))

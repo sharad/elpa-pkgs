@@ -43,9 +43,6 @@
 (defvar occ-org-clock-auto-clock-resolution nil "Control occ-org-clock-auto-clock-resolution at time of occ clock-in")
 
 
-(defvar occ-debug nil "Debug occ")
-(defvar occ-debug-uncond nil "occ-debug-uncond")
-
 
 (defvar occ-list-select-ap-normal-keys '(t actions general edit checkout))
 (defvar occ-list-select-ap-transf-keys '(t actions general edit checkout))
@@ -58,72 +55,6 @@
       (expand-file-name (file-name-directory file))
     (directory-file-name (expand-file-name (file-name-directory file)))))
 
-
-;;;###autoload
-(defun occ-enable-debug ()
-  (interactive)
-  (setq occ-debug t))
-;;;###autoload
-(defun occ-disable-debug ()
-  (interactive)
-  (setq occ-debug nil))
-
-;;;###autoload
-(defun occ-enable-debug-uncond ()
-  (interactive)
-  (setq occ-debug-uncond t))
-;;;###autoload
-(defun occ-disable-debug-uncond ()
-  (interactive)
-  (setq occ-debug-uncond nil))
-
-
-;;;###autoload
-(defun occ-lwarn (level &rest args)
-  (when occ-debug
-    (when (cl-first args)
-      (apply #'format args)
-      (when (member level '(:emergency :error :warning :debug))
-        (apply #'lwarn 'occ level args))
-      (unless (eq level :nodisplay)
-        (apply #'message args))))
-  nil)
-
-(defun occ-critical (fmt &rest args)
-  (apply #'occ-lwarn :critical fmt args)
-  (apply #'error fmt args))
-
-(defun occ-emergency (fmt &rest args)
-  (apply #'occ-lwarn :emergency fmt args)
-  (apply #'error fmt args))
-
-(defun occ-error (fmt &rest args)
-  (apply #'occ-lwarn :error fmt args)
-  (apply #'error fmt args))
-
-(defun occ-warn (fmt &rest args)
-  (apply #'occ-lwarn :warning fmt args))
-
-(defun occ-debug (fmt &rest args)
-  (apply #'occ-lwarn :debug fmt args))
-
-(defun occ-info (fmt &rest args)
-  (apply #'occ-lwarn :info fmt args))
-
-(defun occ-nodisplay (fmt &rest args)
-  (apply #'occ-lwarn :nodisplay fmt args))
-
-
-;;;###autoload
-(defun occ-message (&rest args)
-  (apply #'message args)
-  (apply #'occ-debug :debug args))
-
-;;;###autoload
-(defun occ-debug-uncond (&rest args)
-  (apply #'occ-debug args)
-  (when occ-debug-uncond
-    (apply #'occ-message args)))
 
 ;; ;;;###autoload
 ;; (defun occ-error (&rest args)
@@ -309,3 +240,4 @@
       (funcall candidate-fun)))
 
 ;;; occ-util-common.el ends here
+
