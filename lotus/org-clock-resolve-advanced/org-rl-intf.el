@@ -50,7 +50,7 @@
 (defun org-rl-find-intf-clock-p (clock-marker)
   (org-rl-interface-get (org-rl-find-intf clock-marker) :org-rl-clock-p))
 
-(defun org-rl-find-intf-clock-clock-in (clock-marker)
+(defun org-rl-find-intf-clock-in (clock-marker)
   (org-rl-interface-get (org-rl-find-intf clock-marker) :org-rl-clock-clock-in))
 
 (defun org-rl-find-intf-clock-out (clock-marker)
@@ -86,7 +86,7 @@
 
 
 (defun org-rl-intf-clock-clock-in (clock-marker &optional resume start-time)
-  (let ((fun (org-rl-find-intf-clock-clock-in clock-marker)))
+  (let ((fun (org-rl-find-intf-clock-in clock-marker)))
     (if fun
         (funcall fun clock-marker resume start-time)
       (error "Not found org-rl-clock-clock-in"))))
@@ -99,7 +99,7 @@
       (error "Not found org-rl-clock-out"))))
 
 (defun org-rl-intf-clock-clock-out (clock-marker &optional fail-quietly at-time)
-  (let ((fun (org-rl-find-intf-clock-clock-out clock-marker)))
+  (let ((fun (org-rl-find-intf-clock-out clock-marker)))
     (if fun
         (funcall fun clock-marker fail-quietly at-time)
       (error "Not found org-rl-clock-clock-out"))))
