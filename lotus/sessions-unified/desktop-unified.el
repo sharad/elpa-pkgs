@@ -39,11 +39,10 @@
                                                 dir default-filename mustmatch initial predicate)
     (if default-initial-input
         (with-timeout
-            (seconds
-             (progn
-               (when (active-minibuffer-window)
-                 (abort-recursive-edit))
-               initial))
+            (seconds (progn
+                       (when (active-minibuffer-window)
+                         (abort-recursive-edit))
+                       initial))
           (read-file-name prompt
                           dir
                           default-filename
