@@ -46,10 +46,14 @@
     ;; start with t and the second value is the symbol of the function
     (while (not (equal t (first frame)))
       (setq frame (backtrace-frame (cl-incf index))))
-    (let ((fun (second frame)))
-      (if (symbolp fun)
-          (symbol-name fun)
-        (format "%s" fun)))))
+    (let* ((fun     (second frame))
+           (funname (if (symbolp fun)
+                        (symbol-name fun)
+                      (format "%s" fun)))
+           (flen    (length funname)))
+      (substring funname 0 (if (> flen 10)
+                               10
+                             flen)))))
 
 ;;;###autoload
 (defun occ-enable-debug ()
@@ -89,7 +93,7 @@
 
 ;;;###autoload
 (defun occ-dmessage (fmt &rest args)
-  (apply #'occ-dmessage-index 3 fmt args))
+  (apply #'occ-dmessage-index 4 fmt args))
 
 
 ;;;###autoload

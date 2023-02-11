@@ -57,11 +57,10 @@
    'occ-tree-tsk-subtree fn tree args))
 
 
-
 (defun occ-tree-trim (limit subtree)
   (if (> limit 0)
       (let ((count (length subtree)))
-        (occ-message "occ-tree-trim: limit %s, count %d" limit count)
+        (occ-dmessage "occ-tree-trim: limit %s, count %d" limit count)
         (let ((limit (- limit count)))
           (when subtree
             (let ((sum (apply #'+ count (mapcar #'occ-tsk-sibling-count subtree))))
@@ -81,7 +80,6 @@
             (nthcdr (- count limit) subtree)
           subtree))
     subtree))
-  
 
 ;; (cl-defmethod occ-trim ((limit number) (tsk occ-tree-tsk))
 ;;   ())

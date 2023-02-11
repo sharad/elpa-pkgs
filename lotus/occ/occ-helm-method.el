@@ -336,8 +336,8 @@ if here is more than one filtered candidates then it make a helm-source and retu
                                                 candidates-unfiltered))
          (filtered-count        (length candidates-filtered)))
 
-    ;; (occ-dmessage "occ-obj-helm-build-collection-source: len candidates-unfiltered %d" unfiltered-count)
-    ;; (occ-dmessage "occ-obj-helm-build-collection-source: len candidates-filtered %d" filtered-count)
+    (occ-dmessage "len candidates-unfiltered %d" unfiltered-count)
+    (occ-dmessage "len candidates-filtered %d" filtered-count)
 
     ;; (when (<= filtered-count 3)
     ;;   (occ-dmessage "occ-obj-helm-build-collection-source: candidates-filtered = %s" candidates-filtered))
@@ -537,8 +537,8 @@ if here is more than one filtered candidates then it make a helm-source and retu
                                                   cand-sources))
            (preferred-candidate (cl-first (sort candidates
                                                 #'occ-candidate-compare))))
-      ;; (occ-dmessage "occ-obj-helm-act-on-multiple: candidates: %s" candidates)
-      ;; (occ-dmessage "occ-obj-helm-act-on-multiple: preferred-candidate: %s" preferred-candidate)
+      (occ-dmessage "candidates: %s" candidates)
+      (occ-dmessage "preferred-candidate: %s" preferred-candidate)
 
       (if preferred-candidate
                     ;; Mean if first cand-sources has only one element then it will pack
@@ -556,12 +556,12 @@ if here is more than one filtered candidates then it make a helm-source and retu
         ;; Else all source will be passed to helm to be shown.
         (let ((helm-sources (cl-remove-if-not #'occ-hsrc-source-p
                                                    cand-sources)))
-          ;; (occ-dmessage "occ-obj-helm-act-on-multiple:: len helm-sources %s" (length helm-sources))
-          ;; (occ-dmessage "occ-obj-helm-act-on-multiple:: some helm-sources %s" (cl-some #'occ-source-main-p
-          ;;                                                                              helm-sources))
+          (occ-dmessage "len helm-sources %d" (length helm-sources))
+          (occ-dmessage "some helm-sources %s" (cl-some #'occ-source-main-p
+                                                        helm-sources))
           (when (cl-some #'occ-source-main-p
                          helm-sources)
-            ;; (occ-dmessage "occ-obj-helm-act-on-multiple:: len helm-sources %s" (length helm-sources))
+            (occ-dmessage "len helm-sources %d" (length helm-sources))
             (let* ((in-occ-helm t)
                    (timer (run-with-timer 0.08 nil #'(lambda ()
                                                        (if in-occ-helm
