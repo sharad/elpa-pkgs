@@ -441,8 +441,8 @@ if here is more than one filtered candidates then it make a helm-source and retu
                                                       (apn occ-ap-normal)
                                                       (apt null))
   (let ((act (cl-first (occ-obj-ap-helm-get-actions obj
-                                                 apn
-                                                 apt))))
+                                                    apn
+                                                    apt))))
     (cl-rest act)))
 
 (cl-defmethod occ-obj-get-first-helm-actions-for-obj ((obj occ-obj)
