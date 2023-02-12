@@ -37,9 +37,6 @@
 (defvar occ-debug-uncond nil "occ-debug-uncond")
 
 
-
-
-
 ;; https://emacs.stackexchange.com/questions/2310/can-functions-access-their-name
 (defun occ-get-current-func-name (&optional index)
   "Get the symbol of the function this function is called from."
