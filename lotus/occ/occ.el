@@ -263,7 +263,7 @@
   (interactive)
   (occ-message "Occ mode is %s and switch-buffer-functions is %s"
                (if occ-mode "on" "off")
-               (if (memq 'switch-buffer-functions-run post-command-hook)
+               (if (memq 'switch-buffer-functions-run (default-value 'post-command-hook))
                    "working"
                  "not working")))
 
