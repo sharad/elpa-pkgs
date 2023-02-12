@@ -33,7 +33,6 @@
 (require 'occ-main)
 (require 'occ-util-common)
 (require 'occ-filter-config)
-;; (require 'occ-commands)
 (require 'occ-resolve-clock)
 (require 'occ-test)
 (require 'occ-config)
@@ -191,6 +190,10 @@
       ;; (add-hook 'buffer-list-update-hook     'occ-run-curr-ctx-timer t)
       ;; (add-hook 'elscreen-screen-update-hook 'occ-run-curr-ctx-timer t)
       ;; (add-hook 'elscreen-goto-hook          'occ-run-curr-ctx-timer t)
+      ;; (debug)
+      (unless (memq 'switch-buffer-functions-run post-command-hook)
+        (add-hook 'post-command-hook
+                  'switch-buffer-functions-run))
       (add-hook 'switch-buffer-functions #'occ-switch-buffer-run-curr-ctx-timer-function)
       (add-hook 'org-mode-hook           #'occ-add-after-save-hook-fun-in-org-mode)
       (add-hook 'org-mode-hook           #'occ-add-org-file-timer))))
@@ -236,7 +239,8 @@
           (occ-error "Not able to start occ")
           nil))))
   ;; newly added
-  (org-clock-load))
+  ;; (org-clock-load) ;; is getting struck
+  (run-with-idle-timer 3 nil #'org-clock-load))
 
 ;;;###autoload
 (defun occ-uninitialize ()
@@ -254,6 +258,14 @@
       (unless (member propstr org-use-property-inheritance)
         (delete propstr org-use-property-inheritance))))
   (setq occ-mode nil))
+
+(defun occ-status ()
+  (interactive)
+  (occ-message "Occ mode is %s and switch-buffer-functions is %s"
+               (if occ-mode "on" "off")
+               (if (memq 'switch-buffer-functions-run post-command-hook)
+                   "working"
+                 "not working")))
 
 
 (defun occ-find-library-dir (library)

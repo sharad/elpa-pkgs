@@ -414,7 +414,8 @@
 
 
 ;;;###autoload
-(defun occ-switch-buffer-run-curr-ctx-timer-function (prev next)
+(defun occ-switch-buffer-run-curr-ctx-timer-function (prev
+                                                      next)
   (occ-debug "occ-switch-buffer-run-curr-ctx-timer-function: begin")
   (setq *occ-last-buff-sel-time* (current-time))
   (occ-do-try-clock-schedule-next-timeout 'buffer-switch))
