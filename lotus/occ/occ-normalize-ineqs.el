@@ -47,16 +47,15 @@
               occ-ineqs))
 
 
-
 ;; (occ-obj-properties-to-calculate-rank 'occ-tsk)  
 ;; (occ-obj-properties-to-calculate-rank 'occ-obj-ctx-tsk)
 
 (defvar occ-tsk-normalized-ineq '(none 1 key 10 status 20 current-clock 40 timebeing 50 root 10 currfile 20))
 (defvar occ-obj-ctx-tsk-normalized-ineq '(none 1 root 10 currfile 20))
 
-
 (defun occ-ineq-get (prop value)
-  (let ((factor (plist-get occ-tsk-normalized-ineq prop)))
+  (let ((factor (plist-get occ-tsk-normalized-ineq
+                           prop)))
     (* factor
        value)))
 
