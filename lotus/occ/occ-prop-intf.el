@@ -58,6 +58,22 @@
   "Return the RANK (number) for OBJ based on the property PROPERTY"
   (occ-debug "occ-obj-rankprop(obj=%s symbol=%s)" obj property)
   (occ-obj-rankprop obj property))
+
+
+
+;; adding base propetry NIL for helping to add relative properties
+(cl-defmethod occ-obj-rankprop ((obj  occ-tsk)
+                                (property (eql nil)))
+  "Return the RANK (number) for OBJ based on the property PROPERTY"
+  (occ-debug "occ-obj-rankprop(obj=%s symbol=%s)"
+             obj
+             property)
+  0)
+(cl-defmethod occ-obj-rankprop ((obj  occ-obj-ctx-tsk)
+                                (property (eql nil)))
+  "Return the RANK (number) for OBJ based on the property PROPERTY"
+  (occ-debug "occ-obj-rankprop(obj=%s symbol=%s)" obj property)
+  (occ-obj-rankprop obj property))
 
 
 (cl-defgeneric occ-obj-has-p (obj

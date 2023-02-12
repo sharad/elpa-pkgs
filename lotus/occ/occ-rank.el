@@ -30,6 +30,7 @@
 (require 'occ-macros)
 (require 'occ-util-common)
 (require 'occ-prop-intf)
+(require 'occ-normalize-ineqs)
 
 ;; TODO: graded ranking where ranking will be under priority of properties, where one can not go beyond above one, normally
 
@@ -47,7 +48,7 @@
   (let* ((props (occ-obj-properties-to-calculate-rank obj))
          (rank  (reduce #'+
                         (mapcar #'(lambda (slot)
-                                    (occ-obj-rankprop obj (downcase-sym slot)))
+                                    (occ-obj-ineq-rankprop obj (downcase-sym slot)))
                                 props))))
     ;; (occ-debug "occ-obj-calculate-rank(obj occ-tsk): rank = %d" rank)
     rank))
@@ -60,10 +61,11 @@
   (occ-debug "occ-obj-calculate-rank(obj occ-obj-ctx-tsk) %s" (occ-obj-properties-to-calculate-rank obj))
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (let ((rank (reduce #'+
-                        (mapcar #'(lambda (slot)
-                                    (occ-obj-rankprop obj (downcase-sym slot)))
-                                (occ-obj-properties-to-calculate-rank obj)))))
+    (let* ((props (occ-obj-properties-to-calculate-rank obj))
+           (rank  (reduce #'+
+                            (mapcar #'(lambda (slot)
+                                        (occ-obj-ineq-rankprop obj (downcase-sym slot)))
+                                      props))))
       ;; (occ-debug "occ-obj-calculate-rank(obj occ-obj-ctx-tsk): rank = %d" rank)
       rank)))
 
