@@ -27,6 +27,7 @@
 (provide 'occ-normalize-ineqs)
 
 
+(require 'occ-obj)
 (require 'occ-prop-intf)
 
 
@@ -69,11 +70,13 @@
 (cl-defgeneric occ-obj-ineq-rankprop (obj prop)
   "Get normalized rank.")
 
-(cl-defmethod occ-obj-ineq-rankprop ((obj occ-tsk) (symbol prop))
+(cl-defmethod occ-obj-ineq-rankprop ((obj occ-tsk)
+                                     (prop symbol))
   (occ-ineq-get prop
                 (occ-obj-rankprop obj prop)))
 
-(cl-defmethod occ-obj-ineq-rankprop ((obj occ-obj-ctx-tsk) (symbol prop))
+(cl-defmethod occ-obj-ineq-rankprop ((obj  occ-obj-ctx-tsk)
+                                     (prop symbol))
   (occ-ineq-get prop
                 (occ-obj-rankprop obj prop)))
 

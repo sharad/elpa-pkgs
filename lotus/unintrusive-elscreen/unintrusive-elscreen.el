@@ -116,5 +116,9 @@
         (unintrusive-elscreen-display-tab-off))
       (define-key elscreen-map (kbd "<up>") nil)
       (global-set-key (kbd "C-z <up>") nil))))
+;;;###autoload
+(defun unintrusive-elscreen-display-tab-enable ()
+  (interactive)
+  (unintrusive-elscreen-display-tab-mode 1))
 
 ;;; unintrusive-elscreen.el ends here
