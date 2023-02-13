@@ -43,22 +43,28 @@
   ;; 5 is the magic number that makes us look
   ;; above this function
   (let* ((index (+ 4 (or index 0)))
-         (frame (backtrace-frame index)))
+         (frame (backtrace-frame index))
+         (max   (+ index 10)))
     ;; from what I can tell, top level function call frames
     ;; start with t and the second value is the symbol of the function
-    (while (not (equal t (first frame)))
+    (while (and (> max 0)
+                (not (equal t (first frame))))
+      (cl-decf max)
       (setq frame (backtrace-frame (cl-incf index))))
-    (let* ((fun     (second frame))
-           (funname (if (symbolp fun)
-                        (symbol-name fun)
-                      (format "%s" fun)))
-           (flen    (length funname)))
-      (substring funname 0 (if (> flen 10)
-                               10
-                             flen)))))
+    ;; (message "index %d" index)
+    (if (equal t (first frame))
+        (let* ((fun     (second frame))
+               (funname (if (symbolp fun)
+                            (symbol-name fun)
+                          (format "%s" fun)))
+               (flen    (length funname)))
+          (substring funname 0 (if (> flen 10)
+                                   10
+                                 flen)))
+      "unknown")))
 
 
-;;;###autoload  
+;;;###autoload
 (defun occ-set-log-level (level)
   (interactive (list (intern (completing-read (format "Log level [%s]: " occ-log-level)
                                               (reverse occ-log-levels)
@@ -100,17 +106,19 @@
             (memq level occ-log-current-levels))
     (apply #'lwarn 'occ level args)
     (apply #'message args))
-    
   nil)
 
 (defun occ-debug-index (index fmt &rest args)
   (let* ((strfmtp (stringp fmt))
-         (level (if strfmtp :debug fmt))
-         (fmt (if strfmtp fmt (car args)))
-         (args (if strfmtp args (cdr args)))
-         (index   (or index 0))
-         (funname (occ-get-current-func-name index)))
-    (apply #'occ-lwarn level (concat funname ": " fmt) args)))
+         (level   (if strfmtp :debug fmt)))
+    (when (memq level occ-log-current-levels)
+      (let ((fmt (if strfmtp fmt (car args)))
+            (args (if strfmtp args (cdr args)))
+            (index   (or index 0))
+            (funname (occ-get-current-func-name index)))
+        (apply #'occ-lwarn level
+               (concat funname ": " fmt)
+               args)))))
 
 
 (defun occ-debug (fmt &rest args)
