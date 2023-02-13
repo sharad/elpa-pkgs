@@ -120,5 +120,9 @@
 (defun unintrusive-elscreen-display-tab-enable ()
   (interactive)
   (unintrusive-elscreen-display-tab-mode 1))
+;;;###autoload
+(defun unintrusive-elscreen-display-tab-disable ()
+  (interactive)
+  (unintrusive-elscreen-display-tab-mode -1))
 
 ;;; unintrusive-elscreen.el ends here
