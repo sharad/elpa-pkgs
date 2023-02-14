@@ -187,6 +187,5 @@
                       #'(lambda ()
                           (without-active-minibuffer
                            (read-from-minibuffer "Test: ")))))
-
 
 ;;; occ-debug-method.el ends here
