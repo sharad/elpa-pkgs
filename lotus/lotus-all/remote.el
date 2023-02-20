@@ -27,6 +27,7 @@
 (provide 'remote)
 
 
+(require 'utils-custom)
 (require 'lotus-misc-utils)
 
 

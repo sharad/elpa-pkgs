@@ -24,15 +24,15 @@
 
 ;;; Code:
 
+(provide 'utils-custom)
+
 
 
 (require 'cl)
 
 (eval-when-compile
   '(require 'cl))
-
-
-
+
 
 (defvar resume-workdir "/home/s/paradise/Projects/doc/resume" "resume work dir.")
 
@@ -376,7 +376,5 @@ Elements of ALIST that are not conses are ignored."
             (setcdr tail (cl-rest tail-cdr))
             (setq tail tail-cdr))))
     alist))
-
-
-(provide 'utils-custom)
+
 ;;; utils-custom.el ends here

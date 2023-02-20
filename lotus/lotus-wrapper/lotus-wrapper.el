@@ -279,3 +279,24 @@ attempts to find a file whose name is produced by (format FMT FILENAME)."
             (ggtags-find-project)
           (ggtags-make-project ggtags-project-root))))))
 
+
+(defun lsp-headerline--build-path-up-to-project-string ()
+  "Build the path-up-to-project segment for the breadcrumb."
+  (if-let ((root (lsp-headerline--workspace-root)))
+      (let ((segments (progn
+                        (unless lsp-headerline--path-up-to-project-segments
+                          (setq lsp-headerline--path-up-to-project-segments
+                                (list (lsp-headerline--path-up-to-project-root
+                                       root
+                                       (file-name-directory (buffer-file-name))))))
+                        (car lsp-headerline--path-up-to-project-segments))))
+        (mapconcat (lambda (next-dir)
+                     (propertize next-dir
+                                 'font-lock-face
+                                 (lsp-headerline--face-for-path
+                                  (get-text-property
+                                   0 'lsp-full-path next-dir))))
+                   segments
+                   (concat " " (lsp-headerline--arrow-icon) " ")))
+    ""))
+
