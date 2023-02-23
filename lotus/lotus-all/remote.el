@@ -477,22 +477,22 @@
                   (not (string-equal (getenv "SSH_AUTH_SOCK")
                                      (getenv "SSH_AUTH_SOCK" (selected-frame))))
                   (not (shell-command-local-no-output "ssh-add -l < /dev/null")))
-          (if (memq epa-file-handler file-name-handler-alist)
-              (if t                     ;disable current reading and open ~/.authinfo.gpg
-                  (without-active-minibuffer
-                    (with-temp-buffer
-                      (let ((default-directory "~/"))
-                        (find-file-noselect (or (plist-get (car auth-sources) :source)
-                                                "~/.authinfo.gpg")))))
-               (if (not (lotus-active-recursive-edit-p))
-                  (with-temp-buffer
-                    (let ((default-directory "~/"))
-                      (find-file-noselect (or (plist-get (car auth-sources) :source)
-                                              "~/.authinfo.gpg"))))
-                (message "Minibuffer already active")))
-            (message "update-ssh-agent: epa is not enabled."))
-          (update-ssh-agent-1)))
-
+          (when nil
+            (if (memq epa-file-handler file-name-handler-alist)
+                (if t                     ;disable current reading and open ~/.authinfo.gpg
+                    (without-active-minibuffer
+                      (with-temp-buffer
+                        (let ((default-directory "~/"))
+                          (find-file-noselect (or (plist-get (car auth-sources) :source)
+                                                  "~/.authinfo.gpg")))))
+                  (if (not (lotus-active-recursive-edit-p))
+                      (with-temp-buffer
+                        (let ((default-directory "~/"))
+                          (find-file-noselect (or (plist-get (car auth-sources) :source)
+                                                  "~/.authinfo.gpg"))))
+                    (message "Minibuffer already active")))
+              (message "update-ssh-agent: epa is not enabled."))
+            (update-ssh-agent-1))))
 
       (progn
         (defadvice tramp-file-name-handler
