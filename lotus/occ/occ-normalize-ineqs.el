@@ -48,12 +48,12 @@
               occ-ineqs))
 
 
-;; (occ-obj-properties-to-calculate-rank 'occ-tsk)  
+;; (occ-obj-properties-to-calculate-rank 'occ-tsk)
 ;; (occ-obj-properties-to-calculate-rank 'occ-obj-ctx-tsk)
 
 (defvar occ-tsk-normalized-ineq '(none 1 key 10 status 20 current-clock 40 timebeing 50 root 10 currfile 20))
 (defvar occ-obj-ctx-tsk-normalized-ineq '(none 1 root 10 currfile 20))
-
+
 
 (defun occ-ineq-sum ()
   (reduce #'+
@@ -79,5 +79,12 @@
                                      (prop symbol))
   (occ-ineq-get prop
                 (occ-obj-rankprop obj prop)))
+
+
+
+(defvar occ-ineqs-collection '((key (gt (* 10 none)))))
+(defvar occ-ineq-in-resolve-collection)
+(defun occ-normalize (collection))
+
 
 ;;; occ-normalize-ineqs.el ends here
