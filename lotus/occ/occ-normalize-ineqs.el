@@ -86,5 +86,44 @@
 (defvar occ-ineq-in-resolve-collection)
 (defun occ-normalize (collection))
 
+
+
+(defvar occ-ineqs '())
+(defvar occ-normalized-ineq '())
+
+(defgeneric occ-add-ineq (operator
+                          prop1
+                          prop2)
+  "Add relative property.")
+
+(cl-defmethod occ-add-ineq ((operator symbol)
+                            (prop1    symbol)
+                            (prop2    symbol))
+  "Add relative property."
+  (cl-assert (memq operator '(gt lt eq)))
+  (cl-pushnew (list operator prop1 prop2)
+              occ-ineqs))
+
+
+(defun eval-ineq (ineq)
+  (let ((op   (nth 0 ineq))
+        (exp1 (nth 1 ineq))
+        (exp2 (nth 2 ineq)))
+    (cond ((eq op '>) (list (eval-ineq exp1)
+                            (list '+ (eval-ineq exp2) 10)))
+          ((eq op '<) (list (eval-ineq exp2)
+                            (list '+ (eval-ineq exp1) 10)))
+          ((eq op '*) (list '*
+                            (eval-ineq exp1)
+                            exp2)))))
+
+'( ('> a b)
+   ('< c a)
+   ('> e (* a 4)))
+
+
+
+
+
 
 ;;; occ-normalize-ineqs.el ends here
