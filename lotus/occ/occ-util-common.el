@@ -107,8 +107,9 @@
     (progn
      (lotus-org-clock-load-only)
      (prog1
-         (let ((org-clock-persist               occ-org-clock-persist)
-               (org-clock-auto-clock-resolution occ-org-clock-auto-clock-resolution))
+         (let ((org-clock-persist               nil)  ;; occ-org-clock-persist
+               (org-clock-auto-clock-resolution nil)) ;; occ-org-clock-auto-clock-resolution)
+           ;; BUG: clocking in to other unnamed clock than specified
            (org-clock-clock-in clock
                                resume
                                start-time)
