@@ -418,7 +418,11 @@
                                                       next)
   (occ-debug "occ-switch-buffer-run-curr-ctx-timer-function: begin")
   (setq *occ-last-buff-sel-time* (current-time))
-  (occ-do-try-clock-schedule-next-timeout 'buffer-switch))
+  ;; (occ-do-try-clock-schedule-next-timeout 'buffer-switch)
+  ;; avoiding direct run as failure will cause removal of switch-buffer-function from post-command-hook
+  (run-with-timer nil nil
+                  #'occ-do-try-clock-schedule-next-timeout
+                  'buffer-switch))
 
 
 (defvar occ-add-inquery        0)

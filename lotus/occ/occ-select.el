@@ -43,6 +43,21 @@
 ;; helm-buffers
 ;; helm-buffer
 
+;; new BUG:
+;; assert-time: time = now [5 times]
+;; assert-time: time = (25485 39600) [5 times]
+;; assert-time: time = now [4 times]
+;; Error: (dbus-error "org.freedesktop.DBus.Error.NoReply" "Call timed out")
+;; Clock starts at [2023-03-10 Fri 12:56] - showing entire task time.
+;; IMPORTANT: please install Org from GNU ELPA as Org ELPA will close before Org 9.6 [2 times]
+;; Error running timer ‘occ-do-clock-in-curr-ctx-if-not-timer-function’: (error #("occ-current-ctxual-tsk: Contextual Task: Task:  * Unnamed task 305 from head of *occ-clocked-ctxual-tsk-ctx-history* is not equal to current clocking clock Marker: STARTED Unnamed task 171" 48 49 (face (org-superstar-header-bullet org-level-1) composition (0 1 [9673])) 49 50 (face org-level-1) 50 66 (face org-level-1) 164 171 (face ((:foreground "red" :weight bold) org-level-2) :org-clock-minutes 47579 fontified nil :org-clock-minutes-today 751 effort-minutes 10.0 effort "10" org-category "Unnamed") 171 172 (face org-level-2) 172 188 (face org-level-2 :org-clock-minutes 47579 fontified nil :org-clock-minutes-today 751 effort-minutes 10.0 effort "10" org-category "Unnamed")))
+;; IMPORTANT: please install Org from GNU ELPA as Org ELPA will close before Org 9.6
+;; Error in post-command-hook (switch-buffer-functions-run): (error #("occ-current-ctxual-tsk: Contextual Task: Task:  * Unnamed task 305 from head of *occ-clocked-ctxual-tsk-ctx-history* is not equal to current clocking clock Marker: STARTED Unnamed task 171" 48 49 (face (org-superstar-header-bullet org-level-1) composition (0 1 [9673])) 49 50 (face org-level-1) 50 66 (face org-level-1) 164 171 (face ((:foreground "red" :weight bold) org-level-2) :org-clock-minutes 47579 fontified nil :org-clock-minutes-today 751 effort-minutes 10.0 effort "10" org-category "Unnamed") 171 172 (face org-level-2) 172 188 (face org-level-2 :org-clock-minutes 47579 fontified nil :org-clock-minutes-today 751 effort-minutes 10.0 effort "10" org-category "Unnamed")))
+;; Mark set
+;; next-line: End of buffer [4 times]
+;; Mark set [3 times]
+
+
 (defvar occ-helm-select-buffer-name "*helm occ select")
 (defun occ-helm-select-buffer ()
   occ-helm-select-buffer-name)

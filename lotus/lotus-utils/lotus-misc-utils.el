@@ -49,16 +49,17 @@
 
 ;;;###autoload
 (defun lotus-current-window-configuration (&optional frame)
-  (let* ((frame (or frame     (selected-frame)))
+  (let* ((frame               (or frame
+                                  (selected-frame)))
          (elscreen-entry      (when (featurep 'elscreen)
                                 (when (and frame
                                            elscreen-frame-confs
-                                           (elscreen-get-frame-confs frame))
-                                  (elscreen-get-current-screen))))
+                                           (elscreen-get-frame-confs frame))))
+                                  (elscreen-get-current-screen))
          (elscreen-win-config (when elscreen-entry
-                                (elscreen-current-window-configuration)))
+                               (elscreen-current-window-configuration)))
          (win-config          (unless elscreen-win-config
-                                (current-window-configuration frame))))
+                       (current-window-configuration frame))))
     (list :frame               frame
           :elscreen-entry      elscreen-entry
           :elscreen-win-config elscreen-win-config
@@ -66,10 +67,10 @@
 
 ;;;###autoload
 (defun lotus-set-window-configuration (config)
-  (let ((frame (plist-get config :frame))
-        (elscreen-entry (plist-get config :elscreen-entry))
+  (let ((frame               (plist-get config :frame))
+        (elscreen-entry      (plist-get config :elscreen-entry))
         (elscreen-win-config (plist-get config :elscreen-win-config))
-        (win-config (plist-get config :win-config)))
+        (win-config          (plist-get config :win-config)))
     (if frame
         (if (frame-live-p frame)
             (with-selected-frame frame
@@ -81,8 +82,8 @@
                        (featurep 'elscreen))
                   (lotus-elscreen-with-screen elscreen-entry
                                               (elscreen-set-window-configuration elscreen-entry elscreen-win-config))
-                (if win-config
-                    (set-window-configuration win-config))))
+                (when win-config
+                  (set-window-configuration win-config))))
           (error "Gievn frame %s is not live now" frame))
       (error "Frame is nil"))))
 
@@ -191,48 +192,43 @@
   ;; TODO: improve it.
   ;; If the mode line might interfere with the calculator
   ;; buffer, use 3 lines instead.
-  (if (and
-       (fboundp 'face-attr-construct)
-       (let* ((dh (plist-get (face-attr-construct 'default) :height))
-              (mf (face-attr-construct 'mode-line))
-              (mh (plist-get mf :height)))
-         ;; If the mode line is shorter than the default,
-         ;; stick with 2 lines.  (It may be necessary to
-         ;; check how much shorter.)
-         (and
-          (not
-           (or (and (integerp dh)
-                    (integerp mh)
-                    (< mh dh))
-               (and (numberp mh)
-                    (not (integerp mh))
-                    (< mh 1))))
-          (or
-           ;; If the mode line is taller than the default,
-           ;; use 3 lines.
-           (and (integerp dh)
-                (integerp mh)
-                (> mh dh))
-           (and (numberp mh)
-                (not (integerp mh))
-                (> mh 1))
-           ;; If the mode line has a box with non-negative line-width,
-           ;; use 3 lines.
-           (let* ((bx (plist-get mf :box))
-                  (lh (plist-get bx :line-width)))
-             (and bx
-                  (or
-                   (not lh)
-                   (> lh 0))))
-           ;; If the mode line has an overline, use 3 lines.
-           (plist-get (face-attr-construct 'mode-line) :overline)))))
+  (if (and (fboundp 'face-attr-construct)
+           (let* ((dh (plist-get (face-attr-construct 'default) :height))
+                  (mf (face-attr-construct 'mode-line))
+                  (mh (plist-get mf :height)))
+             ;; If the mode line is shorter than the default,
+             ;; stick with 2 lines.  (It may be necessary to
+             ;; check how much shorter.)
+             (and (not (or (and (integerp dh)
+                                (integerp mh)
+                                (< mh dh))
+                           (and (numberp mh)
+                                (not (integerp mh))
+                                (< mh 1))))
+                  ;; If the mode line is taller than the default,
+                  ;; use 3 lines.
+                  (or (and (integerp dh)
+                           (integerp mh)
+                           (> mh dh))
+                      (and (numberp mh)
+                           (not (integerp mh))
+                           (> mh 1))
+                      ;; If the mode line has a box with non-negative line-width,
+                      ;; use 3 lines.
+                      (let* ((bx (plist-get mf :box))
+                             (lh (plist-get bx :line-width)))
+                        (and bx
+                             (or (not lh)
+                                 (> lh 0))))
+                      ;; If the mode line has an overline, use 3 lines.
+                      (plist-get (face-attr-construct 'mode-line) :overline)))))
       -12 -10))
 
 ;; create smaller and proper sized window
 ;; TODO: org-fit-window-to-buffer
 ;;;###autoload
 (defun lotus-make-new-win ()
-  (let ((size (lotus-new-lower-win-size))
+  (let ((size              (lotus-new-lower-win-size))
         (window-min-height 7))
     (prog1
         (split-window-below size)
@@ -307,16 +303,14 @@
                                      (lotus-set-window-configuration ,temp-win-config)
                                      (setq ,temp-win-config nil)))))
        (lotus-with-new-win ,newwin
-         (let* ((,timer
-                 (when (and
-                        ,timeout
-                        (numberp ,timeout)
-                        (not (> ,timeout 0)))
-                   (run-with-idle-plus-timer ,timeout
-                                             nil
-                                             ,cleanupfn-newwin
-                                             ,newwin
-                                             ,cleanupfn-local))))
+         (let* ((,timer (when (and ,timeout
+                                   (numberp ,timeout)
+                                   (not (> ,timeout 0)))
+                          (run-with-idle-plus-timer ,timeout
+                                                    nil
+                                                    ,cleanupfn-newwin
+                                                    ,newwin
+                                                    ,cleanupfn-local))))
            (condition-case err
                (progn
                  ,@body)
@@ -974,19 +968,17 @@
   ;; todo: how to cancel the timer later
   (let ((timer nil)
         (frame (selected-frame)))
-    (letrec ((focusfn
-              (lambda ()
-                (if (and
-                     (lotus-has-focus-p)
-                     (eq frame (selected-frame))
-                     (frame-visible-p (selected-frame)))
-                    (funcall fn arg)
-                  (progn
-                    (when timer
-                      (cancel-timer timer)
-                      (setq timer nil))
-                    (setq timer
-                          (run-with-idle-timer (+ sec sec) repeat focusfn)))))))
+    (letrec ((focusfn #'(lambda ()
+                          (if (and (lotus-has-focus-p)
+                                   (eq frame (selected-frame))
+                                   (frame-visible-p (selected-frame)))
+                              (funcall fn arg)
+                            (progn
+                              (when timer
+                                (cancel-timer timer)
+                                (setq timer nil))
+                              (setq timer
+                                    (run-with-idle-timer (+ sec sec) repeat focusfn)))))))
       (setq timer
             (run-with-idle-timer sec repeat focusfn)))))
 

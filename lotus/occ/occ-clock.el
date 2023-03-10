@@ -165,7 +165,13 @@
 
           (setq retval t)
 
-          (push obj *occ-clocked-ctxual-tsk-ctx-history*)
+          (push obj
+                *occ-clocked-ctxual-tsk-ctx-history*)
+
+          ;; check if current task is proper.
+          ;;; if above (occ-do-clock-in obj-tsk) clocked in properly.
+          (occ-assert (occ-obj-marker= obj org-clock-marker))
+          (occ-current-tsk)
 
           (when old-buff
             (with-current-buffer old-buff

@@ -24,6 +24,9 @@
 
 ;;; Code:
 
+(provide 'timer-utils-lotus)
+
+
 ;; (defvar debug-tags-level-list)          ;prepare debug it is in xlotus-debug-config
 
 ;; (add-to-list 'debug-tags-level-list
@@ -32,6 +35,7 @@
 (defun debug-message (fmt &rest args)
   (when nil
     (apply #'message fmt args)))
+
 
 ;;;###autoload
 (defun run-with-idle-plus-timer (secs repeat function &rest args)
@@ -127,6 +131,7 @@ Benefit with this timer is that it will very much ensure before running that use
 
 (defun run-with-idle-timer-nonobtrusive-simple (sec repeat fn &optional arg)
   (run-with-idle-timer sec repeat fn arg))
+
 
 (when nil
   (progn
@@ -140,6 +145,5 @@ Benefit with this timer is that it will very much ensure before running that use
                                                        (setq nonobtrusive-test-timer nil))
                                                    nil
                                                    t))))
-
-(provide 'timer-utils-lotus)
+
 ;;; timer-utils-lotus.el ends here

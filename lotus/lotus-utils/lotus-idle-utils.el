@@ -26,6 +26,7 @@
 
 (provide 'lotus-idle-utils)
 
+
 (require 'frame)
 (require 'timer)
 (require 'timer-utils-lotus)

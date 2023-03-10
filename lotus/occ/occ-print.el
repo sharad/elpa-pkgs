@@ -45,10 +45,10 @@
 (defvar occ-fontify-like-org-file-bullet ?\▆ "occ-fontify-like-org-file-bullet")
 ;; (defvar occ-fontify-like-org-file-bullet ?\▆ "occ-fontify-like-org-file-bullet")
 
-(cl-defgeneric occ-obj-fontify-like-in-org-mode (obj)
+(cl-defgeneric occ-obj-fontify-like-in-org-mode (obj &optional no-propterties)
   "occ-obj-fontify-like-in-org-mode")
 
-(cl-defmethod occ-obj-fontify-like-in-org-mode ((obj marker))
+(cl-defmethod occ-obj-fontify-like-in-org-mode ((obj marker) &optional no-propterties)
   "Insert a line for the clock selection menu.
 And return a cons cell with the selection character integer and the obj
 pointing to it."
@@ -63,15 +63,15 @@ pointing to it."
                                (org-back-to-heading t)
                                (looking-at org-outline-regexp)
                                (match-string 0)))
-                (org-heading (substring
-                              (org-fontify-like-in-org-mode
-                               (concat prefix heading)
-                               org-odd-levels-only)
+                (org-heading (substring (if no-propterties
+                                            (concat prefix heading)
+                                          (org-fontify-like-in-org-mode (concat prefix heading)
+                                                                        org-odd-levels-only))
                               (length prefix))))
 
            org-heading))))))
 
-(cl-defmethod occ-obj-fontify-like-in-org-mode ((obj occ-tsk))
+(cl-defmethod occ-obj-fontify-like-in-org-mode ((obj occ-tsk) &optional no-propterties)
   (let* ((level               (or (occ-obj-get-property obj 'level) 0))
          (subtree-level       (or (occ-obj-get-property obj 'subtree-level) 1))
          (filename            (occ-obj-format-file obj))
@@ -83,13 +83,15 @@ pointing to it."
          (heading-prefix      " ")
          (prefix              (concat (make-string (+ subtree-level level) ?\*) " "))
          (org-heading-noprop  (concat prefix heading))
-         (org-heading         (org-fontify-like-in-org-mode org-heading-noprop org-odd-levels-only))
+         (org-heading         (if no-propterties
+                                  org-heading-noprop
+                                  (org-fontify-like-in-org-mode org-heading-noprop org-odd-levels-only)))
          (display-org-heading (concat heading-prefix org-heading)))
     ;; (occ-debug "fontify: %s subtree-level=%s" heading subtree-level)
     display-org-heading))
 
-(cl-defmethod occ-obj-build-format-string ((obj occ-tsk))
-  (occ-obj-fontify-like-in-org-mode obj))
+(cl-defmethod occ-obj-build-format-string ((obj occ-tsk) &optional no-propterties)
+  (occ-obj-fontify-like-in-org-mode obj no-propterties))
 
 
 (cl-defmethod occ-obj-build-format-file ((obj occ-tsk))
@@ -138,14 +140,16 @@ pointing to it."
                                &optional
                                case
                                rank
-                               no-curr-clock)
+                               no-curr-clock
+                               no-propterties)
   "occ-obj-format")
 
 (cl-defmethod occ-obj-format (obj
                               &optional
                               case
                               rank
-                              no-curr-clock)
+                              no-curr-clock
+                              no-propterties)
   (concat (when case
             (concat (occ-obj-title obj
                                case)
@@ -156,9 +160,10 @@ pointing to it."
                               &optional
                               case
                               rank
-                              no-curr-clock)
+                              no-curr-clock
+                              no-propterties)
   (concat (when case (concat (occ-obj-title obj case) ": "))
-          (occ-obj-fontify-like-in-org-mode obj)))
+          (occ-obj-fontify-like-in-org-mode obj no-propterties)))
 
 (defvar occ-obj-format-tsk-tag-alignment 100 "occ-obj-format-tsk-tag-alignment")
 
@@ -166,9 +171,10 @@ pointing to it."
                               &optional
                               case
                               rank
-                              no-curr-clock)
+                              no-curr-clock
+                              no-propterties)
   (let* ((align      occ-obj-format-tsk-tag-alignment)
-         (heading    (occ-obj-format-string obj))
+         (heading    (occ-obj-format-string obj no-propterties))
          (headinglen (length heading))
          (tags       (occ-obj-get-property obj 'tags))
          (tagstr     (if tags
@@ -185,46 +191,53 @@ pointing to it."
                               &optional
                               case
                               rank
-                              no-curr-clock)
+                              no-curr-clock
+                              no-propterties)
   (format "%s" obj))
 
 (cl-defmethod occ-obj-format ((obj occ-obj-ctx-tsk)
                               &optional
                               case
                               rank
-                              no-curr-clock)
+                              no-curr-clock
+                              no-propterties)
   (let ((tsk (occ-ctsk-tsk obj)))
     (concat (when case (concat (occ-obj-title obj case) ": "))
             (when rank (format "[%4d] " (or (occ-obj-rank obj) -128)))
-            (occ-obj-format tsk case nil)
+            (occ-obj-format tsk case nil nil no-propterties)
             (unless no-curr-clock
               (when (occ-obj-current-p obj) "          🕑")))))
 
 (cl-defmethod occ-obj-format ((obj occ-ctxual-tsk) &optional
                                                    case
                                                    rank
-                                                   no-curr-clock)
+                                                   no-curr-clock
+                                                   no-propterties)
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
     (concat (when case (concat (occ-obj-title obj case) ": "))
             (when rank (format "[c%4d] " (or (occ-obj-rank obj) -128)))
-            (format "%s" (occ-obj-format tsk case rank))
+            (format "%s" (occ-obj-format tsk case rank no-propterties))
             (unless no-curr-clock
               (when (occ-obj-current-p obj) "          🕑")))))
 
 
 (defun occ-obj-Format (obj &optional
                            rank
-                           no-curr-clock)
+                           no-curr-clock
+                           no-propterties)
   (occ-obj-format obj 'capitalize
                   rank
-                  no-curr-clock))
+                  no-curr-clock
+                  no-propterties))
 
 (defun occ-obj-FORMAT (obj &optional
                            rank
-                           no-curr-clock)
+                           no-curr-clock
+                           no-propterties)
   (occ-obj-format obj 'upcase
               rank
-              no-curr-clock))
+              no-curr-clock
+              no-propterties))
 
 
 (cl-defgeneric occ-obj-display (obj)

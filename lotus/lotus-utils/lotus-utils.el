@@ -28,14 +28,14 @@
 ;; assume file from here are always available.
 
 (provide 'lotus-utils)
+
 
 ;;;###autoload
 (defun touch-file (file)
   (interactive)
   ;; https://stackoverflow.com/questions/2592095/how-do-i-create-an-empty-file-in-emacs/2592558#2592558
   (unless (file-exists-p file)
-    (make-directory
-     (file-name-directory file) t)
+    (make-directory (file-name-directory file) t)
     (with-temp-buffer
       (write-file file)))
   file)
@@ -43,10 +43,8 @@
 ;;;###autoload
 (defun cleanup-tty-process ()
   (interactive)
-  (let ((tty-processes
-         (remove-if-not
-          'process-tty-name
-          (process-list))))
+  (let ((tty-processes (remove-if-not 'process-tty-name
+                                      (process-list))))
     (dolist (tp tty-processes)
       (kill-process tp))))
 
@@ -59,24 +57,24 @@
       (define-key evil-emacs-state-map (kbd "C-z") nil)
       (global-unset-key [C-z])
       ;; (global-set-key [C-z c] 'elscreen-create)
-      (funcall
-       #'(lambda (symbol value)
-           (when (boundp 'elscreen-map)
-             (elscreen-set-prefix-key value))
-           (custom-set-default symbol value))
-       'elscreen-prefix-key "\C-z")
+      (funcall #'(lambda (symbol value)
+                   (when (boundp 'elscreen-map)
+                     (elscreen-set-prefix-key value))
+                   (custom-set-default symbol value))
+               'elscreen-prefix-key "\C-z")
       (global-set-key [s-right] 'elscreen-next)
       (global-set-key [s-left]  'elscreen-previous)
       (global-set-key [H-right] 'elscreen-move-right)
       (global-set-key [H-left]  'elscreen-move-left)
-      (global-set-key [M-H-right]    'elscreen-swap)
+      (global-set-key [M-H-right]    'elscreen-swap))))
       ;; (global-set-key-if-unbind [H-down]  'elscreen-previous)
       ;;}}
-      )))
+
 
 ;;;###autoload
 (defun resolveip (host)
-  (= 0 (call-process "~/bin/resolveip" nil nil nil host)))
+  (= 0
+     (call-process "~/bin/resolveip" nil nil nil host)))
 
 ;;;###autoload
 (defun host-accessable-p (&optional host)
@@ -93,18 +91,17 @@
           (defvar known-last-input-event nil)
           (if *test-idle-prints-timer* (cancel-timer *test-idle-prints-timer*))
           (when t
-            (setq
-             *test-idle-prints-timer*
-             (run-with-timer 1 2
-                             #'(lambda ()
-                                 ;; (message "Test: From timer idle for org %d secs emacs %d secs" (org-emacs-idle-seconds) (float-time (current-idle-time)))
-                                 (let* (display-last-input-event
-                                        (idle (current-idle-time))
-                                        (idle (if idle (float-time (current-idle-time)) 0)))
-                                   (unless (eq known-last-input-event last-input-event)
-                                     (setq display-last-input-event last-input-event
-                                           known-last-input-event last-input-event))
-                                   (message "Test: From timer idle for %f secs emacs, and last even is %s" idle display-last-input-event)))))))
+            (setq *test-idle-prints-timer*
+                  (run-with-timer 1 2
+                                  #'(lambda ()
+                                      ;; (message "Test: From timer idle for org %d secs emacs %d secs" (org-emacs-idle-seconds) (float-time (current-idle-time)))
+                                      (let* (display-last-input-event
+                                             (idle (current-idle-time))
+                                             (idle (if idle (float-time (current-idle-time)) 0)))
+                                        (unless (eq known-last-input-event last-input-event)
+                                          (setq display-last-input-event last-input-event
+                                                known-last-input-event last-input-event))
+                                        (message "Test: From timer idle for %f secs emacs, and last even is %s" idle display-last-input-event)))))))
       (when *test-idle-prints-timer*
         (cancel-timer *test-idle-prints-timer*))))
 
@@ -148,9 +145,8 @@
 ;;;###autoload
 (defun forgive/them ()
   (interactive)
-  (if (and
-       (featurep 'develock)
-       (assq major-mode develock-keywords-alist))
+  (if (and (featurep 'develock)
+           (assq major-mode develock-keywords-alist))
       (develock-mode -1))
   (highlight-changes-visible-mode -1))
 
