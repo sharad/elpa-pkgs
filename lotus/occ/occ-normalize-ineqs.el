@@ -122,8 +122,204 @@
   ('> e (* a 4)))
 
 
+;; (defun normalize-inequalities (ineqs)
+;;   (let* ((vars (remove-duplicates (flatten ineqs)))
+;;          (graph (make-hash-table :test 'equal))
+;;          (visited (make-hash-table :test 'equal))
+;;          (result '()))
+;;     ;; Build a graph of the inequalities
+;;     (dolist (var vars)
+;;       (setf (gethash var graph) '())
+;;       (setf (gethash var visited) nil))
+;;     (dolist (ineq ineqs)
+;;       (let ((x (first ineq))
+;;             (y (second ineq)))
+;;         (push y (gethash x graph))))
+;;     ;; Check for cycles in the graph
+;;     (letrec ((dfs-visit (lambda (var)
+;;                           (when (gethash var visited)
+;;                             (error "Cycle detected in inequalities"))
+;;                           (setf (gethash var visited) t)
+;;                           (dolist (dep (gethash var graph))
+;;                             (funcall dfs-visit dep))
+;;                           (push var result))))
+;;       (dolist (var vars)
+;;         (funcall dfs-visit var)))
+;;     ;; Generate the output list
+;;     (mapcar (lambda (var) (find var vars :test 'equal))
+;;             (reverse result))))
+
+;; (normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
 
 
+
+
+(defun normalize-inequalities (ineqs)
+  (let* ((vars (delete-dups (apply #'append ineqs)))
+         (graph (make-hash-table :test #'equal))
+         (visited (make-hash-table :test #'equal))
+         (result '()))
+    ;; Build a graph of the inequalities
+    (dolist (var vars)
+      (puthash var '() graph)
+      (puthash var nil visited))
+    (dolist (ineq ineqs)
+      (let ((x (car ineq))
+            (y (cadr ineq)))
+        (push y (gethash x graph))))
+    ;; Check for cycles in the graph
+    (letrec ((dfs-visit (lambda (var)
+                          (unless (eq (gethash var visited) :active)
+                            (puthash var :active visited)
+                            (dolist (dep (gethash var graph))
+                              (funcall dfs-visit dep))
+                            (puthash var t visited)
+                            (push var result)))))
+      (dolist (var vars)
+        (unless (gethash var visited)
+          (funcall dfs-visit var))))
+    ;; Generate the output list
+    (mapcar (lambda (var) (find var vars :test #'equal))
+            (reverse result))))
+
+(normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
+;; Output: (a b c (* 2 d) (* 2 e))
+
+
+
+
+(defun normalize-inequalities (ineqs)
+  (let* ((vars (delete-dups (apply #'append ineqs)))
+         (graph (make-hash-table :test #'equal))
+         (visited (make-hash-table :test #'equal))
+         (result '()))
+    ;; Build a graph of the inequalities
+    (dolist (var vars)
+      (puthash var '() graph)
+      (puthash var nil visited))
+    (dolist (ineq ineqs)
+      (let ((x (car ineq))
+            (y (cadr ineq)))
+        (push y (gethash x graph))))
+    ;; Check for cycles in the graph
+    (letrec ((dfs-visit (lambda (var)
+                          (unless (eq (gethash var visited) :active)
+                            (puthash var :active visited)
+                            (dolist (dep (gethash var graph))
+                              (funcall dfs-visit dep))
+                            (puthash var t visited)
+                            (push var result)))))
+      (dolist (var vars)
+        (unless (gethash var visited)
+          (funcall dfs-visit var))))
+    ;; Generate the output list
+    (mapcar (lambda (var) (find var vars :test #'equal))
+            (reverse result))))
+
+(normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
+;; Output: (a b c (* 2 d) (* 2 e))
+
+
+
+
+(defun normalize-inequalities (ineqs)
+  (let* ((vars (delete-dups (apply #'append ineqs)))
+         (graph (make-hash-table :test #'equal))
+         (visited (make-hash-table :test #'equal))
+         (result '()))
+    ;; Build a graph of the inequalities
+    (dolist (var vars)
+      (puthash var '() graph)
+      (puthash var nil visited))
+    (dolist (ineq ineqs)
+      (let ((lhs (car ineq))
+            (rhs (cadr ineq)))
+        (cond
+          ((and (numberp lhs) (symbolp rhs))
+           (push rhs (gethash lhs graph)))
+          ((and (numberp lhs) (consp rhs) (eq (car rhs) '*))
+           (let ((coeff (cadr rhs))
+                 (var (caddr rhs)))
+             (push var (gethash lhs graph))
+             (push (* coeff var) (gethash lhs graph))))
+          ((and (symbolp lhs) (numberp rhs))
+           (push lhs (gethash rhs graph)))
+          ((and (symbolp lhs) (consp rhs) (eq (car rhs) '*))
+           (let ((coeff (cadr rhs))
+                 (var (caddr rhs)))
+             (push lhs (gethash (* coeff var) graph))
+             (push var (gethash (* coeff var) graph))))
+          (t (error "Invalid inequality: ~S" ineq)))))
+
+    ;; Check for cycles in the graph
+    (letrec ((dfs-visit (lambda (var)
+                          (unless (eq (gethash var visited) :active)
+                            (puthash var :active visited)
+                            (dolist (dep (gethash var graph))
+                              (funcall dfs-visit dep))
+                            (puthash var t visited)
+                            (push var result)))))
+      (dolist (var vars)
+        (unless (gethash var visited)
+          (funcall dfs-visit var))))
+    ;; Generate the output list
+    (mapcar (lambda (var) (find var vars :test #'equal))
+            (reverse result))))
+
+
+
+(defun normalize-inequalities (inequalities)
+  (let* ((var-list (sort (remove-duplicates (mapcan (lambda (ineq) (list (nth 1 ineq) (nth 2 ineq))) inequalities))
+                         #'string<))
+         (vars (make-hash-table :test #'equal))
+         (graph (make-hash-table :test #'equal))
+         (degree (make-hash-table :test #'equal))
+         (topo-sorted-vars nil))
+    ;; initialize hash tables
+    (dolist (var var-list)
+      (puthash var 0 degree)
+      (puthash var nil vars))
+    ;; create directed graph from inequalities
+    (dolist (ineq inequalities)
+      (let ((from (nth 1 ineq))
+            (to (nth 2 ineq)))
+        (puthash from (cons to (gethash from graph)) graph)
+        (puthash to nil vars)))
+    ;; calculate in-degree of each variable
+    (maphash (lambda (var deps)
+               (dolist (dep deps)
+                 (puthash dep (1+ (gethash dep degree)) degree)))
+             graph)
+    ;; perform topological sort on graph
+    (let ((queue ()))
+      (maphash (lambda (var deg)
+                 (when (= deg 0)
+                   (push var queue)))
+               degree)
+      (while queue
+        (let ((var (pop queue)))
+          (push var topo-sorted-vars)
+          (dolist (dep (gethash var graph))
+            (let ((new-degree (1- (gethash dep degree))))
+              (puthash dep new-degree degree)
+              (when (= new-degree 0)
+                (push dep queue)))))))
+    ;; construct normalized list of variables
+    (let ((result nil))
+      (dolist (var topo-sorted-vars)
+        (let ((val (gethash var vars)))
+          (if (null val)
+              (error "Cycle detected in inequalities")
+            (let ((multiplier (if (numberp val) val 1)))
+              (push (* multiplier (intern var)) result))))))
+    (nreverse result)))
+
+
+(normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
+;; Output: (a b c (* 2 d) (* 2 e))
+
+(normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d (* 2 e))))
+;; Output: (a b c d (* 2 e))
 
 
 ;;; occ-normalize-ineqs.el ends here
