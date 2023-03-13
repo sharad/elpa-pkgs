@@ -598,9 +598,9 @@ pointing to it."
 
 
 (defun occ-current-ctxual-tsk (&optional occ-other-allowed)
-  (let* ((ctxual-tsk (cl-first *occ-clocked-ctxual-tsk-ctx-history*))
-         (org-clock  (or (occ-valid-marker org-clock-marker)
-                         (occ-valid-marker org-clock-hd-marker))))
+  (let ((ctxual-tsk (cl-first *occ-clocked-ctxual-tsk-ctx-history*))
+        (org-clock  (or (occ-valid-marker org-clock-marker)
+                        (occ-valid-marker org-clock-hd-marker))))
     (if (and org-clock
              ctxual-tsk
              (occ-obj-marker= ctxual-tsk
