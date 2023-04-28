@@ -29,6 +29,7 @@
 
 (require 'org-rl-obj)
 (require 'org-rl-clock)
+(require 'org-rl-utils)
 
 
 (defun org-rl-clock-cps-process-option (timelen-mins opt prev next maxtime resume fail-quietly resume-clocks)
