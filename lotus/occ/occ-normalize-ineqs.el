@@ -132,7 +132,7 @@
 ;;       (setf (gethash var graph) '())
 ;;       (setf (gethash var visited) nil))
 ;;     (dolist (ineq ineqs)
-;;       (let ((x (first ineq))
+;;       (let ((x (cl-first ineq))
 ;;             (y (second ineq)))
 ;;         (push y (gethash x graph))))
 ;;     ;; Check for cycles in the graph

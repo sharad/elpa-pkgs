@@ -48,11 +48,11 @@
     ;; from what I can tell, top level function call frames
     ;; start with t and the second value is the symbol of the function
     (while (and (> max 0)
-                (not (equal t (first frame))))
+                (not (equal t (cl-first frame))))
       (cl-decf max)
       (setq frame (backtrace-frame (cl-incf index))))
     ;; (message "index %d" index)
-    (if (equal t (first frame))
+    (if (equal t (cl-first frame))
         (let* ((fun     (second frame))
                (funname (if (symbolp fun)
                             (symbol-name fun)

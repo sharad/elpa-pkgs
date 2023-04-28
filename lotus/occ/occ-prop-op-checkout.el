@@ -28,6 +28,8 @@
 
 
 (require 'occ-prop-base)
+(eval-when-compile
+  (require 'occ-macros))
 
 
 (cl-defgeneric occ-do-op-prop-checkout (obj

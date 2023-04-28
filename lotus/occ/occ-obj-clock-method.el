@@ -26,6 +26,8 @@
 (provide 'occ-obj-clock-method)
 
 
+(eval-when-compile
+  (require 'occ-macros))
 (require 'lotus-misc-utils)
 (eval-when-compile
   (require 'lotus-misc-utils))

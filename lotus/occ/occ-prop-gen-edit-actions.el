@@ -27,6 +27,8 @@
 (provide 'occ-prop-gen-edit-actions)
 
 
+(eval-when-compile
+  (require 'occ-macros))
 (require 'occ-prop-base)
 (require 'occ-prop-op-edit)
 

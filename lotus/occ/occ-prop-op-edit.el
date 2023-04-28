@@ -30,6 +30,8 @@
 (require 'occ-prop-base)
 (require 'occ-property-editor)
 (require 'occ-assert)
+(eval-when-compile
+ (require 'occ-macros))
 
 
 (cl-defmethod occ-obj-operation ((obj       marker)

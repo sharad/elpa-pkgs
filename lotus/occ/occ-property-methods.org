@@ -250,7 +250,7 @@
                                           (prop (eql currfile)))
         (let* ((tsk        (occ-obj-tsk      obj))
                (files      (occ-obj-get-property tsk prop))
-               (first-file (first files)))
+               (first-file (cl-first files)))
              (if first-file
                  (find-file first-file)
                (occ-debug "occ-do-checkout-prop: %s value ruturned for prop %s" first-file prop))))
@@ -273,7 +273,7 @@
                      (occ-obj-format ctx 'capitalize)
                      prop)
           (occ-aggrigate-list-rank tsk-root (occ-obj-get-property tsk prop) #'+
-            (let* ((tsk-root (first (occ-obj-get-property tsk prop)))
+            (let* ((tsk-root (cl-first (occ-obj-get-property tsk prop)))
                    (tsk-root (when tsk-root (file-truename tsk-root)))
                    (ctx-file (occ-ctx-file ctx))
                    ;; (ctx-file (when ctx-file (file-truename ctx-file)))
@@ -321,7 +321,7 @@
                                           (prop (eql root)))
         (let* ((tsk       (occ-obj-tsk      obj))
                (dirs      (occ-obj-get-property tsk prop))
-               (first-dir (first dirs)))
+               (first-dir (cl-first dirs)))
           (if first-dir
               (find-file first-dir)
             (occ-debug "occ-do-checkout-prop: %s value ruturned for prop %s" first-dir prop))))

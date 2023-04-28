@@ -27,6 +27,8 @@
 (provide 'occ-obj-method)
 
 
+(eval-when-compile
+  (require 'occ-macros))
 (require 'occ-obj-clock-method)
 (require 'occ-tsk)
 (require 'occ-print)
