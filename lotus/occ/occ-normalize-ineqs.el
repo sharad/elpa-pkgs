@@ -182,7 +182,7 @@
     (mapcar (lambda (var) (find var vars :test #'equal))
             (reverse result))))
 
-(normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
+;; (normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
 ;; Output: (a b c (* 2 d) (* 2 e))
 
 
@@ -216,7 +216,7 @@
     (mapcar (lambda (var) (find var vars :test #'equal))
             (reverse result))))
 
-(normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
+;; (normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
 ;; Output: (a b c (* 2 d) (* 2 e))
 
 
@@ -315,10 +315,10 @@
     (nreverse result)))
 
 
-(normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
+;; (normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
 ;; Output: (a b c (* 2 d) (* 2 e))
 
-(normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d (* 2 e))))
+;; (normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d (* 2 e))))
 ;; Output: (a b c d (* 2 e))
 
 
