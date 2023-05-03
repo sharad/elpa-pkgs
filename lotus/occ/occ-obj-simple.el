@@ -60,7 +60,9 @@
 
 
 (cl-defmethod occ-obj-find ((collection list)
-                            (mrk marker)))
+                            (mrk marker))
+  (ignore collection)
+  (ignore mrk))
 
 (cl-defgeneric occ-do-goto (obj)
   "occ-do-goto")
@@ -115,8 +117,8 @@
   (setf (occ-tree-tsk-subtree obj) (nconc (occ-tree-tsk-subtree obj)
                                           (list  child))))
 
-(cl-defmethod occ-do-induct-child ((obj   occ-list-tsk))
-                                (child occ-list-tsk)
+(cl-defmethod occ-do-induct-child ((obj   occ-list-tsk)
+                                   (child occ-list-tsk))
   (occ-obj-set-property child 'subtree-level
                         (occ-obj-get-property obj 'subtree-level))
   (occ-insert-node-after-element child obj
@@ -130,9 +132,11 @@
   "occ-do-capture")
 
 (cl-defmethod occ-do-capture ((obj marker) &key
-                                        template
-                                        clock-in
-                                        immediate-finish)
+                              template
+                              clock-in
+                              immediate-finish)
+  (ignore template)
+  (ignore clock-in)
   (org-capture-run 'entry
                    `(marker ,obj)
                    'occ-do-capture+-helm-select-template
@@ -175,9 +179,10 @@
               (occ-do-try-clock-in child-ctxual-tsk))))))))
 
 (cl-defmethod occ-do-capture ((obj null) &key
-                                      template
-                                      clock-in
-                                      immediate-finish)
+                              template
+                              clock-in
+                              immediate-finish)
+  (ignore obj)
   ;; BUG: occ-list-select is become an interactive function, here it is not returning desired object.
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION for OCC-LIST-SELECT
   (let ((ctx-tsk (occ-obj-list-select (occ-obj-make-ctx-at-point)
@@ -242,6 +247,8 @@
                                                                   occ-list-select-keys-1)
                     :return-transform   nil
                     :action-transformer #'(lambda (action candidate)
+                                            (ignore action)
+                                            (ignore candidate)
                                             (occ-obj-get-helm-actions obj
                                                                       occ-list-select-keys-2))
                     :timeout            occ-idle-timeout
@@ -255,10 +262,10 @@
 (cl-defgeneric occ-do-procreate-child (obj)
   "occ-child")
 
-(cl-defmethod occ-do-procreate-child ((obj marker))
-                                   &key
-                                   template
-                                   clock-in
+(cl-defmethod occ-do-procreate-child ((obj marker)
+                                      &keys
+                                      template
+                                      clock-in)
   (if (not (occ-obj-unnamed-p obj))
       (occ-do-capture obj
                       :clock-in clock-in ;; helm-current-prefix-arg
@@ -269,10 +276,10 @@
            title
            title))))
 
-(cl-defmethod occ-do-procreate-child ((obj occ-obj-tsk))
-                                   &key
-                                   template
-                                   clock-in
+(cl-defmethod occ-do-procreate-child ((obj occ-obj-tsk)
+                                      &key
+                                      template
+                                      clock-in)
   (if (not (occ-obj-unnamed-p obj))
       (occ-do-capture obj
                    :clock-in clock-in ;; helm-current-prefix-arg
@@ -284,16 +291,18 @@
              title))))
 
 
-(cl-defmethod occ-obj-tsk-txt ((obj occ-obj-ctx))
-                           (heading string)
+(cl-defmethod occ-obj-tsk-txt ((obj occ-obj-ctx)
+                               (heading string))
   "Build a task name description from OBJ occ-ctx"
+  (ignore obj)
   (concat "* " heading "\n"))
 
 
-(cl-defmethod occ-do-fast-procreate-child ((heading string
-                                            &key
-                                            template
-                                            clock-in))
+(cl-defmethod occ-do-fast-procreate-child ((heading string)
+                                           &key
+                                           template
+                                           clock-in)
+  (ignore template)
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (occ-do-capture nil
                     :clock-in         clock-in ;; helm-current-prefix-arg
@@ -304,6 +313,7 @@
                                                 &key
                                                 template
                                                 clock-in)
+  (ignore template)
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (occ-do-capture nil
                     :clock-in clock-in ;; helm-current-prefix-arg
@@ -314,12 +324,13 @@
                                                      &key
                                                      template
                                                      clock-in)
+  (ignore template)
   (let ((ctx (occ-obj-make-ctx-at-point)))
-    (let ((anonymous-heading-marker (cl-rest (org-without-org-clock-persist
-                                           ;; TODO: Implement it.
-                                           (lotus-org-create-anonymous-task))))
-          (anonymous-tsk (when anonymous-heading-marker
-                           (occ-obj-make-tsk anonymous-heading-marker))))
+    (let* ((anonymous-heading-marker (cl-rest (org-without-org-clock-persist
+                                            ;; TODO: Implement it.
+                                               (lotus-org-create-anonymous-task))))
+           (anonymous-tsk (when anonymous-heading-marker
+                            (occ-obj-make-tsk anonymous-heading-marker))))
       (occ-do-capture anonymous-tsk
                       :clock-in         clock-in ;; helm-current-prefix-arg
                       :template         (occ-obj-tsk-txt ctx heading)
