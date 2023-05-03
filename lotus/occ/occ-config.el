@@ -29,6 +29,7 @@
 
 (require 'occ-util-common)
 (require 'occ-macros)
+(require 'occ-debug-method)
 
 
 ;; check
@@ -47,13 +48,19 @@
 
 
 (defcustom occ-prefix-key "M-n"
-  "occ prefix key")
+  "occ prefix key"
+  :type '(string)
+  :group 'occ)
 
 (defcustom occ-unnamed t
-  "occ-unnamed")
+  "occ-unnamed"
+  :type '(boolean)
+  :group 'occ)
 
 (defcustom occ-clockout-unassociable-to-unnamed 'ask
-  "occ-clockout-unassociable-to-unnamed") ;; TODO: or could ask to continue for TIME(m/h) with current task.
+  "occ-clockout-unassociable-to-unnamed"
+  :type '(symbol)
+  :group 'occ) ;; TODO: or could ask to continue for TIME(m/h) with current task.
 
 
 ;; mozilla config
@@ -69,12 +76,13 @@
 (defun occ-confirm (config
                     msg
                     timeout)
+  (ignore timeout)
   (cond
-   ((null config) nil)
-   ((function config) (funcall config))
-   ((eq config 'ask)  (y-or-n-p msg))
-   ((eq config t) t)
-   (t nil)))
+     ((null config) nil)
+     ((function config) (funcall config))
+     ((eq config 'ask)  (y-or-n-p msg))
+     ((eq config t) t)
+     (t nil)))
 
 
 ;; org-agenda-category-icon-alist

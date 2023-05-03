@@ -30,7 +30,21 @@
 (eval-when-compile
   (require 'helm-source))
 (require 'helm-files)
+(require 'helm-lib)
+(require 'helm-source)
 (require 'occ-assert)
+(require 'occ-obj-simple)
+(require 'occ-obj-clock-method)
+(require 'occ-obj-utils)
+(require 'occ-obj-accessor)
+(require 'occ-obj-ctor)
+(require 'occ-debug-method)
+(require 'occ-select)
+(require 'occ-obj)
+(require 'occ-obj-simple)
+(require 'occ-cl-utils)
+(require 'occ-filter-base)
+(require 'occ-util-common)
 
 
 (defvar occ-helm-map
@@ -113,6 +127,7 @@
 ;; (fmakunbound 'occ-helm-null-candidate)
 
 (cl-defmethod occ-helm-null-candidate ((obj occ-ctx))
+  (ignore obj)
   nil)
 
 ;;
@@ -135,6 +150,7 @@
                                              (collections list)
                                              &optional
                                              actions)
+  ;; BUG: occ-helm-build-candidates not defined anywhere
   (occ-helm-build-candidates :source (occ-obj-list-with obj
                                                         collections)
                              actions))
@@ -170,6 +186,7 @@
                                                        filtered-count
                                                        &key
                                                        prompt)
+  (ignore obj)
   (let ((override        (and prompt
                               (consp prompt)
                               (eq :overrride
@@ -214,6 +231,11 @@
          (called-never          t)
          (candidates-new-unfiltered nil)
          (candidates-new-filtered   nil))                            ;; TODO: make a separate function for it.
+    (ignore timeout)
+    (ignore filtered-count)
+    (ignore filtered-new-count)
+    (ignore candidates-new-unfiltered)
+    (ignore candidates-new-filtered)
     (occ-debug "occ-obj-helm-build-collection-source: (length candidates-unfiltered) = %d, called-never = %s"
                (length candidates-unfiltered)
                called-never)
@@ -235,6 +257,7 @@
                                                                                                               filters
                                                                                                               candidates-new-unfiltered)))
                                                               (setq filtered-new-count (length candidates-new-filtered))
+                                                              (ignore filtered-new-count)
                                                               candidates-new-filtered))))
                                   (occ-assert candidates-visible)
                                   (mapcar #'occ-obj-candidate
@@ -321,9 +344,12 @@
                                                     timeout
                                                     prompt)
   "Generate helm-source for COLLECTION.
-It first find unfiltered and filtered candidates for passed COLLECTION,
-if only one filtered candidate present in passed COLLECTION then it return that candidate via occ-hsrc-candidate,
-if here is more than one filtered candidates then it make a helm-source and returned as occ-hsrc-source which will be used to select candidate from it."
+It first find unfiltered and filtered candidates for passed
+COLLECTION, if only one filtered candidate present in passed
+COLLECTION then it return that candidate via occ-hsrc-candidate,
+if here is more than one filtered candidates then it make a
+helm-source and returned as occ-hsrc-source which will be used to
+select candidate from it."
 
   ;; (occ-assert candidates)
   (let* ((rank (occ-obj-collection-rank collection))
@@ -371,10 +397,10 @@ if here is more than one filtered candidates then it make a helm-source and retu
                   occ-ignore-buffer-names)
     (let ((source (occ-obj-helm-fun-action-function-call-source "Other Actions"
                                                                 (list (cons (format "Add current buffer %s to ignore list" (current-buffer))
-                                                                            #'(lambda ()
-                                                                                (let ((buff (buffer-name (current-buffer))))
+                                                                            #'(lambda (buff)
+                                                                                (let ((buff (or buff (buffer-name (current-buffer)))))
                                                                                   (cl-pushnew buff occ-ignore-buffer-names)
-                                                                                  (occ-helm-null-candidate obj))))))))
+                                                                                  (occ-helm-null-candidate (occ-obj-make-ctx buff)))))))))
       (occ-build-hsrc-source source
                              :rank 0
                              :level :optional))))
@@ -422,6 +448,11 @@ if here is more than one filtered candidates then it make a helm-source and retu
                                           auto-select-if-only
                                           timeout
                                           prompt)
+  (ignore timeout)
+  (ignore filters)
+  (ignore builders)
+  (ignore auto-select-if-only)
+  (ignore prompt)
   ;; (occ-debug "occ-obj-helm-build-collections-sources: ap-normal: %s" ap-normal)
   (let ((collection-sources (occ-obj-helm-build-collections-sources obj
                                                                     collections ;; (occ-collections-default)
@@ -533,6 +564,7 @@ if here is more than one filtered candidates then it make a helm-source and retu
     ;;              (length cand-sources))
 
     ;; TODO: here decide what to do with cand-sources all has rank and level
+    (ignore timoout)
     (let* ((candidates          (cl-remove-if-not #'occ-candidate-main-p
                                                   cand-sources))
            (preferred-candidate (cl-first (sort candidates
@@ -569,12 +601,12 @@ if here is more than one filtered candidates then it make a helm-source and retu
                                                          (occ-debug "Running occ-list-select-internal helm is gone"))))))
               (unwind-protect
                   (when (occ-obj-obj (cl-first helm-sources))
-                    (condition-case e
+                    (condition-case err
                         (helm :sources (mapcar #'occ-obj-obj helm-sources)
                               :buffer  (occ-helm-select-buffer)
                               :resume  'noresume)
                       ((quit error)
-                       (occ-message "Enable Disable occ with occ-mode."))))
+                       (occ-message "Enable Disable occ with occ-mode %s." err))))
                 (progn
                   (setq in-occ-helm nil)
                   (cancel-timer timer))))))))))
