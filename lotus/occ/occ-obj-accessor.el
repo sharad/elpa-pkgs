@@ -36,32 +36,32 @@
 
 
 (cl-defmethod occ-obj-class-name (obj)
-  "unknown"
-  (ignore obj))
+  (ignore obj)
+  "unknown")
 
 (cl-defmethod occ-obj-class-name ((obj symbol))
-  "symbol"
-  (ignore obj))
+  (ignore obj)
+  "symbol")
 
 (cl-defmethod occ-obj-class-name ((obj null))
-  "null"
-  (ignore obj))
+  (ignore obj)
+  "null")
 
 (cl-defmethod occ-obj-class-name ((obj marker))
-  "marker"
-  (ignore obj))
+  (ignore obj)
+  "marker")
 
 (cl-defmethod occ-obj-class-name ((obj occ-tsk))
-  "task"
-  (ignore obj))
+  (ignore obj)
+  "task")
 
 (cl-defmethod occ-obj-class-name ((obj occ-ctsk))
-  "context task"
-  (ignore obj))
+  (ignore obj)
+  "context task")
 
 (cl-defmethod occ-obj-class-name ((obj occ-ctxual-tsk))
-  "contextual task"
-  (ignore obj))
+  (ignore obj)
+  "contextual task")
 
 
 (cl-defmethod occ-obj-obj ((obj occ-obj))
