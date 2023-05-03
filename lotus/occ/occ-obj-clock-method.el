@@ -47,7 +47,9 @@
 (require 'occ-helm-actions-config)
 
 
-(defcustom *occ-last-buff-sel-time*            (current-time) "*occ-last-buff-sel-time*")
+(defcustom *occ-last-buff-sel-time*            (current-time) "*occ-last-buff-sel-time*"
+  :type '(list)
+  :group 'occ)
 (defvar    *occ-buff-sel-timer*                nil)
 (defvar    *occ-tsk-current-ctx-time-interval* 7)
 (defvar    *occ-tsk-previous-ctx*              nil)
@@ -73,7 +75,8 @@
 
 (cl-defmethod occ-obj-try-until-associable-p ((obj occ-ctxual-tsk)
                                               (tries number))
-  "Try three time to associated CTX with current TSK if succeed then return t else nil"
+  "Try three time to associated CTX with current TSK if succeed
+then return t else nil"
   (occ-debug "(occ-obj-try-until-associable-p (obj occ-ctxual-tsk)[%s]) begin" (occ-obj-Format obj))
   (let ((retval  nil)
         (org-obj obj)
@@ -125,6 +128,7 @@
 
 (cl-defmethod occ-obj-try-if-unassociated-p ((obj null)) ;; should handle occ-ctx
   "If clock in task is not unnamed clock then offer to increase clock time."
+  (ignore obj)
   t)
 
 (cl-defmethod occ-obj-try-if-unassociated-p ((obj occ-ctsk)) ;; should handle occ-ctx
@@ -166,6 +170,8 @@
                                       ap-transf
                                       auto-select-if-only
                                       timeout)
+  (ignore ap-normal)
+  (ignore ap-transf)
   (unless builder (occ-error "Builder can not be nil"))
   (let ((filters          (or filters (occ-match-filters)))
         (builder          (or builder #'occ-obj-build-ctxual-tsk-with))
@@ -228,6 +234,8 @@
 
 (cl-defmethod occ-obj-try-to-clock-in-p ((curr occ-ctx)
                                          (prev null))
+  (ignore curr)
+  (ignore prev)
   t)
 
 (defvar occ-do-clock-in-ctx-auto-select-if-only t "occ-do-clock-in-ctx-auto-select-if-only")
@@ -240,6 +248,8 @@
                                       ap-transf
                                       auto-select-if-only
                                       timeout)
+  (ignore ap-normal)
+  (ignore ap-transf)
   (let ((filters (or filters (occ-match-filters)))
         (builder (or builder #'occ-obj-build-ctxual-tsk-with))
         (timeout (or timeout occ-idle-timeout)))
@@ -314,6 +324,7 @@
 ;;;###autoload
 (defun occ-do-clock-in-curr-ctx (&optional force)
   (interactive "P")
+  (ignore force)
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (let ((filters             (occ-match-filters))
           (builder             #'occ-obj-build-ctxual-tsk-with)
@@ -418,6 +429,8 @@
 ;;;###autoload
 (defun occ-switch-buffer-run-curr-ctx-timer-function (prev
                                                       next)
+  (ignore prev)
+  (ignore next)
   (occ-debug "occ-switch-buffer-run-curr-ctx-timer-function: begin")
   (setq *occ-last-buff-sel-time* (current-time))
   ;; (occ-do-try-clock-schedule-next-timeout 'buffer-switch)
@@ -432,6 +445,7 @@
 
 (cl-defmethod occ-do-add-org-buffer ((key symbol)
                                      buff)
+  (ignore key)
   (occ-debug "occ-do-add-org-buffer: ignoring buff %s" buff))
 
 (cl-defmethod occ-do-add-org-buffer ((key  symbol)
@@ -462,6 +476,7 @@
     (occ-warn "occ-add-org-buff: ignoring %s to add to %s" buff key)))
 
 (defun occ-add-org-file-timer (&optional key buffer)
+  (ignore key)
   (occ-nodisplay "occ-add-org-file-timer: started for buff %s, occ-add-inquery %s, occ-add-org-file-timer %s"
                  buffer
                  occ-add-inquery
@@ -469,6 +484,7 @@
   (let ((key    (occ-collector-default-key))
         (buffer (or buffer
                     (current-buffer))))
+    (ignore key)
     (when (buffer-live-p buffer)
       (with-current-buffer buffer
         (make-local-variable 'occ-add-org-file-timer)

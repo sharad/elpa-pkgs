@@ -44,13 +44,14 @@
        ,@body)))
 (put 'occ-with-marker 'lisp-indent-function 1)
 
-(defmacro occ-debug-return (label &rest body)
-  `(let ((retval
-          (progn ,@body)))
-     (occ-debug "%s: returns %s\n" ,label retval)))
-(put 'occ-debug-return 'lisp-indent-function 1)
+;; (defmacro occ-debug-return (label &rest body)
+;;   `(let ((retval
+;;           (progn ,@body)))
+;;      (occ-debug "%s: returns %s\n" ,label retval)))
+;; (put 'occ-debug-return 'lisp-indent-function 1)
 
 (defmacro occ-debug-return (label &rest body)
+  (ignore label)
   `(progn ,@body))
 (put 'occ-debug-return 'lisp-indent-function 1)
 
@@ -257,25 +258,29 @@
 (put 'condition-case-control 'lisp-indent-function 1)
 
 
-(defmacro occ-run-unobtrusively (obtrusive &rest body)
-  `(if (or obtrusive
-           (called-interactively-p 'any))
-       (progn
-         ,@body)
-     (while-no-input
-       (redisplay)
-       ,@body)))
+;; (defmacro occ-run-unobtrusively (obtrusive &rest body)
+;;   `(if (or obtrusive
+;;            (called-interactively-p 'any))
+;;        (progn
+;;          ,@body)
+;;      (while-no-input
+;;        (redisplay)
+;;        ,@body)))
 
-(defmacro occ-run-unobtrusively (obtrusive &rest body)
-  `(if (or obtrusive
-           (called-interactively-p 'any))
-       (progn ,@body)
-     (let ((retval (while-no-input
-                     (redisplay)
-                     ,@body)))
-       (when (eq retval t)
-         (occ-debug "user input %s retval %s" last-input-event retval))
-       retval)))
+(defmacro occ-run-unobtrusively (obtrusive &rest
+                                           body)
+  `(progn
+     (ignore ,obtrusive)
+     (if (or obtrusive
+             (called-interactively-p 'any))
+         (progn
+           ,@body)
+       (let ((retval (while-no-input
+                       (redisplay)
+                       ,@body)))
+         (when (eq retval t)
+           (occ-debug "user input %s retval %s" last-input-event retval))
+         retval))))
 (put 'occ-run-unobtrusively 'lisp-indent-function 1)
 
 
@@ -311,17 +316,21 @@
    '(marker org-clock-marker)
    "* Hello %^{PROMPT}"
    ;; :immediate-finish t
-   :empty-lines 1)
+   :empty-lines 1))
 
 
+;; (let (k f k0 x)
+;;   (ignore k)
+;;   (ignore f)
+;;   (ignore x)
+;;   (ignore k0)
+;;   ;; https://stackoverflow.com/questions/3811448/can-call-with-current-continuation-be-implemented-only-with-lambdas-and-closures
+;;   (lambda (f k)
+;;     (f (lambda (v k0) (k v)) k))
 
-  ;; https://stackoverflow.com/questions/3811448/can-call-with-current-continuation-be-implemented-only-with-lambdas-and-closures
-  (lambda (f k)
-    (f (lambda (v k0) (k v)) k))
+;;   ;; https://stackoverflow.com/questions/612761/what-is-call-cc
+;;   (defvar x 0)
 
-  ;; https://stackoverflow.com/questions/612761/what-is-call-cc
-  (defvar x 0)
-
-  (+ 2 (call/cc (lambda (cc) (setq x cc) 3)))
-
-  (x 4))
+;;   (+ 2 (call/cc (lambda (cc)
+;;                   (setq x cc) 3)))
+;;   (x 4))

@@ -116,9 +116,10 @@
             (args (if strfmtp args (cdr args)))
             (index   (or index 0))
             (funname (occ-get-current-func-name index)))
+        (ignore index)
         (apply #'occ-lwarn level
-               (concat funname ": " fmt)
-               args)))))
+                       (concat funname ": " fmt)
+                       args)))))
 
 
 (defun occ-debug (fmt &rest args)

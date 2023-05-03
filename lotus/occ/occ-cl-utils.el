@@ -35,43 +35,43 @@
 (require 'cl-generic)
 
 
-(occ-testing ;; required
-  (progn
+;; (occ-testing ;; required
+;;  (let (tsk-test)
 
-    (setq tsk-test (occ-obj-make-tsk-at-point))
+;;     (setq tsk-test (occ-obj-make-tsk-at-point (occ-default-collection)))
 
-    (cl-structure-class cl-struct-occ-tree-tsk)
+;;     (cl-structure-class cl-struct-occ-tree-tsk)
 
-    (cl-structure-class- cl-struct-occ-tree-tsk)
+;;     (cl-structure-class- cl-struct-occ-tree-tsk)
 
-    (cl-structure-class tsk-test)
+;;     (cl-structure-class tsk-test)
 
-    (cl--struct-get-class tsk-test)
+;;     (cl--struct-get-class tsk-test)
 
-    (cl--struct-class-slots cl-struct-occ-tree-tsk)
+;;     (cl--struct-class-slots cl-struct-occ-tree-tsk)
 
-    (cl--struct-get-class cl-struct-occ-tree-tsk)
+;;     (cl--struct-get-class cl-struct-occ-tree-tsk)
 
-    (cl--struct-class-slots cl-struct-cl-structure-class)
+;;     (cl--struct-class-slots cl-struct-cl-structure-class)
 
-    (cl-structure-class-parents cl-struct-cl-structure-class)
+;;     (cl-structure-class-parents cl-struct-cl-structure-class)
 
-    (cl-struct-slot-value 'cl-structure-class 'parents cl-struct-cl-structure-class)
+;;     (cl-struct-slot-value 'cl-structure-class 'parents cl-struct-cl-structure-class)
 
-    (cl-struct-slot-value 'cl-structure-class 'parents cl-struct-occ-tree-tsk)
+;;     (cl-struct-slot-value 'cl-structure-class 'parents cl-struct-occ-tree-tsk)
 
-    (cl--struct-get-class tsk-test)
+;;     (cl--struct-get-class tsk-test)
 
-    (cl-struct-slot-value 'cl-structure-class 'name (symbol-value (aref tsk-test 0)))
+;;     (cl-struct-slot-value 'cl-structure-class 'name (symbol-value (aref tsk-test 0)))
 
-    (cl--struct-class-slots (symbol-value (aref tsk-test 0)))
+;;     (cl--struct-class-slots (symbol-value (aref tsk-test 0)))
 
 
-    (occ-cl-class-parent-names (occ-cl-class tsk-test))
+;;     (occ-cl-class-parent-names (occ-cl-class tsk-test))
 
-    (occ-cl-inst-class-parent-names tsk-test)
+;;     (occ-cl-inst-class-parent-names tsk-test)
 
-    (occ-obj-operations-for-prop tsk-test 'root)))
+;;     (occ-obj-operations-for-prop tsk-test 'root)))
 
 
 (defun occ-flatten (L)
@@ -152,7 +152,7 @@
   (mapcar #'(lambda (field)
               (cons field
                     (occ-cl-get-field object field)))
-          fileds))
+          fields))
 (defun occ-cl-class-slots (class)
   (mapcar #'(lambda (slot) (aref slot 1))
           (cl--struct-class-slots (cl--struct-get-class class))))
@@ -221,9 +221,9 @@
   (mapcar fn
           (occ-cl-method-param-signs method)))
 
-(defun occ-cl-method-first-arg (method)
-  (mapcar #'(lambda (fspec) (cadar fspec))
-          (occ-cl-method-param-signs method)))
+;; (defun occ-cl-method-first-arg (method)
+;;   (mapcar #'(lambda (fspec) (cadar fspec))
+;;           (occ-cl-method-param-signs method)))
 
 (defun occ-cl-method-first-arg (method)
   (occ-cl-method-arg-get method #'cadar))

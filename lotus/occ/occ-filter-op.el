@@ -34,6 +34,9 @@
 (cl-defmethod occ-obj-filter-mutual-deviation-points ((obj occ-ctx)
                                                       sequence
                                                       &key rank) ;TODO: make it after method
+  (ignore obj)
+  (ignore sequence)
+  (ignore rank)
   ())
 
 
@@ -41,6 +44,7 @@
                                                sequence
                                                &key rank) ;TODO: make it after method
   "Return matched Sequence for context CTX"
+  (ignore obj)
   (if (occ-default-collection)
       (let* ((rankslist  (mapcar #'occ-obj-rank       sequence))
              (avgrank    (apply  #'occ-stats-average  rankslist))
@@ -49,44 +53,48 @@
         (occ-debug "matched ctxtsks %s" (length sequence))
         (occ-debug "occ-filter-mutual-deviation: avgrank = %d varirank = %d"
                           avgrank varirank)
-        (remove-if-not #'(lambda (obj)
-                           (>= (funcall rank obj)
-                               avgrank))
-                       sequence))
+        (cl-remove-if-not #'(lambda (obj)
+                              (>= (funcall rank obj)
+                                  avgrank))
+                          sequence))
     (occ-error "(occ-default-collection) returned nil")))
 
 (cl-defmethod occ-obj-filter-positive ((obj occ-ctx)
                                        sequence
                                        &key rank)
-  (remove-if-not #'(lambda (obj)
-                     (> (funcall rank obj)
-                        0))
-                 sequence))
+  (ignore obj)
+  (cl-remove-if-not #'(lambda (obj)
+                        (> (funcall rank obj)
+                           0))
+                    sequence))
 
 (cl-defmethod occ-obj-filter-nonnegative ((obj occ-ctx)
                                           sequence
                                           &key rank)
-  (remove-if-not #'(lambda (obj)
-                     (>= (funcall rank obj)
-                         0))
-                 sequence))
+  (ignore obj)
+  (cl-remove-if-not #'(lambda (obj)
+                        (>= (funcall rank obj)
+                            0))
+                    sequence))
 
 (defvar occ-filter-min 0)
 (cl-defmethod occ-obj-filter-min ((obj occ-ctx)
                                   sequence
                                   &key rank)
-  (remove-if-not #'(lambda (obj)
-                     (>= (funcall rank obj)
-                         occ-filter-min))
-                 sequence))
+  (ignore obj)
+  (cl-remove-if-not #'(lambda (obj)
+                        (>= (funcall rank obj)
+                            occ-filter-min))
+                    sequence))
 
 (defvar occ-filter-max 0)
 (cl-defmethod occ-obj-filter-max ((obj occ-ctx)
                                   sequence
                                   &key rank)
-  (remove-if-not #'(lambda (obj)
-                     (>= (funcall rank obj)
-                         occ-filter-max))
-                 sequence))
+  (ignore obj)
+  (cl-remove-if-not #'(lambda (obj)
+                        (>= (funcall rank obj)
+                            occ-filter-max))
+                    sequence))
 
 ;;; occ-filter-op.el ends here

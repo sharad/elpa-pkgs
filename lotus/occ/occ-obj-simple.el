@@ -342,9 +342,9 @@
                   :clock-in t))
 
 
-(defun occ-confirm (fn new)
-  (occ-y-or-n-timeout)
-  (occ-error "Implement it."))
+;; (defun occ-confirm (fn new)
+;;   (occ-y-or-n-timeout)
+;;   (occ-error "Implement it."))
 
 
 (defun sacha/org-capture-prefill-template (template &rest values)

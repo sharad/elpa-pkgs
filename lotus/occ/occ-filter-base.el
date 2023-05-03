@@ -47,22 +47,23 @@
   (push filter
         occ-obj-filters))
 (defun occ-obj-filter-get (key)
-  (cl-first (remove-if-not #'(lambda (filter)
-                            (eq key
-                                (occ-filter-keyword filter)))
-                      occ-obj-filters)))
+  (cl-first (cl-remove-if-not #'(lambda (filter)
+                                  (eq key
+                                      (occ-filter-keyword filter)))
+                              occ-obj-filters)))
 (defun occ-obj-filters-get (keylist)
   (mapcan #'(lambda (key)
-              (remove-if-not #'(lambda (filter)
-                                 (eq key
-                                     (occ-filter-keyword filter)))
-                             occ-obj-filters))
+              (cl-remove-if-not #'(lambda (filter)
+                                    (eq key
+                                        (occ-filter-keyword filter)))
+                                occ-obj-filters))
           keylist))
 
 
 (cl-defmethod occ-obj-get-filters ((obj occ-obj-ctx)
                                    keylist)
   ;; TODO: do we require (apply #'append ...)
+  (ignore obj)
   (occ-debug "(OCC-OBJ-GET-FILTERS OCC-OBJ-TSK): called")
   (occ-obj-filters-get keylist))
 
@@ -96,10 +97,30 @@
   (plist-get (occ-obj-ctx-stat-plist obj) stat))
 
 
+;; (defun occ-filters-get (&rest keys)
+;;   (let ((funs nil))
+;;     (dolist (key keys)
+;;       (ignore key)
+;;       (let ((funkw-rank keys))
+;;         (let ((funkw (or (car-safe funkw-rank)
+;;                          funkw-rank))
+;;               (rank  (if (consp funkw-rank)
+;;                          (nth 1 funkw-rank)
+;;                        nil)))
+;;           (when funkw
+;;             (let ((fun (or (occ-filter-fun (occ-obj-filter-get funkw))
+;;                            funkw
+;;                            #'identity)))
+;;               (setf funs (nconc funs
+;;                                 (list (if rank ;; (consp funkw-rank)
+;;                                           (list fun rank)
+;;                                         fun)))))))))
+;;     funs))
+
 (defun occ-filters-get (&rest keys)
   (let ((funs nil))
     (dolist (key keys)
-      (let ((funkw-rank keys))
+      (let ((funkw-rank key))
         (let ((funkw (or (car-safe funkw-rank)
                          funkw-rank))
               (rank  (if (consp funkw-rank)

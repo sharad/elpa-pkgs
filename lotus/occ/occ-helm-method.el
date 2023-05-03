@@ -450,7 +450,7 @@ select candidate from it."
                                           prompt)
   (ignore timeout)
   (ignore filters)
-  (ignore builders)
+  (ignore builder)
   (ignore auto-select-if-only)
   (ignore prompt)
   ;; (occ-debug "occ-obj-helm-build-collections-sources: ap-normal: %s" ap-normal)
@@ -496,6 +496,11 @@ select candidate from it."
                                              timeout
                                              prompt)
   "OBJ ignored"
+  (ignore filters)
+  (ignore builder)
+  (ignore auto-select-if-only)
+  (ignore timeout)
+  (ignore prompt)
   (let* ((helm-action (occ-obj-get-first-helm-actions-for-obj obj
                                                               ap-normal
                                                               ap-transf)))
@@ -544,6 +549,7 @@ select candidate from it."
                                             auto-select-if-only
                                             timeout
                                             prompt)
+  (ignore timeout)
   (let ((cand-sources (occ-obj-helm-build-sources obj
                                                   collections ;; (occ-collections-default)
                                                   :filters          filters
@@ -564,7 +570,6 @@ select candidate from it."
     ;;              (length cand-sources))
 
     ;; TODO: here decide what to do with cand-sources all has rank and level
-    (ignore timoout)
     (let* ((candidates          (cl-remove-if-not #'occ-candidate-main-p
                                                   cand-sources))
            (preferred-candidate (cl-first (sort candidates

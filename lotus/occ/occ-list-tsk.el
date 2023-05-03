@@ -34,7 +34,8 @@
 (defun occ-list-tsk-build (&optional
                            file
                            collection)
-  "Build recursive org tsks from org FILE (or current buffer) using TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
+  "Build recursive org tsks from org FILE (or current buffer) using
+TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
   (let ((tsk-builder-at-point   (occ-obj-tsk-builder-at-point collection)))
     (with-current-buffer (if file
                              (occ-find-file-noselect file)
@@ -43,8 +44,9 @@
                  (> (buffer-size (current-buffer)) 30))
         (occ-setup-buffer)
         (if file (goto-char (point-min)))
-        (cons entry
-              (org-map-entries tsk-builder-at-point t file))))))
+        (let ((entry (funcall tsk-builder-at-point)))
+          (cons entry
+                (org-map-entries tsk-builder-at-point t file)))))))
 
 (cl-defmethod occ-obj-drived-tsk-builder ((collection occ-list-collection))
   #'(lambda (&optional file)
@@ -57,7 +59,9 @@
         ;; TODO: use collection-limit to limit childs it can be null pr 0
         ;; we have to limit on return value of this function
         (builder (occ-obj-drived-tsk-builder collection)))
+    (ignore depth)
+    (ignore limit)
     (remove nil (mapcar builder
-                        (occ-list-collection-roots collection)))))
+                                (occ-list-collection-roots collection)))))
 
 ;;; occ-list-tsk.el ends here

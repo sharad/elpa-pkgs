@@ -42,6 +42,7 @@
 
 (defvar *occ-clocked-ctxual-tsk-ctx-history* nil)
 (defvar occ-do-clock-in-hooks nil "Hook to run on clockin with previous and next markers.")
+(defvar *occ-update-current-ctx-msg* nil)
 
 (cl-defmethod occ-do-clock-in ((obj null)
                                &key
@@ -50,6 +51,12 @@
                                ap-normal
                                ap-transf
                                timeout)
+  (ignore obj)
+  (ignore filters)
+  (ignore builder)
+  (ignore ap-normal)
+  (ignore ap-transf)
+  (ignore timeout)
   (error "Can not clock in NIL"))
 
 (cl-defmethod occ-do-clock-in ((obj marker)
@@ -59,6 +66,11 @@
                                ap-normal
                                ap-transf
                                timeout)
+  (ignore filters)
+  (ignore builder)
+  (ignore ap-normal)
+  (ignore ap-transf)
+  (ignore timeout)
   (occ-debug "occ-do-clock-in(marker=%s)" obj)
   (let ((org-log-note-clock-out nil))
     (when (marker-buffer obj)
@@ -78,6 +90,11 @@
                                ap-normal
                                ap-transf
                                timeout)
+  (ignore filters)
+  (ignore builder)
+  (ignore ap-normal)
+  (ignore ap-transf)
+  (ignore timeout)
   (occ-debug "occ-do-clock-in(occ-tsk=%s)" obj)
   (if (occ-config-clock-in)
       (occ-do-clock-in (occ-obj-marker obj))
@@ -122,6 +139,8 @@
          (obj-ctx        (occ-ctxual-tsk-ctx obj))
          (new-marker     (if obj-tsk (occ-tsk-marker obj-tsk)))
          (new-heading    (if obj-tsk (occ-tsk-heading obj-tsk))))
+    (ignore old-marker)
+    (ignore obj-ctx)
     (when (and new-marker
                (marker-buffer new-marker))
 
@@ -180,6 +199,7 @@
 
 
 (cl-defmethod occ-obj-ignore-p ((buff buffer))
+  (ignore buff)
   nil)
 
 (cl-defmethod occ-obj-ignore-p ((obj occ-ctx))
@@ -209,7 +229,10 @@
                                ap-transf
                                auto-select-if-only
                                timeout)
-  "Clock-in selected CTXUAL-TSK for occ-ctx OBJ or open interface for adding properties to heading."
+  "Clock-in selected CTXUAL-TSK for occ-ctx OBJ or open interface
+for adding properties to heading."
+  (ignore ap-normal)
+  (ignore ap-transf)
   (unless builder (error "Builder can not be nil"))
   (occ-debug "occ-do-clock-in(occ-ctx=%s)" obj)
   (if (occ-obj-clockable-p obj)

@@ -73,13 +73,18 @@
 ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Customization-Types.html
 ;; https://www.gnu.org/software/emacs/manual/html_node/eintr/defcustom.html
 
+
+;; (defun occ-confirm (fn new)
+;;   (occ-y-or-n-timeout)
+;;   (occ-error "Implement it."))
+
 (defun occ-confirm (config
                     msg
                     timeout)
   (ignore timeout)
   (cond
      ((null config) nil)
-     ((function config) (funcall config))
+     ((functionp config) (funcall config))
      ((eq config 'ask)  (y-or-n-p msg))
      ((eq config t) t)
      (t nil)))
@@ -93,8 +98,8 @@
 
 
 (cl-defstruct occ-entry-types
-  :sequence
-  :catogery)
+  sequence
+  catogery)
 
 
 (defvar occ-config-clock-in t)

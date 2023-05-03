@@ -34,9 +34,9 @@
 (defvar occ-ineqs '())
 (defvar occ-normalized-ineq '())
 
-(defgeneric occ-add-ineq (operator
-                          prop1
-                          prop2)
+(cl-defgeneric occ-add-ineq (operator
+                             prop1
+                             prop2)
   "Add relative property.")
 
 (cl-defmethod occ-add-ineq ((operator symbol)
@@ -56,9 +56,9 @@
 
 
 (defun occ-ineq-sum ()
-  (reduce #'+
-          (mapcar #'cdr
-                  (cl--plist-to-alist occ-tsk-normalized-ineq))))
+  (cl-reduce #'+
+             (mapcar #'cdr
+                     (cl--plist-to-alist occ-tsk-normalized-ineq))))
 
 (defun occ-ineq-get (prop value)
   (let ((factor (plist-get occ-tsk-normalized-ineq
@@ -84,16 +84,16 @@
 
 (defvar occ-ineqs-collection '((key (gt (* 10 none)))))
 (defvar occ-ineq-in-resolve-collection)
-(defun occ-normalize (collection))
+(defun occ-normalize (collection) (ignore collection))
 
 
 
 (defvar occ-ineqs '())
 (defvar occ-normalized-ineq '())
 
-(defgeneric occ-add-ineq (operator
-                          prop1
-                          prop2)
+(cl-defgeneric occ-add-ineq (operator
+                             prop1
+                             prop2)
   "Add relative property.")
 
 (cl-defmethod occ-add-ineq ((operator symbol)
@@ -179,7 +179,7 @@
         (unless (gethash var visited)
           (funcall dfs-visit var))))
     ;; Generate the output list
-    (mapcar (lambda (var) (find var vars :test #'equal))
+    (mapcar (lambda (var) (cl-find var vars :test #'equal))
             (reverse result))))
 
 ;; (normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
@@ -213,7 +213,7 @@
         (unless (gethash var visited)
           (funcall dfs-visit var))))
     ;; Generate the output list
-    (mapcar (lambda (var) (find var vars :test #'equal))
+    (mapcar (lambda (var) (cl-find var vars :test #'equal))
             (reverse result))))
 
 ;; (normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
@@ -249,7 +249,7 @@
                  (var (caddr rhs)))
              (push lhs (gethash (* coeff var) graph))
              (push var (gethash (* coeff var) graph))))
-          (t (error "Invalid inequality: ~S" ineq)))))
+          (t (error "Invalid inequality: %s" ineq)))))
 
     ;; Check for cycles in the graph
     (letrec ((dfs-visit (lambda (var)
@@ -263,13 +263,15 @@
         (unless (gethash var visited)
           (funcall dfs-visit var))))
     ;; Generate the output list
-    (mapcar (lambda (var) (find var vars :test #'equal))
+    (mapcar (lambda (var) (cl-find var vars :test #'equal))
             (reverse result))))
 
 
-
 (defun normalize-inequalities (inequalities)
-  (let* ((var-list (sort (remove-duplicates (mapcan (lambda (ineq) (list (nth 1 ineq) (nth 2 ineq))) inequalities))
+  (let* ((var-list (sort (cl-remove-duplicates (mapcan #'(lambda (ineq)
+                                                           (list (nth 1 ineq)
+                                                                 (nth 2 ineq)))
+                                                       inequalities))
                          #'string<))
          (vars (make-hash-table :test #'equal))
          (graph (make-hash-table :test #'equal))
@@ -286,33 +288,34 @@
         (puthash from (cons to (gethash from graph)) graph)
         (puthash to nil vars)))
     ;; calculate in-degree of each variable
-    (maphash (lambda (var deps)
-               (dolist (dep deps)
-                 (puthash dep (1+ (gethash dep degree)) degree)))
-             graph)
-    ;; perform topological sort on graph
-    (let ((queue ()))
-      (maphash (lambda (var deg)
-                 (when (= deg 0)
-                   (push var queue)))
-               degree)
-      (while queue
-        (let ((var (pop queue)))
-          (push var topo-sorted-vars)
-          (dolist (dep (gethash var graph))
-            (let ((new-degree (1- (gethash dep degree))))
-              (puthash dep new-degree degree)
-              (when (= new-degree 0)
-                (push dep queue)))))))
-    ;; construct normalized list of variables
-    (let ((result nil))
-      (dolist (var topo-sorted-vars)
-        (let ((val (gethash var vars)))
-          (if (null val)
-              (error "Cycle detected in inequalities")
-            (let ((multiplier (if (numberp val) val 1)))
-              (push (* multiplier (intern var)) result))))))
-    (nreverse result)))
+    (maphash #'(lambda (var deps)
+                 (ignore var)
+                 (dolist (dep deps)
+                   (puthash dep (1+ (gethash dep degree)) degree)
+                   graph
+                     ;; perform topological sort on graph
+                   (let ((queue ()))
+                     (maphash (lambda (var deg)
+                                (when (= deg 0)
+                                  (push var queue)))
+                              degree)
+                     (while queue
+                       (let ((var (pop queue)))
+                         (push var topo-sorted-vars)
+                         (dolist (dep (gethash var graph))
+                           (let ((new-degree (1- (gethash dep degree))))
+                             (puthash dep new-degree degree)
+                             (when (= new-degree 0)
+                               (push dep queue)))))))
+                     ;; construct normalized list of variables
+                   (let ((result nil))
+                     (dolist (var topo-sorted-vars)
+                       (let ((val (gethash var vars)))
+                         (if (null val)
+                             (error "Cycle detected in inequalities")
+                           (let ((multiplier (if (numberp val) val 1)))
+                             (push (* multiplier (intern var)) result))))))
+                   (nreverse result))))))
 
 
 ;; (normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))

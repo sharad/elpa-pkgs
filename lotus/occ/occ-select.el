@@ -79,6 +79,7 @@ superseding ACTION, As in helm ACTION-TRANSFORMER are superseding
 ACTION
 TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
+  (ignore obtrusive)
   (let* ((timeout (or timeout
                       occ-idle-timeout)))
     (helm-timed timeout (occ-helm-select-buffer)
@@ -213,6 +214,7 @@ TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
                               prompt)
   "TODO: Document it."
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
+  (ignore obj)
   (occ-debug "occ-select((obj null)): begin")
   (let ((retval (occ-obj-select (occ-obj-make-ctx-at-point)
                                 collections

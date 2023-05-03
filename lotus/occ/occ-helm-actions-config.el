@@ -29,6 +29,8 @@
 
 (require 'occ-helm)
 
+(defvar occ-helm-callables nil)
+
 ;;;###autoload
 (defun occ-helm-actions-config-initialize ()
   (interactive)
@@ -60,7 +62,7 @@
       (occ-obj-build-callable-normal :procreate-child          "Procreate Child"          #'occ-do-procreate-child)
       (occ-obj-build-callable-normal :procreate-child-clock-in "Procreate Child Clock-in" #'occ-do-procreate-child-clock-in)
       (occ-obj-build-callable-normal :goto                     "Goto"                     #'occ-do-goto)
-      (occ-obj-build-callable-normal :set-to                   "Set To"                   #'occ-set-to)
+      (occ-obj-build-callable-normal :set-to                   "Set To"                   #'occ-do-set-to)
       (occ-obj-build-callable-normal :property-window-edit     "Properties Window Edit"   #'occ-do-properties-window-editor) ;TODO: implement it.
       (occ-obj-build-callable-normal :property-edit-combined   "Properties Edit Combined" #'occ-do-properties-editor-combined) ;TODO: implement it.
       (occ-obj-build-callable-normal :call-with-obj            "Call with object"         #'occ-do-call-with-obj)

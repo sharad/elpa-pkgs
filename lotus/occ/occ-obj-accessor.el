@@ -36,25 +36,32 @@
 
 
 (cl-defmethod occ-obj-class-name (obj)
-  "unknown")
+  "unknown"
+  (ignore obj))
 
 (cl-defmethod occ-obj-class-name ((obj symbol))
-  "symbol")
+  "symbol"
+  (ignore obj))
 
 (cl-defmethod occ-obj-class-name ((obj null))
-  "null")
+  "null"
+  (ignore obj))
 
 (cl-defmethod occ-obj-class-name ((obj marker))
-  "marker")
+  "marker"
+  (ignore obj))
 
 (cl-defmethod occ-obj-class-name ((obj occ-tsk))
-  "task")
+  "task"
+  (ignore obj))
 
 (cl-defmethod occ-obj-class-name ((obj occ-ctsk))
-  "context task")
+  "context task"
+  (ignore obj))
 
 (cl-defmethod occ-obj-class-name ((obj occ-ctxual-tsk))
-  "contextual task")
+  "contextual task"
+  (ignore obj))
 
 
 (cl-defmethod occ-obj-obj ((obj occ-obj))
@@ -65,10 +72,12 @@
 
 
 (cl-defmethod occ-obj-obj ((obj null))
+  (ignore obj)
   nil)
 
 
 (cl-defmethod occ-obj-tsk ((obj null))
+  (ignore obj)
   nil)
 
 (cl-defmethod occ-obj-tsk ((obj occ-tsk))
@@ -79,10 +88,12 @@
   (occ-ctsk-tsk obj))
 
 (cl-defmethod occ-obj-tsk ((obj occ-obj-ctx))
+  (ignore obj)
   nil)
 
 
 (cl-defmethod occ-obj-ctx ((obj null))
+  (ignore obj)
   nil)
 
 (cl-defmethod occ-obj-ctx ((obj occ-ctx))
@@ -94,6 +105,7 @@
 
 
 (cl-defmethod occ-obj-marker ((obj null))
+  (ignore obj)
   nil)
 
 (cl-defmethod occ-obj-marker ((obj marker))
@@ -104,6 +116,7 @@
 
 
 (cl-defmethod occ-obj-buffer ((obj null))
+  (ignore obj)
   nil)
 
 (cl-defmethod occ-obj-buffer ((obj marker))
@@ -116,15 +129,16 @@
 (cl-defmethod occ-obj-callable ((callable occ-callable))
   callable)
 
-(cl-defmethod occ-obj-callable-internal ((callable list) (type symbol))
+(cl-defmethod occ-obj-callable-internal ((callable list)
+                                         (type symbol))
   (let ((callable-ctor (if (eq type :normal)
                            #'occ-obj-make-callable-normal
                          (if (eq type :generator)
                              #'occ-obj-make-callable-generator
                            (occ-error "occ-obj-callable-internal: type is not one of (:normal :generator)")))))
-    (let ((keyword (nth 0 (callable)))
-          (name    (nth 1 (callable)))
-          (fun     (nth 2 (callable))))
+    (let ((keyword (nth 0 callable))
+          (name    (nth 1 callable))
+          (fun     (nth 2 callable)))
       (funcall callable-ctor keyword name fun))))
 
 (cl-defmethod occ-obj-callable-normal ((callable list))
@@ -160,17 +174,20 @@
 (cl-defmethod occ-obj-callables ((callable list)
                                  (obj      null))
   "Return list of ((NAME . FUN) ...)"
+  (ignore obj)
   (mapcar #'occ-obj-callable
           callable))
 
 (cl-defmethod occ-obj-callables ((callable list)
                                  (obj      occ-obj))
   "Return list of ((NAME . FUN) ...)"
+  (ignore obj)
   (occ-obj-callables callable nil))
 
 (cl-defmethod occ-obj-callables ((callable occ-callable-normal)
                                  (obj      occ-obj))
   "Return list of ((NAME . FUN) ...)"
+  (ignore obj)
   (list callable))
 
 (cl-defmethod occ-obj-callables ((callable occ-callable-generator)
@@ -217,12 +234,14 @@
 (cl-defmethod occ-obj-callable-helm-actions ((callables (head :callables))
                                              (obj occ-obj))
   "Return list of ((NAME . FUN) ...)"
+  (ignore obj)
   (let ((callables (cl-rest callables)))
     (occ-obj-callable-helm-actions callables)))
 
 (cl-defmethod occ-obj-callable-helm-actions ((callables (head :keywords))
                                              (obj occ-obj))
   "Return list of ((NAME . FUN) ...)"
+  (ignore obj)
   (let* ((keywords  (cl-rest callables))
          (callables (occ-helm-callables-get keywords)))
     (occ-obj-callable-helm-actions callables)))
@@ -230,12 +249,15 @@
 
 ;; TODO: Consider preparing
 (cl-defmethod occ-obj-ap (xyz)
+  (ignore xyz)
   (occ-error "Implement it"))
 
 (cl-defmethod occ-obj-ap-normal (xyz)
+  (ignore xyz)
   (occ-error "Implement it"))
 
 (cl-defmethod occ-obj-ap-transf (xyz)
+  (ignore xyz)
   (occ-error "Implement it"))
 
 
@@ -252,12 +274,13 @@
 (cl-defmethod occ-obj-ap-base ((ap-obj occ-ap-transf))
   (let ((base (cl-call-next-method)))
     (or base
-        (let ((transform (occ-ap-normal-transform ap-obj)))
+        (let ((transform (occ-ap-transf-transform ap-obj)))
           (when transform
             (cons :transform transform))))))
 
 (cl-defmethod occ-obj-ap-tree-keybranch ((ap-obj occ-ap)
                                          (obj    occ-obj))
+  (ignore obj)
   (unless (occ-ap-tree-keybranch ap-obj)
     (occ-error "occ-ap obj %s missing tree-keybranch %s" ap-obj (occ-ap-tree-keybranch ap-obj)))
   (occ-ap-tree-keybranch ap-obj))
@@ -265,7 +288,6 @@
 (cl-defmethod occ-obj-ap-callables ((ap-obj occ-ap-normal)
                                     (obj occ-obj))
   (occ-debug "occ-obj-ap-callables: ap-obj = %s" ap-obj)
-
   ;; NOTE:
   ;; If TREE-KEYBRANCH are present then callable must have to generated afresh every time
   ;; this method is called.
@@ -291,6 +313,7 @@
   (unless (occ-ap-transf-transform ap-obj)
     (let ((transform #'(lambda (action
                                 candidate)
+                         (ignore action)
                          (occ-debug "occ-obj-ap-transform: lambda: ap-obj = %s" ap-obj)
                          (let* ((candidate-obj (occ-obj-obj candidate))
                                 (callables (occ-obj-ap-callables ap-obj
@@ -318,6 +341,8 @@
 
 (cl-defmethod occ-obj-ap-helm-actions ((ap-obj occ-ap-transf)
                                        (obj occ-obj))
+  (ignore obj)
+  (ignore ap-obj)
   (occ-error "OCC-OBJ-AP-HELM-ACTIONS can not work for OCC-AP-TRANSF as it requires OCC-AP-NORMAL to run TRANSFORMATION function"))
 
 
@@ -364,11 +389,15 @@
 (cl-defmethod occ-obj-ap-helm-get-actions ((obj occ-obj)
                                            (apn occ-ap-normal)
                                            (apt null))
+  (ignore apt)
   (occ-obj-ap-helm-actions apn obj))
 
 (cl-defmethod occ-obj-ap-helm-get-actions ((obj occ-obj)
                                            (apn null)
                                            (apt occ-ap-transf))
+  (ignore obj)
+  (ignore apn)
+  (ignore apt)
   (occ-error "test"))
 
 
@@ -380,10 +409,12 @@
 (cl-defmethod occ-obj-ap-helm-item ((ap-obj occ-ap-transf)
                                     (obj occ-obj))
   "Return lambda function which do transformation on actions and return actions"
+  (ignore obj)
   (occ-obj-ap-helm-transformation ap-obj))
 
 
 (cl-defmethod occ-obj-heading-marker ((obj null))
+  (ignore obj)
   (make-marker))
 
 (cl-defmethod occ-obj-heading-marker ((obj marker))
@@ -418,7 +449,7 @@
   (let ((tsk (occ-ctsk-tsk obj)))
     (occ-obj-rank tsk)))
 
-(cl-defmethod (setf occ-obj-rank) (value (obj occ-ctsk))
+(cl-defmethod (setf occ-obj-rank) (rank (obj occ-ctsk))
   (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
   (let ((tsk (occ-ctsk-tsk obj)))
     (setf (occ-obj-rank tsk) rank)))
@@ -527,8 +558,7 @@
 (cl-defgeneric occ-obj-candidate (obj)
   "occ-obj-candidate")
 
-(cl-defmethod occ-obj-candidate
-  ((obj marker))
+(cl-defmethod occ-obj-candidate ((obj marker))
   "Insert a line for the clock selection menu.
 And return a cons cell with the selection character integer and the obj
 pointing to it."
@@ -612,17 +642,17 @@ pointing to it."
                                (occ-obj-Format ctxual-tsk nil t)
                                (occ-obj-Format org-clock nil t))
                      (format "occ-current-ctxual-tsk: %s is outside of occ"
-                             (occ-obj-Format org-clock nil t nil t)))))
+                             (occ-obj-Format org-clock nil t nil)))))
           (if (not occ-other-allowed)
               (occ-error msg)
             (occ-debug :warning msg)
             (occ-obj-build-ctxual-tsk-with (occ-obj-make-tsk org-clock)
                                            (occ-obj-make-ctx-at-point))))))))
 
-(defun occ-current-tsk (&optional occ-other-allowed)
-  (let ((curr-ctxual-tsk (occ-current-ctxual-tsk occ-other-allowed))) ;recursion
-    (when curr-ctxual-tsk
-      (occ-obj-tsk curr-ctxual-tsk))))
+;; (defun occ-current-tsk (&optional occ-other-allowed)
+;;   (let ((curr-ctxual-tsk (occ-current-ctxual-tsk occ-other-allowed))) ;recursion
+;;     (when curr-ctxual-tsk
+;;       (occ-obj-tsk curr-ctxual-tsk))))
 
 (defun occ-current-tsk (&optional occ-other-allowed)
   (let ((ctxual-tsk (cl-first *occ-clocked-ctxual-tsk-ctx-history*))
@@ -643,7 +673,7 @@ pointing to it."
           (if (not occ-other-allowed)
               (occ-error msg)
             (occ-debug :warning msg)
-            (occ-obj-make-tsk clock)))))))
+            (occ-obj-make-tsk org-clock)))))))
 
 
 (defun occ-default-collection (&optional noerror)
@@ -663,6 +693,7 @@ pointing to it."
 
 (cl-defmethod occ-do-reset-tsks ((collection null))
   ;; (occ-message "null")
+  (ignore collection)
   nil)
 
 (cl-defmethod occ-do-reset-tsks ((collection occ-list-collection))
@@ -680,6 +711,8 @@ pointing to it."
 (cl-defmethod occ-obj-collect-tsks (collection
                                     &optional
                                     force)
+  (ignore collection)
+  (ignore force)
   (occ-error "first argument should be of type (or occ-tree-collection occ-list-collection)"))
 
 (cl-defmethod occ-obj-collect-tsks ((collection occ-list-collection)
@@ -702,6 +735,8 @@ pointing to it."
 (cl-defmethod occ-obj-tsks (collection
                             &optional
                             force)
+  (ignore collection)
+  (ignore force)
   (occ-error "first argument should be of type (or occ-tree-collection occ-list-collection)"))
 
 ;; FIND: what it mean by tsks collection-tree are same ?
@@ -734,12 +769,14 @@ pointing to it."
 (cl-defmethod occ-obj-collect-files ((collection occ-tree-collection)
                                      &optional
                                      force)
+  (ignore force)
   (unless (occ-tree-collection-files collection)
     ;; (occ-obj-collect-tsks collection nil)
     (let ((occ-files (let ((tsks  (occ-obj-collection-tsks collection))
                            (files '()))
                        (mapc #'(lambda (tsk)
                                  (occ-mapc-tree-tsks #'(lambda (tsk args)
+                                                         (ignore args)
                                                          (push (occ-tsk-file tsk) files))
                                                      tsk
                                                      nil))
@@ -751,6 +788,7 @@ pointing to it."
 (cl-defmethod occ-obj-collect-files ((collection occ-list-collection)
                                      &optional
                                      force)
+  (ignore force)
   (unless (occ-list-collection-files collection)
     (setf
      (occ-list-collection-files collection)
@@ -784,6 +822,7 @@ pointing to it."
                             builder
                             obtrusive)
   "return TSKs container"
+  (ignore obj)
   (occ-obj-list (occ-obj-make-ctx-at-point)
                 :builder   builder
                 :obtrusive obtrusive))
@@ -792,11 +831,14 @@ pointing to it."
                             &key
                             builder
                             obtrusive)
+  (ignore builder)
+  (ignore obtrusive)
   (unless (occ-tree-collection-list collection)
     (let ((tsks     (occ-obj-collection-tsks collection))
           (tsk-list '()))
       (mapc #'(lambda (tsk)
                 (occ-mapc-tree-tsks #'(lambda (subtsk args)
+                                        (ignore args)
                                         (setf tsk-list (nconc tsk-list (list subtsk))))
                                     tsk
                                     nil))
@@ -809,6 +851,8 @@ pointing to it."
                             &key
                             builder
                             obtrusive)
+  (ignore builder)
+  (ignore obtrusive)
   (let ((tsks (occ-obj-collection-tsks collection)))
     tsks))
 
@@ -819,6 +863,7 @@ pointing to it."
                                  builder
                                  obtrusive)
   "return CTSKs list"
+  (ignore obtrusive)
   (let ((builder (or builder
                      #'occ-obj-build-ctsk-with)))
     (let ((ctsks (occ-run-unobtrusively obtrusive
@@ -841,6 +886,7 @@ pointing to it."
                                  builder
                                  obtrusive)
   "return CTSKs list"
+  (ignore obtrusive)
   (let ((builder (or builder
                      #'occ-obj-build-ctsk-with)))
     (let ((ctsks (let ((tsks (occ-obj-list collection))) ;;????TODO
@@ -861,6 +907,7 @@ pointing to it."
                                  builder
                                  obtrusive)
   "return TSKs container"
+  (ignore obj)
   (occ-obj-list-with (occ-obj-make-ctx-at-point)
                      (occ-obj-collection collection)
                      :builder   builder
@@ -872,6 +919,10 @@ pointing to it."
                                  builder
                                  obtrusive)
   "return TSKs container"
+  (ignore obj)
+  (ignore collection)
+  (ignore builder)
+  (ignore obtrusive)
   nil)
 
 (cl-defmethod occ-obj-list-with ((obj null)
@@ -880,6 +931,10 @@ pointing to it."
                                  builder
                                  obtrusive)
   "return TSKs container"
+  (ignore obj)
+  (ignore collection)
+  (ignore builder)
+  (ignore obtrusive)
   nil)
 
 (cl-defmethod occ-obj-length ((collection symbol))
@@ -890,6 +945,7 @@ pointing to it."
 
 
 (cl-defmethod occ-obj-select-obj ((source null))
+  (ignore source)
   nil)
 
 (cl-defmethod occ-ob-select-obj ((source occ-hsrc))
@@ -900,6 +956,7 @@ pointing to it."
 
 
 (cl-defmethod occ-obj-rank ((obj null))
+  (ignore obj)
   nil)
 
 (cl-defmethod occ-ob-rank ((obj occ-obj-collection))
@@ -910,6 +967,7 @@ pointing to it."
 
 
 (cl-defmethod occ-obj-level ((obj null))
+  (ignore obj)
   nil)
 
 (cl-defmethod occ-ob-rank ((obj occ-obj-collection))
@@ -924,6 +982,7 @@ pointing to it."
 
 (cl-defmethod occ-name ((obj null))
   "return NIL"
+  (ignore obj)
   "NIL")
 
 (cl-defmethod occ-name ((obj occ-obj))
@@ -932,10 +991,10 @@ pointing to it."
 
 (cl-defmethod occ-name ((obj list))
   "return name"
-  (cond ((assoc 'name) (cdr (assoc 'name)))
-        ((assoc :name) (cdr (assoc :name)))
-        ((assoc "name") (cdr (assoc "name")))
-        ((plist-get 'name) (plist-get 'name))
-        ((plist-get :name) (plist-get :name))
-        ((plist-get "name") (plist-get "name"))))
+  (cond ((assoc 'name obj) (cdr (assoc 'name obj)))
+        ((assoc :name obj) (cdr (assoc :name obj)))
+        ((assoc "name" obj) (cdr (assoc "name" obj)))
+        ((plist-get 'name obj) (plist-get 'name obj))
+        ((plist-get :name obj) (plist-get :name obj))
+        ((plist-get "name" obj) (plist-get "name" obj))))
 ;;; occ-obj-accessor.el ends here

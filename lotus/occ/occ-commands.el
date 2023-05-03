@@ -86,6 +86,7 @@
       (occ-debug "No current task clocking-in"))))
 
 (defun occ-curr-tsk-continue-for (mins)
+  (ignore mins)
   (occ-error "Implement it."))
 
 
@@ -97,6 +98,7 @@
 
 (defun occ-show-up (mins)
   (interactive)
+  (ignore mins)
   ;; https://www.merriam-webster.com/thesaurus/pack%20(up%20or%20off)
   (occ-error "Implement it."))
 
@@ -106,6 +108,7 @@
 
 (defun occ-pack-up (mins)
   (interactive)
+  (ignore mins)
   ;; https://www.merriam-webster.com/thesaurus/pack%20(up%20or%20off)
   (occ-error "Implement it."))
 
@@ -122,6 +125,7 @@
   (occ-error "Implement it, open context ctx if not present, then occ-do-clock-in-if-associable else show error."))
 
 (defun occ-interrupt-clock-in (mins)
+  (ignore mins)
   (occ-error "Implement it."))
 
 (defun occ-clock-out (&optional switch-to-state
@@ -207,7 +211,7 @@
                      (read-file-name "org file:")))
   ;; TODO: Improve to create direct tree from here rather than resetting whole occ-global-tsk-collection
   (unless (occ-collector-spec key)
-    (occ-obj-make-spec key))
+    (occ-obj-make-spec key (symbol-name key)))
   (if (occ-collector-spec key)
     (unless (memq file (cl-rest (occ-collector-spec key)))
       (let ((spec       (cl-first (occ-collector-spec key)))
@@ -230,7 +234,7 @@
 ;;;###autoload
 (defun occ-obj-build-spec (key)
   (interactive (list (occ-collector-read-key "key for spec: ")))
-  (occ-obj-make-spec key)
+  (occ-obj-make-spec key (symbol-name key))
   (when (cl-first (occ-collector-spec key))
         (occ-add-to-spec key (read-file-name "Spec file: ")))
   (prog1
@@ -241,19 +245,19 @@
 ;; testing verification
 (defun occ-files-with-null-regex ()
   (interactive)
-  (let ((files (remove-if #'(lambda (f)
-                              (with-current-buffer (occ-find-file-noselect f)
-                                org-complex-heading-regexp))
-                          (occ-obj-files))))
+  (let ((files (cl-remove-if #'(lambda (f)
+                                 (with-current-buffer (occ-find-file-noselect f)
+                                   org-complex-heading-regexp))
+                             (occ-obj-files))))
     (occ-debug "files with null regex %s" files)))
 
 ;; testing verification
 (defun occ-files-not-in-org-mode ()
   (interactive)
-  (let ((files (remove-if #'(lambda (f)
-                              (with-current-buffer (occ-find-file-noselect f)
-                                (eq major-mode 'org-mode)))
-                          (occ-obj-files))))
+  (let ((files (cl-remove-if #'(lambda (f)
+                                 (with-current-buffer (occ-find-file-noselect f)
+                                   (eq major-mode 'org-mode)))
+                             (occ-obj-files))))
     (occ-debug "files not in org-mode %s" files)))
 
 
