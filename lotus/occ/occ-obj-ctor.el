@@ -118,7 +118,7 @@
 
 (defun occ-util-plist-value-mapcar (fun plist)
   (mapcan #'identity
-          (occ-plist-mapcar #'(lambda (c)
+          (occ-util-plist-mapcar #'(lambda (c)
                                 (list (cl-first c)
                                       (funcall fun (nth 1 c))))
                             plist)))
@@ -130,13 +130,13 @@
                                                             (occ-obj-prop-from-org (occ-util-keyword2sym (cl-first c))
                                                                                    (nth 1 c))))
                                                   plist))))
-    (occ-assert (evenp (length     plist)))
+    (occ-assert (cl-evenp (length     plist)))
     (occ-debug "occ-tsk-plist-from-org: plist %s" plist)
-    (occ-assert (evenp (length ret-plist)))
+    (occ-assert (cl-evenp (length ret-plist)))
     ret-plist))
 
 (occ-testing
- (eq (aref (symbol-name :test) 0) ?:)
+ (ignore (eq (aref (symbol-name :test) 0) ?:))
  (list-utils-flatten '((a  b) (x)))
  (seq-partition (list :a 1 :b 2 :c 3 :more (list 4 5 6) :x nil) 2)
  (mapcan #'identity (seq-partition (list :a 1 :b 2 :c 3 :more (list 4 5 6) :x nil) 2)))
@@ -157,15 +157,19 @@
   "Task constructor")
 
 (cl-defmethod occ-obj-tsk-builder ((collection occ-tree-collection))
+  (ignore collection)
   #'make-occ-tree-tsk)
 
 (cl-defmethod occ-obj-tsk-builder ((collection occ-list-collection))
+  (ignore collection)
   #'make-occ-list-tsk)
 
 (cl-defmethod occ-obj-tsk-builder ((collection occ-obj-collection))
+  (ignore collection)
   #'make-occ-tsk)
 
 (cl-defmethod occ-obj-tsk-builder ((collection null))
+  (ignore collection)
   #'make-occ-tsk)
 
 
@@ -197,7 +201,7 @@
 
                ;; NOTE also these two are mixed in one list only
                (tsk-plist    (nth 1 (org-element-at-point))))
-           (occ-assert (evenp (length tsk-plist)))
+           (occ-assert (cl-evenp (length tsk-plist)))
            (when heading
              (setf tsk
                    (funcall builder
@@ -257,8 +261,9 @@
             (occ-obj-make-tsk (marker-position obj))))))
 
 (cl-defmethod occ-obj-make-tsk ((obj null))
-  (occ-debug "current pos %s" (point-marker))
-  (occ-obj-make-tsk (point-marker)))
+  (ignore obj)
+  (occ-debug "current pos %s" (point-marker)
+    (occ-obj-make-tsk (point-marker))))
 
 (cl-defmethod occ-obj-make-tsk ((obj occ-tsk))
   obj)
@@ -318,6 +323,7 @@
   (occ-obj-make-ctx-at-point obj))
 
 (cl-defmethod occ-obj-make-ctx ((obj null))
+  (ignore obj)
   (occ-obj-make-ctx-at-point (point-marker)))
 
 (cl-defmethod occ-obj-make-ctx ((obj occ-ctx))
@@ -380,10 +386,14 @@
 
 (cl-defmethod occ-obj-build-ctxual-tsk-with ((tsk occ-ctxual-tsk) ;ctor
                                              (ctx occ-ctx))
+  (ignore tsk)
+  (ignore ctx)
   (debug))
 
 (cl-defmethod occ-obj-build-ctxual-tsk-with ((tsk null) ;ctor
                                              (ctx occ-ctx))
+  (ignore tsk)
+  (ignore ctx)
   nil)
 
 (cl-defmethod occ-obj-make-ctxual-tsk ((obj occ-ctsk)
@@ -399,6 +409,7 @@
 (cl-defmethod occ-obj-make-ctxual-tsk ((obj occ-ctxual-tsk)
                                        &optional
                                        rank)
+  (ignore rank)
   obj)
 
 (cl-defmethod occ-obj-build-ctxual-tsk ((obj occ-ctsk)
@@ -410,6 +421,7 @@
 (cl-defmethod occ-obj-build-ctxual-tsk ((obj occ-ctxual-tsk)
                                         &optional
                                         rank)
+  (ignore rank)
   obj)
 
 
@@ -420,8 +432,9 @@
 
 (cl-defmethod occ-obj-build-obj-with ((obj occ-tsk)
                                       (ctx null))
+  (ignore ctx)
   (occ-obj-build-obj-with obj
-                          (occ-obj-make-ctx-at-point)))
+                            (occ-obj-make-ctx-at-point)))
 
 
 (cl-defmethod occ-obj-make-collection ((desc string)
@@ -598,7 +611,7 @@
     (make-occ-ap-transf :callables callables)))
 
 (cl-defmethod occ-obj-make-ap-transf ((ap-obj (head :keywords)))
-  (let* ((keywors   (cl-rest ap-obj))
+  (let* ((keywords   (cl-rest ap-obj))
          (callables (occ-helm-callables-get keywords)))
     (make-occ-ap-transf :callables callables)))
 
@@ -611,74 +624,88 @@
 (cl-defmethod occ-obj-build-ap-normal ((ap-obj list)
                                        &optional
                                        optional-obj)
+  (ignore optional-obj)
   (make-occ-ap-normal :tree-keybranch ap-obj))
 
 (cl-defmethod occ-obj-build-ap-normal ((ap-obj (head :tree-keybranch))
                                        &optional
                                        optional-obj)
+  (ignore optional-obj)
   (occ-obj-make-ap-normal ap-obj))
 
 (cl-defmethod occ-obj-build-ap-normal ((ap-obj (head :callables))
                                        &optional
                                        optional-obj)
+  (ignore optional-obj)
   (occ-obj-make-ap-normal ap-obj))
 
 (cl-defmethod occ-obj-build-ap-normal ((ap-obj (head :keywords))
                                        &optional
                                        optional-obj)
+  (ignore optional-obj)
   (occ-obj-make-ap-normal ap-obj))
 
 (cl-defmethod occ-obj-build-ap-normal ((ap-obj occ-ap-normal)
                                        &optional
                                        optional-obj)
+  (ignore optional-obj)
   ap-obj)
 
 (cl-defmethod occ-obj-build-ap-normal ((ap-obj null)
                                        &optional
                                        optional-obj)
+  (ignore ap-obj)
   (occ-obj-make-ap-normal optional-obj))
 
 
 (cl-defmethod occ-obj-build-ap-transf ((ap-obj list)
                                        &optional
                                        optional-obj)
+  (ignore optional-obj)
   (occ-obj-make-ap-transf ap-obj))
 
 (cl-defmethod occ-obj-build-ap-transf ((ap-obj (head :tree-keybranch))
                                        &optional
                                        optional-obj)
+  (ignore optional-obj)
   (occ-obj-make-ap-transf ap-obj))
 
 (cl-defmethod occ-obj-build-ap-transf ((ap-obj (head :callables))
                                        &optional
                                        optional-obj)
+  (ignore optional-obj)
   (occ-obj-make-ap-transf ap-obj))
 
 (cl-defmethod occ-obj-build-ap-transf ((ap-obj (head :keywords))
                                        &optional
                                        optional-obj)
+  (ignore optional-obj)
   (occ-obj-make-ap-transf ap-obj))
 
 (cl-defmethod occ-obj-build-ap-transf ((ap-obj (head :transform))
                                        &optional
                                        optional-obj)
+  (ignore optional-obj)
   (occ-obj-make-ap-transf ap-obj))
 
 (cl-defmethod occ-obj-build-ap-transf ((ap-obj occ-ap-normal)
                                        &optional
                                        optional-obj)
+  (ignore optional-obj)
   (occ-obj-make-ap-transf ap-obj))
 
 (cl-defmethod occ-obj-build-ap-transf ((ap-obj occ-ap-transf)
                                        &optional
                                        optional-obj)
+  (ignore optional-obj)
   ap-obj)
 
 (cl-defmethod occ-obj-build-ap-transf ((ap-obj null)
                                        &optional
                                        optional-obj)
+  (ignore ap-obj)
   (if optional-obj
-      (occ-obj-build-ap-transf optional-obj)))
+        (occ-obj-build-ap-transf optional-obj)))
 
 ;; ctor
 
@@ -724,24 +751,26 @@
 (cl-defmethod occ-obj-build-return-lambda ((callable occ-callable-generator)
                                            &optional
                                            label)
+  (ignore label)
   (occ-error "Can not use occ-callable-transf %s" callable))
 
 
-(defun* occ-build-hsrc-null (candidate &key rank level)
+(cl-defun occ-build-hsrc-null (candidate &key rank level)
+  (ignore candidate)
   (let ((rank  (or rank 0))
         (level (or level :optional)))
     (make-occ-hsrc-null :obj nil ;; candidate
                         :rank rank
                         :level level)))
 
-(defun* occ-build-hsrc-candidate (candidate &key rank level)
+(cl-defun occ-build-hsrc-candidate (candidate &key rank level)
   (let ((rank  (or rank 0))
         (level (or level :optional)))
     (make-occ-hsrc-candidate :obj candidate
                              :rank rank
                              :level level)))
 
-(defun* occ-build-hsrc-source (source &key rank level)
+(cl-defun occ-build-hsrc-source (source &key rank level)
   (let ((rank  (or rank 0))
         (level (or level :optional)))
     (make-occ-hsrc-source :obj source
