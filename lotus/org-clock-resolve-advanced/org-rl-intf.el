@@ -27,7 +27,8 @@
 (provide 'org-rl-intf)
 
 
-(require 'cl)
+;; (require 'cl)
+(require 'org)
 
 ;;;###autoload
 (defvar org-rl-interfaces nil)
@@ -36,14 +37,14 @@
   (plist-get (cl-rest (assoc intf org-rl-interfaces)) key))
 
 (defun org-rl-interface-put (intf key value)
-  (plist-set (cl-rest (assoc intf org-rl-interfaces)) key value))
+  (plist-put (cl-rest (assoc intf org-rl-interfaces)) key value))
 
 (defun org-rl-find-intf (clock-marker)
-  (some #'(lambda (intf)
-            (let ((clock-p (org-rl-interface-get (cl-first intf) :org-rl-clock-p)))
-              (when (and clock-p
-                         (funcall clock-p clock-marker))
-                (cl-first intf))))
+  (cl-some #'(lambda (intf)
+               (let ((clock-p (org-rl-interface-get (cl-first intf) :org-rl-clock-p)))
+                 (when (and clock-p
+                            (funcall clock-p clock-marker))
+                   (cl-first intf))))
         org-rl-interfaces))
 
 
