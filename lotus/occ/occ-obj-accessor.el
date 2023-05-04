@@ -33,6 +33,7 @@
 (require 'occ-prop)
 (require 'occ-rank)
 (require 'occ-assert)
+(require 'occ-commands)
 
 
 (cl-defmethod occ-obj-class-name (obj)
