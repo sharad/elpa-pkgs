@@ -209,9 +209,9 @@
                       :obtrusive nil
 
 
-  (occ-obj-list-debug-select (occ-obj-make-ctx-at-point)
-                             :ap-normal '(t actions select)
-                             :obtrusive nil)
+  (occ-obj-list-select (occ-obj-make-ctx-at-point)
+                       :ap-normal '(t actions select)
+                       :obtrusive nil)
 
   ;;; Group2
   (let ((obj (occ-obj-make-ctx-at-point)))

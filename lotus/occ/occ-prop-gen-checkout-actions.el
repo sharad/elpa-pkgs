@@ -38,17 +38,20 @@
                                            (prop symbol)
                                            &key param-only)
   "Used by occ-obj-gen-checkout"
+  (ignore param-only)
   (let ((list-p (occ-obj-list-p prop)))
-    (format "%s property %s of %s"
-            "Checkout"
-            prop
-            (occ-obj-Format obj))))
+    (ignore list-p)
+      (format "%s property %s of %s"
+              "Checkout"
+              prop
+              (occ-obj-Format obj))))
 
 (cl-defmethod occ-obj-gen-checkout-fun ((obj  occ-obj-tsk)
                                         (prop symbol)
                                         &key param-only)
   "Generate helm function, purpose PARAM-ONLY for the case where
 only argument required for some other further processing"
+  (ignore obj)
   (if param-only
       (list prop)
     #'(lambda (obj)
@@ -90,6 +93,8 @@ only argument required for some other further processing"
 
 (cl-defmethod occ-obj-gen-checkouts-if-required ((obj null)
                                                  &key param-only)
+  (ignore obj)
+  (ignore param-only)
   nil)
 
 (cl-defmethod occ-obj-gen-checkouts-if-required ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
@@ -106,11 +111,15 @@ only argument required for some other further processing"
 
 (cl-defmethod occ-obj-gen-checkouts-if-required ((obj occ-obj-ctx)
                                                  &key param-only)
+  (ignore obj)
+  (ignore param-only)
   nil)
 
 
 (cl-defmethod occ-obj-gen-each-prop-checkouts ((obj null)
                                                &key param-only)
+  (ignore obj)
+  (ignore param-only)
   nil)
 
 (cl-defmethod occ-obj-gen-each-prop-checkouts ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
@@ -120,6 +129,8 @@ only argument required for some other further processing"
 
 (cl-defmethod occ-obj-gen-each-prop-checkouts ((obj occ-obj-ctx)
                                                &key param-only)
+  (ignore obj)
+  (ignore param-only)
   nil)
 
 
@@ -133,10 +144,13 @@ only argument required for some other further processing"
 
 (cl-defmethod occ-obj-gen-simple-checkouts ((obj null)
                                             &key param-only)
+  (ignore obj)
+  (ignore param-only)
   nil)
 
 (cl-defmethod occ-obj-gen-simple-checkouts ((obj occ-obj-tsk)
                                             &key param-only)
+  (ignore param-only)
   (list (occ-obj-make-callable-normal :checkout
                                   (format "Checkout %s" (occ-obj-Format obj))
                                   #'(lambda (obj)
@@ -144,6 +158,8 @@ only argument required for some other further processing"
 
 (cl-defmethod occ-obj-gen-simple-checkouts ((obj occ-obj-ctx)
                                             &key param-only)
+  (ignore obj)
+  (ignore param-only)
   nil)
 
 ;;; occ-prop-gen-checkout-actions.el ends here

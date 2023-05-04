@@ -40,20 +40,28 @@
 ;; Correct it ???
 (cl-defmethod occ-obj-gen-misc ((obj null)
                                 &param-only param-only)
+  (ignore obj)
+  (ignore param-only)
   nil)
 
 (cl-defmethod occ-obj-gen-misc ((obj occ-obj-ctx-tsk)
                                 &param-only param-only)
-  (list (occ-obj-make-callable-normal :continue
-                                  "Continue"
-                                  t)
-        (occ-obj-make-callable-normal :checkout
-                                  "Checkout"
-                                  #'(lambda (obj)
-                                      (occ-do-checkout obj)))))
+  (ignore obj)
+  (ignore param-only)
+  (let ((continue (occ-obj-make-callable-normal :continue
+                                                "Continue"
+                                                t))
+        (checkout (occ-obj-make-callable-normal :checkout
+                                                "Checkout"
+                                                #'(lambda (obj)
+                                                    (occ-do-checkout obj)))))
+    (list continue
+          checkout)))
 
 (cl-defmethod occ-obj-gen-misc ((obj occ-obj-ctx)
                                 &param-only param-only)
+  (ignore obj)
+  (ignore param-only)
   nil)
 
 ;;; occ-prop-gen-actions.el ends here

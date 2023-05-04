@@ -41,29 +41,32 @@
                                        &key param-only)
   "Used by occ-obj-gen-edit"
   ;; TODO: Improve it.
+  (ignore param-only)
   (let ((list-p (occ-obj-list-p prop)))
-    (format "%s %s %s property %s to %s"
-            (symbol-name operation)
-            (occ-obj-format-prop obj prop value)
-            (if list-p "in" "from")
-            prop
-            (occ-obj-Format obj))))
+      (format "%s %s %s property %s to %s"
+              (symbol-name operation)
+              (occ-obj-format-prop obj prop value)
+              (if list-p "in" "from")
+              prop
+              (occ-obj-Format obj))))
 
 (cl-defmethod occ-obj-gen-edit-fun ((obj       occ-obj-tsk)
                                     (prop      symbol)
                                     (operation symbol)
                                     value
                                     &key param-only)
-  "Generate helm function, purpose PARAM-ONLY for the case where only argument required for some other further processing"
+  "Generate helm function, purpose PARAM-ONLY for the case where
+only argument required for some other further processing"
   (if param-only
       (list prop
             operation
             value)
     #'(lambda (candidate)
+        (ignore candidate)
         (occ-do-op-prop-edit obj
-                             prop
-                             operation
-                             value))))
+                                     prop
+                                     operation
+                                     value))))
 
 
 (cl-defgeneric occ-obj-gen-edit (obj
@@ -115,6 +118,7 @@
                                              (prop      symbol)
                                              (operation null)
                                              &key param-only)
+  (ignore operation)
   (let* ((ops      (occ-obj-operations-for-prop obj prop))
          (edit-ops (mapcar #'(lambda (operation)
                                (let ((value (occ-obj-prop-default-value obj
@@ -135,6 +139,7 @@
                                              (operation symbol)
                                              &key param-only)
   ;; NOTE: occ-obj-properties-to-edit will handle (obj occ-obj-ctx-tsk)
+  (ignore prop)
   (let* ((props    (occ-obj-properties-to-edit obj))
          ;; will be call (OCC-OBJ-GEN-EDITS-IF-REQUIRED OBJ PROP OPERATION :PARAM_ONLY PARAM_ONLY)
          (edit-ops (mapcar #'(lambda (prop)
@@ -150,6 +155,7 @@
                                              (prop      null)
                                              (operation null)
                                              &key param-only)
+  (ignore prop)
   (let* ((props (occ-obj-properties-to-edit obj))
          ;; NOTE:
          ;; will be calling            (OCC-OBJ-GEN-EDITS-IF-REQUIRED OBJ PROP NIL :PARAM_ONLY PARAM_ONLY)
@@ -166,6 +172,8 @@
 
 (cl-defmethod occ-obj-gen-each-prop-edits ((obj null)
                                            &key param-only)
+  (ignore obj)
+  (ignore param-only)
   nil)
 
 (cl-defmethod occ-obj-gen-each-prop-edits ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
@@ -180,10 +188,12 @@
 
 (cl-defmethod occ-obj-gen-each-prop-edits ((obj occ-obj-ctx)
                                            &key param-only)
+  (ignore obj)
+  (ignore param-only)
   nil)
 
 
-(defun* occ-obj-gen-each-prop-fast-edits (obj &key param-only)
+(cl-defun occ-obj-gen-each-prop-fast-edits (obj &key param-only)
   (append (occ-obj-gen-each-prop-edits obj
                                        :param-only param-only)
           (occ-obj-gen-each-prop-edits (occ-obj-tsk obj)
@@ -192,10 +202,13 @@
 
 (cl-defmethod occ-obj-gen-simple-edits ((obj null)
                                         &key param-only)
+  (ignore obj)
+  (ignore param-only)
   nil)
 
 (cl-defmethod occ-obj-gen-simple-edits ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
                                         &key param-only)
+  (ignore param-only)
   (list (occ-obj-make-callable-normal :edit
                                       (format "Edit %s" (occ-obj-Format obj))
                                       #'(lambda (obj)
@@ -203,6 +216,8 @@
 
 (cl-defmethod occ-obj-gen-simple-edits ((obj occ-obj-ctx)
                                         &key param-only)
+  (ignore obj)
+  (ignore param-only)
   nil)
 
 ;;; occ-prop-gen-edit-actions.el ends here

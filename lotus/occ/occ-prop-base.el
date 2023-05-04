@@ -176,14 +176,15 @@
 
 
 (defun occ-internal-remove-template-symbol (prop-list)
-  (remove-if #'(lambda (prop)
-                 (string-match "^_.+_$" (symbol-name prop)))
-             prop-list))
+  (cl-remove-if #'(lambda (prop)
+                    (string-match "^_.+_$" (symbol-name prop)))
+                prop-list))
 
 
 ;; TODO: occ-prop-base.el: Warning: ‘cl-next-method-p’ is an obsolete macro (as of 25.1); make sure there’s always a next method, or catch ‘cl-no-next-method’ instead [7 times]
 (cl-defmethod occ-obj-properties-to-edit :around (obj)
   "return PROPERTIES list that can be edited."
+  (ignore obj)
   (if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
     (occ-error "No
@@ -193,6 +194,7 @@
 method provided.")))
 (cl-defmethod occ-obj-properties-to-inherit :around (obj)
   "return PROPERTIES list that can be inherited."
+  (ignore obj)
   (if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
     (occ-error "No
@@ -202,6 +204,7 @@ method provided.")))
 method provided.")))
 (cl-defmethod occ-obj-properties-to-calculate-rank :around (obj)
   "return PROPERTIES list that can be used in calculating rank."
+  (ignore obj)
   (if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
     (occ-error "No
@@ -211,6 +214,7 @@ method provided.")))
 method provided.")))
 (cl-defmethod occ-obj-properties-to-checkout :around (obj)
   "return PROPERTIES list that can be checked-out."
+  (ignore obj)
   (if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
     (occ-error "No
@@ -226,6 +230,7 @@ method provided.")))
                                                   (prop symbol))
   "Read value of element of list for property PROP from user for
 OCC-TSK OBJ."
+  (ignore obj)
   (if (cl-next-method-p)
       (cl-call-next-method)
     (occ-error "No
@@ -239,6 +244,7 @@ method provided."
                                                   (prop symbol))
   "Read value of element of list for property PROP from user for
 OCC-TSK OBJ."
+  (ignore obj)
   (if (cl-next-method-p)
       (cl-call-next-method)
     (occ-error "No
@@ -277,6 +283,7 @@ method provided."
 
 (cl-defmethod occ-obj-reread-props :around (obj)
   "return PROPERTIES list that can be checked-out."
+  (ignore obj)
   (if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
     (occ-error "No
@@ -290,6 +297,7 @@ method provided.")))
                                  (operation (eql get))
                                  (prop      symbol)
                                  values)
+  (ignore obj)
   (occ-debug "occ-obj-require-p11 prop %s operation %s values %s is called" prop operation values)
   nil)
 
@@ -305,6 +313,7 @@ method provided.")))
                                  (operation (eql put))
                                  (prop      symbol)
                                  values)
+  (ignore obj)
   (occ-debug "occ-obj-require-p10 prop %s operation %s values %s is called" prop operation values)
   nil)
 
@@ -320,12 +329,14 @@ method provided.")))
                                  (operation (eql member))
                                  (prop      symbol)
                                  values)
+  (ignore obj)
   (occ-debug "occ-obj-require-p9 prop %s operation %s values %s is called" prop operation values)
   nil)
 
 
 (cl-defmethod occ-obj-valid-p ((operation symbol)
                                (prop      symbol))
+  (ignore prop)
   (memq operation
         '(add remove get put member)))
 
