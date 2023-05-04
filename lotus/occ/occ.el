@@ -52,7 +52,7 @@
     (intern symstr)))
 (defun occ-collector-get (key)
   (alist-get key *occ-collector*))
-(defun* occ-collector-get-create (key desc spec files &key depth limit rank level)
+(cl-defun occ-collector-get-create (key desc spec files &key depth limit rank level)
   (let ((depth (or depth 0))
         (limit (or limit 0))
         (rank  (or rank 0))
@@ -84,8 +84,8 @@
     (when collection
       (occ-obj-collection-files collection))))
 (defun occ-collector-keys ()
-  (remove-duplicates (append (list *occ-collector-default-key*)
-                             (mapcar #'first *occ-collector*))))
+  (cl-remove-duplicates (append (list *occ-collector-default-key*)
+                                (mapcar #'cl-first *occ-collector*))))
 
 
 (cl-defmethod occ-obj-collection ((obj symbol))
@@ -111,9 +111,12 @@
   (add-hook 'after-save-hook 'occ-after-save-hook-fun t t))
 
 
-(defun occ-reset-collection-spec (key)
+(defun occ-reset-collection-spec (&optional key)
   (interactive (list (occ-collector-read-key "key for spec: ")))
-  (setf (occ-collection-spec (occ-collector-get key)) nil))
+  (occ-debug "resetting deafult-tsk-collection")
+  (let ((key (or key
+                 (occ-collector-default-key))))
+    (occ-reset-collection-object key)))
 
 (defun occ-reset-collection-roots (key)
   (interactive (list (occ-collector-read-key "key for spec: ")))
@@ -131,7 +134,7 @@
 
 
 ;;;###autoload
-(defun* occ-set-collection-spec (key desc spec files &key depth limit rank level)
+(cl-defun occ-set-collection-spec (key desc spec files &key depth limit rank level)
   (let ((depth (or depth 0))
         (limit (or limit 0))
         (rank  (or rank 0))
@@ -144,13 +147,9 @@
                               :limit limit
                               :rank  rank
                               :level level)))
-
-(defun occ-reset-collection-spec ()
-  (occ-debug "resetting deafult-tsk-collection")
-  (occ-reset-collection-object (occ-collector-default-key)))
 
 ;;;###autoload
-(defun* occ-set-deafult-collection-spec (spec files &key depth limit rank level)
+(cl-defun occ-set-deafult-collection-spec (spec files &key depth limit rank level)
   (let ((depth (or depth 0))
         (limit (or limit 0))
         (rank  (or rank 0))
@@ -164,7 +163,7 @@
                              :rank  rank
                              :level level)))
 ;;;###autoload
-(defun* occ-set-primary-deafult-collection-spec (spec files &key depth limit rank level)
+(cl-defun occ-set-primary-deafult-collection-spec (spec files &key depth limit rank level)
   (let ((depth (or depth 0))
         (limit (or limit 0))
         (rank  (or rank 20))
@@ -228,7 +227,13 @@
     (unless spec
       (if (occ-valid-spec-p spec)
           (progn
-            (occ-collector-get-create key "Test" spec)
+            (occ-collector-get-create key "Test" spec (list (read-file-name "org file for occ: "
+                                                                            "~/Documents"
+                                                                            "~/Documents/tasks.org"
+                                                                            t
+                                                                            nil
+                                                                            #'(lambda (f)
+                                                                                (string-match "*.org/" f)))))
             (setq occ-mode t)
             (occ-initialize-hooks key))
         (if (called-interactively-p 'interactive) ;; (called-interactively-p 'interactive)
@@ -274,7 +279,7 @@
   (unless occ-dev-dir
     (occ-error "occ-dev-dir is NIL"))
   (progn
-     (delete* (expand-file-name occ-dev-dir library) load-path)
+     (cl-delete (expand-file-name occ-dev-dir library) load-path)
      (let ((libpath (expand-file-name (concat library ".el")
                                       occ-dev-dir)))
        (if (file-exists-p libpath)
@@ -291,6 +296,7 @@ Interactively, or when MESSAGE is non-nil, show it in echo area.
 With prefix argument, or when HERE is non-nil, insert it at point.
 In non-interactive uses, a reduced version string is output unless
 FULL is given."
+  (ignore message)
   (let ((occ-dir            (ignore-errors (occ-find-library-dir "occ")))
         (save-load-suffixes (when (boundp 'load-suffixes) load-suffixes))
         (load-suffixes      (list ".el"))
@@ -335,7 +341,7 @@ FULL is given."
                                                            package-alist)))))))
     (if occ-dev-dir
         (dolist (lib deps)
-          (delete* (concat occ-dev-dir lib) load-path)
+          (cl-delete (concat occ-dev-dir lib) load-path)
           (push (concat occ-dev-dir   lib) load-path))
       (occ-error "occ-dev-dir not defined"))))
 
@@ -388,6 +394,7 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
          (load-suffixes  (if uncompiled (reverse load-suffixes) load-suffixes))
          (load-uncore    nil)
          (load-misses    nil))
+    (ignore occ-dir)
     (unless occ-dev-dir
       (occ-set-dev-dir))
     (unless occ-dev-dir

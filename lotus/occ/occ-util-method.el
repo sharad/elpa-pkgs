@@ -51,7 +51,7 @@
 be NIL, using (occ-list-filters) for FILTERS"
 
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
-
+  (ignore ap-normal)
   (let ((filters          (occ-list-filters))
         (builder          #'occ-obj-build-ctsk-with)
         (ap-normal        occ-list-select-keys)
@@ -98,9 +98,9 @@ be NIL, using (occ-match-filters) for FILTERS"
 
 
 (occ-testing
- (occ-obj-list-debug-select (occ-obj-make-ctx-at-point)
-                        :ap-normal (occ-obj-get-helm-actions nil '(t actions select))
-                        :obtrusive nil))
+ (occ-obj-list-select (occ-obj-make-ctx-at-point)
+                      :ap-normal (occ-obj-get-helm-actions nil '(t actions select))
+                      :obtrusive nil))
 
 (occ-testing
  (let ((obj (occ-obj-make-ctx-at-point)))
@@ -124,7 +124,7 @@ selection for ap-normal to run on selected tsk. It is mainly meant
 for testing given ap-normal on selected tsk."
 
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
-
+  (ignore ap-normal)
   (let ((filters          (occ-list-filters))
         (builder          #'occ-obj-build-ctsk-with)
         (ap-normal        occ-list-select-keys)

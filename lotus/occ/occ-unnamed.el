@@ -129,10 +129,13 @@
   (occ-unnamed-collection))
 
 (occ-testing
-  (occ-cl-inst-classname (occ-obj-make-tsk org-clock-hd-marker))
-  (setq unnamed-test (occ-obj-make-tsk org-clock-hd-marker))
-  (occ-tsk-marker unnamed-test)
-  (type-of (lotus-org-unnamed-task-clock-marker)))
+ (ignore (occ-cl-inst-classname (occ-obj-make-tsk org-clock-hd-marker)))
+ (let ((unnamed-test nil))
+   (ignore (setq unnamed-test (occ-obj-make-tsk org-clock-hd-marker)))
+   (ignore unnamed-test)
+   (ignore (occ-tsk-marker unnamed-test))
+   unnamed-test)
+ (type-of (lotus-org-unnamed-task-clock-marker)))
 
 (cl-defmethod occ-do-maybe-create-unnamed-ctxual-tsk ((ctx occ-ctx))
   ;; back

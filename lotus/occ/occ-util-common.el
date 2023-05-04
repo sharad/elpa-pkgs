@@ -163,11 +163,11 @@
   (let ((file (buffer-file-name)))
     (when (and file
                (eq major-mode 'org-mode))
-      (if (member* file
-                   (occ-obj-files)
-           :test #'(lambda (f1 f2)
-                     (string= (file-truename f1)
-                              (file-truename f2))))
+      (if (cl-member file
+                     (occ-obj-files)
+                     :test #'(lambda (f1 f2)
+                               (string= (file-truename f1)
+                                        (file-truename f2))))
           ;; TODO workaround do complete nil, later change it to optimized.
           ;; TODO update existing occ-collection.tree or occ-collection.list
           ;; (occ-reset-deafult-tsk-collection)
@@ -232,6 +232,7 @@
 (defun occ-lambda-call-obj (obj)
   "Closed OBJ will be called, ignoring CANDIDATE arg"
   #'(lambda (candidate)
+      (ignore candidate)
       (if (functionp obj)
           (funcall obj)
         obj)))

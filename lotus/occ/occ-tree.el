@@ -34,7 +34,8 @@
 
 ;; tree api
 (defun tree-mapcar-nodes (subtreefn fn tree args)
-  "Tree mapcar return result for FN for all TREE nodes with ARGS, function SUBTREEFN require to find nonleaf node"
+  "Tree mapcar return result for FN for all TREE nodes with ARGS,
+function SUBTREEFN require to find nonleaf node"
   (list
    (funcall fn tree args)
    :subtree
@@ -44,7 +45,8 @@
     (funcall subtreefn tree))))
 
 (defun tree-mapc-nodes (subtreefn fn tree args)
-  "Tree mapc run FN for all TREE nodes with ARGS, function SUBTREEFN require to find nonleaf node"
+  "Tree mapc run FN for all TREE nodes with ARGS, function
+SUBTREEFN require to find nonleaf node"
   (funcall fn tree args)
   (mapc
    #'(lambda (e)
@@ -52,7 +54,9 @@
    (funcall subtreefn tree)))
 
 (defun tree-remove-if-not-nodes (subtreefn predicate tree args)
-  "Tree remove if return TREE with all node and its subtree removed if node return nil for PREDICATE, function SUBTREEFN require to find nonleaf node"
+  "Tree remove if return TREE with all node and its subtree removed
+if node return nil for PREDICATE, function SUBTREEFN require to
+find nonleaf node"
   (if (funcall subtreefn tree)
       (let ((rootele
              (if (funcall predicate tree args) tree))

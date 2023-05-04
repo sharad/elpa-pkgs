@@ -28,6 +28,7 @@
 
 
 (cl-defgeneric occ-obj-build-tsks (collection)
+  (ignore collection)
   (occ-error "occ-obj-build-tsks"))
 
 (require 'occ-list-tsk)
