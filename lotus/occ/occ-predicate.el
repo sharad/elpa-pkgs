@@ -83,8 +83,8 @@
   "Test if CTSK is associate")
 
 (cl-defmethod occ-obj-associable-p ((obj null))
-  "Test if CTSK is associate"     ;not required
-  (ignore obj).
+  "Test if CTSK is associate"     ;not required.
+  (ignore obj)
   nil)
 
 (cl-defmethod occ-obj-associable-p ((obj occ-obj-ctx-tsk))
