@@ -54,8 +54,8 @@
          (elscreen-entry      (when (featurep 'elscreen)
                                 (when (and frame
                                            elscreen-frame-confs
-                                           (elscreen-get-frame-confs frame))))
-                                  (elscreen-get-current-screen))
+                                           (elscreen-get-frame-confs frame))
+                                  (elscreen-get-current-screen))))
          (elscreen-win-config (when elscreen-entry
                                 (elscreen-current-window-configuration)))
          (win-config          (unless elscreen-win-config
