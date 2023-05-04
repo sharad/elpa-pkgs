@@ -206,57 +206,57 @@
  ;;                            :obtrusive nil)
  (occ-obj-list-select (occ-obj-make-ctx-at-point)
                       :ap-normal '(t actions select)
-                      :obtrusive nil
+                      :obtrusive nil)
 
 
-  (occ-obj-list-select (occ-obj-make-ctx-at-point)
-                       :ap-normal '(t actions select)
-                       :obtrusive nil)
+ (occ-obj-list-select (occ-obj-make-ctx-at-point)
+                      :ap-normal '(t actions select)
+                      :obtrusive nil)
 
   ;;; Group2
-  (let ((obj (occ-obj-make-ctx-at-point)))
-    (occ-obj-select obj
-                    (occ-collections-default)
-                    :filters            (occ-list-filters)
-                    :builder            #'occ-obj-build-ctsk-with
-                    :action             (occ-obj-get-helm-actions obj
-                                                                  occ-list-select-keys)
-                    :return-transform   nil
-                    :action-transformer #'(lambda (action candidate)
-                                            (occ-obj-get-helm-actions obj
-                                                                      occ-list-select-keys))
-                    :timeout            occ-idle-timeout
-                    :obtrusive         t))
+ (let ((obj (occ-obj-make-ctx-at-point)))
+   (occ-obj-select obj
+                   (occ-collections-default)
+                   :filters            (occ-list-filters)
+                   :builder            #'occ-obj-build-ctsk-with
+                   :action             (occ-obj-get-helm-actions obj
+                                                                 occ-list-select-keys)
+                   :return-transform   nil
+                   :action-transformer #'(lambda (action candidate)
+                                           (occ-obj-get-helm-actions obj
+                                                                     occ-list-select-keys))
+                   :timeout            occ-idle-timeout
+                   :obtrusive         t))
 
 
   ;; (occ-obj-get-helm-actions nil '(t actions select)) -> nil
-  (occ-obj-list-select (occ-obj-make-ctx-at-point)
-                       :action (occ-obj-get-helm-actions nil '(t actions select))
-                       :obtrusive nil)
+ (occ-obj-list-select (occ-obj-make-ctx-at-point)
+                      :action (occ-obj-get-helm-actions nil '(t actions select))
+                      :obtrusive nil)
 
 
   ;;; Group3
-  (let ((obj                    (occ-obj-make-ctx-at-point))
-        (occ-list-select-keys-1 '(t actions select))
-        (occ-list-select-keys-2 '(t actions general)))
-    (occ-obj-select obj
-                    (occ-collections-default)
-                    :filters            (occ-list-filters)
-                    :builder            #'occ-obj-build-ctsk-with
-                    :action             (occ-obj-get-helm-actions obj
-                                                                  occ-list-select-keys-1)
-                    :return-transform   nil
-                    :action-transformer #'(lambda (action candidate)
-                                            (ignore action)
-                                            (ignore candidate)
-                                            (occ-obj-get-helm-actions obj
-                                                                      occ-list-select-keys-2))
-                    :timeout            occ-idle-timeout
-                    :obtrusive         t))
+ (let ((obj                    (occ-obj-make-ctx-at-point))
+       (occ-list-select-keys-1 '(t actions select))
+       (occ-list-select-keys-2 '(t actions general)))
+   (occ-obj-select obj
+                   (occ-collections-default)
+                   :filters            (occ-list-filters)
+                   :builder            #'occ-obj-build-ctsk-with
+                   :action             (occ-obj-get-helm-actions obj
+                                                                 occ-list-select-keys-1)
+                   :return-transform   nil
+                   :action-transformer #'(lambda (action candidate)
+                                           (ignore action)
+                                           (ignore candidate)
+                                           (occ-obj-get-helm-actions obj
+                                                                     occ-list-select-keys-2))
+                   :timeout            occ-idle-timeout
+                   :obtrusive         t))
 
 
 
-  ()))
+ ())
 
 
 (cl-defgeneric occ-do-procreate-child (obj)
