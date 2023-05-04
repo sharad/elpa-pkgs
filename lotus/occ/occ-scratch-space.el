@@ -583,22 +583,26 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
 
 
  (cl-defmethod occ-test-combine ((x symbol))
+   (ignore x)
    (append (list 'symbol)
-           (when (cl-next-method-p)
-             (cl-call-next-method))))
+           (condition-case nil
+               (cl-call-next-method)
+             ((cl-no-next-method) nil))))
  ;; TODO: occ-prop-base.el: Warning: ‘cl-next-method-p’ is an obsolete macro (as of 25.1); make sure there’s always a next method, or catch ‘cl-no-next-method’ instead [7 times]
 
  (cl-defmethod occ-test-combine ((x (head z)))
    (ignore x)
    (append (list 'z)
-           (when (cl-next-method-p)
-             (cl-call-next-method))))
+           (condition-case nil
+               (cl-call-next-method)
+             ((cl-no-next-method) nil))))
 
  (cl-defmethod occ-test-combine ((x (eql a)))
    (ignore x)
    (append (list 'a)
-           (when (cl-next-method-p)
-             (cl-call-next-method))))
+           (condition-case nil
+               (cl-call-next-method)
+             ((cl-no-next-method) nil))))
 
  (let ((generic (cl--generic 'occ-test-combine)))
    (ignore (cl--generic-method-table generic)))

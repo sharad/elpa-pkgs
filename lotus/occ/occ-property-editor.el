@@ -343,7 +343,6 @@
                   obj))
               ((quit)
                (progn
-                 (ignore err)
                  (occ-debug :warning "occ-do-properties-window-editor(obj occ-obj-ctx-tsk): canceling timer")
                  (occ-debug "occ-do-properties-window-editor(obj occ-obj-ctx-tsk): canceling timer")
                  (funcall cleanup
