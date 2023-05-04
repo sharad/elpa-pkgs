@@ -245,11 +245,11 @@
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (ignore tsk)
-    (let* ((ctx-currfile (if ctx (occ-ctx-file ctx))
-               (ctx-dir      (when (stringp ctx-currfile)
-                               (file-name-directory ctx-currfile)))
-               (prompt       (concat (symbol-name prop) ": "))))
-          (ido-read-file-name prompt ctx-dir ctx-currfile))))
+    (let* ((ctx-currfile (if ctx (occ-ctx-file ctx)))
+           (ctx-dir      (when (stringp ctx-currfile)
+                           (file-name-directory ctx-currfile)))
+           (prompt       (concat (symbol-name prop) ": ")))
+      (ido-read-file-name prompt ctx-dir ctx-currfile))))
 
 (cl-defmethod occ-do-checkout-prop ((obj occ-obj-tsk)
                                     (prop (eql currfile)))
@@ -322,10 +322,10 @@
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (ignore tsk)
-    (let* ((ctx-file   (when ctx (occ-ctx-file ctx))
-               (ctx-dir    (when (stringp ctx-file) (file-name-directory ctx-file)))
-               (prompt     (concat (symbol-name prop) ": "))))
-          (ido-read-directory-name prompt ctx-dir ctx-dir))))
+    (let* ((ctx-file   (when ctx (occ-ctx-file ctx)))
+           (ctx-dir    (when (stringp ctx-file) (file-name-directory ctx-file)))
+           (prompt     (concat (symbol-name prop) ": ")))
+      (ido-read-directory-name prompt ctx-dir ctx-dir))))
 
 (cl-defmethod occ-do-checkout-prop ((obj occ-obj-tsk)
                                     (prop (eql root)))
@@ -367,22 +367,23 @@
 (cl-defmethod occ-obj-prop-to-org ((prop (eql timebeing))
                                    value)
   (ignore prop)
-  (if (numberp value
-        (number-to-string value))
-      ""))
+  (if (numberp value)
+      (number-to-string value)
+    ""))
 
 (cl-defmethod occ-obj-prop-from-org ((prop (eql timebeing))
                                      value)
   (ignore prop)
-  (if (stringp value
-        (or (string-to-number value)
-            0))
-      0))
+  (if (stringp value)
+      (or (string-to-number value)
+          0)
+    0))
 
 (cl-defmethod occ-obj-readprop-from-user ((obj occ-tsk)
                                           (prop (eql timebeing)))
   "READ"
   (let ((tsk (occ-obj-tsk obj)))
+    (ignore tsk)
     (let* ((prompt     (concat (symbol-name prop)
                                ": ")))
       (ignore prompt)
@@ -409,7 +410,10 @@
                                  (operation (eql increment))
                                  (prop (eql timebeing))
                                  values)
+  (ignore operation)
+  (ignore values)
   (let ((tsk    (occ-obj-tsk obj)))
+    (ignore tsk)
     (if (occ-obj-list-p prop)
         (occ-error "Implement it.")
       (occ-error "Implement it."))))
@@ -418,6 +422,7 @@
                                     (operation (eql increment))
                                     (prop (eql timebeing))
                                     values)
+  (ignore obj)
   (ignore operation)
   (ignore values)
   (let ((prop-string (symbol-name prop)))
@@ -457,13 +462,13 @@
                                 (prop (eql status)))
   "Predicate funtion to check if ctx matches to tsk's status attribute."
   (ignore prop)
-  (let ((todo-type (occ-obj-get-property obj 'todo-type)
-          (closed    (occ-obj-get-property obj 'closed))
-          (status    (occ-obj-get-property obj 'todo-keyword))))
-      (if (or closed
-              (eql todo-type 'done)
-              (string= status "HOLD"))
-          -30 0)))
+  (let ((todo-type (occ-obj-get-property obj 'todo-type))
+        (closed    (occ-obj-get-property obj 'closed))
+        (status    (occ-obj-get-property obj 'todo-keyword)))
+    (if (or closed
+            (eql todo-type 'done)
+            (string= status "HOLD"))
+        -30 0)))
 
 #+end_src
 
