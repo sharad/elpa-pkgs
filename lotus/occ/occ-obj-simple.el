@@ -201,9 +201,9 @@
 
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION for OCC-LIST-SELECT
   ;; (occ-obj-get-helm-actions nil '(t actions select)) -> nil
- (occ-obj-list-debug-select (occ-obj-make-ctx-at-point)
-                            :ap-normal '(t actions select)
-                            :obtrusive nil)
+ ;; (occ-obj-list-debug-select (occ-obj-make-ctx-at-point)
+ ;;                            :ap-normal '(t actions select)
+ ;;                            :obtrusive nil)
  (occ-obj-list-select (occ-obj-make-ctx-at-point)
                       :ap-normal '(t actions select)
                       :obtrusive nil

@@ -55,22 +55,25 @@
 
 (cl-defmethod occ-obj-return-tranform ((ap-transf-obj occ-ap-transf)
                                        (obj occ-obj))
-  "Will make transformer fun to change action except first to return occ-return-label."
+  "Will make transformer fun to change action except first to
+return occ-return-label."
+  (ignore obj)
   (let ((new-transform #'(lambda (action
-                                  candidate)
-                           (let ((transform (occ-obj-ap-transform ap-transf-obj)))
-                             (occ-assert transform)
-                             (let* ((candidate-obj (occ-obj-return-get-value candidate))
-                                    (ap-normal-obj (funcall transform
-                                                            action candidate-obj)))
-                               (occ-debug "occ-obj-return-tranform: lambda: ap-normal-obj = %s" ap-normal-obj)
-                               ;; (occ-obj-return-tranform ap-normal-obj obj)
-                               (occ-obj-return-tranform ap-normal-obj candidate-obj))))))
-    (occ-obj-build-ap-transf (cons :transform
-                                   new-transform))))
+                                    candidate)
+                             (let ((transform (occ-obj-ap-transform ap-transf-obj)))
+                               (occ-assert transform)
+                               (let* ((candidate-obj (occ-obj-return-get-value candidate))
+                                      (ap-normal-obj (funcall transform
+                                                              action candidate-obj)))
+                                 (occ-debug "occ-obj-return-tranform: lambda: ap-normal-obj = %s" ap-normal-obj)
+                                 ;; (occ-obj-return-tranform ap-normal-obj obj)
+                                 (occ-obj-return-tranform ap-normal-obj candidate-obj))))))
+      (occ-obj-build-ap-transf (cons :transform
+                                     new-transform))))
 
 
 (cl-defmethod occ-obj-return-in-labels-p (retval &rest label)
+  (ignore label)
   retval)
 
 (cl-defmethod occ-obj-return-in-labels-p ((retval occ-return) &rest label)
@@ -110,8 +113,8 @@
     (`((string symbol (eql ,val) list integer integer)) val)
     (_ nil))
 
-  (occ-cl-method-param-case '(occ-obj-make-collection (`(string symbol (eql ,val) list integer integer) val)))
-  )
+  (occ-cl-method-param-case '(occ-obj-make-collection (`(string symbol (eql ,val) list integer integer) val))))
+  
 
 (defun occ-valid-spec-p (spec)
   (memq spec (list :tree :list)))

@@ -68,13 +68,14 @@
                                  (operation (eql get))
                                  (prop      symbol)
                                  values)
+  (ignore values)
   (let ((tsk (occ-obj-tsk obj)))
-    (occ-debug "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
-    (if (occ-obj-list-p prop)
-        (occ-obj-get-property tsk
-                              prop)
-      (list (occ-obj-get-property tsk
-                                  prop)))))
+      (occ-debug "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
+      (if (occ-obj-list-p prop)
+          (occ-obj-get-property tsk
+                                prop)
+        (list (occ-obj-get-property tsk
+                                    prop)))))
 
 (cl-defmethod occ-obj-operation ((obj       occ-obj-tsk)
                                  (operation (eql add))
@@ -109,8 +110,8 @@
     (occ-debug "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
     (if (occ-obj-list-p prop
                         (occ-obj-set-property tsk prop
-                                              (remove (cl-first values
-                                                             (occ-obj-get-property tsk prop)))))
+                                              (remove (cl-first values)
+                                                      (occ-obj-get-property tsk prop))))
         (occ-error "Implement it."))))
 
 (cl-defmethod occ-obj-operation ((obj       occ-obj-tsk)

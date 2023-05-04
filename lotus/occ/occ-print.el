@@ -36,8 +36,11 @@
 (cl-defmethod occ-obj-uniquify-file ((tsk occ-tsk))
   (let* ((filename (occ-obj-get-property tsk 'file))
          (basename (file-name-nondirectory filename))
-         (files (occ-obj-files)))))
-    ;; (uniquify-buffer-file-name)
+         (files (occ-obj-files)))
+    (ignore basename)
+    (ignore files)
+    t))
+        ;; (uniquify-buffer-file-name)
 
 ;; (file-name-nondirectory "/aaa/aaa/aaa")
 
@@ -68,7 +71,7 @@ pointing to it."
                                           (org-fontify-like-in-org-mode (concat prefix heading)
                                                                         org-odd-levels-only))
                               (length prefix))))
-
+           (ignore cat)
            org-heading))))))
 
 (cl-defmethod occ-obj-fontify-like-in-org-mode ((obj occ-tsk) &optional no-propterties)
@@ -150,10 +153,12 @@ pointing to it."
                               rank
                               no-curr-clock
                               no-propterties)
+  (ignore rank)
+  (ignore no-curr-clock)
+  (ignore no-propterties)
   (concat (when case
             (concat (occ-obj-title obj
-                               case)
-                    ": "))
+                                   case) ": "))
           (format "%s" obj)))
 
 (cl-defmethod occ-obj-format ((obj marker)
@@ -162,6 +167,8 @@ pointing to it."
                               rank
                               no-curr-clock
                               no-propterties)
+  (ignore rank)
+  (ignore no-curr-clock)
   (concat (when case (concat (occ-obj-title obj case) ": "))
           (occ-obj-fontify-like-in-org-mode obj no-propterties)))
 
@@ -173,6 +180,7 @@ pointing to it."
                               rank
                               no-curr-clock
                               no-propterties)
+  (ignore no-curr-clock)
   (let* ((align      occ-obj-format-tsk-tag-alignment)
          (heading    (occ-obj-format-string obj no-propterties))
          (headinglen (length heading))
@@ -193,6 +201,10 @@ pointing to it."
                               rank
                               no-curr-clock
                               no-propterties)
+  (ignore case)
+  (ignore rank)
+  (ignore no-curr-clock)
+  (ignore no-propterties)
   (format "%s" obj))
 
 (cl-defmethod occ-obj-format ((obj occ-obj-ctx-tsk)
@@ -244,6 +256,7 @@ pointing to it."
   "Neatly Output OBJ with its properties")
 
 (cl-defmethod occ-obj-display ((obj occ-obj-tsk))
+  (ignore obj)
   (occ-error "Implement it: neatly output OBJ with its properties"))
 
 ;;; occ-print.el ends here

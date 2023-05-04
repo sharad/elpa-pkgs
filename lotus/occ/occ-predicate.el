@@ -59,10 +59,14 @@
 
 (cl-defmethod occ-obj-marker= ((obj occ-obj-tsk)
                                (mrk null))
+  (ignore obj)
+  (ignore mrk)
   nil)
 
 (cl-defmethod occ-obj-marker= ((obj null)
                                (tsk occ-obj-tsk))
+  (ignore obj)
+  (ignore tsk)
   nil)
 
 
@@ -79,7 +83,8 @@
   "Test if CTSK is associate")
 
 (cl-defmethod occ-obj-associable-p ((obj null))
-  "Test if CTSK is associate"     ;not required.
+  "Test if CTSK is associate"     ;not required
+  (ignore obj).
   nil)
 
 (cl-defmethod occ-obj-associable-p ((obj occ-obj-ctx-tsk))

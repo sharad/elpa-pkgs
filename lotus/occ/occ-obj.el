@@ -138,8 +138,8 @@
   (tree nil))
 
 
-(cl-defmethod occ-collection-dyn ()
-  collection)
+;; (cl-defmethod occ-collection-dyn ()
+;;   collection)
 
 ;; (cl-defstruct (occ-prop (:include occ-obj-prop))
 ;;   value)

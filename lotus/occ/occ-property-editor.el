@@ -63,47 +63,49 @@
                                       &optional prompt)
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (occ-debug "occ-do-select-propetry: %s" (occ-obj-Format tsk))
-    (let ((prompt     (or prompt
-                          (format "%s proptery: "
-                                  (occ-obj-Format tsk))))
-          (fixed-keys '(edit
-                        done))
-          (keys       (occ-obj-properties-to-edit obj)))
-      (if keys
-          (let ((maxkeylen (apply #'max
-                                  (mapcar #'(lambda (sym) ;https://www.gnu.org/software/emacs/manual/html_node/elisp/Formatting-Strings.html
-                                              (length (symbol-name sym)))
-                                          (append keys fixed-keys))))
-                (key-vals  (occ-obj-get-properties tsk keys)))
-            (occ-debug "occ-do-select-propetry: for %s with keys =%s got key-vals = %s"
-                              (occ-obj-Format tsk)
-                              keys
-                              key-vals)
-            (if key-vals
-                (let* ((key-val-collection (mapcar #'(lambda (key-val)
-                                                       (cons
-                                                        (if (cl-rest key-val)
-                                                            (format "%s: %s" (cl-first key-val) (cl-rest key-val))
-                                                          (symbol-name (cl-first key-val)))
-                                                        (cl-first key-val)))
-                                                   key-vals))
-                       (key-val-collection (append key-val-collection
-                                                   (mapcar #'(lambda (fk) (cons (symbol-name fk) fk))
-                                                           fixed-keys))))
-                  (occ-assert key-val-collection)
-                  (if key-val-collection
-                      (let* ((key-sel (occ-completing-read prompt
-                                                           key-val-collection
-                                                           nil
-                                                           t))
-                             (sel (assoc key-sel
-                                         key-val-collection)))
-                        (occ-debug "selected option %s" sel)
-                        (cl-rest sel))
-                    (occ-error "Not Keys Vals Collection %s for %s" key-val-collection (occ-obj-Format tsk))))
-              (occ-error "Not Keys Vals for %s" (occ-obj-Format tsk))))
-        (occ-debug "Not Keys for %s" (occ-obj-Format tsk))))))
+    (ignore ctx)
+    (occ-debug "occ-do-select-propetry: %s" (occ-obj-Format tsk)
+        (let ((prompt     (or prompt
+                              (format "%s proptery: "
+                                      (occ-obj-Format tsk))))
+              (fixed-keys '(edit
+                            done))
+              (keys       (occ-obj-properties-to-edit obj)))
+          (if keys
+              (let ((maxkeylen (apply #'max
+                                      (mapcar #'(lambda (sym) ;https://www.gnu.org/software/emacs/manual/html_node/elisp/Formatting-Strings.html
+                                                  (length (symbol-name sym)))
+                                              (append keys fixed-keys))))
+                    (key-vals  (occ-obj-get-properties tsk keys)))
+                (ignore maxkeylen)
+                (occ-debug "occ-do-select-propetry: for %s with keys =%s got key-vals = %s"
+                                                  (occ-obj-Format tsk)
+                                                  keys
+                                                  key-vals
+                                (if key-vals
+                                    (let* ((key-val-collection (mapcar #'(lambda (key-val)
+                                                                           (cons
+                                                                            (if (cl-rest key-val)
+                                                                                (format "%s: %s" (cl-first key-val) (cl-rest key-val))
+                                                                              (symbol-name (cl-first key-val)))
+                                                                            (cl-first key-val)))
+                                                                       key-vals))
+                                           (key-val-collection (append key-val-collection
+                                                                       (mapcar #'(lambda (fk) (cons (symbol-name fk) fk))
+                                                                               fixed-keys))))
+                                      (occ-assert key-val-collection)
+                                      (if key-val-collection
+                                          (let* ((key-sel (occ-completing-read prompt
+                                                                               key-val-collection
+                                                                               nil
+                                                                               t))
+                                                 (sel (assoc key-sel
+                                                             key-val-collection)))
+                                            (occ-debug "selected option %s" sel)
+                                            (cl-rest sel))
+                                        (occ-error "Not Keys Vals Collection %s for %s" key-val-collection (occ-obj-Format tsk))))
+                                  (occ-error "Not Keys Vals for %s" (occ-obj-Format tsk)))
+                            (occ-debug "Not Keys for %s" (occ-obj-Format tsk)))))))))
 
 
 (defun org-get-flag-property-drawer (&optional force)
@@ -120,8 +122,10 @@
   ;; (recenter-top-bottom 2)
   ;; (unless flag                  ;; creating issue in cleanupfn error as display buffer and current buffer is not same.
   ;;   (recenter-top-bottom 2))
-  (let ((prop-range (org-get-property-block (point)
+  (let ((heading (org-get-heading 'notags))
+        (prop-range (org-get-property-block (point)
                                             force)))
+    (ignore prop-range)
     ;; first show heading
     (when (eq org-cycle-subtree-status 'folded)
       (unless flag
@@ -159,8 +163,10 @@
                            (if flag "close" "open")
                            drawer
                            (point))
-                (org-flag-drawer flag
-                                 drawer)
+                ;; (org-flag-drawer flag
+                ;;                  drawer)
+                (org-hide-drawer-toggle flag
+                                        drawer)
                 ;; Make sure to skip drawer entirely or we might flag
                 ;; it another time when matching its ending line with
                 ;; `org-drawer-regexp'.
@@ -201,6 +207,7 @@
                loc)
       (with-current-buffer buff
         (let ((currloc (point)))
+          (ignore currloc)
           (goto-char loc)
           (occ-debug "%s: org-flag-property-drawer-at-marker: called to %s drawer of heading `%s' in file %s loc %d"
                      (time-stamp-string)
@@ -228,17 +235,19 @@
             (recenter-top-bottom 2)
             (let* ((prop-range (org-flag-property-drawer-at-marker mrk nil))
                    (prop-loc   (when (consp prop-range) (1- (cl-first prop-range)))))
-              (show-all)
-              (if (numberp prop-loc)
-                  (goto-char prop-loc)
-                (if nil
-                    (occ-error "occ-do-open-property-block: no prop-loc % for buff %s marker %s"
-                           prop-loc buff mrk)
-                  t))))
-        (occ-error "occ-do-open-property-block: no buff %s found for object %s"
-               (occ-obj-Format obj))))))
+              ;; (show-all)
+              (outline-show-all)
+              (if (numberp prop-loc
+                                (goto-char prop-loc)
+                              (if nil
+                                  (occ-error "occ-do-open-property-block: no prop-loc % for buff %s marker %s"
+                                         prop-loc buff mrk)
+                                t)
+                      (occ-error "occ-do-open-property-block: no buff %s found for object %s"
+                             (occ-obj-Format obj))))))))))
 
 (cl-defmethod occ-do-open-property-block ((obj null))
+  (ignore obj)
   (occ-do-open-property-block (point-marker)))
 
 
@@ -247,6 +256,8 @@
              (occ-obj-Format obj))
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
+    (ignore tsk)
+    (ignore ctx)
     (let ((prop nil))
       (while (and (not (member (setq prop (occ-do-select-propetry obj))
                                '(edit done)))
@@ -280,6 +291,7 @@
                                                  cleanup
                                                  local-cleanup
                                                  win)
+  (ignore timeout)
   (cond ((eql 'done prop)
          (funcall cleanup
                   win
@@ -331,6 +343,7 @@
                   obj))
               ((quit)
                (progn
+                 (ignore err)
                  (occ-debug :warning "occ-do-properties-window-editor(obj occ-obj-ctx-tsk): canceling timer")
                  (occ-debug "occ-do-properties-window-editor(obj occ-obj-ctx-tsk): canceling timer")
                  (funcall cleanup
@@ -355,6 +368,8 @@
                                                ap-transf
                                                return-transform ;Here caller know if return value is going to be used.
                                                timeout)
+  (ignore ap-normal)
+  (ignore ap-transf)
   (let* ((filters   (or filters nil))
          (builder   (or builder #'occ-obj-build-ctsk-with))
          (ap-normal '(t actions general))
@@ -375,6 +390,8 @@
                                                 :timeout          timeout)))
             ;; (occ-debug "occ-do-properties-window-editor((obj occ-ctx)): ap-transf: %s action %s"
             ;;                   ap-transf action)
+            (ignore ap-normal)
+            (ignore ap-transf)
             (occ-debug "occ-do-properties-window-editor((obj occ-ctx)): selected original: %s, retval: %s with label %s"
                        retval-ctx-tsk
                        (occ-obj-format (occ-obj-obj retval-ctx-tsk) 'capitalize)
@@ -412,6 +429,9 @@
                                                ap-transf
                                                return-transform
                                                timeout)
+  (ignore obj)
+  (ignore ap-normal)
+  (ignore ap-transf)
   (occ-debug "occ-select-obj-prop-edit((obj null)):")
   (let ((filters   (or filters nil))
         (builder   (or builder #'occ-obj-build-ctsk-with))
@@ -438,6 +458,8 @@
   "add-ctx-to-org-heading"
   ;; TODO: make helm conditional when it is used than only it should be handled.
   ;; (interactive '((occ-obj-make-ctx-at-point) occ-idle-timeout))
+  (ignore ap-normal)
+  (ignore ap-transf)
   (occ-debug "occ-do-safe-properties-window-editor((obj occ-ctx)): begin")
   (occ-debug "occ-do-safe-properties-window-editor((obj[%s] occ-ctx)): begin"
                (occ-obj-Format obj))
@@ -482,9 +504,11 @@
                                                     builder
                                                     ap-normal
                                                     ap-transf
+                                                    return-transform
                                                     timeout)
+  (ignore obj)
   (occ-debug "occ-do-safe-properties-window-editor((obj marker)): begin")
-  (let ((selected (occ-do-safe-properties-window-editor (occ-obj-make-ctx marker)
+  (let ((selected (occ-do-safe-properties-window-editor (occ-obj-make-ctx obj)
                                                         :filters          filters
                                                         :builder          builder
                                                         :return-transform return-transform
@@ -511,9 +535,11 @@
   ;; NOTE: presently it is not running on idle time, it simply runs immediately
 
   "Return value is important to decide next action to (create unnamed tsk.)"
+  (ignore ap-normal)
+  (ignore ap-transf)
   (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor((obj occ-ctx)): begin")
   (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor((obj occ-ctx)): begin")
-  (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor((obj[%s] occ-ctx)): begin" (occ-mbj-Format obj))
+  (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor((obj[%s] occ-ctx)): begin" (occ-obj-Format obj))
   (let ((filters   (or filters nil))
         (builder   (or builder #'occ-obj-build-ctsk-with))
         (ap-normal '(t actions general))
@@ -579,6 +605,8 @@
                                                                  ap-transf
                                                                  timeout)
   "Return value is important to decide next action to (create unnamed tsk.)"
+  (ignore ap-normal)
+  (ignore ap-transf)
   (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor((obj occ-ctx)): begin")
   (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor((obj[%s] occ-ctx)): begin" (occ-obj-Format obj))
   (let ((filters   (or filters nil))

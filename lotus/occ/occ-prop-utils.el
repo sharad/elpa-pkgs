@@ -35,7 +35,8 @@
 (cl-defmethod occ-obj-set-rank-hierarchy ((property symbol)
                                           &key
                                           pos)
-
+  (ignore property)
+  (ignore pos)
   (cond))
 
 ;; (cl-defmethod)
@@ -43,6 +44,8 @@
 
 (defun occ-prop-util-readprop-list-from-user (obj
                                               property)
+  (ignore obj)
+  (ignore property)
   (occ-error "Implement it, try with (occ-readprop-elem-from-user obj property)"))
 
 
@@ -74,6 +77,8 @@
                                    (property symbol)
                                    value)
   "Should return format printable value"
+  (ignore obj)
+  (ignore property)
   value)
 
 

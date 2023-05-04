@@ -156,8 +156,7 @@
   (occ-helm-callables-get :identity)
   ;; (occ-helm-callables-get :identity :clock-in)
   (occ-helm-callables-get :identity)
-  (occ-helm-callables-get :clock-in
-    (occ-obj-get-helm-actions nil '(t actions select))))
+  (occ-helm-callables-get :clock-in))
 
 (occ-testing
  (occ-get-keywords-list-from-tree '(t actions select))
@@ -168,16 +167,17 @@
  (occ-obj-get-callables (occ-obj-make-ctx-at-point)
                         (occ-get-keywords-list-from-tree '(t actions select general edit)))
 
- (cl-first (occ-obj-get-callables (occ-obj-make-ctx-at-point (occ-get-keywords-list-from-tree '(t actions select general edit)))))
+ (ignore (cl-first (occ-obj-get-callables (occ-obj-make-ctx-at-point (occ-get-keywords-list-from-tree '(t actions select general edit))))))
 
- (tree-collect-items occ-helm-actions-tree nil '(t actions general) 0)
+ (ignore (tree-collect-items occ-helm-actions-tree nil '(t actions general) 0)))
 
- (occ-obj-get-helm-actions-plist nil
-                             (cl-first (occ-get-keywords-list-from-tree '(t actions general))))
+ ;; (occ-obj-get-helm-actions-plist nil
+ ;;                             (cl-first (occ-get-keywords-list-from-tree '(t actions general))))
 
- (mapcan #'(lambda (name-action-key)
-             (occ-obj-get-helm-actions-plist nil
-                                             name-action-key))
-         (occ-get-keywords-list-from-tree '(t actions general))))
+ ;; (ignore (mapcan #'(lambda (name-action-key)
+ ;;                     (occ-obj-get-helm-actions-plist nil
+ ;;                                                     name-action-key))
+ ;;               (occ-get-keywords-list-from-tree '(t actions general))))
+ 
 
 ;;; occ-helm.el ends here
