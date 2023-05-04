@@ -185,43 +185,43 @@
 (cl-defmethod occ-obj-properties-to-edit :around (obj)
   "return PROPERTIES list that can be edited."
   (ignore obj)
-  (if (cl-next-method-p)
+  (condition-case e ;; if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
-    (occ-error "No
+    ((cl-no-next-method) (occ-error "No
 (cl-defmethod occ-obj-properties-to-edit (obj)
   ...)
 
-method provided.")))
+method provided."))))
 (cl-defmethod occ-obj-properties-to-inherit :around (obj)
   "return PROPERTIES list that can be inherited."
   (ignore obj)
-  (if (cl-next-method-p)
+  (condition-case e ;; if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
-    (occ-error "No
+    ((cl-no-next-method) (occ-error "No
 (cl-defmethod occ-obj-properties-to-inherit (obj)
    ...)
 
-method provided.")))
+method provided."))))
 (cl-defmethod occ-obj-properties-to-calculate-rank :around (obj)
   "return PROPERTIES list that can be used in calculating rank."
   (ignore obj)
-  (if (cl-next-method-p)
+  (condition-case e ;; if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
-    (occ-error "No
+    ((cl-no-next-method) (occ-error "No
 (cl-defmethod occ-obj-properties-to-calculate-rank (obj)
   ...)
 
-method provided.")))
+method provided."))))
 (cl-defmethod occ-obj-properties-to-checkout :around (obj)
   "return PROPERTIES list that can be checked-out."
   (ignore obj)
-  (if (cl-next-method-p)
+  (condition-case e ;; if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
-    (occ-error "No
+    ((cl-no-next-method) (occ-error "No
 (cl-defmethod occ-obj-properties-to-checkout (obj)
   ...)
 
-method provided.")))
+method provided."))))
 
 
 ;; NOTE: These two around methods not belongs to occ-prop-intf.el
@@ -231,28 +231,28 @@ method provided.")))
   "Read value of element of list for property PROP from user for
 OCC-TSK OBJ."
   (ignore obj)
-  (if (cl-next-method-p)
+  (condition-case e ;; if (cl-next-method-p)
       (cl-call-next-method)
-    (occ-error "No
+    ((cl-no-next-method) (occ-error "No
 (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk) (prop (eql %s)))
   ...)
 
 method provided."
-               prop)))
+               prop))))
 
 (cl-defmethod occ-obj-readprop-from-user :around ((obj  occ-obj-tsk)
                                                   (prop symbol))
   "Read value of element of list for property PROP from user for
 OCC-TSK OBJ."
   (ignore obj)
-  (if (cl-next-method-p)
+  (condition-case e ;; if (cl-next-method-p)
       (cl-call-next-method)
-    (occ-error "No
+    ((cl-no-next-method) (occ-error "No
 (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk) (prop (eql %s)))
    ...)
 
 method provided."
-               prop)))
+               prop))))
 
 
 (cl-defmethod occ-obj-rereadprop-value ((prop symbol)
@@ -284,13 +284,13 @@ method provided."
 (cl-defmethod occ-obj-reread-props :around (obj)
   "return PROPERTIES list that can be checked-out."
   (ignore obj)
-  (if (cl-next-method-p)
+  (condition-case e ;; if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
-    (occ-error "No
+    ((cl-no-next-method) (occ-error "No
 (cl-defmethod occ-obj-reread-props (obj)
   ...)
 
-method provided.")))
+method provided."))))
 
 
 (cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
