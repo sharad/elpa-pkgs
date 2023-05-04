@@ -503,10 +503,10 @@
         (ignore prop)
         (let* ((tsk-marker (occ-obj-get-property obj 'marker)))
           (ignore tsk-marker)
-          (if (occ-obj-marker= obj org-clock-marker
-                        100
-                      0))))
-
+          (if (occ-obj-marker= obj org-clock-marker)
+              100
+            0)))
+      
    #+end_src
 
 ** Special properties

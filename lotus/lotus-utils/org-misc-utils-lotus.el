@@ -38,13 +38,13 @@
   (require 'lotus-misc-utils))
 (require 'lotus-misc-utils)
 
-(eval-when-compile
-  (require 'cl))
+;; (eval-when-compile
+;;   (require 'cl))
 
 (eval-when-compile
   (require 'org-macs))
 
-(require 'cl)
+;; (require 'cl)
 
 
 (defvar safe-org-refile-get-location-modes

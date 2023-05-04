@@ -27,6 +27,7 @@
 
 
 (require 'switch-buffer-functions)
+(require 'package)
 
 
 (require 'occ-obj-ctor)

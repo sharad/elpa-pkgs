@@ -59,6 +59,7 @@
 
 (require 'seq)
 (require 'list-utils)
+(require 'org-element)
 
 
 (eval-when-compile

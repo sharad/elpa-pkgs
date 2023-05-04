@@ -382,7 +382,7 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
         (require 'calendar)
         (require 'org)
         (require 'org-agenda)
-        (require 'cl)
+        ;; (require 'cl)
         (unless
             (and
              (calendar-date-is-valid-p begin)

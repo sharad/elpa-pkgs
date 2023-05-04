@@ -57,9 +57,9 @@
                                            (elscreen-get-frame-confs frame))))
                                   (elscreen-get-current-screen))
          (elscreen-win-config (when elscreen-entry
-                               (elscreen-current-window-configuration)))
+                                (elscreen-current-window-configuration)))
          (win-config          (unless elscreen-win-config
-                       (current-window-configuration frame))))
+                                (current-window-configuration frame))))
     (list :frame               frame
           :elscreen-entry      elscreen-entry
           :elscreen-win-config elscreen-win-config
