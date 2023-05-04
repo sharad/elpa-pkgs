@@ -78,8 +78,9 @@
             (occ-debug "prop %s NOT correct" prop)))))))
 
 (cl-defmethod occ-do-verify ((obj occ-collection))
+  (ignore obj)
   (dolist (tsk (occ-obj-list nil))
-    (occ-do-verify tsk)))
+      (occ-do-verify tsk)))
 
 (defun occ-do-verify-objects ()
   (interactive)
@@ -116,7 +117,7 @@
     (cl-loop for i below (* 1000 1000 1) sum i))
 
   (defun test-no-input ()
-    (let ((retval))
+    (let ((retval nil))
       (occ-debug "last-input-event %s retval %s" last-input-event retval)))
 
   (progn
@@ -439,14 +440,19 @@
 
 (occ-testing
  (cl-defmethod test-method1 ((obj symbol))
+   (ignore obj)
    (message "test-method1 ((obj symbol))"))
 
  (cl-defmethod test-method1 ((obj symbol)
                              (x number))
+   (ignore obj)
+   (ignore x)
    (message "test-method1 ((obj symbol) (x number))"))
 
  (cl-defmethod test-method1 ((obj number)
                              (m   marker))
+   (ignore obj)
+   (ignore m)
    (message "test-method1 ((obj number) (m   marker))"))
 
  (test-method1 'a 1)

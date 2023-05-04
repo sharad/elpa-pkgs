@@ -52,7 +52,8 @@
    'occ-tree-tsk-subtree fn tree args))
 
 (defun occ-remove-if-not-tree-tsks (fn tree args)
-  "Tree remove if return TREE with all node and its subtree removed if node return nil for PREDICATE"
+  "Tree remove if return TREE with all node and its subtree removed
+if node return nil for PREDICATE"
   (tree-remove-if-not-nodes
    'occ-tree-tsk-subtree fn tree args))
 
@@ -111,7 +112,8 @@
                            file
                            collection
                            subtree-level)
-  "Build recursive org tsks from org FILE (or current buffer) using TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
+  "Build recursive org tsks from org FILE (or current buffer) using
+TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
   (progn ;; save-excursion
     (progn  ;; save-restriction
       (let ((depth     (occ-obj-collection-depth collection))
@@ -158,13 +160,12 @@
                                            (subtree-file-list (let ((subtree-file-prop (occ-obj-get-property entry :SUBTREEFILE)))
                                                                 (when subtree-file-prop
                                                                   (let* ((file         (if file file (buffer-file-name)))
-                                                                         (subtree-file (if (and subtree-file-prop
-                                                                                                (file-relative-name subtree-file-prop)
-                                                                                                (expand-file-name subtree-file-prop
-                                                                                                                  (if file
-                                                                                                                      (file-name-directory file)
-                                                                                                                    default-directory))
-                                                                                                subtree-file))))
+                                                                         (subtree-file (if subtree-file-prop
+                                                                                           (file-relative-name subtree-file-prop
+                                                                                                               (expand-file-name subtree-file-prop
+                                                                                                                                 (if file
+                                                                                                                                     (file-name-directory file)
+                                                                                                                                   default-directory))))))
                                                                     (if (and subtree-file
                                                                              (file-readable-p subtree-file))
                                                                         (list (occ-tree-tsk-build subtree-file
@@ -202,6 +203,7 @@
         ;; TODO: use collection-limit to limit childs it can be null pr 0
         ;; we have to use some beadth tree traversal to limit number of entries
         (builder (occ-obj-drived-tsk-builder collection)))
+    (ignore depth)
     (let ((tree (remove nil (mapcar builder
                                     (occ-tree-collection-roots collection)))))
       (occ-tree-trim limit tree))))

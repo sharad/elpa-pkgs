@@ -114,7 +114,7 @@ if jump is non-nil or the function is called with the prefix argument, jump to t
 
 
 
-    
+
 
 
   (progn
@@ -163,7 +163,7 @@ captured %<%y-%m-%d %h:%m>
              (file+headline "~/personal/organizer.org" "track energy")
              "| %u | %^{energy 5-awesome 3-fuzzy 1-zzz} | %^{note} |"
              :immediate-finish t)
-             
+
             ("b" "business task" entry
              (file+headline "~/personal/business.org" "tasks")
              ,my/org-basic-task-template)
@@ -238,7 +238,7 @@ captured %<%y-%m-%d %h:%m>
             ("r" "notes" entry
              (file+datetree "~/personal/organizer.org")
              "* %?\n\n%i\n%u\n")))
-             
+
     (bind-key "c-m-r" 'org-capture)
 
     ;; allow refiling in the middle(ish) of a capture
@@ -259,7 +259,7 @@ captured %<%y-%m-%d %h:%m>
       '(bind-key "c-c c-r" 'my/org-refile-and-jump org-capture-mode-map)))
 
 
-    
+
 
   (progn
     ;;http://pages.sachachua.com/.emacs.d/sacha.html
@@ -276,7 +276,7 @@ captured %<%y-%m-%d %h:%m>
            "* todo %^{task}\nscheduled: %^t\n:properties:\n:effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:end:\n%?\n"
            "hello world")
           "* todo hello world\nscheduled: %^t\n:properties:\n:effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}\n:end:\n%?\n"))
-          
+
         (should
          (string=
           (my/org-capture-prefill-template
@@ -545,8 +545,8 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
 
 
 
-      
-    
+
+
 
 
   (fset 'org-refile-get-location 'org-refile-get-location-bkp))
@@ -578,9 +578,9 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
 
 
 (occ-testing
- 
+
  (cl-defgeneric occ-test-combine (obj))
- 
+
 
  (cl-defmethod occ-test-combine ((x symbol))
    (append (list 'symbol)
@@ -589,23 +589,25 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
  ;; TODO: occ-prop-base.el: Warning: ‘cl-next-method-p’ is an obsolete macro (as of 25.1); make sure there’s always a next method, or catch ‘cl-no-next-method’ instead [7 times]
 
  (cl-defmethod occ-test-combine ((x (head z)))
+   (ignore x)
    (append (list 'z)
            (when (cl-next-method-p)
              (cl-call-next-method))))
 
  (cl-defmethod occ-test-combine ((x (eql a)))
+   (ignore x)
    (append (list 'a)
            (when (cl-next-method-p)
              (cl-call-next-method))))
 
  (let ((generic (cl--generic 'occ-test-combine)))
-   (cl--generic-method-table generic))
+   (ignore (cl--generic-method-table generic)))
 
  (occ-test-combine '(z))
 
  (cl-generic-combine-methods (cl--generic 'occ-test-combine)
                              (let ((generic (cl--generic 'occ-test-combine)))
-                               (cl--generic-method-table generic)))
+                               (ignore (cl--generic-method-table generic))))
 
 
  (cl-generic-call-method (cl--generic-make 'occz-combine) (list #'occ-test-combine))
@@ -617,7 +619,7 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
  (cl--generic-make 'occ-test1-combine)
 
  ())
- 
+
 
 
 ;;; occ-scratch-space.el ends here

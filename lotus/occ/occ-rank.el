@@ -46,12 +46,12 @@
                (occ-obj-Format (occ-obj-tsk obj)))
   (occ-debug "occ-obj-calculate-rank(obj occ-tsk) %s" (occ-obj-properties-to-calculate-rank obj))
   (let* ((properties (occ-obj-properties-to-calculate-rank obj))
-         (rank       (reduce #'+
-                             (mapcar #'(lambda (slot)
-                                         (let ((prop (downcase-sym slot)))
-                                           (occ-obj-ineq-rankprop obj
-                                                                  prop)))
-                                     properties))))
+         (rank       (cl-reduce #'+
+                                (mapcar #'(lambda (slot)
+                                            (let ((prop (downcase-sym slot)))
+                                              (occ-obj-ineq-rankprop obj
+                                                                     prop)))
+                                        properties))))
     ;; (occ-debug "occ-obj-calculate-rank(obj occ-tsk): rank = %d" rank)
     rank))
 
@@ -63,13 +63,15 @@
   (occ-debug "occ-obj-calculate-rank(obj occ-obj-ctx-tsk) %s" (occ-obj-properties-to-calculate-rank obj))
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
+    (ignore tsk)
+    (ignore ctx)
     (let* ((properties (occ-obj-properties-to-calculate-rank obj))
-           (rank       (reduce #'+
-                               (mapcar #'(lambda (slot)
-                                           (let ((prop (downcase-sym slot)))
-                                             (occ-obj-ineq-rankprop obj
-                                                                    prop)))
-                                         properties))))
+           (rank       (cl-reduce #'+
+                                  (mapcar #'(lambda (slot)
+                                              (let ((prop (downcase-sym slot)))
+                                                (occ-obj-ineq-rankprop obj
+                                                                       prop)))
+                                          properties))))
       ;; (occ-debug "occ-obj-calculate-rank(obj occ-obj-ctx-tsk): rank = %d" rank)
       rank)))
 
@@ -82,6 +84,7 @@
                                   :builder #'occ-obj-build-ctxual-tsk-with))
          (rankslist (mapcar #'occ-obj-rank
                             objs))
+         ;; BUG
          (avgrank   (occ-calculate-average rankslist)))
     avgrank))
 
@@ -93,6 +96,7 @@
                                   :builder #'occ-obj-build-ctxual-tsk-with))
          (rankslist (mapcar #'occ-obj-rank
                             objs))
+         ;; BUG
          (varirank  (occ-calculate-variance rankslist)))
     varirank))
 

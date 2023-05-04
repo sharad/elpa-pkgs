@@ -30,12 +30,26 @@
 (require 'org-rl-intf nil nil)
 
 
-(defun occ-rl-clock-p (clock-marker))
-(defun occ-rl-clock-clock-in (clock-marker &optional resume start-time))
-(defun occ-rl-clock-out (&optional switch-to-state fail-quietly at-time))
-(defun occ-rl-clock-clock-out (clock-marker &optional fail-quietly at-time))
-(defun occ-rl-select-other-clock (clock-marker &optional target))
-(defun occ-rl-capture+-helm-templates-alist (clock-marker))
+(defun occ-rl-clock-p (clock-marker)
+  (ignore clock-marker))
+(defun occ-rl-clock-clock-in (clock-marker &optional resume start-time)
+  (ignore clock-marker)
+  (ignore resume)
+  (ignore start-time))
+
+(defun occ-rl-clock-out (&optional switch-to-state fail-quietly at-time)
+  (ignore switch-to-state)
+  (ignore fail-quietly)
+  (ignore at-time))
+(defun occ-rl-clock-clock-out (clock-marker &optional fail-quietly at-time)
+  (ignore clock-marker)
+  (ignore fail-quietly)
+  (ignore at-time))
+(defun occ-rl-select-other-clock (clock-marker &optional target)
+  (ignore clock-marker)
+  (ignore target))
+(defun occ-rl-capture+-helm-templates-alist (clock-marker)
+  (ignore clock-marker))
 
 
 ;;;###autoload

@@ -60,7 +60,7 @@
 (defun occ-stats-median (&rest nums)
   (let ((nums   (sort nums #'<))
         (length (length nums)))
-    (if (evenp length)
+    (if (cl-evenp length)
         (occ-stats-mean
          (nth (1- (/ length 2)) nums)
          (nth (/ length 2)      nums))
@@ -69,25 +69,25 @@
 (defun occ-stats-mode (&rest nums)
   ;; https://stackoverflow.com/questions/6050033/elegant-way-to-count-items
   (let ((num-pairs
-         (reduce #'(lambda (r e)
-                     (if (and r
-                              (= (cl-first (cl-first r))
-                                 e))
-                         (cons (cons (cl-first (cl-first r))
-                                     (1+ (cl-rest (cl-first r))))
-                               (cl-rest r))
-                       (cons (cons e  1)
-                             r)))
-                 (sort nums #'>)
-                 :initial-value nil)))
+         (cl-reduce #'(lambda (r e)
+                        (if (and r
+                                 (= (cl-first (cl-first r))
+                                    e))
+                            (cons (cons (cl-first (cl-first r))
+                                        (1+ (cl-rest (cl-first r))))
+                                  (cl-rest r))
+                          (cons (cons e  1)
+                                r)))
+                    (sort nums #'>)
+                    :initial-value nil)))
     (let ((num-pairs (sort num-pairs
                            #'(lambda (a b)
                                (> (cl-rest a) (cl-rest b))))))
       (mapcar #'car
-              (remove-if-not #'(lambda (pair)
-                                 (= (cl-rest pair)
-                                    (cl-rest (cl-first num-pairs))))
-                             num-pairs)))))
+              (cl-remove-if-not #'(lambda (pair)
+                                    (= (cl-rest pair)
+                                       (cl-rest (cl-first num-pairs))))
+                                num-pairs)))))
 
 (defun occ-stats-variance-internal (average &rest nums)
   (if (> (length nums) 0)
@@ -126,16 +126,16 @@
             '((5 . 3) (4 . 1) (3 . 3) (2 . 1) (1 . 2)) #'(lambda (a b) (> (cl-rest a) (cl-rest b))))
            '((5 . 3) (3 . 3) (1 . 2) (4 . 1) (2 . 1))))
   (should (equal
-           (reduce (lambda (r e)
-                     (if (and r (= (cl-first (cl-first r))
-                                   e))
-                         (cons (cons (cl-first (cl-first r))
-                                     (1+ (cl-rest (cl-first r))))
-                               (cl-rest r))
-                       (cons (cons e  1)
-                             r)))
-                   (sort (list 1 1 2 3 3 3 4 5 5 5 ) #'>)
-                   :initial-value nil)
+           (cl-reduce (lambda (r e)
+                        (if (and r (= (cl-first (cl-first r))
+                                      e))
+                            (cons (cons (cl-first (cl-first r))
+                                        (1+ (cl-rest (cl-first r))))
+                                  (cl-rest r))
+                          (cons (cons e  1)
+                                r)))
+                      (sort (list 1 1 2 3 3 3 4 5 5 5 ) #'>)
+                      :initial-value nil)
            '((1 . 2) (2 . 1) (3 . 3) (4 . 1) (5 . 3)))))
 
 ;;; occ-statistics.el ends here
