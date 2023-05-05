@@ -28,6 +28,16 @@
 (provide 'occ-prop-org)
 
 
+(require 'org)
+(require 'org-misc-utils-lotus)
+
+(require 'occ-prop-intf)
+(require 'occ-obj-common)
+(require 'occ-property-methods)
+(require 'occ-obj-accessor)
+(require 'occ-debug-method)
+
+
 
 (eval-when-compile
   (require 'lotus-misc-utils))

@@ -28,6 +28,11 @@
 
 
 (require 'occ-obj-clock-method)
+(require 'occ-unnamed)
+(require 'occ-obj-ctor)
+(require 'occ-util-common)
+(require 'occ-obj-accessor)
+(require 'occ-debug-method)
 
 
 (cl-defgeneric occ-obj-marker= ((obj marker)

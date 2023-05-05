@@ -27,8 +27,7 @@
 
 
 (require 'time-stamp)
-
-
+(require 'remem)
 (require 'timer-utils-lotus)
 (eval-when-compile
   (require 'timer-utils-lotus))

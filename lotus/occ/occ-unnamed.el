@@ -30,9 +30,15 @@
 (require 'org-clock-unnamed-task)
 
 
+(require 'occ)
+(require 'occ-obj)
+(require 'occ-obj-ctor)
 (eval-when-compile
   (require 'occ-macros))
 (require 'occ-assert)
+(require 'occ-clock)
+(require 'occ-cl-utils)
+(require 'occ-debug-method)
 
 
 (defvar +occ-unnamed-collection-depth+ 0)
