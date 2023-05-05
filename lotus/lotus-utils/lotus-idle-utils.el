@@ -161,23 +161,23 @@ this macro intended to be used with or in idle timer functions."
                                     (lwarn 'lotus-idle-timed-window :debug "lotus-with-first-idle-timed-transient-window: triggered timer for new-win %s" w)
                                     (without-active-minibuffer
                                       (select-frame-set-input-enable-raise)))))
-                (timer      (run-with-idle-plus-timer timeout nil cleanup-fun window))
-           (unwind-protect
-               (progn
-                 ;; TODO: If this can be completely omitted when first-idle-only is nil
-                 (when first-idle-only
-                   (with-post-command
-                     (cancel-timer timer)
-                     (setq timer nil)))
-                 (progn
-                   (select-frame-set-input-disable-raise)
-                   (progn
-                     ,@body)))
+                (timer      (run-with-idle-plus-timer timeout nil cleanup-fun window))))
+         (unwind-protect
              (progn
-               (select-frame-set-input-enable-raise)
-               (when timer
-                 (cancel-timer timer)
-                 (setq timer nil))))))))
+               ;; TODO: If this can be completely omitted when first-idle-only is nil
+               (when first-idle-only
+                 (with-post-command
+                   (cancel-timer timer)
+                   (setq timer nil)))
+               (progn
+                 (select-frame-set-input-disable-raise)
+                 (progn
+                   ,@body)))
+           (progn
+             (select-frame-set-input-enable-raise)
+             (when timer
+               (cancel-timer timer)
+               (setq timer nil))))))
 (put 'lotus-with-idle-timed-transient-window 'lisp-indent-function 3)
 
 (defmacro lotus-with-first-idle-timed-transient-window (timeout

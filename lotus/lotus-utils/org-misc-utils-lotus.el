@@ -87,9 +87,8 @@ deletion[s] modification[s] etc.)"
   `(progn
      (goto-char (point-min))
      (let ((pos (org-find-exact-headline-in-buffer ,heading)))
-       (if (and
-            (markerp pos)
-            (<= (marker-position pos) (point-max)))
+       (if (and (markerp pos)
+                (<= (marker-position pos) (point-max)))
            (progn
              (goto-char pos)
              ,@body)
@@ -101,9 +100,8 @@ deletion[s] modification[s] etc.)"
      (goto-char (point-min))
      (let ((,pos (org-find-exact-headline-in-buffer ,heading)))
        (progn
-         (when (and
-                (markerp ,pos)
-                (<= (marker-position ,pos) (point-max)))
+         (when (and (markerp ,pos)
+                    (<= (marker-position ,pos) (point-max)))
            (goto-char ,pos))
          ,@body))))
 (put 'org-with-heading-pos 'lisp-indent-function 2)
@@ -384,10 +382,10 @@ With prefix arg C-u, copy region instad of killing it."
         (lotus-org-files-list :maxlevel . 4))) ;all files returned by `lotus-org-files-list'
 
 (defun lotus-org-files-list ()
-  (remove nil
-          (mapcar (lambda (buffer)
-                    (buffer-file-name buffer))
-                  (org-buffer-list 'files t))))
+  (cl-remove nil
+             (mapcar #'(lambda (buffer)
+                         (buffer-file-name buffer))
+                     (org-buffer-list 'files t))))
 
 (defvar org-refile-region-format "\n%s\n")
 
@@ -472,12 +470,11 @@ With prefix arg C-u, copy region instad of killing it."
 (defun org-number-of-subheadings ()
   (let ((curr-level (org-current-level)))
     (length
-     (remove nil
-            (org-map-entries
-             #'(lambda ()
-                 (= (1+ curr-level) (org-current-level)))
-             nil
-             'tree)))))
+     (cl-remove nil
+                (org-map-entries #'(lambda ()
+                                     (= (1+ curr-level) (org-current-level)))
+                                 nil
+                                 'tree)))))
 
 (defun org-goto-last-child ()
   (let ((curr-level (org-current-level)))
@@ -489,9 +486,8 @@ With prefix arg C-u, copy region instad of killing it."
 
 (defun org-goto-end-of-heading ()
   (let ((element (org-element-at-point)))
-    (if (and
-         element
-         (eq (cl-first element) 'heading))
+    (if (and element
+             (eq (cl-first element) 'heading))
         (let ((begin (plist-get (nth 1 element) :begin))
               (level (plist-get (nth 1 element) :level))
               (title (plist-get (nth 1 element) :title)))
@@ -512,10 +508,9 @@ With prefix arg C-u, copy region instad of killing it."
         ;; lotus-org-create-unnamed-task()
         ;; occ-maybe-create-unnamed-tsk()
     (let ((buffer-read-only nil)
-          (subheading (cond
-                       ((stringp subheading) subheading)
-                       ((functionp subheading) (funcall subheading))
-                       (t (error "no subheading")))))
+          (subheading (cond ((stringp subheading) subheading)
+                            ((functionp subheading) (funcall subheading))
+                            (t (error "no subheading")))))
       (progn
         (if (org-heading-has-child-p)
             (progn
@@ -545,10 +540,9 @@ With prefix arg C-u, copy region instad of killing it."
         ;; lotus-org-create-unnamed-task()
         ;; occ-maybe-create-unnamed-tsk()
     (let ((buffer-read-only nil)
-          (subheading (cond
-                       ((stringp subheading) subheading)
-                       ((functionp subheading) (funcall subheading))
-                       (t (error "no subheading")))))
+          (subheading (cond ((stringp subheading) subheading)
+                            ((functionp subheading) (funcall subheading))
+                            (t (error "no subheading")))))
       (progn
         (if (eql org-refile-string-position 'bottom)
             (org-end-of-subtree)
@@ -564,10 +558,9 @@ With prefix arg C-u, copy region instad of killing it."
 
 (defun org-insert-sibling-headline-at-point (subheading)
   (let ((buffer-read-only nil)
-        (subheading (cond
-                      ((stringp subheading) subheading)
-                      ((functionp subheading) (funcall subheading))
-                      (t (error "no subheading")))))
+        (subheading (cond ((stringp subheading) subheading)
+                          ((functionp subheading) (funcall subheading))
+                          (t (error "no subheading")))))
     ;; (if (eql org-refile-string-position 'bottom)
     ;;     (org-end-of-subtree)
     ;;     ;; (org-end-of-meta-data-and-drawers)
@@ -584,8 +577,8 @@ With prefix arg C-u, copy region instad of killing it."
 (defun org-insert-grandsubheading-to-headline (text heading &optional create)
   (let ((pos (org-with-cloned-buffer (current-buffer) "<tree>"
                (org-with-narrow-to-heading-subtree
-                heading create
-                (org-insert-grandsubheading-at-point text)))))
+                   heading create
+                 (org-insert-grandsubheading-at-point text)))))
     (copy-marker pos)))
 
 (defun org-insert-grandsubheading-to-file-headline (text file heading &optional create)
@@ -600,8 +593,8 @@ With prefix arg C-u, copy region instad of killing it."
 (defun org-insert-sibling-headline-to-headline (text heading &optional create)
   (let ((pos (org-with-cloned-buffer (current-buffer) "<tree>"
                (org-with-narrow-to-heading-subtree
-                heading create
-                (org-insert-sibling-headline-at-point text)))))
+                   heading create
+                 (org-insert-sibling-headline-at-point text)))))
     (copy-marker pos)))
 
 (defun org-insert-sibling-headline-to-file-headline (text file heading &optional create)
@@ -617,8 +610,8 @@ With prefix arg C-u, copy region instad of killing it."
   "return marker"
   (let ((pos (org-with-cloned-buffer (current-buffer) "<tree>"
                (org-with-narrow-to-heading-subtree
-                heading create
-                (org-insert-subheading-at-point text)))))
+                   heading create
+                 (org-insert-subheading-at-point text)))))
     (copy-marker pos)))
 
 (defun org-insert-subheadline-to-file-headline (text file heading &optional create)
@@ -668,14 +661,13 @@ With prefix arg C-u, copy region instad of killing it."
     (with-current-buffer (or default-buffer (current-buffer))
       (dolist (entry entries)
         (setq files (cl-first entry) desc (cl-rest entry))
-        (cond
-         ((null files) (setq files (list (current-buffer))))
-         ((eq files 'org-agenda-files)
-          (setq files (org-agenda-files 'unrestricted)))
-         ((and (symbolp files) (fboundp files))
-          (setq files (funcall files)))
-         ((and (symbolp files) (boundp files))
-          (setq files (symbol-value files))))))
+        (cond ((null files) (setq files (list (current-buffer))))
+              ((eq files 'org-agenda-files)
+               (setq files (org-agenda-files 'unrestricted)))
+              ((and (symbolp files) (fboundp files))
+               (setq files (funcall files)))
+              ((and (symbolp files) (boundp files))
+               (setq files (symbol-value files))))))
     files))
 
 ;; (org-refile-target-files '((occ-included-files :maxlevel . 4)))
@@ -739,24 +731,23 @@ With prefix arg C-u, copy region instad of killing it."
 (defun safe-timed-org-refile-get-location (timeout &optional prompt)
   ;; TODO: org-fit-window-to-buffer
   ;; TODO: as clean up reset newwin configuration
-  (let* ((current-command (or
-                           (helm-this-command)
-                           this-command))
+  (let* ((current-command (or (helm-this-command)
+                              this-command))
          (str-command     (helm-symbol-name current-command))
          (prompt          (or prompt str-command))
          (buf-name        (format "*helm-mode-%s*" str-command))
          (timer (run-with-idle-plus-timer timeout nil
-                                     #'(lambda (buffname)
-                                         (let* ((buff (get-buffer buffname))
-                                                (w (if buff (get-buffer-window buff))))
-                                           (message "safe-timed-org-refile-get-location: triggered timer for new-win %s" w)
-                                           (when (and w
-                                                      (windowp w)
-                                                      (window-valid-p w))
-                                             (safe-delete-window w)
-                                             (without-active-minibuffer
-                                               (select-frame-set-input-enable-raise)))))
-                                     buf-name)))
+                                          #'(lambda (buffname)
+                                              (let* ((buff (get-buffer buffname))
+                                                     (w (if buff (get-buffer-window buff))))
+                                                (message "safe-timed-org-refile-get-location: triggered timer for new-win %s" w)
+                                                (when (and w
+                                                           (windowp w)
+                                                           (window-valid-p w))
+                                                  (safe-delete-window w)
+                                                  (without-active-minibuffer
+                                                    (select-frame-set-input-enable-raise)))))
+                                          buf-name)))
     (unwind-protect
          (progn
            (select-frame-set-input-disable-raise)
@@ -767,9 +758,8 @@ With prefix arg C-u, copy region instad of killing it."
 (defun safe-timed-org-refile-get-location (timeout &optional prompt)
   ;; TODO: org-fit-window-to-buffer
   ;; TODO: as clean up reset newwin configuration
-  (let* ((current-command (or
-                           (helm-this-command)
-                           this-command))
+  (let* ((current-command (or (helm-this-command)
+                              this-command))
          (str-command     (helm-symbol-name current-command))
          (prompt          (or prompt str-command))
          (buf-name        (format "*helm-mode-%s*" str-command)))
@@ -780,9 +770,8 @@ With prefix arg C-u, copy region instad of killing it."
 (defun safe-timed-org-refile-get-marker (timeout &optional prompt)
   ;; TODO: org-fit-window-to-buffer
   ;; TODO: as clean up reset newwin configuration
-  (let* ((current-command (or
-                           (helm-this-command)
-                           this-command))
+  (let* ((current-command (or (helm-this-command)
+                              this-command))
          (str-command     (helm-symbol-name current-command))
          (prompt          (or prompt str-command))
          (buf-name        (format "*helm-mode-%s*" str-command))
