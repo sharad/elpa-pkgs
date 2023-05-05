@@ -36,7 +36,7 @@
 
 
 (defvar occ-mode-main-keymap (make-keymap) "occ-mode keymap.")
-(defvar spacemacs-occ-mode-map nil)
+(defvar spacemacs-occ-mode-map (make-keymap) "occ-mode keymap.")
 ;; https://www.emacswiki.org/emacs/PrefixKey
 ;; https://stackoverflow.com/questions/25524710/define-key-in-prefix-keymap-for-a-particular-mode
 
