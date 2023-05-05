@@ -426,13 +426,14 @@
 (put 'lotus-with-buffer-pos-new-win 'lisp-indent-function 1)
 
 (defmacro lotus-with-file-pos-new-win (file pos newwin &rest body)
+  (ignore newwin)
   `(let ((buff (find-file-noselect ,file)))
-     (if buff
-         (with-current-buffer buff
-           (lotus-with-pos-new-win
-               buff ,pos
-               ,@body))
-       (error "can not open file %f" ,file))))
+       (if buff
+           (with-current-buffer buff
+             (lotus-with-pos-new-win
+                 buff ,pos
+                 ,@body))
+         (error "can not open file %f" ,file))))
 (put 'lotus-with-file-pos-new-win 'lisp-indent-function 1)
 
 ;; (query-replace-regexp "org-with-marker-timed-new-win" "lotus-with-marker-timed-new-win" t nil nil nil)
@@ -557,7 +558,7 @@
 
 
 ;;; TODO: extend it to include elscreen change also.
-(defmacro lotus-with-other-frame-event (action &rest body)
+(defmacro lotus-with-other-frame-event-BACKUP (action &rest body)
   `(let ((frame nil)
          (sel-frame-adviced-p
           (select-frame-set-input-focus-no-raise-p)))
@@ -917,19 +918,20 @@
 
 
 (defmacro lotus-run-when-idle (secs &rest body)
-  `(letrec ((timer nil)
-            (fn
-             (lambda ()
-               (let ((retval
-                      (while-no-input (redisplay)
-                                      ,@body
-                                      :complete)))))))
+  (ignore secs)
+  `(letrec ((timer nil
+              (fn
+               (lambda ()
+                 (let ((retval
+                        (while-no-input (redisplay)
+                                        ,@body
+                                        :complete))))))))
 
-     (setq
-      timer
-      (run-with-idle-timer secs nil))
+       (setq
+        timer
+        (run-with-idle-timer secs nil))
 
-     `(while-no-input (redisplay))))
+       `(while-no-input (redisplay))))
 
 
 (defmacro lotus-run-unobtrusively (&rest body)
@@ -949,11 +951,12 @@
 
 ;; TODO complete it using letrec
 (defmacro lotus-run-unobtrusively-complete-when-idle (idletime &rest body) ;throw
+  (ignore idletime)
   `(let ((retval
-          (while-no-input
-            (redisplay)
-            ,@body)))
-     retval))
+              (while-no-input
+                (redisplay)
+                ,@body))
+         retval)))
 (put 'lotus-run-unobtrusively-complete-when-idle 'lisp-indent-function 0)
 
 

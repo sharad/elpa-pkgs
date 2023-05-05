@@ -237,26 +237,29 @@
   )
 
 ;;;###autoload
-(defun lll ()
+(defun lotus-org-schedule-deadline-with-eod ()
   ;; schedule deadline to honour end of day time also.
  )
 
 ;;;###autoload
-(defun lll ()
+(defun lotus-org-schedule-deadline-with-availability ()
   ;; calculate schedule deadline whether available in given time
  )
 
 ;;;###autoload
 (defun org-define-a-task ()
   "This function is used to create a org tree to complete a task.
-for e.g. implementing lvm support for guixsd what all steps a person have to take
-he has to read scheme, guixsd details, than see similar module and try to implement it."
+for e.g. implementing lvm support for guixsd what all steps a
+person have to take he has to read scheme, guixsd details, than
+see similar module and try to implement it."
   (interactive)
   )
 
 ;;;###autoload
 (defun org-log-not-on-event (start end event)
-  )
+  (ignore start)
+  (ignore end)
+  (ignore event))
 
 ;;;###autoload
 (defun org-goto-refile (&optional refile-targets)

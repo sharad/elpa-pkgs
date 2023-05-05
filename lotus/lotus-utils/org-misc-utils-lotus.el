@@ -62,7 +62,8 @@
 (put 'org-with-inhibit-modification-hooks 'lisp-indent-function 0)
 
 (defmacro lotus-org-with-safe-modification (&rest body)
-  "For general purpose org file modification (insertion[s] deletion[s] modification[s] etc.)"
+  "For general purpose org file modification (insertion[s]
+deletion[s] modification[s] etc.)"
   `(org-with-inhibit-modification-hooks
      (progn
       ,@body)))
@@ -368,6 +369,7 @@ With prefix arg C-u, copy region instad of killing it."
 (defmacro org-with-file-loc-timed-refile (marker timeout &rest body)
   "Refile run body with file and loc set."
   ;; mark paragraph if no region is set
+  (ignore timeout)
   `(let* ((marker ,marker))
      (lotus-with-marker marker
        ,@body)))
@@ -431,8 +433,7 @@ end of the subtree. ")
   "Refile the active region.
 If no region is active, refile the current paragraph.
 With prefix arg C-u, copy region instad of killing it."
-  (interactive "sorg entry: \nP")
-  ;; mark paragraph if no region is set
+  (ignore arg)
   (org-with-refile file pos nil
     ;; (unless arg (kill-region beg end))
     ;; (deactivate-mark)
@@ -656,12 +657,14 @@ With prefix arg C-u, copy region instad of killing it."
       (org-entry-put-multivalued-property nil property values))))
     ;; )
 
-(defun org-refile-target-files (org-refile-targets &optional default-buffer)
-  (let ( ;; (case-fold-search nil)
-         ;; otherwise org confuses "TODO" as a kw and "Todo" as a word
-        (entries (or org-refile-targets '((nil . (:level . 1)))))
-        files
-        desc)
+(defun org-refile-target-files (refile-targets &optional default-buffer)
+  (let* ( ;; (case-fold-search nil)
+          ;; otherwise org confuses "TODO" as a kw and "Todo" as a word
+         (org-refile-targets refile-targets)
+         (entries (or org-refile-targets '((nil . (:level . 1)))))
+         files
+         desc)
+    (ignore desc)
     (with-current-buffer (or default-buffer (current-buffer))
       (dolist (entry entries)
         (setq files (cl-first entry) desc (cl-rest entry))
@@ -677,12 +680,13 @@ With prefix arg C-u, copy region instad of killing it."
 
 ;; (org-refile-target-files '((occ-included-files :maxlevel . 4)))
 
-(defun org-refile-target-check (org-refile-targets &optional default-buffer)
-  (let* ((files (org-refile-target-files org-refile-targets default-buffer))
-         (files (remove-if #'(lambda (f)
-                               (with-current-buffer (find-file-noselect f)
-                                 (eq 'org-mode major-mode)))
-                           files)))
+(defun org-refile-target-check (refile-targets &optional default-buffer)
+  (let* ((org-refile-targets refile-targets)
+         (files (org-refile-target-files org-refile-targets default-buffer))
+         (files (cl-remove-if #'(lambda (f)
+                                  (with-current-buffer (find-file-noselect f)
+                                    (eq 'org-mode major-mode)))
+                              files)))
     (when files
       (error "org-refile-target: files %s not in org-mode for org-refile-targets %s"
              files
@@ -702,11 +706,12 @@ With prefix arg C-u, copy region instad of killing it."
          (prompt          (or prompt
                               str-command))
          (buf-name        (format "*helm-mode-%s*" str-command)))
+    (ignore buf-name)
     (let ((org-refile-targets
            (if (safe-org-refile-get-location-p)
                org-refile-targets
-             (remove-if #'(lambda (e) (null (cl-first e)))
-                        org-refile-targets))))
+             (cl-remove-if #'(lambda (e) (null (cl-first e)))
+                           org-refile-targets))))
       (org-refile-target-check org-refile-targets)
       (org-refile-get-location prompt))))
 
@@ -717,11 +722,11 @@ With prefix arg C-u, copy region instad of killing it."
          (prompt          (or prompt
                               str-command))
          (buf-name        (format "*helm-mode-%s*" str-command)))
-    (let ((org-refile-targets
-           (if (safe-org-refile-get-location-p)
-               org-refile-targets
-             (remove-if #'(lambda (e) (null (cl-first e)))
-                        org-refile-targets))))
+    (ignore buf-name)
+    (let ((org-refile-targets (if (safe-org-refile-get-location-p)
+                                  org-refile-targets
+                                (cl-remove-if #'(lambda (e) (null (cl-first e)))
+                                              org-refile-targets))))
       (org-refile-target-check org-refile-targets)
       (let* ((marker (make-marker))
              (target (org-refile-get-location prompt))
@@ -768,6 +773,7 @@ With prefix arg C-u, copy region instad of killing it."
          (str-command     (helm-symbol-name current-command))
          (prompt          (or prompt str-command))
          (buf-name        (format "*helm-mode-%s*" str-command)))
+    (ignore buf-name)
     (lotus-with-first-idle-timed-transient-buffer-window timeout buf-name
       (safe-org-refile-get-location prompt))))
 
@@ -781,6 +787,7 @@ With prefix arg C-u, copy region instad of killing it."
          (prompt          (or prompt str-command))
          (buf-name        (format "*helm-mode-%s*" str-command))
          (marker          (safe-org-refile-get-marker prompt)))
+    (ignore buf-name)
     (lotus-with-first-idle-timed-transient-buffer-window timeout buf-name marker)))
 
 
@@ -973,7 +980,7 @@ With prefix arg C-u, copy region instad of killing it."
             (and (outline-next-heading)
                  (org-flag-heading nil))) ; show the next heading
           (when (outline-invisible-p)
-            (show-entry))                 ; display invisible text
+            (outline-show-entry))                 ; display invisible text
           (run-hooks 'org-agenda-after-show-hook))))))
 
 

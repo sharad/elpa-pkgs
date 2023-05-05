@@ -363,17 +363,14 @@ captured %<%y-%m-%d %h:%m>
 
       (defun my/org-get-todays-items-as-refile-candidates ()
         "return items scheduled for today, ready for choosing during refiling."
-        (delq
-         nil
-         (mapcar
-          (lambda (s)
-            (if (get-text-property 0 'org-marker s)
-                (list
-                 s
-                 (buffer-file-name (marker-buffer (get-text-property 0 'org-marker s)))
-                 nil
-                 (marker-position (get-text-property 0 'org-marker s)))))
-          (save-window-excursion (my/org-get-entries-fn (calendar-current-date) (calendar-current-date))))))
+        (delq nil (mapcar #(lambda (s)
+                             (if (get-text-property 0 'org-marker s)
+                                 (list
+                                  s
+                                  (buffer-file-name (marker-buffer (get-text-property 0 'org-marker s)))
+                                  nil
+                                  (marker-position (get-text-property 0 'org-marker s)))))
+                          (save-window-excursion (my/org-get-entries-fn (calendar-current-date) (calendar-current-date))))))
 
       ;; based on http://emacs.stackexchange.com/questions/4063/how-to-get-the-raw-data-for-an-org-mode-agenda-without-an-agenda-view
       (defun my/org-get-entries-fn (begin end)

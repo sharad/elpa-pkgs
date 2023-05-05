@@ -43,8 +43,8 @@
 ;;;###autoload
 (defun cleanup-tty-process ()
   (interactive)
-  (let ((tty-processes (remove-if-not 'process-tty-name
-                                      (process-list))))
+  (let ((tty-processes (cl-remove-if-not 'process-tty-name
+                                         (process-list))))
     (dolist (tp tty-processes)
       (kill-process tp))))
 

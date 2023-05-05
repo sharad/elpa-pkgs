@@ -144,37 +144,40 @@
 this macro intended to be used with or in idle timer functions."
   ;; TODO: org-fit-window-to-buffer
   ;; TODO: as clean up reset newwin configuration
+  (ignore first-idle-only)
+  (ignore timeout)
+  (ignore window)
   `(let* ((cleanup-fun #'(lambda (w)
-                           (let ((w (if (functionp w)
-                                        (funcall w)
-                                      w)))
-                            (when (and w
-                                       (windowp w)
-                                       (window-valid-p w))
-                              ;; TODO: open emacs why SIGABRT triggered on pressin C-g three time when struck.
-                              ;;       with below line.
-                              (discard-input)
-                              (safe-delete-window w)
-                              (lwarn 'lotus-idle-timed-window :debug "lotus-with-first-idle-timed-transient-window: triggered timer for new-win %s" w)
-                              (without-active-minibuffer
-                                (select-frame-set-input-enable-raise))))))
-          (timer      (run-with-idle-plus-timer timeout nil cleanup-fun window)))
-     (unwind-protect
-         (progn
-           ;; TODO: If this can be completely omitted when first-idle-only is nil
-           (when first-idle-only
-             (with-post-command
-               (cancel-timer timer)
-               (setq timer nil)))
-           (progn
-             (select-frame-set-input-disable-raise)
+                                 (let ((w (if (functionp w)
+                                              (funcall w)
+                                            w)))
+                                  (when (and w
+                                             (windowp w)
+                                             (window-valid-p w))
+                                    ;; TODO: open emacs why SIGABRT triggered on pressin C-g three time when struck.
+                                    ;;       with below line.
+                                    (discard-input)
+                                    (safe-delete-window w)
+                                    (lwarn 'lotus-idle-timed-window :debug "lotus-with-first-idle-timed-transient-window: triggered timer for new-win %s" w)
+                                    (without-active-minibuffer
+                                      (select-frame-set-input-enable-raise)))))
+                (timer      (run-with-idle-plus-timer timeout nil cleanup-fun window))
+           (unwind-protect
+               (progn
+                 ;; TODO: If this can be completely omitted when first-idle-only is nil
+                 (when first-idle-only
+                   (with-post-command
+                     (cancel-timer timer)
+                     (setq timer nil)))
+                 (progn
+                   (select-frame-set-input-disable-raise)
+                   (progn
+                     ,@body)))
              (progn
-               ,@body)))
-       (progn
-         (select-frame-set-input-enable-raise)
-         (when timer
-           (cancel-timer timer)
-           (setq timer nil))))))
+               (select-frame-set-input-enable-raise)
+               (when timer
+                 (cancel-timer timer)
+                 (setq timer nil))))))))
 (put 'lotus-with-idle-timed-transient-window 'lisp-indent-function 3)
 
 (defmacro lotus-with-first-idle-timed-transient-window (timeout
@@ -182,6 +185,8 @@ this macro intended to be used with or in idle timer functions."
                                                         &rest body)
   "Will destroy WINDOW after continued idle TIMEOUT
 this macro intended to be used with or in idle timer functions."
+  (ignore timeout)
+  (ignore window)
   `(lotus-with-idle-timed-transient-window t timeout window
      ,@body))
 (put 'lotus-with-first-idle-timed-transient-window 'lisp-indent-function 2)
@@ -191,6 +196,8 @@ this macro intended to be used with or in idle timer functions."
                                                                &rest body)
   "Will destroy window with BUFFER after continued idle TIMEOUT
 this macro intended to be used with or in idle timer functions."
+  (ignore timeout)
+  (ignore buffer)
   `(lotus-with-first-idle-timed-transient-window timeout #'(lambda () (get-buffer buffer))
      ,@body))
 (put 'lotus-first-idle-timed-transient-buffer-window 'lisp-indent-function 2)
