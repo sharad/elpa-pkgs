@@ -27,10 +27,14 @@
 (provide 'occ-rank)
 
 
-(require 'occ-macros)
+(eval-when-compile
+  (require 'occ-macros))
 (require 'occ-util-common)
 (require 'occ-prop-intf)
 (require 'occ-normalize-ineqs)
+(require 'occ-obj-accessor)
+(require 'occ-debug-method)
+(require 'occ-prop-base)
 
 ;; TODO: graded ranking where ranking will be under priority of properties, where one can not go beyond above one, normally
 

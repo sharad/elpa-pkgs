@@ -31,6 +31,7 @@
 (require 'occ-tree)
 (require 'occ-obj-ctor)
 (require 'occ-assert)
+(require 'occ-debug-method)
 
 
 (defun occ-tree-tsk-node-p (tx)

@@ -27,6 +27,9 @@
 (provide 'occ-tsk)
 
 
+(require 'occ-debug-method)
+
+
 (cl-defgeneric occ-obj-build-tsks (collection)
   (ignore collection)
   (occ-error "occ-obj-build-tsks"))

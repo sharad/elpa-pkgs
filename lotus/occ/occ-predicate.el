@@ -27,6 +27,9 @@
 (provide 'occ-predicate)
 
 
+(require 'occ-obj-clock-method)
+
+
 (cl-defgeneric occ-obj-marker= ((obj marker)
                                 (mrk marker))
   "compare markers")

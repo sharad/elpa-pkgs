@@ -60,6 +60,7 @@
 (require 'seq)
 (require 'list-utils)
 (require 'org-element)
+(require 'org-clock)
 
 
 (eval-when-compile
@@ -72,6 +73,10 @@
 (require 'occ-rank)
 (require 'occ-property-methods)
 (require 'occ-assert)
+(require 'occ-helm)
+(require 'occ-obj-accessor)
+(require 'occ-debug-method)
+(require 'occ-prop-base)
 
 
 (defvar *occ-collection-change-hook* nil

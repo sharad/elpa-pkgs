@@ -29,6 +29,7 @@
 
 (require 'occ-util-common)
 (require 'occ-obj)
+(require 'occ-obj-accessor)
 
 
 (defvar occ-log-levels '(:emergency :error :warning :debug :info :dmessage :nodisplay t))
@@ -53,7 +54,7 @@
       (setq frame (backtrace-frame (cl-incf index))))
     ;; (message "index %d" index)
     (if (equal t (cl-first frame))
-        (let* ((fun     (second frame))
+        (let* ((fun     (cl-second frame))
                (funname (if (symbolp fun)
                             (symbol-name fun)
                           (format "%s" fun)))

@@ -31,6 +31,13 @@
 (require 's)
 (eval-when-compile
   (require 'org-macs))
+(require 'org-macs)
+(require 'org)
+
+(require 'occ-obj)
+(require 'occ-predicate)
+(require 'occ-obj-accessor)
+(require 'occ-debug-method)
 
 
 (cl-defmethod occ-obj-uniquify-file ((tsk occ-tsk))
