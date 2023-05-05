@@ -126,6 +126,7 @@
   "org-rl-marker")
 
 (cl-defmethod org-rl-marker ((clock null))
+  (ignore clock)
   nil)
 
 (cl-defmethod org-rl-marker ((clock org-rl-clock))
@@ -144,6 +145,7 @@
 ;;     (org-get-heading-from-marker mrk)))
 
 (cl-defmethod org-rl-format ((clock null))
+  (ignore clock)
   (format "null"))
 
 (cl-defmethod org-rl-format ((clock org-rl-clock))
@@ -210,13 +212,13 @@
 
 (cl-defmethod org-rl-clock-null ((clock org-rl-clock))
   (let ((marker (org-rl-clock-marker clock)))
-    (or
-     (equal marker 'imaginary)
-     (null marker)
-     (not (markerp marker)))))
+    (or (equal marker 'imaginary)
+        (null marker)
+        (not (markerp marker)))))
 
 (cl-defmethod org-rl-clock-real-p ((clock org-rl-clock))
   (let ((marker (org-rl-clock-marker clock)))
+    (ignore marker)
     (when (not (org-rl-clock-null clock))
       clock)))
 
@@ -247,10 +249,10 @@
     (let ((marker (org-rl-clock-marker clock)))
       (with-current-buffer (marker-buffer marker)
         (goto-char marker)
-        (let ((clock-reg
-               (concat "^ *CLOCK: *\\[" org-ts-regexp0 "\\]$"))
+        (let ((clock-reg (concat "^ *CLOCK: *\\[" org-ts-regexp0 "\\]$"))
               (beginning (line-beginning-position))
-              (end (line-end-position)))
+              (end       (line-end-position)))
+          (ignore beginning)
           (when (move-beginning-of-line nil)
             (re-search-forward clock-reg end t)))))))
 
@@ -259,11 +261,10 @@
     (let ((marker (org-rl-clock-marker clock)))
       (with-current-buffer (marker-buffer marker)
         (goto-char marker)
-        (let ((clock-reg
-               (concat " *CLOCK: *\\["
-                       org-ts-regexp0 "\\]\\(?:--\\[\\)?" org-ts-regexp0))
+        (let ((clock-reg (concat " *CLOCK: *\\[" org-ts-regexp0 "\\]\\(?:--\\[\\)?" org-ts-regexp0))
               (beginning (line-beginning-position))
-              (end (line-end-position)))
+              (end       (line-end-position)))
+          (ignore beginning)
           (move-beginning-of-line nil)
           (re-search-forward clock-reg end t))))))
 
@@ -295,7 +296,8 @@
                              "\\(" org-ts-regexp0 "\\)"
                              "\\(?:\\] *=> *\\([0-9]+:[0-9]\\{2\\}\\)\\)"))
                     (beginning (line-beginning-position))
-                    (end (line-end-position)))
+                    (end       (line-end-position)))
+                (ignore beginning)
                 (when (and (goto-char marker)
                            (move-beginning-of-line nil))
                   (when (re-search-forward clock-reg end t)
@@ -329,7 +331,8 @@
   (org-rl-clock-for-clock-op clock))
 
 
-(cl-defmethod org-clock-clock-remove-last-clock ((clock org-rl-clock)))
+(cl-defmethod org-clock-clock-remove-last-clock ((clock org-rl-clock))
+  (ignore clock))
 ;; TODO
 
 (cl-defmethod org-rl-clock-clock-cancel ((clock org-rl-clock)
@@ -455,6 +458,7 @@
       (error "Clock org-clock-clocking-in is %s" org-clock-clocking-in))))
 
 (cl-defmethod org-rl-clock-restart-now ((clock org-rl-clock) resume)
+  (ignore resume)
   (let ((newclock (org-rl-make-clock
                    (org-rl-clock-marker clock)
                    'now
@@ -484,7 +488,9 @@
   clock)
 
 (cl-defmethod org-rl-clock-contract-time ((clock org-rl-clock) sec)
-  "if sec is positive contract from future else contract from past."
+  "if sec is positive contract from future else contract from
+past."
+  (ignore sec)
   (org-rl-debug nil "org-rl-clock-contract-time: clock[%s] org-clock-clocking-in[%s]"
                 (org-rl-format clock)
                 org-clock-clocking-in))
@@ -524,6 +530,7 @@
                          (if (org-rl-clock-start-time next) (% (/ (floor (float-time (org-rl-clock-start-time next))) 60) base) 0)
                          (if (org-rl-clock-stop-time next)  (% (/ (floor (float-time (org-rl-clock-stop-time next))) 60) base) 0)))
          (debug (if prompt (concat prompt " " _debug) _debug)))
+    (ignore _debug)
     (when stop (read-from-minibuffer (format "%s test: " debug)))
     debug))
 
@@ -545,6 +552,7 @@
                          (if (org-rl-clock-start-time next) (% (/ (floor (float-time (org-rl-clock-start-time next))) 60) base) 0)
                          (if (org-rl-clock-stop-time next)  (% (/ (floor (float-time (org-rl-clock-stop-time next))) 60) base) 0)))
          (debug (if prompt (concat prompt " " _debug) _debug)))
+    (ignore _debug)
     (when stop (read-from-minibuffer (format "%s test: " debug)))
     debug))
 
@@ -710,6 +718,7 @@
   (org-rl-debug nil "calling org-rl-clock-opts-prev")
   (let ((prev-heading (org-rl-clock-heading prev))
         (next-heading (org-rl-clock-heading next)))
+    (ignore next-heading)
     (when (org-rl-clock-real-p prev)
       (list (list :option
                   (format "Jump to prev %s" prev-heading)
@@ -727,6 +736,7 @@
   (org-rl-debug nil "calling org-rl-clock-opts-prev-with-time")
   (let ((prev-heading (org-rl-clock-heading prev))
         (next-heading (org-rl-clock-heading next)))
+    (ignore next-heading)
     (list (list :option
                 (if (org-rl-clock-real-p prev)
                     (format "Include in prev %s" prev-heading)
@@ -829,6 +839,7 @@
 (defvar org-rl-read-interval-secs 60)
 
 (defun org-rl-clock-read-option (interval-secs prompt-fn options-fn default-fn)
+  (ignore default-fn)
   (let* ((options (if (functionp options-fn) (funcall options-fn) options-fn))
          (desopt (assoc (time-aware-completing-read interval-secs prompt-fn options-fn) options))
          (des (cl-first desopt))
@@ -869,6 +880,7 @@
                    resume-clocks)
         (org-clock-resolve-reset-last-idle-start-time))
     ((error quit) (progn
+                    (ignore err)
                     (org-rl-debug :warning "Resetting org-clock-last-idle-start-time [= %s] to nil" org-clock-last-idle-start-time)
                     (org-clock-resolve-reset-last-idle-start-time)
                     (setq org-clock-last-idle-start-time nil)

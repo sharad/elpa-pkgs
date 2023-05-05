@@ -34,6 +34,7 @@
 
 
 (defun org-rl-clock-cps-process-option (timelen-mins opt prev next maxtime resume fail-quietly resume-clocks)
+  (ignore maxtime)
   (org-rl-debug :warning "started org-rl-clock-cps-process-option selected opt=%s" opt)
   (let ((maxtimelen-secs (org-rl-get-time-gap-secs prev next))) ;get maxtimelen-secs time again
     (if (<=
@@ -114,6 +115,8 @@
          (action (list
                   (cons "Select" #'org-rl-clock-cps-process-helm-option)))
          (action-transformer #'(lambda (actions candidate)
+                                 (ignore actions)
+                                 (ignore candidate)
                                  (list (cons "select" #'org-rl-clock-cps-process-helm-option)))))
     (org-rl-debug nil "org-rl-helm-sync-source-on-option: candidates %s" candidates)
     (org-rl-debug nil "org-rl-helm-sync-source-on-option: after helm-options %s" helm-options)
@@ -148,11 +151,12 @@
       (org-rl-debug nil "org-rl-helm-sync-source-on-option-tree: name = %s append %d" name (length (append
                                                                                                     rec-options-helm
                                                                                                     (list options-helm))))
-      (append
-       (mapcar #'car rec-options-helm)
-       (list options-helm)))))
+      (append (mapcar #'car rec-options-helm)
+              (list options-helm)))))
 
 (defun org-rl-helm-build-options (interval prompt-fn options-fn default-fn)
+  (ignore interval)
+  (ignore default-fn)
   (let ((name (if (functionp prompt-fn)
                   (funcall prompt-fn)
                 prompt-fn))
@@ -171,6 +175,7 @@
       options))))
 
 (defun org-rl-clock-cps-read-option (interval prompt-fn options-fn default-fn)
+  (ignore default-fn)
   (org-rl-debug nil "org-rl-clock-cps-read-option:")
   (let ((options (if (functionp options-fn) (funcall options-fn) options-fn))
         (prompt (if (functionp prompt-fn) (funcall prompt-fn) prompt-fn)))
@@ -230,6 +235,8 @@
                                                           (format "Select option [%d]: " maxtimelen-mins))))
                                                   options
                                                   maxtimelen-mins-fn))))
+        (ignore ret)
+        (ignore opt)
         (message "Do someting."))))
           ;; (barely-started-p (< (- (float-time last-valid)
           ;;                         (float-time (cl-rest clock))) 45))

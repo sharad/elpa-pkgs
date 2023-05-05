@@ -43,6 +43,7 @@
 (defvar org-rl-capture+-helm-templates-alist org-capture+-helm-templates-alist)
 
 (defun org-default-rl-clock-p (clock-marker)
+  (ignore clock-marker)
   t)
 (defun org-default-rl-clock-clock-in (clock-marker &optional resume start-time)
   (org-rl-straight-org-clock-clock-in clock-marker resume start-time))
@@ -52,6 +53,7 @@
   (org-clock-clock-out clock-marker fail-quietly at-time))
 (defun org-default-rl-select-other-clock (clock-marker &optional target)
   (interactive)
+  (ignore clock-marker)
   (org-rl-debug nil "org-rl-select-other-clock: target[%s]" target)
   (org-with-refile
       file loc (or target org-refile-targets) "Refile other org heading"
@@ -59,6 +61,7 @@
       (set-marker marker loc)
       marker)))
 (defun org-default-rl-capture+-helm-templates-alist (clock-marker)
+  (ignore clock-marker)
   org-rl-capture+-helm-templates-alist)
 
 (org-rl-intf-register 'default
@@ -130,6 +133,7 @@
       (let ((prompt (if (functionp prompt-fn) (funcall prompt-fn) prompt-fn))
             (options (if (functionp options-fn) (funcall options-fn) options-fn))
             (default (if (functionp default-fn) (funcall default-fn) default-fn)))
+        (ignore default)
         (completing-read prompt options)))))
 
 (defun time-aware-read-number (interval prompt-fn default-fn)

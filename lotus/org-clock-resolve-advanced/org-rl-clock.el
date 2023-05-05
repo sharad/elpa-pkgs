@@ -54,6 +54,7 @@
 (cl-defmethod org-rl-clock-opt-jump-to ((clock org-rl-clock)
                                         &optional
                                         resume-clocks)
+  (ignore resume-clocks)
   (org-rl-clock-clock-jump-to clock))
 
 (cl-defmethod org-rl-clock-opt-cancel-prev ((prev org-rl-clock)
@@ -188,6 +189,7 @@
                                (org-rl-org-select-other-clock (org-rl-marker (cl-some #'org-rl-clock-real-p
                                                                                       (list prev next))))))
         (resume-alist      nil))
+    (ignore maxtimelen-secs)
     (progn
       (setf prev (org-rl-clock-clock-out prev fail-quietly))     ;if necessary
       (setf next (org-rl-clock-clock-out next fail-quietly))     ;if necessary
@@ -263,6 +265,7 @@
                                                 resume
                                                 fail-quietly
                                                 resume-clocks)
+  (ignore maxtimelen-mins)
   (org-rl-debug nil "org-rl-clock-time-process-option: begin")
   (org-rl-debug :warning "started org-rl-clock-time-process-option: selected opt=%s" opt)
   (let* ((clocks

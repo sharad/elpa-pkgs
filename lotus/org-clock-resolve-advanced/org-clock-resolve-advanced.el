@@ -45,8 +45,9 @@
   (let* ((old org-clock-last-idle-start-time)
          (fmt (cl-rest org-time-stamp-formats))
          (time-string (format-time-string fmt org-clock-last-idle-start-time)))
-    (setq org-clock-last-idle-start-time nil)
-    (message "%s" time-string)))
+    (ignore old)
+    (setq org-clock-last-idle-start-time nil
+        (message "%s" time-string))))
 
 (defun org-clock-resolve-get-idle-start-time ()
   (let* ((org-clock-user-idle-seconds (if org-clock-last-idle-start-time
@@ -58,12 +59,13 @@
     org-clock-user-idle-start))
 
 (defun LM:rtos (n mode precision)
-  (let* ((num-str (number-to-string n))
-         (pos     (seq-position num-str ?.))
-         (pos     (when pos (+ pos precision 1))))
-    (substring (number-to-string n)
-               0
-               pos)))
+  (ignore mode)
+  (let* ((num-str (number-to-string n)
+           (pos     (seq-position num-str ?.))
+           (pos     (when pos (+ pos precision 1)))))
+      (substring (number-to-string n)
+                 0
+                 pos)))
 
 (defun LM:roundm (n m)
   (* m (string-to-number (LM:rtos (/ n (float m)) 2 0))))
@@ -195,19 +197,21 @@ so long."
 If `only-dangling-p' is non-nil, only ask to resolve dangling
 \(i.e., not currently open and valid) clocks."
   (interactive "P")
+  (ignore prompt-fn)
+  (ignore last-valid)
   (unless org-clock-resolving-clocks
-    (let ((org-clock-resolving-clocks t))
-      (dolist (file (org-files-list))
-        (let ((clocks (org-find-open-clocks file)))
-          (dolist (clock clocks)
-            (let ((dangling (or (not (org-clock-is-active))
-                                (/= (cl-first clock) org-clock-marker))))
-              (when (or (not only-dangling-p) dangling)
-                (org-rl-clock-resolve-internal (org-rl-make-clock (cl-first clock) (cl-rest clock) (cl-rest clock))
-                                               (org-rl-make-clock 'imaginary 'now 'now)
-                                               nil
-                                               nil
-                                               nil)))))))))
+        (let ((org-clock-resolving-clocks t))
+          (dolist (file (org-files-list))
+            (let ((clocks (org-find-open-clocks file)))
+              (dolist (clock clocks)
+                (let ((dangling (or (not (org-clock-is-active))
+                                    (/= (cl-first clock) org-clock-marker))))
+                  (when (or (not only-dangling-p) dangling)
+                    (org-rl-clock-resolve-internal (org-rl-make-clock (cl-first clock) (cl-rest clock) (cl-rest clock))
+                                                   (org-rl-make-clock 'imaginary 'now 'now)
+                                                   nil
+                                                   nil
+                                                   nil)))))))))
 
 ;;;###autoload
 (defalias 'org-resolve-clocks 'org-rl-resolve-clocks)
@@ -243,34 +247,35 @@ so long."
                         org-clock-marker))
           (mins-spent (or (org-rl-first-clock-started-mins marker)
                           0)))
-     (list (* (read-number (format "clock[ %s ] Resolve mins: " (org-get-heading-from-clock (list marker)))
-                           (org-rl-first-clock-started-mins marker))
-              60))))
-  (let* ((marker     (if current-prefix-arg
-                         (point-marker)
-                       org-clock-marker))
-         (start-time (org-clock-get-nth-half-clock-time marker 1))
-         (mins-spent (or (org-rl-first-clock-started-mins marker)
-                         0)))
-    (if (> mins-spent 1)
-        (if (< 1 (/ (abs idle-sec) 60) (1- mins-spent))
-            (when (and org-clock-idle-time
-                       (not org-clock-resolving-clocks)
-                       marker
-                       (marker-buffer marker))
-              (let* ((org-clock-user-idle-seconds (abs idle-sec))
-                     (org-clock-user-idle-start   (time-subtract (current-time)
-                                                                 (seconds-to-time org-clock-user-idle-seconds)))
-                     (org-clock-resolving-clocks-due-to-idleness t))
-                (if (> org-clock-user-idle-seconds (* 60 org-clock-idle-time))
-                    (org-rl-clock-resolve-internal (org-rl-make-clock marker start-time org-clock-user-idle-start t)
-                                                   (org-rl-make-clock 'imaginary 'now 'now))
-                  (when t
-                    (org-rl-debug nil "Idle time now min[%d] sec[%d]"
-                             (/ org-clock-user-idle-seconds 60)
-                             (% org-clock-user-idle-seconds 60))))))
-          (org-rl-debug nil "Selected min[ = %d ] is more than mins-spent[ = %d ]" (/ idle-sec 60) mins-spent))
-      (org-rl-debug nil "Not one min is spent with clock mins-spent = %d" mins-spent))))
+     (ignore prompt-fn)
+     (list (* (read-number (format "clock[ %s ] Resolve mins: " (org-get-heading-from-clock (list marker))
+                                (org-rl-first-clock-started-mins marker))
+                   60))
+       (let* ((marker     (if current-prefix-arg
+                              (point-marker)
+                            org-clock-marker))
+              (start-time (org-clock-get-nth-half-clock-time marker 1))
+              (mins-spent (or (org-rl-first-clock-started-mins marker)
+                              0)))
+         (if (> mins-spent 1)
+             (if (< 1 (/ (abs idle-sec) 60) (1- mins-spent))
+                 (when (and org-clock-idle-time
+                            (not org-clock-resolving-clocks)
+                            marker
+                            (marker-buffer marker))
+                   (let* ((org-clock-user-idle-seconds (abs idle-sec))
+                          (org-clock-user-idle-start   (time-subtract (current-time)
+                                                                      (seconds-to-time org-clock-user-idle-seconds)))
+                          (org-clock-resolving-clocks-due-to-idleness t))
+                     (if (> org-clock-user-idle-seconds (* 60 org-clock-idle-time))
+                         (org-rl-clock-resolve-internal (org-rl-make-clock marker start-time org-clock-user-idle-start t)
+                                                        (org-rl-make-clock 'imaginary 'now 'now))
+                       (when t
+                         (org-rl-debug nil "Idle time now min[%d] sec[%d]"
+                                  (/ org-clock-user-idle-seconds 60)
+                                  (% org-clock-user-idle-seconds 60))))))
+               (org-rl-debug nil "Selected min[ = %d ] is more than mins-spent[ = %d ]" (/ idle-sec 60) mins-spent))
+           (org-rl-debug nil "Not one min is spent with clock mins-spent = %d" mins-spent)))))))
 
 
 ;;;###autoload
