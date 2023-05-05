@@ -54,7 +54,6 @@
 ;;; Code:
 
 (provide 'sessions-unified)
-
 
 ;; (require 'dot-emacs-helper)
 

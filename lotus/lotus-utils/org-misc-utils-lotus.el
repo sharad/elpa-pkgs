@@ -41,6 +41,7 @@
 
 ;; (eval-when-compile
 ;;   (require 'cl))
+(require 'elscreen)
 (require 'helm-lib)
 (require 'outline)
 (require 'info+)                        ;outline-invisible-p

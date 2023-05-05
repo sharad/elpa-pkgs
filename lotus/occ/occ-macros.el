@@ -27,6 +27,10 @@
 (provide 'occ-macros)
 
 
+(require 'org-refile)
+(require 'org-capture+-lib)
+
+
 (defvar occ-testing-status nil)
 (defun occ-enable-testing ()
   (setq occ-testing-status t))
