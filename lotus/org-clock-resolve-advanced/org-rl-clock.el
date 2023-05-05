@@ -29,6 +29,7 @@
 
 (require 'time-stamp)
 (require 'org-capture+-helm)
+(require 'org-capture+-lib)
 (require 'org-capture)
 (eval-when-compile
     (require 'org-capture+-macros))
@@ -193,27 +194,23 @@
       (push (cons :prev prev) resume-alist)
       (push (cons :next next) resume-alist))
     (if (> timelen-mins 0)
-        (setq prev
-              (org-rl-clock-clock-in-out
-               (org-rl-make-clock other-marker
-                                  (org-rl-clock-stop-time prev)
-                                  (time-add
-                                   (org-rl-clock-stop-time prev)
-                                   timelen-mins))
-               resume
-               fail-quietly))
-      (setq next
-            (org-rl-clock-clock-in-out
-             (org-rl-make-clock other-marker
-                                (time-subtract
-                                 (org-rl-clock-start-time next)
-                                 (abs timelen-mins))
-                                (org-rl-clock-stop-time next))
-             resume
-             fail-quietly)))
-
+        (setq prev (org-rl-clock-clock-in-out (org-rl-make-clock other-marker
+                                                                 (org-rl-clock-stop-time prev)
+                                                                 (time-add
+                                                                  (org-rl-clock-stop-time prev)
+                                                                  timelen-mins))
+                                              resume
+                                              fail-quietly))
+      (setq next (org-rl-clock-clock-in-out (org-rl-make-clock other-marker
+                                                               (time-subtract
+                                                                (org-rl-clock-start-time next)
+                                                                (abs timelen-mins))
+                                                               (org-rl-clock-stop-time next))
+                                            resume
+                                            fail-quietly)))
     (progn
-      (push (cons :other (if (> timelen-mins 0) prev next)) resume-alist)
+      (push (cons :other (if (> timelen-mins 0) prev next))
+            resume-alist)
             ;; (org-rl-clocks-action nil nil prev next)
       (org-rl-debug nil "finish %s" 'org-rl-clock-opt-include-in-other)
       ;; TODO: add off to restart now (org-rl-clock-restart-now)
@@ -333,13 +330,13 @@
     (let* ((resume-clocks (cl-remove-if-not #'consp resume-clocks))
            (resume-clocks (append resume-clocks '((:done nil))))
            (resume-clocks (mapcar #'(lambda (el)
-                                      (cons
-                                       (format "%s %s"
-                                               (cl-first el)
-                                               (if (cl-rest el) (org-rl-format (cl-rest el)))) el))
+                                      (cons (format "%s %s"
+                                                    (cl-first el)
+                                                    (if (cl-rest el) (org-rl-format (cl-rest el))))
+                                            el))
                                     resume-clocks))
            (sel       (completing-read "resume clock: " resume-clocks))
-           (sel-clock ((assoc sel resume-clocks))))
+           (sel-clock (assoc sel resume-clocks)))
       (when sel-clock
         (org-rl-clock-clock-in sel-clock)))))
 

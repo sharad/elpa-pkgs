@@ -130,9 +130,9 @@
 (defun org-rl-helm-sync-source-on-option-tree (name list)
   (org-rl-debug nil "org-rl-helm-sync-source-on-option-tree: name: %s" name)
   (org-rl-debug nil "org-rl-helm-sync-source-on-option-tree: list: %s" list)
-  (let ((helm-options (remove-if-not #'(lambda (opt) (eq (cl-first opt) :helm)) list))
-        (options (remove-if-not #'(lambda (opt) (member (cl-first opt) '(:option))) list))
-        (rec-options (remove-if #'(lambda (opt) (member (cl-first opt) '(:option :helm) )) list)))
+  (let ((helm-options (cl-remove-if-not #'(lambda (opt) (eq (cl-first opt) :helm)) list))
+        (options (cl-remove-if-not #'(lambda (opt) (member (cl-first opt) '(:option))) list))
+        (rec-options (cl-remove-if #'(lambda (opt) (member (cl-first opt) '(:option :helm) )) list)))
     (let ((options-helm     (org-rl-helm-sync-source-on-option name
                                                                (mapcar #'cdr options)
                                                                (apply #'append (mapcar #'cdr helm-options))))
@@ -190,10 +190,9 @@
                                              resume
                                              fail-quietly
                                              resume-clocks)
-  "Read time which could be positive or negative or full"
+  "Resolve clock time, Read time which could be positive or negative or full"
   ;; BUG how to handle current time == 'now
   ;; BUG how to handle when prev == next
-  "Resolve clock time"
   (interactive)
   ;; last-input-event
   ;; last-event-frame
@@ -217,33 +216,26 @@
                     (org-rl-clock-time-adv-debug-prompt prev next) maxtimelen-secs)
       (when (> maxtimelen-secs 0)
         (let* ((maxtimelen-mins-fn #'(lambda () (org-rl-get-time-gap-mins prev next)))
-               (options (org-rl-clock-build-options
-                         prev next
-                         maxtimelen-secs
-                         resume
-                         fail-quietly
-                         resume-clocks))
+               (options (org-rl-clock-build-options prev next
+                                                    maxtimelen-secs
+                                                    resume
+                                                    fail-quietly
+                                                    resume-clocks))
                (ret (org-rl-debug nil "org-rl-clock-cps-resolve-time: options %s" options))
-               (opt
-                (org-rl-clock-cps-read-option
-                 org-rl-read-interval-secs
-                 #'(lambda ()
-                     (let ((maxtimelen-mins (funcall maxtimelen-mins-fn)))
-                       (if debug-prompt
-                           (format "%s Select option [%d]: " (org-rl-clock-time-debug-prompt prev next) maxtimelen-mins)
-                         (format "Select option [%d]: " maxtimelen-mins))))
-                 options
-                 maxtimelen-mins-fn)))))))
-
+               (opt (org-rl-clock-cps-read-option org-rl-read-interval-secs
+                                                  #'(lambda ()
+                                                      (let ((maxtimelen-mins (funcall maxtimelen-mins-fn)))
+                                                        (if debug-prompt
+                                                            (format "%s Select option [%d]: " (org-rl-clock-time-debug-prompt prev next) maxtimelen-mins)
+                                                          (format "Select option [%d]: " maxtimelen-mins))))
+                                                  options
+                                                  maxtimelen-mins-fn))))
+        (message "Do someting."))))
           ;; (barely-started-p (< (- (float-time last-valid)
           ;;                         (float-time (cl-rest clock))) 45))
           ;; (start-over-p (and subtractp barely-started-p))
           ;; cancel prev and add to time
-
-
           ;; (org-rl-debug nil "You have selected opt %s and timelen-mins %d" opt timelen-mins)
-
-
   (org-rl-debug nil "org-rl-clock-cps-resolve-time: finished"))
-
+
 ;;; org-rl-obj-cps.el ends here

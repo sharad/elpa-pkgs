@@ -47,6 +47,7 @@
   (require 'org-clock-utils-lotus))
 (require 'org-clock-utils-lotus)
 (require 'org-rl-utils)
+(require 'org-clock-resolve-advanced)
 
 
 (defun assert-time (time)
@@ -236,7 +237,7 @@
               (org-rl-format clock) dur)
      (message "org-rl-clock-assert: ASSERTION FAILURE %s (org-rl-clock-duration clock) = %s"
               (org-rl-format clock) dur)
-     (message "org-rl-clock-assert: ASSERTION FAILURE S (org-rl-clock-duration clock) = %s"
+     (message "org-rl-clock-assert: ASSERTION FAILURE S (org-rl-clock-duration clock) = %s dur = %s"
               (org-rl-format clock) dur)))
   (cl-assert (>= (org-rl-clock-duration clock) 0)))
 
@@ -295,34 +296,31 @@
                              "\\(?:\\] *=> *\\([0-9]+:[0-9]\\{2\\}\\)\\)"))
                     (beginning (line-beginning-position))
                     (end (line-end-position)))
-                (when (and
-                       (goto-char marker)
-                       (move-beginning-of-line nil))
+                (when (and (goto-char marker)
+                           (move-beginning-of-line nil))
                   (when (re-search-forward clock-reg end t)
                     (let ((file-clock-start (org-time-string-to-time (match-string 1)))
                           (file-clock-stop  (org-time-string-to-time (match-string 2))))
-                      (cond
-                       ((eq terminal 'start)
-                        (if (= file-clock-stop (org-rl-clock-stop-time clock))
-                            (progn
-                              (kill-line)
-                              (setf clock (org-rl-clock-insert-range clock)))))
-                       ((eq terminal 'stop)
-                        (if (= file-clock-start (org-rl-clock-start-time clock))
-                            (progn
-                              (kill-line)
-                              (setf clock (org-rl-clock-insert-range clock)))))
-                       (t
-                        (kill-line)
-                        (setf clock (org-rl-clock-insert-range clock)))))))))))
+                      (cond ((eq terminal 'start)
+                             (if (= file-clock-stop (org-rl-clock-stop-time clock))
+                                 (progn
+                                   (kill-line)
+                                   (setf clock (org-rl-clock-insert-range clock)))))
+                            ((eq terminal 'stop)
+                             (if (= file-clock-start (org-rl-clock-start-time clock))
+                                 (progn
+                                   (kill-line)
+                                   (setf clock (org-rl-clock-insert-range clock)))))
+                            (t
+                             (kill-line)
+                             (setf clock (org-rl-clock-insert-range clock)))))))))))
       (error "clock %s is not full" (org-rl-clock-name-bracket clock)))
     clock))
 
 
 (cl-defmethod org-rl-clock-for-clock-op ((clock org-rl-clock))
-  (cons
-   (org-rl-clock-marker clock)
-   (org-rl-clock-start-time clock)))
+  (cons (org-rl-clock-marker clock)
+        (org-rl-clock-start-time clock)))
 
 (cl-defmethod org-rl-clock-for-clock-in ((clock org-rl-clock))
   (org-rl-clock-for-clock-op clock))
@@ -659,8 +657,8 @@
                              prev next maxtimelen-secs resume fail-quietly resume-clocks))
                         (cl-rest list)))))
 
-          (org-rl-org-capture+-helm-templates-alist (org-rl-marker (some #'org-rl-clock-real-p
-                                                                         (list prev next))))))
+          (org-rl-org-capture+-helm-templates-alist (org-rl-marker (cl-some #'org-rl-clock-real-p
+                                                                            (list prev next))))))
 
 
 (cl-defmethod org-rl-clock-opts-common ((prev org-rl-clock)
