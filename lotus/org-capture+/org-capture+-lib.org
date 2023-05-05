@@ -35,6 +35,9 @@
 ** Required libraries
 #+BEGIN_SRC emacs-lisp
 (require 'org-capture)
+(require 'dired)
+(require 'org-misc-utils-lotus)
+(require 'org-crypt)
 #+END_SRC
 
 ** Rest
@@ -154,7 +157,7 @@
     (if (and (org-capture-get :target-entry-p)
              (bolp)
              (looking-at org-outline-regexp))
-        (let ((note (rest (assq note-purpose org-log-note-headings)))
+        (let ((note (cl-rest (assq note-purpose org-log-note-headings)))
               lines)
           (progn
             (while (string-match "\\`# .*\n[ \t\n]*" txt)
