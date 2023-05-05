@@ -43,12 +43,12 @@
                      (when (cl-rest name-clock)
                        (org-rl-clock-current-real (cl-rest name-clock))))                       ;;no current running clock should be present.
                  clock-alist)
-      (remove-if #'(lambda (name-clock)
-                     (or (not (consp name-clock))
-                         (null (cl-rest name-clock))
-                         (org-rl-clock-null (cl-rest name-clock))))
-                 (append clock-alist
-                         (unless (consp resume-clocks) nil)))))
+      (cl-remove-if #'(lambda (name-clock)
+                        (or (not (consp name-clock))
+                            (null (cl-rest name-clock))
+                            (org-rl-clock-null (cl-rest name-clock))))
+                    (append clock-alist
+                            (unless (consp resume-clocks) nil)))))
 
 
 (cl-defmethod org-rl-clock-opt-jump-to ((clock org-rl-clock)
@@ -236,8 +236,8 @@
                 template)
 
   (let ((mrk (org-rl-org-select-other-clock
-              (org-rl-marker (some #'org-rl-clock-real-p
-                                   (list prev next))))))
+              (org-rl-marker (cl-some #'org-rl-clock-real-p
+                                      (list prev next))))))
     (org-rl-debug nil "begin %s: org-rl-select-other-clock: %s" 'org-rl-clock-opt-include-in-new mrk)
     (org-rl-debug nil "begin %s: template: %s" 'org-rl-clock-opt-include-in-new template)
     (after-org-capture-run mrk 'entry `(marker ,mrk) template '(:empty-lines 1)
