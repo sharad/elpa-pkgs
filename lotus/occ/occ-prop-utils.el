@@ -27,6 +27,8 @@
 (provide 'occ-prop-utils)
 
 
+(require 'occ-obj-accessor)
+(require 'occ-debug-method)
 (require 'occ-prop-intf)
 
 

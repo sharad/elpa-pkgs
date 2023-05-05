@@ -27,6 +27,9 @@
 (provide 'org-clock-resolve-advanced)
 
 
+(require 'time-stamp)
+
+
 (require 'org-rl-clock)
 (require 'org-rl-obj-cps)
 

@@ -29,7 +29,9 @@
 (require 'occ-obj)
 (require 'occ-prop-intf)
 (require 'occ-assert)
-
+(require 'occ-cl-utils)
+(require 'occ-obj-accessor)
+(require 'occ-debug-method)
 
 ;; TODO org-base-buffer
 

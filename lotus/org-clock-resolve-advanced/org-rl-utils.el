@@ -27,6 +27,11 @@
 (provide 'org-rl-utils)
 
 
+(require 'time-stamp)
+(require 'lotus-idle-utils)
+(require 'org-clock-utils-lotus)
+(require 'org-misc-utils-lotus)
+(require 'org-clock)
 (eval-when-compile
   (require 'lotus-misc-utils)
   (require 'org-misc-utils-lotus))

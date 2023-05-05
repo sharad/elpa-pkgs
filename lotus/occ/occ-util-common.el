@@ -26,12 +26,18 @@
 (provide 'occ-util-common)
 
 
+(require 'org-clock)
 (eval-when-compile
   (require 'org-misc-utils-lotus))
+(require 'org-clock-utils-lotus)
 
 
 (eval-when-compile
   (require 'occ-macros))
+(require 'occ-obj-accessor)
+(require 'occ)
+(require 'occ-debug-method)
+(require 'occ-obj-common)
 
 
 (defvar occ-verbose 0)

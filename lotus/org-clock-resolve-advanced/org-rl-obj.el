@@ -33,6 +33,7 @@
 (require 'org)
 (require 'org-timer)
 (require 'org-clock)
+(require 'org-capture+-helm)
 (require 'timer-utils-lotus)
 (eval-when-compile
   (require 'timer-utils-lotus))

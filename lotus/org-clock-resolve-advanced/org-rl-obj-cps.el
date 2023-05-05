@@ -27,6 +27,7 @@
 (provide 'org-rl-obj-cps)
 
 
+(require 'org-capture+-helm)
 (require 'org-rl-obj)
 (require 'org-rl-clock)
 (require 'org-rl-utils)
