@@ -96,20 +96,10 @@
 (defvar session-unified-save-all-sessions-after-hook nil "Hook run after saving all session")
 
 
-(eval-when-compile
- (defvar *sessions-unified-utils-notify* nil)
- (unless (null '*sessions-unified-utils-notify*)
-   (sessions-unified-utils-notify-set-default)))
-
 (defvar *sessions-unified-utils-notify* nil)
 
 (defun sessions-unified-utils-notify-default (title fmt &rest args)
   (message  "%s: %s" title (apply #'format fmt args)))
-
-(defun sessions-unified-utils-notify-set-default ()
-  (setq *sessions-unified-utils-notify* #'sessions-unified-utils-notify-default))
-
-(sessions-unified-utils-notify-set-default)
 
 ;; https://emacs.stackexchange.com/questions/2310/can-functions-access-their-name
 (defun get-current-func-name ()
@@ -130,10 +120,13 @@
 (defun session-unfiy-notify (fmt &rest args)
   (let ((funname (get-current-func-name)))
     ;; (message "test")
-    (unless (eq *sessions-unified-utils-notify*
-                #'sessions-unified-utils-notify-default)
+    (unless (or (null *sessions-unified-utils-notify*)
+                (eq *sessions-unified-utils-notify*
+                    #'sessions-unified-utils-notify-default))
       (apply sessions-unified-utils-notify-default funname fmt args))
-    (apply *sessions-unified-utils-notify* funname fmt args)))
+    (let ((notify (or *sessions-unified-utils-notify*
+                      #'sessions-unified-utils-notify-default)))
+      (apply notify funname fmt args))))
 
 ;; (session-unfiy-notify "Enabled session saving")
 ;; (apply *sessions-unified-utils-notify* "test" "fmt" '())
