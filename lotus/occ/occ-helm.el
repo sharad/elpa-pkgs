@@ -41,6 +41,7 @@
 (require 'occ-debug-method)
 (require 'occ-obj-method)
 (require 'occ-helm-method)
+(require 'occ-util-common)
 
 
 (defun occ-capture+-helm-select-template ()

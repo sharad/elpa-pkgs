@@ -39,6 +39,7 @@
 (require 'occ-clock)
 (require 'occ-cl-utils)
 (require 'occ-debug-method)
+(require 'occ-util-common)
 
 
 (defvar +occ-unnamed-collection-depth+ 0)

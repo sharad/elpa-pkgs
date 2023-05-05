@@ -32,6 +32,7 @@
 (require 'occ)
 (require 'occ-config)
 (require 'occ-commands)
+(require 'occ-util-common)
 
 
 (defvar occ-mode-main-keymap (make-keymap) "occ-mode keymap.")

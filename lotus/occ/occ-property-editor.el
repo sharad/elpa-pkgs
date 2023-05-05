@@ -27,7 +27,6 @@
 
 
 (require 'time-stamp)
-(require 'remem)
 (require 'timer-utils-lotus)
 (eval-when-compile
   (require 'timer-utils-lotus))
@@ -52,6 +51,8 @@
 (require 'occ-obj-utils)
 (require 'occ-prop)
 (require 'occ-assert)
+
+(require 'remem)
 
 
 (cl-defgeneric occ-do-select-propetry (obj

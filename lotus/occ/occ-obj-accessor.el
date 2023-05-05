@@ -34,6 +34,7 @@
 (require 'occ-rank)
 (require 'occ-assert)
 (require 'occ-commands)
+(require 'occ-util-common)
 
 
 (cl-defmethod occ-obj-class-name (obj)

@@ -33,6 +33,7 @@
 (require 'occ-cl-utils)
 (require 'occ-obj-accessor)
 (require 'occ-debug-method)
+(require 'occ-util-common)
 
 
 ;; method
