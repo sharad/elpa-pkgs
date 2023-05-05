@@ -30,6 +30,12 @@
 (provide 'lotus-utils)
 
 
+(require 'helm-core)
+(require 'elscreen)
+
+(require 'lotus-misc-utils)
+
+
 ;;;###autoload
 (defun touch-file (file)
   (interactive)
@@ -54,7 +60,9 @@
     (when (featurep 'elscreen)
       ;;{{ elscreen
       ;; https://github.com/syl20bnr/spacemacs/issues/7372
-      (define-key evil-emacs-state-map (kbd "C-z") nil)
+      (when (featurep 'evil-states)
+        (require 'evil-states)
+        (define-key evil-emacs-state-map (kbd "C-z") nil))
       (global-unset-key [C-z])
       ;; (global-set-key [C-z c] 'elscreen-create)
       (funcall #'(lambda (symbol value)
@@ -146,6 +154,7 @@
 (defun forgive/them ()
   (interactive)
   (if (and (featurep 'develock)
+           (require 'develock)
            (assq major-mode develock-keywords-alist))
       (develock-mode -1))
   (highlight-changes-visible-mode -1))

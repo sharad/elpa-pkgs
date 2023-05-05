@@ -87,7 +87,10 @@
 
 (defun org-capture+-collect-template-classes ()
   (mapcar #'car
-          (org-capture+-collect-templates-alist #'(lambda (key-tree arg) t)
+          (org-capture+-collect-templates-alist #'(lambda (key-tree arg)
+                                                    (ignore key-tree)
+                                                    (ignore arg)
+                                                    t)
                                                 '(t)
                                                 0)))
 
@@ -104,7 +107,7 @@
 
 
 (defun helm-template-gen-source (predicate arg level &optional action noclass)
-  (let* ((action          (or action #'indentity))
+  (let* ((action          (or action #'identity))
          (list            (if noclass
                               (org-capture+-collect-templates predicate arg level)
                             (org-capture+-collect-templates-alist predicate arg level)))
@@ -184,6 +187,8 @@
                                     ;; :filter-one-by-one #'h-candidate-transformer
                                     :action-transformer             h-action-transformer))
                               classes))))
+    (ignore default-arg)
+    (ignore predicate)
     sources))
 
 

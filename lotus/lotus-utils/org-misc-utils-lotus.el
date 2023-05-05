@@ -37,13 +37,20 @@
 (eval-when-compile
   (require 'lotus-misc-utils))
 (require 'lotus-misc-utils)
+(require 'timer-utils-lotus)
 
 ;; (eval-when-compile
 ;;   (require 'cl))
-
+(require 'helm-lib)
+(require 'outline)
+(require 'info+)                        ;outline-invisible-p
+(require 'calendar)
+(require 'org)
+(require 'org-element)
 (eval-when-compile
   (require 'org-macs))
-
+(require 'org-refile)
+(require 'org-agenda)
 ;; (require 'cl)
 
 
