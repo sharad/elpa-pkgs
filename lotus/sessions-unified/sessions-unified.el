@@ -120,12 +120,11 @@
 (defun session-unfiy-notify (fmt &rest args)
   (let ((funname (get-current-func-name)))
     ;; (message "test")
-    (unless (or (null *sessions-unified-utils-notify*)
-                (eq *sessions-unified-utils-notify*
-                    #'sessions-unified-utils-notify-default))
-      (apply sessions-unified-utils-notify-default funname fmt args))
     (let ((notify (or *sessions-unified-utils-notify*
                       #'sessions-unified-utils-notify-default)))
+      (unless (eq notify
+                  #'sessions-unified-utils-notify-default)
+        (apply sessions-unified-utils-notify-default funname fmt args))
       (apply notify funname fmt args))))
 
 ;; (session-unfiy-notify "Enabled session saving")
