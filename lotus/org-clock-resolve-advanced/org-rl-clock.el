@@ -460,5 +460,5 @@
     (if start
         (org-rl-straight-org-clock-clock-in (list marker start) nil start)
       (error "start is null."))))
-
+
 ;;; org-rl-clock.el ends here
