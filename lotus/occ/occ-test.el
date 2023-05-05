@@ -28,11 +28,22 @@
 
 
 
-(eval-when-compile
-  (require 'occ-macros))
 (require 'ert)
 (require 'ert-x)
 (require 'el-mock)
+
+(eval-when-compile
+  (require 'occ-macros))
+(require 'occ-print)
+(require 'occ-cl-utils)
+(require 'occ-obj-accessor)
+(require 'occ-obj-common)
+(require 'occ-util-common)
+(require 'occ-prop-intf)
+(require 'occ-prop-org)
+(require 'occ-obj-clock-method)
+(require 'occ-obj-accessor)
+(require 'occ-debug-method)
 
 
 ;; https://www.gnu.org/software/emacs/manual/html_node/ert/index.html
