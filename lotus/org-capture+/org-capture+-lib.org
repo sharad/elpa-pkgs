@@ -34,6 +34,7 @@
 
 ** Required libraries
 #+BEGIN_SRC emacs-lisp
+(require 'crm)
 (require 'org)
 (require 'org-capture)
 (require 'dired)
@@ -154,7 +155,8 @@
     ;;   (t
     ;;    ;; beginning or end of file
     ;;    (goto-char (if (org-capture-get :prepend) (point-min) (point-max)))))
-
+    (ignore note-how)
+    (ignore note-extra)
     (if (and (org-capture-get :target-entry-p)
              (bolp)
              (looking-at org-outline-regexp))
@@ -309,6 +311,7 @@
 (defun org-capture-plus-set-target-location (&optional target nodisplay)
   "Find TARGET buffer and position.
     Store them in the capture property list."
+  (ignore nodisplay)
   (let ((target-entry-p t))
     (save-excursion
       (pcase (or target (org-capture-get :target))
@@ -494,6 +497,7 @@
   The template may still contain \"%?\" for cursor positioning.
   INITIAL content and/or ANNOTATION may be specified, but will be overridden
   by their respective `org-store-link-plist' properties if present."
+  (ignore nodisplay)
   (let* ((template (or template (org-capture-get :template)))
          (buffer (org-capture-get :buffer))
          (file (buffer-file-name (or (buffer-base-buffer buffer) buffer)))
@@ -510,7 +514,7 @@
          (v-x (or (org-get-x-clipboard 'PRIMARY)
                   (org-get-x-clipboard 'CLIPBOARD)
                   (org-get-x-clipboard 'SECONDARY)
-                  ""))            			;ensure it is a string
+                  ""))                        			;ensure it is a string
          ;; `initial' and `annotation' might have been passed.  But if
          ;; the property list has them, we prefer those values.
          (v-i (or (plist-get org-store-link-plist :initial)
@@ -643,7 +647,7 @@
       ;; completion in interactive prompts.
       (let ((org-inhibit-startup t)) (org-mode))
       (org-clone-local-variables buffer "\\`org-")
-      (let (strings)            			; Stores interactive answers.
+      (let (strings)                        			; Stores interactive answers.
         (save-excursion
           (let ((regexp "%\\^\\(?:{\\([^}]*\\)}\\)?\\([CgGLptTuU]\\)?"))
             (while (re-search-forward regexp nil t)
@@ -669,13 +673,12 @@
                                     (file (list file))
                                     (t nil))))
                             (org-add-colon-after-tag-completion t)
-                            (ins (mapconcat
-                                  #'identity
-                                  (let ((crm-separator "[ \t]*:[ \t]*"))
-                                    (completing-read-multiple
-                                     (if prompt (concat prompt ": ") "Tags: ")
-                                     org-last-tags-completion-table nil nil nil
-                                     'org-tags-history))
+                            (ins (mapconcat #'identity
+                                            (let ((crm-separator "[ \t]*:[ \t]*"))
+                                              (ignore crm-separator)
+                                              (completing-read-multiple (if prompt (concat prompt ": ") "Tags: ")
+                                                                        org-last-tags-completion-table nil nil nil
+                                                                        'org-tags-history))
                                   ":")))
                        (when (org-string-nw-p ins)
                          (unless (eq (char-before) ?:) (insert ":"))
