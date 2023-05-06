@@ -109,7 +109,7 @@
          (frame (backtrace-frame index)))
     ;; from what I can tell, top level function call frames
     ;; start with t and the second value is the symbol of the function
-    (while (not (equal t (first frame)))
+    (while (not (equal t (cl-first frame)))
       (setq frame (backtrace-frame (cl-incf index))))
     (let ((fun (second frame)))
       (if (symbolp fun)

@@ -134,7 +134,7 @@ If not, show simply the clocked time like 01:50."
 (defun custom-plist-keys (in-plist)
   (if (null in-plist)
       in-plist
-      (cons (first in-plist) (custom-plist-keys (nthcdr 2 in-plist)))))
+      (cons (cl-first in-plist) (custom-plist-keys (nthcdr 2 in-plist)))))
 
 #+END_SRC
 
@@ -461,7 +461,7 @@ see here[[https://emacs.stackexchange.com/questions/9530/how-can-i-get-an-org-mo
     ;;TODO add org-insert-log-not
     (org-context-clock-debug :debug "org-context-clock-clockin-marker %s" new-dyntaskpl)
     (let* (retval
-           (old-dyntaskpl (first *org-context-clock-clocked-dyntaskpl-context-history*))
+           (old-dyntaskpl (cl-first *org-context-clock-clocked-dyntaskpl-context-history*))
            (old-task    (plist-get old-dyntaskpl :task))
            (old-marker  (or (if old-task (plist-get old-task :task-clock-marker)) org-clock-hd-marker))
            (old-heading (if old-task (plist-get old-task :task-clock-heading)))
@@ -507,7 +507,7 @@ see here[[https://emacs.stackexchange.com/questions/9530/how-can-i-get-an-org-mo
                 ((error)
                  (progn
                    (setq retval nil)
-                   (signal (first err) (rest err)))))))
+                   (signal (cl-first err) (rest err)))))))
           (if old-buff
               (with-current-buffer old-buff
                 (setq buffer-read-only old-buff-read-only)))
@@ -535,7 +535,7 @@ see here[[https://emacs.stackexchange.com/questions/9530/how-can-i-get-an-org-mo
             (let* ((sel-dyntaskpl
                     (if (> (length matched-dyntaskpls) 1)
                         (sacha/helm-select-dyntaskpl-timed matched-dyntaskpls)
-                        (first matched-dyntaskpls)))
+                        (cl-first matched-dyntaskpls)))
                    ;; (sel-task   (if sel-dyntaskpl (plist-get sel-dyntaskpl :task)))
                    ;; (sel-marker (if sel-task      (plist-get sel-task      :task-clock-marker)))
                    )
@@ -651,7 +651,7 @@ see here[[https://emacs.stackexchange.com/questions/9530/how-can-i-get-an-org-mo
 #+BEGIN_SRC  emacs-lisp
   ;; rank based
     (defun sacha/helm-select-dyntaskpl (dyntaskpls)
-      ;; (org-context-clock-debug :debug "sacha marker %s" (first dyntaskpls))
+      ;; (org-context-clock-debug :debug "sacha marker %s" (cl-first dyntaskpls))
       (helm
        (list
         (helm-build-sync-source "Select matching tasks"
@@ -671,7 +671,7 @@ see here[[https://emacs.stackexchange.com/questions/9530/how-can-i-get-an-org-mo
         (sacha/helm-select-dyntaskpl dyntaskpls)))
 
     (defun sacha/helm-dyntaskpl-action (dyntaskpls clockin-fn)
-      ;; (message "sacha marker %s" (first dyntaskpls))
+      ;; (message "sacha marker %s" (cl-first dyntaskpls))
       ;; (setq sacha/helm-org-refile-locations tbl)
       (progn
         (helm
@@ -832,16 +832,16 @@ see here[[https://emacs.stackexchange.com/questions/9530/how-can-i-get-an-org-mo
     (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
 
    (org-context-clock-task-get-property
-    (first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
+    (cl-first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
     :task-clock-marker)
 
    (org-context-clock-clockin-marker
     (org-context-clock-task-get-property
-     (first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
+     (cl-first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
      :task-clock-marker))
 
    (org-context-clock-task-associated-to-context-by-keys-p
-    (first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
+    (cl-first (funcall org-context-clock-matching-tasks (org-context-clock-build-context)))
     (org-context-clock-build-context))
 
    (length

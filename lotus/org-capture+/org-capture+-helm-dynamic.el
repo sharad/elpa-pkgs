@@ -53,7 +53,7 @@
             org-capture+-helm-templates-tree))
 
 (defun org-capture+-template-p (template)
-  (eql :template (cl-first template)))
+  (eql :template (car template)))
 
 (defun org-capture+-tree-gen-predicate (predicate arg)
   #'(lambda (key)
@@ -95,7 +95,7 @@
                                                 0)))
 
 (defun org-capture+-tree-predicate (key-tree arg)
-  (memq (cl-first key-tree) arg))
+  (memq (car key-tree) arg))
 
 
 ;;;###autoload
@@ -121,8 +121,8 @@
                               #'(lambda ()
                                   (let ((xlist (org-capture+-collect-templates-alist predicate arg level)))
                                     (if list
-                                        (when (cl-first xlist)
-                                          (setcar list (cl-first xlist))
+                                        (when (car xlist)
+                                          (setcar list (car xlist))
                                           (setcdr list (cl-rest xlist)))
                                       (setq list xlist))))))
 
