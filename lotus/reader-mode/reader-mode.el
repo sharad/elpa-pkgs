@@ -24,7 +24,8 @@
 
 ;;; Code:
 
-
+(provide 'reader-mode)
+
 
 (require 'centered-cursor-mode)
 ;; To activate do:
@@ -34,18 +35,16 @@
 ;; for global minor mode.
 ;; (setq ccm-vpos-init '(round (window-text-height) 2))
 ;;  )
-
+
 
 ;;{{ from: http://www.gnu.org/software/emacs/manual/html_node/cl/
 (require 'cl)
 ;; (require 'general-testing)
-
+
 
 (defmacro testing (&rest body)
   (when nil
     ,@body))
-
-
 
 (defvar reader-mode-smooth-read-start-hook nil "")
 (defvar reader-mode-smooth-read-end-hook nil "")
@@ -624,9 +623,7 @@
         (centered-cursor-mode (reader-mode-get-config 'centered-cursor-mode))
         (view-mode  (reader-mode-get-config 'view-mode)))
       (run-hooks 'reader-mode-end-hook)))
-
-
-(provide 'reader-mode)
+
 ;;; reader-mode.el ends here
 
 ;; (testing

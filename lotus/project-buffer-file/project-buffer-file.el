@@ -24,7 +24,11 @@
 
 ;;; Code:
 
+(provide 'project-buffer-file)
+
+
 (require 'project-buffer-mode)
+
 
 (defgroup pbm-file nil
   "The EasyPG Assistant hooks for transparent file encryption"
@@ -338,41 +342,41 @@ reloaded through `project-buffer-raw-load' function."
 	 ;;   ((listp pbm-file-encrypt-to) pbm-file-encrypt-to)
 	 ;;   ((stringp pbm-file-encrypt-to) (list pbm-file-encrypt-to))))
          )
-;;     (epg-context-set-passphrase-callback
-;;      context
-;;      (cons #'pbm-file-passphrase-callback-function
-;;            file))
-;;     (epg-context-set-progress-callback
-;;      context
-;;      (cons #'pbm-progress-callback-function
-;;            (format "Encrypting %s" file)))
-;;     (epg-context-set-armor context pbm-armor)
-;;     (condition-case error
-;; 	(setq string
-;; 	      (epg-encrypt-string
-;; 	       context
-;; 	       (if (stringp start)
-;; 		   (pbm-file--encode-coding-string start coding-system)
-;; 		 (unless start
-;; 		   (setq start (point-min)
-;; 			 end (point-max)))
-;; 		 (pbm-file--encode-coding-string (buffer-substring start end)
-;; 						 coding-system))
-;; 	       (if (or (eq pbm-file-select-keys t)
-;; 		       (and (null pbm-file-select-keys)
-;; 			    (not (local-variable-p 'pbm-file-encrypt-to
-;; 						   (current-buffer)))))
-;; 		   (pbm-select-keys
-;; 		    context
-;; 		    "Select recipients for encryption.
-;; If no one is selected, symmetric encryption will be performed.  "
-;; 		    recipients)
-;; 		 (if pbm-file-encrypt-to
-;; 		     (epg-list-keys context recipients)))))
-;;       (error
-;;        (if (setq entry (assoc file pbm-file-passphrase-alist))
-;; 	   (setcdr entry nil))
-;;        (signal 'file-error (cons "Opening output file" (cl-rest error)))))
+    ;;     (epg-context-set-passphrase-callback
+    ;;      context
+    ;;      (cons #'pbm-file-passphrase-callback-function
+    ;;            file))
+    ;;     (epg-context-set-progress-callback
+    ;;      context
+    ;;      (cons #'pbm-progress-callback-function
+    ;;            (format "Encrypting %s" file)))
+    ;;     (epg-context-set-armor context pbm-armor)
+    ;;     (condition-case error
+    ;; 	(setq string
+    ;; 	      (epg-encrypt-string
+    ;; 	       context
+    ;; 	       (if (stringp start)
+    ;; 		   (pbm-file--encode-coding-string start coding-system)
+    ;; 		 (unless start
+    ;; 		   (setq start (point-min)
+    ;; 			 end (point-max)))
+    ;; 		 (pbm-file--encode-coding-string (buffer-substring start end)
+    ;; 						 coding-system))
+    ;; 	       (if (or (eq pbm-file-select-keys t)
+    ;; 		       (and (null pbm-file-select-keys)
+    ;; 			    (not (local-variable-p 'pbm-file-encrypt-to
+    ;; 						   (current-buffer)))))
+    ;; 		   (pbm-select-keys
+    ;; 		    context
+    ;; 		    "Select recipients for encryption.
+    ;; If no one is selected, symmetric encryption will be performed.  "
+    ;; 		    recipients)
+    ;; 		 (if pbm-file-encrypt-to
+    ;; 		     (epg-list-keys context recipients)))))
+    ;;       (error
+    ;;        (if (setq entry (assoc file pbm-file-passphrase-alist))
+    ;; 	   (setcdr entry nil))
+    ;;        (signal 'file-error (cons "Opening output file" (cl-rest error)))))
 
     ;; (pbm-file-run-real-handler
     ;;  #'write-region
@@ -496,8 +500,5 @@ Commands:
       (add-hook 'project-buffer-post-load-hook 'pbm-setup-local-key nil t))))
 
 (add-to-list 'auto-mode-alist '("\\.pb\\'" . pbm-mode))
-
-
-
-(provide 'project-buffer-file)
+
 ;;; project-buffer-file.el ends here

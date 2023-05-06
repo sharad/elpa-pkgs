@@ -27,13 +27,6 @@
 (provide 'utils-custom)
 
 
-
-(require 'cl)
-
-(eval-when-compile
-  '(require 'cl))
-
-
 (defvar resume-workdir "/home/s/paradise/Projects/doc/resume" "resume work dir.")
 
 (defvar tags-from-resume nil "Tags from resume")

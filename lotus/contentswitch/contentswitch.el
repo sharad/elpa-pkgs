@@ -207,13 +207,13 @@ restored when Emacs is restarted."
 (defun contentswitch-previous-line ()
   "Move selection to the previous line."
   (interactive)
-  (contentswitch-move-selection 'next-line -1))
+  (contentswitch-move-selection 'forward-line -1))
 
 ;;;###autoload
 (defun contentswitch-next-line ()
   "Move selection to the next line."
   (interactive)
-  (contentswitch-move-selection 'next-line 1))
+  (contentswitch-move-selection 'forward-line 1))
 
 ;;;###autoload
 (defun contentswitch-previous-page ()
@@ -292,21 +292,18 @@ MOVEFUNC and MOVEARG."
 
                 (save-excursion
                   (goto-char (match-beginning 0))
-                  (list
-                   'line (buffer-substring-no-properties
-                          (point-at-bol)
-                          (point-at-eol))
-                   'line-start (point-at-bol)
-                   'start (match-beginning 0)
-                   'end (match-end 0)))))
+                  (list 'line (buffer-substring-no-properties (point-at-bol)
+                                                              (point-at-eol))
+                        'line-start (point-at-bol)
+                        'start (match-beginning 0)
+                        'end (match-end 0)))))
 
           (if contentswitch-enable-name-matches
-              (let ((start (string-match
-                            (regexp-quote contentswitch-current-input)
-                            (buffer-name buffer))))
+              (let ((start (string-match (regexp-quote contentswitch-current-input)
+                                         (buffer-name buffer))))
                 (if start
                     (list 'name-start start
-                          'name-end (match-end 0)))))))
+                          'name-end   (match-end 0)))))))
 
 
 (defun contentswitch-check-input ()
@@ -322,79 +319,75 @@ MOVEFUNC and MOVEARG."
       (erase-buffer))
 
     (contentswitch-display-matches
-     (delete-if-not
-      (lambda (info)
-        info)
+     (cl-delete-if-not #'(lambda (info) info)
+                       (mapcar #'(lambda (buffer)
+                                   (let ((info (unless (equal contentswitch-current-input "")
+                                                 (contentswitch-get-buffer-info buffer))))
+                                     (if (or info
+                                             (equal contentswitch-current-input ""))
+                                         (plist-put (plist-put info 'object buffer)
+                                                    'point (with-current-buffer buffer
+                                                             (point))))))
 
-      (mapcar (lambda (buffer)
-                (let ((info (unless (equal contentswitch-current-input "")
-                              (contentswitch-get-buffer-info buffer))))
-                  (if (or info
-                          (equal contentswitch-current-input ""))
-                      (plist-put (plist-put info 'object buffer)
-                                 'point (with-current-buffer buffer
-                                          (point))))))
+                               (cl-delete-if #'(lambda (buffer)
+                                                 (or (eq (aref (buffer-name buffer) 0) ?\ )
+                                                     (cl-some #'(lambda (regex)
+                                                                  (string-match
+                                                                   regex (buffer-name buffer)))
+                                                              contentswitch-ignore)
+                                                     (eq buffer (get-buffer contentswitch-buffer))))
 
-              (delete-if (lambda (buffer)
-                           (or (eq (aref (buffer-name buffer) 0) ?\ )
-                               (some (lambda (regex)
-                                       (string-match
-                                        regex (buffer-name buffer)))
-                                     contentswitch-ignore)
-                               (eq buffer (get-buffer contentswitch-buffer))))
-
-                         (buffer-list)))))
+                                             (buffer-list)))))
 
 
     (unless (equal contentswitch-current-input "")
       (setq contentswitch-idle-timer
-            (run-with-idle-timer
-             contentswitch-file-completion-delay nil
-             (lambda ()
-               (setq contentswitch-idle-timer nil)
-               (contentswitch-display-matches
-                (let (infos files)
-                  (dolist (file (symbol-value contentswitch-file-history-variable))
-                    (unless (or (get-file-buffer file) ; opened files
-                                                       ; are dealt
-                                                       ; with above
-                                (member file files)
-                                (file-directory-p file)
-                                (and contentswitch-ignore-remote-files
-                                     (file-remote-p file))
-                                (and contentswitch-ignore-encrypted-files
-                                     (featurep 'epa-file)
-                                     (string-match epa-file-name-regexp file))
-                                (not (file-readable-p file))
-                                (some (lambda (regex)
-                                        (string-match regex file))
-                                     contentswitch-ignore))
-                      (let* ((buffer (find-file-noselect file t))
-                             (point (with-current-buffer buffer
-                                      (if (and contentswitch-context-bias
-                                               (featurep 'saveplace))
-                                          ;; restore saved point position
-                                          (save-place-find-file-hook))
-                                      (point)))
-                             (info (contentswitch-get-buffer-info buffer)))
+            (run-with-idle-timer contentswitch-file-completion-delay nil
+                                 #'(lambda ()
+                                     (setq contentswitch-idle-timer nil)
+                                     (contentswitch-display-matches
+                                      (let (infos files)
+                                        (dolist (file (symbol-value contentswitch-file-history-variable))
+                                          (unless (or (get-file-buffer file) ; opened files
+                                                      ;; are dealt
+                                                      ;; with above
+                                                      (member file files)
+                                                      (file-directory-p file)
+                                                      (and contentswitch-ignore-remote-files
+                                                           (file-remote-p file))
+                                                      (and contentswitch-ignore-encrypted-files
+                                                           (featurep 'epa-file)
+                                                           (string-match epa-file-name-regexp file))
+                                                      (not (file-readable-p file))
+                                                      (cl-some #'(lambda (regex)
+                                                                   (string-match regex file))
+                                                               contentswitch-ignore))
+                                            (let* ((buffer (find-file-noselect file t))
+                                                   (point (with-current-buffer buffer
+                                                            (if (and contentswitch-context-bias
+                                                                     (featurep 'saveplace))
+                                                                ;; restore saved point position
+                                                                (save-place-find-file-hook))
+                                                            (point)))
+                                                   (info (contentswitch-get-buffer-info buffer)))
 
-                        ;; since we suppressed the opening ceremony
-                        ;; above there no need to performing the
-                        ;; closing one
-                        (let ((kill-buffer-hook nil))
-                          (kill-buffer buffer))
+                                              ;; since we suppressed the opening ceremony
+                                              ;; above there no need to performing the
+                                              ;; closing one
+                                              (let ((kill-buffer-hook nil))
+                                                (kill-buffer buffer))
 
-                        (when info
-                          (push file files)
-                          (push (plist-put (plist-put info 'object file)
-                                           'point point)
-                                infos)
-                          (if (> (length files)
-                                 contentswitch-max-files-from-history)
-                              (return))))))
+                                              (when info
+                                                (push file files)
+                                                (push (plist-put (plist-put info 'object file)
+                                                                 'point point)
+                                                      infos)
+                                                (if (> (length files)
+                                                       contentswitch-max-files-from-history)
+                                                    (cl-return))))))
 
-                  ;; because of push
-                  (nreverse infos)))))))))
+                                        ;; because of push
+                                        (nreverse infos)))))))))
 
 
 (defun contentswitch-display-matches (infos)
@@ -403,29 +396,29 @@ MOVEFUNC and MOVEARG."
     (if contentswitch-context-bias
         (setq infos
               (sort infos
-                    (lambda (info1 info2)
-                      (if (plist-get info1 'start)
-                          (if (plist-get info2 'start)
-                              (let ((diff1 (abs (- (plist-get info1 'point)
-                                                   (plist-get info1 'start))))
-                                    (diff2 (abs (- (plist-get info2 'point)
-                                                   (plist-get info2 'start)))))
-                                (if (numberp contentswitch-context-bias)
-                                    (if (<= diff1 contentswitch-context-bias)
-                                        (> diff2 contentswitch-context-bias)
+                    #'(lambda (info1 info2)
+                        (if (plist-get info1 'start)
+                            (if (plist-get info2 'start)
+                                (let ((diff1 (abs (- (plist-get info1 'point)
+                                                     (plist-get info1 'start))))
+                                      (diff2 (abs (- (plist-get info2 'point)
+                                                     (plist-get info2 'start)))))
+                                  (if (numberp contentswitch-context-bias)
+                                      (if (<= diff1 contentswitch-context-bias)
+                                          (> diff2 contentswitch-context-bias)
 
-                                      (unless (<= diff2 contentswitch-context-bias)
-                                        (< diff1 diff2)))
+                                        (unless (<= diff2 contentswitch-context-bias)
+                                          (< diff1 diff2)))
 
-                                  (< diff1 diff2)))
+                                    (< diff1 diff2)))
 
-                            ;; info2 has no content match, so info1
-                            ;; is ranked higher
-                            t)
+                              ;; info2 has no content match, so info1
+                              ;; is ranked higher
+                              t)
 
-                        ;; if info2 has content match then
-                        ;; it is ranked higher
-                        (plist-get info2 'start)))))))
+                          ;; if info2 has content match then
+                          ;; it is ranked higher
+                          (plist-get info2 'start)))))))
 
   (let ((window-width (window-width (selected-window))))
     (with-current-buffer contentswitch-buffer
@@ -553,9 +546,10 @@ MOVEFUNC and MOVEARG."
         ;; `after-find-file' is suppressed temporarily
         (orig-fun (symbol-function 'after-find-file)))
 
-    (fset 'after-find-file (lambda (&optional error warn noauto
-                                              after-find-file-from-revert-buffer
-                                              nomodes)))
+    (fset 'after-find-file
+          #'(lambda (&optional error warn noauto
+                               after-find-file-from-revert-buffer
+                               nomodes)))
     (pop-to-buffer contentswitch-buffer)
 
     (unwind-protect
@@ -564,7 +558,8 @@ MOVEFUNC and MOVEARG."
       (fset 'after-find-file orig-fun)
       (set-window-configuration winconfig)))
 
-  (unless (= (buffer-size (get-buffer contentswitch-buffer)) 0)
+  (unless (= 0
+             (buffer-size (get-buffer contentswitch-buffer)))
     (let* ((info (contentswitch-get-jump-info))
            (object (plist-get info 'object)))
       (if (bufferp object)
