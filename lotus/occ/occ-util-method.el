@@ -30,11 +30,12 @@
 
 (eval-when-compile
   (require 'occ-macros))
-(require 'occ-util-common)
 (require 'occ-filter-config)
 
 
-(defvar occ-list-select-keys occ-list-select-ap-normal-keys)
+(with-eval-after-load "occ-util-common"
+  (defvar occ-list-select-keys   occ-list-select-ap-normal-keys))
+
 ;; (setq occ-list-select-keys '(t actions normal))
 ;; (setq occ-list-select-keys occ-list-select-ap-transf-keys)
 

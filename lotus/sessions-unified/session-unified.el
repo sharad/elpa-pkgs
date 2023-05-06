@@ -25,7 +25,15 @@
 ;;; Code:
 
 (provide 'session-unified)
+
 
+(require 'org)
+(require 'outline)
+(require 'info+)
+(require 'session)
+(require 'vc)
+(require 'lotus-utils)
+(require 'rcs-backup)
 
 
 (defvar session-unified-dir "~/.emacs.d/.cache/session-unified/")

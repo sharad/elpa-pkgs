@@ -31,8 +31,14 @@
 (eval-when-compile
   (require 'elscreen))
 
-
+(require 'xwin)
+(require 'desktop)
+(require 'session)
+(require 'elscreen)
 (require 'session-unified)
+(require 'sessions-unified)
+(require 'desktop-unified)
+(require 'utils-custom)
 
 
 (defvar session-unified-debug nil)
@@ -174,28 +180,137 @@ return a new alist whose car is the new pair and cdr is ALIST."
        ;; (elscreen-set-screen-to-name-alist-cache screen-to-name-alist)
        (reverse screen-to-name-alist))))
 
-  (defun lotus-elscreen-get-desktop-buffer-args-list ()
+
+  (defun lotus-elscreen-get-screen-to-name-alist ()
     ;; (when (elscreen-screen-modified-p 'elscreen-get-screen-to-name-alist)
     (elscreen-notify-screen-modification-suppress
      (elscreen-set-window-configuration (elscreen-get-current-screen)
                                         (elscreen-current-window-configuration))
-     (let* ((screen-list (sort (elscreen-get-screen-list) '<))
-            screen-name)
-       (let ((desktop-buffers (elscreen-save-screen-excursion
-                               (mapcan #'(lambda (screen)
-                                           ;; If nickname exists, use it.
-                                           (setq screen-name (elscreen-get-screen-nickname screen))
-                                           ;; Nickname does not exist, so examine major-mode and buffer-name.
-                                           (when (null screen-name)
-                                             (elscreen-goto-internal screen)
-                                             (mapcar #'(lambda (window)
-                                                         (window-buffer window))
-                                                     (window-list))))
-                                       screen-list))))
-         ;; (session-unfiy-notify "desktop-buffers: %s" desktop-buffers)
-         (when desktop-buffers
-           (remove nil
-                   (mapcar #'desktop-make-create-buffer-list desktop-buffers))))))))
+     (let* ((lexical-binding nil)
+            (screen-list (sort (elscreen-get-screen-list) '<))
+            screen-name
+            screen-to-name-alist
+            nickname-type-map)
+       (elscreen-save-screen-excursion
+        (mapcar
+         #'(lambda (screen)
+             ;; If nickname exists, use it.
+             (setq screen-name (elscreen-get-screen-nickname screen))
+             ;; Nickname does not exist, so examine major-mode and buffer-name.
+             (when (null screen-name)
+               (elscreen-goto-internal screen)
+
+               (setq nickname-type-map
+                     (mapcar
+                      (lambda (window)
+                        (with-current-buffer (window-buffer window)
+                          (or (elscreen-get-alist-to-nickname
+                               elscreen-mode-to-nickname-alist-internal
+                               'string-match (symbol-name major-mode))
+                              (elscreen-get-alist-to-nickname
+                               elscreen-buffer-to-nickname-alist-internal
+                               'string-match (buffer-name))
+                              (cons 'buffer-name (cons (buffer-name) (buffer-file-name))))))
+                      (window-list)))
+
+               (let (nickname-list)
+                 (while (> (length nickname-type-map) 0)
+                   (let ((type (cl-first (cl-first nickname-type-map)))
+                         (buff-file (cl-rest (cl-first nickname-type-map))))
+                     (when buff-file
+                       (setq nickname-list (cons buff-file nickname-list)))
+                     (setq nickname-type-map
+                           (if (eq type 'nickname)
+                               (delete (cl-first nickname-type-map) nickname-type-map)
+                             (cl-rest nickname-type-map)))))
+                 ;; (setq screen-name
+                 ;;       (mapconcat 'identity (reverse nickname-list) ":"))
+                 (setq screen-name (reverse nickname-list))))
+
+             ;; (sessions-unified-set-alist 'screen-to-name-alist screen screen-name)
+             (push (cons screen screen-name) screen-to-name-alist))
+         screen-list))
+
+       ;; (elscreen-set-screen-to-name-alist-cache screen-to-name-alist)
+       (reverse screen-to-name-alist)))))
+
+
+(defun lotus-elscreen-get-screen-to-name-alist ()
+    ;; (when (elscreen-screen-modified-p 'elscreen-get-screen-to-name-alist)
+    (elscreen-notify-screen-modification-suppress
+     (elscreen-set-window-configuration (elscreen-get-current-screen)
+                                        (elscreen-current-window-configuration))
+     (let* ((lexical-binding nil)
+            (screen-list (sort (elscreen-get-screen-list) '<))
+            screen-name
+            screen-to-name-alist
+            nickname-type-map)
+       (elscreen-save-screen-excursion
+        (mapcar
+         #'(lambda (screen)
+             ;; If nickname exists, use it.
+             (setq screen-name (elscreen-get-screen-nickname screen))
+             ;; Nickname does not exist, so examine major-mode and buffer-name.
+             (when (null screen-name)
+               (elscreen-goto-internal screen)
+
+               (setq nickname-type-map
+                     (mapcar
+                      (lambda (window)
+                        (with-current-buffer (window-buffer window)
+                          (or (elscreen-get-alist-to-nickname
+                               elscreen-mode-to-nickname-alist-internal
+                               'string-match (symbol-name major-mode))
+                              (elscreen-get-alist-to-nickname
+                               elscreen-buffer-to-nickname-alist-internal
+                               'string-match (buffer-name))
+                              (cons 'buffer-name (cons (buffer-name) (buffer-file-name))))))
+                      (window-list)))
+
+               (let (nickname-list)
+                 (while (> (length nickname-type-map) 0)
+                   (let ((type (cl-first (cl-first nickname-type-map)))
+                         (buff-file (cl-rest (cl-first nickname-type-map))))
+                     (when buff-file
+                       (setq nickname-list (cons buff-file nickname-list)))
+                     (setq nickname-type-map
+                           (if (eq type 'nickname)
+                               (delete (cl-first nickname-type-map) nickname-type-map)
+                               (cl-rest nickname-type-map)))))
+                 ;; (setq screen-name
+                 ;;       (mapconcat 'identity (reverse nickname-list) ":"))
+                 (setq screen-name (reverse nickname-list))))
+
+             ;; (sessions-unified-set-alist 'screen-to-name-alist screen screen-name)
+             (push (cons screen screen-name) screen-to-name-alist))
+         screen-list))
+
+       ;; (elscreen-set-screen-to-name-alist-cache screen-to-name-alist)
+       (reverse screen-to-name-alist))))
+
+(defun lotus-elscreen-get-desktop-buffer-args-list ()
+  ;; (when (elscreen-screen-modified-p 'elscreen-get-screen-to-name-alist)
+  (elscreen-notify-screen-modification-suppress
+   (elscreen-set-window-configuration (elscreen-get-current-screen)
+                                      (elscreen-current-window-configuration))
+   (let* ((screen-list (sort (elscreen-get-screen-list) '<))
+          screen-name)
+     (let ((desktop-buffers (elscreen-save-screen-excursion
+                             (mapcan #'(lambda (screen)
+                                         ;; If nickname exists, use it.
+                                         (setq screen-name (elscreen-get-screen-nickname screen))
+                                         ;; Nickname does not exist, so examine major-mode and buffer-name.
+                                         (when (null screen-name)
+                                           (elscreen-goto-internal screen)
+                                           (mapcar #'(lambda (window)
+                                                       (window-buffer window))
+                                                   (window-list))))
+                                     screen-list))))
+       ;; (session-unfiy-notify "desktop-buffers: %s" desktop-buffers)
+       (when desktop-buffers
+         (remove nil
+                 (mapcar #'desktop-make-create-buffer-list
+                         desktop-buffers)))))))
 
 ;; with-eval-after-load "elscreen"
 
@@ -261,6 +376,9 @@ return a new alist whose car is the new pair and cdr is ALIST."
                     (let ((desktop-buffer-ok-count 0)
                           (desktop-buffer-fail-count 0)
                           desktop-first-buffer)
+                      (ignore desktop-buffer-ok-count)
+                      (ignore desktop-buffer-fail-count)
+                      (ignore desktop-first-buffer)
                       (dolist (desktop-buffer-args desktop-buffers)
                         (let ((bufname (nth 2 desktop-buffer-args))
                               (file-path (nth 1 desktop-buffer-args)))
@@ -409,12 +527,15 @@ return a new alist whose car is the new pair and cdr is ALIST."
        (y-or-n-p (format "Can I delete screen \"%s\" session: " session)))
       (progn
         (push
-         (find session *frames-elscreen-session* :key 'car :test 'string-equal)
+         (cl-find session
+                  *frames-elscreen-session*
+                  :key 'car
+                  :test 'string-equal)
          *frames-elscreen-session-old*)
         (setq *frames-elscreen-session*
-              (remove* session *frames-elscreen-session*
-                       :key 'car
-                       :test 'string-equal)))
+              (cl-remove session *frames-elscreen-session*
+                         :key 'car
+                         :test 'string-equal)))
     (session-unfiy-notify "Not deleting screen \"%s\" session: " session)))
 
 
@@ -437,61 +558,66 @@ return a new alist whose car is the new pair and cdr is ALIST."
 (defun fmsession-restore-from-file (file)
   (interactive "ffile: ")
   (setq *frames-elscreen-session*
-        (append
-         *frames-elscreen-session*
-         (lotus-read-sexp file))))
+        (append *frames-elscreen-session*
+                (lotus-read-sexp file))))
 
 
 (defun fmsession-get-locations ()
-  (remove-if #'null
-             (mapcar #'(lambda (f) (frame-parameter f 'frame-spec-id))
-                     (frame-list))))
+  (remove nil
+          (mapcar #'(lambda (f) (frame-parameter f 'frame-spec-id))
+                  (frame-list))))
 
 
 (defun elscreen-session-store (elscreen-session &optional nframe)
   (interactive
-   (list
-    (fmsession-read-location)))
-  (let ((session-list (elscreen-session-session-list-get (or nframe (selected-frame)))))
+   (list (fmsession-read-location)))
+  (let ((session-list (elscreen-session-session-list-get (or nframe
+                                                             (selected-frame)))))
     (if (assoc elscreen-session *frames-elscreen-session*)
-        (setcdr (assoc elscreen-session *frames-elscreen-session*) session-list)
-      (push (cons elscreen-session session-list) *frames-elscreen-session*))))
+        (setcdr (assoc elscreen-session
+                       *frames-elscreen-session*)
+                session-list)
+      (push (cons elscreen-session
+                  session-list)
+            *frames-elscreen-session*))))
 
 (defun elscreen-session-restore (elscreen-session &optional nframe)
   (interactive
-   (list
-    (fmsession-read-location)))
+   (list (fmsession-read-location)))
   (session-unfiy-notify "start")
   (if elscreen-session
       (let ((elscreen-session-list
-             (cl-rest (assoc elscreen-session *frames-elscreen-session*))))
+             (cl-rest (assoc elscreen-session
+                             *frames-elscreen-session*))))
         (when session-unified-debug
          (session-unfiy-notify "Nstart: session-session %s" elscreen-session))
         (if elscreen-session-list
-            (elscreen-session-session-list-set elscreen-session-list (or nframe (selected-frame)))
+            (elscreen-session-session-list-set elscreen-session-list
+                                               (or nframe
+                                                   (selected-frame)))
           (session-unfiy-notify "Error: elscreen-session-list %s" elscreen-session-list)))
     (session-unfiy-notify "Error: elscreen-session is %s" elscreen-session)))
 
 (defun fmsession-read-location-internal (&optional initial-input)
-  (condition-case terr
+  (condition-case nil
       (ido-completing-read "Session: "
-                           (remove-if-not #'(lambda (dir)
-                                              (not
-                                               (member dir (fmsession-get-locations))))
-                                          (mapcar 'car *frames-elscreen-session*))
+                           (cl-remove-if-not #'(lambda (dir)
+                                                 (not
+                                                  (member dir (fmsession-get-locations))))
+                                             (mapcar 'car *frames-elscreen-session*))
                            nil
                            nil
                            initial-input)
     ('quit nil)))
 
 (defun fmsession-read-location-internal (&optional initial-input)
-  (condition-case terr
+  (condition-case nil
       (completing-read-timeout 7
                                "Session: "
-                               (remove-if-not #'(lambda (dir)
-                                                  (let ((specs (fmsession-get-locations)))
-                                                    (not (member dir specs))))
-                                              (mapcar 'car *frames-elscreen-session*))
+                               (cl-remove-if-not #'(lambda (dir)
+                                                     (let ((specs (fmsession-get-locations)))
+                                                       (not (member dir specs))))
+                                                 (mapcar 'car *frames-elscreen-session*))
                                nil
                                nil
                                initial-input)
@@ -501,12 +627,11 @@ return a new alist whose car is the new pair and cdr is ALIST."
   ;; keeps on reading name.
   (let ((locations (fmsession-get-locations))
         (used t)
-        seletion)
+        selection)
     (while used
-      (setq
-       used (member (setq selection
-                          (fmsession-read-location-internal initial-input))
-                    locations)))
+      (setq used (member (setq selection
+                               (fmsession-read-location-internal initial-input))
+                         locations)))
     selection))
 
 (defun fmsession-store (session-name &optional nframe)
@@ -627,7 +752,8 @@ return a new alist whose car is the new pair and cdr is ALIST."
       location))
 
 (defvar *frame-session-restore-screen-display-function* #'display-about-screen
-  "function to display screen with frame-session-restore, e.g. display-about-screen, spacemacs-buffer/goto-buffer")
+  "function to display screen with frame-session-restore, e.g.
+display-about-screen, spacemacs-buffer/goto-buffer")
 
 (defun frame-session-restore (nframe &optional try-guessing)
   (when t
