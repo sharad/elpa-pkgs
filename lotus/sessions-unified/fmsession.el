@@ -31,7 +31,7 @@
 (eval-when-compile
   (require 'elscreen))
 
-(require 'xwin)
+(require 'emacs-panel)
 (require 'desktop)
 (require 'session)
 (require 'elscreen)

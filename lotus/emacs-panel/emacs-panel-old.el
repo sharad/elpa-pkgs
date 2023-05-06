@@ -24,40 +24,39 @@
 
 ;;; Code:
 
+(provide 'emacs-panel)
 
+;; http://lists.gnu.org/archive/html/emacs-devel/2011-06/msg00340.html
 
-;; (x-window-property "_NET_CURRENT_DESKTOP" nil nil 0 nil nil)
-;; (x-window-property "_NET_NUMBER_OF_DESKTOPS" nil nil 0 nil nil)
-;; (x-window-property "_NET_DESKTOP_NAMES" nil nil 0 nil nil)
-;; (x-window-property "_NET_WM_NAME" nil nil 0 nil t)
-;; (x-window-property "STUMPWM_WCLI" nil nil 0 nil t)
-
-;; (fmsession-read-location-internal)
-
-;; (x-window-property "_NET_DESKTOP_NAMES" nil nil 0 nil nil)
-
-
-;; From http://lists.gnu.org/archive/html/emacs-devel/2011-06/msg00340.html
 (require 'bindat)
 
 (defmacro emacs-panel-x-property (prop window &optional type vec)
-  `(x-window-property ,prop nil ,(or type "AnyPropertyType") ,window nil ,vec))
+  `(x-window-property ,prop
+                      nil
+                      ,(or type "AnyPropertyType")
+                      ,window
+                      nil
+                      ,vec))
 
 (defmacro emacs-panel-x-property-nullsepstringarray (prop window &optional type)
-  `(split-string (emacs-panel-x-property ,prop ,window ,type) "\0" t))
+  `(split-string
+    (emacs-panel-x-property ,prop ,window ,type) "\0" t))
 
 (defmacro emacs-panel-x-property-u32r (prop window &optional type)
   `(let ((spec '((:v u32r)))
-         (bin (emacs-panel-x-property ,prop ,window ,type)))
-     (cdr-safe (assq :v (bindat-unpack spec bin)))))
+         (bin (emacs-panel-x-property ,prop
+                                      ,window
+                                      ,type)))
+     (cdr-safe
+      (assq :v (bindat-unpack spec bin)))))
 
-(defmacro emacs-panel-x-property-u32r (prop window &optional type)
-  `(let ((spec '((:v u32r)))
-         (bin (emacs-panel-x-property ,prop ,window ,type t)))
-     bin))
+(defmacro emacs-panel-x-property-vector (prop window &optional type)
+  `(emacs-panel-x-property ,prop
+                           ,window
+                           ,type t))
 
-;;;###autoload
-(defun emacs-panel-wm-hints ()
+
+(defun emacs-panel-wm-hints-old ()
   ;; ask the root window what window to query for the WM name
   (let* ((nqid (emacs-panel-x-property-u32r "_NET_SUPPORTING_WM_CHECK" 0))
          (name (when nqid (emacs-panel-x-property "_NET_WM_NAME" nqid))))
@@ -71,7 +70,19 @@
       (current-desktop
        ,(emacs-panel-x-property-u32r "_NET_CURRENT_DESKTOP" 0)))))
 
-
+(defun emacs-panel-wm-hints ()
+  ;; ask the root window what window to query for the WM name
+  (let* ((nqid (emacs-panel-x-property-vector "_NET_SUPPORTING_WM_CHECK" 0))
+         (name (when nqid (emacs-panel-x-property "_NET_WM_NAME" nqid))))
+    `((name ,name)
+      (desktop-names
+       ,@(emacs-panel-x-property-nullsepstringarray "_NET_DESKTOP_NAMES" 0))
+      (active-window
+       ,(emacs-panel-x-property-vector "_NET_ACTIVE_WINDOW" 0))
+      (desktop-count
+       ,(emacs-panel-x-property-vector "_NET_NUMBER_OF_DESKTOPS" 0))
+      (current-desktop
+       ,(emacs-panel-x-property-vector "_NET_CURRENT_DESKTOP" 0)))))
 
 
 (when nil
@@ -91,6 +102,8 @@
     (cdr-safe (assq :v (bindat-unpack '((:v u32r)) "x194")))
 
     (emacs-panel-x-property "_NET_WM_NAME" 404)
+
+    (emacs-panel-x-property "_WM_NAME" 404)
 
     (emacs-panel-x-property-nullsepstringarray "_NET_DESKTOP_NAMES" 0)
 
@@ -113,8 +126,7 @@
 
     (assq :v (bindat-unpack '((:v byte)) ""))
 
-    (assq :v (bindat-unpack '((:v byte)) "H"))
-    ))
+    (assq :v (bindat-unpack '((:v byte)) "H"))))
+    
 
-(provide 'emacs-panel)
 ;;; emacs-panel.el ends here

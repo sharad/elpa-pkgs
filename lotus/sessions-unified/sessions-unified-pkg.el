@@ -2,5 +2,4 @@
                 '((rcs-backup "1")
                   (elscreen "1")
                   (session "1")
-                  (emacs-panel "1")
-                  (xwin "1")))
+                  (emacs-panel "1")))
