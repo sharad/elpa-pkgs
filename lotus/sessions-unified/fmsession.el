@@ -25,20 +25,18 @@
 ;;; Code:
 
 (provide 'fmsession)
-
 
 
 (eval-when-compile
   (require 'elscreen))
-
 (require 'emacs-panel)
 (require 'desktop)
 (require 'session)
 (require 'elscreen)
 (require 'session-unified)
-(require 'sessions-unified)
 (require 'desktop-unified)
 (require 'utils-custom)
+(require 'sessions-unified)
 
 
 (defvar session-unified-debug nil)

@@ -27,7 +27,9 @@
 (provide 'org-clock-unnamed-task)
 
 
+(require 'org-clock)
 (require 'org-misc-utils-lotus)
+(require 'org-clock-utils-lotus)
 (eval-when-compile
   (require 'org-misc-utils-lotus))
 
@@ -50,6 +52,8 @@
 (defun lotus-org-unnamed-task-straight-org-clock-clock-in (clock &optional resume start-time)
   (let ((org-clock-persist               lotus-org-unnamed-task-org-clock-persist)
         (org-clock-auto-clock-resolution lotus-org-unnamed-task-org-clock-auto-clock-resolution))
+    (ignore org-clock-persist)
+    (ignore org-clock-auto-clock-resolution)
     (lotus-org-clock-load-only)
     (prog1
         (org-clock-clock-in clock resume start-time)
@@ -156,22 +160,18 @@
        (org-entry-put nil "Effort" "10")
        ;; BUG: It is clocking to last unfinished task
        (lotus-org-unnamed-task-straight-org-clock-clock-in
-        (list (lotus-org-unnamed-task-clock-marker (mark-marker)))))
+        (list (lotus-org-unnamed-task-clock-marker (mark-marker))))))))
      ;; (org-clock-in)
      ;; (lotus-org-unnamed-task-clock-marker (mark-marker))
-     )))
 
 (when nil
 
-  (lotus-org-create-unnamed-task
-   *lotus-org-unnamed-task-file*
-   *lotus-org-unnamed-parent-task-name*)
+  (lotus-org-create-unnamed-task *lotus-org-unnamed-task-file*
+                                 *lotus-org-unnamed-parent-task-name*)
 
-  (lotus-org-create-unnamed-task-task-clock-in
-   *lotus-org-unnamed-task-file*
-   *lotus-org-unnamed-parent-task-name*)
+  (lotus-org-create-unnamed-task-task-clock-in *lotus-org-unnamed-task-file*
+                                               *lotus-org-unnamed-parent-task-name*))
 
-  )
 ;;;###autoload
 (defun lotus-org-merge-unnamed-task-at-point ()
   (interactive)
@@ -223,6 +223,6 @@
         (lotus-org-unnamed-task-straight-org-clock-clock-in (list (point-marker))))))
 
 (defun lotus-org-clockin-last-time (min)
-  )
+  (ignore min))
 
 ;;; org-clock-unnamed-task.el ends here

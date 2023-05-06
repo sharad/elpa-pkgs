@@ -43,6 +43,10 @@
   (require 'org-macs))
 (eval-when-compile
   (require 'org-clock))
+(require 'org-clock)
+(require 'time-stamp)
+(require 'undo-tree)
+(require 'message)
 ;; Libraries required:1 ends here
 
 ;; Org insert log note un-interactively
@@ -60,8 +64,8 @@
            (note-state state)
            (note-previous-state previous-state))
       (if (marker-buffer marker)
-          (let ((note (rest (assq note-purpose org-log-note-headings)))
-                lines)
+          (let ((note (cl-rest (assq note-purpose org-log-note-headings)))
+                (lines nil))
             (while (string-match "\\`# .*\n[ \t\n]*" txt)
               (setq txt (replace-match "" t t txt)))
             (when (string-match "\\s-+\\'" txt)
@@ -235,7 +239,7 @@
         (setq org-log-note-window-configuration (current-window-configuration))
         (lotus-with-timed-new-win
             win-timeout timer cleanupfn-newwin cleanupfn-local win
-            (condition-case err
+            (condition-case nil
                 (let ((target-buffer (get-buffer-create "*Org Note*")))
                   (org-add-log-note-buffer target-buffer))
               ((quit)
@@ -244,11 +248,18 @@
                  (if timer (cancel-timer timer))
                  (signal (cl-first err) (rest err)))))))))
 
-  (defun org-add-log-setup-with-timed-new-win (win-timeout &optional purpose state prev-state how extra)
+  (defun org-add-log-setup-with-timed-new-win (win-timeout
+                                               &optional
+                                               purpose
+                                               state
+                                               prev-state
+                                               how
+                                               extra)
     "Set up the post command hook to take a note.
   If this is about to TODO state change, the new state is expected in STATE.
   HOW is an indicator what kind of note should be created.
   EXTRA is additional text that will be inserted into the notes buffer."
+    (ignore win-timeout)
     (let ((win-timeout (or win-timeout 7)))
       (move-marker org-log-note-marker (point))
       (setq org-log-note-purpose purpose
@@ -256,14 +267,14 @@
             org-log-note-previous-state prev-state
             org-log-note-how how
             org-log-note-extra extra
-            org-log-note-effective-time (org-current-effective-time)))
-    (org-add-log-note-with-timed-new-win  win-timeout)
-    ;; (add-hook 'post-command-hook 'org-add-log-note-background 'append)
-    )
+            org-log-note-effective-time (org-current-effective-time))
+      ;; (add-hook 'post-command-hook 'org-add-log-note-background 'append)
+      (org-add-log-note-with-timed-new-win  win-timeout)))
 
   ;;;##autoload
   (defun org-clock-lotus-log-note-current-clock-with-timed-new-win (win-timeout &optional fail-quietly)
     (interactive)
+    (ignore fail-quietly)
     (let ((win-timeout  (or win-timeout  7)))
       (when (org-clocking-p)
         (move-marker org-log-note-return-to (point))
@@ -289,11 +300,9 @@
 (defun lotus-buffer-changes-count ()
   (let ((changes 0))
     (when buffer-undo-tree
-      (undo-tree-mapc
-       (lambda (node)
-         (setq changes (+ changes 1;; (length (undo-tree-node-next node))
-                          )))
-       (undo-tree-root buffer-undo-tree)))
+      (undo-tree-mapc #'(lambda (node)
+                          (setq changes (+ changes 1))) ;; (length (undo-tree-node-next node))
+                      (undo-tree-root buffer-undo-tree)))
     changes))
 
 (defvar lotus-minimum-char-changes 70)
@@ -514,11 +523,9 @@ will return point to the current position."
  (defun email-heading ()
    "Send the current org-mode heading as the body of an email, with headline as the subject.
 
- use these properties
- TO
- OTHER-HEADERS is an alist specifying additional
- header fields.  Elements look like (HEADER . VALUE) where both
- HEADER and VALUE are strings.
+ use these properties TO OTHER-HEADERS is an alist specifying
+ additional header fields. Elements look like (HEADER . VALUE)
+ where both HEADER and VALUE are strings.
 
  save when it was sent as s SENT property. this is overwritten on
  subsequent sends. could save them all in a logbook?

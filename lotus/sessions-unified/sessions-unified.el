@@ -79,6 +79,7 @@
 
 ;; ;; BUG TODO
 ;; (require 'vc-config)
+(require 'basic-utils)
 
 (defvar *session-unified-desktop-enabled* t "Enable desktop restoration.")
 (defvar *session-unified-session-enabled* t "Enable session restoration.")
@@ -86,10 +87,14 @@
 
 
 (defvar lotus-disable-desktop-restore-interrupting-feature-hook nil
-  "feature that need to be disabled for proper restoring of desktop.")
+  "feature that need to be disabled for proper restoring of
+desktop.")
+(defvar lotus-disable-desktop-restore-interrupting-feature-hook-old nil)
 
 (defvar lotus-enable-desktop-restore-interrupting-feature-hook nil
-  "feature that were disabled for proper restoring of desktop will get re-enabled here.")
+  "feature that were disabled for proper restoring of desktop will
+get re-enabled here.")
+(defcvar defvar lotus-enable-desktop-restore-interrupting-feature-hook-old nil)
 
 (defvar session-unified-save-all-sessions-before-hook nil "Hook run before saving all session")
 (defvar session-unified-save-all-sessions-after-hook nil "Hook run after saving all session")
@@ -123,7 +128,7 @@
                       #'sessions-unified-utils-notify-default)))
       (unless (eq notify
                   #'sessions-unified-utils-notify-default)
-        (apply sessions-unified-utils-notify-default funname fmt args))
+        (apply #'sessions-unified-utils-notify-default funname fmt args))
       (apply notify funname fmt args))))
 
 ;; (session-unfiy-notify "Enabled session saving")
@@ -152,6 +157,7 @@
                fn
                local))
 ;;;###autoload
+(defvar *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer* nil)
 (defun sessions-unified-desktop-enable-restore-interrupting-feature-run ()
   "run hook"
   (interactive)
@@ -166,7 +172,6 @@
      (setq lotus-enable-desktop-restore-interrupting-feature-hook-old lotus-enable-desktop-restore-interrupting-feature-hook)
      (setq lotus-enable-desktop-restore-interrupting-feature-hook nil))
    (session-unfiy-notify "already triggered")))
-(defvar *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer* nil)
 ;;;###autoload
 (defun sessions-unified-desktop-enable-restore-interrupting-feature-delay-run (&optional secs)
   (interactive "nsecs: ")

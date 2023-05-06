@@ -31,13 +31,22 @@
 (eval-when-compile
   (require 'lotus-misc-utils))
 (require 'lotus-misc-utils)
+(require 'lotus-idle-utils)
+(require 'lotus-utils-debug)
 (eval-when-compile
   (require 'org-misc-utils-lotus))
 (require 'org-misc-utils-lotus)
+(require 'org)
+(require 'org-clock)
+(require 'org-macs)
+(require 'startup-hooks)
+(require 'time-stamp)
 
 
 (defvar org-ci-if-not-debug nil "Debug org-ci-if-not")
 (defvar org-ci-if-not-debug-uncond nil "org-ci-if-not-debug-uncond")
+
+(defvar org-clock-in-if-not-at-time-timer nil)
 
 
 ;;;###autoload
@@ -86,7 +95,9 @@
 ;; (org-clock-in-refile nil)
 (defvar org-clock-in-if-not-delay 100 "org-clock-in-if-not-delay")
 (defvar org-donot-try-to-clock-in nil
-  "Not try to clock-in, require for properly creating frame especially for frame-launcher function.")
+  "Not try to clock-in, require for properly creating frame
+especially for frame-launcher function.")
+
 ;;;###autoload
 (defun org-clock-in-if-not ()
   (interactive)
@@ -104,14 +115,14 @@
         (lotus-with-other-frame-event-debug "org-clock-in-if-not" :restart
           (org-ci-if-not-debug :debug "org-clock-in-if-not: [body] lotus-with-no-active-minibuffer-if")
           ;; (message "Enable Disabel with org-clock-in-if-not-enable org-clock-in-if-not-disable")
-          (condition-case e
+          (condition-case nil
               (if org-clock-history
                   (let (buffer-read-only)
                     (org-clock-in '(4)))
-                ;; with-current-buffer should be some real file
-                (org-clock-in-refile nil))
-            ((quit error)
-             (message "Enable/Disable with org-clock-in-if-not-enable/org-clock-in-if-not-disable")))
+                                  ;; with-current-buffer should be some real file
+                (org-clock-in-refile nil
+                            ((quit error))))
+             (message "Enable/Disable with org-clock-in-if-not-enable/org-clock-in-if-not-disable"))
           (org-ci-if-not-debug :debug "org-clock-in-if-not: finished"))))))
 
 (defun org-clock-in-if-not-disable ()
@@ -122,8 +133,6 @@
   (interactive)
   (setq org-donot-try-to-clock-in nil))
 
-
-(defvar org-clock-in-if-not-at-time-timer nil)
 
 ;;;###autoload
 (defun org-clock-in-if-not-at-time (delay)

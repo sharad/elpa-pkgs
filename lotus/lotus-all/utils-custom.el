@@ -27,6 +27,13 @@
 (provide 'utils-custom)
 
 
+(require 'recentf)
+(require 'dbus)
+(require 'cl-seq)
+(require 'notify nil t)
+(require 'rcs-backup)
+
+
 (defvar resume-workdir "/home/s/paradise/Projects/doc/resume" "resume work dir.")
 
 (defvar tags-from-resume nil "Tags from resume")
@@ -39,23 +46,22 @@
 
 
 ;;;###autoload
-(defun insert-reply-object (resume object &optional keys attachment type discription)
+(defun insert-reply-object (resume object &optional keys attachment type description)
   "Prepare reply object"
   (interactive
-   (let*
-       ((resume (read-from-minibuffer "who: " "sharad"))
-        (object (read-from-minibuffer "object: " "resume"))
-        (resume-make-keys (format "make -sC %s name=%s object=%s keys" resume-workdir resume object))
-        (keys   (read-string "keys: " (shell-command-to-string resume-make-keys)))
-        (type (or (read-from-minibuffer "type: " "pdf") "txt"))
-        ;(attachment (y-or-n-p (format "make inline: ")))
-        (discription "attachment")
-        attachment)
+   (let* ((resume (read-from-minibuffer "who: " "sharad"))
+          (object (read-from-minibuffer "object: " "resume"))
+          (resume-make-keys (format "make -sC %s name=%s object=%s keys" resume-workdir resume object))
+          (keys   (read-string "keys: " (shell-command-to-string resume-make-keys)))
+          (type (or (read-from-minibuffer "type: " "pdf") "txt"))
+          ;(attachment (y-or-n-p (format "make inline: ")))
+          (description "attachment")
+          (attachment nil))
      ;; (list resume object keys attachment type disposition)))
      (list resume object keys attachment type description)))
   (let* ((resume-make-keys (format "make -sC %s name=%s object=%s keys" resume-workdir resume object))
          (keys (or keys  (read-string "keys: " (shell-command-to-string resume-make-keys))))
-         (keys-of-resume-name (mapconcat 'identity (sort (split-string keys) #'string-lessp) "-"))
+         (keys-of-resume-name (mapconcat #'identity (sort (split-string keys) #'string-lessp) "-"))
          (resume-make-cmd (format "make -C %s name=%s object=%s filter_targets='%s' %s link%s" resume-workdir resume object keys type type))
          (resume-attachable-file (format "%s/output/%s-%s.%s" resume-workdir resume object type))
          (resume-actual-file (format "%s/output/%s-%s-%s.%s" resume-workdir resume object keys-of-resume-name type))
@@ -69,9 +75,9 @@
       (if attachment
           (mml-attach-file
            resume-attachable-file
-           (mm-default-file-encoding resume-attachable-file)
+           (mm-default-file-type resume-attachable-file)
            ;; (mml-minibuffer-read-type resume-attachable-file) ; "application/pdf"
-           discription "inline")
+           description "inline")
           (insert-file-contents resume-actual-file))
       (message "Not able to %s %s."
                (if attachment "attach" "insert")
@@ -101,7 +107,7 @@
     (with-temp-buffer
       (insert-file-contents-literally filename)
       (let ((contents
-             (condition-case e
+             (condition-case nil
                  ;; (read (current-buffer))
                  (buffer-string)
                ('end-of-file nil))))
@@ -249,35 +255,26 @@ Write data into the file specified by `recentf-save-file'."
 White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
     (replace-regexp-in-string "\\`[ \t\n]*" "" (replace-regexp-in-string "[ \t\n]*\\'" "" string))))
 
-(progn ;; "library utils"
-  (defun find-library-directory (lib)
-    (file-name-directory (let (nosuffix)
-                           (locate-file lib
-                                        load-path
-                                        (append (unless nosuffix (get-load-suffixes))
-                                                load-file-rep-suffixes))))))
 
-(progn ;; notify
-  (if (require 'notify nil t)
-      (defun message-notify (title fmt &rest args)
-        (let ((msg (apply 'format fmt args)))
-          (message "%s: %s" title msg)
-          (ignore-errors
-            (notify title msg))
-          msg))
-      (defun message-notify (title fmt &rest args)
-        (let ((msg (apply 'format fmt args)))
-          (message "%s: %s" title msg)
-          ;; (notify title msg)
-          msg))))
+(defun find-library-directory (lib)
+  (file-name-directory (let ((nosuffix nil))
+                         (locate-file lib
+                                      load-path
+                                      (append (unless nosuffix (get-load-suffixes))
+                                              load-file-rep-suffixes)))))
 
+(defun message-notify (title fmt &rest args)
+  (let ((msg (apply 'format fmt args)))
+    (message "%s: %s" title msg)
+    (when (feture 'notify)
+      (ignore-errors
+        (notify title msg)))
+    msg))
 
-(progn ;; "have-x-focus"
-  (defun have-x-focus ()
+(defun have-x-focus ()
     "Runs on-blur-hook if emacs has lost focus."
-    (if (and
-         (featurep 'x)
-         window-system)
+    (if (and (featurep 'x)
+             window-system)
         (let* ((active-window (x-window-property
                                "_NET_ACTIVE_WINDOW" nil "WINDOW" 0 nil t))
                (active-window-id (if (numberp active-window)
@@ -294,35 +291,26 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
           (= emacs-window-id active-window-id))
         (message "Not in Graphical Window system.")))
 
-  (when nil
-    (have-x-focus)
-    (progn
-      (sleep-for 4)
-      (list (selected-frame)
-            (have-x-focus)))))
-
 
 
 (progn ;; "setenv-from-file"
   (defun setenv-from-file (file &optional buses)
     (let ((buses (if (consp buses) buses (list buses))))
       (if (file-exists-p file)
-          (mapc
-           (lambda (ev)
-             (let ((p (position ?\= ev)))
-               (setenv (substring ev 0 p)
-                       (substring ev (1+ p)))
-               (when (consp buses)
-                 (dolist (bus buses)
-                   (ignore-errors
-                     (dbus-setenv
-                      bus
-                      (substring ev 0 p)
-                      (substring ev (1+ p))))))))
-           (remove-if-not (lambda (l)
-                            (and (not (string-match "^#" l))
-                                 (string-match "\\w+=\\w+" l)))
-                          (split-string (lotus-read-file file) "\n")))))))
+          (mapc #'(lambda (ev)
+                    (let ((p (cl-position ?\= ev)))
+                      (setenv (substring ev 0 p)
+                              (substring ev (1+ p)))
+                      (when (consp buses)
+                        (dolist (bus buses)
+                          (ignore-errors
+                            (dbus-setenv bus
+                                         (substring ev 0 p)
+                                         (substring ev (1+ p))))))))
+                (cl-remove-if-not #'(lambda (l)
+                                      (and (not (string-match "^#" l))
+                                           (string-match "\\w+=\\w+" l)))
+                                  (split-string (lotus-read-file file) "\n")))))))
 
 
 
@@ -331,6 +319,7 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
     ;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Internals-of-Debugger.html
     (with-output-to-temp-buffer buf ; "backtrace-output"
       (let ((var 1))
+        (ignore var)
         (save-excursion
           (setq var (eval '(progn
                             (if (boundp 'var) (1+ var))

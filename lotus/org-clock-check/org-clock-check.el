@@ -24,14 +24,25 @@
 
 ;;; Code:
 
+(provide 'org-clock-check)
+
+
+(require 'org)
+(require 'org-clock-in-if-not)
+(require 'timer-utils-lotus)
+
+
 (defvar org-clock-check-long-timer-period 7
-  "Period of Long Timer to remind to clock-in after some time of clockout or if no clock found at start of emacs.")
+  "Period of Long Timer to remind to clock-in after some time of
+clockout or if no clock found at start of emacs.")
 
 (defvar org-clock-check-long-timer nil
-  "Long Timer to remind to clock-in after some time of clockout or if no clock found at start of emacs.")
+  "Long Timer to remind to clock-in after some time of clockout or
+if no clock found at start of emacs.")
 
 (defvar org-clock-check-short-timer-period 2
-  "Period Short Timer to remind to clock-in after some time of clockout or if no clock found at start of emacs.")
+  "Period Short Timer to remind to clock-in after some time of
+clockout or if no clock found at start of emacs.")
 
 ;; (defvar org-clock-check-short-timer nil
 ;;   "Short Timer to remind to clock-in after some time of clockout or if no clock found at start of emacs.")
@@ -48,6 +59,7 @@
          org-clock-check-short-timer-period
          nil
          #'(lambda (arg)
+             (ignore arg)
              (message "stop with org-clock-stop-check-timer")
              (message "started with org-clock-start-check-timer")
              (unless (org-clock-is-active)
@@ -74,6 +86,5 @@
 ;;;###autoload
 (defun org-clock-start-check-timer-uninsiuate ()
   (org-clock-stop-check-timer))
-
-(provide 'org-clock-check)
+
 ;;; org-clock-check.el ends here
