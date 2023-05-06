@@ -26,22 +26,24 @@
 
 
 
-(deh-require-maybe centered-cursor-mode
+(require 'centered-cursor-mode)
 ;; To activate do:
 ;;     M-x centered-cursor-mode
 ;; for buffer local or
 ;;     M-x global-centered-cursor-mode
 ;; for global minor mode.
 ;; (setq ccm-vpos-init '(round (window-text-height) 2))
-  )
+;;  )
 
 
 ;;{{ from: http://www.gnu.org/software/emacs/manual/html_node/cl/
 (require 'cl)
-(require 'general-testing)
+;; (require 'general-testing)
 
 
-
+(defmacro testing (&rest body)
+  (when nil
+    ,@body))
 
 
 
@@ -156,13 +158,14 @@
           ;; stop reader
           (lambda ()
             ;; (set (make-local-variable 'reader-mode-smooth-step-active) nil)
-            (testing
-             (message "reader-mode-pause-hook")
-             (reader-show-timers))
+            ;; (testing
+            ;;  (message "reader-mode-pause-hook")
+            ;;  (reader-show-timers))
             (if (boundp 'old-fullscreen)
                 (progn
                   (set-frame-parameter nil 'fullscreen old-fullscreen)
-                  (testing (message "pause-hook: old-fullscreen %s" old-fullscreen)))
+                  ;; (testing (message "pause-hook: old-fullscreen %s" old-fullscreen))
+                  )
                 (testing (message "no old cursor")))
             (if (boundp 'old-elscreen-display-tab)
                 (progn

@@ -116,7 +116,7 @@
   (let* ((mappings (or mappings status-mappings))
          (rstatus
           (if (consp stati)
-              (loop for s in stati
+              (cl-loop for s in stati
                    collect (task-status-of-sys sys s mappings))
             (task-status-of-sys sys stati mappings))))
     rstatus))
@@ -124,7 +124,7 @@
 (defun task-maps-from-sys-stati (sys stati &optional mappings)
   (let* ((mappings (or mappings status-mappings))
          (map (if (consp stati)
-                  (loop for s in stati
+                  (cl-loop for s in stati
                        collect (task-map-from-sys-status sys s mappings))
                 (task-map-from-sys-status sys stati mappings))))
     map))
@@ -225,25 +225,23 @@
 
 
 (defun planner-plans-on-task-lists-main (task-lists)
-  (remove-duplicates
-   (apply
-    'append
-    (mapcar
-     #'(lambda (task)
-         (split-string (nth 6 task) ","))
-     task-lists))
-   :test 'equal))
+  (remove-duplicates (apply
+                      'append
+                      (mapcar
+                       #'(lambda (task)
+                           (split-string (nth 6 task) ","))
+                       task-lists))
+                     :test 'equal))
 
 (defun planner-plans-on-task-lists (task-lists)
-  (mapcar
-   #'(lambda (str)
-       ;; (if (string-match "\\[\\[\\(\\S\\+\\)\\](:?\\[\\S\\])\\?\\]" str)
-       (if (string-match muse-explicit-link-regexp str)
-           (cond
-             ((match-string 2 str)
-              (replace-match "\\2" t nil str))
-             ((match-string 1 str)
-              (replace-match "\\1" t nil str)))))
+  (mapcar #'(lambda (str)
+              ;; (if (string-match "\\[\\[\\(\\S\\+\\)\\](:?\\[\\S\\])\\?\\]" str)
+              (if (string-match muse-explicit-link-regexp str)
+                  (cond
+                   ((match-string 2 str)
+                    (replace-match "\\2" t nil str))
+                   ((match-string 1 str)
+                    (replace-match "\\1" t nil str)))))
    (planner-plans-on-task-lists-main task-lists)))
 
 ;; (defun planner-plans-on-task-lists (task-lists)
@@ -290,7 +288,7 @@
  (planner-plans-on-today))
 
 ;; (defun planner-task-lists-if (test task-lists &key fun)
-;;   (loop for task in task-lists          ;lisp is beautiful !!
+;;   (cl-loop for task in task-lists          ;lisp is beautiful !!
 ;;         when (funcall test task)
 ;;         collect (if fun (funcall fun task) task)))
 

@@ -27,6 +27,9 @@
 (provide 'php-cli)
 
 
+(require 'ac-php-core)
+
+
 (defvar php-cli-file-path "php"
   "Path to the program used by `run-php-cli'")
 
