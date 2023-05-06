@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(require 'org-context-clock-api)
+
 (defvar org-context-clock-entry-list-files nil "org entry task files")
 
 ;;;###autoload

@@ -24,7 +24,11 @@
 
 ;;; Code:
 
+(provide 'pa-planner)
+
+
 (require 'planner-interface)
+
 ;; (require 'general-testing)
 
 ;; (defun pa/find-task-in-page-main (task page &optional buf-op)
@@ -108,9 +112,5 @@
 ;;                                  (bury-buffer buf)
 ;;                                  ;; (kill-buffer buf)
 ;;                                  )))
-
-
-
-
-(provide 'pa-planner)
+
 ;;; pa-planner.el ends here

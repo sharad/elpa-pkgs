@@ -256,6 +256,7 @@ or nil if the version cannot be parsed."
                'utf-8-emacs
              'emacs-mule))
           (erase-buffer)
+          (vhl/ext/delete/off)
           (let ((content (let ((print-length nil)
                                (print-level nil))
                            (pp-to-string pkg-def))))
@@ -398,33 +399,21 @@ or nil if the version cannot be parsed."
       (package-upload-packages-from-source-path base)
       (message "Uploaded all packages from %s" base))
 
-    (let* ((subdirs
-            (remove-if-not
-             #'(lambda (d) (file-directory-p (expand-file-name d base)))
-             (remove ".."(remove "." (directory-files base)))))
-           (subdir-paths
-            (mapcar
-             #'(lambda (d) (expand-file-name d base))
-             subdirs))
-           (subdir-paths
-            (remove-if-not
-             #'file-directory-p
-             subdir-paths))
+    (let* ((subdirs (remove-if-not #'(lambda (d) (file-directory-p (expand-file-name d base))) (remove ".." (remove "." (directory-files base)))))
+           (subdir-paths (mapcar #'(lambda (d) (expand-file-name d base)) subdirs))
+           (subdir-paths (remove-if-not #'file-directory-p subdir-paths))
            (dependencies-with-version
             (apply #'append
                    (remove nil
-                           (mapcar
-                            #'package-requirements-package-from-dir
-                            subdir-paths))))
+                           (mapcar #'package-requirements-package-from-dir
+                                   subdir-paths))))
            (dependencies-without-version
-            (delete-dups
-             (mapcar 'car dependencies-with-version)))
+            (delete-dups (mapcar #'car dependencies-with-version)))
            (dependencies-external
-            (remove-if
-             #'(lambda (d)
-                 (file-directory-p
-                  (expand-file-name (symbol-name d) base)))
-             dependencies-without-version)))
+            (remove-if #'(lambda (d)
+                           (file-directory-p
+                            (expand-file-name (symbol-name d) base)))
+                       dependencies-without-version)))
            ;; (dependencies-external
            ;;  (delete-dups
            ;;   dependencies-external))
@@ -516,8 +505,7 @@ will be deleted."
            (removable
             (remove-if-not
              #'(lambda (p)
-                 (let* ((pdesc
-                         (nth 1 (assq p package-alist)))
+                 (let* ((pdesc (nth 1 (assq p package-alist)))
                         (dir (if pdesc
                                  (package-desc-dir pdesc))))
                    (string-prefix-p (file-name-as-directory

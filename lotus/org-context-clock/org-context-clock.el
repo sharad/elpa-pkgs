@@ -263,13 +263,13 @@
     (let ((org-log-note-clock-out nil))
       (if (org-clock-marker-is-unnamed-clock-p)
           (org-context-clock-debug :debug "org-context-clock-maybe-create-unnamed-task: Already clockin unnamed task")
-          (cl-rest (lotus-org-create-unnamed-task))))))
+          (rest (lotus-org-create-unnamed-task))))))
 
 
 (defun org-context-clock-maybe-create-unnamed-task ()
   ;; back
   (let* ((unnamed-heading-marker
-         (cl-rest (lotus-org-create-unnamed-task)))
+         (rest (lotus-org-create-unnamed-task)))
         (unnamed-task
          (when unnamed-heading-marker
            (with-current-buffer (marker-buffer unnamed-heading-marker)
@@ -467,7 +467,7 @@
               ((error)
                (progn
                  (setq retval nil)
-                 (signal (cl-first err) (cl-rest err)))))))
+                 (signal (cl-first err) (rest err)))))))
         (if old-buff
             (with-current-buffer old-buff
               (setq buffer-read-only old-buff-read-only)))

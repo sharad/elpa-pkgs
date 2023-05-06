@@ -59,6 +59,9 @@
 
 ;;; Code:
 
+(provide 'contentswitch)
+
+
 (defgroup contentswitch nil
   "The contentswitch package."
   :version "22.1")
@@ -177,11 +180,11 @@ restored when Emacs is restarted."
     (define-key map (kbd "<RET>") 'exit-minibuffer)
     map)
   "Keymap.")
-
+
 ;;; end of user configuration
 
 (require 'cl)
-
+
 
 (defconst contentswitch-buffer "*contentswitch*"
   "Buffer used for finding files.")
@@ -195,31 +198,30 @@ restored when Emacs is restarted."
 (defvar contentswitch-idle-timer nil
   "Idle timer for file matches.")
 
-
-
 (defun contentswitch-mark-current-line ()
   "Mark current line with a distinctive color."
   (move-overlay contentswitch-overlay (point-at-bol) (1+ (point-at-eol))))
+
 
-
+;;;###autoload
 (defun contentswitch-previous-line ()
   "Move selection to the previous line."
   (interactive)
   (contentswitch-move-selection 'next-line -1))
 
-
+;;;###autoload
 (defun contentswitch-next-line ()
   "Move selection to the next line."
   (interactive)
   (contentswitch-move-selection 'next-line 1))
 
-
+;;;###autoload
 (defun contentswitch-previous-page ()
   "Move selection back with a pageful."
   (interactive)
   (contentswitch-move-selection 'scroll-down nil))
 
-
+;;;###autoload
 (defun contentswitch-next-page ()
   "Move selection forward with a pageful."
   (interactive)
@@ -541,7 +543,7 @@ MOVEFUNC and MOVEARG."
     (with-current-buffer contentswitch-buffer
       (setq cursor-type t))))
 
-
+;;;###autoload
 (defun contentswitch ()
   (interactive)
   (let ((winconfig (current-window-configuration))
@@ -572,9 +574,6 @@ MOVEFUNC and MOVEARG."
                (plist-get info 'start))
           (goto-char (plist-get info 'start))))))
 
-
-
 (put 'contentswitch 'timid-completion 'disabled)
-
-(provide 'contentswitch)
+
 ;;; contentswitch.el ends here

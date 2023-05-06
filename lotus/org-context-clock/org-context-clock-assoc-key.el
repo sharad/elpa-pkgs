@@ -38,7 +38,7 @@
     '(time based recently opened)
     '(heading level based)))
 
-
+(require 'org-context-clock-api)
 (require 'org-context-clock-api-recursive)
 (require 'org-context-clock-assoc-api)
 

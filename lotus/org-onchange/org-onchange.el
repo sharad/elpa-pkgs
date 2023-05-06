@@ -60,7 +60,7 @@
            (note-state state)
            (note-previous-state previous-state))
       (if (marker-buffer marker)
-          (let ((note (cl-rest (assq note-purpose org-log-note-headings)))
+          (let ((note (rest (assq note-purpose org-log-note-headings)))
                 lines)
             (while (string-match "\\`# .*\n[ \t\n]*" txt)
               (setq txt (replace-match "" t t txt)))
@@ -242,7 +242,7 @@
                (progn
                  (funcall cleanupfn-newwin win cleanupfn-local)
                  (if timer (cancel-timer timer))
-                 (signal (cl-first err) (cl-rest err)))))))))
+                 (signal (cl-first err) (rest err)))))))))
 
   (defun org-add-log-setup-with-timed-new-win (win-timeout &optional purpose state prev-state how extra)
     "Set up the post command hook to take a note.
@@ -339,7 +339,7 @@ will return point to the current position."
       (setq minimal-char-changes 10))
     (let ((char-changes 0)
           (undo-list (if lotus-last-buffer-undo-list-pos
-                         (cl-rest (memq lotus-last-buffer-undo-list-pos buffer-undo-list))
+                         (rest (memq lotus-last-buffer-undo-list-pos buffer-undo-list))
                          buffer-undo-list))
           undo)
       (while (and undo-list
@@ -347,21 +347,21 @@ will return point to the current position."
                   (< char-changes minimal-char-changes))
         (setq undo (cl-first undo-list))
         (cond
-          ((and (consp undo) (integerp (cl-first undo)) (integerp (cl-rest undo)))
+          ((and (consp undo) (integerp (cl-first undo)) (integerp (rest undo)))
            ;; (BEG . END)
-           (setq char-changes (+ char-changes (abs (- (cl-first undo) (cl-rest undo))))))
+           (setq char-changes (+ char-changes (abs (- (cl-first undo) (rest undo))))))
           ((and (consp undo) (stringp (cl-first undo))) ; (TEXT . POSITION)
            (setq char-changes (+ char-changes (length (cl-first undo)))))
           ((and (consp undo) (eq (cl-first undo) t))) ; (t HIGH . LOW)
           ((and (consp undo) (null (cl-first undo)))
            ;; (nil PROPERTY VALUE BEG . END)
-           ;; (setq position (cl-rest (last undo)))
+           ;; (setq position (rest (last undo)))
            )
           ((and (consp undo) (markerp (cl-first undo)))) ; (MARKER . DISTANCE)
           ((integerp undo))		; POSITION
           ((null undo))		; nil
           (t (error "Invalid undo entry: %s" undo)))
-        (setq undo-list (cl-rest undo-list)))
+        (setq undo-list (rest undo-list)))
 
       (cond
         ((>= char-changes minimal-char-changes)

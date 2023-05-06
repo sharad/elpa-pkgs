@@ -26,6 +26,8 @@
 
 ;; "Org tasks associated to context predicate functions"
 
+(require 'org-context-clock-api)
+
 (defvar org-context-clock-task-associated-context-predicate-fns nil)
 
 (defun org-task-associated-to-context-by-predicate-p (task context)

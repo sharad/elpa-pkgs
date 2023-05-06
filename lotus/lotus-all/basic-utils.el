@@ -25,6 +25,7 @@
 ;;; Code:
 
 (provide 'basic-utils)
+
 
 (require 'pp)
 
@@ -39,12 +40,12 @@
   (when (file-directory-p package-dir)
     (mapc
      (if recursive
-         (lambda (path)
-           (add-to-list 'load-path path)
-           (let ((default-directory path))
-             (normal-top-level-add-subdirs-to-load-path)))
-       (lambda (path)
-         (add-to-list 'load-path path)))
+         #'(lambda (path))
+       (add-to-list 'load-path path)
+       (let ((default-directory path))
+         (normal-top-level-add-subdirs-to-load-path))
+       #'(lambda (path))
+       (add-to-list 'load-path path))
      (remove-if-not
       'file-directory-p
       (directory-files package-dir t "[a-zA-Z]+")))))
@@ -253,10 +254,10 @@
 
 
 
-;; (add-hook 'aa-hook (lambda ()
+;; (add-hook 'aa-hook #'(lambda ()
 ;;                      (message "dsafds")))
 
-;; (add-hook 'aa-hook (lambda ()
+;; (add-hook 'aa-hook #'(lambda ()
 ;;                      (message "errorQQ")
 ;;                      (error "Err")))
 
@@ -292,9 +293,9 @@
   (let (load-file-with-errors)
     (when (file-directory-p dir)
       (byte-recompile-directory dir 0)
-      (mapc #'(lambda (f)
-                (if (not (ignore-errors (load-file f)))
-                    (push f load-file-with-errors)))
+      (mapc #'#'(lambda (f))
+            (if (not (ignore-errors (load-file f)))
+                (push f load-file-with-errors))
             (directory-files dir t "^[a-zA-Z0-9-]+\.elc$"))
       (if load-file-with-errors
           (mapc 'load-file
@@ -307,31 +308,31 @@
         reloading-libraries)
     (when (file-directory-p dir)
       (ignore-errors (byte-recompile-directory dir 0))
-      (mapc (lambda (lib)
-              (let ((feature (if (string-match "\\(.\+\\)\.el" lib)
-                                 (intern (match-string 1 lib)))))
-                (if feature
-                    (unless
-                        (and
-                         (message "now loading %s.el" feature)
-                         (with-report-error "check"
-                             (require feature)))
-                      (push feature load-lib-with-errors)))))
+      (mapc #'(lambda (lib))
+            (let ((feature (if (string-match "\\(.\+\\)\.el" lib)
+                               (intern (match-string 1 lib)))))
+              (if feature
+                  (unless
+                      (and
+                       (message "now loading %s.el" feature)
+                       (with-report-error "check"
+                           (require feature)))
+                    (push feature load-lib-with-errors))))
             (directory-files dir nil "^[a-zA-Z0-9-]+\.el$"))
       (if load-lib-with-errors
           (progn
             (setq reloading-libraries t)
             (message "now loading files ( %s ) with errors." load-lib-with-errors)
-            (mapc #'(lambda (f)
-                      (message "now loading file with error %s.el" f)
-                      (with-report-error "check"
-                          (require f)))
+            (mapc #'#'(lambda (f))
+                  (message "now loading file with error %s.el" f)
+                  (with-report-error "check"
+                      (require f))
                   load-lib-with-errors))
         (message "all library loaded in %s directory without error." dir))
       t)))
 
 (progn
-;;;###autoload
+  ;;;###autoload
   (defun load-lib-autoloads (feature)
     (let* ((packagesfn (intern (format "configuration|common|%s|packages" feature)))
            (featureinitfn (intern (format "configuration|common|%s|init" feature)))
@@ -353,32 +354,32 @@
         (message "loading %s" featureinitfn)
         (funcall featureinitfn))))
 
-;;;###autoload
+  ;;;###autoload
   (defun autoload-dir-libs (dir)
     (let (load-lib-with-errors
           reloading-libraries)
       (when (file-directory-p dir)
         (ignore-errors (byte-recompile-directory dir 0))
-        (mapc (lambda (lib)
-                (let ((feature (if (string-match "\\(.\+\\)\.el" lib)
-                                   (intern (match-string 1 lib)))))
-                  (if feature
-                      (unless
-                          (and
-                           (message "now loading %s.el" feature)
-                           (with-report-error "check"
-                               (load-lib-autoloads feature)))
+        (mapc #'(lambda (lib))
+              (let ((feature (if (string-match "\\(.\+\\)\.el" lib)
+                                 (intern (match-string 1 lib)))))
+                (if feature
+                    (unless
+                        (and
+                         (message "now loading %s.el" feature)
+                         (with-report-error "check"
+                             (load-lib-autoloads feature)))
 
-                        (push feature load-lib-with-errors)))))
+                      (push feature load-lib-with-errors))))
               (directory-files dir nil "^[a-zA-Z0-9-]+\.el$"))
         (if load-lib-with-errors
             (progn
               (setq reloading-libraries t)
               (message "now loading files ( %s ) with errors." load-lib-with-errors)
-              (mapc #'(lambda (f)
-                        (message "now loading file with error %s.el" f)
-                        (with-report-error "check"
-                            (load-lib-autoloads f)))
+              (mapc #'#'(lambda (f))
+                    (message "now loading file with error %s.el" f)
+                    (with-report-error "check"
+                        (load-lib-autoloads f))
                     load-lib-with-errors))
           (message "all library loaded in %s directory without error." dir))
         t))))
@@ -421,18 +422,18 @@
 
 ;;{{ Pathname Utilities
 (progn ;; "Pathname Utilities"
-;;;###autoload
+  ;;;###autoload
   (defun  pathname-end-with-/ (path)
     "Check if path name end with /"
     (equal (elt path (- (length path) 1)) ?/))
 
-;;;###autoload
+  ;;;###autoload
   (defun pathname-delete-trailing-/ (path)
     (if (pathname-end-with-/ path)
         (pathname-delete-trailing-/ (subseq path 0 (- (length path) 2)))
       path))
 
-;;;###autoload
+  ;;;###autoload
   (defun pathname-equal (p1 p2)
     "Pathname equality"
     (apply #'string-equal
@@ -464,7 +465,7 @@
   "Run FN with ARG at TIME if numeric is otherwise run now only."
   (if (numberp time)
       (run-with-timer time nil
-                      (lambda (a) (funcall (cl-first a) (cl-rest a)))
+                      #'(lambda (a) (funcall (cl-first a) (cl-rest a)))
                       (cons fn arg))
     (funcall fn arg)))
 
@@ -519,12 +520,12 @@
   (when (file-directory-p package-dir)
     (mapc
      (if recursive
-         (lambda (path)
-           (add-to-list 'load-path path)
-           (let ((default-directory path))
-             (normal-top-level-add-subdirs-to-load-path)))
-       (lambda (path)
-         (add-to-list 'load-path path)))
+         #'(lambda (path))
+       (add-to-list 'load-path path)
+       (let ((default-directory path))
+         (normal-top-level-add-subdirs-to-load-path))
+       #'(lambda (path))
+       (add-to-list 'load-path path))
      (remove-if-not
       'file-directory-p
       (directory-files package-dir t "[a-zA-Z]+")))))
@@ -716,7 +717,7 @@
 
 
 (when nil
-;;;###autoload
+  ;;;###autoload
   (defun toignore ()
     (message "asdfds"))
 
@@ -753,10 +754,10 @@
 
 
 
-;; (add-hook 'aa-hook (lambda ()
+;; (add-hook 'aa-hook #'(lambda ()
 ;;                      (message "dsafds")))
 
-;; (add-hook 'aa-hook (lambda ()
+;; (add-hook 'aa-hook #'(lambda ()
 ;;                      (message "errorQQ")
 ;;                      (error "Err")))
 
@@ -777,9 +778,9 @@
                      (locate-library (symbol-name feature)))))
 
           (load-file file)
-          (byte-compile-file file)
-          ;; (require feature filename noerror)
-          ))))
+          (byte-compile-file file)))))
+  ;; (require feature filename noerror)
+
 
   (when nil
     (ad-disable-advice 'require 'around 'compile-if-fail)
@@ -792,9 +793,9 @@
   (let (load-file-with-errors)
     (when (file-directory-p dir)
       (byte-recompile-directory dir 0)
-      (mapc #'(lambda (f)
-                (if (not (ignore-errors (load-file f)))
-                    (push f load-file-with-errors)))
+      (mapc #'#'(lambda (f))
+            (if (not (ignore-errors (load-file f)))
+                (push f load-file-with-errors))
             (directory-files dir t "^[a-zA-Z0-9-]+\.elc$"))
       (if load-file-with-errors
           (mapc 'load-file
@@ -807,31 +808,31 @@
         reloading-libraries)
     (when (file-directory-p dir)
       (ignore-errors (byte-recompile-directory dir 0))
-      (mapc (lambda (lib)
-              (let ((feature (if (string-match "\\(.\+\\)\.el" lib)
-                                 (intern (match-string 1 lib)))))
-                (if feature
-                    (unless
-                        (and
-                         (message "now loading %s.el" feature)
-                         (with-report-error "check"
-                             (require feature)))
-                      (push feature load-lib-with-errors)))))
+      (mapc #'(lambda (lib))
+            (let ((feature (if (string-match "\\(.\+\\)\.el" lib)
+                               (intern (match-string 1 lib)))))
+              (if feature
+                  (unless
+                      (and
+                       (message "now loading %s.el" feature)
+                       (with-report-error "check"
+                           (require feature)))
+                    (push feature load-lib-with-errors))))
             (directory-files dir nil "^[a-zA-Z0-9-]+\.el$"))
       (if load-lib-with-errors
           (progn
             (setq reloading-libraries t)
             (message "now loading files ( %s ) with errors." load-lib-with-errors)
-            (mapc #'(lambda (f)
-                      (message "now loading file with error %s.el" f)
-                      (with-report-error "check"
-                          (require f)))
+            (mapc #'#'(lambda (f))
+                  (message "now loading file with error %s.el" f)
+                  (with-report-error "check"
+                      (require f))
                   load-lib-with-errors))
         (message "all library loaded in %s directory without error." dir))
       t)))
 
 (progn
-;;;###autoload
+  ;;;###autoload
   (defun load-lib-autoloads (feature)
     (let* ((packagesfn (intern (format "configuration|common|%s|packages" feature)))
            (featureinitfn (intern (format "configuration|common|%s|init" feature)))
@@ -853,32 +854,32 @@
         (message "loading %s" featureinitfn)
         (funcall featureinitfn))))
 
-;;;###autoload
+  ;;;###autoload
   (defun autoload-dir-libs (dir)
     (let (load-lib-with-errors
           reloading-libraries)
       (when (file-directory-p dir)
         (ignore-errors (byte-recompile-directory dir 0))
-        (mapc (lambda (lib)
-                (let ((feature (if (string-match "\\(.\+\\)\.el" lib)
-                                   (intern (match-string 1 lib)))))
-                  (if feature
-                      (unless
-                          (and
-                           (message "now loading %s.el" feature)
-                           (with-report-error "check"
-                               (load-lib-autoloads feature)
-                               ))
-                        (push feature load-lib-with-errors)))))
+        (mapc #'(lambda (lib))
+              (let ((feature (if (string-match "\\(.\+\\)\.el" lib)
+                                 (intern (match-string 1 lib)))))
+                (if feature
+                    (unless
+                        (and
+                         (message "now loading %s.el" feature)
+                         (with-report-error "check"
+                             (load-lib-autoloads feature)))
+
+                      (push feature load-lib-with-errors))))
               (directory-files dir nil "^[a-zA-Z0-9-]+\.el$"))
         (if load-lib-with-errors
             (progn
               (setq reloading-libraries t)
               (message "now loading files ( %s ) with errors." load-lib-with-errors)
-              (mapc #'(lambda (f)
-                        (message "now loading file with error %s.el" f)
-                        (with-report-error "check"
-                            (load-lib-autoloads f)))
+              (mapc #'#'(lambda (f))
+                    (message "now loading file with error %s.el" f)
+                    (with-report-error "check"
+                        (load-lib-autoloads f))
                     load-lib-with-errors))
           (message "all library loaded in %s directory without error." dir))
         t))))
@@ -921,26 +922,26 @@
 
 ;;{{ Pathname Utilities
 (progn ;; "Pathname Utilities"
-;;;###autoload
+  ;;;###autoload
   (defun  pathname-end-with-/ (path)
     "Check if path name end with /"
     (equal (elt path (- (length path) 1)) ?/))
 
-;;;###autoload
+  ;;;###autoload
   (defun pathname-delete-trailing-/ (path)
     (if (pathname-end-with-/ path)
         (pathname-delete-trailing-/ (subseq path 0 (- (length path) 2)))
       path))
 
-;;;###autoload
+  ;;;###autoload
   (defun pathname-equal (p1 p2)
     "Pathname equality"
     (apply #'string-equal
-           (mapcar #'pathname-delete-trailing-/ (list p1 p2))))
+           (mapcar #'pathname-delete-trailing-/ (list p1 p2)))))
 
   ;; (testing
   ;;  (pathname-delete-trailing-/ "/sdfsd/sdgfdg////"))
-  )
+
 
 
 
@@ -964,7 +965,7 @@
   "Run FN with ARG at TIME if numeric is otherwise run now only."
   (if (numberp time)
       (run-with-timer time nil
-                      (lambda (a) (funcall (cl-first a) (cl-rest a)))
+                      #'(lambda (a) (funcall (cl-first a) (cl-rest a)))
                       (cons fn arg))
     (funcall fn arg)))
 

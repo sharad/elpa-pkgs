@@ -24,13 +24,13 @@
 
 ;;; Code:
 
+(provide 'misc-utils)
+
+
 ;; (require 'dot-emacs-helper)
 ;; (require 'basic-macros)
 (require 'basic-utils) ;; global-set-key-if-unbind
-
-
-
-
+
 
 (progn ;; deh-section "autoconfig"
   (unless user-emacs-directory
@@ -91,7 +91,7 @@ The indirect buffer can have another major mode."
   (insert (format-time-string "%Y-%m-%d")))
 
 (if (not running-xemacs)
-   (menu-bar-mode -10))
+    (menu-bar-mode -10))
 
 (tool-bar-mode -10)
 
@@ -138,7 +138,8 @@ The indirect buffer can have another major mode."
 ;; timestamps rule
 ;;;Turn on time-stamp updating. Timestamp must be in first 8 lines of file and look like:
 ;;; Time-stamp: <>
-(add-hook 'write-file-hooks 'time-stamp)
+;; (add-hook 'write-file-hooks 'time-stamp)
+(add-hook 'write-file-functions 'time-stamp)
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; (setq time-stamp-format                 ; format of the stamp
 ;;       ;;use describe-variable for info
@@ -156,16 +157,16 @@ The indirect buffer can have another major mode."
 ;; consider adding:
 
 (progn ;; deh-require-maybe ispell
- (add-hook 'tex-mode-hook                ;for tex
-          (function (lambda () (setq ispell-parser 'tex)))))
+  (add-hook 'tex-mode-hook                ;for tex
+            (function #'(lambda () (setq ispell-parser 'tex)))))
 
 (add-hook 'text-mode-hook
-          (lambda () (flyspell-mode 1)))
+          #'(lambda () (flyspell-mode 1)))
 (add-hook 'fundamental-mode-hook
-          (lambda () (flyspell-mode 1)))
+          #'(lambda () (flyspell-mode 1)))
 
 ;; peace
-;; (setq ring-bell-function (lambda () (message "bell !!")))
+;; (setq ring-bell-function #'(lambda () (message "bell !!")))
 (setq ring-bell-function nil)
 
 ;; Make minibuffer larger if there is more to see
@@ -182,7 +183,7 @@ The indirect buffer can have another major mode."
 ;; 'right) instead.
 ;; No scrollbar
 (when (functionp 'set-scroll-bar-mode)
-    (set-scroll-bar-mode nil))
+  (set-scroll-bar-mode nil))
 ;; No beeping
 ;; (setq visible-bell t)
 ;; I don't like VB
@@ -218,24 +219,24 @@ The indirect buffer can have another major mode."
 (defun down-one () (interactive) (scroll-down 1)) ;key set in keymap.el
 
 (unless (featurep 'xemacs)
-    (progn
-      (global-set-key [S-mouse-4] 'down-one)
-      (global-set-key [S-mouse-5] 'up-one)))
+  (progn
+    (global-set-key [S-mouse-4] 'down-one)
+    (global-set-key [S-mouse-5] 'up-one)))
 
 (defun up-a-lot () (interactive) (scroll-up))
 (defun down-a-lot () (interactive) (scroll-down))
 
 (unless (featurep 'xemacs)
-    (progn
-      (global-set-key-if-unbind [C-mouse-4] 'down-a-lot)
-      (global-set-key-if-unbind [C-mouse-5] 'up-a-lot)))
+  (progn
+    (global-set-key-if-unbind [C-mouse-4] 'down-a-lot)
+    (global-set-key-if-unbind [C-mouse-5] 'up-a-lot)))
 ;;;;;;;
 
 ;; MAN PAGE FOR SYS CALLS
 (global-set-key-if-unbind  [(f4)]
-		 (lambda ()
-		   (interactive)
-		   (manual-entry (current-word))))
+                           #'(lambda ()
+                               (interactive)
+                               (manual-entry (current-word))))
 
 ;;customization of major modes
 (setq auto-mode-alist
@@ -244,15 +245,15 @@ The indirect buffer can have another major mode."
                '("\\.cfg$" . python-mode)
                '("\\.py$" . python-mode)
                '("\\.php$" . php-mode)
-	      ;; '("\\.crm$" . crm114-mode)
-	      ;; '("/etc/apache2/.*\\.\\(conf$\\|load$\\)" . apache-mode)
-	      ;; '("\\.r$" . R-mode)
-	      ;; '("\\.ahk$"  ahk-mode)
+               ;; '("\\.crm$" . crm114-mode)
+               ;; '("/etc/apache2/.*\\.\\(conf$\\|load$\\)" . apache-mode)
+               ;; '("\\.r$" . R-mode)
+               ;; '("\\.ahk$"  ahk-mode)
                `("\\.html$" . ,(if (functionp 'html-helper-mode) 'html-helper-mode 'html-mode))
                `("\\.html.tmpl$" . ,(if (functionp 'html-helper-mode) 'html-helper-mode 'html-mode))
                '("Makefile" . makefile-mode)
                )
-      auto-mode-alist))
+              auto-mode-alist))
 
 ;; remember www.maruko.ca/i18n/
 ;; (if (not running-xemacs) nil ))
@@ -284,8 +285,8 @@ The indirect buffer can have another major mode."
   ;; set-cursor-color is somewhat costly, so we only call it when needed:
   (let ((color
          (if buffer-read-only "black"
-             (if overwrite-mode "red" "coral"))))
-                 ;;"blue"))))
+           (if overwrite-mode "red" "coral"))))
+    ;;"blue"))))
     (unless (and
              (string= color hcz-set-cursor-color-color)
              (string= (buffer-name) hcz-set-cursor-color-buffer))
@@ -359,7 +360,7 @@ The indirect buffer can have another major mode."
   (interactive)
   (if (string-equal current-input-method "devanagari-itrans")
       (set-input-method nil nil)
-      (set-input-method "devanagari-itrans" nil)))
+    (set-input-method "devanagari-itrans" nil)))
 
 
 (progn ;; deh-require-maybe imenu-tree
@@ -412,10 +413,10 @@ The indirect buffer can have another major mode."
       (if (fboundp 'epa-file-disable)
           (epa-file-enable)))
     (progn ;; deh-featurep (and light-symbol hilit-chg)
-      (add-element-to-lists '(lambda ()
-                              (light-symbol-mode 1)
-                              (highlight-changes-visible-mode t)
-                              (highlight-changes-mode t)) pgm-langs)))
+      (add-element-to-lists '#'(lambda ()
+                                 (light-symbol-mode 1)
+                                 (highlight-changes-visible-mode t)
+                                 (highlight-changes-mode t)) pgm-langs)))
 
   (add-hook 'lotus-enable-startup-interrupting-feature-hook 'general-enable-startup-setting)
   (add-hook 'lotus-disable-startup-interrupting-feature-hook 'general-disable-startup-setting))
@@ -439,314 +440,313 @@ The indirect buffer can have another major mode."
     (progn
 
       (progn
-(progn ;; deh-section "crontab-mode"
-  (autoload 'crontab-mode "crontab-mode.el" "Major mode for editing your crontab file." t)
-  (eval-after-load "crontab-mode"
-    '(progn
-      (add-hook 'crontab-mode-hook
-       '(lambda () (setq crontab-apply-after-save t)))
-      (defvar crontab-default-file "~/.crontab")
-      (defadvice crontab-mode (after set-buffer-file-name activate)
-       (when (and crontab-default-file
-                  (file-exists-p crontab-default-file)
-                  (null buffer-file-name))
-         (setq
-          buffer-file-name crontab-default-file
-          default-directory (file-name-directory buffer-file-name)))))))
+        (progn ;; deh-section "crontab-mode"
+          (autoload 'crontab-mode "crontab-mode.el" "Major mode for editing your crontab file." t)
+          (eval-after-load "crontab-mode"
+            '(progn
+               (add-hook 'crontab-mode-hook
+                         '#'(lambda () (setq crontab-apply-after-save t)))
+               (defvar crontab-default-file "~/.crontab")
+               (defadvice crontab-mode (after set-buffer-file-name activate)
+                 (when (and crontab-default-file
+                            (file-exists-p crontab-default-file)
+                            (null buffer-file-name))
+                   (setq
+                    buffer-file-name crontab-default-file
+                    default-directory (file-name-directory buffer-file-name)))))))
 
-(progn ;; deh-section "centered-cursor-mode"
-  (defun centered-cursor-stay-same-pos ()
-    (interactive)
-    (unless (ad-find-advice 'ccm-first-start 'before 'reset-ccm-vpos)
-      (defadvice ccm-first-start (before reset-ccm-vpos (animate) activate)
-        (setq ccm-vpos nil) t))
-    (setq ccm-vpos-init
-          '(or ccm-vpos
-            (1- (count-lines (window-start) (point)))))
-    (ad-enable-advice 'ccm-first-start 'before 'reset-ccm-vpos)
-    (ad-activate #'ccm-first-start)
-    (ad-update #'ccm-first-start))
+        (progn ;; deh-section "centered-cursor-mode"
+          (defun centered-cursor-stay-same-pos ()
+            (interactive)
+            (unless (ad-find-advice 'ccm-first-start 'before 'reset-ccm-vpos)
+              (defadvice ccm-first-start (before reset-ccm-vpos (animate) activate)
+                (setq ccm-vpos nil) t))
+            (setq ccm-vpos-init
+                  '(or ccm-vpos
+                       (1- (count-lines (window-start) (point)))))
+            (ad-enable-advice 'ccm-first-start 'before 'reset-ccm-vpos)
+            (ad-activate #'ccm-first-start)
+            (ad-update #'ccm-first-start))
 
-  (defun centered-cursor-unstay-same-pos ()
-    (interactive)
-    (unless (ad-find-advice 'ccm-first-start 'before 'reset-ccm-vpos)
-      (defadvice ccm-first-start (before reset-ccm-vpos (animate) activate)
-        (setq ccm-vpos nil) t))
-    (setq ccm-vpos-init
-          (default-value 'ccm-vpos-init))
-    (ad-disable-advice 'ccm-first-start 'before 'reset-ccm-vpos)
-    (ad-activate #'ccm-first-start)
-    (ad-update #'ccm-first-start))
+          (defun centered-cursor-unstay-same-pos ()
+            (interactive)
+            (unless (ad-find-advice 'ccm-first-start 'before 'reset-ccm-vpos)
+              (defadvice ccm-first-start (before reset-ccm-vpos (animate) activate)
+                (setq ccm-vpos nil) t))
+            (setq ccm-vpos-init
+                  (default-value 'ccm-vpos-init))
+            (ad-disable-advice 'ccm-first-start 'before 'reset-ccm-vpos)
+            (ad-activate #'ccm-first-start)
+            (ad-update #'ccm-first-start))
 
-  (defun centered-cursor-toggle-stay-same-pos ()
-    (interactive)
-    (if (eq ccm-vpos-init
-            (default-value 'ccm-vpos-init))
-        (centered-cursor-stay-same-pos)
-        (centered-cursor-unstay-same-pos)))
+          (defun centered-cursor-toggle-stay-same-pos ()
+            (interactive)
+            (if (eq ccm-vpos-init
+                    (default-value 'ccm-vpos-init))
+                (centered-cursor-stay-same-pos)
+              (centered-cursor-unstay-same-pos)))
 
-  (defalias 'toggle-ccm-stay 'centered-cursor-toggle-stay-same-pos)
-  (defalias 'ccm-stay 'centered-cursor-stay-same-pos)
-  (defalias 'ccm-unstay 'centered-cursor-unstay-same-pos)
+          (defalias 'toggle-ccm-stay 'centered-cursor-toggle-stay-same-pos)
+          (defalias 'ccm-stay 'centered-cursor-stay-same-pos)
+          (defalias 'ccm-unstay 'centered-cursor-unstay-same-pos)
 
-  (defalias 'ccm 'centered-cursor-mode))
-)
-
-(progn
-  (progn
-   (progn ;; deh-section "Emacs Code Jump"
-     ;; http://lists.gnu.org/archive/html/help-gnu-emacs/2009-09/msg00669.html
-
-     (defun elisp-disassemble (function)
-       (interactive (list (function-called-at-point)))
-       (disassemble function))
-
-     (defun elisp-pp (sexp)
-       (with-output-to-temp-buffer "*Pp Eval Output*"
-         (pp sexp)
-         (with-current-buffer standard-output
-           (emacs-lisp-mode))))
-
-     (defun elisp-macroexpand (form)
-       (interactive (list (form-at-point 'sexp)))
-       (elisp-pp (macroexpand form)))
-
-     ;; (defun elisp-macroexpand-all (form)
-     ;;   (interactive (list (form-at-point 'sexp)))
-     ;;   (elisp-pp (cl-macroexpand-all form)))
-
-     (defun elisp-macroexpand-all (form)
-       (interactive (list (form-at-point 'sexp)))
-       (elisp-pp (macroexpand-all form)))
-
-     (defun elisp-push-point-marker ()
-       (require 'etags)
-       (cond ((featurep 'xemacs)
-              (push-tag-mark))
-             (t (ring-insert find-tag-marker-ring (point-marker)))))
-
-     (defun elisp-pop-found-function ()
-       (interactive)
-       (cond ((featurep 'xemacs) (pop-tag-mark nil))
-             (t (pop-tag-mark))))
-
-     (defun elisp-find-definition (name)
-       "Jump to the definition of the function (or variable) at point."
-       (interactive (list (thing-at-point 'symbol)))
-       (cond (name
-              (let ((symbol (intern-soft name))
-                    (search (lambda (fun sym)
-                              (let* ((r (save-excursion (funcall fun sym)))
-                                     (buffer (cl-first r))
-                                     (point (cl-rest r)))
-                                (cond ((not point)
-                                       (error "Found no definition for %s in %s"
-                                              name buffer))
-                                      (t
-                                       (switch-to-buffer buffer)
-                                       (goto-char point)
-                                       (recenter 1)))))))
-                (cond ((fboundp symbol)
-                       (elisp-push-point-marker)
-                       (funcall search 'find-function-noselect symbol))
-                      ((boundp symbol)
-                       (elisp-push-point-marker)
-                       (funcall search 'find-variable-noselect symbol))
-                      (t
-                       (message "Symbol not bound: %S" symbol)))))
-             (t (message "No symbol at point"))))
-
-     (defun elisp-bytecompile-and-load ()
-       (interactive)
-       (or buffer-file-name
-           (error "The buffer must be saved in a file first"))
-       (require 'bytecomp)
-       ;; Recompile if file or buffer has changed since last compilation.
-       (when  (and (buffer-modified-p)
-                   (y-or-n-p (format "save buffer %s first? " (buffer-name))))
-         (save-buffer))
-       (let ((filename (expand-file-name buffer-file-name)))
-         (with-temp-buffer
-           (byte-compile-file filename t))))
-
-     (when nil
-       (defvar elisp-extra-keys
-         '(((kbd "C-c d")   'elisp-disassemble)
-           ((kbd "C-c m")   'elisp-macroexpand)
-           ((kbd "C-c M")   'elisp-macroexpand-all)
-           ((kbd "C-c C-c") 'compile-defun)
-           ((kbd "C-c C-k") 'elisp-bytecompile-and-load)
-           ((kbd "C-c C-l") 'load-file)
-           ((kbd "C-c p")   'pp-eval-last-sexp)
-           ((kbd "M-.")     'elisp-find-definition)
-           ((kbd "M-,")     'elisp-pop-found-function)
-           ((kbd "C-c <")   'list-callers)))
-
-       (dolist (binding elisp-extra-keys)
-         (let ((key (eval (cl-first binding))) (val (eval (nth 1 binding))))
-           (define-key emacs-lisp-mode-map key val)
-           (define-key lisp-interaction-mode-map key val))))
-
-
-
-
-     (progn ;; deh-section "Emacs jump"
-       ;; with output following C-h v or C-h f I use `jump-to-form' -
-       ;; bound here to f12:
-
-       (defun jump-to-form ()
-         (interactive)
-         (if (featurep 'xemacs)
-             (progn
-               (forward-char 1)
-               (let ((name (symbol-atpt))
-                     (file (progn (search-forward "\"" nil t 1)(thing-at-point
-                                                                'filename))))
-                 (forward-char 1)
-                 (help-find-source-or-scroll-up (point))
-                 (switch-to-buffer (current-buffer))
-                 (kill-new name)
-                 (search-forward name)))
-             (other-window 1)
-             (forward-button 1)
-             ;; (find-file (filename-atpt))
-             (push-button)))))
-   )
-
-  (progn
-    (progn ;; deh-section "New"
-      '(progn ;; deh-require-maybe (progn
-                            ipa         ;problem resetting current-idle-time
-                            org-pua
-                            )
-        ;;http://www.emacswiki.org/emacs/InPlaceAnnotations
+          (defalias 'ccm 'centered-cursor-mode))
         )
-      (progn ;; deh-require-maybe alert
-        ;;http://www.emacswiki.org/emacs/alert.el
+
+      (progn
+        (progn
+          (progn ;; deh-section "Emacs Code Jump"
+            ;; http://lists.gnu.org/archive/html/help-gnu-emacs/2009-09/msg00669.html
+
+            (defun elisp-disassemble (function)
+              (interactive (list (function-called-at-point)))
+              (disassemble function))
+
+            (defun elisp-pp (sexp)
+              (with-output-to-temp-buffer "*Pp Eval Output*"
+                (pp sexp)
+                (with-current-buffer standard-output
+                  (emacs-lisp-mode))))
+
+            (defun elisp-macroexpand (form)
+              (interactive (list (form-at-point 'sexp)))
+              (elisp-pp (macroexpand form)))
+
+            ;; (defun elisp-macroexpand-all (form)
+            ;;   (interactive (list (form-at-point 'sexp)))
+            ;;   (elisp-pp (cl-macroexpand-all form)))
+
+            (defun elisp-macroexpand-all (form)
+              (interactive (list (form-at-point 'sexp)))
+              (elisp-pp (macroexpand-all form)))
+
+            (defun elisp-push-point-marker ()
+              (require 'etags)
+              (cond ((featurep 'xemacs)
+                     (push-tag-mark))
+                    (t (ring-insert find-tag-marker-ring (point-marker)))))
+
+            (defun elisp-pop-found-function ()
+              (interactive)
+              (cond ((featurep 'xemacs) (pop-tag-mark nil))
+                    (t (pop-tag-mark))))
+
+            (defun elisp-find-definition (name)
+              "Jump to the definition of the function (or variable) at point."
+              (interactive (list (thing-at-point 'symbol)))
+              (cond (name
+                     (let ((symbol (intern-soft name))
+                           (search #'(lambda (fun sym)
+                                       (let* ((r (save-excursion (funcall fun sym)))
+                                              (buffer (cl-first r))
+                                              (point (cl-rest r)))
+                                         (cond ((not point)
+                                                (error "Found no definition for %s in %s"
+                                                       name buffer))
+                                               (t
+                                                (switch-to-buffer buffer)
+                                                (goto-char point)
+                                                (recenter 1)))))))
+                       (cond ((fboundp symbol)
+                              (elisp-push-point-marker)
+                              (funcall search 'find-function-noselect symbol))
+                             ((boundp symbol)
+                              (elisp-push-point-marker)
+                              (funcall search 'find-variable-noselect symbol))
+                             (t
+                              (message "Symbol not bound: %S" symbol)))))
+                    (t (message "No symbol at point"))))
+
+            (defun elisp-bytecompile-and-load ()
+              (interactive)
+              (or buffer-file-name
+                  (error "The buffer must be saved in a file first"))
+              (require 'bytecomp)
+              ;; Recompile if file or buffer has changed since last compilation.
+              (when  (and (buffer-modified-p)
+                          (y-or-n-p (format "save buffer %s first? " (buffer-name))))
+                (save-buffer))
+              (let ((filename (expand-file-name buffer-file-name)))
+                (with-temp-buffer
+                  (byte-compile-file filename t))))
+
+            (when nil
+              (defvar elisp-extra-keys
+                '(((kbd "C-c d")   'elisp-disassemble)
+                  ((kbd "C-c m")   'elisp-macroexpand)
+                  ((kbd "C-c M")   'elisp-macroexpand-all)
+                  ((kbd "C-c C-c") 'compile-defun)
+                  ((kbd "C-c C-k") 'elisp-bytecompile-and-load)
+                  ((kbd "C-c C-l") 'load-file)
+                  ((kbd "C-c p")   'pp-eval-last-sexp)
+                  ((kbd "M-.")     'elisp-find-definition)
+                  ((kbd "M-,")     'elisp-pop-found-function)
+                  ((kbd "C-c <")   'list-callers)))
+
+              (dolist (binding elisp-extra-keys)
+                (let ((key (eval (cl-first binding))) (val (eval (nth 1 binding))))
+                  (define-key emacs-lisp-mode-map key val)
+                  (define-key lisp-interaction-mode-map key val))))
+
+
+
+
+            (progn ;; deh-section "Emacs jump"
+              ;; with output following C-h v or C-h f I use `jump-to-form' -
+              ;; bound here to f12:
+
+              (defun jump-to-form ()
+                (interactive)
+                (if (featurep 'xemacs)
+                    (progn
+                      (forward-char 1)
+                      (let ((name (symbol-atpt))
+                            (file (progn (search-forward "\"" nil t 1)(thing-at-point
+                                                                       'filename))))
+                        (forward-char 1)
+                        (help-find-source-or-scroll-up (point))
+                        (switch-to-buffer (current-buffer))
+                        (kill-new name)
+                        (search-forward name)))
+                  (other-window 1)
+                  (forward-button 1)
+                  ;; (find-file (filename-atpt))
+                  (push-button)))))
+          )
+
+        (progn
+          (progn ;; deh-section "New"
+            '(progn ;; deh-require-maybe (progn
+               ipa         ;problem resetting current-idle-time
+               org-pua
+               )
+            ;;http://www.emacswiki.org/emacs/InPlaceAnnotations
+            )
+          (progn ;; deh-require-maybe alert
+            ;;http://www.emacswiki.org/emacs/alert.el
+            )
+          (progn ;; deh-require-maybe org-pua
+            ;;http://www.emacswiki.org/emacs-es/org-pua.el
+            ))
         )
-      (progn ;; deh-require-maybe org-pua
-        ;;http://www.emacswiki.org/emacs-es/org-pua.el
-        ))
+      )
     )
-)
-)
 
-;; check here
-(progn
+  ;; check here
+  (progn
 
-(progn ;; deh-require-maybe point-stack
-  (global-set-key-if-unbind '[(f5)] 'point-stack-push)
-  (global-set-key-if-unbind '[(f6)] 'point-stack-pop)
-  (global-set-key-if-unbind '[(f7)] 'point-stack-forward-stack-pop)
+    (progn ;; deh-require-maybe point-stack
+      (global-set-key-if-unbind '[(f5)] 'point-stack-push)
+      (global-set-key-if-unbind '[(f6)] 'point-stack-pop)
+      (global-set-key-if-unbind '[(f7)] 'point-stack-forward-stack-pop)
 
-  (global-set-key-if-unbind (kbd "s-<right>") 'point-stack-push)
-  (global-set-key-if-unbind (kbd "s-<left>") 'point-stack-pop)
-  (global-set-key-if-unbind (kbd "s-<left>") 'point-stack-forward-stack-pop))
+      (global-set-key-if-unbind (kbd "s-<right>") 'point-stack-push)
+      (global-set-key-if-unbind (kbd "s-<left>") 'point-stack-pop)
+      (global-set-key-if-unbind (kbd "s-<left>") 'point-stack-forward-stack-pop))
 
-(progn ;; deh-require-maybe byte-code-cache)
+    (progn ;; deh-require-maybe byte-code-cache)
 
-(when nil                               ;obslete
-  (progn ;; deh-require-maybe lazy-lock
-  ;; http://www.opensource.apple.com/source/emacs/emacs-54/emacs/lisp/lazy-lock.el
-  ))
+      (when nil                               ;obslete
+        (progn ;; deh-require-maybe lazy-lock
+          ;; http://www.opensource.apple.com/source/emacs/emacs-54/emacs/lisp/lazy-lock.el
+          ))
 
-(progn ;; deh-section "misc"
-  ;; from: http://www.zerny.dk/emacs/dot-emacs.el
-  (defun cycle-windows()
-    "cycle the buffer of the windows in cyclic ordering"
-    (interactive)
-    (mapcar  (lambda(window)
-               (let ((next-window-buffer (window-buffer (next-window window 0))))
-                 (set-window-buffer (next-window window 0) (window-buffer window))
-                 (set-window-buffer window next-window-buffer))) (butlast (window-list nil 0)))))
+      (progn ;; deh-section "misc"
+        ;; from: http://www.zerny.dk/emacs/dot-emacs.el
+        (defun cycle-windows()
+          "cycle the buffer of the windows in cyclic ordering"
+          (interactive)
+          (mapcar  (lambda(window)
+                     (let ((next-window-buffer (window-buffer (next-window window 0))))
+                       (set-window-buffer (next-window window 0) (window-buffer window))
+                       (set-window-buffer window next-window-buffer))) (butlast (window-list nil 0)))))
 
-(progn ;; deh-section "examine"
-  (defun display-expression-value (var)
-    (interactive "sexp: ")
-    (let ((buf (get-buffer-create "*output*")))
-      (if (or t (window-splittable-p (selected-window) ))
-          (split-window-sensibly (selected-window)))
-      (switch-to-buffer-other-window buf)
-      (switch-to-buffer buf)
-      ;; (pp (eval (read var)) buf)
-      (with-current-buffer buf
-        (prin1 (eval (read var)) buf)
-        (terpri)))))
-)
-)
+      (progn ;; deh-section "examine"
+        (defun display-expression-value (var)
+          (interactive "sexp: ")
+          (let ((buf (get-buffer-create "*output*")))
+            (if (or t (window-splittable-p (selected-window) ))
+                (split-window-sensibly (selected-window)))
+            (switch-to-buffer-other-window buf)
+            (switch-to-buffer buf)
+            ;; (pp (eval (read var)) buf)
+            (with-current-buffer buf
+              (prin1 (eval (read var)) buf)
+              (terpri)))))
+      )
+    )
 
-(progn ;; deh-section "vim"
-  ;; viper-mode
-  ;; viper-go-away
-  (defun open-xvim ()
-    (interactive)
-    (if (buffer-file-name)
-        (let* ((file (file-truename (buffer-file-name)))
-               (xcmd
-                (if (file-remote-p file)
-                    "DISPLAY=localhost:10.0 xterm -e"
+  (progn ;; deh-section "vim"
+    ;; viper-mode
+    ;; viper-go-away
+    (defun open-xvim ()
+      (interactive)
+      (if (buffer-file-name)
+          (let* ((file (file-truename (buffer-file-name)))
+                 (xcmd
+                  (if (file-remote-p file)
+                      "DISPLAY=localhost:10.0 xterm -e"
                     "xterm -e"))
-               (vimcmd "vim")
-               (filename (file-name-localname file))
-               (pos (format "'+normal %dG%d|'" (current-line) (current-column)))
-               (cmd (mapconcat 'identity
-                               (list xcmd vimcmd pos filename "&") " ")))
-          (message cmd)
-          ;; DONE: shell-command-no-output in background
-          (shell-command-no-output cmd))
+                 (vimcmd "vim")
+                 (filename (file-name-localname file))
+                 (pos (format "'+normal %dG%d|'" (current-line) (current-column)))
+                 (cmd (mapconcat 'identity
+                                 (list xcmd vimcmd pos filename "&") " ")))
+            (message cmd)
+            ;; DONE: shell-command-no-output in background
+            (shell-command-no-output cmd))
         (error "No file is associated with buffer %s" (current-buffer)))))
 
 
-(progn ;; deh-require-maybe ielm
-  ;; * Trying from the interactive emacs lisp mode (M-x ielm)
-  (defalias 'repl 'ielm)
-  (add-hook 'lotus-enable-startup-interrupting-feature-hook
-            '(lambda ()
-              (let ((default-directory "~/"))
-                (ielm)))
-            t))
+  (progn ;; deh-require-maybe ielm
+    ;; * Trying from the interactive emacs lisp mode (M-x ielm)
+    (defalias 'repl 'ielm)
+    (add-hook 'lotus-enable-startup-interrupting-feature-hook
+              '#'(lambda ()
+                   (let ((default-directory "~/"))
+                     (ielm)))
+              t))
 
 
-(progn ;; deh-section "vimrc"
-  ;; http://stackoverflow.com/questions/4236808/syntax-highlight-a-vimrc-file-in-emacs
-  (define-generic-mode 'vimrc-generic-mode
+  (progn ;; deh-section "vimrc"
+    ;; http://stackoverflow.com/questions/4236808/syntax-highlight-a-vimrc-file-in-emacs
+    (define-generic-mode 'vimrc-generic-mode
       '()
-    '()
-    '(("^[\t ]*:?\\(!\\|ab\\|map\\|unmap\\)[^\r\n\"]*\"[^\r\n\"]*\\(\"[^\r\n\"]*\"[^\r\n\"]*\\)*$"
-       (0 font-lock-warning-face))
-      ("\\(^\\|[\t ]\\)\\(\".*\\)$"
-       (2 font-lock-comment-face))
-      ("\"\\([^\n\r\"\\]\\|\\.\\)*\""
-       (0 font-lock-string-face)))
-    '("/vimrc\\'" "\\.vim\\(rc\\)?\\'")
-    '((lambda ()
-        (modify-syntax-entry ?\" ".")))
-    "Generic mode for Vim configuration files.")
-  (add-to-list 'auto-mode-alist '("vimrc\\'" . vimrc-generic-mode)))
+      '()
+      '(("^[\t ]*:?\\(!\\|ab\\|map\\|unmap\\)[^\r\n\"]*\"[^\r\n\"]*\\(\"[^\r\n\"]*\"[^\r\n\"]*\\)*$"
+         (0 font-lock-warning-face))
+        ("\\(^\\|[\t ]\\)\\(\".*\\)$"
+         (2 font-lock-comment-face))
+        ("\"\\([^\n\r\"\\]\\|\\.\\)*\""
+         (0 font-lock-string-face)))
+      '("/vimrc\\'" "\\.vim\\(rc\\)?\\'")
+      '(#'(lambda ()
+            (modify-syntax-entry ?\" ".")))
+      "Generic mode for Vim configuration files.")
+    (add-to-list 'auto-mode-alist '("vimrc\\'" . vimrc-generic-mode)))
 
-(progn ;; deh-require-maybe wtf
-;; wtf.el provides the ability to look up the definitions of popular
-;; conversational and computing acronyms.
-)
+  (progn ;; deh-require-maybe wtf
+    ;; wtf.el provides the ability to look up the definitions of popular
+    ;; conversational and computing acronyms.
+    )
 
 
-(defun get-string-from-file (filePath)
-  ;; http://ergoemacs.org/emacs/elisp_read_file_content.html
-  "Return filePath's file content."
-  (with-temp-buffer
-    (insert-file-contents filePath)
-    (buffer-string)))
-;; thanks to “Pascal J Bourguignon” and “TheFlyingDutchman 〔zzbba…@aol.com〕”. 2010-09-02
+  (defun get-string-from-file (filePath)
+    ;; http://ergoemacs.org/emacs/elisp_read_file_content.html
+    "Return filePath's file content."
+    (with-temp-buffer
+      (insert-file-contents filePath)
+      (buffer-string)))
+  ;; thanks to “Pascal J Bourguignon” and “TheFlyingDutchman 〔zzbba…@aol.com〕”. 2010-09-02
 
-(progn ;; deh-require-maybe ini-mode
-  (autoload 'ini-mode "ini-mode" nil t)
-  (add-to-list 'auto-mode-alist '("\\.ini\\'" . ini-mode)))
+  (progn ;; deh-require-maybe ini-mode
+    (autoload 'ini-mode "ini-mode" nil t)
+    (add-to-list 'auto-mode-alist '("\\.ini\\'" . ini-mode)))
 
-(progn ;; deh-require-maybe any-ini-mode
-  (add-to-list 'auto-mode-alist '(".*\\.ini$" . any-ini-mode))
-  (add-to-list 'auto-mode-alist '(".*\\.conf$" . any-ini-mode)))
+  (progn ;; deh-require-maybe any-ini-mode
+    (add-to-list 'auto-mode-alist '(".*\\.ini$" . any-ini-mode))
+    (add-to-list 'auto-mode-alist '(".*\\.conf$" . any-ini-mode)))
 
-)
-
-(provide 'misc-utils)
+  )
+
 ;;; misc-utils.el ends here

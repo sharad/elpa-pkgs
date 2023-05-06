@@ -33,17 +33,17 @@
 ;; opened again. You can even store annotations on non-editable files.  Because
 ;; annot keeps track of md5 checksums of annotated files, annotations won't
 ;; disappear even when file names are changed.
-;; 
+;;
 ;; Requirement:
-;; 
+;;
 ;; GNU Emacs 23 or higher.
-;; 
+;;
 ;; Installation:
 ;;
 ;; Insert the following line to your .emacs:
 ;;
 ;;  (require 'annot)
-;; 
+;;
 ;; Keybindings:
 ;;
 ;; * [C-x C-a] - Add a new annotation
@@ -52,7 +52,7 @@
 ;; * [C-x C-i] - Insert a new image at point (annot-add-image)
 ;;
 ;; User Commands:
-;; 
+;;
 ;; * `annot-edit/add'   - Add a new annotation or highlight if a region is
 ;;                        specified.  Edit an annotation if there's one already.
 ;; * `annot-remove'     - Remove the annotation/highlight at point.
@@ -872,7 +872,7 @@ Only annotation files use this function internally."
       ;; since we cannot guarantee that `annot-md5-max-chars' would cover all
       ;; lengths of annotated files that are to be opened, not imposing it is
       ;; more accurate and indeed desirable.
-      ;; 
+      ;;
       ;; (when (boundp 'current-md5)
       ;;   (unless (string= current-md5 (plist-get annotations-info :md5))
       ;;
@@ -1140,6 +1140,6 @@ and create, for each annot text property, an annot overlay."
     (remove-overlays beg end 'invisible 'fuf))
   (setq fuf-remove-ellipsis-overlay-function 'annot-fuf-remove-ellipsis-overlay))
 
-
+
 (provide 'annot)
 ;;; annot.el ends here

@@ -38,6 +38,7 @@
     '(time based recently opened)
     '(heading level based)))
 
+(require 'org-context-clock-api)
 
 
 ;; (defun org-context-clock-task-associated-to-context-by-rank-p (task context)

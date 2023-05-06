@@ -29,6 +29,13 @@
 ;; output dot problem see https://www.gnu.org/software/emacs/manual/html_node/elisp/Output-Variables.html
 ;; set print-length
 
+(provide 'planner-interface)
+
+
+(defmacro testing (&rest body)
+  `(when nil
+     ,@body))
+
 ;;test
 (when nil
   (testing
@@ -41,13 +48,15 @@
    ))
 
 
-(require 'general-testing)
+;; (require 'general-testing)
 (require 'cl)
 
 (eval-when-compile
   '(require 'cl))
 
-(require 'tree)
+(eval-when-compile
+  (require 'tree-utils))
+
 
 (defvar status-mappings nil "Status Mapping")
 
@@ -472,17 +481,5 @@
                                  ;; (kill-buffer b)
                                  )))
 ;; }}
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; bugz ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
-
-
-
-
-
-(provide 'planner-interface)
+
 ;;; planner-interface.el ends here
