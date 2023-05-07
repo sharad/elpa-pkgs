@@ -388,11 +388,12 @@ then return t else nil"
       (if (occ-config-value-quiet)
           (occ-debug "Occ is quiet for some time.")
         (lotus-with-no-recursive-edit-if
-            (occ-debug "occ-do-clock-in-curr-ctx-if-not-timer-function: (recursion-depth) [%d] > 0" (recursion-depth))
+            (occ-debug "(recursion-depth) [%d] > 0" (recursion-depth))
           (lotus-with-no-active-minibuffer-if
-              (occ-debug "occ-do-clock-in-curr-ctx-if-not-timer-function: minibuffer active")
+              (occ-debug "minibuffer active")
             (occ-cancel-timer)
-            (if (eq 'buffer-switch event)
+            (if (eq 'buffer-switch
+                    event)
                 (occ-run-curr-ctx-chg-timer)
               (occ-run-curr-ctx-timer)))))
     ;; to bypass QUIT
@@ -406,17 +407,17 @@ then return t else nil"
 
 (cl-defmethod occ-obj-try-clock-in-next-timeout ()
   "Get next timeout to try clock-in"
-  (occ-debug "occ-obj-try-clock-in-next-timeout: begin")
+  (occ-debug "begin")
   (let* ((ctx             (occ-obj-make-ctx-at-point))
          (ctxual-curr-tsk (occ-obj-ctxual-current-tsk ctx)))
     (cond
-     ((null ctxual-curr-tsk)          3)
+     ((null ctxual-curr-tsk)              3)
      ((occ-obj-unnamed-p ctxual-curr-tsk) (+ *occ-tsk-current-ctx-time-interval* 10))
-     (t                               30))))
+     (t                                   30))))
 
 (cl-defmethod occ-do-try-clock-schedule-next-timeout (event)
   "Get next timeout to try clock-in"
-  (occ-debug "occ-do-try-clock-schedule-next-timeout: begin")
+  (occ-debug "begin")
   (occ-cancel-timer)
   (setq *occ-buff-sel-timer*
         ;; distrubing while editing.
@@ -429,8 +430,7 @@ then return t else nil"
 ;;;###autoload
 (defun occ-switch-buffer-run-curr-ctx-timer-function (prev
                                                       next)
-  (ignore prev)
-  (ignore next)
+  (ignore prev next)
   (occ-debug "occ-switch-buffer-run-curr-ctx-timer-function: begin")
   (setq *occ-last-buff-sel-time* (current-time))
   ;; (occ-do-try-clock-schedule-next-timeout 'buffer-switch)
@@ -484,7 +484,7 @@ then return t else nil"
   (let ((key    (occ-collector-default-key))
         (buffer (or buffer
                     (current-buffer))))
-    (ignore key)
+    
     (when (buffer-live-p buffer)
       (with-current-buffer buffer
         (make-local-variable 'occ-add-org-file-timer)
