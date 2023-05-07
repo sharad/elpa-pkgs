@@ -1,17 +1,6 @@
 
 
 
-Warning (comp): mail-event.el:91:55: Warning: Unused lexical variable `link' Disable showing Disable logging
-Warning (comp): mail-event.el:88:16: Warning: reference to free variable ‘gnus-article-buffer’ Disable showing Disable logging
-Warning (comp): mail-event.el:136:47: Warning: Unused lexical variable `link' Disable showing Disable logging
-Warning (comp): mail-event.el:132:16: Warning: reference to free variable ‘gnus-message-buffer’ Disable showing Disable logging
-Warning (comp): mail-event.el:151:27: Warning: reference to free variable ‘@mail-read-event-detector-instance’ Disable showing Disable logging
-Warning (comp): mail-event.el:155:9: Warning: assignment to free variable ‘@mail-read-event-detector-instance’ Disable showing Disable logging
-Warning (comp): mail-event.el:158:9: Warning: assignment to free variable ‘@mail-send-event-detector-instance’ Disable showing Disable logging
-Warning (comp): mail-event.el:170:2: Warning: the function ‘activity-register’ is not known to be defined. Disable showing Disable logging
-Warning (comp): mail-event.el:66:22: Warning: the function ‘message-fetch-field’ is not known to be defined. Disable showing Disable logging
-Warning (comp): mail-event.el:53:4: Warning: the function ‘remove-if’ is not known to be defined. Disable showing Disable logging
-
 
 Warning (comp): backtrace-debug.el:50:33: Warning: Unused lexical variable `var' Disable showing Disable logging
 Warning (comp): backtrace-debug.el:131:47: Warning: Unused lexical argument `orig-fun' Disable showing Disable logging

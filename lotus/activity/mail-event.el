@@ -40,7 +40,11 @@
 (provide 'mail-event)
 
 
+(require 'gnus)
 (require 'org-capture-note)
+(require 'message)
+
+(require 'activity)
 
 
 ;; https://emacs.stackexchange.com/questions/101/how-can-i-create-an-org-link-for-each-email-sent-by-mu4e
@@ -50,10 +54,10 @@
 
 (defun activity~wipe-brackets (msgid)
   (interactive)
-  (remove-if #'(lambda (c)
-                 (or (equal c ?>)
-                     (equal c ?<)))
-             msgid))
+  (cl-remove-if #'(lambda (c)
+                    (or (equal c ?>)
+                        (equal c ?<)))
+                msgid))
 
 (defun lotus-plist-get-members (plist keys)
   (mapcar #'(lambda (k)
@@ -68,6 +72,7 @@
            (from    (message-fetch-field "From" t))
            (to      (message-fetch-field "To" t))
            (link    (concat "mu4e:msgid:" (activity~wipe-brackets msgid))))
+      (ignore link)
       (list :subject subject
             :from from
             :to to)))
@@ -112,6 +117,7 @@
            (from    (message-fetch-field "From" t))
            (to      (message-fetch-field "To" t))
            (link    (concat "mu4e:msgid:" (activity~wipe-brackets msgid))))
+      (ignore link)
       (list :subject subject
             :from    from
             :to      to)))
@@ -143,6 +149,7 @@
 
   (@:dispatch))
 
+(defvar @mail-read-event-detector-instance nil)
 
 (defun mail-event-run-action ()
   (run-with-timer nil nil
