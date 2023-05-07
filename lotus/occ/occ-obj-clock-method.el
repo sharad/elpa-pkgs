@@ -484,7 +484,6 @@ then return t else nil"
   (let ((key    (occ-collector-default-key))
         (buffer (or buffer
                     (current-buffer))))
-    
     (when (buffer-live-p buffer)
       (with-current-buffer buffer
         (make-local-variable 'occ-add-org-file-timer)

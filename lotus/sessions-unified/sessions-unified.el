@@ -80,6 +80,14 @@
 ;; ;; BUG TODO
 ;; (require 'vc-config)
 (require 'basic-utils)
+
+
+(declare-function save-all-sessions-auto-save "desktop-unified" (&optional force))
+(declare-function save-all-sessions-auto-save-immediately "desktop-unified" (&optional force))
+(declare-function frame-session-restore-unhook-func "fmsession" ())
+(declare-function frame-session-restore-force "fmsession" (nframe))
+(declare-function frame-session-save "fmsession" (nframe))
+
 
 (defvar *session-unified-desktop-enabled* t "Enable desktop restoration.")
 (defvar *session-unified-session-enabled* t "Enable session restoration.")
@@ -94,7 +102,7 @@ desktop.")
 (defvar lotus-enable-desktop-restore-interrupting-feature-hook nil
   "feature that were disabled for proper restoring of desktop will
 get re-enabled here.")
-(defcvar defvar lotus-enable-desktop-restore-interrupting-feature-hook-old nil)
+(defvar lotus-enable-desktop-restore-interrupting-feature-hook-old nil)
 
 (defvar session-unified-save-all-sessions-before-hook nil "Hook run before saving all session")
 (defvar session-unified-save-all-sessions-after-hook nil "Hook run after saving all session")

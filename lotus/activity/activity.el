@@ -41,6 +41,7 @@
 
 
 (require 'cl-seq)
+
 (require '@)
 (require 'activity-base)
 
