@@ -38,8 +38,13 @@
 ;;; Code:
 
 (provide 'activity)
-
 
+
+(require 'cl-seq)
+(require '@)
+(require 'activity-base)
+
+
 (defgroup activity nil
   "Customizations for Activity"
   :group 'convenience
@@ -75,13 +80,8 @@
 ;;     (add-to-list 'load-path dir)))
 
 
-(require '@)
-(require 'activity-base)
 
-(eval-when-compile
-  '(require 'cl))
-
-
+(defvar @activity nil)
 
 (setf @activity
       (@drive-object @activity-base "activities"
@@ -222,6 +222,7 @@
 
 (defun activity-turn-on (defer)
   "Turn on Activity."
+  (ignore defer)
   (activity-bind-hooks))
 
 (defun activity-turn-off ()

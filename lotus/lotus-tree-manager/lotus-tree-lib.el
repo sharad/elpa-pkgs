@@ -28,7 +28,7 @@
 
 
 ;; old
-(defun collect-carlist (alist)
+(defun collect-carlist-old (alist)
   (let ((ulist nil))
     (dolist (pair (copy-tree alist))
       (if (assoc (cl-first pair) ulist)
@@ -44,6 +44,7 @@
         (when (cl-first pair)
           (push (list (cl-first pair)) ulist)))
       (let ((ef (cl-first pair)))
+        (ignore ef)
         (let ((xulist (assoc (cl-first pair) ulist))
               (tlist  nil)
               (ilist  (cl-rest pair)))
@@ -75,12 +76,12 @@
   (let ((nodep (or nodep #'atom)))
     (if (funcall nodep tree)
         0
-      (1+ (reduce #'max
-                  (mapcar #'(lambda (subtree)
-                              (if (consp subtree)
-                                  (max-depth subtree nodep)
-                                0))
-                          tree))))))
+      (1+ (cl-reduce #'max
+                     (mapcar #'(lambda (subtree)
+                                 (if (consp subtree)
+                                     (max-depth subtree nodep)
+                                   0))
+                             tree))))))
 
 (defun collect-elem-cond (tree nodep predicate)
   (if (funcall nodep tree)
@@ -108,7 +109,7 @@
                            depth))
 
 
-(defun tree-add (keys item list)
+(defun tree-add-old (keys item list)
   (let ((key (cl-first keys)))
     (if (cl-rest list)
         (if key

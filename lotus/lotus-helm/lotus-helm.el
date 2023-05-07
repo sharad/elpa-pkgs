@@ -27,8 +27,13 @@
 (provide 'lotus-helm)
 
 
+(require 'helm)
+(require 'helm-core)
 (eval-when-compile
   (require 'helm-source))
+(require 'helm-source)
+
+(require 'org-capture+-helm-dynamic)
 
 
 (defun helm-template-gen-selector (predicate arg level)
@@ -50,10 +55,12 @@
             (define-key map (kbd "M-<down>")   level-dec-fn)
             map))
          (h-action-transformer    #'(lambda (actions candidate)
+                                      (ignore actions candidate)
                                       '(("Even" . identity))))
          (h-candidates            #'(lambda ()
                                       (org-capture+-collect-templates predicate arg level)))
          (h-candidate-transformer #'(lambda (candidates source)
+                                      (ignore candidates source)
                                       (org-capture+-collect-templates predicate arg level)))
          (source (helm-build-sync-source "Templates"
                    :keymap                         h-map

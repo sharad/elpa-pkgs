@@ -29,6 +29,7 @@
 
 (require 'dash)
 (require 'helm)
+(require 'helm-core)
 (eval-when-compile
   (require 'helm-source))
 
@@ -142,14 +143,14 @@
                               (setf level (1- level))
                               (funcall calculate-list)
                               (helm-refresh)))
-         (h-map
-          (let ((map (make-sparse-keymap)))
-            (set-keymap-parent map helm-map)
-            (define-key map (kbd "M-<up>")     level-inc-fn)
-            (define-key map (kbd "M-<down>")   level-dec-fn)
-            (define-key map (kbd "M-<space>")  level-reset-fn)
-            map))
+         (h-map           (let ((map (make-sparse-keymap)))
+                            (set-keymap-parent map helm-map)
+                            (define-key map (kbd "M-<up>")     level-inc-fn)
+                            (define-key map (kbd "M-<down>")   level-dec-fn)
+                            (define-key map (kbd "M-<space>")  level-reset-fn)
+                            map))
          (h-action-transformer    #'(lambda (actions candidate)
+                                      (ignore actions candidate)
                                       (list (cons "Select" action))))
          (h-candidate (if noclass
                           #'(lambda ()
@@ -157,15 +158,17 @@
                               list)
                         #'(lambda ()
                             (funcall calculate-list)
-                            (let* ((name        (cl-rest (assoc 'name source)))
+                            (let* ((name        (cl-rest (assoc 'name list)))
                                    (ncandidates (cl-rest (assoc name list))))
                               ncandidates))))
-         ;; (h-candidate-transformer (if noclass
-         ;;                              #'(lambda (candidates source)
-         ;;                                  candidates)
-         ;;                            #'(lambda (candidates source)
-         ;;                                (message "candidates length %d" (length candidates))
-         ;;                                candidates)))
+         (h-candidate-transformer (if noclass
+                                      #'(lambda (candidates source)
+                                          (ignore source)
+                                          candidates)
+                                    #'(lambda (candidates source)
+                                        (ignore source)
+                                        (message "candidates length %d" (length candidates))
+                                        candidates)))
          (sources (if noclass
                       (helm-build-sync-source           "templates"
                         :keymap                         h-map

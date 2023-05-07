@@ -52,6 +52,7 @@
 (provide 'autoinsert+)
 
 
+(require 'cl-seq)
 (require 'autoinsert)
 
 
@@ -191,12 +192,12 @@ thus, on a GNU or Unix system, it must end in a slash."
 
 
 ;;;###autoload
-(defun auto-mode-alist-get-modes-from-file (file) ;return list
-  )
+(defun auto-mode-alist-get-modes-from-file (file)) ;return list
+  
 
 ;;;###autoload
-(defun auto-mode-alist-get-fileregexs-from-mode (file) ;return list
-  )
+(defun auto-mode-alist-get-fileregexs-from-mode (file)) ;return list
+  
 
 ;;;###autoload
 (defun regex-equal (r1 r2)
@@ -229,20 +230,20 @@ thus, on a GNU or Unix system, it must end in a slash."
 ;;   ;; inmode: given file mode
 ;;   ;; inregx: template file regex
 ;;   (let ((mode-regexs (find inmode auto-mode-alist :key 'cdr :test 'eq)))
-;;     (member* tmplregex
-;;               mode-regexs
-;;               :test '(lambda (e)
-;;                       (regex-equal (cl-first e) tmplregex)))))
+;;     (cl-member tmplregex
+;;                mode-regexs
+;;                :test #'(lambda (e)
+; ;                         (regex-equal (cl-first e) tmplregex)))))
 
 
 ;;;###autoload
 (defun auto-mode-alist-get-from-strmode (infile tmplmode) ;return list
   ;; inmode: given file mode
   ;; inregx: template file regex
-  (let ((mode-regexs (remove-if-not (lambda (regex)
-                                      (string-match regex infile))
-                                    auto-mode-alist :key 'car)))
-    (member* tmplmode mode-regexs :key 'cdr)))
+  (let ((mode-regexs (cl-remove-if-not #'(lambda (regex)
+                                           (string-match regex infile))
+                                       auto-mode-alist :key 'car)))
+    (cl-member tmplmode mode-regexs :key 'cdr)))
 
 ;; TODO: checkout pcre2el.el
 ;; TODO: check major mode with reverse auto-mode-alist file pattern.
@@ -278,10 +279,10 @@ Matches the visited file name against the elements of `auto-insert+-alist'."
 
     ;; all actions test and accumulation
     (let ((alist auto-insert+-alist)
-          case-fold-search
-          cond
-          desc
-          action-alist)
+          (case-fold-search nil)
+          (cond nil)
+          (desc nl)
+          (action-alist nil))
       (goto-char 1)
       ;; find all matching alist entry
       (while alist
@@ -289,22 +290,21 @@ Matches the visited file name against the elements of `auto-insert+-alist'."
                (cond    (cl-first element))
                (newdesc (plist-get (cl-rest element) :desc)))
           ;; (message "cond %s newdesc %s" cond newdesc)
-          (if (some (lambda (c)
-                      (if (symbolp c)
-                          (let ((cond-major-mode c))
-                            (or (eq cond major-mode)
-                                (auto-mode-alist-get-from-strmode buffer-file-name cond-major-mode)))
-                        (let ((file-regex-cond c))
-                          (or
-                           (and buffer-file-name
-                                (string-match cond buffer-file-name))
-                           (auto-mode-alist-get-from-moderegex major-mode file-regex-cond)))))
-                    (if (consp cond) cond (list cond)))
+          (if (cl-some #'(lambda (c)
+                           (if (symbolp c)
+                               (let ((cond-major-mode c))
+                                 (or (eq cond major-mode)
+                                     (auto-mode-alist-get-from-strmode buffer-file-name cond-major-mode)))
+                             (let ((file-regex-cond c))
+                               (or
+                                (and buffer-file-name
+                                     (string-match cond buffer-file-name))
+                                (auto-mode-alist-get-from-moderegex major-mode file-regex-cond)))))
+                       (if (consp cond) cond (list cond)))
               (setq action-alist (append action-alist (plist-get (cl-rest element) :action-alist))
-                    desc (concat
-                          desc
-                          (if newdesc
-                              (format (concat (if desc " or") " %s") newdesc))))))
+                    desc (concat desc
+                                 (if newdesc
+                                     (format (concat (if desc " or") " %s") newdesc))))))
         (setq alist (cl-rest alist)))
       ;; (message "action-alist %s" action-alist)
       ;; Now, if we found something, do it
@@ -360,10 +360,55 @@ or if CONDITION had no actions, after all other CONDITIONs."
     (push condition auto-noinsert+-alist)))
 
 
-;;;###autoload
-(with-eval-after-load 'autoinsert
-  ;; (require 'autoinsert)
-  (defun action-type-old-autoinsert-alist (action)
+;; ;;;###autoload
+;; (with-eval-after-load 'autoinsert
+;;   ;; (require 'autoinsert)
+;;   (defun action-type-old-autoinsert-alist (action)
+;;     ;; TODO: Add support function with arguments
+;;     (if action
+;;         (cond
+;;          ((and
+;;            (stringp action)
+;;            (or
+;;             (file-readable-p action)
+;;             (file-readable-p
+;;              (expand-file-name
+;;               action auto-insert+-directory))))
+;;           :plain-file)
+;;          ((and (consp action)
+;;                (not (eq (cl-first action) 'lambda)))
+;;           :skeleton)
+;;          ((or
+;;            (symbolp action)
+;;            (and
+;;             (consp action)
+;;             (eq (cl-first action) 'lambda)))
+;;           :func)
+;;          (t ;; (error "action is recognizable.")
+;;           :unknown))
+;;       (error "action is nil")))
+
+;;   (defun add-from-autoinsert-alist (name alist)
+;;     (dolist (elt alist)
+;;       (let ((pattern-mode (if (consp (cl-first elt))
+;;                               (cl-first (cl-first elt))
+;;                             (cl-first elt)))
+;;             (desc         (if (consp (cl-first elt))
+;;                               (cl-rest (cl-first elt))
+;;                             (if (symbolp (cl-first elt))
+;;                                 (symbol-name (cl-first elt))
+;;                               (cl-first elt))))
+;;             (action       (cl-rest elt))
+;;             (type         (action-type-old-autoinsert-alist (cl-rest elt))))
+;;         (if (vectorp (cl-rest elt))
+;;             (dolist (a (append (cl-rest elt) nil))
+;;               (define-auto-insert+ pattern-mode desc name type a t))
+;;           (define-auto-insert+ pattern-mode desc   name type action t)))))
+
+;;   (add-from-autoinsert-alist "old" auto-insert-alist))
+
+
+(defun action-type-old-autoinsert-alist (action)
     ;; TODO: Add support function with arguments
     (if action
         (cond
@@ -388,35 +433,40 @@ or if CONDITION had no actions, after all other CONDITIONs."
           :unknown))
       (error "action is nil")))
 
-  (defun add-from-autoinsert-alist (name alist)
-    (dolist (elt alist)
-      (let ((pattern-mode (if (consp (cl-first elt))
-                              (cl-first (cl-first elt))
-                            (cl-first elt)))
-            (desc         (if (consp (cl-first elt))
-                              (cl-rest (cl-first elt))
-                            (if (symbolp (cl-first elt))
-                                (symbol-name (cl-first elt))
-                              (cl-first elt))))
-            (action       (cl-rest elt))
-            (type         (action-type-old-autoinsert-alist (cl-rest elt))))
-        (if (vectorp (cl-rest elt))
-            (dolist (a (append (cl-rest elt) nil))
-              (define-auto-insert+ pattern-mode desc name type a t))
-          (define-auto-insert+ pattern-mode desc   name type action t)))))
+(defun add-from-autoinsert-alist (name alist)
+  (dolist (elt alist)
+    (let ((pattern-mode (if (consp (cl-first elt))
+                            (cl-first (cl-first elt))
+                          (cl-first elt)))
+          (desc         (if (consp (cl-first elt))
+                            (cl-rest (cl-first elt))
+                          (if (symbolp (cl-first elt))
+                              (symbol-name (cl-first elt))
+                            (cl-first elt))))
+          (action       (cl-rest elt))
+          (type         (action-type-old-autoinsert-alist (cl-rest elt))))
+      (if (vectorp (cl-rest elt))
+          (dolist (a (append (cl-rest elt) nil))
+            (define-auto-insert+ pattern-mode desc name type a t))
+        (define-auto-insert+ pattern-mode desc   name type action t)))))
 
-  (add-from-autoinsert-alist "old" auto-insert-alist))
+;;;###autoload
+(defun autoinsert+-init ()
+  (with-eval-after-load 'autoinsert
+    (add-from-autoinsert-alist "old" auto-insert-alist)))
+;;;###autoload
+(autoinsert+-init)
 
 
 ;;;###autoload
 (defvar tmpledir-alist
-  '(("yastemp" "~/emacs.d/template.d/autoinsert" )
+  '(("yastemp" "~/emacs.d/template.d/autoinsert")
     ("autoinsert" "~/emacs.d/template.d/autoinsert")
     ("template" "~/emacs.d/template.d/template")))
 
 ;;;###autoload
 (defun template-buffer ()
-  (tmpldir )
+  ;; (tmpldir )
   ())
 
 

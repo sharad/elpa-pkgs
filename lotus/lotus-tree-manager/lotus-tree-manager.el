@@ -59,7 +59,7 @@
 (defun stree-collect-items-alist (fn arg level)
   (let* ((fn    (or fn #'tree-tree-predicate))
          (alist (mapcar #'(lambda (x) (nth 1 x))
-                        (tree-collect-item-alist fn arg level))))
+                        (stree-collect-item-alist fn arg level))))
     (let ((items-alist
            (collect-carlist alist)))
       items-alist)))
@@ -73,7 +73,7 @@
 
 (defun stree-collect-item-classes ()
   (mapcar #'car
-          (tree-collect-items-alist #'(lambda (key-tree arg) t)
+          (tree-collect-items-alist #'(lambda (key-tree arg) (ignore key-tree arg) t)
                                     '(t)
                                     0)))
 
@@ -124,7 +124,7 @@
 (defun tree-collect-item-classes (tree)
   (mapcar #'car
           (tree-collect-items-alist tree
-                                    #'(lambda (key-tree arg) t)
+                                    #'(lambda (key-tree arg) (ignore key-tree arg) t)
                                     '(t)
                                     0)))
 
