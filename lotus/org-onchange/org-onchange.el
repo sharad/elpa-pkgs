@@ -64,8 +64,8 @@
            (note-state state)
            (note-previous-state previous-state))
       (if (marker-buffer marker)
-          (let ((note (cl-rest (assq note-purpose org-log-note-headings)))
-                (lines nil))
+          (let ((note (rest (assq note-purpose org-log-note-headings)))
+                lines)
             (while (string-match "\\`# .*\n[ \t\n]*" txt)
               (setq txt (replace-match "" t t txt)))
             (when (string-match "\\s-+\\'" txt)
@@ -173,124 +173,117 @@
 ;; add note but in this case it is not shown so background word is used.
 
 ;; *Note:* these function prepare buffer or window (timed) to take log note
-;;         main work is only done by _org-store-log-note_
+;;  main work is only done by _org-store-log-note_
 
 
 ;; [[file:org-onchange.org::*Org add log note with-timed-new-win][Org add log note with-timed-new-win:1]]
 ;; copy of org-add-log-note
- (defun org-add-log-note-buffer (target-buffer)
-   "Prepare buffer for taking a note, to add this note later."
-   ;; (pop-to-buffer-same-window (marker-buffer org-log-note-marker))
-   ;; (goto-char org-log-note-marker)
-   ;; (org-switch-to-buffer-other-window "*Org Note*")
+(defun org-add-log-note-buffer (target-buffer)
+  "Prepare buffer for taking a note, to add this note later."
+  ;; (pop-to-buffer-same-window (marker-buffer org-log-note-marker))
+  ;; (goto-char org-log-note-marker)
+  ;; (org-switch-to-buffer-other-window "*Org Note*")
 
-   (switch-to-buffer target-buffer 'norecord)
-   ;; (set-buffer target-buffer)
-   (erase-buffer)
+  (switch-to-buffer target-buffer 'norecord)
+  ;; (set-buffer target-buffer)
+  (erase-buffer)
 
-   (if (memq org-log-note-how '(time state))
-       (let (current-prefix-arg) (org-store-log-note))
-     (let ((org-inhibit-startup t)) (org-mode))
-     (insert (format (string-join
-                      '("# Insert note for %s."
-                        "# Finish with C-c C-c, or cancel with C-c C-k.\n\n")
-                      "\n")
-                     (cond
-                      ((eq org-log-note-purpose 'clock-out) "stopped clock")
-                      ((eq org-log-note-purpose 'done)  "closed todo item")
-                      ((eq org-log-note-purpose 'state)
-                       (format "state change from \"%s\" to \"%s\""
-                               (or org-log-note-previous-state "")
-                               (or org-log-note-state "")))
-                      ((eq org-log-note-purpose 'reschedule)
-                       "rescheduling")
-                      ((eq org-log-note-purpose 'delschedule)
-                       "no longer scheduled")
-                      ((eq org-log-note-purpose 'redeadline)
-                       "changing deadline")
-                      ((eq org-log-note-purpose 'deldeadline)
-                       "removing deadline")
-                      ((eq org-log-note-purpose 'refile)
-                       "refiling")
-                      ((eq org-log-note-purpose 'note)
-                       "this entry")
-                      (t (error "This should not happen")))))
-     (when org-log-note-extra (insert org-log-note-extra))
-     (setq-local org-finish-function 'org-store-log-note)
-     (run-hooks 'org-log-buffer-setup-hook)))
+  (if (memq org-log-note-how '(time state))
+      (let (current-prefix-arg) (org-store-log-note))
+    (let ((org-inhibit-startup t)) (org-mode))
+    (insert (format (string-join
+                     '("# Insert note for %s."
+                       "# Finish with C-c C-c, or cancel with C-c C-k.\n\n")
+                     "\n")
+                    (cond
+                     ((eq org-log-note-purpose 'clock-out) "stopped clock")
+                     ((eq org-log-note-purpose 'done)  "closed todo item")
+                     ((eq org-log-note-purpose 'state)
+                      (format "state change from \"%s\" to \"%s\""
+                              (or org-log-note-previous-state "")
+                              (or org-log-note-state "")))
+                     ((eq org-log-note-purpose 'reschedule)
+                      "rescheduling")
+                     ((eq org-log-note-purpose 'delschedule)
+                      "no longer scheduled")
+                     ((eq org-log-note-purpose 'redeadline)
+                      "changing deadline")
+                     ((eq org-log-note-purpose 'deldeadline)
+                      "removing deadline")
+                     ((eq org-log-note-purpose 'refile)
+                      "refiling")
+                     ((eq org-log-note-purpose 'note)
+                      "this entry")
+                     (t (error "This should not happen")))))
+    (when org-log-note-extra (insert org-log-note-extra))
+    (setq-local org-finish-function 'org-store-log-note)
+    (run-hooks 'org-log-buffer-setup-hook)))
 
 
-  (defun org-add-log-note-with-timed-new-win (win-timeout &optional _purpose)
-    "Pop up a window for taking a note, and add this note later."
-    ;; (remove-hook 'post-command-hook 'org-add-log-note-background)
-    ;; (setq org-log-note-window-configuration (current-window-configuration))
-    ;; (delete-other-windows)
+(defun org-add-log-note-with-timed-new-win (win-timeout &optional _purpose)
+  "Pop up a window for taking a note, and add this note later."
+  ;; (remove-hook 'post-command-hook 'org-add-log-note-background)
+  ;; (setq org-log-note-window-configuration (current-window-configuration))
+  ;; (delete-other-windows)
 
-    ;; (move-marker org-log-note-return-to (point))
-    (lotus-with-no-active-minibuffer-if
-        (progn                            ;could schedule in little further.
-          (lwarn 'org-onchange :debug "org-add-log-note-with-timed-new-win: [minibuff body] lotus-with-no-active-minibuffer-if")
-          (lwarn 'org-onchange :debug "add-log-note-background: minibuffer already active quitting")
-          (message "add-log-note-background: minibuffer already active quitting")
-          (message nil))
-      (lwarn 'org-onchange :debug "org-add-log-note-with-timed-new-win: [body] lotus-with-no-active-minibuffer-if")
-      (let ((win-timeout (or win-timeout 7))
-            (cleanupfn-local nil))
-        (setq org-log-note-window-configuration (current-window-configuration))
-        (lotus-with-timed-new-win
-            win-timeout timer cleanupfn-newwin cleanupfn-local win
-            (condition-case nil
-                (let ((target-buffer (get-buffer-create "*Org Note*")))
-                  (org-add-log-note-buffer target-buffer))
-              ((quit)
-               (progn
-                 (funcall cleanupfn-newwin win cleanupfn-local)
-                 (if timer (cancel-timer timer))
-                 (signal (cl-first err) (rest err)))))))))
+  ;; (move-marker org-log-note-return-to (point))
+  (lotus-with-no-active-minibuffer-if
+      (progn                            ;could schedule in little further.
+        (lwarn 'org-onchange :debug "org-add-log-note-with-timed-new-win: [minibuff body] lotus-with-no-active-minibuffer-if")
+        (lwarn 'org-onchange :debug "add-log-note-background: minibuffer already active quitting")
+        (message "add-log-note-background: minibuffer already active quitting")
+        (message nil))
+    (lwarn 'org-onchange :debug "org-add-log-note-with-timed-new-win: [body] lotus-with-no-active-minibuffer-if")
+    (let ((win-timeout (or win-timeout 7))
+          (cleanupfn-local nil))
+      (setq org-log-note-window-configuration (current-window-configuration))
+      (lotus-with-timed-new-win
+          win-timeout timer cleanupfn-newwin cleanupfn-local win
+          (condition-case nil
+              (let ((target-buffer (get-buffer-create "*Org Note*")))
+                (org-add-log-note-buffer target-buffer))
+            ((quit)
+             (progn
+               (funcall cleanupfn-newwin win cleanupfn-local)
+               (if timer (cancel-timer timer))
+               (signal (cl-first err) (rest err)))))))))
 
-  (defun org-add-log-setup-with-timed-new-win (win-timeout
-                                               &optional
-                                               purpose
-                                               state
-                                               prev-state
-                                               how
-                                               extra)
-    "Set up the post command hook to take a note.
-  If this is about to TODO state change, the new state is expected in STATE.
-  HOW is an indicator what kind of note should be created.
-  EXTRA is additional text that will be inserted into the notes buffer."
-    (ignore win-timeout)
-    (let ((win-timeout (or win-timeout 7)))
-      (move-marker org-log-note-marker (point))
-      (setq org-log-note-purpose purpose
-            org-log-note-state state
-            org-log-note-previous-state prev-state
-            org-log-note-how how
-            org-log-note-extra extra
-            org-log-note-effective-time (org-current-effective-time))
-      ;; (add-hook 'post-command-hook 'org-add-log-note-background 'append)
-      (org-add-log-note-with-timed-new-win  win-timeout)))
+(defun org-add-log-setup-with-timed-new-win (win-timeout &optional purpose state prev-state how extra)
+  "Set up the post command hook to take a note.
+    If this is about to TODO state change, the new state is expected in STATE.
+    HOW is an indicator what kind of note should be created.
+    EXTRA is additional text that will be inserted into the notes buffer."
+  (let ((win-timeout (or win-timeout 7)))
+    (move-marker org-log-note-marker (point))
+    (setq org-log-note-purpose purpose
+          org-log-note-state state
+          org-log-note-previous-state prev-state
+          org-log-note-how how
+          org-log-note-extra extra
+          org-log-note-effective-time (org-current-effective-time))
+    ;; (add-hook 'post-command-hook 'org-add-log-note-background 'append)
+    (org-add-log-note-with-timed-new-win  win-timeout)))
 
-  ;;;##autoload
-  (defun org-clock-lotus-log-note-current-clock-with-timed-new-win (win-timeout &optional fail-quietly)
-    (interactive)
-    (ignore fail-quietly)
-    (let ((win-timeout  (or win-timeout  7)))
+;;;##autoload
+(defun org-clock-lotus-log-note-current-clock-with-timed-new-win (win-timeout &optional fail-quietly)
+  (interactive)
+  (ignore win-timeout)
+  (let ((win-timeout  (or win-timeout  7)))
       (when (org-clocking-p)
         (move-marker org-log-note-return-to (point))
         (org-clock-lotus-with-current-clock
             (org-add-log-setup-with-timed-new-win win-timeout
-            'note nil nil nil
-            (concat "# Task: " (org-get-heading t) "\n\n"))))))
+             'note nil nil nil
+             (concat "# Task: " (org-get-heading t) "\n\n"))))))
 
-  ;; (defun org-clock-lotus-log-note-current-clock-with-timed-new-win (&optional fail-quietly)
-  ;;   (interactive)
-  ;;   (if (org-clocking-p)
-  ;;       (org-clock-lotus-with-current-clock
-  ;;        (org-add-log-setup-background
-  ;;         'note nil nil nil
-  ;;         (concat "# Task: " (org-get-heading t) "\n\n")))
-  ;;       (if fail-quietly (throw 'exit t) (user-error "No active clock"))))
+      ;; (defun org-clock-lotus-log-note-current-clock-with-timed-new-win (&optional fail-quietly)
+      ;;   (interactive)
+      ;;   (if (org-clocking-p)
+      ;;       (org-clock-lotus-with-current-clock
+      ;;        (org-add-log-setup-background
+      ;;         'note nil nil nil
+      ;;         (concat "# Task: " (org-get-heading t) "\n\n")))
+      ;;       (if fail-quietly (throw 'exit t) (user-error "No active clock"))))
 ;; Org add log note with-timed-new-win:1 ends here
 
 ;; Org detect change to log note
@@ -301,7 +294,7 @@
   (let ((changes 0))
     (when buffer-undo-tree
       (undo-tree-mapc #'(lambda (node)
-                          (setq changes (+ changes 1))) ;; (length (undo-tree-node-next node))
+                          (setq changes (+ changes 1)));; (length (undo-tree-node-next node))
                       (undo-tree-root buffer-undo-tree)))
     changes))
 
@@ -362,13 +355,13 @@ will return point to the current position."
           ((and (consp undo) (stringp (cl-first undo))) ; (TEXT . POSITION)
            (setq char-changes (+ char-changes (length (cl-first undo)))))
           ((and (consp undo) (eq (cl-first undo) t))) ; (t HIGH . LOW)
-          ((and (consp undo) (null (cl-first undo)))
+          ((and (consp undo) (null (cl-first undo))))
            ;; (nil PROPERTY VALUE BEG . END)
            ;; (setq position (rest (last undo)))
-           )
+
           ((and (consp undo) (markerp (cl-first undo)))) ; (MARKER . DISTANCE)
-          ((integerp undo))		; POSITION
-          ((null undo))		; nil
+          ((integerp undo))    		; POSITION
+          ((null undo))    		; nil
           (t (error "Invalid undo entry: %s" undo)))
         (setq undo-list (rest undo-list)))
 
@@ -376,7 +369,7 @@ will return point to the current position."
         ((>= char-changes minimal-char-changes)
          (if (funcall action win-timeout)
              (setq lotus-last-buffer-undo-list-pos undo)))
-        (t )))))
+        (t)))))
 (defun org-clock-lotus-log-note-on-change (&optional win-timeout)
   ;; (when (or t (eq buffer (current-buffer)))
   (let ((win-timeout (or win-timeout 7)))
@@ -436,19 +429,20 @@ will return point to the current position."
 
 ;; [[file:org-onchange.org::*Org log note change from different sources][Org log note change from different sources:1]]
 ;;{{
- ;; https://emacs.stackexchange.com/questions/101/how-can-i-create-an-org-link-for-each-email-sent-by-mu4e
- ;; My first suggestion would be to try the following.
+   ;; https://emacs.stackexchange.com/questions/101/how-can-i-create-an-org-link-for-each-email-sent-by-mu4e
+   ;; My first suggestion would be to try the following.
 
- (add-hook 'message-send-hook (lambda () (org-store-link nil)))
+(add-hook 'message-send-hook #'(lambda ()
+                                 (org-store-link nil)))
 
- ;; Since you said you tried the hook, another way is to just combine
- ;; org-store-link and message sending into a single function.
+   ;; Since you said you tried the hook, another way is to just combine
+   ;; org-store-link and message sending into a single function.
 
- (defun store-link-then-send-message ()
-   "Call `org-store-link', then send current email message."
-   (interactive)
-   (call-interactively #'org-store-link)
-   (call-interactively #'message-send-and-exit))
+(defun store-link-then-send-message ()
+  "Call `org-store-link', then send current email message."
+  (interactive)
+  (call-interactively #'org-store-link)
+  (call-interactively #'message-send-and-exit))
 
 (when (and
        (boundp 'mu4e-compose-mode-map)
@@ -467,105 +461,105 @@ will return point to the current position."
  ;; information in a heading. It is pretty easy to write a simple function that
  ;; emails a selected region.
 
- (defun email-region (start end)
-   "Send region as the body of an email."
-   (interactive "r")
-   (let ((content (buffer-substring start end)))
-     (compose-mail)
+(defun email-region (start end)
+  "Send region as the body of an email."
+  (interactive "r")
+  (let ((content (buffer-substring start end)))
+    (compose-mail)
+    (message-goto-body)
+    (insert content)
+    (message-goto-to)))
+
+   ;; that function is not glamorous, and you still have to fill in the email
+   ;; fields, and unless you use gnus and org-contacts, the only record keeping is
+   ;; through the email provider.
+
+   ;; What I would like is to send a whole heading in an email. The headline should
+   ;; be the subject, and if there are TO, CC or BCC properties, those should be
+   ;; used. If there is no TO, then I want to grab the TO from the email after you
+   ;; enter it and store it as a property. You should be able to set OTHER-HEADERS
+   ;; as a property (this is just for fun. There is no practical reason for this
+   ;; yet). After you send the email, it should record in the heading when it was
+   ;; sent.
+
+   ;; It turned out that is a relatively tall order. While it is easy to setup the
+   ;; email if you have everything in place, it is tricky to get the information on
+   ;; TO and the time sent after the email is sent. Past lispers had a lot of ideas
+   ;; to make this possible, and a day of digging got me to the answer. You can
+   ;; specify some "action" functions that get called at various times, e.g. after
+   ;; sending, and a return action when the compose window is done. Unfortunately,
+   ;; I could not figure out any way to do things except to communicate through
+   ;; some global variables.
+
+   ;; So here is the code that lets me send org-headings, with the TO, CC, BCC
+   ;; properties, and that records when I sent the email after it is sent.
+
+(defvar *email-heading-point* nil
+  "global variable to store point in for returning")
+
+(defvar *email-to-addresses* nil
+  "global variable to store to address in email")
+
+(defun email-heading-return ()
+  "after returning from compose do this"
+  (switch-to-buffer (marker-buffer  *email-heading-point*))
+  (goto-char (marker-position  *email-heading-point*))
+  (setq *email-heading-point* nil)
+  (org-set-property "SENT-ON" (current-time-string))
+  ;; reset this incase you added new ones
+  (org-set-property "TO" *email-to-addresses*))
+
+
+(defun email-send-action ()
+  "send action for compose-mail"
+  (setq *email-to-addresses* (mail-fetch-field "To")))
+
+(defun email-heading ()
+  "Send the current org-mode heading as the body of an email, with headline as the subject.
+
+   use these properties TO OTHER-HEADERS is an alist specifying
+   additional header fields. Elements look like (HEADER . VALUE)
+   where both HEADER and VALUE are strings.
+
+   save when it was sent as s SENT property. this is overwritten on
+   subsequent sends. could save them all in a logbook?
+   "
+  (interactive)
+  ; store location.
+  (setq *email-heading-point* (set-marker (make-marker) (point)))
+  (org-mark-subtree)
+  (let ((content (buffer-substring (point) (mark)))
+        (TO (org-entry-get (point) "TO" t))
+        (CC (org-entry-get (point) "CC" t))
+        (BCC (org-entry-get (point) "BCC" t))
+        (SUBJECT (nth 4 (org-heading-components)))
+        (OTHER-HEADERS (eval (org-entry-get (point) "OTHER-HEADERS")))
+        (continue nil)
+        (switch-function nil)
+        (yank-action nil)
+        (send-actions '((email-send-action . nil)))
+        (return-action '(email-heading-return)))
+
+    (compose-mail TO SUBJECT OTHER-HEADERS continue switch-function yank-action send-actions return-action)
+    (message-goto-body)
+    (insert content)
+    (when CC
+      (message-goto-cc)
+      (insert CC))
+    (when BCC
+      (message-goto-bcc)
+      (insert BCC))
+    (if TO
      (message-goto-body)
-     (insert content)
-     (message-goto-to)))
+     (message-goto-to))))
 
- ;; that function is not glamorous, and you still have to fill in the email
- ;; fields, and unless you use gnus and org-contacts, the only record keeping is
- ;; through the email provider.
 
- ;; What I would like is to send a whole heading in an email. The headline should
- ;; be the subject, and if there are TO, CC or BCC properties, those should be
- ;; used. If there is no TO, then I want to grab the TO from the email after you
- ;; enter it and store it as a property. You should be able to set OTHER-HEADERS
- ;; as a property (this is just for fun. There is no practical reason for this
- ;; yet). After you send the email, it should record in the heading when it was
- ;; sent.
+   ;; This works pretty well for me. Since I normally use this to send tasks to
+   ;; people, it keeps the task organized where I want it, and I can embed an
+   ;; org-id in the email so if the person replies to it telling me the task is
+   ;; done, I can easily navigate to the task to mark it off. Pretty handy.
 
- ;; It turned out that is a relatively tall order. While it is easy to setup the
- ;; email if you have everything in place, it is tricky to get the information on
- ;; TO and the time sent after the email is sent. Past lispers had a lot of ideas
- ;; to make this possible, and a day of digging got me to the answer. You can
- ;; specify some "action" functions that get called at various times, e.g. after
- ;; sending, and a return action when the compose window is done. Unfortunately,
- ;; I could not figure out any way to do things except to communicate through
- ;; some global variables.
-
- ;; So here is the code that lets me send org-headings, with the TO, CC, BCC
- ;; properties, and that records when I sent the email after it is sent.
-
- (defvar *email-heading-point* nil
-   "global variable to store point in for returning")
-
- (defvar *email-to-addresses* nil
-   "global variable to store to address in email")
-
- (defun email-heading-return ()
-   "after returning from compose do this"
-   (switch-to-buffer (marker-buffer  *email-heading-point*))
-   (goto-char (marker-position  *email-heading-point*))
-   (setq *email-heading-point* nil)
-   (org-set-property "SENT-ON" (current-time-string))
-   ;; reset this incase you added new ones
-   (org-set-property "TO" *email-to-addresses*)
-   )
-
- (defun email-send-action ()
-   "send action for compose-mail"
-   (setq *email-to-addresses* (mail-fetch-field "To")))
-
- (defun email-heading ()
-   "Send the current org-mode heading as the body of an email, with headline as the subject.
-
- use these properties TO OTHER-HEADERS is an alist specifying
- additional header fields. Elements look like (HEADER . VALUE)
- where both HEADER and VALUE are strings.
-
- save when it was sent as s SENT property. this is overwritten on
- subsequent sends. could save them all in a logbook?
- "
-   (interactive)
-   ; store location.
-   (setq *email-heading-point* (set-marker (make-marker) (point)))
-   (org-mark-subtree)
-   (let ((content (buffer-substring (point) (mark)))
-   (TO (org-entry-get (point) "TO" t))
-   (CC (org-entry-get (point) "CC" t))
-   (BCC (org-entry-get (point) "BCC" t))
-   (SUBJECT (nth 4 (org-heading-components)))
-   (OTHER-HEADERS (eval (org-entry-get (point) "OTHER-HEADERS")))
-   (continue nil)
-   (switch-function nil)
-   (yank-action nil)
-   (send-actions '((email-send-action . nil)))
-   (return-action '(email-heading-return)))
-
-     (compose-mail TO SUBJECT OTHER-HEADERS continue switch-function yank-action send-actions return-action)
-     (message-goto-body)
-     (insert content)
-     (when CC
-       (message-goto-cc)
-       (insert CC))
-     (when BCC
-       (message-goto-bcc)
-       (insert BCC))
-     (if TO
-   (message-goto-body)
-       (message-goto-to))
-     ))
-
- ;; This works pretty well for me. Since I normally use this to send tasks to
- ;; people, it keeps the task organized where I want it, and I can embed an
- ;; org-id in the email so if the person replies to it telling me the task is
- ;; done, I can easily navigate to the task to mark it off. Pretty handy.
-
- ;;}}
+   ;;}}
 ;; Org log note change from different sources:1 ends here
 
 ;; Provide this file
