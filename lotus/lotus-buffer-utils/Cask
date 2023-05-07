@@ -1,0 +1,25 @@
+
+(source gnu)
+(source melpa)
+(source marmalade)
+(source org)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "buffer-utils" "20191027.2325" "buffer-utils")
+
+
+(files
+ "buffer-utils-pkg.el"
+ "buffer-utils.el")
+
+(development
+ ;; (depends-on "ibuffer")
+ (depends-on "ibuffer-vc")
+ ;; (depends-on "ibuf-ext")
+ (depends-on "uniquify")
+ (depends-on "ibuffer")
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))
