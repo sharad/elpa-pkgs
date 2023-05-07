@@ -176,9 +176,9 @@
 
 
 (defun org-select-targets (&rest targets)
-  (remove-if-not #'(lambda (trg)
-                     (memq (cl-rest trg) targets))
-                 org-capture+-target-names))
+  (cl-remove-if-not #'(lambda (trg)
+                        (memq (cl-rest trg) targets))
+                    org-capture+-target-names))
 
 
 (defun org-capture+-build-target-arg (ptree)
@@ -186,7 +186,8 @@
         (file      (ptree-get ptree :target :file))
         (headlines (ptree-get ptree :target :headlines))
         (function  (ptree-get ptree :target :function))
-        (marker    (ptree-get ptree :target :marker)))
+        (marker    (ptree-get ptree :target :marker))
+        (id        (ptree-get ptree :target :id)))
     (cl-case name
       (file              (list name file))
       (id                (list name id))
@@ -232,6 +233,7 @@
                                     (prefix  (concat (make-string level ?\*) " "))
                                     (headline-tags   (org-get-heading))
                                     (headline-notags (substring-no-properties (org-get-heading 'no-tags))))
+                               (ignore headline-notags)
                                (cons (org-fontify-like-in-org-mode (concat prefix headline-tags))
                                      (org-get-outline-path t))))
                          match
@@ -296,6 +298,7 @@
   (org-capture+-meta--put 'multi :template :alignment)
 
   (define-org-capture+-filter (ptree :type)
+    (ignore ptree)
     org-capture+-types)
 
   (define-org-capture+-filter (ptree :target :name)
@@ -323,6 +326,7 @@
                  (null headlines))
         (apply #'org-capture+-get-file-headlines file t headlines)))))
 
+;;;###autoload
 (org-capture+-initialize)
 
 
@@ -334,8 +338,8 @@
                               (if (eq (org-capture+-meta-get keys :alignment) 'multi) "\n" ": ")
                               (apply #'ptree-get ptree keys))
                       keys))
-            (remove-if-not #'(lambda (keys) (apply #'ptree-get ptree keys))
-                           key-lists))))
+            (cl-remove-if-not #'(lambda (keys) (apply #'ptree-get ptree keys))
+                              key-lists))))
 
 (defun org-capture+reset-source (ptree)
   (let (sources
@@ -384,8 +388,8 @@
 
 
 (defun org-capture+-ptree-runnable-p (ptree)
-  (every #'(lambda (keys) (apply #'ptree-get ptree keys))
-         (ptree-key-lists org-capture+-plist)))
+  (cl-every #'(lambda (keys) (apply #'ptree-get ptree keys))
+            (ptree-key-lists org-capture+-plist)))
 
 ;; TODO: Add resets which will help to edit existing
 ;;       take new as editing an anonymous
@@ -424,6 +428,7 @@
 (defalias 'org-capture+ #'org-capture+-guided)
 
 
+;;;###autoload
 (define-key global-map [remap org-capture] 'org-capture+)
 
 

@@ -41,6 +41,7 @@
 
 
 (require 'activity-base)
+(require 'activity)
 (require 'switch-buffer-functions)
 (require 'org-uninteractive-log-note)
 
@@ -87,14 +88,12 @@
      (@:message "Timer %s" @:timer))
 
   (def@ @@ :get-idle-times ()
-    (@:message "Idle Times %s" idle-times))
+    (@:message "Idle Times %s" @:idle-times))
 
   (def@ @@ :buffer-chg-print-info (&optional msg)
-    (let ((msg (or msg "info"))
-          (time-passed
-            (-
-             (float-time (current-time))
-             (float-time @:time-start))))
+    (let ((msg         (or msg "info"))
+          (time-passed (- (float-time (current-time))
+                          (float-time @:time-start))))
       (when @:debug-switch-buf
          (@:notify-buf-chg
           "%s: prev currbuf-detect-buffer-chg-use %s, currbuf-run-detect-buffer-chg currbuf %s, (current-buffer) %s, (window-buffer) %s, idle-times %s, time-passed %d, Idle timer %s"
@@ -130,31 +129,24 @@
   (def@ @@ :cancel-detect-buffer-chg-use ()
     (when @:timer
       (cancel-timer @:timer)
-      (setf
-       @:timer nil))
-    (setf
-     @:idle-times nil
-     @:time-start (current-time)))
+      (setf @:timer nil))
+    (setf @:idle-times nil
+          @:time-start (current-time)))
 
 
   (def@ @@ :detect-buffer-chg-use (prev curr)
-    (let* ((cumulatibe-idle-time (reduce #'+ @:idle-times))
-           (time-passed
-             (-
-              (float-time (current-time))
-              (float-time @:time-start)))
-           (time-spent
-             (- time-passed cumulatibe-idle-time)))
-
+    (let* ((cumulatibe-idle-time (cl-reduce #'+ @:idle-times))
+           (time-passed (- (float-time (current-time))
+                           (float-time @:time-start)))
+           (time-spent  (- time-passed cumulatibe-idle-time)))
       (when @:debug-switch-buf
         (@:message "detect-buffer-chg-use: (>= time-spent time-threshold-gap) %s" (>= time-spent @:time-threshold-gap))
         (@:message "detect-buffer-chg-use: (is-run-detect-buffer-chg-use) %s" (@:is-run-detect-buffer-chg-use))
         (@:message "detect-buffer-chg-use: (not (eq currbuf-detect-buffer-chg-use (current-buffer))) %s" (not (eq @:currbuf-detect-buffer-chg-use (current-buffer)))))
 
-      (if (and
-           (>= time-spent @:time-threshold-gap)
-           (@:is-run-detect-buffer-chg-use)
-           (not (eq @:currbuf-detect-buffer-chg-use (current-buffer))))
+      (if (and (>= time-spent @:time-threshold-gap)
+               (@:is-run-detect-buffer-chg-use)
+               (not (eq @:currbuf-detect-buffer-chg-use (current-buffer))))
           (progn
             (@:cancel-detect-buffer-chg-use)
             (@:buffer-chg-action prev curr time-spent)
@@ -172,31 +164,26 @@
             (@:buffer-chg-print-info "detect-buffer-chg-use reschd timer")))))
 
   (def@ @@ :is-run-detect-buffer-chg-use ()
-    (and
-     (not
-      (or
-        ;; (current-idle-time)
-       (string-match "^*helm" (buffer-name))
-       (string-match "^*Minibuf-" (buffer-name))
-       (minibufferp)))
-     (eq
-      (current-buffer)
-      (window-buffer))))
+    (and (not (or (string-match "^*helm" (buffer-name))
+                  ;; (current-idle-time)
+                  (string-match "^*Minibuf-" (buffer-name))
+                  (minibufferp)))
+         (eq (current-buffer)
+             (window-buffer))))
   ;; (current-idle-time)
 
   (def@ @@ :run-detect-buffer-chg (prev curr)
+    (ignore prev)
     (@:buffer-chg-print-info "run-detect-buffer-chg1")
-    (if (and
-         (@:is-run-detect-buffer-chg-use)
-         (not (eq @:currbuf-run-detect-buffer-chg (current-buffer)))
-         (not (eq @:currbuf-detect-buffer-chg-use (current-buffer))))
+    (if (and (@:is-run-detect-buffer-chg-use)
+             (not (eq @:currbuf-run-detect-buffer-chg (current-buffer)))
+             (not (eq @:currbuf-detect-buffer-chg-use (current-buffer))))
         (progn
           (@:buffer-chg-print-info "run-detect-buffer-chg")
           (@:cancel-detect-buffer-chg-use)
-          (setf @:timer
-                (run-with-timer @:timer-gap
-                                nil
-                                @:detect-buffer-chg-use @@ @:currbuf-run-detect-buffer-chg curr))
+          (setf @:timer (run-with-timer @:timer-gap
+                                        nil
+                                        @:detect-buffer-chg-use @@ @:currbuf-run-detect-buffer-chg curr))
           (setf @:currbuf-run-detect-buffer-chg curr))
         (when (eq @:currbuf-detect-buffer-chg-use (current-buffer))
           (when @:debug-switch-buf (@:message "cancel timer"))
@@ -238,12 +225,18 @@
   (@:initialize))
 
 
+
+(defvar @defautl-buffer-transition-with-log-note-in-org-current-clock nil)
 (setf @defautl-buffer-transition-with-log-note-in-org-current-clock
   (@drive-object @transition-class "default buffer transition"
     (def@ @@ :dispatch (prev curr time-spent)
+      (ignore time-spent)
       (@! @org-clock-uninteractive-log-note :send "Changed to buffer %s from %s" curr prev))))
 
 
+
+(defvar @buffer-transition nil)
+(defvar @buffer-transition-span-detector nil)
 (progn
   (setf @buffer-transition
         (@! @transition-class
