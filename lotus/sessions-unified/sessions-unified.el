@@ -29,56 +29,20 @@
 ;; in some startup-hook
 
 
-;; (defun lotus-desktop-session-config (funn-notify)
-;;   (progn
-;;     (setq session-mgr-utils-notify funn-notify)
-;;     (add-hook
-;;      'lotus-enable-startup-interrupting-feature-hook
-;;      'frame-session-restore-hook-func
-;;      t)
-;;     (add-hook ;; 'after-init-hook
-;;      'lotus-enable-startup-interrupting-feature-hook
-;;      #'(lambda ()
-;;         (run-at-time-or-now 7 'lotus-desktop-session-restore)))))
-
-;; function frame-session-restore-hook-func
-;; (add-hook 'lotus-enable-startup-interrupting-feature-hook
-;;           'frame-session-restore-hook-func
-;;           t)
-
-;; (add-hook ;; 'after-init-hook
-;;  'lotus-enable-startup-interrupting-feature-hook
-;;  #'(lambda ()
-;;    (run-at-time-or-now 7 'lotus-desktop-session-restore)))
-
 ;;; Code:
 
 (provide 'sessions-unified)
 
-;; (require 'dot-emacs-helper)
 
-;; (require 'general-testing)
-;; testing
 (require 'rcs-backup)
 (require 'cl)
 
 (eval-when-compile
   '(require 'cl))
 
-;; (require 'wrappers)
-;; (require 'basic-utils)
-;; run-at-time-or-now
-;; (require 'utils-custom)
-;; lotus-read-sexp
-;; (require 'misc-utils)
-
 (require 'desktop)
 (require 'session)
 (require 'elscreen)
-;; (require 'emacs-panel)
-
-;; ;; BUG TODO
-;; (require 'vc-config)
 (require 'basic-utils)
 
 
@@ -307,32 +271,5 @@ get re-enabled here.")
      (member #'save-all-sessions-auto-save-immediately kill-emacs-hook)
      (member #'frame-session-restore-force after-make-frame-functions)
      (member #'frame-session-save delete-frame-functions))))
-
-;; (member 'save-all-sessions-auto-save-immediately
-;;         (symbol-value 'kill-emacs-hook))
 
-
-;; (require 'fmsession)
-;; (require 'session-unified)
-;; (require 'desktop-unified)
-;; (require 'misc-unified)
-
-
-
-
-;; ;;;###autoload
-;; (defun lotus-desktop-session-config (funn-notify)
-;;   (progn
-;;     (setq session-mgr-utils-notify funn-notify)
-;;     (add-hook
-;;      'lotus-enable-startup-interrupting-feature-hook
-;;      'frame-session-restore-hook-func
-;;      t)
-;;     (add-hook ;; 'after-init-hook
-;;      'lotus-enable-startup-interrupting-feature-hook
-;;      #'(lambda ()
-;;         (run-at-time-or-now 7 'lotus-desktop-session-restore)))))
-
-;; (toggle-debug-on-error)
-
 ;;; session-config.el ends here
