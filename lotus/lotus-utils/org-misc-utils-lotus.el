@@ -39,8 +39,6 @@
 (require 'lotus-misc-utils)
 (require 'timer-utils-lotus)
 
-;; (eval-when-compile
-;;   (require 'cl))
 (require 'elscreen)
 (require 'helm-lib)
 (require 'outline)
@@ -52,7 +50,6 @@
   (require 'org-macs))
 (require 'org-refile)
 (require 'org-agenda)
-;; (require 'cl)
 
 
 (defvar safe-org-refile-get-location-modes
@@ -189,7 +186,8 @@ deletion[s] modification[s] etc.)"
                   (goto-char (point-min))
                   (widen)
                   (outline-show-all)
-                  (goto-char (marker-position-nonil marker))
+                  (goto-char (or (marker-position marker)
+                                 0))
                   ;; (org-mode)
                   ,@body))
            (setq pos (point))
@@ -215,7 +213,8 @@ deletion[s] modification[s] etc.)"
                  (goto-char (point-min))
                  (widen)
                  (outline-show-all)
-                 (goto-char (marker-position-nonil marker))
+                 (goto-char (or (marker-position marker)
+                                0))
                  ;; (org-mode)
                  ,@body))
            (setq pos (point))
@@ -240,7 +239,7 @@ deletion[s] modification[s] etc.)"
                  ;; (goto-char (point-min))
                  ;; (widen)
                  ;; (outline-show-all)
-                 ;; (goto-char (marker-position-nonil marker))
+                 ;; (goto-char (or (marker-position marker) 0))
                  ;; (org-mode)
                  ,@body))
            (setq pos (point))

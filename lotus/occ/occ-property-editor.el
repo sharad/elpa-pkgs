@@ -51,8 +51,6 @@
 (require 'occ-obj-utils)
 (require 'occ-prop)
 (require 'occ-assert)
-
-(require 'remem)
 
 
 (cl-defgeneric occ-do-select-propetry (obj
@@ -235,16 +233,15 @@
             (recenter-top-bottom 2)
             (let* ((prop-range (org-flag-property-drawer-at-marker mrk nil))
                    (prop-loc   (when (consp prop-range) (1- (cl-first prop-range)))))
-              ;; (show-all)
               (outline-show-all)
-              (if (numberp prop-loc
-                                (goto-char prop-loc)
-                              (if nil
-                                  (occ-error "occ-do-open-property-block: no prop-loc % for buff %s marker %s"
-                                         prop-loc buff mrk)
-                                t)
-                      (occ-error "occ-do-open-property-block: no buff %s found for object %s"
-                             (occ-obj-Format obj))))))))))
+              (if (numberp prop-loc)
+                  (goto-char prop-loc)
+                (if nil
+                    (occ-error "occ-do-open-property-block: no prop-loc % for buff %s marker %s"
+                               prop-loc buff mrk)))
+              t))
+        (occ-error "occ-do-open-property-block: no buff %s found for object %s"
+                   (occ-obj-Format obj))))))
 
 (cl-defmethod occ-do-open-property-block ((obj null))
   (ignore obj)

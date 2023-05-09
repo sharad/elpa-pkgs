@@ -386,7 +386,7 @@
   (when (and
          org-clock-marker
          (markerp org-clock-marker)
-         (> (marker-position-nonil org-clock-marker) 0))
+         (> (or (marker-position org-clock-marker) 0) 0))
     (org-with-cloned-marker org-clock-marker "<tree>"
       (let ((view-read-only nil)
             (buffer-read-only t))
