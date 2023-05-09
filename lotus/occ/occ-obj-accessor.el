@@ -35,6 +35,7 @@
 (require 'occ-assert)
 (require 'occ-commands)
 (require 'occ-util-common)
+(require 'occ-debug-method)
 
 
 (cl-defmethod occ-obj-class-name (obj)

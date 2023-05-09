@@ -46,8 +46,11 @@
 
 ;;;###autoload
 (defun run-with-nonobtrusive-aware-idle-timers (longdelay repeat shortdelay repeat-after-idle fn arg &optional cancel)
-  "Run a function after idle time of REPEAT + SHORTDELAY, and repeat running on every SHORTDELAY till emacs is idle if REPEAT-AFTER-IDLE is non nil.
-Benefit with this timer is that it will very much ensure before running that user is not typing in emacs."
+  "Run a function after idle time of REPEAT + SHORTDELAY, and
+ repeat running on every SHORTDELAY till emacs is idle if
+ REPEAT-AFTER-IDLE is non nil. Benefit with this timer is that it
+ will very much ensure before running that user is not typing in
+ emacs."
   (let* ((longdelay longdelay)
          (repeat repeat)
          (repeat-after-idle repeat-after-idle)

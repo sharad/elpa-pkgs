@@ -286,3 +286,46 @@ Warning (comp): org-clock-daysummary.el:327:6: Warning: the function ‘spacelin
 Warning (comp): org-clock-daysummary.el:333:43: Warning: the function ‘spaceline-toggle-workdaysummary-on’ is not known to be defined. Disable showing Disable logging
 Warning (comp): org-clock-daysummary.el:254:10: Warning: the function ‘directory-files-recursive’ is not known to be defined. Disable showing Disable logging
 Warning (comp): org-clock-daysummary.el:158:40: Warning: the function ‘org-timer-secs-to-hms’ is not known to be defined. Disable showing Disable logging
+
+
+Warning (comp): /home/s/hell/.emacs.d/elpa/28.2/develop/occ-20230510.27/occ-tsk.el: Error: Symbol's function definition is void occ-debug Disable showing Disable logging
+
+Warning (comp): occ-obj-simple.el:249:58: Warning: Unused lexical argument `action' Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:249:58: Warning: Unused lexical argument `candidate' Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:392:12: Warning: the function ‘org-capture-place-template’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:391:12: Warning: the function ‘org-capture-put’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:390:31: Warning: the function ‘org-capture-fill-template’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:388:72: Warning: the function ‘org-capture-get’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:386:6: Warning: the function ‘org-capture-set-target-location’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:385:6: Warning: the function ‘org-capture-get-template’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:384:6: Warning: the function ‘org-capture-set-plist’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:383:17: Warning: the function ‘org-capture-select-template’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:331:49: Warning: the function ‘lotus-org-create-anonymous-task’ is not known to be defined. Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:166:77: Warning: the function ‘org-capture+-debug’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:164:24: Warning: the function ‘occ-do-capture+-helm-select-template’ is not known to be defined. Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:140:4: Warning: the function ‘org-capture-run’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-simple.el:78:4: Warning: the function ‘org-content’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-helm-method.el:154:4: Warning: the function ‘occ-helm-build-candidates’ is not known to be defined. Disable showing Disable logging
+Warning (comp): occ-obj-method.el:130:21: Warning: the function ‘select-frame-set-input-disable-raise’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-method.el:130:21: Warning: the function ‘lotus-set-window-configuration’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-method.el:130:21: Warning: the function ‘select-frame-set-input-enable-raise’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-method.el:130:21: Warning: the function ‘safe-exit-recursive-edit-if-active’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-method.el:130:21: Warning: the function ‘safe-delete-window’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-method.el:129:28: Warning: the function ‘run-with-idle-plus-timer’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-method.el:129:28: Warning: the function ‘helm-symbol-name’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-method.el:129:28: Warning: the function ‘helm-this-command’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-obj-method.el:129:28: Warning: the function ‘lotus-current-window-configuration’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): occ-prop-base.el:188:4: Warning: Unused lexical variable `e' Disable showing Disable logging
+Warning (comp): occ-prop-base.el:198:4: Warning: Unused lexical variable `e' Disable showing Disable logging
+Warning (comp): occ-prop-base.el:208:4: Warning: Unused lexical variable `e' Disable showing Disable logging
+Warning (comp): occ-prop-base.el:218:4: Warning: Unused lexical variable `e' Disable showing Disable logging
+Warning (comp): occ-prop-base.el:234:4: Warning: Unused lexical variable `e' Disable showing Disable logging
+Warning (comp): occ-prop-base.el:248:4: Warning: Unused lexical variable `e' Disable showing Disable logging
+Warning (comp): occ-prop-base.el:287:4: Warning: Unused lexical variable `e' Disable showing Disable logging
+
+Warning (comp): occ-property-editor.el:347:27: Warning: Unused lexical variable `err' Disable showing Disable logging
+Warning (comp): occ-obj-clock-method.el:483:18: Warning: Unused lexical variable `key' Disable showing Disable logging
+Warning (comp): occ-obj-clock-method.el:391:54: Warning: the function ‘lotus-utils-debug’ might not be defined at runtime. Disable showing Disable logging
+Warning (comp): /home/s/hell/.emacs.d/elpa/28.2/develop/occ-20230510.27/occ-obj-accessor.el: Error: Symbol's function definition is void occ-debug Disable showing Disable logging
+Warning (comp): /home/s/hell/.emacs.d/elpa/28.2/develop/occ-20230510.27/occ-util-common.el: Error: Symbol's function definition is void occ-debug Disable showing Disable logging
+Warning (comp): /home/s/hell/.emacs.d/elpa/28.2/develop/occ-20230510.27/occ-prop-utils.el: Error: Symbol's function definition is void occ-debug Disable showing Disable logging
