@@ -60,9 +60,9 @@
 
 (defun LM:rtos (n mode precision)
   (ignore mode)
-  (let* ((num-str (number-to-string n)
-           (pos     (seq-position num-str ?.))
-           (pos     (when pos (+ pos precision 1)))))
+  (let* ((num-str (number-to-string n))
+         (pos     (seq-position num-str ?.))
+         (pos     (when pos (+ pos precision 1))))
       (substring (number-to-string n)
                  0
                  pos)))
