@@ -45,10 +45,10 @@
   (let* ((old org-clock-last-idle-start-time)
          (fmt (cl-rest org-time-stamp-formats))
          (time-string (format-time-string fmt org-clock-last-idle-start-time)))
+    (setq org-clock-last-idle-start-time nil)
     (ignore old)
-    (setq org-clock-last-idle-start-time nil
-        (message "%s" time-string))))
-
+    (message "%s" time-string)))
+    
 (defun org-clock-resolve-get-idle-start-time ()
   (let* ((org-clock-user-idle-seconds (if org-clock-last-idle-start-time
                                           (time-to-seconds (time-subtract (current-time)
