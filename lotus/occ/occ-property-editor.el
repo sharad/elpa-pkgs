@@ -64,7 +64,7 @@
     (ignore ctx)
     (occ-debug "%s" (occ-obj-Format tsk))
     ;; (occ-message "%s" (occ-obj-Format tsk))
-    ;; (occ-message (occ-obj-Format tsk))
+    (message (occ-obj-Format tsk))
     (let ((prompt     (or prompt
                           (format "%s proptery: "
                                   (occ-obj-Format tsk))))
@@ -78,17 +78,17 @@
                                           (append keys fixed-keys))))
                 (key-vals  (occ-obj-get-properties tsk keys)))
             (ignore maxkeylen)
-            (occ-debug "occ-do-select-propetry: for %s with keys =%s got key-vals = %s"
-                                              (occ-obj-Format tsk)
-                                              keys
-                                              key-vals)
+            (occ-debug "for %s with keys =%s got key-vals = %s"
+                       (occ-obj-Format tsk)
+                       keys
+                       key-vals)
             (if key-vals
                 (let* ((key-val-collection (mapcar #'(lambda (key-val)
-                                                       (cons
-                                                        (if (cl-rest key-val)
-                                                            (format "%s: %s" (cl-first key-val) (cl-rest key-val))
-                                                          (symbol-name (cl-first key-val)))
-                                                        (cl-first key-val)))
+                                                       (let ((key-prompt (if (cl-rest key-val)
+                                                                             (format "%s: %s" (cl-first key-val) (cl-rest key-val))
+                                                                           (symbol-name (cl-first key-val)))))
+                                                         (cons key-prompt
+                                                               (cl-first key-val))))
                                                    key-vals))
                        (key-val-collection (append key-val-collection
                                                    (mapcar #'(lambda (fk) (cons (symbol-name fk) fk))
