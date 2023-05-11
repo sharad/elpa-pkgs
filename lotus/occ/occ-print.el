@@ -154,19 +154,19 @@ pointing to it."
                                no-propterties)
   "occ-obj-format")
 
-(cl-defmethod occ-obj-format (obj
-                              &optional
-                              case
-                              rank
-                              no-curr-clock
-                              no-propterties)
-  (ignore rank)
-  (ignore no-curr-clock)
-  (ignore no-propterties)
-  (concat (when case
-            (concat (occ-obj-title obj
-                                   case) ": "))
-          (format "%s" obj)))
+;; (cl-defmethod occ-obj-format (obj
+;;                               &optional
+;;                               case
+;;                               rank
+;;                               no-curr-clock
+;;                               no-propterties)
+;;   (ignore rank)
+;;   (ignore no-curr-clock)
+;;   (ignore no-propterties)
+;;   (concat (when case
+;;             (concat (occ-obj-title obj
+;;                                    case) ": "))
+;;           (format "%s" obj)))
 
 (cl-defmethod occ-obj-format ((obj marker)
                               &optional
@@ -227,32 +227,49 @@ pointing to it."
             (unless no-curr-clock
               (when (occ-obj-current-p obj) "          🕑")))))
 
-(cl-defmethod occ-obj-format ((obj occ-ctxual-tsk) &optional
-                                                   case
-                                                   rank
-                                                   no-curr-clock
-                                                   no-propterties)
+(cl-defmethod occ-obj-format ((obj occ-ctxual-tsk)
+                              &optional
+                              case
+                              rank
+                              no-curr-clock
+                              no-propterties)
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
     (concat (when case (concat (occ-obj-title obj case) ": "))
             (when rank (format "[c%4d] " (or (occ-obj-rank obj) -128)))
+            ;; (occ-obj-format tsk case rank no-curr-clock no-propterties)
             (format "%s" (occ-obj-format tsk case rank no-curr-clock no-propterties))
             (unless no-curr-clock
               (when (occ-obj-current-p obj) "          🕑")))))
+
+(cl-defmethod occ-obj-format ((obj occ-return)
+                              &optional
+                              case
+                              rank
+                              no-curr-clock
+                              no-propterties)
+  (ignore case rank no-curr-clock no-propterties)
+  (let ((label     (occ-return-label obj))
+        (value-obj (occ-obj-obj obj)))
+    (format "%s: %s"
+            (symbol-name label)
+            (occ-obj-format value-obj))))
 
 
-(defun occ-obj-Format (obj &optional
-                           rank
-                           no-curr-clock
-                           no-propterties)
+(defun occ-obj-Format (obj
+                       &optional
+                       rank
+                       no-curr-clock
+                       no-propterties)
   (occ-obj-format obj 'capitalize
                   rank
                   no-curr-clock
                   no-propterties))
 
-(defun occ-obj-FORMAT (obj &optional
-                           rank
-                           no-curr-clock
-                           no-propterties)
+(defun occ-obj-FORMAT (obj
+                       &optional
+                       rank
+                       no-curr-clock
+                       no-propterties)
   (occ-obj-format obj 'upcase
                   rank
                   no-curr-clock

@@ -64,7 +64,6 @@
     (ignore ctx)
     (occ-debug "%s" (occ-obj-Format tsk))
     ;; (occ-message "%s" (occ-obj-Format tsk))
-    (message (occ-obj-Format tsk))
     (let ((prompt     (or prompt
                           (format "%s proptery: "
                                   (occ-obj-Format tsk))))
@@ -96,8 +95,6 @@
                                                    (mapcar #'(lambda (fk) (cons (symbol-name fk) fk))
                                                            fixed-keys))))
                   (occ-assert key-val-collection)
-                  ;; (message prompt)
-                  ;; (message (format "%s pp: " prompt))
                   (if key-val-collection
                       (let* ((key-sel (occ-completing-read prompt
                                                            key-val-collection
@@ -220,7 +217,7 @@
                      (buffer-file-name buff)
                      loc)
           (org-flag-property-drawer flag
-                                   force))))))
+                                    force))))))
 
 
 (cl-defmethod occ-do-open-property-block ((obj marker))
@@ -259,8 +256,7 @@
              (occ-obj-Format obj))
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (ignore tsk)
-    (ignore ctx)
+    (ignore tsk ctx)
     (let ((prop nil))
       (while (and (not (member (setq prop (occ-do-select-propetry obj))
                                '(edit done)))
@@ -278,6 +274,8 @@
 
 (cl-defmethod occ-do-properties-editor-in-cloned-buffer ((obj occ-obj-ctx-tsk))
   (occ-debug "occ-do-properties-editor-in-cloned-buffer: begin")
+  ;; (message "message")
+  ;; (message (occ-obj-format (occ-obj-tsk obj)))
   (let ((mrk (occ-obj-marker obj)))
     (org-with-cloned-marker mrk "<proptree>"
       (let ((cloned-mrk (point-marker)))

@@ -99,12 +99,13 @@ TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
                                           :timeout             timeout
                                           ;; :obtrusive           obtrusive
                                           :prompt              prompt)))
-          (occ-message "occ-list-select: selected = %s" selected)
-          (occ-debug   "occ-list-select: selected = %s" selected)
+          (occ-message "occ-list-select: selected = %s" (occ-obj-format selected))
+          (occ-debug   "occ-list-select: selected = %s" (occ-obj-format selected))
           (if return-transform
               ;; TODO: add cl-defmethod magic here
               (or selected ;as return value is going to be used.
-                  (occ-obj-make-return occ-return-quit-label selected))
+                  (occ-obj-make-return occ-return-quit-label
+                                       selected))
             selected))))))
 
 
