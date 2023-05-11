@@ -75,8 +75,10 @@
           (let ((maxkeylen (apply #'max
                                   (mapcar #'(lambda (sym) ;https://www.gnu.org/software/emacs/manual/html_node/elisp/Formatting-Strings.html
                                               (length (symbol-name sym)))
-                                          (append keys fixed-keys))))
-                (key-vals  (occ-obj-get-properties tsk keys)))
+                                          (append keys
+                                                  fixed-keys))))
+                (key-vals  (occ-obj-get-properties tsk
+                                                   keys)))
             (ignore maxkeylen)
             (occ-debug "for %s with keys =%s got key-vals = %s"
                        (occ-obj-Format tsk)
@@ -241,10 +243,10 @@
               (if (numberp prop-loc)
                   (goto-char prop-loc)
                 (if nil
-                    (occ-error "occ-do-open-property-block: no prop-loc % for buff %s marker %s"
+                    (occ-error "no prop-loc % for buff %s marker %s"
                                prop-loc buff mrk)))
               t))
-        (occ-error "occ-do-open-property-block: no buff %s found for object %s"
+        (occ-error "no buff %s found for object %s"
                    (occ-obj-Format obj))))))
 
 (cl-defmethod occ-do-open-property-block ((obj null))
@@ -270,7 +272,7 @@
                                            prop)))
           (when retval
             ;; (occ-tsk-update-tsks t)
-            (occ-debug "occ-do-properties-editor-with: done with retval %s" retval)
+            (occ-debug "done with retval %s" retval)
             retval))))))
 
 
