@@ -235,7 +235,7 @@ pointing to it."
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
     (concat (when case (concat (occ-obj-title obj case) ": "))
             (when rank (format "[c%4d] " (or (occ-obj-rank obj) -128)))
-            (format "%s" (occ-obj-format tsk case rank no-propterties))
+            (format "%s" (occ-obj-format tsk case rank no-curr-clock no-propterties))
             (unless no-curr-clock
               (when (occ-obj-current-p obj) "          🕑")))))
 
@@ -254,9 +254,9 @@ pointing to it."
                            no-curr-clock
                            no-propterties)
   (occ-obj-format obj 'upcase
-              rank
-              no-curr-clock
-              no-propterties))
+                  rank
+                  no-curr-clock
+                  no-propterties))
 
 
 (cl-defgeneric occ-obj-display (obj)

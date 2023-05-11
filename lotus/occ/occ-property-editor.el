@@ -62,48 +62,52 @@
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (ignore ctx)
-    (occ-debug "occ-do-select-propetry: %s" (occ-obj-Format tsk)
-        (let ((prompt     (or prompt
-                              (format "%s proptery: "
-                                      (occ-obj-Format tsk))))
-              (fixed-keys '(edit
-                            done))
-              (keys       (occ-obj-properties-to-edit obj)))
-          (if keys
-              (let ((maxkeylen (apply #'max
-                                      (mapcar #'(lambda (sym) ;https://www.gnu.org/software/emacs/manual/html_node/elisp/Formatting-Strings.html
-                                                  (length (symbol-name sym)))
-                                              (append keys fixed-keys))))
-                    (key-vals  (occ-obj-get-properties tsk keys)))
-                (ignore maxkeylen)
-                (occ-debug "occ-do-select-propetry: for %s with keys =%s got key-vals = %s"
-                                                  (occ-obj-Format tsk)
-                                                  keys
-                                                  key-vals
-                                (if key-vals
-                                    (let* ((key-val-collection (mapcar #'(lambda (key-val)
-                                                                           (cons
-                                                                            (if (cl-rest key-val)
-                                                                                (format "%s: %s" (cl-first key-val) (cl-rest key-val))
-                                                                              (symbol-name (cl-first key-val)))
-                                                                            (cl-first key-val)))
-                                                                       key-vals))
-                                           (key-val-collection (append key-val-collection
-                                                                       (mapcar #'(lambda (fk) (cons (symbol-name fk) fk))
-                                                                               fixed-keys))))
-                                      (occ-assert key-val-collection)
-                                      (if key-val-collection
-                                          (let* ((key-sel (occ-completing-read prompt
-                                                                               key-val-collection
-                                                                               nil
-                                                                               t))
-                                                 (sel (assoc key-sel
-                                                             key-val-collection)))
-                                            (occ-debug "selected option %s" sel)
-                                            (cl-rest sel))
-                                        (occ-error "Not Keys Vals Collection %s for %s" key-val-collection (occ-obj-Format tsk))))
-                                  (occ-error "Not Keys Vals for %s" (occ-obj-Format tsk)))
-                            (occ-debug "Not Keys for %s" (occ-obj-Format tsk)))))))))
+    (occ-debug "%s" (occ-obj-Format tsk))
+    ;; (occ-message "%s" (occ-obj-Format tsk))
+    ;; (occ-message (occ-obj-Format tsk))
+    (let ((prompt     (or prompt
+                          (format "%s proptery: "
+                                  (occ-obj-Format tsk))))
+          (fixed-keys '(edit
+                        done))
+          (keys       (occ-obj-properties-to-edit obj)))
+      (if keys
+          (let ((maxkeylen (apply #'max
+                                  (mapcar #'(lambda (sym) ;https://www.gnu.org/software/emacs/manual/html_node/elisp/Formatting-Strings.html
+                                              (length (symbol-name sym)))
+                                          (append keys fixed-keys))))
+                (key-vals  (occ-obj-get-properties tsk keys)))
+            (ignore maxkeylen)
+            (occ-debug "occ-do-select-propetry: for %s with keys =%s got key-vals = %s"
+                                              (occ-obj-Format tsk)
+                                              keys
+                                              key-vals)
+            (if key-vals
+                (let* ((key-val-collection (mapcar #'(lambda (key-val)
+                                                       (cons
+                                                        (if (cl-rest key-val)
+                                                            (format "%s: %s" (cl-first key-val) (cl-rest key-val))
+                                                          (symbol-name (cl-first key-val)))
+                                                        (cl-first key-val)))
+                                                   key-vals))
+                       (key-val-collection (append key-val-collection
+                                                   (mapcar #'(lambda (fk) (cons (symbol-name fk) fk))
+                                                           fixed-keys))))
+                  (occ-assert key-val-collection)
+                  ;; (message prompt)
+                  ;; (message (format "%s pp: " prompt))
+                  (if key-val-collection
+                      (let* ((key-sel (occ-completing-read prompt
+                                                           key-val-collection
+                                                           nil
+                                                           t))
+                             (sel (assoc key-sel
+                                         key-val-collection)))
+                        (occ-debug "selected option %s" sel)
+                        (cl-rest sel))
+                    (occ-error "Not Keys Vals Collection %s for %s" key-val-collection (occ-obj-Format tsk))))
+              (occ-error "Not Keys Vals for %s" (occ-obj-Format tsk))))
+        (occ-debug "Not Keys for %s" (occ-obj-Format tsk))))))
 
 
 (defun org-get-flag-property-drawer (&optional force)
