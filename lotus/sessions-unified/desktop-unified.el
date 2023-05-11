@@ -29,10 +29,11 @@
 
 (require 'server)
 (require 'lotus-utils)
-(require 'sessions-unified)
-(require 'session-unified)
+(require 'emacs-panel)
 
 
+(require 'sessions-unified)
+(require 'session-unified)
 (require 'fmsession)
 
 

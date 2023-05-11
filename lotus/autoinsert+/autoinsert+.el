@@ -185,7 +185,7 @@ thus, on a GNU or Unix system, it must end in a slash."
       (char-isnum-p thechar)))
 
 ;; (mapcar (lambda (s)
-;;           (remove-if-not 'char-isalpha-p s))
+;;           (cl-remove-if-not #'char-isalpha-p s))
 ;;         (mapcar 'car auto-mode-alist))
 
 ;; ? How to unify mode (cl-rest auto-mode-alist) and file names
@@ -201,15 +201,16 @@ thus, on a GNU or Unix system, it must end in a slash."
 
 ;;;###autoload
 (defun regex-equal (r1 r2)
-  (string-equal
-   (remove-if-not 'char-isalpha-p r1)
-   (remove-if-not 'char-isalpha-p r2)))
+  (string-equal (cl-remove-if-not 'char-isalpha-p r1)
+                (cl-remove-if-not 'char-isalpha-p r2)))
 
 
 (when nil
-  (regex-equal
-   "\\.el\\'"
-   (cl-first (find 'emacs-lisp-mode auto-mode-alist :key 'cdr :test 'eq))))
+  (regex-equal "\\.el\\'"
+               (cl-first (cl-find 'emacs-lisp-mode
+                                  auto-mode-alist
+                                  :key 'cdr
+                                  :test 'eq))))
 ;; thos fileregex o mode o auto-mode-alist matchs files regx o
 ;; template o auto-insert-alist than that mode also need also cause
 ;; that template to be used.
@@ -219,17 +220,19 @@ thus, on a GNU or Unix system, it must end in a slash."
 (defun auto-mode-alist-get-from-moderegex (inmode tmplregex) ;return list
   ;; inmode: given file mode
   ;; inregx: template file regex
-  (let ((mode-regexs (remove-if-not (lambda (e)
-                                      (eq e inmode)) auto-mode-alist :key 'cdr)))
-    (remove-if-not '(lambda (e)
-                      (regex-equal (cl-first e) tmplregex))
-                   mode-regexs)))
+  (let ((mode-regexs (cl-remove-if-not #'(lambda (e)
+                                           (eq e inmode))
+                                       auto-mode-alist
+                                       :key 'cdr)))
+    (cl-remove-if-not #'(lambda (e)
+                          (regex-equal (cl-first e) tmplregex))
+                      mode-regexs)))
 
 
 ;; (defun auto-mode-alist-get-modes-from-moderegex-p (inmode tmplregex) ;return list
 ;;   ;; inmode: given file mode
 ;;   ;; inregx: template file regex
-;;   (let ((mode-regexs (find inmode auto-mode-alist :key 'cdr :test 'eq)))
+;;   (let ((mode-regexs (cl-find inmode auto-mode-alist :key 'cdr :test 'eq)))
 ;;     (cl-member tmplregex
 ;;                mode-regexs
 ;;                :test #'(lambda (e)
@@ -281,7 +284,7 @@ Matches the visited file name against the elements of `auto-insert+-alist'."
     (let ((alist auto-insert+-alist)
           (case-fold-search nil)
           (cond nil)
-          (desc nl)
+          (desc nil)
           (action-alist nil))
       (goto-char 1)
       ;; find all matching alist entry
@@ -411,26 +414,22 @@ or if CONDITION had no actions, after all other CONDITIONs."
 (defun action-type-old-autoinsert-alist (action)
     ;; TODO: Add support function with arguments
     (if action
-        (cond
-         ((and
-           (stringp action)
-           (or
-            (file-readable-p action)
-            (file-readable-p
-             (expand-file-name
-              action auto-insert+-directory))))
-          :plain-file)
-         ((and (consp action)
-               (not (eq (cl-first action) 'lambda)))
-          :skeleton)
-         ((or
-           (symbolp action)
-           (and
-            (consp action)
-            (eq (cl-first action) 'lambda)))
-          :func)
-         (t ;; (error "action is recognizable.")
-          :unknown))
+        (cond ((and (stringp action)
+                    (or (file-readable-p action)
+                        (file-readable-p
+                         (expand-file-name
+                          action auto-insert+-directory))))
+               :plain-file)
+              ((and (consp action)
+                    (not (eq (cl-first action)
+                             'lambda)))
+               :skeleton)
+              ((or (symbolp action)
+                (and (consp action)
+                     (eq (cl-first action) 'lambda)))
+               :func)
+              (t ;; (error "action is recognizable.")
+               :unknown))
       (error "action is nil")))
 
 (defun add-from-autoinsert-alist (name alist)
@@ -485,8 +484,8 @@ insert a template for the file depending on the mode of the buffer."
   :init-value nil
   (if (and arg
            (if (> (prefix-numeric-value arg) 0)
-               auto-insert+-mode (not auto-insert+-mode)))
-
+               auto-insert+-mode
+             (not auto-insert+-mode)))
       (add-hook 'find-file-hook 'auto-insert+)
     (remove-hook 'find-file-hook 'auto-insert+)))
 

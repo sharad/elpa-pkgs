@@ -26,6 +26,9 @@
 
 
 
+(provide 'emacs-panel)
+
+
 ;; (x-window-property "_NET_CURRENT_DESKTOP" nil nil 0 nil nil)
 ;; (x-window-property "_NET_NUMBER_OF_DESKTOPS" nil nil 0 nil nil)
 ;; (x-window-property "_NET_DESKTOP_NAMES" nil nil 0 nil nil)
@@ -115,6 +118,5 @@
 
     (assq :v (bindat-unpack '((:v byte)) "H"))
     ))
-
-(provide 'emacs-panel)
+
 ;;; emacs-panel.el ends here

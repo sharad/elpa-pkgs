@@ -27,8 +27,11 @@
 (provide 'org-capture+)
 
 
-(require 'lotus-utils)
 (require 's)
+(require 'org-capture+)
+
+
+(require 'lotus-utils)
 
 
 (require 'org-capture+-lib)

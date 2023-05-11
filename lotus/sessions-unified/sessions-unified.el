@@ -44,6 +44,7 @@
 (require 'session)
 (require 'elscreen)
 (require 'basic-utils)
+(require 'emacs-panel)
 
 
 (declare-function save-all-sessions-auto-save "desktop-unified" (&optional force))

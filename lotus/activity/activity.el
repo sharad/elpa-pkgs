@@ -82,7 +82,7 @@
 
 
 
-(defvar @activity nil)
+(defvar @activity nil "Activity")
 
 (setf @activity
       (@drive-object @activity-base "activities"
@@ -162,11 +162,9 @@
 ;;;###autoload
 (defun activity-activate (key)
   (interactive
-   (list
-    (completing-read "activity: "
-                     (set-difference
-                      (mapcar #'car (@ @activity :insinuate))
-                      (@ @activity :active)))))
+   (list (completing-read "activity: "
+                          (cl-set-difference (mapcar #'car (@ @activity :insinuate))
+                                        (@ @activity :active)))))
   ;; (activity-add-subdirs-load-path)
   (@! @activity :activate key))
 

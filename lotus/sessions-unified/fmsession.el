@@ -33,9 +33,11 @@
 (require 'desktop)
 (require 'session)
 (require 'elscreen)
+(require 'utils-custom)
+
+
 (require 'session-unified)
 (require 'desktop-unified)
-(require 'utils-custom)
 (require 'sessions-unified)
 
 
