@@ -213,13 +213,16 @@
   (unless (occ-collector-spec key)
     (occ-obj-make-spec key (symbol-name key)))
   (if (occ-collector-spec key)
-    (unless (memq file (cl-rest (occ-collector-spec key)))
+    (unless (memq file
+                  (cl-rest (occ-collector-spec key)))
       (let ((spec       (cl-first (occ-collector-spec key)))
             (spec-files (cl-rest (occ-collector-spec key))))
         (setq spec-files
              (if current-prefix-arg
-                 (nconc (list file) spec-files)
-               (nconc spec-files (list file))))
+                 (nconc (list file)
+                        spec-files)
+               (nconc spec-files
+                      (list file))))
         (setf (occ-collection-spec (occ-collector-get key)) (cons spec spec-files)))
       (prog1
           (occ-collector-spec key)
@@ -229,7 +232,8 @@
 (defun occ-add-org-file (key buffer)
   (interactive (list (occ-collector-read-key "key for spec: ")
                      (current-buffer)))
-  (occ-do-add-org-buffer key buffer))
+  (occ-do-add-org-buffer key
+                         buffer))
 
 ;;;###autoload
 (defun occ-obj-build-spec (key)
