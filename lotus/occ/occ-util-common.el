@@ -32,6 +32,7 @@
 (require 'org-clock-utils-lotus)
 
 
+(require 'occ-config)
 (eval-when-compile
   (require 'occ-macros))
 (require 'occ-obj-accessor)
@@ -107,7 +108,10 @@
     t))
 
 ;;;###autoload
-(defun occ-straight-org-clock-clock-in (clock &optional resume start-time)
+(defun occ-straight-org-clock-clock-in (clock
+                                        &optional
+                                        resume
+                                        start-time)
   ;; lotus-org-with-safe-modification
   (let ((org-log-note-clock-out nil))
     (progn
@@ -123,18 +127,26 @@
        (setq org-clock-loaded t)))))
 
 
-(defun occ-completing-read (prompt collection &optional predicate require-match initial-input hist def inherit-input-method)
+(defun occ-completing-read (prompt
+                            collection
+                            &optional
+                            predicate
+                            require-match
+                            initial-input
+                            hist
+                            def
+                            inherit-input-method)
   (let ((helm-always-two-windows nil))
     (occ-debug-uncond "occ-completing-read: prompt %s collection %s"
                       prompt collection)
-    (completing-read prompt
-                     collection
-                     predicate
-                     require-match
-                     initial-input
-                     hist
-                     def
-                     inherit-input-method)))
+    (funcall occ-completing-read-function prompt
+             collection
+             predicate
+             require-match
+             initial-input
+             hist
+             def
+             inherit-input-method)))
 
 
 (defun occ-insert-node-before-element (node element list)

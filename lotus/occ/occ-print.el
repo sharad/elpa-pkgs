@@ -124,6 +124,11 @@ pointing to it."
   (occ-case case
             (occ-obj-class-name obj)))
 
+(cl-defmethod occ-obj-title ((obj null)
+                             case)
+  (occ-case case
+            (occ-obj-class-name obj)))
+
 (cl-defmethod occ-obj-title ((obj  marker)
                              (case symbol))
   (occ-case case
@@ -154,19 +159,34 @@ pointing to it."
                                no-propterties)
   "occ-obj-format")
 
-;; (cl-defmethod occ-obj-format (obj
-;;                               &optional
-;;                               case
-;;                               rank
-;;                               no-curr-clock
-;;                               no-propterties)
-;;   (ignore rank)
-;;   (ignore no-curr-clock)
-;;   (ignore no-propterties)
-;;   (concat (when case
-;;             (concat (occ-obj-title obj
-;;                                    case) ": "))
-;;           (format "%s" obj)))
+(cl-defmethod occ-obj-format (obj
+                              &optional
+                              case
+                              rank
+                              no-curr-clock
+                              no-propterties)
+  (ignore rank
+          no-curr-clock
+          no-propterties)
+  (concat (when case
+            (concat (occ-obj-title obj
+                                   case) ": "))
+          (format "%s" obj)))
+
+(cl-defmethod occ-obj-format ((obj null)
+                              &optional
+                              case
+                              rank
+                              no-curr-clock
+                              no-propterties)
+  (ignore case
+          rank
+          no-curr-clock
+          no-propterties)
+  (concat (when case
+            (concat (occ-obj-title obj
+                                   case) ": "))
+          (format "%s" obj)))
 
 (cl-defmethod occ-obj-format ((obj marker)
                               &optional
