@@ -62,9 +62,9 @@
   :type '(symbol)
   :group 'occ) ;; TODO: or could ask to continue for TIME(m/h) with current task.
 
-(defcustom occ-completing-read-function #'completing-read "Occ Completing read function"
-  :type '(choice (function-item #'completing-read)
-                 (function-item #'ido-completing-read))
+(defcustom occ-completing-read-function 'completing-read "Occ Completing read function"
+  :type '(choice (function-item 'completing-read)
+                 (function-item 'ido-completing-read))
   :group 'occ)
 
 
