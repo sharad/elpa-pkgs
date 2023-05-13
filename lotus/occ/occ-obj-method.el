@@ -67,7 +67,7 @@
 (let ((occ-debug-object nil))
   (cl-defmethod occ-do-set-debug-obj ((obj occ-obj-tsk))
     (setq occ-debug-object obj)
-    (occ-debug "Use (occ-get-debug-obj) to access object."))
+    (occ-message "Use (occ-get-debug-obj) to access object."))
   (defun occ-describe-debug-obj ()
     (interactive)
     (occ-do-describe-obj occ-debug-object))
