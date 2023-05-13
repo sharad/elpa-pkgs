@@ -160,9 +160,9 @@
        ,minibuffer-body)
      (put 'quit 'error-message "")
      (run-at-time nil nil
-                  (lambda ()
-                    (put 'quit 'error-message "Quit")
-                    ,@body))
+                  #'(lambda ()
+                      (put 'quit 'error-message "Quit")
+                      ,@body))
      (when (lotus-active-recursive-edit)
        (safe-exit-recursive-edit))))
 (put 'without-active-minibuffer-debug 'lisp-indent-function 1)

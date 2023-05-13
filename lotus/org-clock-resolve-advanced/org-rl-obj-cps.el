@@ -26,7 +26,9 @@
 
 (provide 'org-rl-obj-cps)
 
-
+(eval-when-compile
+  (require 'lotus-misc-utils))
+(require 'lotus-misc-utils)
 (require 'org-capture+-helm)
 (require 'org-rl-obj)
 (require 'org-rl-clock)
@@ -234,9 +236,8 @@
                                                             (format "%s Select option [%d]: " (org-rl-clock-time-debug-prompt prev next) maxtimelen-mins)
                                                           (format "Select option [%d]: " maxtimelen-mins))))
                                                   options
-                                                  maxtimelen-mins-fn))))
-        (ignore ret)
-        (ignore opt)
+                                                  maxtimelen-mins-fn)))
+          (ignore ret opt))
         (message "Do someting."))))
           ;; (barely-started-p (< (- (float-time last-valid)
           ;;                         (float-time (cl-rest clock))) 45))

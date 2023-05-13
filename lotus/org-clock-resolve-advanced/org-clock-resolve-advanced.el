@@ -30,6 +30,8 @@
 (require 'time-stamp)
 
 
+(eval-when-compile
+  (require 'lotus-misc-utils))
 (require 'org-rl-clock)
 (require 'org-rl-obj-cps)
 
