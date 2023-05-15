@@ -48,6 +48,30 @@
               occ-ineqs))
 
 
+
+
+(defun occ-assert-ineq (ineq)
+  (occ-assert (= 3 (length ineq)))
+  (occ-assert (memq (car ineq) '(> < =)))
+  (occ-assert (not (cl-every #'consp (cdr ineq))))
+  (occ-assert (cl-any #'symbolp (cdr ineq)))
+  (dolist (el (cdr ineq))
+    (cond (((symbolp ineq)
+            (occ-assert (symbolp ineq)))
+           ((consp ineq)
+            (progn
+              (occ-assert (= 3 (length el)))
+              (occ-assert (memq (car ineq) '(* +)))
+              (occ-assert (or (and (symbolp (car ineq))
+                                   (numberp (cadr ineq)))
+                              (and (numberp (car ineq))
+                                   (symbolp (cadr ineq)))))))))))
+
+(defun occ-normalize-ineq (ineq)
+  (occ-assert-ineq ineq))
+
+;; (length '(a () x))
+
 ;; (occ-obj-properties-to-calculate-rank 'occ-tsk)
 ;; (occ-obj-properties-to-calculate-rank 'occ-obj-ctx-tsk)
 

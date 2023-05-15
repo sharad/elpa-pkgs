@@ -59,7 +59,8 @@
 
 (cl-defmethod org-rl-clock-opt-cancel-prev ((prev org-rl-clock)
                                             (next org-rl-clock)
-                                            &optional resume-clocks)
+                                            &optional
+                                            resume-clocks)
   ;; (setf (org-rl-clock-cancel prev) t)
   (org-rl-clock-clock-cancel prev)
   (org-rl-debug nil "cancelled prev, Can not find previous clock presently [todo]")
@@ -69,11 +70,13 @@
   ;; TODO: add off to restart now (org-rl-clock-restart-now)
   (list (list prev next)
         (org-rl-get-resume-clocks resume-clocks
-                                  (list (cons :prev prev) (cons :next next)))))
+                                  (list (cons :prev prev)
+                                        (cons :next next)))))
 
 (cl-defmethod org-rl-clock-opt-cancel-next ((prev org-rl-clock)
                                             (next org-rl-clock)
-                                            &optional resume-clocks)
+                                            &optional
+                                            resume-clocks)
   ;; what to do with prev.
   ;; cancel next clock
   ;; add next clock time
@@ -87,7 +90,8 @@
   ;; TODO: add off to restart now (org-rl-clock-restart-now)
   (list (list prev next)
         (org-rl-get-resume-clocks resume-clocks
-                                  (list (cons :prev prev) (cons :next next)))))
+                                  (list (cons :prev prev)
+                                        (cons :next next)))))
 
 (cl-defmethod org-rl-clock-opt-include-in-prev ((prev org-rl-clock)
                                                 (next org-rl-clock)
@@ -114,21 +118,22 @@
               (org-rl-clock-clock-out next fail-quietly)     ;if necessary
               (setf next
                     (org-rl-make-clock (org-rl-clock-marker prev)
-                                       (time-subtract
-                                        (org-rl-clock-start-time next)
-                                        (abs timelen-mins))
+                                       (time-subtract (org-rl-clock-start-time next)
+                                                      (abs timelen-mins))
                                        (org-rl-clock-stop-time next)))
               (org-rl-clock-clock-in-out next resume fail-quietly)))
         (error "timelen-mins %d is greater than time difference %d[=%d] between clocks"
                timelen-mins
                maxtimelen-secs
-               (float-time (org-rl-get-time-gap prev next))))))
+               (float-time (org-rl-get-time-gap prev
+                                                next))))))
   ;; (org-rl-clocks-action resume fail-quietly prev next)
   (org-rl-debug nil "finish %s" 'org-rl-clock-opt-include-in-prev)
   ;; TODO: add off to restart now (org-rl-clock-restart-now)
   (list (list prev next)
         (org-rl-get-resume-clocks resume-clocks
-                                  (list (cons :prev prev) (cons :next next)))))
+                                  (list (cons :prev prev)
+                                        (cons :next next)))))
 
 (cl-defmethod org-rl-clock-opt-include-in-next ((prev org-rl-clock)
                                                 (next org-rl-clock)
@@ -138,35 +143,45 @@
                                                 fail-quietly
                                                 resume-clocks)
   (org-rl-debug nil "begin %s" 'org-rl-clock-opt-include-in-next)
-  (let ((maxtimelen-secs (org-rl-get-time-gap-secs prev next)))
-    (if (= (org-rl-compare-time-gap-mins prev next timelen-mins) 0)
+  (let ((maxtimelen-secs (org-rl-get-time-gap-secs prev
+                                                   next)))
+    (if (= 0 (org-rl-compare-time-gap-mins prev
+                                           next
+                                           timelen-mins))
         (progn
           (org-rl-debug nil "compare = %s" 'org-rl-clock-opt-include-in-next)
-          (setf (org-rl-clock-stop-time next) (time-add
-                                               (org-rl-clock-start-time next) maxtimelen-secs))
-          (org-rl-clock-clock-out next fail-quietly))
-      (if (> (org-rl-compare-time-gap-mins prev next timelen-mins) 0)
+          (setf (org-rl-clock-stop-time next) (time-add (org-rl-clock-start-time next)
+                                                        maxtimelen-secs))
+          (org-rl-clock-clock-out next
+                                  fail-quietly))
+      (if (> (org-rl-compare-time-gap-mins prev
+                                           next
+                                           timelen-mins)
+             0)
           (if (< timelen-mins 0)
-              (setf next (org-rl-clock-expand-time next timelen-mins resume))
+              (setf next (org-rl-clock-expand-time next
+                                                   timelen-mins
+                                                   resume))
             (progn
               (org-rl-clock-clock-out prev fail-quietly)     ;if necessary
               (setf next (org-rl-clock-clock-out next fail-quietly))     ;if necessary
               (setf prev (org-rl-make-clock (org-rl-clock-marker next)
                                             (org-rl-clock-stop-time prev)
-                                            (time-add
-                                             (org-rl-clock-stop-time prev)
-                                             (abs timelen-mins))))
+                                            (time-add (org-rl-clock-stop-time prev)
+                                                      (abs timelen-mins))))
               (setf prev (org-rl-clock-clock-in-out prev resume fail-quietly))))
         (error "timelen-mins %d is greater than time difference %d[=%d] between clocks"
                timelen-mins
                maxtimelen-secs
-               (float-time (org-rl-get-time-gap prev next))))))
+               (float-time (org-rl-get-time-gap prev
+                                                next))))))
   ;; (org-rl-clocks-action resume fail-quietly prev next)
   (org-rl-debug nil "finish %s" 'org-rl-clock-opt-include-in-next)
   ;; TODO: add off to restart now (org-rl-clock-restart-now)
   (list (list prev next)
         (org-rl-get-resume-clocks resume-clocks
-                                  (list (cons :prev prev) (cons :next next)))))
+                                  (list (cons :prev prev)
+                                        (cons :next next)))))
 
 (cl-defmethod org-rl-clock-opt-include-in-other ((prev org-rl-clock)
                                                  (next org-rl-clock)
@@ -184,10 +199,12 @@
                 other-marker
                 timelen-mins)
 
-  (let ((maxtimelen-secs   (org-rl-get-time-gap-secs prev next))
+  (let ((maxtimelen-secs   (org-rl-get-time-gap-secs prev
+                                                     next))
         (other-marker      (or other-marker
                                (org-rl-org-select-other-clock (org-rl-marker (cl-some #'org-rl-clock-real-p
-                                                                                      (list prev next))))))
+                                                                                      (list prev
+                                                                                            next))))))
         (resume-alist      nil))
     (ignore maxtimelen-secs)
     (progn
@@ -198,15 +215,13 @@
     (if (> timelen-mins 0)
         (setq prev (org-rl-clock-clock-in-out (org-rl-make-clock other-marker
                                                                  (org-rl-clock-stop-time prev)
-                                                                 (time-add
-                                                                  (org-rl-clock-stop-time prev)
-                                                                  timelen-mins))
+                                                                 (time-add (org-rl-clock-stop-time prev)
+                                                                           timelen-mins))
                                               resume
                                               fail-quietly))
       (setq next (org-rl-clock-clock-in-out (org-rl-make-clock other-marker
-                                                               (time-subtract
-                                                                (org-rl-clock-start-time next)
-                                                                (abs timelen-mins))
+                                                               (time-subtract (org-rl-clock-start-time next)
+                                                                              (abs timelen-mins))
                                                                (org-rl-clock-stop-time next))
                                             resume
                                             fail-quietly)))
@@ -216,8 +231,10 @@
             ;; (org-rl-clocks-action nil nil prev next)
       (org-rl-debug nil "finish %s" 'org-rl-clock-opt-include-in-other)
       ;; TODO: add off to restart now (org-rl-clock-restart-now)
-      (list (list prev next)
-            (org-rl-get-resume-clocks resume-clocks resume-alist)))))
+      (list (list prev
+                  next)
+            (org-rl-get-resume-clocks resume-clocks
+                                      resume-alist)))))
 
 (cl-defmethod org-rl-clock-opt-include-in-new ((prev org-rl-clock)
                                                (next org-rl-clock)
@@ -248,13 +265,82 @@
         (org-rl-debug nil "org-rl-clock-opt-include-in-new: (org-capture-get :position-for-last-stored 'local) = %s" (org-capture-get :position-for-last-stored 'local))
         ;; (org-rl-clock-opt-include-in-other prev next mrk timelen-mins resume fail-quietly resume-clocks)
         (let ((maxtimelen-secs (org-rl-get-time-gap-secs prev next)))
-          (org-rl-clock-cps-process-option timelen-mins (cons 'include-in-other mrk) prev next maxtimelen-secs resume fail-quietly resume-clocks)))))
+          (org-rl-clock-cps-process-option timelen-mins
+                                           (cons 'include-in-other mrk)
+                                           prev
+                                           next
+                                           maxtimelen-secs
+                                           resume
+                                           fail-quietly
+                                           resume-clocks)))))
   ;; (org-rl-clocks-action nil nil prev next)
   (org-rl-debug nil "finish %s" 'org-rl-clock-opt-include-in-new)
   ;; TODO: add off to restart now (org-rl-clock-restart-now)
   ;; next processing will be handled in after-org-capture-run cps
   nil)
 
+
+(cl-defmethod org-rl-org-clock-get-clocks ((prev org-rl-clock)
+                                           (next org-rl-clock)
+                                           opt
+                                           timelen-mins
+                                           maxtimelen-mins
+                                           &optional
+                                           resume
+                                           fail-quietly
+                                           resume-clocks)
+  (cond ((eq opt 'jump-prev)
+         ;; finish here
+         (org-rl-clock-opt-jump-to prev resume-clocks)
+         nil)
+
+        ((eq opt 'jump-next)
+         ;; finish here
+         (org-rl-clock-opt-jump-to next resume-clocks)
+         nil)
+
+        ((eq opt 'cancel-prev)
+         (org-rl-clock-opt-cancel-prev prev next resume-clocks))
+        ;; set org-clock-leftover-time here
+
+        ((eq opt 'cancel-next)
+         (org-rl-clock-opt-cancel-next prev next resume-clocks))
+
+        ((eq opt 'include-in-prev)
+         ;; include timelen-mins in prev
+         ;; update timelength-mins
+         (org-rl-clock-opt-include-in-prev prev next timelen-mins resume fail-quietly resume-clocks))
+        ;; set org-clock-leftover-time here
+        ((eq opt 'include-in-next)
+         (org-rl-clock-opt-include-in-next  prev next timelen-mins resume fail-quietly resume-clocks))
+
+        ((eq opt 'include-in-other) ;; subtract timelen-mins from timelength-mins
+         (org-rl-clock-opt-include-in-other prev next nil timelen-mins resume fail-quietly resume-clocks))
+
+        ((eq opt 'include-in-new)
+         (org-rl-clock-opt-include-in-new prev next nil timelen-mins resume fail-quietly resume-clocks))
+
+        ((consp opt)
+         (org-rl-debug nil "org-rl-clock-time-process-option: in consp")
+         (let ((caropt (cl-first opt)))
+           (cond
+            ((eq caropt 'include-in-other) ;; subtract timelen-mins from timelength-mins
+             (let ((other-marker   (cl-rest opt)))
+               (org-rl-clock-opt-include-in-other prev next other-marker timelen-mins resume fail-quietly resume-clocks)))
+
+            ((eq caropt 'include-in-new)
+             (let ((template (cl-rest opt)))
+               (org-rl-clock-opt-include-in-new prev next template timelen-mins resume fail-quietly resume-clocks)))
+            (t (error "Wrong option %s" opt)))))
+
+        ((eq opt 'done)
+         nil)
+
+        ((eq opt 'restart)
+         (list (list prev next)
+               resume-clocks))
+
+        (t (error "Wrong option %s" opt))))
 
 (cl-defmethod org-rl-clock-time-process-option ((prev org-rl-clock)
                                                 (next org-rl-clock)
@@ -268,60 +354,14 @@
   (ignore maxtimelen-mins)
   (org-rl-debug nil "org-rl-clock-time-process-option: begin")
   (org-rl-debug :warning "started org-rl-clock-time-process-option: selected opt=%s" opt)
-  (let* ((clocks
-          (cond
-           ((eq opt 'jump-prev)
-            ;; finish here
-            (org-rl-clock-opt-jump-to prev resume-clocks)
-            nil)
-
-           ((eq opt 'jump-next)
-            ;; finish here
-            (org-rl-clock-opt-jump-to next resume-clocks)
-            nil)
-
-           ((eq opt 'cancel-prev)
-            (org-rl-clock-opt-cancel-prev prev next resume-clocks))
-           ;; set org-clock-leftover-time here
-
-           ((eq opt 'cancel-next)
-            (org-rl-clock-opt-cancel-next prev next resume-clocks))
-
-           ((eq opt 'include-in-prev)
-            ;; include timelen-mins in prev
-            ;; update timelength-mins
-            (org-rl-clock-opt-include-in-prev prev next timelen-mins resume fail-quietly resume-clocks))
-           ;; set org-clock-leftover-time here
-           ((eq opt 'include-in-next)
-            (org-rl-clock-opt-include-in-next  prev next timelen-mins resume fail-quietly resume-clocks))
-
-           ((eq opt 'include-in-other) ;; subtract timelen-mins from timelength-mins
-            (org-rl-clock-opt-include-in-other prev next nil timelen-mins resume fail-quietly resume-clocks))
-
-           ((eq opt 'include-in-new)
-            (org-rl-clock-opt-include-in-new prev next nil timelen-mins resume fail-quietly resume-clocks))
-
-           ((consp opt)
-            (org-rl-debug nil "org-rl-clock-time-process-option: in consp")
-            (let ((caropt (cl-first opt)))
-             (cond
-              ((eq caropt 'include-in-other) ;; subtract timelen-mins from timelength-mins
-               (let ((other-marker   (cl-rest opt)))
-                 (org-rl-clock-opt-include-in-other prev next other-marker timelen-mins resume fail-quietly resume-clocks)))
-
-              ((eq caropt 'include-in-new)
-               (let ((template (cl-rest opt)))
-                 (org-rl-clock-opt-include-in-new prev next template timelen-mins resume fail-quietly resume-clocks)))
-              (t (error "Wrong option %s" opt)))))
-
-           ((eq opt 'done)
-            nil)
-
-           ((eq opt 'restart)
-            (list (list prev next)
-                  resume-clocks))
-
-           (t (error "Wrong option %s" opt)))))
+  (let* ((clocks (org-rl-org-clock-get-clocks prev
+                                              next
+                                              opt
+                                              timelen-mins
+                                              maxtimelen-mins
+                                              resume
+                                              fail-quietly
+                                              resume-clocks)))
     (org-rl-debug nil "org-rl-clock-time-process-option: finished")
     clocks))
 
