@@ -329,3 +329,46 @@ Warning (comp): occ-obj-clock-method.el:391:54: Warning: the function ‘lotus-u
 Warning (comp): /home/s/hell/.emacs.d/elpa/28.2/develop/occ-20230510.27/occ-obj-accessor.el: Error: Symbol's function definition is void occ-debug Disable showing Disable logging
 Warning (comp): /home/s/hell/.emacs.d/elpa/28.2/develop/occ-20230510.27/occ-util-common.el: Error: Symbol's function definition is void occ-debug Disable showing Disable logging
 Warning (comp): /home/s/hell/.emacs.d/elpa/28.2/develop/occ-20230510.27/occ-prop-utils.el: Error: Symbol's function definition is void occ-debug Disable showing Disable logging
+
+
+
+In end of data:
+org-clock-resolve-advanced-pkg.el:1:2: Warning: the function ‘define-package’
+    is not known to be defined.
+
+In test-org-rl-resolve-clock-force:
+org-clock-resolve-advanced.el:258:29: Warning: Unused lexical variable
+    `mins-spent'
+org-clock-resolve-advanced.el:252:14: Warning: reference to free variable
+    ‘prompt-fn’
+org-clock-resolve-advanced.el:253:16: Warning: ‘format’ called with 2 args to
+    fill 1 format field(s)
+org-clock-resolve-advanced.el:268:61: Warning: reference to free variable
+    ‘idle-sec’
+org-clock-resolve-advanced.el:280:13: Warning: Unused lexical argument
+    `idle-sec'
+
+In end of data:
+org-clock-resolve-advanced.el:155:45: Warning: the function
+    ‘safe-exit-recursive-edit’ might not be defined at runtime.
+org-clock-resolve-advanced.el:98:73: Warning: the function
+    ‘safe-exit-recursive-edit-if-active’ might not be defined at runtime.
+org-clock-resolve-advanced.el:98:73: Warning: the function
+    ‘select-frame-set-input-enable-raise’ might not be defined at runtime.
+org-clock-resolve-advanced.el:98:73: Warning: the function
+    ‘select-frame-set-input-disable-raise’ might not be defined at runtime.
+org-clock-resolve-advanced.el:163:17: Warning: the function
+    ‘select-frame-set-input-focus-no-raise-p’ might not be defined at runtime.
+org-clock-resolve-advanced.el:163:68: Warning: the function
+    ‘lotus-utils-debug’ might not be defined at runtime.
+org-clock-resolve-advanced.el:163:68: Warning: the function
+    ‘lotus-active-recursive-edit’ might not be defined at runtime.
+org-clock-resolve-advanced.el:35:1: Warning: the function
+    ‘elscreen-notify-screen-modification’ might not be defined at runtime.
+
+In toplevel form:
+org-rl-clock.el:291:44: Warning: Unused lexical argument `maxtimelen-mins'
+
+In toplevel form:
+org-rl-obj.el:517:1: Warning: variable ‘_debug’ not left unused
+org-rl-obj.el:538:1: Warning: variable ‘_debug’ not left unused
