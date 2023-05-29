@@ -27,8 +27,16 @@
 (provide 'org-clock-wrapper)
 
 
+(require 'time-stamp)
 (eval-when-compile
   (require 'helm-source))
+(require 'helm-core)
+(require 'helm-source)
+(require 'org)
+(require 'org-macs)
+(require 'org-duration)
+(require 'org-timer)
+(require 'org-clock)
 
 (require 'basic-utils)
 (require 'lotus-misc-utils)
@@ -100,6 +108,7 @@ using three `C-u' prefix arguments."
           (org-timer-show-remaining-time)
           (let ((secs (org-timer-hms-to-secs (org-timer-fix-incomplete minutes)))
                 (hl (org-timer--get-timer-title)))
+            (ignore hl)
             (if (or (not org-timer-countdown-timer)
                     (equal opt '(16))
                     (y-or-n-p "Replace current timer? "))
@@ -143,6 +152,7 @@ using three `C-u' prefix arguments."
                         (concat prefix heading)
                         org-odd-levels-only)
                        (length prefix))))
+           (ignore cat)
            (when task ;; (and cat task)
              ;; (insert (format "[%c] %-12s  %s\n" i cat task))
              ;; marker
