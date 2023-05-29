@@ -27,6 +27,9 @@
 (provide 'org-clock-wrapper)
 
 
+(eval-when-compile
+  (require 'helm-source))
+
 (require 'basic-utils)
 (require 'lotus-misc-utils)
 (eval-when-compile
