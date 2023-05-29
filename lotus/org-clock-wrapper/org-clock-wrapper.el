@@ -78,16 +78,15 @@ using three `C-u' prefix arguments."
                 org-timer-default-timer))
            (clocked-time   (org-clock-get-clocked-time))
            (effort-minutes
-            (or
-             (ignore-errors (org-get-at-eol 'effort-minutes 1))
-             (if (org-entry-get nil "Effort")
-                 (org-duration-string-to-minutes (org-entry-get nil "Effort")))))
+            (or (ignore-errors (org-get-at-eol 'effort-minutes 1))
+                (if (org-entry-get nil "Effort")
+                    (org-duration-to-minutes (org-entry-get nil "Effort")))))
            (remianing-effort-minutes (if (and
-                                          effort-minutes
-                                          clocked-time
-                                          (>= effort-minutes clocked-time))
-                                         (- effort-minutes clocked-time)
-                                         effort-minutes))
+                                                              effort-minutes
+                                                              clocked-time
+                                                              (>= effort-minutes clocked-time)
+                                                             (- effort-minutes clocked-time)
+                                                             effort-minutes)))
            (minutes (or (and (not (equal opt '(64)))
                              effort-minutes
                              (number-to-string remianing-effort-minutes))
