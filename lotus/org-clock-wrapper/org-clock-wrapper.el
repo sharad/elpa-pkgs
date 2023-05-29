@@ -71,32 +71,32 @@ using three `C-u' prefix arguments."
     (when (and org-timer-start-time
                (not org-timer-countdown-timer))
       (user-error "Relative timer is running.  Stop first"))
-    (let* ((default-timer
-            ;; `org-timer-default-timer' used to be a number, don't choke:
-            (if (numberp org-timer-default-timer)
-                (number-to-string org-timer-default-timer)
-                org-timer-default-timer))
+    (let* ((default-timer  (if (numberp org-timer-default-timer) ;; `org-timer-default-timer' used to be a number, don't choke:
+                               (number-to-string org-timer-default-timer)
+                             org-timer-default-timer))
            (clocked-time   (org-clock-get-clocked-time))
-           (effort-minutes
-            (or (ignore-errors (org-get-at-eol 'effort-minutes 1))
-                (if (org-entry-get nil "Effort")
-                    (org-duration-to-minutes (org-entry-get nil "Effort")))))
-           (remianing-effort-minutes (if (and
-                                                              effort-minutes
-                                                              clocked-time
-                                                              (>= effort-minutes clocked-time)
-                                                             (- effort-minutes clocked-time)
-                                                             effort-minutes)))
+           (effort-minutes (or (ignore-errors (org-get-at-eol 'effort-minutes 1))
+                               (if (org-entry-get nil "Effort")
+                                   (org-duration-to-minutes (org-entry-get nil "Effort")))))
+           (remianing-effort-minutes (if (and effort-minutes
+                                              clocked-time
+                                              (>= effort-minutes clocked-time))
+                                         (- effort-minutes clocked-time)
+                                         effort-minutes))
            (minutes (or (and (not (equal opt '(64)))
                              effort-minutes
                              (number-to-string remianing-effort-minutes))
-                        (and (numberp opt) (number-to-string opt))
-                        (and (consp opt) default-timer)
-                        (and (stringp opt) opt)
-                        (read-from-minibuffer
-                         "How much time left? (minutes or h:mm:ss) "
-                         (and (not (string-equal default-timer "0")) default-timer)))))
-      (message "effort-minutes %s clocked-time %s remianing-effort-minutes %s" effort-minutes clocked-time remianing-effort-minutes)
+                        (and (numberp opt)
+                             (number-to-string opt))
+                        (and (consp opt)
+                             default-timer)
+                        (and (stringp opt)
+                             opt)
+                        (read-from-minibuffer "How much time left? (minutes or h:mm:ss) "
+                                              (and (not (string-equal default-timer "0"))
+                                                   default-timer)))))
+      (message "effort-minutes %s clocked-time %s remianing-effort-minutes %s"
+               effort-minutes clocked-time remianing-effort-minutes)
       (when (string-match "\\`[0-9]+\\'" minutes)
         (let* ((mins (string-to-number minutes))
                (h (/ mins 60))
