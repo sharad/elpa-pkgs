@@ -165,44 +165,45 @@ using three `C-u' prefix arguments."
   (prog1
       (lotus-with-other-frame-event-debug "replace-org-clock-select-task" :restart
         (lwarn 'org-clock-wrapper :debug "replace-org-clock-select-task: lotus-with-other-frame-event-debug")
-        (let ((helm-sources nil))
-          (when (marker-buffer org-clock-default-task)
-            (push (helm-build-sync-source "Default Task"
-                    :candidates (list (lotus-org-marker-selection-line org-clock-default-task))
-                    :action (list ;; (cons "Select" 'identity)
-                             (cons "Clock in and track" #'identity)))
-                  helm-sources))
+        (condition-case nil
+            (let ((helm-sources nil))
+             (when (marker-buffer org-clock-default-task)
+               (push (helm-build-sync-source "Default Task"
+                       :candidates (list (lotus-org-marker-selection-line org-clock-default-task))
+                       :action (list ;; (cons "Select" 'identity)
+                                (cons "Clock in and track" #'identity)))
+                     helm-sources))
 
-          (when (marker-buffer org-clock-interrupted-task)
-            (push (helm-build-sync-source "The task interrupted by starting the last one"
-                    :candidates (list (lotus-org-marker-selection-line org-clock-interrupted-task))
-                    :action     (list (cons "Clock in and track" #'identity)))
-                  helm-sources))
+             (when (marker-buffer org-clock-interrupted-task)
+               (push (helm-build-sync-source "The task interrupted by starting the last one"
+                       :candidates (list (lotus-org-marker-selection-line org-clock-interrupted-task))
+                       :action     (list (cons "Clock in and track" #'identity)))
+                     helm-sources))
 
-          (when (and (org-clocking-p)
-                     (marker-buffer org-clock-marker))
-            (push (helm-build-sync-source "Current Clocking Task"
-                    :candidates (list (lotus-org-marker-selection-line org-clock-marker))
-                    :action     (list (cons "Clock in and track" #'identity)))
-                  helm-sources))
+             (when (and (org-clocking-p)
+                        (marker-buffer org-clock-marker))
+               (push (helm-build-sync-source "Current Clocking Task"
+                       :candidates (list (lotus-org-marker-selection-line org-clock-marker))
+                       :action     (list (cons "Clock in and track" #'identity)))
+                     helm-sources))
 
-          (when org-clock-history
-            (push (helm-build-sync-source "Recent Tasks"
-                    :candidates (mapcar #'lotus-org-marker-selection-line org-clock-history)
-                    :action     (list (cons "Clock in and track" #'identity)))
-                  helm-sources))
-
-          (lotus-with-no-active-minibuffer-if
-              (let ((postpone-secs 10))
-                (message "replace-org-clock-select-task: [minibuffer] lotus-with-no-active-minibuffer-if launching after %d seconds" postpone-secs)
-                (unless *org-clock-select-task-postpone-timer*
-                  (setq *org-clock-select-task-postpone-timer*
-                        (run-at-time-or-now postpone-secs #'(lambda ()
-                                                              (setq *org-clock-select-task-postpone-timer* nil)
-                                                              ;; org-clock-select-task call from org-clock-in
-                                                              (replace-org-clock-select-task prompt))))))
-            (helm :sources helm-sources
-                  :buffer "*helm-org-clock-select-task*"))))
+             (when org-clock-history
+               (push (helm-build-sync-source "Recent Tasks"
+                       :candidates (mapcar #'lotus-org-marker-selection-line org-clock-history)
+                       :action     (list (cons "Clock in and track" #'identity)))
+                     helm-sources))
+             (lotus-with-no-active-minibuffer-if
+                 (let ((postpone-secs 10))
+                   (message "replace-org-clock-select-task: [minibuffer] lotus-with-no-active-minibuffer-if launching after %d seconds" postpone-secs)
+                   (unless *org-clock-select-task-postpone-timer*
+                     (setq *org-clock-select-task-postpone-timer*
+                           (run-at-time-or-now postpone-secs #'(lambda ()
+                                                                 (setq *org-clock-select-task-postpone-timer* nil)
+                                                                 ;; org-clock-select-task call from org-clock-in
+                                                                 (replace-org-clock-select-task prompt))))))
+               (helm :sources helm-sources
+                     :buffer "*helm-org-clock-select-task*")))
+          ((quit error) (message "Exit"))))
     (lwarn 'org-clock-select-task :debug "%s: finisha replace-org-clock-select-task" (time-stamp-string))))
 
 ;;;###autoload
