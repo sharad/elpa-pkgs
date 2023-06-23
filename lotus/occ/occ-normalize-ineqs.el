@@ -54,21 +54,78 @@
   (occ-assert (= 3 (length ineq)))
   (occ-assert (memq (car ineq) '(> < =)))
   (occ-assert (not (cl-every #'consp (cdr ineq))))
-  (occ-assert (cl-any #'symbolp (cdr ineq)))
+  (occ-assert (cl-some #'symbolp (cdr ineq)))
   (dolist (el (cdr ineq))
-    (cond (((symbolp ineq)
-            (occ-assert (symbolp ineq)))
-           ((consp ineq)
-            (progn
-              (occ-assert (= 3 (length el)))
-              (occ-assert (memq (car ineq) '(* +)))
-              (occ-assert (or (and (symbolp (car ineq))
-                                   (numberp (cadr ineq)))
-                              (and (numberp (car ineq))
-                                   (symbolp (cadr ineq)))))))))))
+    (cond ((symbolp el)
+           (occ-assert (symbolp el)))
+          ((consp el)
+           (progn
+             (occ-assert (= 3 (length el)))
+             (occ-assert (memq (car el) '(* +)))
+             (occ-assert (or (and (symbolp (car el))
+                                  (numberp (cadr el)))
+                             (and (numberp (car el))
+                                  (symbolp (cadr el))))))))))
 
 (defun occ-normalize-ineq (ineq)
   (occ-assert-ineq ineq))
+
+(occ-normalize-ineq '(< a b))
+
+(setq ineqs '((> a b) (< b d) (> c d)))
+
+
+
+(setq inequalities '((< a b) (> c b) (< c d)))
+(setq sorted-variables (order-variables inequalities))
+(order-variables inequalities)
+
+
+
+(defun order-variables (inequalities)
+  (let ((graph '())
+        (in-degree '()))
+    (dolist (ineq inequalities)
+      (cl-destructuring-bind (op var1 var2) ineq
+        (unless (member* var1 graph :key #'car)
+          (push (list var1) graph)
+          (push (cons var1 0) in-degree))
+        (unless (member* var2 graph :key #'car)
+          (push (list var2) graph)
+          (push (cons var2 0) in-degree))
+        (if (eq op '<)
+            (progn
+              (cl-pushnew var2 (cdr (cl-assoc var1 graph)))
+              (cl-incf (cdr (assoc var2 in-degree))))
+          (progn
+            (cl-pushnew var1 (cdr (cl-assoc var2 graph)))
+            (cl-incf (cdr (assoc var1 in-degree)))))))
+    (let ((sorted-vars '())
+          (queue (cl-remove-if-not #'(lambda (x)
+                                       (= 0 (cdr (assoc x in-degree))))
+                                   (mapcar #'car graph)))
+          (var nil))
+      (while (setf var (pop queue))
+        (setq sorted-vars (append sorted-vars (list var)))
+        (dolist (vertex (cdr (assoc var graph)))
+          (cl-decf (cdr (assoc vertex in-degree)))
+          (if (= 0 (cdr (assoc vertex in-degree)))
+              (setf queue (append queue (list vertex))))))
+      sorted-vars)))
+
+(setq inequalities '((< a c) (> b c) (< b d) (= a z) (= x d)))
+(setq sorted-variables (order-variables inequalities))
+(order-variables inequalities)
+
+(setq new-set '())
+(pushnew 'a new-set)
+
+
+
+(setq xxx '((a)))
+
+(pushnew 'c (cdr (cl-assoc 'a xxx)))
+
 
 ;; (length '(a () x))
 
