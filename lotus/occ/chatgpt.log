@@ -1067,6 +1067,52 @@ print("Solution:", assignment)
 
 This program works by first parsing the input expressions to extract the variables and constraints in the form `(left, comparison, right)`. It then generates every possible assignment of integer values to the variables within the range [-1000, 1000], and checks whether each assignment satisfies all the constraints. If a satisfying assignment is found, it is returned as a dictionary mapping variables to their values. Otherwise, a `ValueError` is raised. The `val` function is used to evaluate the values of expressions given a variable assignment, which recursively evaluates sub-expressions.
 
+### Consider both expressions around > and < as a unit, than sort them using topological sort, which will produce a array of all expressions in a increasing order, after that one will be free to try set of values for all variables
+to find correct set which satisfy constrains of expression, is this will be somewhat efficientg, if yes please try to produce such program
+
+Sorting the constraints using topological sort won't be particularly helpful in this case, because the constraints aren't really a directed acyclic graph. Instead, you can consider the constraints as a set of inequalities between variables and constants. One way to solve this problem is to use a constraint satisfaction solver like Z3, which is a powerful tool for solving systems of constraints involving logical and arithmetic operations.
+
+Here is an example of how to solve the problem using Z3:
+
+```
+from z3 import *
+
+def solution(exprs):
+    # Parse the expressions to get variables and constraints
+    variables = sorted(set(c for c in ''.join(exprs) if c.isalpha()))
+    constraints = []
+    for expr in exprs:
+        left, cmp, right = expr.split()
+        if cmp == '>':
+            constraints.append(Int(left) > Int(right.replace('b', '*2').replace('c', '*3')))
+        elif cmp == '<':
+            constraints.append(Int(left) < Int(right.replace('b', '*2').replace('c', '*3')))
+        else:
+            raise ValueError("Invalid comparison operator.")
+
+    # Create a solver and add the constraints to it
+    solver = Solver()
+    for constraint in constraints:
+        solver.add(constraint)
+
+    # Check if the solver has a solution
+    if solver.check() == sat:
+        # Get the model and return the variable assignments
+        model = solver.model()
+        return {v.name(): model[v].as_long() for v in variables}
+    else:
+        raise ValueError("No solution found.")
+
+# Example usage
+assignment = solution(["a > 2b", "b < c", "d + 10 > e"])
+print("Solution:", assignment)
+```
+
+This program first parses the input expressions to extract the variables and constraints in the form `(left, comparison, right)`. It then converts each constraint to an integer inequality that can be understood by Z3. The `Int` function from Z3 parses the strings into integer expressions, and the `replace` calls replace the variables with the appropriate multiplication expressions (i.e., `b` is replaced with `*2` and `c` is replaced with `*3`). The `solver` is then set up to check if a solution exists. If a solution is found, the `model` object returned by Z3 provides the variable assignments that satisfy the constraints.
+
 ###
+
+
+
 
 
