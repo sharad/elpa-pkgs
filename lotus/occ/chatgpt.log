@@ -1110,7 +1110,8 @@ print("Solution:", assignment)
 
 This program first parses the input expressions to extract the variables and constraints in the form `(left, comparison, right)`. It then converts each constraint to an integer inequality that can be understood by Z3. The `Int` function from Z3 parses the strings into integer expressions, and the `replace` calls replace the variables with the appropriate multiplication expressions (i.e., `b` is replaced with `*2` and `c` is replaced with `*3`). The `solver` is then set up to check if a solution exists. If a solution is found, the `model` object returned by Z3 provides the variable assignments that satisfy the constraints.
 
-###
+### [ a + < 2 * b < 3 * c < d + 10 ]
+
 
 
 
