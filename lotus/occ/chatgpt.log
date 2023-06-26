@@ -887,3 +887,186 @@ To use the program, you can call the `solution/2` predicate with a list of expre
 ### 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### This is a prolog program
+
+
+```
+% Define the operators
+:- op(500, xfx, >).
+:- op(500, xfx, <).
+:- op(400, yfx, +).
+:- op(400, yfx, -).
+:- op(500, yfx, *).
+
+% Define the solution predicate
+solution(Exprs, Vars) :-
+    % Get the list of unique variables in the expressions
+    findall(Var, (member(Expr, Exprs), arg(1, Expr, Var)), Vars),
+    % Generate a list of variable values to try
+    generate_values(Vars, Values),
+    % Test each combination of variable values until a solution is found
+    member(Vars2, Values),
+    eval_exprs(Exprs, Vars2),
+    % Print the solution
+    write('Solution: '), write(Vars2), nl,
+    Vars = Vars2.
+
+% Generate a list of variable values to try
+generate_values([], [[]]).
+generate_values([Var|Vars], Values) :-
+    findall([Var=N|Vars2], (between(1, 1000, N), generate_values(Vars, Vars2)), Values2),
+    append(Values2, Values).
+
+% Evaluate the expressions with a list of variable values
+eval_exprs([], _).
+eval_exprs([Expr|Exprs], Vars) :-
+    Expr =.. [Op, Left, Right],
+    eval_expr(Left, Vars, LeftResult),
+    eval_expr(Right, Vars, RightResult),
+    ((Op = (=), integer(LeftResult), integer(RightResult), LeftResult = RightResult) ; % Unification
+     (Op = (<), integer(LeftResult), integer(RightResult), LeftResult < RightResult) ;
+     (Op = (>), integer(LeftResult), integer(RightResult), LeftResult > RightResult)),
+    eval_exprs(Exprs, Vars).
+
+% Evaluate an expression with a list of variable values
+eval_expr(N, _, N) :-
+    number(N).
+eval_expr(Var, Vars, Val) :-
+    member(Var=Val, Vars).
+eval_expr(Expr1 + Expr2, Vars, Result) :-
+    eval_expr(Expr1, Vars, Val1),
+    eval_expr(Expr2, Vars, Val2),
+    Result is Val1 + Val2.
+eval_expr(Expr1 - Expr2, Vars, Result) :-
+    eval_expr(Expr1, Vars, Val1),
+    eval_expr(Expr2, Vars, Val2),
+    Result is Val1 - Val2.
+eval_expr(Expr1 * Expr2, Vars, Result) :-
+    eval_expr(Expr1, Vars, Val1),
+    eval_expr(Expr2, Vars, Val2),
+    Result is Val1 * Val2.
+
+% Example usage
+?- solution([a > 2*b, b < c, d + 10 > e], Vars).
+```
+
+
+
+which take as input expressions  a > 2b, b < c , d + 10 > e, using operators +, <, >, -, *, and variables like a, b, c, d, e,
+the prolog program find solution as integer numbers for variables which will satisfy these expressions or if expressions are contradictory then throw error
+
+
+Can you create similar program in python
+
+Yes, here's a Python program which solves the same problem:
+
+```
+from itertools import product
+from typing import Dict, List, Tuple
+
+def solution(exprs: List[str]) -> Dict[str, int]:
+    # Parse the expressions to get variables and constraints
+    variables = sorted(set(c for c in ''.join(exprs) if c.isalpha()))
+    constraints = []
+    for expr in exprs:
+        left, cmp, right = expr.split()
+        constraints.append((left, cmp, right))
+
+    # Generate all possible variable assignments
+    for values in product(range(-1000, 1001), repeat=len(variables)):
+        # Assign values to variables
+        assignment = dict(zip(variables, values))
+        # Check if the assignment satisfies all the constraints
+        if all(val(left, assignment) cmp val(right, assignment) for left, cmp, right in constraints):
+            return assignment
+
+    raise ValueError("No solution found.")
+
+def val(expr: str, assignment: Dict[str, int]) -> int:
+    # Evaluate an expression with the given variable assignment
+    if expr.isdigit():
+        return int(expr)
+    elif expr.isalpha():
+        return assignment[expr]
+    else:
+        left, op, right = expr.split()
+        left_val = val(left, assignment)
+        right_val = val(right, assignment)
+        if op == "+":
+            return left_val + right_val
+        elif op == "-":
+            return left_val - right_val
+        elif op == "*":
+            return left_val * right_val
+
+# Example usage
+assignment = solution(["a > 2 b", "b < c", "d + 10 > e"])
+print("Solution:", assignment)
+```
+
+This program works by first parsing the input expressions to extract the variables and constraints in the form `(left, comparison, right)`. It then generates every possible assignment of integer values to the variables within the range [-1000, 1000], and checks whether each assignment satisfies all the constraints. If a satisfying assignment is found, it is returned as a dictionary mapping variables to their values. Otherwise, a `ValueError` is raised. The `val` function is used to evaluate the values of expressions given a variable assignment, which recursively evaluates sub-expressions.
+
+###
+
+
