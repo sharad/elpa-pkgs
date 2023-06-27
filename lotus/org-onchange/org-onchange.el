@@ -55,97 +55,97 @@
 ;; [[file:org-onchange.org::*Org insert log note un-interactively][Org insert log note un-interactively:1]]
 ;; copy of org-store-log-note
 ;;;###autoload
-  (defun org-insert-log-note (marker txt &optional purpose effective-time state previous-state)
-    "Finish taking a log note, and insert it to where it belongs."
-    (let* ((note-marker marker)
-           (txt txt)
-           (note-purpose (or purpose 'note))
-           (effective-time (or effective-time (org-current-effective-time)))
-           (note-state state)
-           (note-previous-state previous-state))
-      (if (marker-buffer marker)
-          (let ((note (rest (assq note-purpose org-log-note-headings)))
-                lines)
-            (while (string-match "\\`# .*\n[ \t\n]*" txt)
-              (setq txt (replace-match "" t t txt)))
-            (when (string-match "\\s-+\\'" txt)
-              (setq txt (replace-match "" t t txt)))
-            (setq lines (org-split-string txt "\n"))
-            (when (org-string-nw-p note)
-              (setq note
-                    (org-replace-escapes
-                     note
-                     (list (cons "%u" (user-login-name))
-                           (cons "%U" user-full-name)
-                           (cons "%t" (format-time-string
-                                       (org-time-stamp-format 'long 'inactive)
-                                       effective-time))
-                           (cons "%T" (format-time-string
-                                       (org-time-stamp-format 'long nil)
-                                       effective-time))
-                           (cons "%d" (format-time-string
-                                       (org-time-stamp-format nil 'inactive)
-                                       effective-time))
-                           (cons "%D" (format-time-string
-                                       (org-time-stamp-format nil nil)
-                                       effective-time))
-                           (cons "%s" (cond
-                                        ((not note-state) "")
-                                        ((string-match-p org-ts-regexp note-state)
-                                         (format "\"[%s]\""
-                                                 (substring note-state 1 -1)))
-                                        (t (format "\"%s\"" note-state))))
-                           (cons "%S"
-                                 (cond
-                                   ((not note-previous-state) "")
-                                   ((string-match-p org-ts-regexp
-                                                    note-previous-state)
-                                    (format "\"[%s]\""
-                                            (substring
-                                             note-previous-state 1 -1)))
-                                   (t (format "\"%s\""
-                                              note-previous-state)))))))
-              (when lines (setq note (concat note " \\\\")))
-              (push note lines))
+(defun org-insert-log-note (marker txt &optional purpose effective-time state previous-state)
+  "Finish taking a log note, and insert it to where it belongs."
+  (let* ((note-marker marker)
+         (txt txt)
+         (note-purpose (or purpose 'note))
+         (effective-time (or effective-time (org-current-effective-time)))
+         (note-state state)
+         (note-previous-state previous-state))
+    (if (marker-buffer marker)
+        (let ((note (rest (assq note-purpose org-log-note-headings)))
+              lines)
+          (while (string-match "\\`# .*\n[ \t\n]*" txt)
+            (setq txt (replace-match "" t t txt)))
+          (when (string-match "\\s-+\\'" txt)
+            (setq txt (replace-match "" t t txt)))
+          (setq lines (org-split-string txt "\n"))
+          (when (org-string-nw-p note)
+            (setq note
+                  (org-replace-escapes
+                   note
+                   (list (cons "%u" (user-login-name))
+                         (cons "%U" user-full-name)
+                         (cons "%t" (format-time-string
+                                     (org-time-stamp-format 'long 'inactive)
+                                     effective-time))
+                         (cons "%T" (format-time-string
+                                     (org-time-stamp-format 'long nil)
+                                     effective-time))
+                         (cons "%d" (format-time-string
+                                     (org-time-stamp-format nil 'inactive)
+                                     effective-time))
+                         (cons "%D" (format-time-string
+                                     (org-time-stamp-format nil nil)
+                                     effective-time))
+                         (cons "%s" (cond
+                                      ((not note-state) "")
+                                      ((string-match-p org-ts-regexp note-state)
+                                       (format "\"[%s]\""
+                                               (substring note-state 1 -1)))
+                                      (t (format "\"%s\"" note-state))))
+                         (cons "%S"
+                               (cond
+                                 ((not note-previous-state) "")
+                                 ((string-match-p org-ts-regexp
+                                                  note-previous-state)
+                                  (format "\"[%s]\""
+                                          (substring
+                                           note-previous-state 1 -1)))
+                                 (t (format "\"%s\""
+                                            note-previous-state)))))))
+            (when lines (setq note (concat note " \\\\")))
+            (push note lines))
 
-            (when lines ;; (and lines (not (or current-prefix-arg org-note-abort)))
-              (with-current-buffer (marker-buffer note-marker)
-                (org-with-wide-buffer
-                 ;; Find location for the new note.
-                 (goto-char note-marker)
-                 ;; (set-marker note-marker nil)
+          (when lines ;; (and lines (not (or current-prefix-arg org-note-abort)))
+            (with-current-buffer (marker-buffer note-marker)
+              (org-with-wide-buffer
+               ;; Find location for the new note.
+               (goto-char note-marker)
+               ;; (set-marker note-marker nil)
 
-                 ;; Note associated to a clock is to be located right after
-                 ;; the clock.  Do not move point.
-                 (unless (eq note-purpose 'clock-out)
-                   (goto-char (org-log-beginning t)))
-                 ;; Make sure point is at the beginning of an empty line.
-                 (cond ((not (bolp)) (let ((inhibit-read-only t)) (insert "\n")))
-                       ((looking-at "[ \t]*\\S-") (save-excursion (insert "\n"))))
-                 ;; In an existing list, add a new item at the top level.
-                 ;; Otherwise, indent line like a regular one.
-                 (let ((itemp (org-in-item-p)))
-                   (if itemp
-                       (indent-line-to
-                        (let ((struct (save-excursion
-                                        (goto-char itemp) (org-list-struct))))
-                          (org-list-get-ind (org-list-get-top-point struct) struct)))
-                       (org-indent-line)))
-                 (insert (org-list-bullet-string "-") (pop lines))
-                 (let ((ind (org-list-item-body-column (line-beginning-position))))
-                   (dolist (line lines)
-                     (insert "\n")
-                     (indent-line-to ind)
-                     (insert line)))
-                 (message "Note stored")
-                 (org-back-to-heading t)
-                 (org-cycle-hide-drawers 'children))
-                ;; Fix `buffer-undo-list' when `org-store-log-note' is called
-                ;; from within `org-add-log-note' because `buffer-undo-list'
-                ;; is then modified outside of `org-with-remote-undo'.
-                (when (eq this-command 'org-agenda-todo)
-                  (setcdr buffer-undo-list (nthcdr 2 buffer-undo-list))))))
-          (error "merker %s buffer is nil" marker))))
+               ;; Note associated to a clock is to be located right after
+               ;; the clock.  Do not move point.
+               (unless (eq note-purpose 'clock-out)
+                 (goto-char (org-log-beginning t)))
+               ;; Make sure point is at the beginning of an empty line.
+               (cond ((not (bolp)) (let ((inhibit-read-only t)) (insert "\n")))
+                     ((looking-at "[ \t]*\\S-") (save-excursion (insert "\n"))))
+               ;; In an existing list, add a new item at the top level.
+               ;; Otherwise, indent line like a regular one.
+               (let ((itemp (org-in-item-p)))
+                 (if itemp
+                     (indent-line-to
+                      (let ((struct (save-excursion
+                                      (goto-char itemp) (org-list-struct))))
+                        (org-list-get-ind (org-list-get-top-point struct) struct)))
+                     (org-indent-line)))
+               (insert (org-list-bullet-string "-") (pop lines))
+               (let ((ind (org-list-item-body-column (line-beginning-position))))
+                 (dolist (line lines)
+                   (insert "\n")
+                   (indent-line-to ind)
+                   (insert line)))
+               (message "Note stored")
+               (org-back-to-heading t)
+               (org-cycle-hide-drawers 'children))
+              ;; Fix `buffer-undo-list' when `org-store-log-note' is called
+              ;; from within `org-add-log-note' because `buffer-undo-list'
+              ;; is then modified outside of `org-with-remote-undo'.
+              (when (eq this-command 'org-agenda-todo)
+                (setcdr buffer-undo-list (nthcdr 2 buffer-undo-list))))))
+        (error "merker %s buffer is nil" marker))))
 ;; Org insert log note un-interactively:1 ends here
 
 ;; Clock out with NOTE
@@ -250,9 +250,9 @@
 
 (defun org-add-log-setup-with-timed-new-win (win-timeout &optional purpose state prev-state how extra)
   "Set up the post command hook to take a note.
-    If this is about to TODO state change, the new state is expected in STATE.
-    HOW is an indicator what kind of note should be created.
-    EXTRA is additional text that will be inserted into the notes buffer."
+      If this is about to TODO state change, the new state is expected in STATE.
+      HOW is an indicator what kind of note should be created.
+      EXTRA is additional text that will be inserted into the notes buffer."
   (let ((win-timeout (or win-timeout 7)))
     (move-marker org-log-note-marker (point))
     (setq org-log-note-purpose purpose
@@ -264,7 +264,7 @@
     ;; (add-hook 'post-command-hook 'org-add-log-note-background 'append)
     (org-add-log-note-with-timed-new-win  win-timeout)))
 
-;;;##autoload
+  ;;;##autoload
 (defun org-clock-lotus-log-note-current-clock-with-timed-new-win (win-timeout &optional fail-quietly)
   (interactive)
   (ignore win-timeout)
@@ -323,13 +323,13 @@
   (add-to-list 'desktop-locals-to-save 'lotus-last-buffer-undo-list-pos))
 (when (featurep 'session)
   (add-to-list 'session-locals-include 'lotus-last-buffer-undo-list-pos))
-;;;###autoload
+  ;;;###autoload
 (defun lotus-action-on-buffer-undo-list-change (action &optional minimal-char-changes win-timeout)
   "Set point to the position of the last change.
-Consecutive calls set point to the position of the previous change.
-With a prefix arg (optional arg MARK-POINT non-nil), set mark so \
-\\[exchange-point-and-mark]
-will return point to the current position."
+  Consecutive calls set point to the position of the previous change.
+  With a prefix arg (optional arg MARK-POINT non-nil), set mark so \
+  \\[exchange-point-and-mark]
+  will return point to the current position."
   ;; (interactive "P")
   ;; (unless (buffer-modified-p)
   ;;   (error "Buffer not modified"))
@@ -360,8 +360,8 @@ will return point to the current position."
            ;; (setq position (rest (last undo)))
 
           ((and (consp undo) (markerp (cl-first undo)))) ; (MARKER . DISTANCE)
-          ((integerp undo))    		; POSITION
-          ((null undo))    		; nil
+          ((integerp undo))        		; POSITION
+          ((null undo))        		; nil
           (t (error "Invalid undo entry: %s" undo)))
         (setq undo-list (rest undo-list)))
 
@@ -429,8 +429,8 @@ will return point to the current position."
 
 ;; [[file:org-onchange.org::*Org log note change from different sources][Org log note change from different sources:1]]
 ;;{{
-   ;; https://emacs.stackexchange.com/questions/101/how-can-i-create-an-org-link-for-each-email-sent-by-mu4e
-   ;; My first suggestion would be to try the following.
+     ;; https://emacs.stackexchange.com/questions/101/how-can-i-create-an-org-link-for-each-email-sent-by-mu4e
+     ;; My first suggestion would be to try the following.
 
 (add-hook 'message-send-hook #'(lambda ()
                                  (org-store-link nil)))
@@ -517,13 +517,13 @@ will return point to the current position."
 (defun email-heading ()
   "Send the current org-mode heading as the body of an email, with headline as the subject.
 
-   use these properties TO OTHER-HEADERS is an alist specifying
-   additional header fields. Elements look like (HEADER . VALUE)
-   where both HEADER and VALUE are strings.
+     use these properties TO OTHER-HEADERS is an alist specifying
+     additional header fields. Elements look like (HEADER . VALUE)
+     where both HEADER and VALUE are strings.
 
-   save when it was sent as s SENT property. this is overwritten on
-   subsequent sends. could save them all in a logbook?
-   "
+     save when it was sent as s SENT property. this is overwritten on
+     subsequent sends. could save them all in a logbook?
+     "
   (interactive)
   ; store location.
   (setq *email-heading-point* (set-marker (make-marker) (point)))

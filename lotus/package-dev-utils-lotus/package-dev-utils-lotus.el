@@ -140,8 +140,8 @@ or nil if the version cannot be parsed."
          (pkg-name             (replace-regexp-in-string "-[0-9\.]\*\$"
                                                         ""
                                                         pkg-name-version))
-         (version              (package-version-join (package-dev-build--valid-version
-                                                     (format-time-string "%Y%m%d.%H%M"))))
+         (version              (package-version-join (package-dev-build--valid-version)
+                                                     (format-time-string "%Y%m%d.%H%M")))
          (currdir-pkg-def-file (expand-file-name (format "%s-pkg.el" pkg-name)
                                                  dir-of-current-file))
          (pkg-def-exists       (file-exists-p currdir-pkg-def-file))
@@ -210,9 +210,12 @@ or nil if the version cannot be parsed."
                                     dir-of-current-file
                                     force))))
       ;; add org-tangle-file here
-      (let ((default-directory dir-of-current-file))
+      (let ((default-directory dir-of-current-file)
+            ;; https://github.com/justinbarclay/parinfer-rust-mode/issues/52
+            (parinfer-rust-check-before-enable nil))
         (dolist (org-file (directory-files dir-of-current-file t "'\*\.org$"))
-          (org-babel-tangle-file org-file)))
+          (let ((org-babel-tangle-file org-file))
+            (org-babel-tangle-file org-file))))
       (copy-directory dir-of-current-file pkg-dir nil t t)
       (when current-prefix-arg
         (package-load-package-from-dir pkg-dir))

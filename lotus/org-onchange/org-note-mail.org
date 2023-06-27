@@ -1,11 +1,47 @@
-;; -*- lexical-binding: t -*-
+#+TITLE Org on change
+#+PROPERTY: header-args :tangle yes :padline yes :comments both :noweb yes :cmd  ";;; org-note-mail.el --- copy config         -*- lexical-binding: t; -*-"
 
-;; https://github.com/danieroux/emacs/blob/master/mine/djr-org-mu4e-capture-sent.el
+* Org on change
+** Preamble
+ #+BEGIN_SRC emacs-lisp :padline no :comments no :noweb no
+   ;;; org-note-mail.el --- copy config         -*- lexical-binding: t; -*-
 
-;;; Store emails that are send/forwarded/replied to
+   ;; Copyright (C) 2012  Sharad Pratap
 
-;; Invoking lotus-org-mu4e-capture-next-message or setting lotus-org-mu4e-must-capture-message before composing a message will call org-capture after the email was sent successfully (using the capture template from lotus-mu4e-org-mode-capture-template-for-sent-email)
+   ;; Author: Sharad Pratap <sh4r4d _at_ _G-mail_>
+   ;; Keywords: convenience
 
+   ;; This program is free software; you can redistribute it and/or modify
+   ;; it under the terms of the GNU General Public License as published by
+   ;; the Free Software Foundation, either version 3 of the License, or
+   ;; (at your option) any later version.
+
+   ;; This program is distributed in the hope that it will be useful,
+   ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+   ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   ;; GNU General Public License for more details.
+
+   ;; You should have received a copy of the GNU General Public License
+   ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+   ;;; Commentary:
+
+   ;; https://github.com/danieroux/emacs/blob/master/mine/djr-org-mu4e-capture-sent.el
+
+   ;;; Store emails that are send/forwarded/replied to
+
+   ;; Invoking lotus-org-mu4e-capture-next-message or setting
+   ;; lotus-org-mu4e-must-capture-message before composing a message will call
+   ;; org-capture after the email was sent successfully (using the capture template
+   ;; from lotus-mu4e-org-mode-capture-template-for-sent-email)
+
+   ;;; Code:
+
+ #+END_SRC
+
+** Libraries required
+
+#+BEGIN_SRC emacs-lisp
 (defvar lotus-org-mu4e-must-capture-message nil
   "If set, the next composed mu4e message will automatically be captured with the template specified in lotus-mu4e-org-mode-capture-template-for-sent-email")
 
@@ -53,8 +89,8 @@
   (interactive)
   (if lotus-org-mu4e-must-capture-message
       (let* ((org-store-link-plist lotus-mu4e-captured-message-p)
-	     (org-capture-link-is-already-stored t))
-	(org-capture nil lotus-mu4e-org-mode-capture-template-for-sent-email))))
+             (org-capture-link-is-already-stored t))
+        (org-capture nil lotus-mu4e-org-mode-capture-template-for-sent-email))))
 
 (defun lotus-org-mu4e-capture-cancel ()
   (interactive)
@@ -84,5 +120,81 @@
   (interactive)
   (lotus-org-mu4e-capture-next-message)
   (mu4e-compose-forward))
+#+END_SRC
 
+** Functions
+
+*** Base functions
+**** Note start
+ (defun org-add-note ()
+   "Add a note to the current entry.
+ This is done in the same way as adding a state change note."
+   (interactive)
+   (org-add-log-setup 'note))
+
+**** org-add-log-setup (&optional purpose state prev-state how extra)
+ Set up the post command hook to take a note.
+ If this is about to TODO state change, the new state is expected in STATE.
+ HOW is an indicator what kind of note should be created.
+ EXTRA is additional text that will be inserted into the notes buffer.
+#+BEGIN_SRC emacs-lisp :tangle no
+
+#+END_SRC
+
+**** org-add-log-note (&optional _purpose)
+ Pop up a window for taking a note, and add this note later.
+ (setq-local org-finish-function 'org-store-log-note)
+#+BEGIN_SRC elisp :tangle no
+#+END_SRC
+
+**** org-store-log-note ()
+ Finish taking a log note, and insert it to where it belongs.
+#+BEGIN_SRC elisp :tangle no
+#+END_SRC
+
+
+*** Org insert log note un-interactively
+
+#+BEGIN_SRC elisp
+
+ #+END_SRC
+
+*** Clock out with NOTE
+
+ #+BEGIN_SRC emacs-lisp
+
+ #+END_SRC
+
+*** Org add log note with-timed-new-win
+background in name is misleading it at present log-note show org file buffer to
+add note but in this case it is not shown so background word is used.
+
+*Note:* these function prepare buffer or window (timed) to take log note
+ main work is only done by _org-store-log-note_
+
+ #+begin_src emacs-lisp
+
+ #+end_src
+
+*** Org detect change to log note
+
+ #+BEGIN_SRC emacs-lisp
+
+ #+END_SRC
+
+*** Org log note on change timer
+ #+BEGIN_SRC emacs-lisp
+
+ #+END_SRC
+
+
+
+*** Org log note change from different sources
+ #+BEGIN_SRC emacs-lisp
+ #+END_SRC
+
+** Provide this file
+#+BEGIN_SRC emacs-lisp
 (provide 'org-note-mail)
+;;; org-note-mail.el ends here
+#+END_SRC
