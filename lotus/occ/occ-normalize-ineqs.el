@@ -48,7 +48,7 @@
               occ-ineqs))
 
 
-
+(defvar occ-ineqs '())
 
 (defun occ-assert-ineq (ineq)
   (occ-assert (= 3 (length ineq)))
@@ -74,7 +74,31 @@
 
 (setq ineqs '((> a b) (< b d) (> c d)))
 
+(defun occ-add-ineq (ineq property)
+  (if (occ-normalize-ineq (append occ-ineqs (list ineq)))
+      (cl-pushnew ineq occ-ineqs)))
 
+
+(defun occ-normalize-ineq (ineqs))
+
+(defun occ-read-math-exp (ineq)
+  (cond))
+
+
+(defun my-new-math-read-sexp-expr (sexp)
+  "Converts a Lisp sexp expression SEXP into an equivalent expression."
+  (cond
+   ((atom sexp) (cond
+                 ((eq sexp '=) '==)
+                 ((symbolp sexp) `(var ,(symbol-name sexp)))
+                 (t sexp)))
+   ((listp sexp) (cons (my-new-math-read-sexp-expr (car sexp))
+                       (mapcar #'my-new-math-read-sexp-expr (cdr sexp))))
+   (t sexp)))
+
+
+(eql (math-read-exprs "x = (a + 2)")
+     (my-new-math-read-sexp-expr '(= x (+ a 2))))
 
 (setq inequalities '((< a b) (> c b) (< c d)))
 (setq sorted-variables (order-variables inequalities))
