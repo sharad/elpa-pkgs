@@ -132,6 +132,7 @@
  (:sorted-vars (z (* 2 c) (+ a 10) a b c d x)))
 
 (order-variables '((< a c) (> b c) (< b d) (= a z) (= x d)))
+
 ((:inequalities ((< a c) (> b c) (< b d) (= a z) (= x d)))
  (:graph ((x) (z a) (d x) (b d) (c b) (a c)))
  (:in-degree-old ((x . 1) (z . 0) (d . 1) (b . 1) (c . 1) (a . 1)))
@@ -139,8 +140,33 @@
  (:sorted-vars (z a c b d x)))
 
 
+(defun occ-get-expr-array (ineqs)
+  (cadr (assoc :sorted-vars (order-variables-topo-sort ineqs))))
+
 (setq new-set '())
 (pushnew 'a new-set)
+
+
+
+(defun reduce-left (expr))
+
+
+(calc-normalize '(calcFunc-solve (vec (calcFunc-eq (* 2 (var a var-a)) (var d var-d)) (calcFunc-eq (+ (var b var-b) (var c1 var-c1)) (var d var-d)) (calcFunc-eq (+ (+ (var a var-a) (var c1 var-c1)) (var c2 var-c2)) (var d var-d)))
+                                 (vec (var a var-a) (var b var-b))))
+
+(math-simplify '(vec (calcFunc-eq (* 2 (var a var-a)) (var d var-d)) (calcFunc-eq (+ (var b var-b) (var c1 var-c1)) (var d var-d)) (calcFunc-eq (+ (+ (var a var-a) (var c1 var-c1)) (var c2 var-c2)) (var d var-d))))
+
+(calc-normalize '(calcFunc-solve (vec (calcFunc-eq (+ (var a var-a) (var b var-b)) (var d var-d)) (calcFunc-eq (+ (var b var-b) (var c var-c)) (var z var-z)) (calcFunc-eq (+ (+ (var a var-a) (var c var-c)) 10) (var z var-z)))
+                                 (vec (var a var-a) (var b var-b) (var c var-c))))
+
+(vec (calcFunc-eq (var a var-a) (- (+ (- (var d var-d) (var z var-z)) (/ (- (* 2 (var z var-z)) (var d var-d)) 2)) 5))
+     (calcFunc-eq (var b var-b) (+ (+ (var z var-z) (/ (- (var d var-d) (* 2 (var z var-z))) 2)) 5))
+     (calcFunc-eq (var c var-c) (- (/ (- (* 2 (var z var-z)) (var d var-d)) 2) 5)))
+
+
+(math-read-exprs "[ a + b = 1]")
+
+(math-format-flat-expr '(vec (calcFunc-eq (var a var-a) (float 55 -1)) (calcFunc-eq (var b var-b) (float 45 -1))) 0)
 
 
 
