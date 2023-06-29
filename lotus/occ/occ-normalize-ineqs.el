@@ -165,9 +165,8 @@
 
 
 (math-read-exprs "[ a + b = 1]")
-
 (math-format-flat-expr '(vec (calcFunc-eq (var a var-a) (float 55 -1)) (calcFunc-eq (var b var-b) (float 45 -1))) 0)
-
+(math-format-flat-expr (car (math-read-exprs "[ a + b = 1]")) 0)
 
 
 (setq xxx '((a)))
