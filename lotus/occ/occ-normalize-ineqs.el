@@ -104,13 +104,9 @@
         (t sexp)))
 (defun occ-obj-math-read-expr (ineq)
   "Return normalized calc math expression."
-  ;; (calc-normalize (list 'vec (cond ((stringp ineq) (math-read-expr ineq))
-  ;;                                  ((consp ineq)   (occ-math-read-sexp-expr ineq))
-  ;;                                  (t (occ-error "ineq %s not string or list" ineq)))))
-
   (calc-normalize (cond ((stringp ineq) (math-read-expr ineq))
-                                   ((consp ineq)   (occ-math-read-sexp-expr ineq))
-                                   (t (occ-error "ineq %s not string or list" ineq)))))
+                        ((consp ineq)   (occ-math-read-sexp-expr ineq))
+                        (t (occ-error "ineq %s not string or list" ineq)))))
 (defun occ-obj-ineq-wash (ineq property)
   (cond ((and (listp ineq)
               (eql 'var (car ineq))
