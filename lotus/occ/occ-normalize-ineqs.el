@@ -180,8 +180,9 @@
   ;;   (occ-obj-order-ineqs-expr ineqs))
   (let ((eqs  (mapcar #'occ-obj-cmp2eq ineqs))
         (vars nil))
-   (calc-normalize (calcFunc-solve `(vec ,@eqs)
-                                   `(vec ,@vars)))))
+    (calc-normalize (calcFunc-solve `(vec ,@eqs)
+                                    `(vec ,@vars)))))
+
 
 (defun occ-do-add-ineq-1 (ineq property)
   (let ((ineq (occ-obj-ineq-wash (occ-obj-math-read-expr ineq) property)))
@@ -194,6 +195,7 @@
 
 (defun occ-obj-ineq-1 (property)
   (cdr (assoc property occ-ineqs)))
+
 
 (occ-do-add-ineq-1 "root > (key + 2)" 'root)
 (occ-do-add-ineq-1 "key > 10" 'key)
