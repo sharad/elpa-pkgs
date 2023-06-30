@@ -186,7 +186,9 @@
   ;;   (occ-obj-order-ineqs-expr ineqs))
   (let ((eqs  (mapcar #'(lambda (e) (occ-obj-cmp2eq (cdr e) ))
                       ineqs))
-        (vars nil))
+        (vars (mapcar #'(lambda (v) (let ((var (car v)))
+                                      `(var ,var ,(intern (concat "var-" (symbol-name var))))))
+                      ineqs)))
     (calc-normalize `(calcFunc-solve (vec ,@eqs)
                                      (vec ,@vars)))))
 
@@ -214,7 +216,6 @@
 
 (equal (math-read-expr "x = (a + 2)")
        (occ-math-read-sexp-expr '(= x (+ a 2))))
-
 
 (calc-normalize (list 'vec (car (math-read-exprs " a + b > (a + c)"))))
 
