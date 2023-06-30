@@ -71,6 +71,7 @@
                              (and (numberp (car el))
                                   (symbolp (cadr el))))))))))
 (defun occ-do-assert-math-ineq (ineq)
+  "Assert variables of INEQ inequality are from properties."
   (cond ((and (listp ineq)
               (eql 'var (car ineq)))
          (let ((var (cadr ineq))
@@ -81,6 +82,17 @@
          (dolist (ine ineq)
            (occ-do-assert-ineq ine))))
   t)
+(defun occ-do-assert-math-ineq-has-prop-p (ineq property)
+  "Check if PROPERTY variable is present in INEQ inequality"
+  (cond ((and (listp ineq)
+              (eql 'var (car ineq)))
+         (let ((var (cadr ineq)))
+           (eql property var)))
+        ((atom ineq) nil)
+        ((listp ineq)
+         (cl-some #'(lambda (e) (occ-do-assert-math-ineq-has-prop-p e property)) ineq))))
+
+;; (occ-do-assert-math-ineq-has-prop (occ-obj-ineq-wash (occ-obj-math-read-expr "root + nil") 'key) 'key)
 
 (defun occ-math-read-sexp-expr (sexp)
   "Converts a Lisp sexp expression SEXP into an equivalent expression."
@@ -94,7 +106,6 @@
   (cond ((stringp ineq) (math-read-exprs ineq))
         ((consp ineq)   (occ-math-read-sexp-expr ineq))
         (t (occ-error "ineq %s not string or list" ineq))))
-
 (defun occ-obj-ineq-wash (ineq property)
   (cond ((and (listp ineq)
               (eql 'var (car ineq))
@@ -110,7 +121,6 @@
 (defun occ-normalize-ineqs (ineqs)
   (message "test")
   t)
-
 
 (defun occ-do-add-ineq-1 (ineq property)
   (let ((ineq (occ-obj-ineq-wash (occ-obj-math-read-expr ineq) property)))
