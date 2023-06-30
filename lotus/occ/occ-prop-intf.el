@@ -239,17 +239,22 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   (occ-error "Implement it for %s: Checkout property in case of force clock-in." property))
 
 
-(cl-defgeneric occ-do-ineq-prop (obj
-                                 property
-                                 list)
+(cl-defgeneric occ-do-add-ineq (property
+                                list)
   "Add ineq for property PROPERTY.")
-(cl-defmethod occ-do-ineq-prop ((obj occ-obj-tsk)
-                                (property symbol)
-                                (ineq list))
+(cl-defmethod occ-do-add-ineq ((property symbol)
+                               (ineq list))
   "Add ineq for property PROPERTY."
-  (ignore obj)
-  (occ-add-ineq ineq property)
+  (occ-do-add-ineq-1 ineq property)
   (occ-error "Implement it for %s: Checkout property in case of force clock-in." property))
+
+
+(cl-defgeneric occ-obj-ineq (property)
+  "Add ineq for property PROPERTY.")
+(cl-defmethod occ-obj-ineq ((property symbol))
+  "Add ineq for property PROPERTY."
+  (occ-obj-ineq-1 ineq property))
+
 
 
 (occ-testing

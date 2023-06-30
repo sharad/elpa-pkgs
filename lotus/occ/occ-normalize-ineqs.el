@@ -66,39 +66,58 @@
                                   (numberp (cadr el)))
                              (and (numberp (car el))
                                   (symbolp (cadr el))))))))))
+(defun occ-do-assert-ineq (ineq)
+  (cond ((and (listp ineq)
+              (eql 'var (car ineq)))
+         (let ((var (cadr ineq))
+               (properties (occ-obj-propetirs-for-rank)))
+           (cl-assert (memq var properties) nil "variable %s is not in properties %s" var properties)))
+        ((atom ineq) ineq)
+        ((listp ineq)
+         (dolist (ine ineq)
+           (occ-do-assert-ineq ine)))))
 
+(defun occ-math-read-sexp-expr (sexp)
+  "Converts a Lisp sexp expression SEXP into an equivalent expression."
+  (list (cond ((atom sexp) (cond ((assoc (prin1-to-string sexp) math-standard-opers) (cadr (assoc (symbol-name sexp) math-standard-opers)))
+                                 ((symbolp sexp) `(var ,sexp ,(intern (concat "var-" (symbol-name sexp)))))
+                                 (t sexp)))
+              ((listp sexp) (cons (car (occ-math-read-sexp-expr (car sexp)))
+                                  (mapcar #'car (mapcar #'occ-math-read-sexp-expr (cdr sexp)))))
+              (t sexp))))
+(defun occ-obj-math-read-expr (ineq)
+  (cond ((stringp ineq) (math-read-exprs ineq))
+        ((consp ineq)   (occ-math-read-sexp-expr ineq))
+        (t (occ-error "ineq %s not string or list" ineq))))
+
+(defun occ-obj-ineq-wash (ineq property)
+  (cond ((and (listp ineq)
+              (eql 'var (car ineq))
+              (eql 'nil (cadr ineq)))
+         (list 'var property (intern (concat "var-" (symbol-name property)))))
+        ((atom ineq) ineq)
+        ((listp ineq) (cons (occ-obj-ineq-wash (car ineq) property)
+                            (mapcar #'(lambda (ineq) (occ-obj-ineq-wash ineq property)) (cdr ineq))))
+        (t ineq)))
+;; (occ-obj-ineq-wash (occ-obj-math-read-expr "a + nil") 'xx)
+;; (occ-do-assert-ineq (occ-obj-ineq-wash (occ-obj-math-read-expr "root + nil") 'key))
 (defun occ-normalize-ineq (ineq)
   (occ-assert-ineq ineq))
-
-(occ-normalize-ineq '(< a b))
-
-(setq ineqs '((> a b) (< b d) (> c d)))
-
-(defun occ-add-ineq (ineq property)
+(defun occ-do-add-ineq-1 (ineq property)
   (if (occ-normalize-ineq (append occ-ineqs (list ineq)))
-      (cl-pushnew ineq occ-ineqs)))
+      (setcdr (assoc property occ-ineqs) ineq)))
+
+(defun occ-obj-ineq-1 (property)
+  (cdr (assoc property occ-ineqs)))
 
 
-(defun occ-normalize-ineq (ineqs))
-
-(defun occ-read-math-exp (ineq)
-  (cond))
-
-
-(defun my-new-math-read-sexp-expr (sexp)
-  "Converts a Lisp sexp expression SEXP into an equivalent expression."
-  (cond
-   ((atom sexp) (cond
-                 ((eq sexp '=) '==)
-                 ((symbolp sexp) `(var ,(symbol-name sexp)))
-                 (t sexp)))
-   ((listp sexp) (cons (my-new-math-read-sexp-expr (car sexp))
-                       (mapcar #'my-new-math-read-sexp-expr (cdr sexp))))
-   (t sexp)))
+(defun occ-obj-propetirs-for-rank ()
+  (delete-dups (append (occ-obj-properties-to-calculate-rank 'occ-tsk)
+                       (occ-obj-properties-to-calculate-rank 'occ-obj-ctx-tsk))))
 
 
-(eql (math-read-exprs "x = (a + 2)")
-     (my-new-math-read-sexp-expr '(= x (+ a 2))))
+(equal (math-read-exprs "x = (a + 2)")
+       (occ-math-read-sexp-expr '(= x (+ a 2))))
 
 (setq inequalities '((< a b) (> c b) (< c d)))
 (setq sorted-variables (order-variables inequalities))
