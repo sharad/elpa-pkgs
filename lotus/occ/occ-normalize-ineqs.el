@@ -120,9 +120,8 @@
 ;; (occ-do-assert-ineq (occ-obj-ineq-wash (occ-obj-math-read-expr "root + nil") 'key))
 
 (defun occ-normalize-ineqs (ineqs)
-  (let ((ineqs (mapcar #'caddr occ-ineqs)))
-    (occ-obj-order-ineqs-expr ineqs))
-  t)
+  (let ((ineqs (mapcar #'caddr ineqs)))
+    (occ-obj-order-ineqs-expr ineqs)))
 
 (defun occ-obj-order-ineqs-expr (inequalities)
   (let ((graph     '())
@@ -137,23 +136,27 @@
           (push (cons var2 0) in-degree))
         (cond ((eq op 'calcFunc-gt)
                (progn
-                 (cl-pushnew var2 (cdr (assoc var1 graph)))
+                 (cl-pushnew (cons var2 'gt) (cdr (assoc var1 graph)))
                  (cl-incf (cdr (assoc var2 in-degree)))))
               ((eq op 'calcFunc-lt)
                (progn
-                 (cl-pushnew var1 (cdr (assoc var2 graph)))
+                 (cl-pushnew (cons var1 'lt) (cdr (assoc var2 graph)))
+                 (cl-incf (cdr (assoc var1 in-degree)))))
+              ((eq op 'calcFunc-eq)
+               (progn
+                 (cl-pushnew (cons var1 'eq) (cdr (assoc var2 graph)))
                  (cl-incf (cdr (assoc var1 in-degree))))))))
     (let ((in-degree-old (mapcar #'copy-list in-degree))
           (sorted-vars   '())
-          (queue (cl-remove-if-not #'(lambda (x)
-                                       (= 0 (cdr (assoc x in-degree))))
-                                   (mapcar #'car graph)))
+          (queue (mapcar #'list (cl-remove-if-not #'(lambda (x)
+                                                      (= 0 (cdr (assoc x in-degree))))
+                                                (mapcar #'car graph))))
           (var nil))
        (while (setf var (pop queue))
          (setq sorted-vars (append sorted-vars (list var)))
-         (dolist (vertex (cdr (assoc var graph)))
-           (cl-decf (cdr (assoc vertex in-degree)))
-           (if (= 0 (cdr (assoc vertex in-degree)))
+         (dolist (vertex (cdr (assoc (car var) graph)))
+           (cl-decf (cdr (assoc (car vertex) in-degree)))
+           (if (= 0 (cdr (assoc (car vertex) in-degree)))
                (setf queue (append queue (list vertex))))))
        (list (list :inequalities inequalities)
              (list :graph graph)
@@ -167,7 +170,7 @@
     (when (and (occ-do-assert-math-ineq-has-prop-p ineq property)
               (occ-do-assert-math-ineq ineq))
      (if (occ-normalize-ineqs (append occ-ineqs (list ineq)))
-         (if occ-ineqs
+         (if (assoc property occ-ineqs)
              (setcdr (assoc property occ-ineqs) ineq)
            (cl-pushnew (cons property ineq) occ-ineqs))))))
 
@@ -175,6 +178,9 @@
   (cdr (assoc property occ-ineqs)))
 
 (occ-do-add-ineq-1 "root > (key + 2)" 'root)
+(occ-do-add-ineq-1 "key > 10" 'key)
+
+(occ-normalize-ineqs occ-ineqs)
 
 (occ-obj-ineq-wash (occ-obj-math-read-expr "2 * root + 1  > root +  (key + 2)") 'root)
 (calc-normalize (math-read-expr "x > b +2"))
