@@ -96,16 +96,17 @@
 
 (defun occ-math-read-sexp-expr (sexp)
   "Converts a Lisp sexp expression SEXP into an equivalent expression."
-  (list (cond ((atom sexp) (cond ((assoc (prin1-to-string sexp) math-standard-opers) (cadr (assoc (symbol-name sexp) math-standard-opers)))
-                                 ((symbolp sexp) `(var ,sexp ,(intern (concat "var-" (symbol-name sexp)))))
-                                 (t sexp)))
-              ((listp sexp) (cons (car (occ-math-read-sexp-expr (car sexp)))
-                                  (mapcar #'car (mapcar #'occ-math-read-sexp-expr (cdr sexp)))))
-              (t sexp))))
+  (cond ((atom sexp) (cond ((assoc (prin1-to-string sexp) math-standard-opers) (cadr (assoc (symbol-name sexp) math-standard-opers)))
+                           ((symbolp sexp) `(var ,sexp ,(intern (concat "var-" (symbol-name sexp)))))
+                           (t sexp)))
+        ((listp sexp) (cons (occ-math-read-sexp-expr (car sexp))
+                            (mapcar #'occ-math-read-sexp-expr (cdr sexp))))
+        (t sexp)))
 (defun occ-obj-math-read-expr (ineq)
-  (cond ((stringp ineq) (math-read-exprs ineq))
-        ((consp ineq)   (occ-math-read-sexp-expr ineq))
-        (t (occ-error "ineq %s not string or list" ineq))))
+  "Return normalized calc math expression."
+  (calc-normalize (list 'vec (cond ((stringp ineq) (math-read-expr ineq))
+                                   ((consp ineq)   (occ-math-read-sexp-expr ineq))
+                                   (t (occ-error "ineq %s not string or list" ineq))))))
 (defun occ-obj-ineq-wash (ineq property)
   (cond ((and (listp ineq)
               (eql 'var (car ineq))
@@ -119,26 +120,70 @@
 ;; (occ-do-assert-ineq (occ-obj-ineq-wash (occ-obj-math-read-expr "root + nil") 'key))
 
 (defun occ-normalize-ineqs (ineqs)
-  (message "test")
+  (let ((ineqs (mapcar #'caddr occ-ineqs)))
+    (occ-obj-order-ineqs-expr ineqs))
   t)
+
+(defun occ-obj-order-ineqs-expr (inequalities)
+  (let ((graph     '())
+        (in-degree '()))
+    (dolist (ineq inequalities)
+      (cl-destructuring-bind (op var1 var2) ineq
+        (unless (member* var1 graph :key #'car)
+          (push (list var1) graph)
+          (push (cons var1 0) in-degree))
+        (unless (member* var2 graph :key #'car)
+          (push (list var2) graph)
+          (push (cons var2 0) in-degree))
+        (cond ((eq op 'calcFunc-gt)
+               (progn
+                 (cl-pushnew var2 (cdr (assoc var1 graph)))
+                 (cl-incf (cdr (assoc var2 in-degree)))))
+              ((eq op 'calcFunc-lt)
+               (progn
+                 (cl-pushnew var1 (cdr (assoc var2 graph)))
+                 (cl-incf (cdr (assoc var1 in-degree))))))))
+    (let ((in-degree-old (mapcar #'copy-list in-degree))
+          (sorted-vars   '())
+          (queue (cl-remove-if-not #'(lambda (x)
+                                       (= 0 (cdr (assoc x in-degree))))
+                                   (mapcar #'car graph)))
+          (var nil))
+       (while (setf var (pop queue))
+         (setq sorted-vars (append sorted-vars (list var)))
+         (dolist (vertex (cdr (assoc var graph)))
+           (cl-decf (cdr (assoc vertex in-degree)))
+           (if (= 0 (cdr (assoc vertex in-degree)))
+               (setf queue (append queue (list vertex))))))
+       (list (list :inequalities inequalities)
+             (list :graph graph)
+             (list :in-degree-old in-degree-old)
+             (list :in-degree in-degree)
+             (list :sorted-vars sorted-vars)))))
+
 
 (defun occ-do-add-ineq-1 (ineq property)
   (let ((ineq (occ-obj-ineq-wash (occ-obj-math-read-expr ineq) property)))
-   (when (and ;; (occ-do-assert-sexp-ineq ineq)
+    (when (and (occ-do-assert-math-ineq-has-prop-p ineq property)
               (occ-do-assert-math-ineq ineq))
-    (if (occ-normalize-ineqs (append occ-ineqs (list ineq)))
-        (if occ-ineqs
-            (setcdr (assoc property occ-ineqs) ineq)
-          (cl-pushnew (cons property ineq )occ-ineqs))))))
+     (if (occ-normalize-ineqs (append occ-ineqs (list ineq)))
+         (if occ-ineqs
+             (setcdr (assoc property occ-ineqs) ineq)
+           (cl-pushnew (cons property ineq) occ-ineqs))))))
 
 (defun occ-obj-ineq-1 (property)
   (cdr (assoc property occ-ineqs)))
 
 (occ-do-add-ineq-1 "root > (key + 2)" 'root)
 
+(occ-obj-ineq-wash (occ-obj-math-read-expr "2 * root + 1  > root +  (key + 2)") 'root)
+(calc-normalize (math-read-expr "x > b +2"))
 
-(equal (math-read-exprs "x = (a + 2)")
+(equal (math-read-expr "x = (a + 2)")
        (occ-math-read-sexp-expr '(= x (+ a 2))))
+
+
+(calc-normalize (list 'vec (car (math-read-exprs " a + b > (a + c)"))))
 
 
 (setq inequalities '((< a b) (> c b) (< c d)))
