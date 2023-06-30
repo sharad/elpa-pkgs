@@ -50,7 +50,11 @@
 
 (defvar occ-ineqs '())
 
-(defun occ-assert-ineq (ineq)
+(defun occ-obj-propetirs-for-rank ()
+  (delete-dups (append (occ-obj-properties-to-calculate-rank 'occ-tsk)
+                       (occ-obj-properties-to-calculate-rank 'occ-obj-ctx-tsk))))
+
+(defun occ-do-assert-sexp-ineq (ineq)
   (occ-assert (= 3 (length ineq)))
   (occ-assert (memq (car ineq) '(> < =)))
   (occ-assert (not (cl-every #'consp (cdr ineq))))
@@ -66,16 +70,17 @@
                                   (numberp (cadr el)))
                              (and (numberp (car el))
                                   (symbolp (cadr el))))))))))
-(defun occ-do-assert-ineq (ineq)
+(defun occ-do-assert-math-ineq (ineq)
   (cond ((and (listp ineq)
               (eql 'var (car ineq)))
          (let ((var (cadr ineq))
                (properties (occ-obj-propetirs-for-rank)))
-           (cl-assert (memq var properties) nil "variable %s is not in properties %s" var properties)))
+           (occ-assert (memq var properties) nil "variable %s is not in properties %s" var properties)))
         ((atom ineq) ineq)
         ((listp ineq)
          (dolist (ine ineq)
-           (occ-do-assert-ineq ine)))))
+           (occ-do-assert-ineq ine))))
+  t)
 
 (defun occ-math-read-sexp-expr (sexp)
   "Converts a Lisp sexp expression SEXP into an equivalent expression."
@@ -101,23 +106,30 @@
         (t ineq)))
 ;; (occ-obj-ineq-wash (occ-obj-math-read-expr "a + nil") 'xx)
 ;; (occ-do-assert-ineq (occ-obj-ineq-wash (occ-obj-math-read-expr "root + nil") 'key))
-(defun occ-normalize-ineq (ineq)
-  (occ-assert-ineq ineq))
+
+(defun occ-normalize-ineqs (ineqs)
+  (message "test")
+  t)
+
+
 (defun occ-do-add-ineq-1 (ineq property)
-  (if (occ-normalize-ineq (append occ-ineqs (list ineq)))
-      (setcdr (assoc property occ-ineqs) ineq)))
+  (let ((ineq (occ-obj-ineq-wash (occ-obj-math-read-expr ineq) property)))
+   (when (and ;; (occ-do-assert-sexp-ineq ineq)
+              (occ-do-assert-math-ineq ineq))
+    (if (occ-normalize-ineqs (append occ-ineqs (list ineq)))
+        (if occ-ineqs
+            (setcdr (assoc property occ-ineqs) ineq)
+          (cl-pushnew (cons property ineq )occ-ineqs))))))
 
 (defun occ-obj-ineq-1 (property)
   (cdr (assoc property occ-ineqs)))
 
-
-(defun occ-obj-propetirs-for-rank ()
-  (delete-dups (append (occ-obj-properties-to-calculate-rank 'occ-tsk)
-                       (occ-obj-properties-to-calculate-rank 'occ-obj-ctx-tsk))))
+(occ-do-add-ineq-1 "root > (key + 2)" 'root)
 
 
 (equal (math-read-exprs "x = (a + 2)")
        (occ-math-read-sexp-expr '(= x (+ a 2))))
+
 
 (setq inequalities '((< a b) (> c b) (< c d)))
 (setq sorted-variables (order-variables inequalities))
