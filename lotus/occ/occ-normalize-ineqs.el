@@ -160,7 +160,11 @@
              (list :in-degree in-degree)
              (list :sorted-vars sorted-vars)))))
 (defun occ-obj-gen-constant (op)
-  (gensym (concat "cx" (if (memq op '(calcFunc-geq calcFunc-leq)) "0" "1") "-")))
+  (let* ((const-var (gensym (concat "cx" "-")))
+         (calc-const-var `(var ,const-var ,(intern (concat "var-" (symbol-name const-var))))))
+    (if (memq op '(calcFunc-gt calcFunc-lt))
+        `(+ 1 ,calc-const-var)
+      calc-const-var)))
 (defun occ-obj-cmp2eq (ineq)
   (cond ((and (consp ineq)
               (symbolp (car ineq))
@@ -168,12 +172,11 @@
          (occ-assert (= 3 (length ineq)))
          (let ((arg1 (cadr ineq))
                (arg2 (caddr ineq)))
-           (let* ((const-var (occ-obj-gen-constant (car ineq)))
-                  (calc-const-var `(var ,const-var ,(intern (concat "var-" (symbol-name const-var))))))
+           (let ((const-expr (occ-obj-gen-constant (car ineq))))
              (cond ((memq (car ineq) '(calcFunc-gt calcFunc-geq))
-                    `(calcFunc-eq ,arg1 (+ ,arg2 ,calc-const-var)))
+                    `(calcFunc-eq ,arg1 (+ ,arg2 ,const-expr)))
                    ((memq (car ineq) '(calcFunc-lt calcFunc-leq))
-                    `(calcFunc-eq ,arg2 (+ ,arg1 ,calc-const-var)))))))
+                    `(calcFunc-eq ,arg2 (+ ,arg1 ,const-expr)))))))
         ((listp ineq) (cons (occ-obj-cmp2eq (car ineq))
                             (mapcar #'occ-obj-cmp2eq (cdr ineq))))
         (t ineq)))
@@ -187,13 +190,16 @@
                       ineqs)))
     (calc-normalize `(calcFunc-solve (vec ,@eqs)
                                      (vec ,@vars)))))
+
+(defun occ-find-vars (eqs)
+  )
 
 
 (defun occ-do-add-ineq-1 (ineq property)
   (let ((ineq (occ-obj-ineq-wash (occ-obj-math-read-expr ineq) property)))
     (when (and (occ-do-assert-math-ineq-has-prop-p ineq property)
                (occ-do-assert-math-ineq ineq))
-     (if (occ-normalize-ineqs (append occ-ineqs (list ineq)))
+     (if (occ-normalize-ineqs (append occ-ineqs `(,(cons property ineq))))
          (if (assoc property occ-ineqs)
              (setcdr (assoc property occ-ineqs) ineq)
            (cl-pushnew (cons property ineq) occ-ineqs))))))
@@ -204,8 +210,13 @@
 
 (occ-do-add-ineq-1 "root > (key + 2)" 'root)
 (occ-do-add-ineq-1 "key > 10" 'key)
+(occ-do-add-ineq-1 "status  > 2 * root" 'status)
 
-(occ-normalize-ineqs occ-ineqs)
+(occ-obj-ineq-wash (occ-obj-math-read-expr "root > (key + 2)") 'root)
+
+;; (math-format-flat-expr (occ-normalize-ineqs occ-ineqs) 0)
+
+(occ-obj-propetirs-for-rank)
 
 (occ-obj-ineq-wash (occ-obj-math-read-expr "2 * root + 1  > root +  (key + 2)") 'root)
 (occ-obj-cmp2eq (calc-normalize (math-read-expr "x > b +2")))
