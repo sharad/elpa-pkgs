@@ -242,9 +242,6 @@
 ;; (math-format-flat-expr (occ-normalize-ineqs occ-ineqs) 1)
 "[status = cx-1627737 + 2 * (cx-1627739 + cx-1627738) + 29, key = cx-1627738 + 11, root = cx-1627739 + cx-1627738 + 14]"
 
-
-
-
 (occ-obj-find-expr-vars (cadr (occ-obj-eqs-exprs (occ-normalize-ineqs occ-ineqs))))
 (occ-obj-find-exprs-vars (occ-get-eqs (occ-normalize-ineqs occ-ineqs)))
 (occ-obj-find-eqs-vars (occ-normalize-ineqs occ-ineqs))
@@ -288,7 +285,8 @@
                                        (= 0 (cdr (assoc x in-degree))))
                                    (mapcar #'car graph)))
           (var nil))
-       (while (setf var (pop queue))
+
+      (while (setf var (pop queue))
          (setq sorted-vars (append sorted-vars (list var)))
          (dolist (vertex (cdr (assoc var graph)))
            (cl-decf (cdr (assoc vertex in-degree)))
