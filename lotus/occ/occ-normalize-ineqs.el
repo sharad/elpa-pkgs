@@ -27,6 +27,10 @@
 (provide 'occ-normalize-ineqs)
 
 
+(require 'calc-ext)
+(require 'calc-aent)
+
+
 (require 'occ-obj)
 (require 'occ-prop-intf)
 
@@ -49,9 +53,6 @@
 
 
 (progn
-
-  (require 'calc-ext)
-  (require 'calc-aent)
 
   (defvar occ-ineqs '())
 
@@ -209,7 +210,6 @@
   (defun occ-eqs-normalized-p (eqs vars)
     (let ((sol (occ-normalize-eqs eqs
                                   vars)))
-      ;; (message "sol %s" sol)
       (if (> (length (cdadr sol))
              1)
           (not (eql (car sol)
