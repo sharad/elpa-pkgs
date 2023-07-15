@@ -52,252 +52,268 @@
               occ-ineqs))
 
 
-(progn
+(defvar occ-ineqs '())
 
-  (defvar occ-ineqs '())
+(defun occ-obj-propetirs-for-rank ()
+  (delete-dups (append (occ-obj-properties-to-calculate-rank 'occ-tsk)
+                       (occ-obj-properties-to-calculate-rank 'occ-obj-ctx-tsk))))
 
-  (defun occ-obj-propetirs-for-rank ()
-    (delete-dups (append (occ-obj-properties-to-calculate-rank 'occ-tsk)
-                         (occ-obj-properties-to-calculate-rank 'occ-obj-ctx-tsk))))
+(defun occ-do-assert-sexp-ineq (ineq)
+  (occ-assert (= 3 (length ineq)))
+  (occ-assert (memq (car ineq) '(> < =)))
+  (occ-assert (not (cl-every #'consp (cdr ineq))))
+  (occ-assert (cl-some #'symbolp (cdr ineq)))
+  (dolist (el (cdr ineq))
+    (cond ((symbolp el)
+           (occ-assert (symbolp el)))
+          ((consp el)
+           (progn
+             (occ-assert (= 3 (length el)))
+             (occ-assert (memq (car el) '(* +)))
+             (occ-assert (or (and (symbolp (car el))
+                                  (numberp (cadr el)))
+                             (and (numberp (car el))
+                                  (symbolp (cadr el))))))))))
+(defun occ-do-assert-math-ineq (ineq)
+  "Assert variables of INEQ inequality are from properties."
+  (cond ((and (listp ineq)
+              (eql 'var (car ineq)))
+         (let ((var (cadr ineq))
+               (properties (occ-obj-propetirs-for-rank)))
+           (occ-assert (memq var properties) nil "variable %s is not in properties %s" var properties)))
+        ((atom ineq) ineq)
+        ((listp ineq)
+         (dolist (ine ineq)
+           (occ-do-assert-math-ineq ine))))
+  t)
+(defun occ-do-assert-math-ineq-has-prop-p (ineq property)
+  "Check if PROPERTY variable is present in INEQ inequality"
+  (cond ((and (listp ineq)
+              (eql 'var (car ineq)))
+         (let ((var (cadr ineq)))
+           (eql property var)))
+        ((atom ineq) nil)
+        ((listp ineq)
+         (cl-some #'(lambda (e) (occ-do-assert-math-ineq-has-prop-p e property)) ineq))))
+;; (occ-do-assert-math-ineq-has-prop (occ-obj-ineq-wash (occ-obj-math-read-expr "root + nil") 'key) 'key)
+(defun occ-math-read-sexp-expr (sexp)
+  "Converts a Lisp sexp expression SEXP into an equivalent expression."
+  (cond ((atom sexp) (cond ((assoc (prin1-to-string sexp) math-standard-opers) (cadr (assoc (symbol-name sexp) math-standard-opers)))
+                           ((symbolp sexp) (occ-obj-math-read-var sexp))
+                           (t sexp)))
+        ((listp sexp) (cons (occ-math-read-sexp-expr (car sexp))
+                            (mapcar #'occ-math-read-sexp-expr (cdr sexp))))
+        (t sexp)))
+(defun occ-obj-math-read-expr (ineq)
+  "Return normalized calc math expression."
+  (calc-normalize (cond ((stringp ineq) (math-read-expr ineq))
+                        ((consp ineq)   (occ-math-read-sexp-expr ineq))
+                        (t (occ-error "ineq %s not string or list" ineq)))))
+(defun occ-obj-math-read-var (sym)
+  (math-read-expr (symbol-name sym)))
+(defun occ-obj-ineq-wash (ineq property)
+  (cond ((and (listp ineq)
+              (eql 'var (car ineq))
+              (eql 'nil (cadr ineq)))
+         (occ-obj-math-read-var property))
+        ((atom ineq) ineq)
+        ((listp ineq) (cons (occ-obj-ineq-wash (car ineq) property)
+                            (mapcar #'(lambda (ineq) (occ-obj-ineq-wash ineq property)) (cdr ineq))))
+        (t ineq)))
+;; (occ-obj-ineq-wash (occ-obj-math-read-expr "a + nil") 'xx)
+;; (occ-do-assert-ineq (occ-obj-ineq-wash (occ-obj-math-read-expr "root + nil") 'key))
+(defun occ-obj-topo-sort-ineqs-expr (inequalities)
+  (let ((graph     '())
+        (in-degree '()))
+    (dolist (ineq inequalities)
+      (cl-destructuring-bind (op var1 var2) ineq
+        (unless (member* var1 graph :key #'car)
+          (push (list var1) graph)
+          (push (cons var1 0) in-degree))
+        (unless (member* var2 graph :key #'car)
+          (push (list var2) graph)
+          (push (cons var2 0) in-degree))
+        (cond ((eq op 'calcFunc-gt)
+               (progn
+                 (cl-pushnew (cons var2 'gt) (cdr (assoc var1 graph)))
+                 (cl-incf (cdr (assoc var2 in-degree)))))
+              ((eq op 'calcFunc-lt)
+               (progn
+                 (cl-pushnew (cons var1 'lt) (cdr (assoc var2 graph)))
+                 (cl-incf (cdr (assoc var1 in-degree)))))
+              ((eq op 'calcFunc-eq)
+               (progn
+                 (cl-pushnew (cons var1 'eq) (cdr (assoc var2 graph)))
+                 (cl-incf (cdr (assoc var1 in-degree))))))))
+    (let ((in-degree-old (mapcar #'copy-list in-degree))
+          (sorted-vars   '())
+          (queue (mapcar #'(lambda (x) (cons x 'gt))
+                         (cl-remove-if-not #'(lambda (x)
+                                               (= 0 (cdr (assoc x in-degree))))
+                                           (mapcar #'car graph))))
+          (var nil))
+      (while (setf var (pop queue))
+        (setq sorted-vars (append sorted-vars (list var)))
+        (dolist (vertex (cdr (assoc (car var) graph)))
+          (cl-decf (cdr (assoc (car vertex) in-degree)))
+          (if (= 0 (cdr (assoc (car vertex) in-degree)))
+              (setf queue (append queue (list vertex))))))
+      (list (list :inequalities inequalities)
+            (list :graph graph)
+            (list :in-degree-old in-degree-old)
+            (list :in-degree in-degree)
+            (list :sorted-vars sorted-vars)))))
+(defun occ-obj-gen-constant (prefix)
+  (gensym (concat prefix "")))
+(defun occ-obj-gen-math-constant (prefix)
+  (let ((const-var (occ-obj-gen-constant prefix)))
+    `,(occ-obj-math-read-var const-var)))
+(defun occ-obj-gen-ineq2eq-constant (op)
+  (let* ((calc-const-geq-var (occ-obj-gen-math-constant "cxgeq"))
+         (calc-const-gth-var (occ-obj-gen-math-constant "cxgth")))
+    (if (memq op '(calcFunc-gt calcFunc-lt))
+        `(+ ,calc-const-gth-var ,calc-const-geq-var)
+      calc-const-geq-var)))
+(defun occ-obj-ineq2eq (ineq)
+  (cond ((and (consp ineq)
+              (symbolp (car ineq))
+              (memq (car ineq) '(calcFunc-gt calcFunc-geq calcFunc-lt calcFunc-leq)))
+         (occ-assert (= 3 (length ineq)))
+         (let ((arg1 (cadr ineq))
+               (arg2 (caddr ineq)))
+           (let ((const-expr (occ-obj-gen-ineq2eq-constant (car ineq))))
+             (cond ((memq (car ineq) '(calcFunc-gt calcFunc-geq))
+                    `(calcFunc-eq ,arg1 (+ ,arg2 ,const-expr)))
+                   ((memq (car ineq) '(calcFunc-lt calcFunc-leq))
+                    `(calcFunc-eq ,arg2 (+ ,arg1 ,const-expr)))))))
+        ((listp ineq) (cons (occ-obj-ineq2eq (car ineq))
+                            (mapcar #'occ-obj-ineq2eq (cdr ineq))))
+        (t ineq)))
+(defun occ-obj-ineqs2eqs (ineqs)
+  (mapcar #'occ-obj-ineq2eq
+          ineqs))
+(defun occ-obj-ineqs-from-map (ineqs-map)
+  (apply #'append
+         (mapcar #'cdr ineqs-map)))
+(defun occ-obj-vars-from-syms (syms)
+  (mapcar #'(lambda (var) (occ-obj-math-read-var var))
+          syms))
+(defun occ-obj-vars-from-map (ineqs-map)
+  (occ-obj-vars-from-syms (mapcar #'car
+                                  ineqs-map)))
+(defun occ-obj-build-math-solve-expr (eqs vars)
+  `(calcFunc-solve (vec ,@(occ-obj-ineqs2eqs eqs))
+                   (vec ,@vars)))
+(defun occ-normalize-eqs (eqs vars)
+  (calc-normalize (occ-obj-build-math-solve-expr eqs
+                                                 vars)))
+(defun occ-eqs-normalized-p (eqs vars)
+  (let ((sol (occ-normalize-eqs eqs
+                                vars)))
+    (if (> (length (cdadr sol))
+           1)
+        (not (eql (car sol)
+                  'calcFunc-solve))
+      t)))
+(defun occ-obj-normalize-ineqs-map (ineqs-map)
+  (occ-normalize-eqs (occ-obj-ineqs2eqs (occ-obj-ineqs-from-map ineqs-map))
+                     (occ-obj-vars-from-map ineqs-map)))
+(defun occ-obj-eqs-exprs (eqs)
+  (mapcar #'caddr
+          (cdr eqs)))
+(defun occ-obj-find-expr-vars (expr)
+  (cond ((and (listp expr)
+              (eql 'var (car expr)))
+         (list (cadr expr)))
+        ((atom expr) nil)
+        ((listp expr)
+         (let ((first-el (occ-obj-find-expr-vars (car expr)))
+               (rest-els (mapcar #'occ-obj-find-expr-vars (cdr expr))))
+           (append first-el
+                   (apply #'append  rest-els))))
+        (t nil)))
 
-  (defun occ-do-assert-sexp-ineq (ineq)
-    (occ-assert (= 3 (length ineq)))
-    (occ-assert (memq (car ineq) '(> < =)))
-    (occ-assert (not (cl-every #'consp (cdr ineq))))
-    (occ-assert (cl-some #'symbolp (cdr ineq)))
-    (dolist (el (cdr ineq))
-      (cond ((symbolp el)
-             (occ-assert (symbolp el)))
-            ((consp el)
-             (progn
-               (occ-assert (= 3 (length el)))
-               (occ-assert (memq (car el) '(* +)))
-               (occ-assert (or (and (symbolp (car el))
-                                    (numberp (cadr el)))
-                               (and (numberp (car el))
-                                    (symbolp (cadr el))))))))))
-  (defun occ-do-assert-math-ineq (ineq)
-    "Assert variables of INEQ inequality are from properties."
-    (cond ((and (listp ineq)
-                (eql 'var (car ineq)))
-           (let ((var (cadr ineq))
-                 (properties (occ-obj-propetirs-for-rank)))
-             (occ-assert (memq var properties) nil "variable %s is not in properties %s" var properties)))
-          ((atom ineq) ineq)
-          ((listp ineq)
-           (dolist (ine ineq)
-             (occ-do-assert-math-ineq ine))))
-    t)
-  (defun occ-do-assert-math-ineq-has-prop-p (ineq property)
-    "Check if PROPERTY variable is present in INEQ inequality"
-    (cond ((and (listp ineq)
-                (eql 'var (car ineq)))
-           (let ((var (cadr ineq)))
-             (eql property var)))
-          ((atom ineq) nil)
-          ((listp ineq)
-           (cl-some #'(lambda (e) (occ-do-assert-math-ineq-has-prop-p e property)) ineq))))
-  ;; (occ-do-assert-math-ineq-has-prop (occ-obj-ineq-wash (occ-obj-math-read-expr "root + nil") 'key) 'key)
-  (defun occ-math-read-sexp-expr (sexp)
-    "Converts a Lisp sexp expression SEXP into an equivalent expression."
-    (cond ((atom sexp) (cond ((assoc (prin1-to-string sexp) math-standard-opers) (cadr (assoc (symbol-name sexp) math-standard-opers)))
-                             ((symbolp sexp) (occ-obj-math-read-var sexp))
-                             (t sexp)))
-          ((listp sexp) (cons (occ-math-read-sexp-expr (car sexp))
-                              (mapcar #'occ-math-read-sexp-expr (cdr sexp))))
-          (t sexp)))
-  (defun occ-obj-math-read-expr (ineq)
-    "Return normalized calc math expression."
-    (calc-normalize (cond ((stringp ineq) (math-read-expr ineq))
-                          ((consp ineq)   (occ-math-read-sexp-expr ineq))
-                          (t (occ-error "ineq %s not string or list" ineq)))))
-  (defun occ-obj-math-read-var (sym)
-    (math-read-expr (symbol-name sym)))
-  (defun occ-obj-ineq-wash (ineq property)
-    (cond ((and (listp ineq)
-                (eql 'var (car ineq))
-                (eql 'nil (cadr ineq)))
-           (occ-obj-math-read-var property))
-          ((atom ineq) ineq)
-          ((listp ineq) (cons (occ-obj-ineq-wash (car ineq) property)
-                              (mapcar #'(lambda (ineq) (occ-obj-ineq-wash ineq property)) (cdr ineq))))
-          (t ineq)))
-  ;; (occ-obj-ineq-wash (occ-obj-math-read-expr "a + nil") 'xx)
-  ;; (occ-do-assert-ineq (occ-obj-ineq-wash (occ-obj-math-read-expr "root + nil") 'key))
-  (defun occ-obj-topo-sort-ineqs-expr (inequalities)
-    (let ((graph     '())
-          (in-degree '()))
-      (dolist (ineq inequalities)
-        (cl-destructuring-bind (op var1 var2) ineq
-          (unless (member* var1 graph :key #'car)
-            (push (list var1) graph)
-            (push (cons var1 0) in-degree))
-          (unless (member* var2 graph :key #'car)
-            (push (list var2) graph)
-            (push (cons var2 0) in-degree))
-          (cond ((eq op 'calcFunc-gt)
-                 (progn
-                   (cl-pushnew (cons var2 'gt) (cdr (assoc var1 graph)))
-                   (cl-incf (cdr (assoc var2 in-degree)))))
-                ((eq op 'calcFunc-lt)
-                 (progn
-                   (cl-pushnew (cons var1 'lt) (cdr (assoc var2 graph)))
-                   (cl-incf (cdr (assoc var1 in-degree)))))
-                ((eq op 'calcFunc-eq)
-                 (progn
-                   (cl-pushnew (cons var1 'eq) (cdr (assoc var2 graph)))
-                   (cl-incf (cdr (assoc var1 in-degree))))))))
-      (let ((in-degree-old (mapcar #'copy-list in-degree))
-            (sorted-vars   '())
-            (queue (mapcar #'(lambda (x) (cons x 'gt))
-                           (cl-remove-if-not #'(lambda (x)
-                                                 (= 0 (cdr (assoc x in-degree))))
-                                             (mapcar #'car graph))))
-            (var nil))
-        (while (setf var (pop queue))
-          (setq sorted-vars (append sorted-vars (list var)))
-          (dolist (vertex (cdr (assoc (car var) graph)))
-            (cl-decf (cdr (assoc (car vertex) in-degree)))
-            (if (= 0 (cdr (assoc (car vertex) in-degree)))
-                (setf queue (append queue (list vertex))))))
-        (list (list :inequalities inequalities)
-              (list :graph graph)
-              (list :in-degree-old in-degree-old)
-              (list :in-degree in-degree)
-              (list :sorted-vars sorted-vars)))))
-  (defun occ-obj-gen-constant (prefix)
-    (gensym (concat prefix "")))
-  (defun occ-obj-gen-math-constant (prefix)
-    (let ((const-var (occ-obj-gen-constant prefix)))
-      `,(occ-obj-math-read-var const-var)))
-  (defun occ-obj-gen-ineq2eq-constant (op)
-    (let* ((calc-const-geq-var (occ-obj-gen-math-constant "cxgeq"))
-           (calc-const-gth-var (occ-obj-gen-math-constant "cxgth")))
-      (if (memq op '(calcFunc-gt calcFunc-lt))
-          `(+ ,calc-const-gth-var ,calc-const-geq-var)
-        calc-const-geq-var)))
-  (defun occ-obj-ineq2eq (ineq)
-    (cond ((and (consp ineq)
-                (symbolp (car ineq))
-                (memq (car ineq) '(calcFunc-gt calcFunc-geq calcFunc-lt calcFunc-leq)))
-           (occ-assert (= 3 (length ineq)))
-           (let ((arg1 (cadr ineq))
-                 (arg2 (caddr ineq)))
-             (let ((const-expr (occ-obj-gen-ineq2eq-constant (car ineq))))
-               (cond ((memq (car ineq) '(calcFunc-gt calcFunc-geq))
-                      `(calcFunc-eq ,arg1 (+ ,arg2 ,const-expr)))
-                     ((memq (car ineq) '(calcFunc-lt calcFunc-leq))
-                      `(calcFunc-eq ,arg2 (+ ,arg1 ,const-expr)))))))
-          ((listp ineq) (cons (occ-obj-ineq2eq (car ineq))
-                              (mapcar #'occ-obj-ineq2eq (cdr ineq))))
-          (t ineq)))
-  (defun occ-obj-ineqs2eqs (ineqs)
-    (mapcar #'occ-obj-ineq2eq
-            ineqs))
-  (defun occ-obj-ineqs-from-map (ineqs-map)
-    (apply #'append
-           (mapcar #'cdr ineqs-map)))
-  (defun occ-obj-vars-from-syms (syms)
-    (mapcar #'(lambda (var) (occ-obj-math-read-var var))
-            syms))
-  (defun occ-obj-vars-from-map (ineqs-map)
-    (occ-obj-vars-from-syms (mapcar #'car
-                                    ineqs-map)))
-  (defun occ-obj-build-math-solve-expr (eqs vars)
-    `(calcFunc-solve (vec ,@(occ-obj-ineqs2eqs eqs))
-                     (vec ,@vars)))
-  (defun occ-normalize-eqs (eqs vars)
-    (calc-normalize (occ-obj-build-math-solve-expr eqs
-                                                   vars)))
-  (defun occ-eqs-normalized-p (eqs vars)
-    (let ((sol (occ-normalize-eqs eqs
-                                  vars)))
-      (if (> (length (cdadr sol))
-             1)
-          (not (eql (car sol)
-                    'calcFunc-solve))
-        t)))
-  (defun occ-obj-normalize-ineqs-map (ineqs-map)
-    (occ-normalize-eqs (occ-obj-ineqs2eqs (occ-obj-ineqs-from-map ineqs-map))
-                       (occ-obj-vars-from-map ineqs-map)))
-  (defun occ-obj-eqs-exprs (eqs)
-    (mapcar #'caddr
-            (cdr eqs)))
-  (defun occ-obj-find-expr-vars (expr)
-    (cond ((and (listp expr)
-                (eql 'var (car expr)))
-           (list (cadr expr)))
-          ((atom expr) nil)
-          ((listp expr)
-           (let ((first-el (occ-obj-find-expr-vars (car expr)))
-                 (rest-els (mapcar #'occ-obj-find-expr-vars (cdr expr))))
-             (append first-el
-                     (apply #'append  rest-els))))
-          (t nil)))
-
-  (defun occ-obj-find-exprs-vars (exprs)
-    (delete nil
-            (delete-dups (apply #'append
-                                (mapcar #'occ-obj-find-expr-vars exprs)))))
-  (defun occ-obj-find-eqs-vars (eqs)
-    (occ-obj-find-exprs-vars (occ-obj-eqs-exprs eqs)))
+(defun occ-obj-find-exprs-vars (exprs)
+  (delete nil
+          (delete-dups (apply #'append
+                              (mapcar #'occ-obj-find-expr-vars exprs)))))
+(defun occ-obj-find-eqs-vars (eqs)
+  (occ-obj-find-exprs-vars (occ-obj-eqs-exprs eqs)))
 
 
-  (defun occ-do-add-ineq-1 (ineq property)
-    (let ((ineq (occ-obj-ineq-wash (occ-obj-math-read-expr ineq)
-                                   property)))
-      (when (and (occ-do-assert-math-ineq-has-prop-p ineq property)
-                 (occ-do-assert-math-ineq ineq)
-                 (not (member ineq (cdr (assoc property
-                                               occ-ineqs)))))
-        (let ((eqs (occ-obj-ineqs2eqs (append (occ-obj-ineqs-from-map (assoc-delete-all property occ-ineqs))
-                                              (cons ineq (cdr (assoc property occ-ineqs))))))
-              (vars (occ-obj-vars-from-syms (delete-dups (cons property
-                                                                     (mapcar #'car
-                                                                             occ-ineqs))))))
-         (if (occ-eqs-normalized-p eqs vars)
+(defun occ-do-add-ineq-1 (ineq property)
+  (let ((ineq (occ-obj-ineq-wash (occ-obj-math-read-expr ineq)
+                                 property)))
+    (when (and (occ-do-assert-math-ineq-has-prop-p ineq property)
+               (occ-do-assert-math-ineq ineq)
+               (not (member ineq (cdr (assoc property
+                                             occ-ineqs)))))
+      (let ((eqs (occ-obj-ineqs2eqs (append (occ-obj-ineqs-from-map (assoc-delete-all property occ-ineqs))
+                                            (cons ineq (cdr (assoc property occ-ineqs))))))
+            (vars (occ-obj-vars-from-syms (delete-dups (cons property
+                                                             (mapcar #'car
+                                                                     occ-ineqs))))))
+        (if (occ-eqs-normalized-p eqs vars)
             (if (assoc property
                        occ-ineqs)
                 (cl-pushnew ineq (cdr (assoc property occ-ineqs)))
               (cl-pushnew (list property ineq)
                           occ-ineqs))
-           (occ-error "Failed to add inequality %s for property %s may be due to circular dependency"
-                      (math-format-flat-expr ineq 1)
-                      property))))))
+          (occ-error "Failed to add inequality %s for property %s may be due to circular dependency"
+                     (math-format-flat-expr ineq 1)
+                     property))))))
 
-  (defun occ-obj-ineq-1 (property)
-    (cdr (assoc property
-                occ-ineqs)))
+(defun occ-obj-ineq-1 (property)
+  (cdr (assoc property
+              occ-ineqs)))
 
 
-  (defun occ-obj-const-value (const)
-    10
-    (random 99))
+(defun occ-obj-const-value (const)
+  ;; 10
+  (random 99))
 
-  (defun occ-obj-equal-consts-exprs (consts)
-    (cons 'vec
-          (mapcar #'(lambda (c)
-                      `(calcFunc-eq ,(occ-obj-math-read-var c)
-                                    ,(occ-obj-const-value c)))
-                  consts)))
+(defun occ-obj-equal-consts-exprs (consts)
+  (cons 'vec
+        (mapcar #'(lambda (c)
+                    `(calcFunc-eq ,(occ-obj-math-read-var c)
+                                  ,(occ-obj-const-value c)))
+                consts)))
 
-  (defun occ-obj-eq2cons (eq)
-    (cons (cadadr eq)
-          (caddr eq)))
+(defun occ-obj-eq2cons (eq)
+  (cons (cadadr eq)
+        (caddr eq)))
 
-  (defun ooc (ineqs-map)
-    (let* ((sols   (occ-obj-normalize-ineqs-map ineqs-map))
-           (consts (occ-obj-find-eqs-vars sols)))
-      (while consts
-        (let ((const (pop consts)))
-          (setq sols (calc-normalize (math-expr-subst sols
-                                                      (occ-obj-math-read-var const)
-                                                      (occ-obj-const-value const))))))
-      (mapcar #'occ-obj-eq2cons
-              (cdr sols))))
+(defun ooc (ineqs-map)
+  (let* ((sols   (occ-obj-normalize-ineqs-map ineqs-map))
+         (consts (occ-obj-find-eqs-vars sols)))
+    (while consts
+      (let ((const (pop consts)))
+        (setq sols (calc-normalize (math-expr-subst sols
+                                                    (occ-obj-math-read-var const)
+                                                    (occ-obj-const-value const))))))
+    (mapcar #'occ-obj-eq2cons
+            (cdr sols))))
 
-  ;; (ooc occ-ineqs)
-  )
+(defun occ-obj-ineq-map-solution (ineqs-map)
+  (let* ((sols   (occ-obj-normalize-ineqs-map ineqs-map))
+         (consts (occ-obj-find-eqs-vars sols)))
+    (while consts
+      (let ((const (pop consts)))
+        (setq sols (calc-normalize (math-expr-subst sols
+                                                    (occ-obj-math-read-var const)
+                                                    (occ-obj-const-value const))))))
+    (mapcar #'occ-obj-eq2cons
+            (cdr sols))))
+
+(defvar occ-prop-priorities nil)
+
+(defun occ-do-set-prop-priorities ()
+  (interactive)
+  (setq occ-prop-priorities (occ-obj-ineq-map-solution occ-ineqs)))
+
+;; (ooc occ-ineqs)
+;; (occ-obj-solve occ-ineqs)
+;; (occ-do-set-prop-priorities)
 
 
 (occ-do-add-ineq-1 "nil > (key + 20)" 'root)
@@ -334,82 +350,6 @@
 (math-expr-subst '(vec (calcFunc-eq (var x var-x) (var a var-a)))  '(var a var-a) 1)
 
 
-
-(setq inequalities '((< a b) (> c b) (< c d)))
-(setq sorted-variables (order-variables inequalities))
-(order-variables inequalities)
-
-(defun order-variables (inequalities)
-  (let ((graph     '())
-        (in-degree '()))
-    (dolist (ineq inequalities)
-      (cl-destructuring-bind (op var1 var2) ineq
-        (unless (member* var1 graph :key #'car)
-          (push (list var1) graph)
-          (push (cons var1 0) in-degree))
-        (unless (member* var2 graph :key #'car)
-          (push (list var2) graph)
-          (push (cons var2 0) in-degree))
-        (if (eq op '<)
-            (progn
-              (cl-pushnew var2 (cdr (assoc var1 graph)))
-              (cl-incf (cdr (assoc var2 in-degree))))
-          (progn
-            (cl-pushnew var1 (cdr (assoc var2 graph)))
-            (cl-incf (cdr (assoc var1 in-degree)))))))
-    (let ((in-degree-old (mapcar #'copy-list in-degree))
-          (sorted-vars   '())
-          (queue (cl-remove-if-not #'(lambda (x)
-                                       (= 0 (cdr (assoc x in-degree))))
-                                   (mapcar #'car graph)))
-          (var nil))
-
-      (while (setf var (pop queue))
-         (setq sorted-vars (append sorted-vars (list var)))
-         (dolist (vertex (cdr (assoc var graph)))
-           (cl-decf (cdr (assoc vertex in-degree)))
-           (if (= 0 (cdr (assoc vertex in-degree)))
-               (setf queue (append queue (list vertex))))))
-       (list (list :inequalities inequalities)
-             (list :graph graph)
-             (list :in-degree-old in-degree-old)
-             (list :in-degree in-degree)
-             (list :sorted-vars sorted-vars)))))
-
-
-(setq inequalities '((< a c) (> b c) (< b d) (= a z) (= x d)))
-(setq sorted-variables (order-variables inequalities))
-(order-variables '((< a c) (> b c) (< b d) (= a z) (= x d)))
-(z a c b d x)
-(order-variables '((< (+ a 10) c) (> b (* 2 c)) (< b d) (= a z) (= x d)))
-(z (* 2 c) (+ a 10) a b c d x)
-
-(order-variables '((< (+ a 10) c) (> b (* 2 c)) (< b d) (= a z) (= x d)))
-((:inequalities ((< (+ a 10) c) (> b (* 2 c)) (< b d) (= a z) (= x d)))
- (:graph ((x) (z a) (a) (d x) ((* 2 c) b) (b d) (c) ((+ a 10) c)))
- (:in-degree-old ((x . 1) (z . 0) (a . 1) (d . 1) ((* 2 c) . 0) (b . 1) (c . 1) ((+ a 10) . 0)))
- (:in-degree ((x . 0) (z . 0) (a . 0) (d . 0) ((* 2 c) . 0) (b . 0) (c . 0) ((+ a 10) . 0)))
- (:sorted-vars (z (* 2 c) (+ a 10) a b c d x)))
-
-(order-variables '((< a c) (> b c) (< b d) (= a z) (= x d)))
-
-((:inequalities ((< a c) (> b c) (< b d) (= a z) (= x d)))
- (:graph ((x) (z a) (d x) (b d) (c b) (a c)))
- (:in-degree-old ((x . 1) (z . 0) (d . 1) (b . 1) (c . 1) (a . 1)))
- (:in-degree ((x . 0) (z . 0) (d . 0) (b . 0) (c . 0) (a . 0)))
- (:sorted-vars (z a c b d x)))
-
-
-(defun occ-get-expr-array (ineqs)
-  (cadr (assoc :sorted-vars (order-variables-topo-sort ineqs))))
-
-(setq new-set '())
-(pushnew 'a new-set)
-
-
-
-(defun reduce-left (expr))
-
 
 (calc-normalize '(calcFunc-solve (vec (calcFunc-eq (* 2 (var a var-a)) (var d var-d)) (calcFunc-eq (+ (var b var-b) (var c1 var-c1)) (var d var-d)) (calcFunc-eq (+ (+ (var a var-a) (var c1 var-c1)) (var c2 var-c2)) (var d var-d)))
                                  (vec (var a var-a) (var b var-b))))
@@ -474,250 +414,6 @@
                                      (prop symbol))
   (occ-ineq-get prop
                 (occ-obj-rankprop obj prop)))
-
-
-
-(defvar occ-ineqs-collection '((key (gt (* 10 none)))))
-(defvar occ-ineq-in-resolve-collection)
-(defun occ-normalize (collection) (ignore collection))
-
-
-
-(defvar occ-ineqs '())
-(defvar occ-normalized-ineq '())
-
-(cl-defgeneric occ-add-ineq (operator
-                             prop1
-                             prop2)
-  "Add relative property.")
-
-(cl-defmethod occ-add-ineq ((operator symbol)
-                            (prop1    symbol)
-                            (prop2    symbol))
-  "Add relative property."
-  (cl-assert (memq operator '(gt lt eq)))
-  (cl-pushnew (list operator prop1 prop2)
-              occ-ineqs))
-
-
-(defun eval-ineq (ineq)
-  (let ((op   (nth 0 ineq))
-        (exp1 (nth 1 ineq))
-        (exp2 (nth 2 ineq)))
-    (cond ((eq op '>) (list (eval-ineq exp1)
-                            (list '+ (eval-ineq exp2) 10)))
-          ((eq op '<) (list (eval-ineq exp2)
-                            (list '+ (eval-ineq exp1) 10)))
-          ((eq op '*) (list '*
-                            (eval-ineq exp1)
-                            exp2)))))
-
-'(('> a b)
-  ('< c a)
-  ('> e (* a 4)))
-
-
-;; (defun normalize-inequalities (ineqs)
-;;   (let* ((vars (remove-duplicates (flatten ineqs)))
-;;          (graph (make-hash-table :test 'equal))
-;;          (visited (make-hash-table :test 'equal))
-;;          (result '()))
-;;     ;; Build a graph of the inequalities
-;;     (dolist (var vars)
-;;       (setf (gethash var graph) '())
-;;       (setf (gethash var visited) nil))
-;;     (dolist (ineq ineqs)
-;;       (let ((x (cl-first ineq))
-;;             (y (second ineq)))
-;;         (push y (gethash x graph))))
-;;     ;; Check for cycles in the graph
-;;     (letrec ((dfs-visit (lambda (var)
-;;                           (when (gethash var visited)
-;;                             (error "Cycle detected in inequalities"))
-;;                           (setf (gethash var visited) t)
-;;                           (dolist (dep (gethash var graph))
-;;                             (funcall dfs-visit dep))
-;;                           (push var result))))
-;;       (dolist (var vars)
-;;         (funcall dfs-visit var)))
-;;     ;; Generate the output list
-;;     (mapcar (lambda (var) (find var vars :test 'equal))
-;;             (reverse result))))
-
-;; (normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
-
-
-
-
-(defun normalize-inequalities (ineqs)
-  (let* ((vars (delete-dups (apply #'append ineqs)))
-         (graph (make-hash-table :test #'equal))
-         (visited (make-hash-table :test #'equal))
-         (result '()))
-    ;; Build a graph of the inequalities
-    (dolist (var vars)
-      (puthash var '() graph)
-      (puthash var nil visited))
-    (dolist (ineq ineqs)
-      (let ((x (car ineq))
-            (y (cadr ineq)))
-        (push y (gethash x graph))))
-    ;; Check for cycles in the graph
-    (letrec ((dfs-visit (lambda (var)
-                          (unless (eq (gethash var visited) :active)
-                            (puthash var :active visited)
-                            (dolist (dep (gethash var graph))
-                              (funcall dfs-visit dep))
-                            (puthash var t visited)
-                            (push var result)))))
-      (dolist (var vars)
-        (unless (gethash var visited)
-          (funcall dfs-visit var))))
-    ;; Generate the output list
-    (mapcar (lambda (var) (cl-find var vars :test #'equal))
-            (reverse result))))
-
-;; (normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
-;; Output: (a b c (* 2 d) (* 2 e))
-
-
-
-
-(defun normalize-inequalities (ineqs)
-  (let* ((vars (delete-dups (apply #'append ineqs)))
-         (graph (make-hash-table :test #'equal))
-         (visited (make-hash-table :test #'equal))
-         (result '()))
-    ;; Build a graph of the inequalities
-    (dolist (var vars)
-      (puthash var '() graph)
-      (puthash var nil visited))
-    (dolist (ineq ineqs)
-      (let ((x (car ineq))
-            (y (cadr ineq)))
-        (push y (gethash x graph))))
-    ;; Check for cycles in the graph
-    (letrec ((dfs-visit (lambda (var)
-                          (unless (eq (gethash var visited) :active)
-                            (puthash var :active visited)
-                            (dolist (dep (gethash var graph))
-                              (funcall dfs-visit dep))
-                            (puthash var t visited)
-                            (push var result)))))
-      (dolist (var vars)
-        (unless (gethash var visited)
-          (funcall dfs-visit var))))
-    ;; Generate the output list
-    (mapcar (lambda (var) (cl-find var vars :test #'equal))
-            (reverse result))))
-
-;; (normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
-;; Output: (a b c (* 2 d) (* 2 e))
-
-
-
-
-(defun normalize-inequalities (ineqs)
-  (let* ((vars (delete-dups (apply #'append ineqs)))
-         (graph (make-hash-table :test #'equal))
-         (visited (make-hash-table :test #'equal))
-         (result '()))
-    ;; Build a graph of the inequalities
-    (dolist (var vars)
-      (puthash var '() graph)
-      (puthash var nil visited))
-    (dolist (ineq ineqs)
-      (let ((lhs (car ineq))
-            (rhs (cadr ineq)))
-        (cond
-          ((and (numberp lhs) (symbolp rhs))
-           (push rhs (gethash lhs graph)))
-          ((and (numberp lhs) (consp rhs) (eq (car rhs) '*))
-           (let ((coeff (cadr rhs))
-                 (var (caddr rhs)))
-             (push var (gethash lhs graph))
-             (push (* coeff var) (gethash lhs graph))))
-          ((and (symbolp lhs) (numberp rhs))
-           (push lhs (gethash rhs graph)))
-          ((and (symbolp lhs) (consp rhs) (eq (car rhs) '*))
-           (let ((coeff (cadr rhs))
-                 (var (caddr rhs)))
-             (push lhs (gethash (* coeff var) graph))
-             (push var (gethash (* coeff var) graph))))
-          (t (error "Invalid inequality: %s" ineq)))))
-
-    ;; Check for cycles in the graph
-    (letrec ((dfs-visit (lambda (var)
-                          (unless (eq (gethash var visited) :active)
-                            (puthash var :active visited)
-                            (dolist (dep (gethash var graph))
-                              (funcall dfs-visit dep))
-                            (puthash var t visited)
-                            (push var result)))))
-      (dolist (var vars)
-        (unless (gethash var visited)
-          (funcall dfs-visit var))))
-    ;; Generate the output list
-    (mapcar (lambda (var) (cl-find var vars :test #'equal))
-            (reverse result))))
-
-
-(defun normalize-inequalities (inequalities)
-  (let* ((var-list (sort (cl-remove-duplicates (mapcan #'(lambda (ineq)
-                                                           (list (nth 1 ineq)
-                                                                 (nth 2 ineq)))
-                                                       inequalities))
-                         #'string<))
-         (vars (make-hash-table :test #'equal))
-         (graph (make-hash-table :test #'equal))
-         (degree (make-hash-table :test #'equal))
-         (topo-sorted-vars nil))
-    ;; initialize hash tables
-    (dolist (var var-list)
-      (puthash var 0 degree)
-      (puthash var nil vars))
-    ;; create directed graph from inequalities
-    (dolist (ineq inequalities)
-      (let ((from (nth 1 ineq))
-            (to (nth 2 ineq)))
-        (puthash from (cons to (gethash from graph)) graph)
-        (puthash to nil vars)))
-    ;; calculate in-degree of each variable
-    (maphash #'(lambda (var deps)
-                 (ignore var)
-                 (dolist (dep deps)
-                   (puthash dep (1+ (gethash dep degree)) degree)
-                   graph
-                     ;; perform topological sort on graph
-                   (let ((queue ()))
-                     (maphash (lambda (var deg)
-                                (when (= deg 0)
-                                  (push var queue)))
-                              degree)
-                     (while queue
-                       (let ((var (pop queue)))
-                         (push var topo-sorted-vars)
-                         (dolist (dep (gethash var graph))
-                           (let ((new-degree (1- (gethash dep degree))))
-                             (puthash dep new-degree degree)
-                             (when (= new-degree 0)
-                               (push dep queue)))))))
-                     ;; construct normalized list of variables
-                   (let ((result nil))
-                     (dolist (var topo-sorted-vars)
-                       (let ((val (gethash var vars)))
-                         (if (null val)
-                             (error "Cycle detected in inequalities")
-                           (let ((multiplier (if (numberp val) val 1)))
-                             (push (* multiplier (intern var)) result))))))
-                   (nreverse result))))))
-
-
-;; (normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d e)))
-;; Output: (a b c (* 2 d) (* 2 e))
-
-;; (normalize-inequalities '((> a b) (> b c) (> c (* 2 d)) (> d (* 2 e))))
-;; Output: (a b c d (* 2 e))
 
 
 ;;; occ-normalize-ineqs.el ends here
