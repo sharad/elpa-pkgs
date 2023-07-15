@@ -96,9 +96,7 @@
           ((atom ineq) nil)
           ((listp ineq)
            (cl-some #'(lambda (e) (occ-do-assert-math-ineq-has-prop-p e property)) ineq))))
-
   ;; (occ-do-assert-math-ineq-has-prop (occ-obj-ineq-wash (occ-obj-math-read-expr "root + nil") 'key) 'key)
-
   (defun occ-math-read-sexp-expr (sexp)
     "Converts a Lisp sexp expression SEXP into an equivalent expression."
     (cond ((atom sexp) (cond ((assoc (prin1-to-string sexp) math-standard-opers) (cadr (assoc (symbol-name sexp) math-standard-opers)))
@@ -186,13 +184,14 @@
                               (mapcar #'occ-obj-ineq2eq (cdr ineq))))
           (t ineq)))
   (defun occ-obj-ineqs2eqs (ineqs)
-    (mapcar #'(lambda (e) (occ-obj-ineq2eq e))
+    (mapcar #'occ-obj-ineq2eq
             ineqs))
   (defun occ-obj-ineqs-from-map (ineqs-map)
     (apply #'append
            (mapcar #'cdr ineqs-map)))
   (defun occ-obj-vars-from-properties (properties)
-    (mapcar #'(lambda (var) `(var ,var ,(intern (concat "var-" (symbol-name var)))))
+    (mapcar #'(lambda (var) `(var ,var
+                                  ,(intern (concat "var-" (symbol-name var)))))
             properties))
   (defun occ-obj-vars-from-map (ineqs-map)
     (occ-obj-vars-from-properties (mapcar #'car
@@ -209,7 +208,7 @@
           (not (eql (car sol)
                     'calcFunc-solve))
         t)))
-  (defun occ-normalize-ineqs-map (ineqs-map)
+  (defun occ-obj-normalize-ineqs-map (ineqs-map)
     (occ-normalize-eqs (occ-obj-ineqs2eqs (occ-obj-ineqs-from-map ineqs-map))
                        (occ-obj-vars-from-map ineqs-map)))
   (defun occ-obj-eqs-exprs (eqs)
@@ -261,7 +260,12 @@
     (cdr (assoc property
                 occ-ineqs)))
 
+  (defun ooc ()
+    (let* ((sol (occ-obj-normalize-ineqs-map occ-ineqs))
+           (vars (occ-obj-find-eqs-vars sol)))
+      (message "sol: %s, vars %s" sol vars)))
 
+  ;; (ooc)
 
   ;; (remove-if #'(lambda (oineq) (eql (car oineq) property))
   ;;            occ-ineqs)
@@ -279,7 +283,7 @@
 
 (occ-obj-ineq-wash (occ-obj-math-read-expr "root > (key + 2)") 'root)
 
-;; (math-format-flat-expr (occ-normalize-ineqs-map occ-ineqs) 1)
+;; (math-format-flat-expr (occ-obj-normalize-ineqs-map occ-ineqs) 1)
 
 "[status = cx411135 - (2 * (cx411137 + (cx411135 + 1) * (cx411136 + 11)) + 6) / (2 * cx411136 + 21) + 1, key = cx411136 + 11, root = (cx411137 + (cx411135 + 1) * (cx411136 + 11) + 3) / (-2 * cx411136 - 21)]"
 
@@ -287,7 +291,7 @@
 
 (occ-obj-find-expr-vars (cadr (occ-obj-eqs-exprs (occ-normalize-ineqs occ-ineqs))))
 (occ-obj-find-exprs-vars (occ-obj-eqs-exprs (occ-normalize-ineqs occ-ineqs)))
-(occ-obj-find-eqs-vars (occ-normalize-ineqs-map occ-ineqs))
+(occ-obj-find-eqs-vars (occ-obj-normalize-ineqs-map occ-ineqs))
 
 (occ-obj-propetirs-for-rank)
 
