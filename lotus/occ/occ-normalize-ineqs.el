@@ -100,7 +100,7 @@
   (defun occ-math-read-sexp-expr (sexp)
     "Converts a Lisp sexp expression SEXP into an equivalent expression."
     (cond ((atom sexp) (cond ((assoc (prin1-to-string sexp) math-standard-opers) (cadr (assoc (symbol-name sexp) math-standard-opers)))
-                             ((symbolp sexp) `(var ,sexp ,(intern (concat "var-" (symbol-name sexp)))))
+                             ((symbolp sexp) (math-read-expr (symbol-name sexp)))
                              (t sexp)))
           ((listp sexp) (cons (occ-math-read-sexp-expr (car sexp))
                               (mapcar #'occ-math-read-sexp-expr (cdr sexp))))
@@ -114,7 +114,7 @@
     (cond ((and (listp ineq)
                 (eql 'var (car ineq))
                 (eql 'nil (cadr ineq)))
-           (list 'var property (intern (concat "var-" (symbol-name property)))))
+           (math-read-expr (symbol-name property)))
           ((atom ineq) ineq)
           ((listp ineq) (cons (occ-obj-ineq-wash (car ineq) property)
                               (mapcar #'(lambda (ineq) (occ-obj-ineq-wash ineq property)) (cdr ineq))))
@@ -162,12 +162,17 @@
               (list :in-degree-old in-degree-old)
               (list :in-degree in-degree)
               (list :sorted-vars sorted-vars)))))
-  (defun occ-obj-gen-constant (op)
-    (let* ((const-var (gensym (concat "cx" "")))
-           (calc-const-var `(var ,const-var ,(intern (concat "var-" (symbol-name const-var))))))
+  (defun occ-obj-gen-constant (prefix)
+    (gensym (concat prefix "")))
+  (defun occ-obj-gen-math-constant (prefix)
+    (let ((const-var (occ-obj-gen-constant prefix)))
+      `,(math-read-expr (symbol-name const-var))))
+  (defun occ-obj-gen-ineq2eq-constant (op)
+    (let* ((calc-const-geq-var (occ-obj-gen-math-constant "cxgeq"))
+           (calc-const-gth-var (occ-obj-gen-math-constant "cxgth")))
       (if (memq op '(calcFunc-gt calcFunc-lt))
-          `(+ 1 ,calc-const-var)
-        calc-const-var)))
+          `(+ ,calc-const-gth-var ,calc-const-geq-var)
+        calc-const-geq-var)))
   (defun occ-obj-ineq2eq (ineq)
     (cond ((and (consp ineq)
                 (symbolp (car ineq))
@@ -175,7 +180,7 @@
            (occ-assert (= 3 (length ineq)))
            (let ((arg1 (cadr ineq))
                  (arg2 (caddr ineq)))
-             (let ((const-expr (occ-obj-gen-constant (car ineq))))
+             (let ((const-expr (occ-obj-gen-ineq2eq-constant (car ineq))))
                (cond ((memq (car ineq) '(calcFunc-gt calcFunc-geq))
                       `(calcFunc-eq ,arg1 (+ ,arg2 ,const-expr)))
                      ((memq (car ineq) '(calcFunc-lt calcFunc-leq))
@@ -189,20 +194,22 @@
   (defun occ-obj-ineqs-from-map (ineqs-map)
     (apply #'append
            (mapcar #'cdr ineqs-map)))
-  (defun occ-obj-vars-from-properties (properties)
-    (mapcar #'(lambda (var) `(var ,var
-                                  ,(intern (concat "var-" (symbol-name var)))))
-            properties))
+  (defun occ-obj-vars-from-syms (syms)
+    (mapcar #'(lambda (var) (math-read-expr (symbol-name var)))
+            syms))
   (defun occ-obj-vars-from-map (ineqs-map)
-    (occ-obj-vars-from-properties (mapcar #'car
-                                          ineqs-map)))
+    (occ-obj-vars-from-syms (mapcar #'car
+                                    ineqs-map)))
+  (defun occ-obj-build-math-solve-expr (eqs vars)
+    `(calcFunc-solve (vec ,@(occ-obj-ineqs2eqs eqs))
+                     (vec ,@vars)))
   (defun occ-normalize-eqs (eqs vars)
-    (calc-normalize `(calcFunc-solve (vec ,@(occ-obj-ineqs2eqs eqs))
-                                     (vec ,@vars))))
+    (calc-normalize (occ-obj-build-math-solve-expr eqs
+                                                   vars)))
   (defun occ-eqs-normalized-p (eqs vars)
     (let ((sol (occ-normalize-eqs eqs
                                   vars)))
-      (message "sol %s" sol)
+      ;; (message "sol %s" sol)
       (if (> (length (cdadr sol))
              1)
           (not (eql (car sol)
@@ -243,7 +250,7 @@
                                                occ-ineqs)))))
         (let ((eqs (occ-obj-ineqs2eqs (append (occ-obj-ineqs-from-map (assoc-delete-all property occ-ineqs))
                                               (cons ineq (cdr (assoc property occ-ineqs))))))
-              (vars (occ-obj-vars-from-properties (delete-dups (cons property
+              (vars (occ-obj-vars-from-syms (delete-dups (cons property
                                                                      (mapcar #'car
                                                                              occ-ineqs))))))
          (if (occ-eqs-normalized-p eqs vars)
@@ -260,12 +267,39 @@
     (cdr (assoc property
                 occ-ineqs)))
 
-  (defun ooc ()
-    (let* ((sol (occ-obj-normalize-ineqs-map occ-ineqs))
-           (vars (occ-obj-find-eqs-vars sol)))
-      (message "sol: %s, vars %s" sol vars)))
 
-  ;; (ooc)
+  (defun occ-obj-const-value (const)
+    10)
+
+  (defun occ-obj-equal-consts-exprs (consts)
+    (cons 'vec
+          (mapcar #'(lambda (c)
+                      `(calcFunc-eq ,(math-read-expr (symbol-name c))
+                                    ,(occ-obj-const-value c)))
+                  consts)))
+
+  (defun ooc (ineqs-map)
+    (let* ((sols (occ-obj-normalize-ineqs-map ineqs-map))
+           (vars (occ-obj-find-eqs-vars sols))
+           (vars-eq-exprs (occ-obj-equal-consts-exprs vars)))
+      (message "sol: %s, vars %s" sols (occ-obj-vars-from-syms vars))
+      (let ((sol-expr (occ-obj-build-math-solve-expr (append (cdr vars-eq-exprs)
+                                                             (cdr sols))
+                                                     (occ-obj-vars-from-map ineqs-map))))
+        (calc-normalize sol-expr)
+        (math-format-flat-expr sol-expr 1))))
+
+  ;; (ooc occ-ineqs)
+
+
+  "solve([cxgeq159982 = 10, cxgth159983 = 10, cxgeq159986 = 10, cxgth159987 = 10, cxgth159985 = 10, cxgeq159984 = 10, status = cxgeq159982 + cxgth159983 + 2 * (cxgeq159986 + cxgth159987 + cxgth159985 + cxgeq159984) + 60, key = cxgeq159984 + cxgth159985 + 10, root = cxgeq159986 + cxgth159987 + cxgth159985 + cxgeq159984 + 30], [status, key, root])"
+
+  "solve([cxgeq83028 = 10, cxgth83029 = 10, cxgeq83032 = 10, cxgth83033 = 10, cxgth83031 = 10, cxgeq83030 = 10, status = cxgeq83028 + cxgth83029 + 2 * (cxgeq83032 + cxgth83033 + cxgth83031 + cxgeq83030) + 60, key = cxgeq83030 + cxgth83031 + 10, root = cxgeq83032 + cxgth83033 + cxgth83031 + cxgeq83030 + 30], [status, key, root])"
+
+
+  ;; "solve([status = cxgeq70246 + cxgth70247 + 2 * (cxgeq70250 + cxgth70251 + cxgth70249 + cxgeq70248) + 60, key = cxgeq70248 + cxgth70249 + 10, root = cxgeq70250 + cxgth70251 + cxgth70249 + cxgeq70248 + 30, cxgeq70246 = 10, cxgth70247 = 10, cxgeq70250 = 10, cxgth70251 = 10, cxgth70249 = 10, cxgeq70248 = 10], [status, key, root])"
+
+
 
   ;; (remove-if #'(lambda (oineq) (eql (car oineq) property))
   ;;            occ-ineqs)
@@ -304,7 +338,7 @@
 (calc-normalize (list 'vec (car (math-read-exprs " a + b > (a + c)"))))
 
 
-
+(math-expr-subst '(vec (calcFunc-eq (var x var-x) (var a var-a)))  '(var a var-a) 1)
 
 
 
