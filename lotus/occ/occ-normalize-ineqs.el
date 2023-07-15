@@ -282,15 +282,23 @@
     (let* ((sols (occ-obj-normalize-ineqs-map ineqs-map))
            (vars (occ-obj-find-eqs-vars sols))
            (vars-eq-exprs (occ-obj-equal-consts-exprs vars)))
-      (message "sol: %s, vars %s" sols (occ-obj-vars-from-syms vars))
-      (let ((sol-expr (occ-obj-build-math-solve-expr (append (cdr vars-eq-exprs)
-                                                             (cdr sols))
-                                                     (occ-obj-vars-from-map ineqs-map))))
-        (calc-normalize sol-expr)
-        (math-format-flat-expr sol-expr 1))))
+      ;; (message "sol: %s, vars %s" sols (occ-obj-vars-from-syms vars))
+      ;; (let ((sol-expr (occ-obj-build-math-solve-expr (append (cdr vars-eq-exprs)
+      ;;                                                        (cdr sols))
+      ;;                                                (occ-obj-vars-from-map ineqs-map))))
+      ;;   (calc-normalize sol-expr)
+      ;;   (math-format-flat-expr sol-expr 1))
+      (while vars
+        (let ((var (pop vars)))
+          (setq sols (calc-normalize (math-expr-subst sols (math-read-expr (symbol-name var)) 10)))))
+      sols))
 
   ;; (ooc occ-ineqs)
 
+  (math-format-flat-expr (ooc occ-ineqs) 1)
+
+
+  ;; (occ-obj-normalize-ineqs-map occ-ineqs)
 
   "solve([cxgeq159982 = 10, cxgth159983 = 10, cxgeq159986 = 10, cxgth159987 = 10, cxgth159985 = 10, cxgeq159984 = 10, status = cxgeq159982 + cxgth159983 + 2 * (cxgeq159986 + cxgth159987 + cxgth159985 + cxgeq159984) + 60, key = cxgeq159984 + cxgth159985 + 10, root = cxgeq159986 + cxgth159987 + cxgth159985 + cxgeq159984 + 30], [status, key, root])"
 
@@ -300,6 +308,7 @@
   ;; "solve([status = cxgeq70246 + cxgth70247 + 2 * (cxgeq70250 + cxgth70251 + cxgth70249 + cxgeq70248) + 60, key = cxgeq70248 + cxgth70249 + 10, root = cxgeq70250 + cxgth70251 + cxgth70249 + cxgeq70248 + 30, cxgeq70246 = 10, cxgth70247 = 10, cxgeq70250 = 10, cxgth70251 = 10, cxgth70249 = 10, cxgeq70248 = 10], [status, key, root])"
 
 
+  ;; (calc-normalize (math-expr-subst '(vec (calcFunc-eq (var x var-x) (var a var-a))  (calcFunc-eq (var y var-y) (+ (var a var-a) 1)))  '(var a var-a) 1))
 
   ;; (remove-if #'(lambda (oineq) (eql (car oineq) property))
   ;;            occ-ineqs)
