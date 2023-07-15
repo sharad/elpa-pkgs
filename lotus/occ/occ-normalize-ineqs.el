@@ -278,41 +278,30 @@
                                     ,(occ-obj-const-value c)))
                   consts)))
 
+  (defun occ-obj-eq2cons (eq)
+    (cons (cadadr eq)
+          (caddr eq)))
+
   (defun ooc (ineqs-map)
-    (let* ((sols (occ-obj-normalize-ineqs-map ineqs-map))
-           (vars (occ-obj-find-eqs-vars sols))
-           (vars-eq-exprs (occ-obj-equal-consts-exprs vars)))
-      ;; (message "sol: %s, vars %s" sols (occ-obj-vars-from-syms vars))
-      ;; (let ((sol-expr (occ-obj-build-math-solve-expr (append (cdr vars-eq-exprs)
-      ;;                                                        (cdr sols))
-      ;;                                                (occ-obj-vars-from-map ineqs-map))))
-      ;;   (calc-normalize sol-expr)
-      ;;   (math-format-flat-expr sol-expr 1))
-      (while vars
-        (let ((var (pop vars)))
-          (setq sols (calc-normalize (math-expr-subst sols (math-read-expr (symbol-name var)) 10)))))
-      sols))
+    (let* ((sols   (occ-obj-normalize-ineqs-map ineqs-map))
+           (consts (occ-obj-find-eqs-vars sols)))
+      (while consts
+        (let ((const (pop consts)))
+          (setq sols (calc-normalize (math-expr-subst sols
+                                                      (math-read-expr (symbol-name const))
+                                                      (occ-obj-const-value const))))))
+      (mapcar #'occ-obj-eq2cons
+              (cdr sols))))
 
   ;; (ooc occ-ineqs)
+
+  (cadadr (nth 1 (ooc occ-ineqs)))
+  (caddr (nth 1 (ooc occ-ineqs)))
 
   (math-format-flat-expr (ooc occ-ineqs) 1)
 
 
-  ;; (occ-obj-normalize-ineqs-map occ-ineqs)
-
-  "solve([cxgeq159982 = 10, cxgth159983 = 10, cxgeq159986 = 10, cxgth159987 = 10, cxgth159985 = 10, cxgeq159984 = 10, status = cxgeq159982 + cxgth159983 + 2 * (cxgeq159986 + cxgth159987 + cxgth159985 + cxgeq159984) + 60, key = cxgeq159984 + cxgth159985 + 10, root = cxgeq159986 + cxgth159987 + cxgth159985 + cxgeq159984 + 30], [status, key, root])"
-
-  "solve([cxgeq83028 = 10, cxgth83029 = 10, cxgeq83032 = 10, cxgth83033 = 10, cxgth83031 = 10, cxgeq83030 = 10, status = cxgeq83028 + cxgth83029 + 2 * (cxgeq83032 + cxgth83033 + cxgth83031 + cxgeq83030) + 60, key = cxgeq83030 + cxgth83031 + 10, root = cxgeq83032 + cxgth83033 + cxgth83031 + cxgeq83030 + 30], [status, key, root])"
-
-
-  ;; "solve([status = cxgeq70246 + cxgth70247 + 2 * (cxgeq70250 + cxgth70251 + cxgth70249 + cxgeq70248) + 60, key = cxgeq70248 + cxgth70249 + 10, root = cxgeq70250 + cxgth70251 + cxgth70249 + cxgeq70248 + 30, cxgeq70246 = 10, cxgth70247 = 10, cxgeq70250 = 10, cxgth70251 = 10, cxgth70249 = 10, cxgeq70248 = 10], [status, key, root])"
-
-
-  ;; (calc-normalize (math-expr-subst '(vec (calcFunc-eq (var x var-x) (var a var-a))  (calcFunc-eq (var y var-y) (+ (var a var-a) 1)))  '(var a var-a) 1))
-
-  ;; (remove-if #'(lambda (oineq) (eql (car oineq) property))
-  ;;            occ-ineqs)
-
+  (math-format-flat-expr (math-read-expr "a") 1)
   )
 
 
