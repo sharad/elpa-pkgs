@@ -253,7 +253,7 @@
                 (cl-pushnew ineq (cdr (assoc property occ-ineqs)))
               (cl-pushnew (list property ineq)
                           occ-ineqs))
-           (occ-error "Failed to add inequality %s for property %s"
+           (occ-error "Failed to add inequality %s for property %s may be due to circular dependency"
                       (math-format-flat-expr ineq 1)
                       property))))))
 
