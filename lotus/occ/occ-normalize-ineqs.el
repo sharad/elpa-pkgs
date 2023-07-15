@@ -203,7 +203,7 @@
   (defun occ-eqs-normalized-p (eqs vars)
     (let ((sol (occ-normalize-eqs eqs
                                   vars)))
-      ;; (message "sol %s" sol)
+      (message "sol %s" sol)
       (if (> (length (cdadr sol))
              1)
           (not (eql (car sol)
@@ -233,7 +233,7 @@
                                 (mapcar #'occ-obj-find-expr-vars exprs)))))
   (defun occ-obj-find-eqs-vars (eqs)
     (occ-obj-find-exprs-vars (occ-obj-eqs-exprs eqs)))
-  
+
 
   (defun occ-do-add-ineq-1 (ineq property)
     (let ((ineq (occ-obj-ineq-wash (occ-obj-math-read-expr ineq)
@@ -242,37 +242,47 @@
                  (occ-do-assert-math-ineq ineq)
                  (not (member ineq (cdr (assoc property
                                                occ-ineqs)))))
-        (if (occ-eqs-normalized-p (occ-obj-ineqs2eqs (append (occ-obj-ineqs-from-map (remove-if #'(lambda (oineq) (eql (car oineq) property))
-                                                                                                occ-ineqs))
-                                                             (cons ineq (cdr (assoc property occ-ineqs)))))
-                                  (occ-obj-vars-from-properties (delete-dups (cons property
-                                                                                   (mapcar #'car
-                                                                                           occ-ineqs)))))
+        (let ((eqs (occ-obj-ineqs2eqs (append (occ-obj-ineqs-from-map (assoc-delete-all property occ-ineqs))
+                                              (cons ineq (cdr (assoc property occ-ineqs))))))
+              (vars (occ-obj-vars-from-properties (delete-dups (cons property
+                                                                     (mapcar #'car
+                                                                             occ-ineqs))))))
+         (if (occ-eqs-normalized-p eqs vars)
             (if (assoc property
                        occ-ineqs)
                 (cl-pushnew ineq (cdr (assoc property occ-ineqs)))
               (cl-pushnew (list property ineq)
-                          occ-ineqs))))))
+                          occ-ineqs))
+           (occ-error "Failed to add inequality %s for property %s"
+                      (math-format-flat-expr ineq 1)
+                      property))))))
 
   (defun occ-obj-ineq-1 (property)
     (cdr (assoc property
                 occ-ineqs)))
 
 
+
+  ;; (remove-if #'(lambda (oineq) (eql (car oineq) property))
+  ;;            occ-ineqs)
+
   )
 
 
-(occ-do-add-ineq-1 "root > (key + 20)" 'root)
-(occ-do-add-ineq-1 "root > (key + status + 2)" 'root)
-(occ-do-add-ineq-1 "root > (key * status + 2)" 'root)
-(occ-do-add-ineq-1 "key > 10" 'key)
-(occ-do-add-ineq-1 "status  > 2 * root" 'status)
-
-
+(occ-do-add-ineq-1 "nil > (key + 20)" 'root)
+(occ-do-add-ineq-1 "nil > (key + status + 2)" 'root)
+(occ-do-add-ineq-1 "nil > (key * status + 2)" 'root)
+(occ-do-add-ineq-1 "nil > 10" 'key)
+(occ-do-add-ineq-1 "nil > 2 * root" 'status)
+;; (occ-do-add-ineq-1 "nil > status" 'key)
+;; (occ-do-add-ineq-1 "nil < key" 'status)
 
 (occ-obj-ineq-wash (occ-obj-math-read-expr "root > (key + 2)") 'root)
 
 ;; (math-format-flat-expr (occ-normalize-ineqs-map occ-ineqs) 1)
+
+"[status = cx411135 - (2 * (cx411137 + (cx411135 + 1) * (cx411136 + 11)) + 6) / (2 * cx411136 + 21) + 1, key = cx411136 + 11, root = (cx411137 + (cx411135 + 1) * (cx411136 + 11) + 3) / (-2 * cx411136 - 21)]"
+
 "[status = cx-1627737 + 2 * (cx-1627739 + cx-1627738) + 29, key = cx-1627738 + 11, root = cx-1627739 + cx-1627738 + 14]"
 
 (occ-obj-find-expr-vars (cadr (occ-obj-eqs-exprs (occ-normalize-ineqs occ-ineqs))))
