@@ -271,7 +271,8 @@
 
 
   (defun occ-obj-const-value (const)
-    10)
+    10
+    (random 99))
 
   (defun occ-obj-equal-consts-exprs (consts)
     (cons 'vec
