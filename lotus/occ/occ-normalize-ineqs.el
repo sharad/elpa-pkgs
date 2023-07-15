@@ -414,6 +414,5 @@
                                      (prop symbol))
   (occ-ineq-get prop
                 (occ-obj-rankprop obj prop)))
-
 
 ;;; occ-normalize-ineqs.el ends here
