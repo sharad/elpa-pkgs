@@ -322,98 +322,74 @@
 (occ-do-add-ineq-1 "nil > (key * status + 2)" 'root)
 (occ-do-add-ineq-1 "nil > 10" 'key)
 (occ-do-add-ineq-1 "nil > 2 * root" 'status)
-;; (occ-do-add-ineq-1 "nil > status" 'key)
-;; (occ-do-add-ineq-1 "nil < key" 'status)
-
-(occ-obj-ineq-wash (occ-obj-math-read-expr "root > (key + 2)") 'root)
-
-;; (math-format-flat-expr (occ-obj-normalize-ineqs-map occ-property-priority-inequalities) 1)
-
-"[status = cx411135 - (2 * (cx411137 + (cx411135 + 1) * (cx411136 + 11)) + 6) / (2 * cx411136 + 21) + 1, key = cx411136 + 11, root = (cx411137 + (cx411135 + 1) * (cx411136 + 11) + 3) / (-2 * cx411136 - 21)]"
-
-"[status = cx-1627737 + 2 * (cx-1627739 + cx-1627738) + 29, key = cx-1627738 + 11, root = cx-1627739 + cx-1627738 + 14]"
-
-(occ-obj-find-expr-vars (cadr (occ-obj-eqs-exprs (occ-normalize-ineqs occ-property-priority-inequalities))))
-(occ-obj-find-exprs-vars (occ-obj-eqs-exprs (occ-normalize-ineqs occ-property-priority-inequalities)))
-(occ-obj-find-eqs-vars (occ-obj-normalize-ineqs-map occ-property-priority-inequalities))
-
-(occ-obj-properties-for-rank)
-
-(occ-obj-ineq-wash (occ-obj-math-read-expr "2 * root + 1  > root +  (key + 2)") 'root)
-(occ-obj-ineq2eq (calc-normalize (math-read-expr "x > b +2")))
-
-(equal (math-read-expr "x = (a + 2)")
-       (occ-math-read-sexp-expr '(= x (+ a 2))))
-
-(calc-normalize (list 'vec (car (math-read-exprs " a + b > (a + c)"))))
 
 
-(math-expr-subst '(vec (calcFunc-eq (var x var-x) (var a var-a)))  '(var a var-a) 1)
+;; ;; (occ-do-add-ineq-1 "nil > status" 'key)
+;; ;; (occ-do-add-ineq-1 "nil < key" 'status)
+
+;; (occ-obj-ineq-wash (occ-obj-math-read-expr "root > (key + 2)") 'root)
+
+;; ;; (math-format-flat-expr (occ-obj-normalize-ineqs-map occ-property-priority-inequalities) 1)
+
+;; "[status = cx411135 - (2 * (cx411137 + (cx411135 + 1) * (cx411136 + 11)) + 6) / (2 * cx411136 + 21) + 1, key = cx411136 + 11, root = (cx411137 + (cx411135 + 1) * (cx411136 + 11) + 3) / (-2 * cx411136 - 21)]"
+
+;; "[status = cx-1627737 + 2 * (cx-1627739 + cx-1627738) + 29, key = cx-1627738 + 11, root = cx-1627739 + cx-1627738 + 14]"
+
+;; (occ-obj-find-expr-vars (cadr (occ-obj-eqs-exprs (occ-normalize-ineqs occ-property-priority-inequalities))))
+;; (occ-obj-find-exprs-vars (occ-obj-eqs-exprs (occ-normalize-ineqs occ-property-priority-inequalities)))
+;; (occ-obj-find-eqs-vars (occ-obj-normalize-ineqs-map occ-property-priority-inequalities))
+
+;; (occ-obj-properties-for-rank)
+
+;; (occ-obj-ineq-wash (occ-obj-math-read-expr "2 * root + 1  > root +  (key + 2)") 'root)
+;; (occ-obj-ineq2eq (calc-normalize (math-read-expr "x > b +2")))
+
+;; (equal (math-read-expr "x = (a + 2)")
+;;        (occ-math-read-sexp-expr '(= x (+ a 2))))
+
+;; (calc-normalize (list 'vec (car (math-read-exprs " a + b > (a + c)"))))
+
+
+;; (math-expr-subst '(vec (calcFunc-eq (var x var-x) (var a var-a)))  '(var a var-a) 1)
 
 
 
-(calc-normalize '(calcFunc-solve (vec (calcFunc-eq (* 2 (var a var-a)) (var d var-d)) (calcFunc-eq (+ (var b var-b) (var c1 var-c1)) (var d var-d)) (calcFunc-eq (+ (+ (var a var-a) (var c1 var-c1)) (var c2 var-c2)) (var d var-d)))
-                                 (vec (var a var-a) (var b var-b))))
+;; (calc-normalize '(calcFunc-solve (vec (calcFunc-eq (* 2 (var a var-a)) (var d var-d)) (calcFunc-eq (+ (var b var-b) (var c1 var-c1)) (var d var-d)) (calcFunc-eq (+ (+ (var a var-a) (var c1 var-c1)) (var c2 var-c2)) (var d var-d)))
+;;                                  (vec (var a var-a) (var b var-b))))
 
-(math-simplify '(vec (calcFunc-eq (* 2 (var a var-a)) (var d var-d)) (calcFunc-eq (+ (var b var-b) (var c1 var-c1)) (var d var-d)) (calcFunc-eq (+ (+ (var a var-a) (var c1 var-c1)) (var c2 var-c2)) (var d var-d))))
+;; (math-simplify '(vec (calcFunc-eq (* 2 (var a var-a)) (var d var-d)) (calcFunc-eq (+ (var b var-b) (var c1 var-c1)) (var d var-d)) (calcFunc-eq (+ (+ (var a var-a) (var c1 var-c1)) (var c2 var-c2)) (var d var-d))))
 
-(calc-normalize '(calcFunc-solve (vec (calcFunc-eq (+ (var a var-a) (var b var-b)) (var d var-d)) (calcFunc-eq (+ (var b var-b) (var c var-c)) (var z var-z)) (calcFunc-eq (+ (+ (var a var-a) (var c var-c)) 10) (var z var-z)))
-                                 (vec (var a var-a) (var b var-b) (var c var-c))))
+;; (calc-normalize '(calcFunc-solve (vec (calcFunc-eq (+ (var a var-a) (var b var-b)) (var d var-d)) (calcFunc-eq (+ (var b var-b) (var c var-c)) (var z var-z)) (calcFunc-eq (+ (+ (var a var-a) (var c var-c)) 10) (var z var-z)))
+;;                                  (vec (var a var-a) (var b var-b) (var c var-c))))
 
-(vec (calcFunc-eq (var a var-a) (- (+ (- (var d var-d) (var z var-z)) (/ (- (* 2 (var z var-z)) (var d var-d)) 2)) 5))
-     (calcFunc-eq (var b var-b) (+ (+ (var z var-z) (/ (- (var d var-d) (* 2 (var z var-z))) 2)) 5))
-     (calcFunc-eq (var c var-c) (- (/ (- (* 2 (var z var-z)) (var d var-d)) 2) 5)))
-
-
-(math-read-exprs "[ a + b = 1]")
-(math-read-exprs "solve([x+y=3, x-y=1], [x,y])")
-(math-format-flat-expr '(vec (calcFunc-eq (var a var-a) (float 55 -1)) (calcFunc-eq (var b var-b) (float 45 -1))) 0)
-(math-format-flat-expr (car (math-read-exprs "[ a + b = 1]")) 0)
-
-(calc-normalize "[a + b = c1 , a - b = c2]")
-(calc-normalize "a - b > 0")
-(calc-eval "solve([a - b > 0], [a,b])")
-(calc-eval "solve([a + b = c1 , a - b = c2], [a,b])")
+;; (vec (calcFunc-eq (var a var-a) (- (+ (- (var d var-d) (var z var-z)) (/ (- (* 2 (var z var-z)) (var d var-d)) 2)) 5))
+;;      (calcFunc-eq (var b var-b) (+ (+ (var z var-z) (/ (- (var d var-d) (* 2 (var z var-z))) 2)) 5))
+;;      (calcFunc-eq (var c var-c) (- (/ (- (* 2 (var z var-z)) (var d var-d)) 2) 5)))
 
 
+;; (math-read-exprs "[ a + b = 1]")
+;; (math-read-exprs "solve([x+y=3, x-y=1], [x,y])")
+;; (math-format-flat-expr '(vec (calcFunc-eq (var a var-a) (float 55 -1)) (calcFunc-eq (var b var-b) (float 45 -1))) 0)
+;; (math-format-flat-expr (car (math-read-exprs "[ a + b = 1]")) 0)
 
-(setq xxx '((a)))
+;; (calc-normalize "[a + b = c1 , a - b = c2]")
+;; (calc-normalize "a - b > 0")
+;; (calc-eval "solve([a - b > 0], [a,b])")
+;; (calc-eval "solve([a + b = c1 , a - b = c2], [a,b])")
 
-(pushnew 'c (cdr (cl-assoc 'a xxx)))
 
 
-;; (length '(a () x))
+;; (setq xxx '((a)))
 
-;; (occ-obj-properties-to-calculate-rank 'occ-tsk)
-;; (occ-obj-properties-to-calculate-rank 'occ-obj-ctx-tsk)
+;; (pushnew 'c (cdr (cl-assoc 'a xxx)))
 
-(defvar occ-tsk-normalized-ineq '(none 1 key 10 status 20 current-clock 40 timebeing 50 root 10 currfile 20))
-(defvar occ-obj-ctx-tsk-normalized-ineq '(none 1 root 10 currfile 20))
-
 
-(defun occ-ineq-sum ()
-  (cl-reduce #'+
-             (mapcar #'cdr
-                     (cl--plist-to-alist occ-tsk-normalized-ineq))))
+;; ;; (length '(a () x))
 
-(defun occ-ineq-get (prop value)
-  (let ((factor (plist-get occ-tsk-normalized-ineq
-                           prop)))
-    (* factor
-       value)))
-
+;; ;; (occ-obj-properties-to-calculate-rank 'occ-tsk)
+;; ;; (occ-obj-properties-to-calculate-rank 'occ-obj-ctx-tsk)
 
-(cl-defgeneric occ-obj-ineq-rankprop (obj prop)
-  "Get normalized rank.")
-
-(cl-defmethod occ-obj-ineq-rankprop ((obj occ-tsk)
-                                     (prop symbol))
-  (occ-ineq-get prop
-                (occ-obj-rankprop obj prop)))
-
-(cl-defmethod occ-obj-ineq-rankprop ((obj  occ-obj-ctx-tsk)
-                                     (prop symbol))
-  (occ-ineq-get prop
-                (occ-obj-rankprop obj prop)))
+;; (defvar occ-tsk-normalized-ineq '(none 1 key 10 status 20 current-clock 40 timebeing 50 root 10 currfile 20))
+;; (defvar occ-obj-ctx-tsk-normalized-ineq '(none 1 root 10 currfile 20))
 
 ;;; occ-normalize-ineqs.el ends here

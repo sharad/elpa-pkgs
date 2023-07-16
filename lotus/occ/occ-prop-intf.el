@@ -36,6 +36,27 @@
 (require 'occ-prop-utils)
 
 
+(cl-defgeneric occ-do-add-ineq (property
+                                list)
+  "Add ineq for property PROPERTY.")
+(cl-defmethod occ-do-add-ineq ((property symbol)
+                               (ineq list))
+  "Add ineq for property PROPERTY."
+  (occ-do-add-ineq-internal property ineq))
+
+(cl-defgeneric occ-obj-ineq (property)
+  "Add ineq for property PROPERTY.")
+(cl-defmethod occ-obj-ineq ((property symbol))
+  "Add ineq for property PROPERTY."
+  (occ-obj-ineq-internal property))
+
+(cl-defgeneric occ-obj-priority (property)
+  "Add ineq for property PROPERTY.")
+(cl-defmethod occ-obj-priority ((property symbol))
+  "Add ineq for property PROPERTY."
+  (occ-obj-priority-internal property))
+
+
 (cl-defgeneric occ-obj-rankprop (obj
                                  property)
   "Return the RANK (number) for OBJ based on the property PROPERTY")
@@ -73,11 +94,7 @@
                                 (property (eql nil)))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
   (occ-debug "occ-obj-rankprop(obj=%s symbol=%s)" obj property)
-  (let ((priority (occ-obj-priority property)))
-    (unless priority
-      (occ-error "Nor priority for property %s" property))
-    (let ((rank (occ-obj-rankprop obj property)))
-      (* priority rank))))
+  (occ-obj-rankprop obj property))
 
 
 (cl-defgeneric occ-obj-has-p (obj
@@ -241,28 +258,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   "Checkout property in case of force clock-in."
   (ignore obj)
   (occ-error "Implement it for %s: Checkout property in case of force clock-in." property))
-
-
-(cl-defgeneric occ-do-add-ineq (property
-                                list)
-  "Add ineq for property PROPERTY.")
-(cl-defmethod occ-do-add-ineq ((property symbol)
-                               (ineq list))
-  "Add ineq for property PROPERTY."
-  (occ-do-add-ineq-internal property ineq))
-
-(cl-defgeneric occ-obj-ineq (property)
-  "Add ineq for property PROPERTY.")
-(cl-defmethod occ-obj-ineq ((property symbol))
-  "Add ineq for property PROPERTY."
-  (occ-obj-ineq-internal property))
-
-(cl-defgeneric occ-obj-priority (property)
-  "Add ineq for property PROPERTY.")
-(cl-defmethod occ-obj-priority ((property symbol))
-  "Add ineq for property PROPERTY."
-  (occ-obj-priority-internal property))
-
 
 
 (occ-testing
