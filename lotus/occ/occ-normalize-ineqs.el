@@ -282,7 +282,7 @@
                                   ,(occ-obj-const-value c)))
                 consts)))
 
-(defun occ-obj-eq2cons (eq)
+(defun occ-obj-eqality2pair (eq)
   (cons (cadadr eq)
         (caddr eq)))
 
@@ -294,7 +294,7 @@
         (setq sols (calc-normalize (math-expr-subst sols
                                                     (occ-obj-math-read-var const)
                                                     (occ-obj-const-value const))))))
-    (mapcar #'occ-obj-eq2cons
+    (mapcar #'occ-obj-eqality2pair
             (cdr sols))))
 
 (defun occ-obj-ineq-map-solution (ineqs-map)
@@ -305,7 +305,7 @@
         (setq sols (calc-normalize (math-expr-subst sols
                                                     (occ-obj-math-read-var const)
                                                     (occ-obj-const-value const))))))
-    (mapcar #'occ-obj-eq2cons
+    (mapcar #'occ-obj-eqality2pair
             (cdr sols))))
 
 (defun occ-do-set-prop-priorities ()
