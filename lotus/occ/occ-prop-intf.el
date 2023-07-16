@@ -97,6 +97,30 @@
   (occ-obj-rankprop obj property))
 
 
+(defun occ-obj-priority-rankprop-internal (prop value)
+  "Get prioritised rank."
+  (let ((priority (occ-obj-priority prop)))
+    (unless priority
+      (occ-error "Priority is not present for property %s" prop))
+    (* priority
+       value)))
+
+(cl-defgeneric occ-obj-priority-rankprop (obj prop)
+  "Get prioritised rank.")
+
+(cl-defmethod occ-obj-priority-rankprop ((obj occ-tsk)
+                                         (prop symbol))
+  "Get prioritised rank."
+  (occ-obj-priority-rankprop-internal prop
+                                      (occ-obj-rankprop obj prop)))
+
+(cl-defmethod occ-obj-priority-rankprop ((obj  occ-obj-ctx-tsk)
+                                         (prop symbol))
+  "Get prioritised rank."
+  (occ-obj-priority-rankprop-internal prop
+                                      (occ-obj-rankprop obj prop)))
+
+
 (cl-defgeneric occ-obj-has-p (obj
                               property
                               value)

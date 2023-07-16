@@ -31,7 +31,7 @@
   (require 'occ-macros))
 (require 'occ-util-common)
 (require 'occ-prop-intf)
-(require 'occ-normalize-ineqs)
+;; (require 'occ-normalize-ineqs)
 (require 'occ-obj-accessor)
 (require 'occ-debug-method)
 (require 'occ-prop-base)
@@ -53,8 +53,8 @@
          (rank       (cl-reduce #'+
                                 (mapcar #'(lambda (slot)
                                             (let ((prop (downcase-sym slot)))
-                                              (occ-obj-ineq-rankprop obj
-                                                                     prop)))
+                                              (occ-obj-priority-rankprop obj
+                                                                         prop)))
                                         properties))))
     ;; (occ-debug "occ-obj-calculate-rank(obj occ-tsk): rank = %d" rank)
     rank))
@@ -73,8 +73,8 @@
            (rank       (cl-reduce #'+
                                   (mapcar #'(lambda (slot)
                                               (let ((prop (downcase-sym slot)))
-                                                (occ-obj-ineq-rankprop obj
-                                                                       prop)))
+                                                (occ-obj-priority-rankprop obj
+                                                                           prop)))
                                           properties))))
       ;; (occ-debug "occ-obj-calculate-rank(obj occ-obj-ctx-tsk): rank = %d" rank)
       rank)))

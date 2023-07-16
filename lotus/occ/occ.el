@@ -244,6 +244,12 @@
               (setq occ-mode t))
           (occ-error "Not able to start occ")
           nil))))
+
+  (progn
+    (occ-do-add-ineq "nil > (key + 20)" 'root)
+    (occ-do-add-ineq "nil > 10" 'key)
+    (occ-do-add-ineq "nil > 2 * root" 'status)
+    (occ-do-set-prop-priorities))
   ;; newly added
   ;; (org-clock-load) ;; is getting struck
   (run-with-idle-timer 3 nil #'org-clock-load))
