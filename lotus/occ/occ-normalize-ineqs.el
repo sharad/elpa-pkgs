@@ -27,6 +27,7 @@
 (provide 'occ-normalize-ineqs)
 
 
+(require 'calc)
 (require 'calc-ext)
 (require 'calc-aent)
 
@@ -239,7 +240,6 @@
            (append first-el
                    (apply #'append  rest-els))))
         (t nil)))
-
 (defun occ-obj-find-exprs-vars (exprs)
   (delete nil
           (delete-dups (apply #'append
@@ -280,7 +280,6 @@
   (cdr (assoc property
               occ-property-priorities)))
 
-
 (defun occ-obj-const-value (const)
   ;; 10
   (random 99))
@@ -319,12 +318,7 @@
             (cdr sols))))
 
 (defun occ-do-set-prop-priorities ()
-  (interactive)
   (setq occ-property-priorities (occ-obj-ineq-map-solution occ-property-priority-inequalities)))
-
-;; (ooc occ-property-priority-inequalities)
-;; (occ-obj-solve occ-property-priority-inequalities)
-;; (occ-do-set-prop-priorities)
 
 
 ;; (occ-do-add-ineq-1 "nil > (key + 20)" 'root)

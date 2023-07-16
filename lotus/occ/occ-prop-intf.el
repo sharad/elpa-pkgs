@@ -122,7 +122,7 @@
                                          (prop symbol))
   "Get prioritised rank."
   (occ-obj-priority-rankprop-internal prop
-                                      (occ-obj-rankprop obj prop)))
+                                      (occ-obj-rankprop obj prop)))a
 
 
 (cl-defgeneric occ-obj-has-p (obj

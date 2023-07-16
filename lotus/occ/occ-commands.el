@@ -271,6 +271,13 @@
   (occ-error "Implement it."))
 
 
+(defun occ-show-priority-ineql (prop)
+  (interactive (list (occ-util-select-from-sym-list "Select property: "
+                                                    (occ-obj-properties-for-rank))))
+  (require 'calc)
+  (occ-message "prop %s: %s" prop (math-format-flat-expr `(vec ,@(occ-obj-ineq-internal prop)) 1)))
+
+
 ;;;###autoload
 (defun occ-insinuate (&optional key)
   (interactive (list (occ-collector-read-key "key for spec: ")))

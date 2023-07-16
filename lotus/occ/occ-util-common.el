@@ -149,6 +149,12 @@
              inherit-input-method)))
 
 
+(defun occ-util-select-from-sym-list (prompt symlist)
+  (let ((symstr (completing-read prompt
+                                 symlist)))
+    (intern symstr)))
+
+
 (defun occ-insert-node-before-element (node element list)
   ;; https://groups.google.com/forum/#!topic/comp.lang.lisp/83g9zkq_CQY
   (let ((pos (cl-position element list)))
