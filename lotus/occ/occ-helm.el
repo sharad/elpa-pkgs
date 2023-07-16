@@ -44,7 +44,7 @@
 (require 'occ-util-common)
 
 
-(defun occ-capture+-helm-select-template ()
+(defun occ-obj-capture+-helm-select-template ()
   (let ((selector (helm-template-gen-selector #'org-capture+-tree-predicate
                                               '(t occ tsk clockable todo)
                                               0)))

@@ -40,20 +40,6 @@
 (defvar occ-property-priorities nil)
 
 
-(cl-defgeneric occ-add-ineq (operator
-                             prop1
-                             prop2)
-  "Add relative property.")
-
-(cl-defmethod occ-add-ineq ((operator symbol)
-                            (prop1    symbol)
-                            (prop2    symbol))
-  "Add relative property."
-  (cl-assert (memq operator '(gt lt eq)))
-  (cl-pushnew (list operator prop1 prop2)
-              occ-property-priority-inequalities))
-
-
 (defun occ-obj-properties-for-rank ()
   (delete-dups (append (occ-obj-properties-to-calculate-rank 'occ-tsk)
                        (occ-obj-properties-to-calculate-rank 'occ-obj-ctx-tsk))))
@@ -251,12 +237,10 @@
 (defun occ-do-add-ineq-internal (property ineq)
   (let ((ineq (occ-obj-ineq-wash (occ-obj-math-read-expr ineq)
                                  property)))
-    (occ-message "ineq %s" ineq)
     (when (and (occ-do-assert-math-ineq-has-prop-p ineq property)
                (occ-do-assert-math-ineq ineq)
                (not (member ineq (cdr (assoc property
                                              occ-property-priority-inequalities)))))
-      (occ-message "TEST")
       (let ((eqs (occ-obj-ineqs2eqs (append (occ-obj-ineqs-from-map (assoc-delete-all property occ-property-priority-inequalities))
                                             (cons ineq (cdr (assoc property occ-property-priority-inequalities))))))
             (vars (occ-obj-vars-from-syms (delete-dups (cons property

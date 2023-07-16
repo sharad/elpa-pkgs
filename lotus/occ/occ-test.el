@@ -365,7 +365,7 @@
     (let* ((ctsk (occ-obj-select (occ-obj-make-ctx nil) #'occ-list))
            (tsk  (if ctsk (occ-ctsk-tsk ctsk)))
            (mrk  (if tsk (occ-tsk-marker tsk))))
-      (before-org-capture+ 'entry `(marker ,mrk) 'occ-capture+-helm-select-template '(:empty-lines 1)
+      (before-org-capture+ 'entry `(marker ,mrk) 'occ-obj-capture+-helm-select-template '(:empty-lines 1)
         (read-from-minibuffer "Test: ")
         t)))
 
@@ -376,25 +376,25 @@
            (ctx  (if ctsk (occ-ctsk-ctx ctsk)))
            (tsk  (if ctsk (occ-ctsk-tsk ctsk)))
            (mrk  (if tsk (occ-tsk-marker tsk))))
-      (org-capture-plus 'entry `(marker ,mrk) 'occ-capture+-helm-select-template
+      (org-capture-plus 'entry `(marker ,mrk) 'occ-obj-capture+-helm-select-template
                         :finalize (lambda ()
                                     (occ-do-properties-window-editor-with tsk ctx 7)
                                     t)
                         :empty-lines 1)))
 
  (macroexpand-1
-  '(before-org-capture-plus mrk 'entry `(marker ,org-clock-marker) 'occ-capture+-helm-select-template '(:empty-lines 1)
+  '(before-org-capture-plus mrk 'entry `(marker ,org-clock-marker) 'occ-obj-capture+-helm-select-template '(:empty-lines 1)
      t))
 
  (let* ((finalize (function (lambda nil t))))
    (org-capture-plus 'entry
                      `(marker ,org-clock-marker)
-                     'occ-capture+-helm-select-template
+                     'occ-obj-capture+-helm-select-template
                      :finalize nil
                      '(:empty-lines 1)))
 
 
- (before-org-capture-plus mrk 'entry `(marker org-clock-marker) 'occ-capture+-helm-select-template '(:empty-lines 1)
+ (before-org-capture-plus mrk 'entry `(marker org-clock-marker) 'occ-obj-capture+-helm-select-template '(:empty-lines 1)
    t))
 
 

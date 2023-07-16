@@ -139,7 +139,7 @@
   (ignore clock-in)
   (org-capture-run 'entry
                    `(marker ,obj)
-                   'occ-do-capture+-helm-select-template
+                   'occ-obj-capture+-helm-select-template
                    :immediate-finish immediate-finish
                    :empty-lines 1))
 
@@ -161,7 +161,7 @@
         (tsk      (occ-obj-tsk    obj))
         (ctx      (occ-obj-ctx    obj))
         (template (or template          ;FIX it.
-                      (occ-do-capture+-helm-select-template))))
+                      (occ-obj-capture+-helm-select-template))))
     (when template
       (with-org-capture-run marker 'entry (list 'marker mrk) template (list :empty-lines 1
                                                                             :immediate-finish immediate-finish)

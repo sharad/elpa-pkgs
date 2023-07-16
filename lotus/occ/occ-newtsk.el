@@ -39,7 +39,7 @@
 
 ;; (org-capture+-build-helm-template-sources)
 
-;; (org-capture+-helm-select-template)
+;; (org-obj-capture+-helm-select-template)
 
 
 
