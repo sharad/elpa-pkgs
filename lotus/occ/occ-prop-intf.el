@@ -34,6 +34,7 @@
 (require 'occ-util-common)
 (require 'occ-obj)
 (require 'occ-prop-utils)
+(require 'occ-normalize-ineqs)
 
 
 (cl-defgeneric occ-do-add-ineq (property
@@ -122,7 +123,7 @@
                                          (prop symbol))
   "Get prioritised rank."
   (occ-obj-priority-rankprop-internal prop
-                                      (occ-obj-rankprop obj prop)))a
+                                      (occ-obj-rankprop obj prop)))
 
 
 (cl-defgeneric occ-obj-has-p (obj
