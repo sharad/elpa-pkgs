@@ -203,20 +203,20 @@
 (defun occ-obj-build-math-solve-expr (eqs vars)
   `(calcFunc-solve (vec ,@(occ-obj-ineqs2eqs eqs))
                    (vec ,@vars)))
-(defun occ-normalize-eqs (eqs vars)
+(defun occ-obj-normalize-eqs (eqs vars)
   (calc-normalize (occ-obj-build-math-solve-expr eqs
                                                  vars)))
-(defun occ-eqs-normalized-p (eqs vars)
-  (let ((sol (occ-normalize-eqs eqs
-                                vars)))
+(defun occ-obj-eqs-normalized-p (eqs vars)
+  (let ((sol (occ-obj-normalize-eqs eqs
+                                    vars)))
     (if (> (length (cdadr sol))
            1)
         (not (eql (car sol)
                   'calcFunc-solve))
       t)))
 (defun occ-obj-normalize-ineqs-map (ineqs-map)
-  (occ-normalize-eqs (occ-obj-ineqs2eqs (occ-obj-ineqs-from-map ineqs-map))
-                     (occ-obj-vars-from-map ineqs-map)))
+  (occ-obj-normalize-eqs (occ-obj-ineqs2eqs (occ-obj-ineqs-from-map ineqs-map))
+                         (occ-obj-vars-from-map ineqs-map)))
 (defun occ-obj-eqs-exprs (eqs)
   (mapcar #'caddr
           (cdr eqs)))
@@ -252,7 +252,7 @@
             (vars (occ-obj-vars-from-syms (delete-dups (cons property
                                                              (mapcar #'car
                                                                      occ-property-priority-inequalities))))))
-        (if (occ-eqs-normalized-p eqs vars)
+        (if (occ-obj-eqs-normalized-p eqs vars)
             (if (assoc property
                        occ-property-priority-inequalities)
                 (cl-pushnew ineq (cdr (assoc property occ-property-priority-inequalities)))
@@ -317,11 +317,11 @@
 ;; (occ-do-set-prop-priorities)
 
 
-(occ-do-add-ineq-1 "nil > (key + 20)" 'root)
-(occ-do-add-ineq-1 "nil > (key + status + 2)" 'root)
-(occ-do-add-ineq-1 "nil > (key * status + 2)" 'root)
-(occ-do-add-ineq-1 "nil > 10" 'key)
-(occ-do-add-ineq-1 "nil > 2 * root" 'status)
+;; (occ-do-add-ineq-1 "nil > (key + 20)" 'root)
+;; (occ-do-add-ineq-1 "nil > (key + status + 2)" 'root)
+;; (occ-do-add-ineq-1 "nil > (key * status + 2)" 'root)
+;; (occ-do-add-ineq-1 "nil > 10" 'key)
+;; (occ-do-add-ineq-1 "nil > 2 * root" 'status)
 
 
 ;; ;; (occ-do-add-ineq-1 "nil > status" 'key)
