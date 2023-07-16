@@ -103,13 +103,21 @@
         ((listp sexp) (cons (occ-math-read-sexp-expr (car sexp))
                             (mapcar #'occ-math-read-sexp-expr (cdr sexp))))
         (t sexp)))
+;; (defun occ-math-read-str-expr (ineq)
+;;   (let ((ineq (string-replace "-" "AAAA" ineq)))
+;;     ()))
+;; (replace-regexp-in-string "[[:alpha:]]\.[[:alnum:]]\.-" "AAAA" "asdfasdf-fdaf - A")
+
+;; (occ-math-read-sexp-expr '(> current-clock timebeing))
+
 (defun occ-obj-math-read-expr (ineq)
   "Return normalized calc math expression."
   (calc-normalize (cond ((stringp ineq) (math-read-expr ineq))
                         ((consp ineq)   (occ-math-read-sexp-expr ineq))
                         (t (occ-error "ineq %s not string or list" ineq)))))
 (defun occ-obj-math-read-var (sym)
-  (math-read-expr (symbol-name sym)))
+  ;;(math-read-expr (symbol-name sym))
+  `(var ,sym ,(intern (concat "var-" (symbol-name sym)))))
 (defun occ-obj-ineq-wash (ineq property)
   (cond ((and (listp ineq)
               (eql 'var (car ineq))
@@ -243,10 +251,12 @@
 (defun occ-do-add-ineq-internal (property ineq)
   (let ((ineq (occ-obj-ineq-wash (occ-obj-math-read-expr ineq)
                                  property)))
+    (occ-message "ineq %s" ineq)
     (when (and (occ-do-assert-math-ineq-has-prop-p ineq property)
                (occ-do-assert-math-ineq ineq)
                (not (member ineq (cdr (assoc property
                                              occ-property-priority-inequalities)))))
+      (occ-message "TEST")
       (let ((eqs (occ-obj-ineqs2eqs (append (occ-obj-ineqs-from-map (assoc-delete-all property occ-property-priority-inequalities))
                                             (cons ineq (cdr (assoc property occ-property-priority-inequalities))))))
             (vars (occ-obj-vars-from-syms (delete-dups (cons property

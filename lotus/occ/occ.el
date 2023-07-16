@@ -246,9 +246,14 @@
           nil))))
 
   (progn
-    (occ-do-add-ineq "nil > (key + 20)" 'root)
-    (occ-do-add-ineq "nil > 10" 'key)
-    (occ-do-add-ineq "nil > 2 * root" 'status)
+    ;; (occ-obj-properties-for-rank)
+    ;; (current-clock key status timebeing root currfile)
+    (occ-do-add-ineq 'root "nil > (key + 20)")
+    (occ-do-add-ineq 'key "nil > 10")
+    (occ-do-add-ineq 'status  "nil > 2 * root")
+    (occ-do-add-ineq 'currfile  "nil > status")
+    (occ-do-add-ineq 'timebeing  "nil > currfile")
+    (occ-do-add-ineq-internal 'current-clock  '(> current-clock timebeing))
     (occ-do-set-prop-priorities))
   ;; newly added
   ;; (org-clock-load) ;; is getting struck

@@ -37,10 +37,14 @@
 
 
 (cl-defgeneric occ-do-add-ineq (property
-                                list)
+                                ineq)
   "Add ineq for property PROPERTY.")
 (cl-defmethod occ-do-add-ineq ((property symbol)
                                (ineq list))
+  "Add ineq for property PROPERTY."
+  (occ-do-add-ineq-internal property ineq))
+(cl-defmethod occ-do-add-ineq ((property symbol)
+                               (ineq string))
   "Add ineq for property PROPERTY."
   (occ-do-add-ineq-internal property ineq))
 
