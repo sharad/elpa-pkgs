@@ -352,7 +352,7 @@ helm-source and returned as occ-hsrc-source which will be used to
 select candidate from it."
 
   ;; (occ-assert candidates)
-  (let* ((rank (occ-obj-collection-rank collection))
+  (let* ((rank  (occ-obj-collection-rank collection))
          (level (occ-obj-collection-level collection))
          (timeout               (or timeout occ-idle-timeout))
          (candidates-unfiltered (occ-obj-list-with obj collection :builder builder)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
