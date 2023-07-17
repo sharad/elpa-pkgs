@@ -110,9 +110,11 @@
 
 (cl-defmethod occ-do-induct-child ((obj   occ-tree-tsk)
                                    (child occ-tree-tsk))
-  (occ-message "Inducting child %s in parent %s" (occ-obj-format child) (occ-obj-format obj))
+  (occ-message "Inducting child %s in parent %s"
+               (occ-obj-format child)
+               (occ-obj-format obj))
   (occ-obj-set-property child 'subtree-level
-                        (occ-obj-get-property obj 'subtree-level))
+                        (1+ (occ-obj-get-property obj 'subtree-level)))
   (occ-insert-node-after-element child obj
                                  (occ-tree-collection-list (occ-default-collection)))
   (setf (occ-tree-tsk-subtree obj) (nconc (occ-tree-tsk-subtree obj)
@@ -172,7 +174,7 @@
                    (tmp-ctsk (occ-obj-build-ctsk-with tmp-tsk ctx)))
               (occ-op-props-edit tmp-ctsk)))
           t)
-        (let* ((child-tsk        (occ-obj-make-tsk-with marker tsk)) ;; (occ-make-tsk-at-point)
+        (let* ((child-tsk        (occ-obj-make-tsk-with marker tsk))
                (child-ctxual-tsk (occ-obj-build-ctxual-tsk-with child-tsk ctx)))
           (when child-tsk
             (occ-do-induct-child tsk child-tsk)
@@ -328,8 +330,8 @@
   (ignore template)
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (let* ((anonymous-heading-marker (cl-rest (org-without-org-clock-persist
-                                            ;; TODO: Implement it.
-                                               (lotus-org-create-anonymous-task))))
+                                                ;; TODO: Implement it.
+                                                (lotus-org-create-anonymous-task))))
            (anonymous-tsk (when anonymous-heading-marker
                             (occ-obj-make-tsk anonymous-heading-marker))))
       (occ-do-capture anonymous-tsk
