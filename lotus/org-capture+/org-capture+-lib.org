@@ -100,11 +100,10 @@
         (buff            (org-base-buffer (current-buffer)))
         (pos             (point-min))
         (marker          (make-marker)))
-
     (set-marker marker pos buff)
     ;; (buffer-base-buffer (current-buffer))
     (if (or (null before-finalize)
-            (save-restriction (save-excursion(funcall before-finalize marker))))
+            (save-restriction (save-excursion (funcall before-finalize marker))))
         (when (org-capture-finalize stay-with-capture)
           (unless (null after-finalize)
             (save-restriction (save-excursion (funcall after-finalize marker)))))

@@ -303,4 +303,33 @@ pointing to it."
   (ignore obj)
   (occ-error "Implement it: neatly output OBJ with its properties"))
 
+(cl-defmethod occ-do-print-1 (obj)
+  (cond ((cl-struct-p obj)
+         (dolist (s (mapcar #'car (cdr (cl-struct-slot-info (occ-cl-class obj)))))
+           (message "%s:" s)
+           (message "%s" (occ-do-print-1 (occ-cl-get-field obj s)))))
+        ((consp obj)
+         (dolist (m obj)
+           (message "-")
+           (message "%s" (occ-do-print-1 m))))
+        (t (message "%s" obj))))
+
+(cl-defmethod occ-do-print-1 ((obj occ-tree-tsk))
+  (message "%s: " (occ-obj-format obj))
+  (dolist (tsk (occ-tree-tsk-subtree obj))
+    (message "-")
+    (message "%s" (occ-do-print-1 tsk))))
+
+(occ-do-print-1 (car (occ-collections-default)))
+
+
+(dolist (x (occ-tree-collection-list (car (occ-collections-default))))
+  (message "- %s" (occ-obj-format x)))
+
+
+(setf (occ-tree-collection-list (car (occ-collections-default)))
+      nil)
+
+(cl-struct-slot-info (occ-cl-class (car (occ-collections-default))))
+
 ;;; occ-print.el ends here
