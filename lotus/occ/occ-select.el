@@ -44,7 +44,7 @@
 ;; helm-buffer
 
 (defvar occ-helm-select-buffer-name "*helm: occ select*")
-(defun occ-helm-select-buffer ()
+(defun occ-obj-helm-select-buffer ()
   occ-helm-select-buffer-name)
 
 ;; checkout spaceline--helm-buffer-ids variable
@@ -72,12 +72,12 @@
   "Main Machinery, TODO: Document it, NOTE: ACTION-TRANSFORMER is
 superseding ACTION, As in helm ACTION-TRANSFORMER are superseding
 ACTION
-TODO: Document it, Note: RETURN-TRANSFORM palying its game here."
+TODO: Document it, Note: RETURN-TRANSFORM playing its game here."
   ;; NOTE: AP-TRANSF is superseding AP-NORMAL
   (ignore obtrusive)
   (let* ((timeout (or timeout
                       occ-idle-timeout)))
-    (helm-timed timeout (occ-helm-select-buffer)
+    (helm-timed timeout (occ-obj-helm-select-buffer)
       (occ-debug "running occ-list-select")
       (progn
         (occ-debug "occ-list-select: ap-normal: %s" ap-normal)

@@ -465,6 +465,7 @@
     (unless rank
       (setf (occ-ctxual-tsk-rank obj) (occ-obj-calculate-rank obj)))
     (occ-debug "occ-obj-rank((obj occ-ctxual-tsk)) rank = %s" rank)
+    ;; (message "occ-obj-rank((obj occ-ctxual-tsk)) rank = %s" rank)
     (occ-ctxual-tsk-rank obj)))
 
 (cl-defmethod (setf occ-obj-rank) (value (obj occ-ctxual-tsk))

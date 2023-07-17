@@ -574,6 +574,7 @@ select candidate from it."
                                                   cand-sources))
            (preferred-candidate (cl-first (sort candidates
                                                 #'occ-candidate-compare))))
+      ;; (message "XX: %s" (mapcar #'(lambda (c) (cons (occ-obj-Format c) (occ-obj-rank c))) candidates))
       (occ-dmessage "candidates: %s" candidates)
       (occ-dmessage "preferred-candidate: %s" preferred-candidate)
 
@@ -592,7 +593,7 @@ select candidate from it."
         ;; (occ-assert (cl-first cand-sources)) -- can happen when no contxtual match found
         ;; Else all source will be passed to helm to be shown.
         (let ((helm-sources (cl-remove-if-not #'occ-hsrc-source-p
-                                                   cand-sources)))
+                                              cand-sources)))
           (occ-dmessage "len helm-sources %d" (length helm-sources))
           (occ-dmessage "some helm-sources %s" (cl-some #'occ-source-main-p
                                                         helm-sources))
@@ -608,7 +609,7 @@ select candidate from it."
                   (when (occ-obj-obj (cl-first helm-sources))
                     (condition-case err
                         (helm :sources (mapcar #'occ-obj-obj helm-sources)
-                              :buffer  (occ-helm-select-buffer)
+                              :buffer  (occ-obj-helm-select-buffer)
                               :resume  'noresume)
                       ((quit error)
                        (occ-message "Enable Disable occ with occ-mode %s." err))))
