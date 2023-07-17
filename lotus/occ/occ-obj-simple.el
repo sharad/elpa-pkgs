@@ -118,7 +118,7 @@
   (occ-insert-node-after-element child (if (occ-tree-tsk-subtree obj)
                                            (car (last (occ-tree-tsk-subtree obj)))
                                          obj) ;BUG: how to identify correction collection
-                                 (occ-obj-list (occ-default-collection)))
+                                 (occ-obj-list (occ-obj-tsk-collection obj)))
   (setf (occ-tree-tsk-subtree obj) (nconc (occ-tree-tsk-subtree obj)
                                           (list  child))))
 
@@ -127,7 +127,7 @@
   (occ-obj-set-property child 'subtree-level
                         (1+ (occ-obj-get-property obj 'subtree-level)))
   (occ-insert-node-after-element child obj
-                                 (occ-obj-list (occ-default-collection))))
+                                 (occ-obj-list (occ-obj-tsk-collection obj))))
 
 
 (cl-defgeneric occ-do-capture (obj &key

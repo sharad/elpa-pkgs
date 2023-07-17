@@ -199,9 +199,10 @@
   builder)
 
 
-(defun occ-make-tsk-at-point (builder)
-  (occ-debug "occ-make-tsk-at-point: Builder %s" builder)
-  (let ((tsk                      nil)
+(defun occ-make-tsk-at-point (collection)
+  ;; (occ-debug "occ-make-tsk-at-point: Builder %s" builder)
+  (let ((builder (occ-obj-tsk-builder collection))
+        (tsk                      nil)
         (heading-with-string-prop (if (org-before-first-heading-p)
                                       'noheading
                                     (org-get-heading 'notags))))
@@ -238,6 +239,7 @@
                        :point        (occ-obj-prop-from-org 'point point)
                        :clock-sum    (occ-obj-prop-from-org 'clock-sum clock-sum)
                        :cat          (occ-obj-prop-from-org 'cat (occ-get-tsk-category heading tsk-plist))
+                       :collection   collection
                        :plist        (occ-tsk-plist-from-org tsk-plist)))
         (let ((inherit         t)
               (inherited-props
@@ -268,49 +270,52 @@
 ;;   (let ((builder (occ-obj-tsk-builder collection)))
 ;;     (occ-make-tsk-at-point builder)))
 
-(cl-defmethod occ-obj-make-tsk-at-point ((builder compiled-function))
-  (occ-make-tsk-at-point builder))
-(cl-defmethod occ-obj-make-tsk-at-point ((builder symbol))
-  (occ-make-tsk-at-point builder))
-(cl-defmethod occ-obj-make-tsk-at-point ((builder null))
-  (let ((builder (occ-obj-tsk-builder builder)))
-    (occ-obj-make-tsk-at-point builder)))
+;; (cl-defmethod occ-obj-make-tsk-at-point ((builder compiled-function))
+;;   (occ-make-tsk-at-point builder))
+;; (cl-defmethod occ-obj-make-tsk-at-point ((builder symbol))
+;;   (occ-make-tsk-at-point builder))
+;; (cl-defmethod occ-obj-make-tsk-at-point ((builder null))
+;;   (let ((builder (occ-obj-tsk-builder builder)))
+;;     (occ-obj-make-tsk-at-point builder)))
 (cl-defmethod occ-obj-make-tsk-at-point ((tsk occ-obj-tsk))
-  (let ((builder (occ-obj-tsk-builder tsk)))
-    (occ-obj-make-tsk-at-point builder)))
+  (let ((collection (occ-obj-tsk-collection tsk)))
+    (occ-obj-make-tsk-at-point collection)))
 (cl-defmethod occ-obj-make-tsk-at-point ((collection occ-obj-collection))
-  (let ((builder (occ-obj-tsk-builder collection)))
-    (occ-obj-make-tsk-at-point builder)))
+  (occ-make-tsk-at-point collection))
 
 
 (cl-defmethod occ-obj-tsk-builder-at-point ((collection occ-obj-collection))
   #'(lambda ()
       (occ-obj-make-tsk-at-point collection)))
+
+(cl-defmethod occ-obj-tsk-builder-at-point ((collection null))
+  #'(lambda ()
+      (occ-obj-make-tsk-at-point (occ-default-collection))))
 
 
-(cl-defmethod occ-obj-make-tsk ((obj number) &optional builder)
+(cl-defmethod occ-obj-make-tsk ((obj number) &optional collection)
   (occ-debug "point %s" obj)
   (if (<= obj (point-max))
       (save-restriction
         (save-excursion
           (goto-char obj)
-          (occ-obj-make-tsk-at-point builder)))))
+          (occ-obj-make-tsk-at-point collection)))))
 
-(cl-defmethod occ-obj-make-tsk ((obj marker) &optional builder)
+(cl-defmethod occ-obj-make-tsk ((obj marker) &optional collection)
   (occ-debug "point %s" obj)
   (if (and (marker-buffer obj)
            (numberp       (marker-position obj)))
       (with-current-buffer (marker-buffer obj)
         (if (<= (marker-position obj)
                 (point-max))
-            (occ-obj-make-tsk (marker-position obj) builder)))))
+            (occ-obj-make-tsk (marker-position obj) collection)))))
 
-(cl-defmethod occ-obj-make-tsk ((obj null) &optional builder)
+(cl-defmethod occ-obj-make-tsk ((obj null) &optional collection)
   (ignore obj)
   (occ-debug "current pos %s" (point-marker))
-  (occ-obj-make-tsk (point-marker) builder))
+  (occ-obj-make-tsk (point-marker) collection))
 
-(cl-defmethod occ-obj-make-tsk ((obj occ-tsk) &optional builder)
+(cl-defmethod occ-obj-make-tsk ((obj occ-tsk) &optional collection)
   obj)
 
 
@@ -318,13 +323,13 @@
   (occ-obj-make-tsk obj collection))
 
 (cl-defmethod occ-obj-make-tsk-with ((obj marker) (tsk occ-obj-tsk))
-  (occ-obj-make-tsk obj tsk))
+  (occ-obj-make-tsk obj (occ-obj-tsk-collection tsk)))
 
 (cl-defmethod occ-obj-make-tsk-with ((obj null) (collection occ-obj-collection))
   (occ-obj-make-tsk obj collection))
 
 (cl-defmethod occ-obj-make-tsk-with ((obj null) (tsk occ-obj-tsk))
-  (occ-obj-make-tsk obj tsk))
+  (occ-obj-make-tsk obj (occ-obj-tsk-collection tsk)))
 
 (cl-defmethod occ-obj-make-tsk-with ((obj occ-tsk) anything)
   obj)

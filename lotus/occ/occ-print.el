@@ -321,8 +321,9 @@ pointing to it."
     (message "-")
     (message "%s" (occ-do-print-1 tsk))))
 
-;; (occ-do-print-1 (car (occ-collections-default)))
+;; (occ-do-print-1 (type-of (occ-collections-default)))
 
+;; (type-of (alist-get 'default *occ-collector*))
 
 ;; (dolist (x (occ-tree-collection-list (car (occ-collections-default))))
 ;;   (message "- %s" (occ-obj-format x)))

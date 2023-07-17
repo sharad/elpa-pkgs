@@ -708,6 +708,9 @@ pointing to it."
   (setf (occ-tree-collection-tree collection) nil))
 
 
+(cl-defmethod occ-obj-tsk-collection ((tsk occ-tsk))
+  (occ-tsk-collection tsk))
+
 ;; BUG (occ-obj-collect-tsks tree) method not called (occ-obj-collect-tsks list)
 ;; is called and it is settign (occ-list-collection-list coll), need to be fixed
 

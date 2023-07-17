@@ -161,6 +161,7 @@
   clock-sum
   file-level
   cat
+  collection
   plist
   format-file
   format-string
