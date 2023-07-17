@@ -477,7 +477,9 @@
   (occ-debug "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
   (occ-debug "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
-    (occ-obj-rank tsk)))
+    ;; (occ-obj-rank tsk) ;; - BUG
+    (+ (occ-obj-rank tsk)
+       (occ-obj-rank obj))))
 
 
 ;; occ-tsk - accessors
