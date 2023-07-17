@@ -110,6 +110,7 @@
 
 (cl-defmethod occ-do-induct-child ((obj   occ-tree-tsk)
                                    (child occ-tree-tsk))
+  (occ-message "Inducting child %s in parent %s" (occ-obj-format child) (occ-obj-format obj))
   (occ-obj-set-property child 'subtree-level
                         (occ-obj-get-property obj 'subtree-level))
   (occ-insert-node-after-element child obj
@@ -144,9 +145,9 @@
                    :empty-lines 1))
 
 (cl-defmethod occ-do-capture ((obj occ-tsk) &key
-                                         template
-                                         clock-in
-                                         immediate-finish)
+                              template
+                              clock-in
+                              immediate-finish)
   (let ((mrk (occ-tsk-marker obj)))
     (occ-do-capture mrk
                  :clock-in         clock-in
@@ -154,9 +155,9 @@
                  :immediate-finish immediate-finish)))
 
 (cl-defmethod occ-do-capture ((obj occ-obj-ctx-tsk) &key
-                                                 template
-                                                 clock-in
-                                                 immediate-finish)
+                              template
+                              clock-in
+                              immediate-finish)
   (let ((mrk      (occ-obj-marker obj))
         (tsk      (occ-obj-tsk    obj))
         (ctx      (occ-obj-ctx    obj))
@@ -167,11 +168,11 @@
                                                                             :immediate-finish immediate-finish)
         (progn
           (unless immediate-finish        ;*NOTE:
-            (let* ((tmp-tsk  (occ-obj-make-tsk marker))
+            (let* ((tmp-tsk  (occ-obj-make-tsk-with marker tsk))
                    (tmp-ctsk (occ-obj-build-ctsk-with tmp-tsk ctx)))
               (occ-op-props-edit tmp-ctsk)))
           t)
-        (let* ((child-tsk        (occ-obj-make-tsk marker))
+        (let* ((child-tsk        (occ-obj-make-tsk-with marker tsk)) ;; (occ-make-tsk-at-point)
                (child-ctxual-tsk (occ-obj-build-ctxual-tsk-with child-tsk ctx)))
           (when child-tsk
             (occ-do-induct-child tsk child-tsk)

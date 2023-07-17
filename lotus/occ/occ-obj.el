@@ -128,8 +128,7 @@
   ;; TODO: implement it
   (file-lcp nil))
 (cl-defstruct (occ-collection (:include occ-obj-collection))
-  "occ-collection"
-  )
+  "occ-collection")
 (cl-defstruct (occ-list-collection (:include occ-collection))
   "occ-list-collection"
   (list nil))
@@ -166,7 +165,6 @@
   format-file
   format-string
   sibling-count
-  ;; rank
   rank)
 (cl-defstruct (occ-tree-tsk (:include occ-tsk))
   "occ-tree-tsk"

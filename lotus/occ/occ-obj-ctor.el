@@ -124,9 +124,9 @@
 
 (defun occ-util-plist-value-mapcar (fun plist)
   (mapcan #'identity
-          (occ-util-plist-mapcar #'(lambda (c)
+          (occ-util-plist-mapcar #'(lambda (c))
                                 (list (cl-first c)
-                                      (funcall fun (nth 1 c))))
+                                      (funcall fun (nth 1 c)))
                             plist)))
 
 (defun occ-tsk-plist-from-org (plist)
@@ -159,7 +159,7 @@
     "TODO"))
 
 
-(cl-defgeneric occ-obj-tsk-builder (collection)
+(cl-defgeneric occ-obj-tsk-builder (obj)
   "Task constructor")
 
 (cl-defmethod occ-obj-tsk-builder ((collection occ-tree-collection))
@@ -174,104 +174,159 @@
   (ignore collection)
   #'make-occ-tsk)
 
-(cl-defmethod occ-obj-tsk-builder ((collection null))
-  (ignore collection)
+(cl-defmethod occ-obj-tsk-builder ((tsk occ-tree-tsk))
+  (ignore tsk)
+  #'make-occ-tree-tsk)
+
+(cl-defmethod occ-obj-tsk-builder ((tsk occ-list-tsk))
+  (ignore tsk)
+  #'make-occ-list-tsk)
+
+(cl-defmethod occ-obj-tsk-builder ((tsk occ-obj-tsk))
+  (ignore tsk)
   #'make-occ-tsk)
+
+(cl-defmethod occ-obj-tsk-builder ((obj null))
+  (ignore obj)
+  #'make-occ-tsk)
+
+(cl-defmethod occ-obj-tsk-builder ((builder compiled-function))
+  (occ-error "Error %s" builder)
+  builder)
+
+(cl-defmethod occ-obj-tsk-builder ((builder symbol))
+  (occ-error "Error %s" builder)
+  builder)
 
 
-(defun occ-make-tsk-at-point (collection)
-  ;; (error "Helloo %s" (current-buffer))
-  (let ((builder (occ-obj-tsk-builder collection)))
-    (occ-debug "occ-make-tsk-at-point: Builder %s" builder)
-    (let ((tsk                      nil)
-          (heading-with-string-prop (if (org-before-first-heading-p)
-                                        'noheading
-                                      (org-get-heading 'notags))))
-         (let ((heading      (when heading-with-string-prop
-                               (if (eq heading-with-string-prop 'noheading)
-                                   heading-with-string-prop
-                                 (substring-no-properties heading-with-string-prop))))
-               (heading-prop heading-with-string-prop)
-               (marker       (move-marker (make-marker)
-                                          (point)
-                                          (org-base-buffer (current-buffer))))
-               (file         (buffer-file-name))
-               (point        (point))
-               (clock-sum    (if (org-before-first-heading-p)
-                                 0
-                               (org-clock-sum-current-item)))
-               ;; BUG: TODO: SHOULD need to maintain plist of :PROPERTIES:
-               ;; separately as keys for these are returned in UPCASE. while it
-               ;; is not the case with other generic properties which are not
-               ;; part of :PROPERTIES: block.
+(defun occ-make-tsk-at-point (builder)
+  (occ-debug "occ-make-tsk-at-point: Builder %s" builder)
+  (let ((tsk                      nil)
+        (heading-with-string-prop (if (org-before-first-heading-p)
+                                      'noheading
+                                    (org-get-heading 'notags))))
+    (let ((heading      (when heading-with-string-prop
+                          (if (eq heading-with-string-prop 'noheading)
+                              heading-with-string-prop
+                            (substring-no-properties heading-with-string-prop))))
+          (heading-prop heading-with-string-prop)
+          (marker       (move-marker (make-marker)
+                                     (point)
+                                     (org-base-buffer (current-buffer))))
+          (file         (buffer-file-name))
+          (point        (point))
+          (clock-sum    (if (org-before-first-heading-p)
+                            0
+                          (org-clock-sum-current-item)))
+          ;; BUG: TODO: SHOULD need to maintain plist of :PROPERTIES:
+          ;; separately as keys for these are returned in UPCASE. while it
+          ;; is not the case with other generic properties which are not
+          ;; part of :PROPERTIES: block.
 
-               ;; NOTE also these two are mixed in one list only
-               (tsk-plist    (nth 1 (org-element-at-point))))
-           (occ-assert (cl-evenp (length tsk-plist)))
-           (when heading
-             (setf tsk
-                   (funcall builder
-                            ;; (occ-obj-prop-from-org) from Org world to Occ world.
-                            :name         (occ-obj-prop-from-org 'name heading)
-                            :heading      (occ-obj-prop-from-org 'heading heading)
-                            :heading-prop (occ-obj-prop-from-org 'heading-prop heading-prop)
-                            :marker       (occ-obj-prop-from-org 'marker marker)
-                            :file         (occ-obj-prop-from-org 'file file)
-                            :point        (occ-obj-prop-from-org 'point point)
-                            :clock-sum    (occ-obj-prop-from-org 'clock-sum clock-sum)
-                            :cat          (occ-obj-prop-from-org 'cat (occ-get-tsk-category heading tsk-plist))
-                            :plist        (occ-tsk-plist-from-org tsk-plist)))
-             (let ((inherit         t)
-                   (inherited-props
-                    ;; is it correct ? - guess it is ok and correct.
-                    (occ-readprop-props)))
-               (dolist (prop inherited-props)
-                 (let* ((propstr (if (keywordp prop)
-                                     (substring (symbol-name prop) 1)
-                                   (symbol-name prop)))
-                        (val (org-entry-get nil propstr inherit)))
-                   (unless (occ-obj-get-property tsk prop)
-                     ;; What is the solution
-                     (occ-obj-set-property tsk prop val :not-recursive t)))))
-             (progn "set :plist here"))
-           (occ-obj-reread-props tsk)      ;reset list properties
-           tsk))))
+          ;; NOTE also these two are mixed in one list only
+          (tsk-plist    (nth 1 (org-element-at-point))))
+      (occ-assert (cl-evenp (length tsk-plist)))
+      (when heading
+        (setf tsk
+              (funcall builder
+                       ;; (occ-obj-prop-from-org) from Org world to Occ world.
+                       :name         (occ-obj-prop-from-org 'name heading)
+                       :heading      (occ-obj-prop-from-org 'heading heading)
+                       :heading-prop (occ-obj-prop-from-org 'heading-prop heading-prop)
+                       :marker       (occ-obj-prop-from-org 'marker marker)
+                       :file         (occ-obj-prop-from-org 'file file)
+                       :point        (occ-obj-prop-from-org 'point point)
+                       :clock-sum    (occ-obj-prop-from-org 'clock-sum clock-sum)
+                       :cat          (occ-obj-prop-from-org 'cat (occ-get-tsk-category heading tsk-plist))
+                       :plist        (occ-tsk-plist-from-org tsk-plist)))
+        (let ((inherit         t)
+              (inherited-props
+               ;; is it correct ? - guess it is ok and correct.
+               (occ-readprop-props)))
+          (dolist (prop inherited-props)
+            (let* ((propstr (if (keywordp prop)
+                                (substring (symbol-name prop) 1)
+                              (symbol-name prop)))
+                   (val (org-entry-get nil propstr inherit)))
+              (unless (occ-obj-get-property tsk prop)
+                ;; What is the solution
+                (occ-obj-set-property tsk prop val :not-recursive t)))))
+        (progn "set :plist here"))
+      (occ-obj-reread-props tsk)      ;reset list properties
+      tsk)))
+;; (cl-defmethod occ-make-tsk-at-point ((builder compiled-function))
+;;   (occ-make-tsk-at-point builder))
+;; (cl-defmethod occ-make-tsk-at-point ((builder symbol))
+;;   (occ-make-tsk-at-point builder))
+;; (cl-defmethod occ-make-tsk-at-point ((builder null))
+;;   (let ((builder (occ-obj-tsk-builder builder)))
+;;     (occ-make-tsk-at-point builder)))
+;; (cl-defmethod occ-make-tsk-at-point ((tsk occ-obj-tsk))
+;;   (let ((builder (occ-obj-tsk-builder tsk)))
+;;     (occ-make-tsk-at-point builder)))
+;; (cl-defmethod occ-make-tsk-at-point ((collection occ-obj-collection))
+;;   (let ((builder (occ-obj-tsk-builder collection)))
+;;     (occ-make-tsk-at-point builder)))
 
+(cl-defmethod occ-obj-make-tsk-at-point ((builder compiled-function))
+  (occ-make-tsk-at-point builder))
+(cl-defmethod occ-obj-make-tsk-at-point ((builder symbol))
+  (occ-make-tsk-at-point builder))
+(cl-defmethod occ-obj-make-tsk-at-point ((builder null))
+  (let ((builder (occ-obj-tsk-builder builder)))
+    (occ-obj-make-tsk-at-point builder)))
+(cl-defmethod occ-obj-make-tsk-at-point ((tsk occ-obj-tsk))
+  (let ((builder (occ-obj-tsk-builder tsk)))
+    (occ-obj-make-tsk-at-point builder)))
 (cl-defmethod occ-obj-make-tsk-at-point ((collection occ-obj-collection))
-  (occ-make-tsk-at-point collection))
-
-(cl-defmethod occ-obj-make-tsk-at-point ((collection null))
-  (occ-make-tsk-at-point collection))
+  (let ((builder (occ-obj-tsk-builder collection)))
+    (occ-obj-make-tsk-at-point builder)))
 
 
 (cl-defmethod occ-obj-tsk-builder-at-point ((collection occ-obj-collection))
   #'(lambda ()
       (occ-obj-make-tsk-at-point collection)))
 
-(cl-defmethod occ-obj-make-tsk ((obj number))
+
+(cl-defmethod occ-obj-make-tsk ((obj number) &optional builder)
   (occ-debug "point %s" obj)
   (if (<= obj (point-max))
       (save-restriction
         (save-excursion
           (goto-char obj)
-          (let ((collection nil))
-            (occ-obj-make-tsk-at-point collection))))))
+          (occ-obj-make-tsk-at-point builder)))))
 
-(cl-defmethod occ-obj-make-tsk ((obj marker))
+(cl-defmethod occ-obj-make-tsk ((obj marker) &optional builder)
   (occ-debug "point %s" obj)
   (if (and (marker-buffer obj)
            (numberp       (marker-position obj)))
       (with-current-buffer (marker-buffer obj)
         (if (<= (marker-position obj)
                 (point-max))
-            (occ-obj-make-tsk (marker-position obj))))))
+            (occ-obj-make-tsk (marker-position obj) builder)))))
 
-(cl-defmethod occ-obj-make-tsk ((obj null))
+(cl-defmethod occ-obj-make-tsk ((obj null) &optional builder)
   (ignore obj)
-  (occ-debug "current pos %s" (point-marker)
-    (occ-obj-make-tsk (point-marker))))
+  (occ-debug "current pos %s" (point-marker))
+  (occ-obj-make-tsk (point-marker) builder))
 
-(cl-defmethod occ-obj-make-tsk ((obj occ-tsk))
+(cl-defmethod occ-obj-make-tsk ((obj occ-tsk) &optional builder)
+  obj)
+
+
+(cl-defmethod occ-obj-make-tsk-with ((obj number) (collection occ-obj-collection))
+  (occ-obj-make-tsk obj collection))
+
+(cl-defmethod occ-obj-make-tsk-with ((obj marker) (tsk occ-obj-tsk))
+  (occ-obj-make-tsk obj tsk))
+
+(cl-defmethod occ-obj-make-tsk-with ((obj null) (collection occ-obj-collection))
+  (occ-obj-make-tsk obj collection))
+
+(cl-defmethod occ-obj-make-tsk-with ((obj null) (tsk occ-obj-tsk))
+  (occ-obj-make-tsk obj tsk))
+
+(cl-defmethod occ-obj-make-tsk-with ((obj occ-tsk) anything)
   obj)
 
 
