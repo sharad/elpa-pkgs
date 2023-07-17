@@ -125,7 +125,7 @@
 (cl-defmethod occ-do-induct-child ((obj   occ-list-tsk)
                                    (child occ-list-tsk))
   (occ-obj-set-property child 'subtree-level
-                        (occ-obj-get-property obj 'subtree-level))
+                        (1+ (occ-obj-get-property obj 'subtree-level)))
   (occ-insert-node-after-element child obj
                                  (occ-obj-list (occ-default-collection))))
 
@@ -170,18 +170,18 @@
     (when template
       (with-org-capture-run marker 'entry (list 'marker mrk) template (list :empty-lines 1
                                                                             :immediate-finish immediate-finish)
-        (progn
+        (progn                          ;before
           (unless immediate-finish        ;*NOTE:
             (let* ((tmp-tsk  (occ-obj-make-tsk-with marker tsk))
                    (tmp-ctsk (occ-obj-build-ctsk-with tmp-tsk ctx)))
               (occ-op-props-edit tmp-ctsk)))
           t)
-        (let* ((child-tsk        (occ-obj-make-tsk-with marker tsk))
-               (child-ctxual-tsk (occ-obj-build-ctxual-tsk-with child-tsk ctx)))
+        (let ((child-tsk (occ-obj-make-tsk-with marker tsk))) ;after
           (when child-tsk
             (occ-do-induct-child tsk child-tsk)
             (when clock-in
-              (occ-do-try-clock-in child-ctxual-tsk))))))))
+              (let ((child-ctxual-tsk (occ-obj-build-ctxual-tsk-with child-tsk ctx)))
+                (occ-do-try-clock-in child-ctxual-tsk)))))))))
 
 (cl-defmethod occ-do-capture ((obj null) &key
                               template
