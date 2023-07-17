@@ -294,8 +294,8 @@ then return t else nil"
 (defun occ-add-ignore-buffer-names ()
   (interactive)
   (let ((buffname (buffer-name (current-buffer))))
-    (push buffname
-          occ-ignore-buffer-names)))
+    (cl-pushnew buffname
+                occ-ignore-buffer-names)))
 
 (cl-defmethod occ-do-describe-try-to-clock-in ((curr occ-ctx)
                                                (prev occ-ctx))

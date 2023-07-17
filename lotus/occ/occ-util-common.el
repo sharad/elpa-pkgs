@@ -164,7 +164,7 @@
           (let ((tail (nthcdr (1- pos) list)))
             (when (null tail)
               (occ-error "There is no position ~D in ~S." pos list))
-            (push node (cl-rest tail))
+            (cl-pushnew node (cl-rest tail))
             list))
       (occ-error "not able to find element: %s" (occ-obj-format element)))))
 (defun occ-insert-node-after-element (node element list)

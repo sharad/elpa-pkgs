@@ -53,8 +53,8 @@
 
 (defvar occ-helm-callables)
 (defun occ-helm-callable-add (callable)
-  (push callable
-        occ-helm-callables))
+  (cl-pushnew callable
+              occ-helm-callables))
 (defun occ-helm-callables-get (keylist)
   (mapcan #'(lambda (key)
               (cl-remove-if-not #'(lambda (callable)

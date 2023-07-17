@@ -786,7 +786,7 @@ pointing to it."
                        (mapc #'(lambda (tsk)
                                  (occ-mapc-tree-tsks #'(lambda (tsk args)
                                                          (ignore args)
-                                                         (push (occ-tsk-file tsk) files))
+                                                         (cl-pushnew (occ-tsk-file tsk) files))
                                                      tsk
                                                      nil))
                              tsks)

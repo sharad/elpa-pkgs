@@ -192,7 +192,7 @@
        (when (and (fboundp x)                     ; does x name a function?
                   (let ((f (symbol-file x)))
                     (and f (string= (file-name-base f) "occ-main.el"))))
-         (push x funclist))))
+         (cl-pushnew x funclist))))
     funclist))
 
 

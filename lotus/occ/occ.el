@@ -221,7 +221,7 @@
                                (substring (symbol-name prop) 1)
                              (symbol-name prop)))))
       (unless (member propstr org-use-property-inheritance)
-        (push propstr org-use-property-inheritance))))
+        (cl-pushnew propstr org-use-property-inheritance))))
   (let ((spec (occ-collector-spec key)))
     (occ-debug "init Test %s" key)
     (unless spec
@@ -296,7 +296,7 @@
        (if (file-exists-p libpath)
            (prog1
                occ-dev-dir
-             (push occ-dev-dir load-path))
+             (cl-pushnew occ-dev-dir load-path))
          (file-name-directory (or (locate-library library)
                                   "~/.fa/src/elisp/elpa/elpa-pkgs/lotus/occ/occ.el"
                                   ""))))))
@@ -353,7 +353,7 @@ FULL is given."
     (if occ-dev-dir
         (dolist (lib deps)
           (cl-delete (concat occ-dev-dir lib) load-path)
-          (push (concat occ-dev-dir   lib) load-path))
+          (cl-pushnew (concat occ-dev-dir   lib) load-path))
       (occ-error "occ-dev-dir not defined"))))
 
 ;;;###autoload

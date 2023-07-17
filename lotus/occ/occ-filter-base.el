@@ -44,8 +44,8 @@
 
 (defvar occ-obj-filters nil)
 (defun occ-obj-filter-add (filter)
-  (push filter
-        occ-obj-filters))
+  (pushnew filter
+           occ-obj-filters))
 (defun occ-obj-filter-get (key)
   (cl-first (cl-remove-if-not #'(lambda (filter)
                                   (eq key
