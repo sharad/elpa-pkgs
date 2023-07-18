@@ -44,17 +44,17 @@
   (interactive
    (list (occ-obj-make-ctx-at-point)))
   (occ-do-run-match-select ctx))
-
+;;;###autoload
 (defun occ-helm-list-select (ctx)
   (interactive
    (list (occ-obj-make-ctx-at-point)))
   (occ-do-run-list-select ctx))
-
+;;;###autoload
 (defun occ-helm-list-debug-select (ctx)
   (interactive
    (list (occ-obj-make-ctx-at-point)))
   (occ-do-run-list-debug-select ctx))
-
+;;;###autoload
 (defun occ-helm-list-launch (ctx)
   (interactive
    (list (occ-obj-make-ctx-at-point)))
@@ -84,7 +84,7 @@
     (if ctxual-tsk
         (occ-do-create-child-clock-in ctxual-tsk)
       (occ-debug "No current task clocking-in"))))
-
+;;;###autoload
 (defun occ-curr-tsk-continue-for (mins)
   (ignore mins)
   (occ-error "Implement it."))
@@ -95,17 +95,17 @@
   (interactive)
   ;; also detect if day is started.
   (occ-error "Implement it."))
-
+;;;###autoload
 (defun occ-show-up (mins)
   (interactive)
   (ignore mins)
   ;; https://www.merriam-webster.com/thesaurus/pack%20(up%20or%20off)
   (occ-error "Implement it."))
-
+;;;###autoload
 (defun occ-stop-day ()
   (interactive)
   (occ-error "Implement it."))
-
+;;;###autoload
 (defun occ-pack-up (mins)
   (interactive)
   (ignore mins)
@@ -127,7 +127,7 @@
 (defun occ-interrupt-clock-in (mins)
   (ignore mins)
   (occ-error "Implement it."))
-
+;;;###autoload
 (defun occ-clock-out (&optional switch-to-state
                                 fail-quietly
                                 at-time)
