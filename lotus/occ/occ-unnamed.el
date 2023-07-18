@@ -97,11 +97,15 @@
 (defun occ-maybe-create-unnamed-tsk ()
   ;; back
   (occ-debug "occ-maybe-create-unnamed-tsk: begin")
-  (let* ((unnamed-heading-marker (cl-rest (org-without-org-clock-persist
-                                         (lotus-org-create-unnamed-task))))
-         (unnamed-tsk            (when unnamed-heading-marker
-                                   (occ-obj-make-tsk unnamed-heading-marker))))
-    unnamed-tsk))
+  (let ((unnamed-collection (occ-unnamed-collection)))
+    (if unnamed-collection
+        (let* ((unnamed-heading-marker (cl-rest (org-without-org-clock-persist
+                                                  (lotus-org-create-unnamed-task))))
+               (unnamed-tsk            (when unnamed-heading-marker
+                                         (occ-obj-make-tsk-with unnamed-heading-marker
+                                                                (occ-collector-get 'unnamed)))))
+          unnamed-tsk)
+      (occ-error "Unable to get unnamed collection."))))
 
 (defun occ-build-unnamed-collection (&optional force-error)
   (let ((type (occ-collector-spec (occ-collector-default-key)))

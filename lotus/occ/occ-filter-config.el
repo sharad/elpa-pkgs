@@ -31,6 +31,7 @@
 
 
 (defun occ-filter-config-initialize ()
+  (setq occ-obj-filters nil)
   (occ-obj-build-filter :mutual-deviation "Mutual Deviation" #'occ-obj-filter-mutual-deviation)
   (occ-obj-build-filter :positive "Positive" #'occ-obj-filter-positive)
   (occ-obj-build-filter :nonnegative "Non negative" #'occ-obj-filter-nonnegative)

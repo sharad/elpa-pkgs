@@ -308,7 +308,8 @@
       (with-current-buffer (marker-buffer obj)
         (if (<= (marker-position obj)
                 (point-max))
-            (occ-obj-make-tsk (marker-position obj) collection)))))
+            (occ-obj-make-tsk (marker-position obj)
+                              collection)))))
 
 (cl-defmethod occ-obj-make-tsk ((obj null) &optional collection)
   (ignore obj)

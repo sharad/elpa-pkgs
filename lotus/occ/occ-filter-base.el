@@ -44,8 +44,8 @@
 
 (defvar occ-obj-filters nil)
 (defun occ-obj-filter-add (filter)
-  (pushnew filter
-           occ-obj-filters))
+  (cl-pushnew filter
+              occ-obj-filters))
 (defun occ-obj-filter-get (key)
   (cl-first (cl-remove-if-not #'(lambda (filter)
                                   (eq key
@@ -66,7 +66,6 @@
   (ignore obj)
   (occ-debug "(OCC-OBJ-GET-FILTERS OCC-OBJ-TSK): called")
   (occ-obj-filters-get keylist))
-
 
 
 (cl-defmethod occ-obj-average ((obj occ-stat)
@@ -97,52 +96,12 @@
   (plist-get (occ-obj-ctx-stat-plist obj) stat))
 
 
-;; (defun occ-filters-get (&rest keys)
-;;   (let ((funs nil))
-;;     (dolist (key keys)
-;;       (ignore key)
-;;       (let ((funkw-rank keys))
-;;         (let ((funkw (or (car-safe funkw-rank)
-;;                          funkw-rank))
-;;               (rank  (if (consp funkw-rank)
-;;                          (nth 1 funkw-rank)
-;;                        nil)))
-;;           (when funkw
-;;             (let ((fun (or (occ-filter-fun (occ-obj-filter-get funkw))
-;;                            funkw
-;;                            #'identity)))
-;;               (setf funs (nconc funs
-;;                                 (list (if rank ;; (consp funkw-rank)
-;;                                           (list fun rank)
-;;                                         fun)))))))))
-;;     funs))
-
-(defun occ-filters-get (&rest keys)
-  (let ((funs nil))
-    (dolist (key keys)
-      (let ((funkw-rank key))
-        (let ((funkw (or (car-safe funkw-rank)
-                         funkw-rank))
-              (rank  (if (consp funkw-rank)
-                         (nth 1 funkw-rank)
-                       nil)))
-          (when funkw
-            (let ((fun (or (occ-filter-fun (occ-obj-filter-get funkw))
-                           funkw
-                           #'identity)))
-              (setf funs (nconc funs
-                                (list (if rank ;; (consp funkw-rank)
-                                          (list fun rank)
-                                        fun)))))))))
-    funs))
-
-
 (cl-defmethod occ-obj-apply-recursively ((obj occ-ctx)
                                          methods
                                          sequence
                                          &key rank)
   "Main engine it applies filters METHODS recursively to SEQUENCE"
-  (let* ((funkw-rank (cl-first methods)))
+  (let* ((funkw-rank (cl-first methods))) ;check occ-filter-config.el
     (let ((funkw (or (car-safe funkw-rank)
                      funkw-rank))
           (rank  (if (consp funkw-rank)
