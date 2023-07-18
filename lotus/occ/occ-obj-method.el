@@ -104,29 +104,48 @@
 ;; do both fast and interactive editing.
 ;; (occ-do-properties-editor obj)
 (cl-defmethod occ-do-properties-editor-combined ((obj occ-obj-ctx-tsk))
-  (let ((prompt (format "%s fast edit" (occ-obj-Format obj))))
-    (let ((helm-fast-source     (helm-build-sync-source prompt
-                                  :candidates (occ-obj-callable-helm-actions (occ-obj-gen-each-prop-fast-edits obj)
-                                                                             obj)
-                                  :action     (list (cons "Edit"
-                                                          (occ-clouser-call-cand-on-obj obj)))))
-          (helm-edit-source     (helm-build-sync-source "edit"
-                                  :candidates (list (cons "Edit"
-                                                          (occ-clouser-call-obj-on-cand #'occ-do-properties-editor)))
-                                  :action     (list (cons "Edit"
-                                                          (occ-clouser-call-cand-on-obj obj)))))
-          (helm-checkout-source (helm-build-sync-source "other"
+  (cl-flet ((promptfn (prompt-txt) (format "%s: %s" prompt-txt (occ-obj-Format (occ-obj-tsk obj)))))
+    (let ((helm-checkout-source (helm-build-sync-source (promptfn "Operations")
                                   :candidates (list (cons (format "Continue with same clock task %s" (occ-obj-Format obj))
                                                           (occ-clouser-call-obj-on-cand 'skip))
                                                     (cons "Try another clocking"
                                                           (occ-clouser-call-obj-on-cand 'no-action)) ;to bypass three repeat cycle of (occ-try-until ) function
                                                     (cons "Checkout"
                                                           (occ-clouser-call-obj-on-cand #'occ-do-checkout)))
-                                  :action     (list (cons "Edit"
-                                                          (occ-clouser-call-cand-on-obj obj))))))
+                                  :action     (list (cons "Run"
+                                                          (occ-clouser-call-cand-on-obj obj)))))
+          (helm-clock-ops-source (helm-build-sync-source (promptfn "Clock Operations")
+                                   :candidates (occ-obj-callable-helm-actions (occ-obj-gen-clock-operations obj)
+                                                                              obj)
+                                   :action     (list (cons "Run"
+                                                           (occ-clouser-call-cand-on-obj obj)))))
+          (helm-fast-edit-source (helm-build-sync-source (promptfn "Fast Edit")
+                                   :candidates (occ-obj-callable-helm-actions (occ-obj-gen-each-prop-fast-edits obj)
+                                                                              obj)
+                                   :action     (list (cons "Run"
+                                                           (occ-clouser-call-cand-on-obj obj)))))
+          (helm-edit-source     (helm-build-sync-source (promptfn "Edit")
+                                  :candidates (list (cons "Edit"
+                                                          (occ-clouser-call-obj-on-cand #'occ-do-properties-editor)))
+                                  :action     (list (cons "Run"
+                                                          (occ-clouser-call-cand-on-obj obj)))))
+          (helm-fast-checkout-source (helm-build-sync-source (promptfn "Fast Checkout")
+                                       :candidates (occ-obj-callable-helm-actions (occ-obj-gen-each-prop-fast-checkouts obj)
+                                                                                  obj)
+                                       :action     (list (cons "Run"
+                                                               (occ-clouser-call-cand-on-obj obj)))))
+          (helm-simple-checkout-source (helm-build-sync-source (promptfn "Checkout")
+                                         :candidates (occ-obj-callable-helm-actions (occ-obj-gen-simple-checkouts obj)
+                                                                                    obj)
+                                         :action     (list (cons "Run"
+                                                                 (occ-clouser-call-cand-on-obj obj))))))
       (let ((sources (list helm-checkout-source
-                           helm-fast-source
-                           helm-edit-source)))
+                           helm-clock-ops-source
+                           helm-fast-edit-source
+                           helm-edit-source
+                           helm-fast-checkout-source
+                           helm-simple-checkout-source)))
+        (message "Hello")
         (helm-timed occ-idle-timeout nil
           (helm :sources sources))))))
 
@@ -147,5 +166,16 @@
   (occ-debug "ImplementIt: Force this %s %d tsk clock-in for a PERIOD with period property"
                (occ-obj-Format obj)
                (occ-obj-rank obj)))
+
+
+(defun occ-run-do-clock-out (&optional switch-to-state
+                                       fail-quietly
+                                       at-time)
+  (interactive)
+  (org-clock-out switch-to-state
+                 fail-quietly
+                 at-time))
+(cl-defmethod occ-do-clockout ((obj occ-obj-tsk))
+  (occ-run-do-clock-out (occ-obj-tsk obj)))
 
 ;;; occ-obj-method.el ends here

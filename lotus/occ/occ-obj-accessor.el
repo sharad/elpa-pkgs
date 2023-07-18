@@ -589,6 +589,9 @@ pointing to it."
 
 (cl-defmethod occ-do-checkout ((obj occ-obj-tsk))
   (occ-do-op-props-checkout obj))
+(cl-defmethod occ-do-checkout ((obj occ-ctxual-tsk))
+  (occ-do-op-props-checkout (occ-ctxual-tsk-tsk obj)))
+
 
 ;; BUG  in Menu
 ;;           "Set debug obj"

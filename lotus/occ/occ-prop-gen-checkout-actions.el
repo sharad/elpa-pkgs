@@ -40,11 +40,11 @@
   "Used by occ-obj-gen-checkout"
   (ignore param-only)
   (let ((list-p (occ-obj-list-p prop)))
-    (ignore list-p)
+    (ignore list-p
       (format "%s property %s of %s"
               "Checkout"
               prop
-              (occ-obj-Format obj))))
+              (occ-obj-Format obj)))))
 
 (cl-defmethod occ-obj-gen-checkout-fun ((obj  occ-obj-tsk)
                                         (prop symbol)
@@ -134,8 +134,8 @@ only argument required for some other further processing"
   nil)
 
 
-(defun occ-obj-gen-each-prop-fast-checkouts (obj
-                                             &key param-only)
+(cl-defun occ-obj-gen-each-prop-fast-checkouts (obj
+                                                &key param-only)
   (append (occ-obj-gen-each-prop-checkouts obj
                                            :param-only param-only)
           (occ-obj-gen-each-prop-checkouts (occ-obj-tsk obj)

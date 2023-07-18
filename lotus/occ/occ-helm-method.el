@@ -406,8 +406,8 @@ select candidate from it."
                              :level :optional))))
 
 (defun occ-helm-build-dummy-sources ()
-  (list (occ-obj-helm-build-dummy-source "Create fast child task may use template"             #'occ-do-fast-procreate-child)
-        (occ-obj-helm-build-dummy-source "Create Anonymous task"  #'occ-do-procreate-anonymous-child)
+  (list (occ-obj-helm-build-dummy-source "Create fast child task may use template" #'occ-do-fast-procreate-child)
+        (occ-obj-helm-build-dummy-source "Create Anonymous task" #'occ-do-procreate-anonymous-child)
         (occ-obj-helm-build-dummy-source "Create Anonymous (fast as unnamed)" #'occ-do-fast-procreate-anonymous-child)))
 
 

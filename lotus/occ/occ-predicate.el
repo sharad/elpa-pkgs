@@ -85,6 +85,13 @@
   "return if OBJ is currently clocking"
   (occ-obj-marker= (occ-current-tsk)
                    (occ-obj-tsk obj)))
+
+(cl-defgeneric occ-obj-clocking-in-p (obj)
+  "return if OBJ is currently clocking")
+
+(cl-defmethod occ-obj-clocking-in-p ((obj occ-obj-tsk))
+  "return if OBJ is currently clocking"
+  (occ-obj-current-p obj))
 
 
 (cl-defgeneric occ-obj-associable-p (obj)

@@ -132,9 +132,9 @@
                                 fail-quietly
                                 at-time)
   (interactive)
-  (org-clock-out switch-to-state
-                 fail-quietly
-                 at-time))
+  (occ-run-do-clock-out switch-to-state
+                        fail-quietly
+                        at-time))
 
 (defun occ-continue-prev ()
   (occ-error "Implement it."))

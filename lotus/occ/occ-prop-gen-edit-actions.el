@@ -220,4 +220,26 @@ only argument required for some other further processing"
   (ignore param-only)
   nil)
 
+
+(cl-defmethod occ-obj-gen-clock-operations ((obj null)
+                                            &key param-only)
+  (ignore obj)
+  (ignore param-only)
+  nil)
+
+(cl-defmethod occ-obj-gen-clock-operations ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
+                                            &key param-only)
+  (ignore param-only)
+  (if (occ-obj-clocking-in-p obj)
+      (list (occ-obj-make-callable-normal :edit
+                                          (format "Clock out %s" (occ-obj-Format obj))
+                                          #'(lambda (obj)
+                                              (occ-clock-out (occ-obj-tsk obj)))))))
+
+(cl-defmethod occ-obj-gen-clock-operations ((obj occ-obj-ctx)
+                                            &key param-only)
+  (ignore obj)
+  (ignore param-only)
+  nil)
+
 ;;; occ-prop-gen-edit-actions.el ends here
