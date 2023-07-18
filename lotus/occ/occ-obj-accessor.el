@@ -426,6 +426,16 @@
   (make-marker))
 
 (cl-defmethod occ-obj-heading-marker ((obj marker))
+  (save-excursion
+    (with-current-buffer (marker-buffer obj)
+      (goto-char obj)
+      (forward-char 1)                  ;required
+      (end-of-line)
+      (org-back-to-heading t)
+      ;; (outline-previous-heading)
+      (point-marker))))
+
+(cl-defmethod occ-obj-heading-marker ((obj marker))
   (with-current-buffer (marker-buffer obj)
     (save-excursion
       (goto-char obj)
@@ -739,11 +749,11 @@ pointing to it."
   (setf (occ-tree-collection-tree collection) nil))
 
 
-(cl-defmethod occ-obj-tsk-collection ((tsk occ-tsk))
-  (occ-tsk-collection tsk))
+(cl-defmethod occ-obj-tsk-collection ((tsk occ-obj-tsk))
+  (occ-tsk-collection (occ-obj-tsk tsk)))
 
-(cl-defmethod occ-obj-collection ((tsk occ-tsk))
-  (occ-tsk-collection tsk))
+(cl-defmethod occ-obj-collection ((tsk occ-obj-tsk))
+  (occ-tsk-collection (occ-obj-tsk tsk)))
 
 (cl-defmethod occ-obj-collection ((obj symbol))
   (let ((key obj))
