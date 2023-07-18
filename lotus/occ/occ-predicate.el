@@ -45,10 +45,25 @@
            (occ-valid-marker mrk))
    (let ((obj-marker (occ-obj-heading-marker obj))
          (mrk-marker (occ-obj-heading-marker mrk)))
+     (message "IN XXX %s %s = %s %s"
+              (marker-position obj-marker)
+              (marker-position mrk-marker)
+              (or (equal obj-marker
+                         mrk-marker)
+                  (>= 1 (abs (- obj-marker
+                                mrk-marker))))
+              (if (and (occ-valid-marker obj-marker)
+                       (occ-valid-marker mrk-marker))
+                  (or (equal obj-marker
+                             mrk-marker)
+                      (>= 1 (abs (- obj-marker
+                                    mrk-marker))))))
      (if (and (occ-valid-marker obj-marker)
               (occ-valid-marker mrk-marker))
-      (equal obj-marker
-             mrk-marker)))))
+      (or (equal obj-marker
+                 mrk-marker)
+          (>= 1 (abs (- obj-marker
+                        mrk-marker))))))))
 
 (cl-defmethod occ-obj-marker= ((obj occ-obj-tsk)
                                (tsk occ-obj-tsk))

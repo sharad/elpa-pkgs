@@ -68,7 +68,10 @@ pointing to it."
        (progn
          (goto-char obj)
          (let* ((cat         (org-get-category))
-                (heading     (org-get-heading 'notags))
+                (heading-from-org (org-get-heading 'notags))
+                (heading (if no-propterties
+                             (substring-no-properties heading-from-org)
+                           heading-from-org))
                 (prefix      (save-excursion
                                (org-back-to-heading t)
                                (looking-at org-outline-regexp)

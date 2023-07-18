@@ -429,8 +429,10 @@
   (save-excursion
     (with-current-buffer (marker-buffer obj)
       (goto-char obj)
+      (forward-char 1)                  ;required
       (end-of-line)
-      (outline-previous-heading)
+      (org-back-to-heading t)
+      ;; (outline-previous-heading)
       (point-marker))))
 
 (cl-defmethod occ-obj-heading-marker ((obj occ-obj-tsk))
@@ -644,8 +646,11 @@ pointing to it."
 
 (defun occ-current-ctxual-tsk (&optional occ-other-allowed)
   (let ((ctxual-tsk (cl-first *occ-clocked-ctxual-tsk-ctx-history*))
-        (org-clock  (or (occ-valid-marker org-clock-marker)
-                        (occ-valid-marker org-clock-hd-marker))))
+        (org-clock  (lotus-with-marker (or (occ-valid-marker org-clock-marker)
+                                           (occ-valid-marker org-clock-hd-marker))
+                      (save-excursion
+                       (org-back-to-heading t)
+                       (point-marker)))))
     (if (and org-clock
              ctxual-tsk
              (occ-obj-marker= ctxual-tsk
@@ -653,9 +658,11 @@ pointing to it."
         ctxual-tsk
       (when org-clock
         (let ((msg (if ctxual-tsk
-                       (format "occ-current-ctxual-tsk: %s from head of *occ-clocked-ctxual-tsk-ctx-history* is not equal to current clocking clock %s"
-                               (occ-obj-Format ctxual-tsk nil t)
-                               (occ-obj-Format org-clock nil t))
+                       (format "occ-current-ctxual-tsk: %s %d from head of *occ-clocked-ctxual-tsk-ctx-history* is not equal to current clocking clock %s %d"
+                               (occ-obj-Format ctxual-tsk nil t nil)
+                               (marker-position (occ-obj-marker ctxual-tsk))
+                               (occ-obj-Format org-clock nil t nil)
+                               (marker-position org-clock))
                      (format "occ-current-ctxual-tsk: %s is outside of occ"
                              (occ-obj-Format org-clock nil t nil)))))
           (if (not occ-other-allowed)
@@ -671,8 +678,11 @@ pointing to it."
 
 (defun occ-current-tsk (&optional occ-other-allowed)
   (let ((ctxual-tsk (cl-first *occ-clocked-ctxual-tsk-ctx-history*))
-        (org-clock  (or (occ-valid-marker org-clock-marker)
-                        (occ-valid-marker org-clock-hd-marker))))
+        (org-clock  (lotus-with-marker (or (occ-valid-marker org-clock-marker)
+                                           (occ-valid-marker org-clock-hd-marker))
+                      (save-excursion
+                        (org-back-to-heading t)
+                        (point-marker)))))
     (if (and ctxual-tsk
              org-clock
              (occ-obj-marker= ctxual-tsk
@@ -680,11 +690,13 @@ pointing to it."
         (occ-obj-tsk ctxual-tsk)
       (when org-clock
         (let ((msg (if ctxual-tsk
-                       (format "occ-current-ctxual-tsk: %s from head of *occ-clocked-ctxual-tsk-ctx-history* is not equal to current clocking clock %s"
-                               (occ-obj-Format ctxual-tsk nil t)
-                               (occ-obj-Format org-clock nil t))
+                       (format "occ-current-ctxual-tsk: %s %d from head of *occ-clocked-ctxual-tsk-ctx-history* is not equal to current clocking clock %s %d"
+                               (occ-obj-Format ctxual-tsk nil t nil)
+                               (marker-position (occ-obj-marker ctxual-tsk))
+                               (occ-obj-Format org-clock nil t nil)
+                               (marker-position org-clock))
                      (format "occ-current-ctxual-tsk: %s is outside of occ"
-                             (occ-obj-Format org-clock nil t)))))
+                             (occ-obj-Format org-clock nil t nil)))))
           (if (not occ-other-allowed)
               (occ-error msg)
             (occ-debug :warning msg)
