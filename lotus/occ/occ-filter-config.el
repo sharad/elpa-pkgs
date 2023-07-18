@@ -42,10 +42,14 @@
 (defun occ-list-filters ()
   '(:nonnegative))
 
+;; (defun occ-match-filters ()
+;;   (list :positive
+;;         :mutual-deviation
+;;         (list :positive #'occ-obj-member-tsk-rank)))
 (defun occ-match-filters ()
   (list :positive
         :mutual-deviation
-        (list :positive #'occ-obj-member-tsk-rank)))
+        (list :positive #'occ-obj-rank)))
 ;; (list :mutual-deviation #'occ-obj-member-tsk-rank)
 
 (defun occ-never-filters ()
