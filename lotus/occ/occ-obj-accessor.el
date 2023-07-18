@@ -368,6 +368,11 @@
             (dolist (a helm-actions)
               (occ-debug "occ-obj-ap-helm-transformation: helm-action: %s" (prin1-to-string a)))
             (when helm-actions
+              (dolist (x helm-actions)
+                (message "occ-obj-ap-helm-transformation: %s -> %s -> %s"
+                         (car x)
+                         (cdr x)
+                         (functionp (cdr x))))
               (occ-assert (cl-every #'(lambda (x)
                                         (functionp (cl-rest x)))
                                     helm-actions)))

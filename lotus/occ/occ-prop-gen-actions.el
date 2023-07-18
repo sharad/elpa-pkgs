@@ -50,7 +50,7 @@
   (ignore param-only)
   (let ((continue (occ-obj-make-callable-normal :continue
                                                 "Continue"
-                                                t))
+                                                #'(lambda (obj) (occ-message "ok continue"))))
         (checkout (occ-obj-make-callable-normal :checkout
                                                 "Checkout"
                                                 #'(lambda (obj)

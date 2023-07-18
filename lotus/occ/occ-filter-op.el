@@ -53,8 +53,8 @@
         (occ-debug "matched ctxtsks %s" (length sequence))
         (occ-debug "occ-filter-mutual-deviation: avgrank = %d varirank = %d"
                           avgrank varirank)
-        (cl-remove-if-not #'(lambda (obj)
-                              (>= (funcall rank obj)
+        (cl-remove-if-not #'(lambda (tsk)
+                              (>= (funcall rank tsk)
                                   avgrank))
                           sequence))
     (occ-error "(occ-default-collection) returned nil")))
@@ -63,8 +63,8 @@
                                        sequence
                                        &key rank)
   (ignore obj)
-  (cl-remove-if-not #'(lambda (obj)
-                        (> (funcall rank obj)
+  (cl-remove-if-not #'(lambda (tsk)
+                        (> (funcall rank tsk)
                            0))
                     sequence))
 
@@ -72,8 +72,8 @@
                                           sequence
                                           &key rank)
   (ignore obj)
-  (cl-remove-if-not #'(lambda (obj)
-                        (>= (funcall rank obj)
+  (cl-remove-if-not #'(lambda (tsk)
+                        (>= (funcall rank tsk)
                             0))
                     sequence))
 
@@ -88,8 +88,8 @@
                                   sequence
                                   &key rank)
   (ignore obj)
-  (cl-remove-if-not #'(lambda (obj)
-                        (>= (funcall rank obj)
+  (cl-remove-if-not #'(lambda (tsk)
+                        (>= (funcall rank tsk)
                             occ-filter-min))
                     sequence))
 
@@ -98,8 +98,8 @@
                                   sequence
                                   &key rank)
   (ignore obj)
-  (cl-remove-if-not #'(lambda (obj)
-                        (>= (funcall rank obj)
+  (cl-remove-if-not #'(lambda (tsk)
+                        (>= (funcall rank tsk)
                             occ-filter-max))
                     sequence))
 

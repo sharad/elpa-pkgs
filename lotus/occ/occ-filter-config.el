@@ -54,7 +54,8 @@
 (defun occ-match-filters ()
   (list :identity ;; :positive
         :mutual-deviation
-        (list :positive #'occ-obj-rank)))
+        (list :positive
+              #'occ-obj-rank)))
 ;; (list :mutual-deviation #'occ-obj-member-tsk-rank)
 
 (defun occ-never-filters ()
