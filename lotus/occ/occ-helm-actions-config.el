@@ -118,7 +118,5 @@
                              "Checkout"
                              :fast-checkouts-gen
                              :checkouts-gen)))))
-
-  
 
 ;;; occ-helm-actions-config.el ends here
