@@ -77,6 +77,12 @@
                             0))
                     sequence))
 
+(cl-defmethod occ-obj-filter-identity ((obj occ-ctx)
+                                       sequence
+                                       &key rank)
+  (ignore obj)
+  sequence)
+
 (defvar occ-filter-min 0)
 (cl-defmethod occ-obj-filter-min ((obj occ-ctx)
                                   sequence

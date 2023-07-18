@@ -35,19 +35,24 @@
   (occ-obj-build-filter :mutual-deviation "Mutual Deviation" #'occ-obj-filter-mutual-deviation)
   (occ-obj-build-filter :positive "Positive" #'occ-obj-filter-positive)
   (occ-obj-build-filter :nonnegative "Non negative" #'occ-obj-filter-nonnegative)
+  (occ-obj-build-filter :identity "Identity" #'occ-obj-filter-identity)
   (occ-obj-build-filter :min "Minimum" #'occ-obj-filter-min)
   (occ-obj-build-filter :max "Maximum" #'occ-obj-filter-max))
 
 
+;; Filter should be list of keys or cons of key and customized rank function
+;; else occ-obj-rank will be used.
+
 (defun occ-list-filters ()
-  '(:nonnegative))
+  ;; '(:nonnegative)
+  '(:identity))
 
 ;; (defun occ-match-filters ()
 ;;   (list :positive
 ;;         :mutual-deviation
 ;;         (list :positive #'occ-obj-member-tsk-rank)))
 (defun occ-match-filters ()
-  (list :positive
+  (list :identity ;; :positive
         :mutual-deviation
         (list :positive #'occ-obj-rank)))
 ;; (list :mutual-deviation #'occ-obj-member-tsk-rank)
