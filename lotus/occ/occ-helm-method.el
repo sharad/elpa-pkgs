@@ -607,7 +607,7 @@ select candidate from it."
                                                          (occ-debug "Running occ-list-select-internal helm is gone"))))))
               (unwind-protect
                   (when (occ-obj-obj (cl-first helm-sources))
-                    (condition-case err
+                    (occ-mac-condition-case-control err
                         (helm :sources (mapcar #'occ-obj-obj helm-sources)
                               :buffer  (occ-obj-helm-select-buffer)
                               :resume  'noresume)

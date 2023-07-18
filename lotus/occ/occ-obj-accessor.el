@@ -426,8 +426,8 @@
   (make-marker))
 
 (cl-defmethod occ-obj-heading-marker ((obj marker))
-  (save-excursion
-    (with-current-buffer (marker-buffer obj)
+  (with-current-buffer (marker-buffer obj)
+    (save-excursion
       (goto-char obj)
       (forward-char 1)                  ;required
       (end-of-line)

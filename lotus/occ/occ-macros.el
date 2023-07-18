@@ -254,12 +254,19 @@
   (setq occ-condition-case-control-debug nil))
 
 (defmacro condition-case-control (var bodyform &rest handlers)
-  (if (not occ-condition-case-control-debug)
+  (if occ-condition-case-control-debug
       `(condition-case ,var
            ,bodyform
          ,@handlers)
     bodyform))
 (put 'condition-case-control 'lisp-indent-function 1)
+(defmacro occ-mac-condition-case-control (var bodyform &rest handlers)
+  (if occ-condition-case-control-debug
+      `(condition-case ,var
+           ,bodyform
+         ,@handlers)
+    bodyform))
+(put 'occ-mac-condition-case-control 'lisp-indent-function 1)
 
 
 ;; (defmacro occ-run-unobtrusively (obtrusive &rest body)
