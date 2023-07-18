@@ -59,8 +59,8 @@
       (occ-obj-build-callable-normal :clock-in                 "Clock-in"                 #'occ-do-clock-in)
       (occ-obj-build-callable-normal :try-fast-clock-in        "Try Fast Clock-in"        #'occ-do-try-fast-clock-in)
       (occ-obj-build-callable-normal :try-clock-in             "Try Clock-in"             #'occ-do-try-clock-in)
-      (occ-obj-build-callable-normal :procreate-child          "Procreate Child"          #'occ-do-procreate-child)
-      (occ-obj-build-callable-normal :procreate-child-clock-in "Procreate Child Clock-in" #'occ-do-procreate-child-clock-in)
+      (occ-obj-build-callable-normal :procreate-child          "Create Child"             #'occ-do-create-child)
+      (occ-obj-build-callable-normal :procreate-child-clock-in "Create Child Clock-in"    #'occ-do-create-child-clock-in)
       (occ-obj-build-callable-normal :goto                     "Goto"                     #'occ-do-goto)
       (occ-obj-build-callable-normal :set-to                   "Set To"                   #'occ-do-set-to)
       (occ-obj-build-callable-normal :property-window-edit     "Properties Window Edit"   #'occ-do-properties-window-editor) ;TODO: implement it.

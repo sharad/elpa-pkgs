@@ -70,19 +70,19 @@
 
 
 ;;;###autoload
-(defun occ-curr-procreate-child ()
+(defun occ-curr-create-child ()
   (interactive)
   (let ((ctxual-tsk (occ-current-ctxual-tsk)))
     (if ctxual-tsk
-        (occ-do-procreate-child ctxual-tsk)
+        (occ-do-create-child ctxual-tsk)
       (occ-debug "No current task clocking-in"))))
 
 ;;;###autoload
-(defun occ-curr-procreate-child-clock-in ()
+(defun occ-curr-create-child-clock-in ()
   (interactive)
   (let ((ctxual-tsk (occ-current-ctxual-tsk)))
     (if ctxual-tsk
-        (occ-do-procreate-child-clock-in ctxual-tsk)
+        (occ-do-create-child-clock-in ctxual-tsk)
       (occ-debug "No current task clocking-in"))))
 
 (defun occ-curr-tsk-continue-for (mins)

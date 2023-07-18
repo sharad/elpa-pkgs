@@ -258,37 +258,38 @@
                                                                      occ-list-select-keys-2))
                    :timeout            occ-idle-timeout
                    :obtrusive         t))
-
-
-
  ())
 
 
-(cl-defgeneric occ-do-procreate-child (obj)
+(cl-defgeneric occ-do-create-child (obj)
   "occ-child")
 
-(cl-defmethod occ-do-procreate-child ((obj marker)
-                                      &keys
-                                      template
-                                      clock-in)
+(cl-defmethod occ-do-create-child ((obj marker)
+                                   &keys
+                                   template
+                                   clock-in
+                                   immediate-finish)
   (if (not (occ-obj-unnamed-p obj))
       (occ-do-capture obj
                       :clock-in clock-in ;; helm-current-prefix-arg
-                      :template template)
+                      :template template
+                      :immediate-finish immediate-finish)
     (let ((title (occ-obj-title obj 'captilize)))
      (occ-error "%s is unnamed %s so can not create child "
            (occ-obj-format obj 'captilize)
            title
            title))))
 
-(cl-defmethod occ-do-procreate-child ((obj occ-obj-tsk)
-                                      &key
-                                      template
-                                      clock-in)
+(cl-defmethod occ-do-create-child ((obj occ-obj-tsk)
+                                   &key
+                                   template
+                                   clock-in
+                                   immediate-finish)
   (if (not (occ-obj-unnamed-p obj))
       (occ-do-capture obj
                       :clock-in clock-in ;; helm-current-prefix-arg
-                      :template template)
+                      :template template
+                      :immediate-finish immediate-finish)
     (let ((title (occ-obj-title obj 'captilize)))
       (occ-error "%s is unnamed %s so can not create child "
              (occ-obj-format obj 'captilize)
@@ -303,10 +304,12 @@
   (concat "* " heading "\n"))
 
 
-(cl-defmethod occ-do-fast-procreate-child ((heading string)
-                                           &key
-                                           template
-                                           clock-in)
+(cl-defmethod occ-do-fast-create-child ((heading string)
+                                        &key
+                                        template
+                                        clock-in
+                                        immediate-finish)
+  "Create fast child task may use template"
   (ignore template)
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (occ-do-capture nil
@@ -314,10 +317,12 @@
                     :template         (occ-obj-tsk-txt ctx heading)
                     :immediate-finish t)))
 
-(cl-defmethod occ-do-procreate-anonymous-child ((heading string)
-                                                &key
-                                                template
-                                                clock-in)
+(cl-defmethod occ-do-create-anonymous-child ((heading string)
+                                             &key
+                                             template
+                                             clock-in
+                                             immediate-finish)
+  "Create Anonymous task"
   (ignore template)
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (occ-do-capture nil
@@ -325,10 +330,12 @@
                     :template (occ-obj-tsk-txt ctx heading))))
 
 
-(cl-defmethod occ-do-fast-procreate-anonymous-child ((heading string)
-                                                     &key
-                                                     template
-                                                     clock-in)
+(cl-defmethod occ-do-fast-create-anonymous-child ((heading string)
+                                                  &key
+                                                  template
+                                                  clock-in
+                                                  immediate-finish)
+  "Create Anonymous (fast as unnamed)"
   (ignore template)
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (let* ((anonymous-heading-marker (cl-rest (org-without-org-clock-persist
@@ -342,18 +349,18 @@
                       :immediate-finish t))))
 
 
-(cl-defgeneric occ-do-procreate-child-clock-in (obj)
+(cl-defgeneric occ-do-create-child-clock-in (obj)
   "occ-child-clock-in")
 
-(cl-defmethod occ-do-procreate-child-clock-in ((obj null))
+(cl-defmethod occ-do-create-child-clock-in ((obj null))
   (occ-do-capture obj
                :clock-in t))
 
-(cl-defmethod occ-do-procreate-child-clock-in ((obj marker))
+(cl-defmethod occ-do-create-child-clock-in ((obj marker))
   (occ-do-capture obj
                :clock-in t))
 
-(cl-defmethod occ-do-procreate-child-clock-in ((obj occ-obj-tsk))
+(cl-defmethod occ-do-create-child-clock-in ((obj occ-obj-tsk))
   (occ-do-capture obj
                   :clock-in t))
 
