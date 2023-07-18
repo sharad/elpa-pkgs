@@ -719,6 +719,16 @@ pointing to it."
 
 (cl-defmethod occ-obj-tsk-collection ((tsk occ-tsk))
   (occ-tsk-collection tsk))
+
+(cl-defmethod occ-obj-collection ((tsk occ-tsk))
+  (occ-tsk-collection tsk))
+
+(cl-defmethod occ-obj-collection ((obj symbol))
+  (let ((key obj))
+    (occ-collector-get key)))
+
+(cl-defmethod occ-obj-collection ((obj occ-obj-collection))
+  obj)
 
 ;; BUG (occ-obj-collect-tsks tree) method not called (occ-obj-collect-tsks list)
 ;; is called and it is settign (occ-list-collection-list coll), need to be fixed

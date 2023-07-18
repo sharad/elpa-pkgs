@@ -34,6 +34,7 @@
 (require 'timer-utils-lotus)
 
 
+(require 'occ-config)
 (require 'occ-cl-utils)
 (require 'occ-obj-common)
 (require 'occ-tree)
@@ -185,8 +186,7 @@ then return t else nil"
             (occ-debug "occ-do-clock-in-if-not: Now really going to clock with this-command=%s"
                        this-command)
             ;; TODO: if (occ-current-tsk) is not unnamed than ask confirmation by :auto-select-if-only 'confirm
-            (occ-debug
-                       "TODO: if (occ-current-tsk) is not unnamed than ask confirmation by :auto-select-if-only 'confirm")
+            (occ-debug "TODO: if (occ-current-tsk) is not unnamed than ask confirmation by :auto-select-if-only 'confirm")
             (let ((retval (occ-do-clock-in obj
                                            :filters             filters
                                            :builder             builder
@@ -238,7 +238,9 @@ then return t else nil"
   (ignore prev)
   t)
 
-(defvar occ-do-clock-in-ctx-auto-select-if-only t "occ-do-clock-in-ctx-auto-select-if-only")
+(defun occ-obj-clock-in-ctx-auto-select-if-only ()
+  "clock in ctx auto select if only"
+  occ-clock-in-ctx-auto-select-if-only nil)
 
 (cl-defmethod occ-do-clock-in-if-chg ((obj occ-ctx)
                                       &key
@@ -328,7 +330,7 @@ then return t else nil"
   (let ((ctx (occ-obj-make-ctx-at-point)))
     (let ((filters             (occ-match-filters))
           (builder             #'occ-obj-build-ctxual-tsk-with)
-          (auto-select-if-only nil) ; occ-do-clock-in-ctx-auto-select-if-only)
+          (auto-select-if-only nil) ; (occ-obj-clock-in-ctx-auto-select-if-only))
           (timeout             occ-idle-timeout))
       (let* ((ap-normal occ-list-select-ap-transf-keys))
         (occ-do-clock-in-if-not ctx
@@ -354,7 +356,7 @@ then return t else nil"
       (let ((ctx (occ-obj-make-ctx-at-point)))
         (let ((filters             (occ-match-filters))
               (builder             #'occ-obj-build-ctxual-tsk-with)
-              (auto-select-if-only occ-do-clock-in-ctx-auto-select-if-only)
+              (auto-select-if-only (occ-obj-clock-in-ctx-auto-select-if-only))
               (timeout             occ-idle-timeout))
           (let ((ap-normal '(t actions general edit)))
             (occ-do-clock-in-if-chg ctx

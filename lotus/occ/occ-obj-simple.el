@@ -131,9 +131,9 @@
 
 
 (cl-defgeneric occ-do-capture (obj &key
-                                template
-                                clock-in
-                                immediate-finish)
+                                   template
+                                   clock-in
+                                   immediate-finish)
   "occ-do-capture")
 
 (cl-defmethod occ-do-capture ((obj marker) &key
@@ -154,9 +154,9 @@
                               immediate-finish)
   (let ((mrk (occ-tsk-marker obj)))
     (occ-do-capture mrk
-                 :clock-in         clock-in
-                 :template         template
-                 :immediate-finish immediate-finish)))
+                    :clock-in         clock-in
+                    :template         template
+                    :immediate-finish immediate-finish)))
 
 (cl-defmethod occ-do-capture ((obj occ-obj-ctx-tsk) &key
                               template
@@ -287,8 +287,8 @@
                                       clock-in)
   (if (not (occ-obj-unnamed-p obj))
       (occ-do-capture obj
-                   :clock-in clock-in ;; helm-current-prefix-arg
-                   :template template)
+                      :clock-in clock-in ;; helm-current-prefix-arg
+                      :template template)
     (let ((title (occ-obj-title obj 'captilize)))
       (occ-error "%s is unnamed %s so can not create child "
              (occ-obj-format obj 'captilize)

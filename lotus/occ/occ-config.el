@@ -66,6 +66,11 @@
   :type '(choice (function-item 'completing-read)
                  (function-item 'ido-completing-read))
   :group 'occ)
+
+(defcustom occ-clock-in-ctx-auto-select-if-only nil
+  "occ-clock-in-ctx-auto-select-if-only"
+  :type '(boolean)
+  :group 'occ)
 
 
 ;; mozilla config

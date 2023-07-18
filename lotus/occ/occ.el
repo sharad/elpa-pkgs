@@ -88,12 +88,15 @@
                                 (mapcar #'cl-first *occ-collector*))))
 
 
-(cl-defmethod occ-obj-collection ((obj symbol))
-  (let ((key obj))
-    (occ-collector-get key)))
 
-(cl-defmethod occ-obj-collection ((obj occ-obj-collection))
-  obj)
+;; moved to occ-obj-accessor.el
+
+;; (cl-defmethod occ-obj-collection ((obj symbol))
+;;   (let ((key obj))
+;;     (occ-collector-get key)))
+
+;; (cl-defmethod occ-obj-collection ((obj occ-obj-collection))
+;;   obj)
 
 (defun occ-collections (&rest keys)
   (remove nil
