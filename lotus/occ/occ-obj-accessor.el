@@ -425,27 +425,13 @@
   (ignore obj)
   (make-marker))
 
-;; (cl-defmethod occ-obj-heading-marker ((obj marker))
-;;   (save-excursion
-;;     (with-current-buffer (marker-buffer obj)
-;;       (goto-char obj)
-;;       (forward-char 1)                  ;required
-;;       (end-of-line)
-;;       (org-back-to-heading t)
-;;       ;; (outline-previous-heading)
-;;       (point-marker))))
-
 (cl-defmethod occ-obj-heading-marker ((obj marker))
   (with-current-buffer (marker-buffer obj)
     (save-excursion
       (goto-char obj)
       (forward-char 1)                  ;required
       (end-of-line)
-      (condition-case e
-          (unless (org-before-first-heading-p)
-            ;; it is a file
-            (org-back-to-heading t))
-        ((error) (occ-error "Hello")))
+      (occ-back-to-heading)
       ;; (outline-previous-heading)
       (point-marker))))
 

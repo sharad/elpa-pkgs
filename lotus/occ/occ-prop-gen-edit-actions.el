@@ -231,15 +231,21 @@ only argument required for some other further processing"
                                             &key param-only)
   (ignore param-only)
   (if (occ-obj-clocking-in-p obj)
-      (list (occ-obj-make-callable-normal :edit
+      (list (occ-obj-make-callable-normal :clock-out
                                           (format "Clock out %s" (occ-obj-Format obj))
                                           #'(lambda (obj)
-                                              (occ-clock-out (occ-obj-tsk obj)))))))
+                                              (occ-do-clock-out (occ-obj-tsk obj)))))))
 
 (cl-defmethod occ-obj-gen-clock-operations ((obj occ-obj-ctx)
                                             &key param-only)
   (ignore obj)
   (ignore param-only)
   nil)
+
+;; (cl-defun occ-obj-gen-each-prop-fast-clock-operations (obj &key param-only)
+;;   (append (occ-obj-gen-each-prop-edits obj
+;;                                        :param-only param-only)
+;;           (occ-obj-gen-each-prop-edits (occ-obj-tsk obj)
+;;                                        :param-only param-only)))
 
 ;;; occ-prop-gen-edit-actions.el ends here

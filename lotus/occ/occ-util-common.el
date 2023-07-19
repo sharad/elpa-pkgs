@@ -271,5 +271,13 @@
   #'(lambda (candidate-fun)
       (funcall candidate-fun)))
 
+
+(defun occ-back-to-heading ()
+  (condition-case e
+      (unless (org-before-first-heading-p)
+        ;; it is a file
+        (org-back-to-heading t))
+    ((error) (occ-error e))))
+
 ;;; occ-util-common.el ends here
 

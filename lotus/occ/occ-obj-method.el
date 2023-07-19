@@ -145,7 +145,6 @@
                            helm-edit-source
                            helm-fast-checkout-source
                            helm-simple-checkout-source)))
-        (message "Hello")
         (helm-timed occ-idle-timeout nil
           (helm :sources sources))))))
 
@@ -175,7 +174,7 @@
   (org-clock-out switch-to-state
                  fail-quietly
                  at-time))
-(cl-defmethod occ-do-clockout ((obj occ-obj-tsk))
+(cl-defmethod occ-do-clock-out ((obj occ-obj-tsk))
   (occ-run-do-clock-out (occ-obj-tsk obj)))
 
 ;;; occ-obj-method.el ends here
