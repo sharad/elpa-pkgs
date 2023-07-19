@@ -236,6 +236,4 @@
   ;; (occ-do-properties-editor-combined obj)
   (occ-do-properties-window-editor obj))
 
-
-
 ;;; occ-prop-op-edit.el ends here
