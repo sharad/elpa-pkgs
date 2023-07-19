@@ -64,6 +64,10 @@
       (occ-obj-build-callable-normal :try-clock-in             "Try Clock-in"             #'occ-do-try-clock-in)
       (occ-obj-build-callable-normal :procreate-child          "Create Child"             #'occ-do-create-child)
       (occ-obj-build-callable-normal :procreate-child-clock-in "Create Child Clock-in"    #'occ-do-create-child-clock-in)
+      (occ-obj-build-callable-normal :cut                      "Cut"                      #'occ-do-cut)
+      (occ-obj-build-callable-normal :paste                    "Paste"                    #'occ-do-paste)
+      (occ-obj-build-callable-normal :archive                  "Archive"                  #'occ-do-archive)
+      (occ-obj-build-callable-normal :delete                   "Delete"                   #'occ-do-delete)
       (occ-obj-build-callable-normal :goto                     "Goto"                     #'occ-do-goto)
       (occ-obj-build-callable-normal :set-to                   "Set To"                   #'occ-do-set-to)
       (occ-obj-build-callable-normal :property-window-edit     "Properties Window Edit"   #'occ-do-properties-window-editor) ;TODO: implement it.
@@ -99,6 +103,10 @@
                              :try-clock-in
                              :close
                              :force-clock-in
+                             :cut
+                             :paste
+                             :archive
+                             :detele
                              :goto
                              :rank
                              :tsk

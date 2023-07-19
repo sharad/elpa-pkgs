@@ -375,10 +375,10 @@
     (org-cut-subtree)))
 
 (cl-defgeneric occ-do-paste (obj)
-  "Cut task")
+  "Paste task")
 
 (cl-defmethod occ-do-paste ((obj occ-obj-tsk))
-  "Cut task"
+  "Paste task"
   (occ-mac-with-org-marker (occ-obj-marker obj)
     (org-paste-subtree)))
 
@@ -400,13 +400,6 @@
   (occ-do-cut obj))
 
 
-(cl-defgeneric occ-do-move (obj)
-  "Move task")
-
-(cl-defmethod occ-do-move ((obj occ-obj-tsk))
-  "Move task"
-  (occ-error "Implement it."))
-
 ;; (defun occ-confirm (fn new)
 ;;   (occ-y-or-n-timeout)
 ;;   (occ-error "Implement it."))
