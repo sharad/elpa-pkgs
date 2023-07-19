@@ -30,8 +30,10 @@
 (require 'occ-prop-base)
 (require 'occ-prop-op-edit)
 (require 'occ-prop-op-checkout)
+(require 'occ-prop-op-misc)
 
-
-(require 'occ-prop-gen-actions)
+(require 'occ-prop-gen-edit-actions)
+(require 'occ-prop-gen-checkout-actions)
+(require 'occ-prop-gen-misc-actions)
 
 ;;; occ-prop.el ends here

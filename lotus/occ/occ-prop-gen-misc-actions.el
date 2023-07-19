@@ -1,8 +1,8 @@
-;;; occ-prop-gen-actions.el --- dynamically generating edit checkout etc methods for prop on occ-tsk occ-ctx etc to be used in helm action  -*- lexical-binding: t; -*-
+;;; occ-prop-gen-misc-actions.el --- dynamically generating edit checkout etc methods for prop on occ-tsk occ-ctx etc to be used in helm action  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021  sharad
 
-;; Author: sharad <spratap@merunetworks.com>
+;; Author: sharad <>
 ;; Keywords: convenience
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -24,16 +24,16 @@
 
 ;;; Code:
 
-(provide 'occ-prop-gen-actions)
+(provide 'occ-prop-gen-misc-actions)
 
 
 (eval-when-compile
   (require 'occ-macros))
 (require 'occ-prop-base)
-(require 'occ-prop-op-edit)
-(require 'occ-prop-op-checkout)
-(require 'occ-prop-gen-edit-actions)
-(require 'occ-prop-gen-checkout-actions)
+;; (require 'occ-prop-op-edit)
+;; (require 'occ-prop-op-checkout)
+;; (require 'occ-prop-gen-edit-actions)
+;; (require 'occ-prop-gen-checkout-actions)
 
 
 
@@ -64,4 +64,4 @@
   (ignore param-only)
   nil)
 
-;;; occ-prop-gen-actions.el ends here
+;;; occ-prop-gen-misc-actions.el ends here

@@ -62,7 +62,7 @@ if node return nil for PREDICATE"
 (defun occ-tree-trim (limit subtree)
   (if (> limit 0)
       (let ((count (length subtree)))
-        (occ-dmessage "occ-tree-trim: limit %s, count %d" limit count)
+        (occ-debug "occ-tree-trim: limit %s, count %d" limit count)
         (let ((limit (- limit count)))
           (when subtree
             (let ((sum (apply #'+ count (mapcar #'occ-tsk-sibling-count subtree))))

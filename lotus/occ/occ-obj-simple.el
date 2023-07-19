@@ -366,6 +366,29 @@
                   :clock-in t))
 
 
+(cl-defgeneric occ-do-delete (obj)
+  "Delete task")
+
+(cl-defmethod occ-do-delete ((obj occ-obj-tsk))
+  "Delete task"
+  (occ-error "Implement it."))
+
+
+(cl-defgeneric occ-do-archive (obj)
+  "Archive task")
+
+(cl-defmethod occ-do-archive ((obj occ-obj-tsk))
+  "Archive task"
+  (occ-error "Implement it."))
+
+
+(cl-defgeneric occ-do-move (obj)
+  "Move task")
+
+(cl-defmethod occ-do-move ((obj occ-obj-tsk))
+  "Move task"
+  (occ-error "Implement it."))
+
 ;; (defun occ-confirm (fn new)
 ;;   (occ-y-or-n-timeout)
 ;;   (occ-error "Implement it."))
