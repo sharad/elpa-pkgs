@@ -190,6 +190,8 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
                                               ;;         :initial-value (length subtree)
                                               ;;         :key #'occ-tsk-sibling-count)
                                             0))
+                    (dolist (child subtree)
+                      (occ-obj-set-property child 'parent entry))
                     entry))))))))))
 
 (cl-defmethod occ-obj-drived-tsk-builder ((collection occ-tree-collection))

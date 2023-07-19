@@ -232,6 +232,9 @@
               (funcall builder
                        ;; (occ-obj-prop-from-org) from Org world to Occ world.
                        :name         (occ-obj-prop-from-org 'name heading)
+                       :collection   collection
+                       :parent       nil
+                       :action       nil
                        :heading      (occ-obj-prop-from-org 'heading heading)
                        :heading-prop (occ-obj-prop-from-org 'heading-prop heading-prop)
                        :marker       (occ-obj-prop-from-org 'marker marker)
@@ -239,7 +242,6 @@
                        :point        (occ-obj-prop-from-org 'point point)
                        :clock-sum    (occ-obj-prop-from-org 'clock-sum clock-sum)
                        :cat          (occ-obj-prop-from-org 'cat (occ-get-tsk-category heading tsk-plist))
-                       :collection   collection
                        :plist        (occ-tsk-plist-from-org tsk-plist)))
         (let ((inherit         t)
               (inherited-props
