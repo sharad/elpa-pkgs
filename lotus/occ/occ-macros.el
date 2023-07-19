@@ -42,11 +42,24 @@
   `(when occ-testing-status ,@body))
 
 
-(defmacro occ-with-marker (marker &rest body)
+(defmacro occ-mac-with-marker (marker &rest body)
   `(let ((marker ,marker))
      (progn
        ,@body)))
-(put 'occ-with-marker 'lisp-indent-function 1)
+(put 'occ-mac-with-marker 'lisp-indent-function 1)
+
+
+(defmacro occ-mac-with-org-marker (mrk &rest body)
+  `(with-current-buffer (marker-buffer ,mrk)
+     (save-excursion
+       (goto-char ,mrk)
+       (forward-char 1)                  ;required
+       (end-of-line)
+       (occ-back-to-heading)
+       (progn
+         ,@body))))
+(put 'occ-mac-with-org-marker 'lisp-indent-function 1)
+
 
 ;; (defmacro occ-debug-return (label &rest body)
 ;;   `(let ((retval

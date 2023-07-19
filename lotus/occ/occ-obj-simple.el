@@ -30,14 +30,14 @@
 (require 'lotus-misc-utils)
 (eval-when-compile
   (require 'lotus-misc-utils))
-(eval-when-compile
-  (require 'occ-macros))
 (require 'org-capture+-macros)
 (eval-when-compile
   (require 'org-capture+-macros))
 (require 'org-capture+)
 
 
+(eval-when-compile
+  (require 'occ-macros))
 (require 'occ-obj-common)
 (require 'occ-tree)
 (require 'occ-obj-accessor)
@@ -366,12 +366,21 @@
                   :clock-in t))
 
 
-(cl-defgeneric occ-do-delete (obj)
-  "Delete task")
+(cl-defgeneric occ-do-cut (obj)
+  "Cut task")
 
-(cl-defmethod occ-do-delete ((obj occ-obj-tsk))
-  "Delete task"
-  (occ-error "Implement it."))
+(cl-defmethod occ-do-cut ((obj occ-obj-tsk))
+  "Cut task"
+  (occ-mac-with-org-marker (occ-obj-marker obj)
+    (org-cut-subtree)))
+
+(cl-defgeneric occ-do-paste (obj)
+  "Cut task")
+
+(cl-defmethod occ-do-paste ((obj occ-obj-tsk))
+  "Cut task"
+  (occ-mac-with-org-marker (occ-obj-marker obj)
+    (org-paste-subtree)))
 
 
 (cl-defgeneric occ-do-archive (obj)
@@ -379,7 +388,16 @@
 
 (cl-defmethod occ-do-archive ((obj occ-obj-tsk))
   "Archive task"
-  (occ-error "Implement it."))
+  (occ-mac-with-org-marker (occ-obj-marker obj)
+    (org-archive-subtree)))
+
+
+(cl-defgeneric occ-do-delete (obj)
+  "Delete task")
+
+(cl-defmethod occ-do-delete ((obj occ-obj-tsk))
+  "Delete task"
+  (occ-do-cut obj))
 
 
 (cl-defgeneric occ-do-move (obj)

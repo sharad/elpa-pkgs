@@ -26,6 +26,8 @@
 (provide 'occ-obj-accessor)
 
 
+(eval-when-compile
+  (require 'occ-macros))
 (require 'occ-tsk)
 (require 'occ-print)
 (require 'occ-obj-ctor)
@@ -443,19 +445,14 @@
   (occ-obj-ap-helm-transformation ap-obj))
 
 
+
 (cl-defmethod occ-obj-heading-marker ((obj null))
   (ignore obj)
   (make-marker))
 
 (cl-defmethod occ-obj-heading-marker ((obj marker))
-  (with-current-buffer (marker-buffer obj)
-    (save-excursion
-      (goto-char obj)
-      (forward-char 1)                  ;required
-      (end-of-line)
-      (occ-back-to-heading)
-      ;; (outline-previous-heading)
-      (point-marker))))
+  (occ-mac-with-org-marker obj
+    (point-marker)))
 
 (cl-defmethod occ-obj-heading-marker ((obj occ-obj-tsk))
   (occ-obj-heading-marker (occ-obj-marker obj)))
