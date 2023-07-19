@@ -89,7 +89,7 @@ then return t else nil"
       ;; TODO: provision to pass prompt to describe why editor is called
       ;; note: it supposed to return t or nil
       ;; (setq retval
-      ;;       (occ-op-props-edit obj '(timebeing add 10)))
+      ;;       (occ-do-op-prop-edit obj '(timebeing add 10)))
       (setq retval (occ-do-properties-editor-combined obj))
       (setq obj (occ-obj-build-ctxual-tsk-with (occ-obj-tsk org-obj)
                                                (occ-obj-make-ctx-at-point)))

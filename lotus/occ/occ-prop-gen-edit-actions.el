@@ -212,7 +212,7 @@ only argument required for some other further processing"
   (list (occ-obj-make-callable-normal :edit
                                       (format "Edit %s" (occ-obj-Format obj))
                                       #'(lambda (obj)
-                                          (occ-op-props-edit obj)))))
+                                          (occ-do-op-props-edit obj)))))
 
 (cl-defmethod occ-obj-gen-simple-edits ((obj occ-obj-ctx)
                                         &key param-only)

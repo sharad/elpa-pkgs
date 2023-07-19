@@ -174,7 +174,7 @@
           (unless immediate-finish        ;*NOTE:
             (let* ((tmp-tsk  (occ-obj-make-tsk-with marker tsk))
                    (tmp-ctsk (occ-obj-build-ctsk-with tmp-tsk ctx)))
-              (occ-op-props-edit tmp-ctsk)))
+              (occ-do-op-props-edit tmp-ctsk)))
           t)
         (let ((child-tsk (occ-obj-make-tsk-with marker tsk))) ;after
           (when child-tsk

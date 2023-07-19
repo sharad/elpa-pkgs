@@ -217,13 +217,19 @@
                                 prop-value
                               (list prop-value)))))
 
-;; Usage not implemented
-;; (occ-op-props-edit obj '(timebeing add 10)) in occ-obj-try-fast-clock-in and occ-obj-try-until-associable-p
+%;; Usage not implemented
+;; (occ-do-op-props-edit obj '(timebeing add 10)) in occ-obj-try-fast-clock-in and occ-obj-try-until-associable-p
 
-(cl-defgeneric occ-op-props-edit (obj)
+(cl-defgeneric occ-do-op-props-edit (obj)
   "Edit all property for forced clock-in.")
 
-(cl-defmethod occ-op-props-edit ((obj occ-obj-tsk))
+;; (cl-defmethod occ-do-op-props-edit ((obj occ-obj-tsk))
+;;   "Misc all property for forced clock-in."
+;;   (dolist (prop (occ-obj-properties-to-edit obj))
+;;     (occ-debug "occ-do-op-props-edit: checkout prop %s" prop)
+;;     (occ-do-op-prop-edit obj
+;;                          prop)))
+(cl-defmethod occ-do-op-props-edit ((obj occ-obj-tsk))
   "Edit all property for forced clock-in."
   ;; (debug)
   ;; (occ-properties-editor obj)

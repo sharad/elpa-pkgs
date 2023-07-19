@@ -51,6 +51,6 @@
   (dolist (prop (occ-obj-properties-to-misc obj))
     (occ-debug "occ-do-op-props-misc: checkout prop %s" prop)
     (occ-do-op-prop-misc obj
-                             prop)))
+                         prop)))
 
 ;;; occ-prop-op-checkout.el ends here
