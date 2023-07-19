@@ -368,13 +368,35 @@
             (dolist (a helm-actions)
               (occ-debug "occ-obj-ap-helm-transformation: helm-action: %s" (prin1-to-string a)))
             (when helm-actions
-              ;; (dolist (x helm-actions)
-              ;;   (occ-message "occ-obj-ap-helm-transformation: %s -> %s -> %s"
-              ;;                (car x)
-              ;;                (cdr x)
-              ;;                (functionp (cdr x))))
+              (dolist (x helm-actions)
+                (occ-debug "occ-obj-ap-helm-transformation: %s -> %s -> %s"
+                             (car x)
+                             (cdr x)
+                             (functionp (cdr x))))
+              (dolist (x helm-actions)
+                (let ((prompt (car x))
+                      (action-callback (cdr x)))
+                  (occ-assert (and prompt
+                                   (stringp prompt))
+                              t
+                              "Prompt(%s) is nil of not string for Action-Callback(%s)"
+                              prompt
+                              action-callback)
+                  (occ-assert (and action-callback
+                                   (functionp action-callback))
+                              t
+                              "Action-Callback(%s) is nil of not function for Prompt(%s)"
+                              action-callback
+                              prompt))
+                (occ-debug "occ-obj-ap-helm-transformation: %s -> %s -> %s"
+                              (car x)
+                              (cdr x)
+                              (functionp (cdr x))))
               (occ-assert (cl-every #'(lambda (x)
-                                        (functionp (cl-rest x)))
+                                        (let ((f (cl-rest x))) (and f (functionp f))))
+                                    helm-actions))
+              (occ-assert (cl-every #'(lambda (x)
+                                        (let ((p (cl-first x))) (and p (stringp p))))
                                     helm-actions)))
             (occ-debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
             helm-actions)))))
