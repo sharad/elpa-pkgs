@@ -256,6 +256,7 @@ then return t else nil"
         (builder (or builder #'occ-obj-build-ctxual-tsk-with))
         (timeout (or timeout occ-idle-timeout)))
     (let* ((ap-normal occ-list-select-ap-transf-keys)
+           ;;  ap-transf will reuse ap-normal if nil
            (ap-transf nil))
       (occ-debug "occ-do-clock-in-if-chg((obj occ-ctx)): begin")
       (if (occ-obj-consider-for-clockin-in-p)
@@ -334,6 +335,7 @@ then return t else nil"
           (auto-select-if-only nil) ; (occ-obj-clock-in-ctx-auto-select-if-only))
           (timeout             occ-idle-timeout))
       (let* ((ap-normal occ-list-select-ap-transf-keys)
+             ;;  ap-transf will reuse ap-normal if nil
              (ap-transf nil))
         (occ-do-clock-in-if-not ctx
                                 :filters             filters
@@ -361,6 +363,7 @@ then return t else nil"
               (auto-select-if-only (occ-obj-clock-in-ctx-auto-select-if-only))
               (timeout             occ-idle-timeout))
           (let ((ap-normal '(t actions general edit))
+                ;;  ap-transf will reuse ap-normal if nil
                 (ap-transf nil))
             (occ-do-clock-in-if-chg ctx
                                     :filters             filters
