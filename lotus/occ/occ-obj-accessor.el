@@ -120,6 +120,30 @@
   (occ-tsk-marker (occ-obj-tsk obj)))
 
 
+(cl-defmethod occ-obj-org-marker ((obj null))
+  (ignore obj)
+  nil)
+
+(cl-defmethod occ-obj-org-marker ((obj marker))
+  (occ-mac-with-org-marker obj
+    (point-marker)))
+
+(cl-defmethod occ-obj-org-marker ((obj occ-obj-tsk))
+  (occ-tsk-marker (occ-obj-tsk obj)))
+
+
+(cl-defmethod occ-obj-heading-marker ((obj null))
+  (ignore obj)
+  (make-marker))
+
+(cl-defmethod occ-obj-heading-marker ((obj marker))
+  (occ-mac-with-org-marker obj
+    (point-marker)))
+
+(cl-defmethod occ-obj-heading-marker ((obj occ-obj-tsk))
+  (occ-obj-heading-marker (occ-obj-marker obj)))
+
+
 (cl-defmethod occ-obj-buffer ((obj null))
   (ignore obj)
   nil)
@@ -443,19 +467,6 @@
   "Return lambda function which do transformation on actions and return actions"
   (ignore obj)
   (occ-obj-ap-helm-transformation ap-obj))
-
-
-
-(cl-defmethod occ-obj-heading-marker ((obj null))
-  (ignore obj)
-  (make-marker))
-
-(cl-defmethod occ-obj-heading-marker ((obj marker))
-  (occ-mac-with-org-marker obj
-    (point-marker)))
-
-(cl-defmethod occ-obj-heading-marker ((obj occ-obj-tsk))
-  (occ-obj-heading-marker (occ-obj-marker obj)))
 
 
 ;; occ-tsk - accessors

@@ -43,8 +43,8 @@
                                (mrk marker))
   (if (and (occ-valid-marker obj)
            (occ-valid-marker mrk))
-   (let ((obj-marker (occ-obj-heading-marker obj))
-         (mrk-marker (occ-obj-heading-marker mrk)))
+   (let ((obj-marker (occ-obj-org-marker obj))
+         (mrk-marker (occ-obj-org-marker mrk)))
      (if (and (occ-valid-marker obj-marker)
               (occ-valid-marker mrk-marker))
       (or (equal obj-marker
