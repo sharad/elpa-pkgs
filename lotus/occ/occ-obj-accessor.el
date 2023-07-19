@@ -651,11 +651,6 @@ pointing to it."
 
 (defun occ-current-tsk (&optional occ-other-allowed)
   (let ((ctxual-tsk (cl-first *occ-clocked-ctxual-tsk-ctx-history*))
-        ;; (org-clock  (lotus-with-marker (or (occ-valid-marker org-clock-marker)
-        ;;                                    (occ-valid-marker org-clock-hd-marker))
-        ;;               (save-excursion
-        ;;                 (org-back-to-heading t)
-        ;;                 (point-marker))))
         (org-clock  (or (occ-valid-marker org-clock-marker)
                         (occ-valid-marker org-clock-hd-marker))))
     (if (and ctxual-tsk
@@ -682,7 +677,7 @@ pointing to it."
 ;;         (org-clock  (lotus-with-marker (or (occ-valid-marker org-clock-marker)
 ;;                                            (occ-valid-marker org-clock-hd-marker))
 ;;                       (save-excursion
-;;                        (org-back-to-heading t)
+;;                        (occ-back-to-heading t)
 ;;                        (point-marker)))))
 ;;     (if (and org-clock
 ;;              ctxual-tsk

@@ -88,7 +88,7 @@
 ;; (defun org-get-todo-state ()
 ;;   "Return the TODO keyword of the current subtree."
 ;;   (save-excursion
-;;     (org-back-to-heading t)
+;;     (occ-back-to-heading)
 ;;     (and (let ((case-fold-search nil)) (looking-at org-todo-line-regexp))
 ;;          (match-end 2)
 ;;          (match-string 2))))

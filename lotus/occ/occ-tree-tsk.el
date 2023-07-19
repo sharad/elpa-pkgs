@@ -91,7 +91,7 @@ if node return nil for PREDICATE"
 
 (defun occ-org-map-subheading (fun)
   "Call FUN for every heading underneath the current heading"
-  ;; (org-back-to-heading)
+  ;; (occ-back-to-heading)
   (let ((level (funcall outline-level))
         (collection nil))
     (save-excursion

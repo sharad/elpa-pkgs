@@ -27,6 +27,9 @@
 (provide 'occ-helm-actions-config)
 
 
+(require 'org-capture+-helm-dynamic)
+
+
 (require 'occ-helm)
 
 (defvar occ-helm-callables nil)
@@ -74,12 +77,12 @@
       (occ-obj-build-callable-normal :close                    "Close"                    #'occ-do-close)
       (occ-obj-build-callable-normal :force-clock-in           "Force Clock in"           #'occ-do-force-clockin))
     (progn
-      (occ-obj-build-callable-generator :fast-edits-gen     "Fast Edits"      #'occ-obj-gen-each-prop-fast-edits)
-      ;; (occ-obj-build-callable-generator :clock-ops-gen      "Clock Operations"      #'occ-obj-gen-clock-operations)
-      (occ-obj-build-callable-generator :edits-gen          "Simple Edit"     #'occ-obj-gen-simple-edits)
-      (occ-obj-build-callable-generator :checkouts-gen      "Simple Checkout" #'occ-obj-gen-simple-checkouts)
-      (occ-obj-build-callable-generator :fast-checkouts-gen "Fast Checkouts"  #'occ-obj-gen-each-prop-fast-checkouts)
-      (occ-obj-build-callable-generator :misc-gen           "Misc"            #'occ-obj-gen-misc))
+      (occ-obj-build-callable-generator :fast-edits-gen     "Fast Edits"       #'occ-obj-gen-each-prop-fast-edits)
+      (occ-obj-build-callable-generator :clock-ops-gen      "Clock Operations" #'occ-obj-gen-clock-operations)
+      (occ-obj-build-callable-generator :edits-gen          "Simple Edit"      #'occ-obj-gen-simple-edits)
+      (occ-obj-build-callable-generator :checkouts-gen      "Simple Checkout"  #'occ-obj-gen-simple-checkouts)
+      (occ-obj-build-callable-generator :fast-checkouts-gen "Fast Checkouts"   #'occ-obj-gen-each-prop-fast-checkouts)
+      (occ-obj-build-callable-generator :misc-gen           "Misc"             #'occ-obj-gen-misc))
     (progn
      (setq occ-helm-actions-tree '(t))
      (progn
@@ -111,7 +114,7 @@
                              :misc-gen)
 
        (occ-add-helm-actions '(actions edit)
-                             "Editing"
+                             "Fast Editing"
                              :fast-edits-gen
                              :edits-gen)
 

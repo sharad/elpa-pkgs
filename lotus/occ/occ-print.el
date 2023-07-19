@@ -72,10 +72,13 @@ pointing to it."
                 (heading (if no-propterties
                              (substring-no-properties heading-from-org)
                            heading-from-org))
-                (prefix      (save-excursion
-                               (org-back-to-heading t)
-                               (looking-at org-outline-regexp)
-                               (match-string 0)))
+                (prefix    (save-excursion
+                             (if (org-before-first-heading-p)
+                                 ""
+                               (progn
+                                 (occ-back-to-heading)
+                                 (looking-at org-outline-regexp)
+                                 (match-string 0)))))
                 (org-heading (substring (if no-propterties
                                             (concat prefix heading)
                                           (org-fontify-like-in-org-mode (concat prefix heading)
