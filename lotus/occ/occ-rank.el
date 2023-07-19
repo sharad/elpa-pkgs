@@ -76,7 +76,7 @@
                                                 (occ-obj-priority-rankprop obj
                                                                            prop)))
                                           properties))))
-      (occ-dmessage "occ-obj-calculate-rank(obj occ-obj-ctx-tsk): rank = %d" rank)
+      (occ-debug "occ-obj-calculate-rank(obj occ-obj-ctx-tsk): rank = %d" rank)
       rank)))
 
 

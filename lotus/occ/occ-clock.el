@@ -245,7 +245,7 @@ for adding properties to heading."
           (timeout   (or timeout occ-idle-timeout)))
       (occ-debug "occ-do-clock-in((obj occ-ctx)): begin")
       (let ((returned-ctxual-tsk (occ-obj-select obj ;TODO: if only one match then where it is selecting that.
-                                                 (occ-collections-default)
+                                                 (occ-collections-all)
                                                  :filters             filters
                                                  :builder             builder
                                                  :return-transform    t ;Here I know return value is going to be used, so passing t

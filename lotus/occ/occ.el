@@ -38,6 +38,7 @@
 (require 'occ-test)
 (require 'occ-config)
 (require 'occ-mode)
+(require 'occ-unnamed)
 
 
 (defvar *occ-collector* nil)
@@ -84,8 +85,18 @@
     (when collection
       (occ-obj-collection-files collection))))
 (defun occ-collector-keys ()
-  (cl-remove-duplicates (append (list *occ-collector-default-key*)
-                                (mapcar #'cl-first *occ-collector*))))
+  (let* ((all-list                 (mapcar #'cl-first
+                                           *occ-collector*))
+         (default-list             (list *occ-collector-default-key*))
+         (all-without-unnamed-list (remove *occ-collector-unnamed-key*
+                                           all-list))
+         (unnamed-list             (when (memq *occ-collector-unnamed-key*
+                                               all-list)
+                                     (list *occ-collector-unnamed-key*))))
+    (cl-remove-duplicates (append default-list
+                                  all-without-unnamed-list
+                                  unnamed-list)
+                          :from-end t)))
 
 
 
@@ -104,7 +115,10 @@
 
 (defun occ-collections-default ()
   (occ-collections (occ-collector-default-key)
-                   'unnamed))
+                   *occ-collector-unnamed-key*))
+
+(defun occ-collections-all ()
+  (apply #'occ-collections (occ-collector-keys)))
 
 ;; (defun occ-switch-buffer-run-curr-ctx-timer-function (prev next)
 ;;   (occ-run-curr-ctx-timer))

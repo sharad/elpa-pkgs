@@ -191,6 +191,7 @@
   ;; BUG: occ-list-select is become an interactive function, here it is not returning desired object.
   ;; NOTE: ACTION-TRANSFORMER is superseding ACTION for OCC-LIST-SELECT
   (let ((ctx-tsk (occ-obj-list-select (occ-obj-make-ctx-at-point)
+                                      (occ-collections-all)
                                       :ap-normal '(t actions select)
                                       :obtrusive t)))
     (if ctx-tsk

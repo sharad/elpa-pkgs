@@ -285,7 +285,7 @@
                                       ;; TODO: check https://github.com/emacsmirror/edit-list/blob/master/edit-list.el
                                       ;; TODO: implement list editor
                                       ;; TODO: search emacs elisp interactively modify list
-                                      (occ-dmessage "Manage filters here.")
+                                      (occ-debug "Manage filters here.")
                                       (setf filters default-filters)))
                                   ;; (funcall gen-candidates)
                                   (helm-refresh)))
@@ -378,11 +378,11 @@ select candidate from it."
                                                 candidates-unfiltered))
          (filtered-count        (length candidates-filtered)))
 
-    (occ-dmessage "len candidates-unfiltered %d" unfiltered-count)
-    (occ-dmessage "len candidates-filtered %d" filtered-count)
+    (occ-debug "len candidates-unfiltered %d" unfiltered-count)
+    (occ-debug "len candidates-filtered %d" filtered-count)
 
     ;; (when (<= filtered-count 3)
-    ;;   (occ-dmessage "occ-obj-helm-build-collection-source: candidates-filtered = %s" candidates-filtered))
+    ;;   (occ-debug "occ-obj-helm-build-collection-source: candidates-filtered = %s" candidates-filtered))
 
     (if (= filtered-count 0)
         (occ-build-hsrc-null nil ;; (cl-first candidates-filtered)
@@ -521,15 +521,15 @@ select candidate from it."
                                                               ap-normal
                                                               ap-transf)))
     ;; (progn ;; debugs
-    ;;   (occ-dmessage "occ-obj-helm-act-on-candidate: helm-action %s listp %s" helm-action (consp helm-action))
+    ;;   (occ-debug "occ-obj-helm-act-on-candidate: helm-action %s listp %s" helm-action (consp helm-action))
     ;;   (occ-debug "occ-obj-helm-act-on-single: (cons p helm-action) %s, (functionp helm-action) %s"
     ;;              (consp helm-action)
     ;;              (functionp helm-action))
-    ;;   (occ-dmessage "occ-obj-helm-act-on-candidate: helm-action1 %s" helm-action)
+    ;;   (occ-debug "occ-obj-helm-act-on-candidate: helm-action1 %s" helm-action)
     ;;   (occ-debug "occ-obj-helm-act-on-single: (cons p (nth 1 helm-action)) %s, (functionp (nth 1 helm-action)) %s"
     ;;              (consp (cl-rest helm-action))
     ;;              (functionp (cl-rest helm-action)))
-    ;;   (occ-dmessage "occ-obj-helm-act-on-candidate: helm-action2 %s" helm-action))
+    ;;   (occ-debug "occ-obj-helm-act-on-candidate: helm-action2 %s" helm-action))
 
     (if (occ-obj-obj source)
         (funcall helm-action (occ-obj-obj source))
@@ -574,15 +574,15 @@ select candidate from it."
                                                   :ap-transf        ap-transf
                                                   :auto-select-if-only auto-select-if-only
                                                   :prompt           prompt)))
-    ;; (occ-dmessage "occ-obj-helm-act-on-multiple: %s"
+    ;; (occ-debug "occ-obj-helm-act-on-multiple: %s"
     ;;              (mapcar #'(lambda (c)
     ;;                          (list (occ-name (occ-obj-obj c))
     ;;                                (occ-hsrc-level c)
     ;;                                (occ-hsrc-rank c)))
     ;;                      cand-sources))
-    ;; (occ-dmessage "occ-obj-helm-act-on-multiple: got (len collections) = %d"
+    ;; (occ-debug "occ-obj-helm-act-on-multiple: got (len collections) = %d"
     ;;              (length collections))
-    ;; (occ-dmessage "occ-obj-helm-act-on-multiple: got (len cand-sources) = %d"
+    ;; (occ-debug "occ-obj-helm-act-on-multiple: got (len cand-sources) = %d"
     ;;              (length cand-sources))
 
     ;; TODO: here decide what to do with cand-sources all has rank and level
@@ -591,8 +591,8 @@ select candidate from it."
            (preferred-candidate (cl-first (sort candidates
                                                 #'occ-candidate-compare))))
       ;; (message "XX: %s" (mapcar #'(lambda (c) (cons (occ-obj-Format c) (occ-obj-rank c))) candidates))
-      (occ-dmessage "candidates: %s" candidates)
-      (occ-dmessage "preferred-candidate: %s" preferred-candidate)
+      (occ-debug "candidates: %s" candidates)
+      (occ-debug "preferred-candidate: %s" preferred-candidate)
 
       (if preferred-candidate
                     ;; Mean if first cand-sources has only one element then it will pack
@@ -610,12 +610,12 @@ select candidate from it."
         ;; Else all source will be passed to helm to be shown.
         (let ((helm-sources (cl-remove-if-not #'occ-hsrc-source-p
                                               cand-sources)))
-          (occ-dmessage "len helm-sources %d" (length helm-sources))
-          (occ-dmessage "some helm-sources %s" (cl-some #'occ-source-main-p
-                                                        helm-sources))
+          (occ-debug "len helm-sources %d" (length helm-sources))
+          (occ-debug "some helm-sources %s" (cl-some #'occ-source-main-p
+                                                     helm-sources))
           (when (cl-some #'occ-source-main-p
                          helm-sources)
-            (occ-dmessage "len helm-sources %d" (length helm-sources))
+            (occ-debug "len helm-sources %d" (length helm-sources))
             (let* ((in-occ-helm t)
                    (timer (run-with-timer 0.08 nil #'(lambda ()
                                                        (if in-occ-helm

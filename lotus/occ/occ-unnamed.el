@@ -46,6 +46,7 @@
 (defvar +occ-unnamed-collection-limit+ 3)
 (defvar *occ-unassociate-ctx-start-time*         nil)
 (defvar *occ-swapen-unnamed-threashold-interval* (* 60 2)) ;2 mins
+(defvar *occ-collector-unnamed-key* 'unnamed)
 
 (defun occ-unassociate-ctx-start-time-reset ()
   (setq *occ-unassociate-ctx-start-time* nil))
@@ -103,7 +104,7 @@
                                                   (lotus-org-create-unnamed-task))))
                (unnamed-tsk            (when unnamed-heading-marker
                                          (occ-obj-make-tsk-with unnamed-heading-marker
-                                                                (occ-collector-get 'unnamed)))))
+                                                                (occ-collector-get *occ-collector-unnamed-key*)))))
           unnamed-tsk)
       (occ-error "Unable to get unnamed collection."))))
 
@@ -113,11 +114,11 @@
     (if (and type
              file)
         (progn
-          (when (occ-collector-get 'unnamed)
-            (unless (eq (cl-first (occ-collector-roots 'unnamed))
+          (when (occ-collector-get *occ-collector-unnamed-key*)
+            (unless (eq (cl-first (occ-collector-roots *occ-collector-unnamed-key*))
                         (lotus-org-unnamed-task-file))
-              (occ-collector-remove 'unnamed)))
-          (occ-collector-get-create 'unnamed
+              (occ-collector-remove *occ-collector-unnamed-key*)))
+          (occ-collector-get-create *occ-collector-unnamed-key*
                                     "Unnamed"
                                     type
                                     (list file)
@@ -128,11 +129,11 @@
           (occ-warn "error with type %s, file %s" type file)))))
 
 (defun occ-unnamed-collection ()
-  (unless (and (occ-collector-get 'unnamed)
-               (eq (cl-first (occ-collector-roots 'unnamed))
+  (unless (and (occ-collector-get *occ-collector-unnamed-key*)
+               (eq (cl-first (occ-collector-roots *occ-collector-unnamed-key*))
                    (lotus-org-unnamed-task-file)))
     (occ-build-unnamed-collection))
-  (occ-collector-get 'unnamed))
+  (occ-collector-get *occ-collector-unnamed-key*))
 
 ;;;###autoload
 (defun occ-unnamed-initialize ()
