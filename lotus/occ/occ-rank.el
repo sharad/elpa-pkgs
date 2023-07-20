@@ -30,8 +30,6 @@
 (eval-when-compile
   (require 'occ-macros))
 (require 'occ-util-common)
-(require 'occ-prop-intf)
-;; (require 'occ-normalize-ineqs)
 (require 'occ-obj-accessor)
 (require 'occ-debug-method)
 (require 'occ-prop-base)

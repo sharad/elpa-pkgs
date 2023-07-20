@@ -102,41 +102,6 @@
   (occ-obj-rankprop obj property))
 
 
-;; (defun occ-obj-priority-rankprop-internal (prop value)
-;;   "Get prioritised rank."
-;;   (let ((priority (occ-obj-priority prop)))
-;;     (unless priority
-;;       (occ-error "Priority is not present for property %s" prop))
-;;     (* priority
-;;        value)))
-
-(cl-defgeneric occ-obj-priority-rankprop (obj prop)
-  "Get prioritised rank.")
-
-(cl-defmethod occ-obj-priority-rankprop ((obj number)
-                                         (prop symbol))
-  (let ((value obj)
-        (priority (occ-obj-priority prop)))
-    (unless priority
-      (occ-error "Priority is not present for property %s" prop))
-    (* priority
-       value)))
-
-(cl-defmethod occ-obj-priority-rankprop ((obj occ-tsk)
-                                         (prop symbol))
-  "Get prioritised rank."
-  (occ-obj-priority-rankprop (occ-obj-rankprop obj prop)
-                             prop))
-                             
-
-(cl-defmethod occ-obj-priority-rankprop ((obj  occ-obj-ctx-tsk)
-                                         (prop symbol))
-  "Get prioritised rank."
-  (occ-obj-priority-rankprop (occ-obj-rankprop obj prop)
-                             prop))
-                             
-
-
 (cl-defgeneric occ-obj-has-p (obj
                               property
                               value)
@@ -371,3 +336,14 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
    (ignore prop)))
 
 ;;; occ-prop-intf.el ends here
+;;
+;;
+;;
+;; * read prop value from user
+;; * read prop value from ctx
+;; * read prop value from tsk
+;; * write prop value to tsk
+;; * write prop value to ctx error
+;; * write to user means print
+;; * checkout prop value from tsk
+;; (org-read-date) (org--deadline-or-schedule arg 'scheduled tim)e
