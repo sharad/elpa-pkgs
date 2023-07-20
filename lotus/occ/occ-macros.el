@@ -83,7 +83,7 @@
 (put 'occ-try-until 'lisp-indent-function 2)
 
 
-(defmacro occ-aggrigate-list-rank (value values aggregator &rest body)
+(defmacro occ-aggregate-rank (value values aggregator &rest body)
   `(let ((values    (if (consp ,values) ,values (list ,values)))
          (total-rank 0))
      (dolist (,value values)
@@ -92,7 +92,20 @@
          (setq total-rank
                (funcall ,aggregator total-rank rank))))
      total-rank))
-(put 'occ-aggrigate-list-rank 'lisp-indent-function 3)
+(put 'occ-aggregate-rank 'lisp-indent-function 3)
+
+(defmacro occ-aggregate-rank (property values aggregator &rest body)
+  `(let ((values    (if (occ-obj-list-p property)
+                        ,values
+                      (list ,values)))
+         (total-rank 0))
+     (dolist (,property values)
+       (let ((rank (progn
+                     ,@body)))
+         (setq total-rank
+               (funcall ,aggregator total-rank rank))))
+     total-rank))
+(put 'occ-aggregate-rank 'lisp-indent-function 3)
 
 
 ;;;###autoload

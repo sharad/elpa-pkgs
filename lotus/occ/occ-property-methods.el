@@ -53,7 +53,7 @@
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (occ-debug "occ-obj-rankprop-with: currfile begin")
-    (occ-aggrigate-list-rank tsk-currfile (occ-obj-get-property tsk prop) #'+
+    (occ-aggregate-rank tsk-currfile (occ-obj-get-property tsk prop) #'+
       (let* ((tsk-currfile (if tsk-currfile (file-truename tsk-currfile)))
              (ctx-file     (occ-ctx-file ctx))
              (ctx-file     (if ctx-file (file-truename ctx-file))))
@@ -128,7 +128,7 @@
                (occ-obj-format tsk 'capitalize)
                (occ-obj-format ctx 'capitalize)
                prop)
-    (occ-aggrigate-list-rank tsk-root (occ-obj-get-property tsk prop) #'+
+    (occ-aggregate-rank tsk-root (occ-obj-get-property tsk prop) #'+
       (let* ((tsk-root (cl-first (occ-obj-get-property tsk prop)))
              (tsk-root (when tsk-root (file-truename tsk-root)))
              (ctx-file (occ-ctx-file ctx))
