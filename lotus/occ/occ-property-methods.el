@@ -22,7 +22,7 @@
 
 ;;; Code:
 
-;; Provide this file
+;; * Provide this file
 
 ;; [[file:occ-property-methods.org::*Provide this file][Provide this file:1]]
 (provide 'occ-property-methods)
@@ -40,10 +40,12 @@
 (require 'occ-debug-method)
 (require 'occ-prop-intf)
 
-;; Required libraries:1 ends here
-
+;; * Required libraries:1 ends here
+;;
+;;
+;; 
 ;; Current File property of task
-
+;;
 ;; [[file:occ-property-methods.org::*Current File property of task][Current File property of task:1]]
 ;;{{ currfile
 (cl-defmethod occ-obj-rankprop ((obj occ-obj-ctx-tsk)
@@ -341,7 +343,8 @@
   (ignore prop)
   (let* ((tsk-marker (occ-obj-get-property obj 'marker)))
     (ignore tsk-marker)
-    (if (occ-obj-marker= obj org-clock-marker)
+    (if (and org-clock-marker
+             (occ-obj-marker= obj org-clock-marker))
         100
       0)))
 
