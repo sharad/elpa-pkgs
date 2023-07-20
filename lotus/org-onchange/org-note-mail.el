@@ -1,4 +1,24 @@
-;; -*- lexical-binding: t -*-
+;;; org-note-mail.el --- copy config         -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2012  Sharad Pratap
+
+;; Author: Sharad Pratap <sh4r4d _at_ _G-mail_>
+;; Keywords: convenience
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
 
 ;; https://github.com/danieroux/emacs/blob/master/mine/djr-org-mu4e-capture-sent.el
 
@@ -9,6 +29,9 @@
 ;; org-capture after the email was sent successfully (using the capture template
 ;; from lotus-mu4e-org-mode-capture-template-for-sent-email)
 
+;;; Code:
+
+;; [[file:org-note-mail.org::*Libraries required][Libraries required:1]]
 (defvar lotus-org-mu4e-must-capture-message nil
   "If set, the next composed mu4e message will automatically be captured with the template specified in lotus-mu4e-org-mode-capture-template-for-sent-email")
 
@@ -87,5 +110,41 @@
   (interactive)
   (lotus-org-mu4e-capture-next-message)
   (mu4e-compose-forward))
+;; Libraries required:1 ends here
 
+;; [[file:org-note-mail.org::*Org insert log note un-interactively][Org insert log note un-interactively:1]]
+
+;; Org insert log note un-interactively:1 ends here
+
+;; [[file:org-note-mail.org::*Clock out with NOTE][Clock out with NOTE:1]]
+
+;; Clock out with NOTE:1 ends here
+
+
+;; background in name is misleading it at present log-note show org file buffer to
+;; add note but in this case it is not shown so background word is used.
+
+;; *Note:* these function prepare buffer or window (timed) to take log note
+;;  main work is only done by _org-store-log-note_
+
+
+;; [[file:org-note-mail.org::*Org add log note with-timed-new-win][Org add log note with-timed-new-win:1]]
+
+;; Org add log note with-timed-new-win:1 ends here
+
+;; [[file:org-note-mail.org::*Org detect change to log note][Org detect change to log note:1]]
+
+;; Org detect change to log note:1 ends here
+
+;; [[file:org-note-mail.org::*Org log note on change timer][Org log note on change timer:1]]
+
+;; Org log note on change timer:1 ends here
+
+;; [[file:org-note-mail.org::*Org log note change from different sources][Org log note change from different sources:1]]
+
+;; Org log note change from different sources:1 ends here
+
+;; [[file:org-note-mail.org::*Provide this file][Provide this file:1]]
 (provide 'org-note-mail)
+;;; org-note-mail.el ends here
+;; Provide this file:1 ends here

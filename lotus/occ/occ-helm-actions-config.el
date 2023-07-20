@@ -106,7 +106,7 @@
                              :cut
                              :paste
                              :archive
-                             :detele
+                             :delete
                              :goto
                              :rank
                              :tsk

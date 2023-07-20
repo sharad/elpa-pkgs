@@ -1,6 +1,3 @@
-;; Preamble
-
-
 ;; [[file:org-context-clock.org::*Preamble][Preamble:1]]
 ;;; org-context-clock.el --- org-context-clock               -*- lexical-binding: t; -*-
 
@@ -36,9 +33,6 @@
   :group 'org-progress)
 ;; Preamble:2 ends here
 
-;; Required libraries
-
-
 ;; [[file:org-context-clock.org::*Required libraries][Required libraries:1]]
 (require 'org-clock)
 
@@ -58,9 +52,6 @@
     (require 'org-macs))
 ;; Required libraries:1 ends here
 
-;; It is divided into multiple files for different functionality
-
-
 ;; [[file:org-context-clock.org::*It is divided into multiple files for different functionality][It is divided into multiple files for different functionality:1]]
 (require 'org-context-clock-api)
 (require 'org-context-clock-api-list) ;; "org tasks access api for list org"
@@ -70,8 +61,6 @@
 (require 'org-context-clock-assoc-rank) ;; "Org tasks associated to context rank functions"
 (require 'org-context-clock-assoc-key) ;; "org tasks associated to context key functions on recursive taskinfos"
 ;; It is divided into multiple files for different functionality:1 ends here
-
-;; Global variables
 
 ;; [[file:org-context-clock.org::*Global variables][Global variables:1]]
 (defvar *org-context-clock-task-current-context*  nil)
@@ -97,9 +86,6 @@
 (defvar org-context-clock-api-task-update-files                (org-context-clock-access-api-get org-context-clock-access-api-name :files))
 ;; Global variables:1 ends here
 
-;; Simple function
-
-
 ;; [[file:org-context-clock.org::*Simple function][Simple function:1]]
 (defun custom-plist-keys (in-plist)
   (if (null in-plist)
@@ -107,17 +93,12 @@
       (cons (cl-first in-plist) (custom-plist-keys (nthcdr 2 in-plist)))))
 ;; Simple function:1 ends here
 
-;; Disable for some time
-
 ;; [[file:org-context-clock.org::*Disable for some time][Disable for some time:1]]
 (defun org-context-clock-disable-for (time)
   "Disable context clocking for TIME period."
   ;; Implement
   )
 ;; Disable for some time:1 ends here
-
-;; Context clock API
-
 
 ;; [[file:org-context-clock.org::*Context clock API][Context clock API:1]]
 ;;;###autoload
@@ -164,9 +145,6 @@
          org-context-clock-api-task-update-tasks                (org-context-clock-access-api-get org-context-clock-access-api-name :update)))))
 ;; Context clock API:1 ends here
 
-;; Update tasks
-
-
 ;; [[file:org-context-clock.org::*Update tasks][Update tasks:1]]
 ;;;###autoload
 (defun org-context-clock-task-update-tasks (&optional force)
@@ -197,9 +175,6 @@
     (org-context-clock-build-tasks (buffer-file-name))))
 ;; Update tasks:1 ends here
 
-;; Build context
-
-
 ;; [[file:org-context-clock.org::*Build context][Build context:1]]
 (defun org-context-clock-build-context (&optional buff)
   (let* ((buff (if buff
@@ -217,14 +192,10 @@
     context))
 ;; Build context:1 ends here
 
-;; Unnamed task related global variable
-
 ;; [[file:org-context-clock.org::*Unnamed task related global variable][Unnamed task related global variable:1]]
 (defvar *org-context-clock-unassociate-context-start-time* nil)
 (defvar *org-context-clock-swapen-unnamed-threashold-interval* (* 60 2)) ;2 mins
 ;; Unnamed task related global variable:1 ends here
-
-;; Unnamed task functions
 
 ;; [[file:org-context-clock.org::*Unnamed task functions][Unnamed task functions:1]]
 (defun org-context-clock-unassociate-context-start-time-reset ()
@@ -317,8 +288,6 @@
       t))
 ;; Unnamed task functions:1 ends here
 
-;; Main context clock function update-current-context
-
 ;; [[file:org-context-clock.org::*Main context clock function update-current-context][Main context clock function update-current-context:1]]
 ;;;###autoload
 (defun org-context-clock-update-current-context (&optional force)
@@ -374,7 +343,7 @@
               (org-context-clock-maybe-create-clockedin-unnamed-dyntaskpl context)))))))
 ;; Main context clock function update-current-context:1 ends here
 
-;; Create task info out of current clock
+
 ;; When org-clock-marker was hidden that time (org-context-clock-collect-task) not able to
 ;; collect correct task, so here cloned buffer need to be created.
 ;; see here[[https://emacs.stackexchange.com/questions/9530/how-can-i-get-an-org-mode-outline-in-a-2nd-buffer-as-a-dynamic-table-of-contents][ How can I get an org-mode outline in a 2nd buffer as a dynamic table of contents?]]
@@ -396,8 +365,6 @@
           info)))))
 ;; Create task info out of current clock:1 ends here
 
-;; Test if TASK is associate to CONTEXT
-
 ;; [[file:org-context-clock.org::*Test if TASK is associate to CONTEXT][Test if TASK is associate to CONTEXT:1]]
 (defun org-context-clock-task-associated-to-context-p (task context)
   (if task
@@ -405,16 +372,12 @@
       0))
 ;; Test if TASK is associate to CONTEXT:1 ends here
 
-;; Collect and return task matching to CONTEXT
-
 ;; [[file:org-context-clock.org::*Collect and return task matching to CONTEXT][Collect and return task matching to CONTEXT:1]]
 ;;;###autoload
 (defun org-context-clock-current-task-associated-to-context-p (context)
   (let ((task (org-context-clock-task-current-task)))
     (org-context-clock-task-associated-to-context-p task context)))
 ;; Collect and return task matching to CONTEXT:1 ends here
-
-;; TODO add org-insert-log-not
 
 ;; [[file:org-context-clock.org::*add org-insert-log-not][add org-insert-log-not:1]]
 (defun org-context-clock-clockin-dyntaskpl (new-dyntaskpl)
@@ -474,8 +437,6 @@
         retval)))))
 ;; add org-insert-log-not:1 ends here
 
-;; Clock-into one of associated tasks
-
 ;; [[file:org-context-clock.org::*Clock-into one of associated tasks][Clock-into one of associated tasks:1]]
 ;;;###autoload
 (defun org-context-clock-dyntaskpl-run-associated-dyntaskpl (context)
@@ -520,9 +481,6 @@
     (org-context-clock-dyntaskpls-associated-to-context-filtered (org-context-clock-build-context))))
   )
 ;; Clock-into one of associated tasks:1 ends here
-
-;; function to setup context clock timer
-
 
 ;; [[file:org-context-clock.org::*function to setup context clock timer][function to setup context clock timer:1]]
 ;;;###autoload
@@ -684,9 +642,6 @@ pointing to it."
         (delete propstr org-use-property-inheritance)))))
 ;; function to setup context clock timer:4 ends here
 
-;; Test functions
-
-
 ;; [[file:org-context-clock.org::*Test functions][Test functions:1]]
 (progn ;; "Org task clock reporting"
   ;; #+BEGIN: task-clock-report-with-comment :parameter1 value1 :parameter2 value2 ...
@@ -832,8 +787,6 @@ pointing to it."
   (org-context-clock-markers-associated-to-context (org-context-clock-build-context)))
   #'org-context-clock-clockin-marker))
 ;; Test functions:2 ends here
-
-;; Provide this file
 
 ;; [[file:org-context-clock.org::*Provide this file][Provide this file:1]]
 (provide 'org-context-clock)

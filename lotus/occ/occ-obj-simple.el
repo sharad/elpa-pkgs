@@ -119,11 +119,34 @@
                                            (car (last (occ-tree-tsk-subtree obj)))
                                          obj) ;BUG: how to identify correction collection
                                  (occ-obj-list (occ-obj-tsk-collection obj)))
+  ;; BUG: why child added to start when it is added in front, may need to fix in tree-tsk.el
   (setf (occ-tree-tsk-subtree obj) (nconc (occ-tree-tsk-subtree obj)
                                           (list  child))))
 
 (cl-defmethod occ-do-induct-child ((obj   occ-list-tsk)
                                    (child occ-list-tsk))
+  (occ-obj-set-property child 'subtree-level
+                        (1+ (occ-obj-get-property obj 'subtree-level)))
+  (occ-insert-node-after-element child obj
+                                 (occ-obj-list (occ-obj-tsk-collection obj))))
+
+
+(cl-defmethod occ-do-abondon-child ((obj   occ-tree-tsk)
+                                    (child occ-tree-tsk))
+  ;; (occ-message "Inducting child %s in parent %s"
+  ;;              (occ-obj-format child)
+  ;;              (occ-obj-format obj))
+  (occ-obj-set-property child 'subtree-level
+                        (1+ (occ-obj-get-property obj 'subtree-level)))
+  (occ-insert-node-after-element child (if (occ-tree-tsk-subtree obj)
+                                           (car (last (occ-tree-tsk-subtree obj)))
+                                         obj) ;BUG: how to identify correction collection
+                                 (occ-obj-list (occ-obj-tsk-collection obj)))
+  (setf (occ-tree-tsk-subtree obj) (nconc (occ-tree-tsk-subtree obj)
+                                          (list  child))))
+
+(cl-defmethod occ-do-abondon-child ((obj   occ-list-tsk)
+                                    (child occ-list-tsk))
   (occ-obj-set-property child 'subtree-level
                         (1+ (occ-obj-get-property obj 'subtree-level)))
   (occ-insert-node-after-element child obj
