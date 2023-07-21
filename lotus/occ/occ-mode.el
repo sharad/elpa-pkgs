@@ -62,8 +62,8 @@
                     ("le" occ-property-edit)
 
 
-                    ("Cc" occ-curr-procreate-child)
-                    ("CC" occ-curr-procreate-child-clock-in)
+                    ("Cc" occ-curr-create-child)
+                    ("CC" occ-curr-create-child-clock-in)
                     ("Ct" occ-curr-tsk-continue-for)
 
                     ("ds" occ-start-day)

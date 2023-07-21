@@ -62,8 +62,8 @@
       (occ-obj-build-callable-normal :clock-in                 "Clock-in"                 #'occ-do-clock-in)
       (occ-obj-build-callable-normal :try-fast-clock-in        "Try Fast Clock-in"        #'occ-do-try-fast-clock-in)
       (occ-obj-build-callable-normal :try-clock-in             "Try Clock-in"             #'occ-do-try-clock-in)
-      (occ-obj-build-callable-normal :procreate-child          "Create Child"             #'occ-do-create-child)
-      (occ-obj-build-callable-normal :procreate-child-clock-in "Create Child Clock-in"    #'occ-do-create-child-clock-in)
+      (occ-obj-build-callable-normal :create-child          "Create Child"             #'occ-do-create-child)
+      (occ-obj-build-callable-normal :create-child-clock-in "Create Child Clock-in"    #'occ-do-create-child-clock-in)
       (occ-obj-build-callable-normal :cut                      "Cut"                      #'occ-do-cut)
       (occ-obj-build-callable-normal :paste                    "Paste"                    #'occ-do-paste)
       (occ-obj-build-callable-normal :archive                  "Archive"                  #'occ-do-archive)
@@ -96,8 +96,8 @@
 
        (occ-add-helm-actions '(actions general)
                              "Simple"
-                             :procreate-child
-                             :procreate-child-clock-in
+                             :create-child
+                             :create-child-clock-in
                              :call-with-obj
                              :set-debug-obj
                              :try-clock-in
