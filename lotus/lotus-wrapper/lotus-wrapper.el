@@ -1,4 +1,4 @@
-;;; lotus-wrapper.el --- rcs autosave backup
+;;; lotus-wrapper.el --- rcs autosave backup  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2012  Sharad Pratap
 
@@ -299,4 +299,39 @@ attempts to find a file whose name is produced by (format FMT FILENAME)."
                    segments
                    (concat " " (lsp-headerline--arrow-icon) " ")))
     ""))
+
+
+;; (org-newline-and-indent)
+;; (org--newline)
+;; (org-return)
+
+;; (defun org--newline (indent arg interactive)
+;;   "Call `newline-and-indent' or just `newline'.
+;; If INDENT is non-nil, call `newline-and-indent' with ARG to
+;; indent unconditionally; otherwise, call `newline' with ARG and
+;; INTERACTIVE, which can trigger indentation if
+;; `electric-indent-mode' is enabled."
+;;   (if indent
+;;       (org-newline-and-indent arg)
+;;     (newline arg interactive)))
+
+
+(let ((last-insertion (current-time)))
+  (defun override--org--newline (oldfn &rest args)
+    (let ((current-time (current-time)))
+      (when (< 10
+               (- (float-time current-time)
+                  (float-time last-insertion)))
+        (org-insert-time-stamp nil nil nil " ")
+        (setq last-insertion current-time)))
+    (apply oldfn args)))
+
+;; (< 10 (- (float-time (current-time)) (float-time xxxlast-insertion)))
+(ignore-error
+    (remove-function (symbol-function 'org--newline)
+                     #'override--org--newline))
+
+(add-function :around
+              (symbol-function 'org--newline)
+              #'override--org--newline)
 
