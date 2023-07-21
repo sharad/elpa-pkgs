@@ -31,6 +31,9 @@
 (require 'lotus-misc-advices)
 
 
+(declare-function override--org--newline "lotus-misc-advices" (oldfn &rest args))
+
+
 ;;;###autoload
 (defun lotus-wrapper-insinuate ()
   (interactive)

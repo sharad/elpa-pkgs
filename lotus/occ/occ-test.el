@@ -467,6 +467,7 @@
    (message "test-method1 ((obj number) (m   marker))"))
 
  (test-method1 'a 1)
+ (test-method1 'a)
 
  (ignore-error (test-method1 1)))
 

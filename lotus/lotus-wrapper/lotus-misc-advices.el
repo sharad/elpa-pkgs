@@ -27,6 +27,8 @@
 (provide 'lotus-misc-advices)
 
 
+(require 'org)
+
 ;;;###autoload
 (defun alternate--erc-identd-start (&optional port)
   "Start an identd server listening to port 8113.
@@ -92,7 +94,7 @@ system."
   ;;   (if indent
   ;;       (org-newline-and-indent arg)
   ;;     (newline arg interactive)))
-  
+
   (defun around--org--newline (oldfn &rest args)
         (let ((current-time (current-time)))
           (when (< 10
@@ -101,5 +103,11 @@ system."
             (org-insert-time-stamp nil nil nil " ")
             (setq last-insertion current-time)))
         (apply oldfn args)))
+
+;;;###autoload
+(autoload 'around--org--newline "lotus-misc-advices" "\
+
+
+\(fn OLDFUN &rest ARGS)" nil nil)
 
 ;;; lotus-misc-advices.el ends here
