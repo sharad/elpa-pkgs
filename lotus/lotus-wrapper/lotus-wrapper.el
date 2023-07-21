@@ -34,6 +34,10 @@
 ;;;###autoload
 (defun lotus-wrapper-insinuate ()
   (interactive)
+  (with-eval-after-load "org"
+    (add-function :around
+                  (symbol-function 'org--newline)
+                  #'override--org--newline))
   (with-eval-after-load "files"
     (add-function :override
                   (symbol-function 'file-truename)
@@ -81,6 +85,8 @@
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
   (interactive)
+  (remove-function (symbol-function 'org--newline)
+                   #'override--org--newline)
   (remove-function (symbol-function 'file-truename)
                    #'override--file-truename)
   (remove-function (symbol-function 'pm--run-other-hooks)
@@ -299,39 +305,4 @@ attempts to find a file whose name is produced by (format FMT FILENAME)."
                    segments
                    (concat " " (lsp-headerline--arrow-icon) " ")))
     ""))
-
-
-;; (org-newline-and-indent)
-;; (org--newline)
-;; (org-return)
-
-;; (defun org--newline (indent arg interactive)
-;;   "Call `newline-and-indent' or just `newline'.
-;; If INDENT is non-nil, call `newline-and-indent' with ARG to
-;; indent unconditionally; otherwise, call `newline' with ARG and
-;; INTERACTIVE, which can trigger indentation if
-;; `electric-indent-mode' is enabled."
-;;   (if indent
-;;       (org-newline-and-indent arg)
-;;     (newline arg interactive)))
-
-
-(let ((last-insertion (current-time)))
-  (defun override--org--newline (oldfn &rest args)
-    (let ((current-time (current-time)))
-      (when (< 10
-               (- (float-time current-time)
-                  (float-time last-insertion)))
-        (org-insert-time-stamp nil nil nil " ")
-        (setq last-insertion current-time)))
-    (apply oldfn args)))
-
-;; (< 10 (- (float-time (current-time)) (float-time xxxlast-insertion)))
-(ignore-error
-    (remove-function (symbol-function 'org--newline)
-                     #'override--org--newline))
-
-(add-function :around
-              (symbol-function 'org--newline)
-              #'override--org--newline)
 

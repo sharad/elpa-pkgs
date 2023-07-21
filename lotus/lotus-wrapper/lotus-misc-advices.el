@@ -77,4 +77,29 @@ system."
 ;;;###autoload
 (defalias 'around--semantic-mode #'fixed--semantic-mode)
 
+
+(let ((last-insertion (current-time)))
+  ;; (org-newline-and-indent)
+  ;; (org--newline)
+  ;; (org-return)
+
+  ;; (defun org--newline (indent arg interactive)
+  ;;   "Call `newline-and-indent' or just `newline'.
+  ;; If INDENT is non-nil, call `newline-and-indent' with ARG to
+  ;; indent unconditionally; otherwise, call `newline' with ARG and
+  ;; INTERACTIVE, which can trigger indentation if
+  ;; `electric-indent-mode' is enabled."
+  ;;   (if indent
+  ;;       (org-newline-and-indent arg)
+  ;;     (newline arg interactive)))
+  
+  (defun around--org--newline (oldfn &rest args)
+        (let ((current-time (current-time)))
+          (when (< 10
+                   (- (float-time current-time)
+                      (float-time last-insertion)))
+            (org-insert-time-stamp nil nil nil " ")
+            (setq last-insertion current-time)))
+        (apply oldfn args)))
+
 ;;; lotus-misc-advices.el ends here
