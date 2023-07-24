@@ -1,7 +1,7 @@
 
 * Test
 
-** Another test <2023-07-24 Mon>
+** MOM test <2023-07-24 Mon>
 <2023-07-24 Mon>
 
 Try M-x org-timer  <2023-07-24 Mon>
