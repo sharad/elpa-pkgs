@@ -40,7 +40,7 @@
   (with-eval-after-load "org"
     (add-function :around
                   (symbol-function 'org--newline)
-                  #'override--org--newline))
+                  #'around--org--newline))
   (with-eval-after-load "files"
     (add-function :override
                   (symbol-function 'file-truename)

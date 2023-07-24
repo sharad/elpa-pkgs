@@ -149,4 +149,12 @@
                                                    nil
                                                    t))))
 
+
+(defmacro lotus-postpone-if-reedit (postpone-time max-tries &rest body)
+  `(if (lotus-active-recursive-edit)
+       (run-at-time postpone-time nil
+                    #'(lambda ()
+                        ,@body))
+     ,@body))
+
 ;;; timer-utils-lotus.el ends here

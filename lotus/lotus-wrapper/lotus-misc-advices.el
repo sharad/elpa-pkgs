@@ -110,4 +110,8 @@ system."
 
 \(fn OLDFUN &rest ARGS)" nil nil)
 
+
+;; clean-buffer-list from midnight -- postpone till recursive-edit is free
+
+
 ;;; lotus-misc-advices.el ends here
