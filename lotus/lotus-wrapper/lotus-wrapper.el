@@ -89,7 +89,7 @@
 (defun lotus-wrapper-uninsinuate ()
   (interactive)
   (remove-function (symbol-function 'org--newline)
-                   #'override--org--newline)
+                   #'around--org--newline)
   (remove-function (symbol-function 'file-truename)
                    #'override--file-truename)
   (remove-function (symbol-function 'pm--run-other-hooks)
