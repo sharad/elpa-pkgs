@@ -105,6 +105,31 @@
                  '(timebeing root currfile))))
 
 
+(cl-defgeneric occ-do-add-ineq (property
+                                ineq)
+  "Add ineq for property PROPERTY.")
+(cl-defmethod occ-do-add-ineq ((property symbol)
+                               (ineq list))
+  "Add ineq for property PROPERTY."
+  (occ-do-add-ineq-internal property ineq))
+(cl-defmethod occ-do-add-ineq ((property symbol)
+                               (ineq string))
+  "Add ineq for property PROPERTY."
+  (occ-do-add-ineq-internal property ineq))
+
+(cl-defgeneric occ-obj-ineq (property)
+  "Add ineq for property PROPERTY.")
+(cl-defmethod occ-obj-ineq ((property symbol))
+  "Add ineq for property PROPERTY."
+  (occ-obj-ineq-internal property))
+
+(cl-defgeneric occ-obj-priority (property)
+  "Add ineq for property PROPERTY.")
+(cl-defmethod occ-obj-priority ((property symbol))
+  "Add ineq for property PROPERTY."
+  (occ-obj-priority-internal property))
+
+
 (cl-defgeneric occ-obj-priority-rankprop (obj prop)
   "Get prioritised rank.")
 
