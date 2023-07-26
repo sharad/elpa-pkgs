@@ -369,15 +369,15 @@ method provided."))))
 
 
 
-(cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
-                                 (operation (eql get))
-                                 (prop      symbol)
-                                 values)
-  ;; Required by occ-obj-gen-edit-if-required in occ-prop-gen-edit-actions.el#L101
-  ;; To generate add and delete increment actions
-  (ignore obj)
-  (occ-debug "occ-obj-require-p11 prop %s operation %s values %s is called" prop operation values)
-  nil)
+;; (cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
+;;                                  (operation (eql get))
+;;                                  (prop      symbol)
+;;                                  values)
+;;   ;; Required by occ-obj-gen-edit-if-required in occ-prop-gen-edit-actions.el#L101
+;;   ;; To generate add and delete increment actions
+;;   (ignore obj)
+;;   (occ-debug "occ-obj-require-p11 prop %s operation %s values %s is called" prop operation values)
+;;   nil)
 
 (cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
                                  (operation (eql add))
