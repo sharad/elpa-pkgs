@@ -368,10 +368,13 @@ method provided."
 method provided."))))
 
 
+
 (cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
                                  (operation (eql get))
                                  (prop      symbol)
                                  values)
+  ;; Required by occ-obj-gen-edit-if-required in occ-prop-gen-edit-actions.el#L101
+  ;; To generate add and delete increment actions
   (ignore obj)
   (occ-debug "occ-obj-require-p11 prop %s operation %s values %s is called" prop operation values)
   nil)
@@ -380,7 +383,10 @@ method provided."))))
                                  (operation (eql add))
                                  (prop      symbol)
                                  values)
+  "Built in for LIST PROP"
   (occ-debug "occ-obj-require-p7 prop %s operation %s values %s is called" prop operation values)
+  (message "tsk %s, operation %s prop %s values %s" (occ-obj-Format obj) operation prop
+           values)
   (not (occ-obj-has-p obj prop
                       values)))
 
@@ -388,6 +394,9 @@ method provided."))))
                                  (operation (eql put))
                                  (prop      symbol)
                                  values)
+  "Built in for LIST PROP"
+  (message "tsk %s, operation %s prop %s values %s" (occ-obj-Format obj) operation prop
+           values)
   (ignore obj)
   (occ-debug "occ-obj-require-p10 prop %s operation %s values %s is called" prop operation values)
   nil)
@@ -396,17 +405,20 @@ method provided."))))
                                  (operation (eql remove))
                                  (prop      symbol)
                                  values)
+  "Built in for LIST PROP"
+  (message "tsk %s, operation %s prop %s values %s" (occ-obj-Format obj) operation prop
+           values)
   (occ-debug "occ-obj-require-p8 prop %s operation %s values %s is called" prop operation values)
   (occ-obj-has-p obj prop
                  values))
 
-(cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
-                                 (operation (eql member))
-                                 (prop      symbol)
-                                 values)
-  (ignore obj)
-  (occ-debug "occ-obj-require-p9 prop %s operation %s values %s is called" prop operation values)
-  nil)
+;; (cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
+;;                                  (operation (eql member))
+;;                                  (prop      symbol)
+;;                                  values)
+;;   (ignore obj)
+;;   (occ-debug "occ-obj-require-p9 prop %s operation %s values %s is called" prop operation values)
+;;   nil)
 
 
 (cl-defmethod occ-obj-valid-p ((operation symbol)

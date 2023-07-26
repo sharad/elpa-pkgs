@@ -27,7 +27,5 @@
 (provide 'occ-intf)
 
 
-(defun occ-helm-marker-source ())
-(defun occ-helm-select-marker ())
 
 ;;; occ-intf.el ends here

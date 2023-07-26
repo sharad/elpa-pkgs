@@ -118,7 +118,7 @@ prop GET and VALUES"
           (occ-org-entry-get-multivalued-property pom
                                                     prop-string)
         (list (occ-org-entry-get pom
-                               prop-string)))))
+                                 prop-string)))))
 
 (cl-defmethod occ-do-org-operation ((pom  marker)
                                     (operation (eql add))

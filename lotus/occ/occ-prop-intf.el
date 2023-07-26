@@ -214,7 +214,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   "Return a default VALUE of property _TEMPLATE_."
   (ignore operation)
   (occ-obj-get-property (occ-obj-ctx obj)
-                    property))
+                        property))
 
 
 (cl-defgeneric occ-obj-operation (obj

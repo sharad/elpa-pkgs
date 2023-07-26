@@ -167,23 +167,31 @@
 
 ;; TODO: Add log not on property editing.
 (cl-defmethod occ-obj-select-operation ((obj  occ-obj-tsk)
-                                        (prop symbol))
+                                        (prop symbol)
+                                        &optional
+                                        value)
   (occ-assert prop)
   (if (occ-obj-list-p prop)
       ;; TODO: where are generated actions?? (occ-obj-operations-for-prop 'occ-obj-tsk 'root)
       (let* ((operations (occ-obj-operations-for-prop obj
                                                       prop))
+             ;; (operations (cl-remove-if #'(lambda (op) (occ-obj-require-p obj op prop value))
+             ;;                           (occ-obj-operations-for-prop obj
+             ;;                                                        prop)))
+
              ;; (actions '(("add" . add)
              ;;            ("del" . remove)
              ;;            ("put" . put)))
+             (existing-value (occ-obj-get-property obj prop))
              (actions    (mapcar #'(lambda (op)
-                                     (cons (symbol-name op) op))
+                                     (cons (format "%s [%s]: " (symbol-name op) existing-value) op))
                                  operations)))
+             
         (occ-assert actions)
-        (let ((action  (completing-read (format "%s action: " prop) actions)))
+        (let ((action  (completing-read (format "%s [%s] action: " prop existing-value) actions)))
           (occ-assert action)
           (cl-rest (assoc action
-                       actions))))
+                          actions))))
     'put))
 
 
@@ -204,7 +212,7 @@
   (occ-debug "occ-do-op-prop-edit: prop: %s, value: %s" prop value)
   (occ-assert prop)
   (let ((operation  (or operation
-                        (occ-obj-select-operation obj prop)))
+                        (occ-obj-select-operation obj prop value)))
         (prop-value (or value
                         (occ-obj-readprop-from-user obj
                                                     prop))))
