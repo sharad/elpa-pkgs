@@ -105,20 +105,20 @@
   "Org operation implementation of OPERATION on POINT-OF-MARKER for
 PROP and VALUES")
 
-;; (cl-defmethod occ-do-org-operation ((pom  marker)
-;;                                     (operation (eql get))
-;;                                     (prop symbol)
-;;                                     values)
-;;   "Org operation implementation of OPERATION on POINT-OF-MARKER for
-;; prop GET and VALUES"
-;;   (ignore operation)
-;;   (ignore values)
-;;   (let ((prop-string (symbol-name prop)))
-;;       (if (occ-obj-list-p prop)
-;;           (occ-org-entry-get-multivalued-property pom
-;;                                                     prop-string)
-;;         (list (occ-org-entry-get pom
-;;                                  prop-string)))))
+(cl-defmethod occ-do-org-operation ((pom  marker)
+                                    (operation (eql get))
+                                    (prop symbol)
+                                    values)
+  "Org operation implementation of OPERATION on POINT-OF-MARKER for
+prop GET and VALUES"
+  (ignore operation)
+  (ignore values)
+  (let ((prop-string (symbol-name prop)))
+      (if (occ-obj-list-p prop)
+          (occ-org-entry-get-multivalued-property pom
+                                                    prop-string)
+        (list (occ-org-entry-get pom
+                                 prop-string)))))
 
 (cl-defmethod occ-do-org-operation ((pom  marker)
                                     (operation (eql add))
@@ -166,21 +166,21 @@ for prop REMOVE and VALUES"
                                                           (cl-first values))
         (occ-error "Implement it."))))
 
-;; (cl-defmethod occ-do-org-operation ((pom  marker)
-;;                                     (operation (eql member))
-;;                                     (prop symbol)
-;;                                     values)
-;;   "Org operation implementation of OPERATION on POINT-OF-MARKER
-;; for prop MEMBER and VALUES"
-;;   (ignore operation)
-;;   (let ((prop-string (symbol-name prop)))
-;;       (if (occ-obj-list-p prop)
-;;           (occ-org-entry-member-in-multivalued-property pom
-;;                                                         prop-string
-;;                                                         (cl-first values))
-;;         (string= (cl-first values)
-;;                  (occ-org-entry-get pom
-;;                                     prop-string)))))
+(cl-defmethod occ-do-org-operation ((pom  marker)
+                                    (operation (eql member))
+                                    (prop symbol)
+                                    values)
+  "Org operation implementation of OPERATION on POINT-OF-MARKER
+for prop MEMBER and VALUES"
+  (ignore operation)
+  (let ((prop-string (symbol-name prop)))
+      (if (occ-obj-list-p prop)
+          (occ-org-entry-member-in-multivalued-property pom
+                                                        prop-string
+                                                        (cl-first values))
+        (string= (cl-first values)
+                 (occ-org-entry-get pom
+                                    prop-string)))))
 
 
 (cl-defmethod occ-do-org-operation ((obj occ-obj-tsk)
