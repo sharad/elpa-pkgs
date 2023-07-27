@@ -146,6 +146,8 @@ return ORG compatible value."
              property)
   (occ-obj-impl-list-p property))
 
+;; TODO: RESUME HERE
+
 
 ;; (cl-defgeneric occ-obj-prop-to-org (property
 (cl-defgeneric occ-obj-intf-to-org (property
