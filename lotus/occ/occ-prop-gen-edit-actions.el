@@ -42,10 +42,10 @@
   "Used by occ-obj-gen-edit"
   ;; TODO: Improve it.
   (ignore param-only)
-  (let ((list-p (occ-obj-list-p prop)))
+  (let ((list-p (occ-obj-intf-list-p prop)))
       (format "%s %s %s property %s to %s"
               (symbol-name operation)
-              (occ-obj-format-prop obj prop value)
+              (occ-obj-intf-format obj prop value)
               (if list-p "in" "from")
               prop
               (occ-obj-Format obj))))

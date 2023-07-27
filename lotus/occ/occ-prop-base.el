@@ -304,7 +304,7 @@ method provided."
 
 (cl-defmethod occ-obj-operations-for-prop ((class symbol)
                                            (prop  symbol))
-  ;; check about (occ-obj-list-p prop) also
+  ;; check about (occ-obj-intf-list-p prop) also
   (let ((ops (append (occ-cl-method-param-values 'occ-obj-operation
                                                  (list '\` `(,class (eql ,'(\, val)) symbol t))
                                                  'val)
@@ -315,7 +315,7 @@ method provided."
 
 (cl-defmethod occ-obj-operations-for-prop ((obj  occ-obj-tsk)
                                            (prop symbol))
-  ;; check about (occ-obj-list-p prop) also
+  ;; check about (occ-obj-intf-list-p prop) also
   (let ((ops (occ-cl-collect-on-classes #'(lambda (class)
                                             (occ-obj-operations-for-prop class
                                                                          prop))
@@ -336,7 +336,7 @@ method provided."
                                         value)
   "Read org string property PROP to occ representation."
   (occ-assert (not (consp value)))
-  (if (occ-obj-list-p prop)
+  (if (occ-obj-intf-list-p prop)
       (let* ((values (and value (split-string value))))
         (mapcar #'(lambda (v)
                     ;; from Org world to Occ world
@@ -349,7 +349,7 @@ method provided."
 
 (cl-defmethod occ-obj-reread-props ((obj occ-tsk))
   "Read all org string properties for task TSK to occ representation."
-  (let ((props-by-is-list   (occ-cl-method-param-case '(occ-obj-list-p (`((eql ,val)) val))))
+  (let ((props-by-is-list   (occ-cl-method-param-case '(occ-obj-impl-list-p (`((eql ,val)) val))))
         (props-by-converter (occ-cl-method-param-case '(occ-obj-prop-from-org (`((eql ,val) t) val)))))
     (let ((props (-union props-by-is-list
                          props-by-converter))) ;dash

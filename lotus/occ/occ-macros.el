@@ -95,7 +95,7 @@
 (put 'occ-aggregate-rank 'lisp-indent-function 3)
 
 (defmacro occ-aggregate-rank (property values aggregator &rest body)
-  `(let ((values    (if (occ-obj-list-p ',property)
+  `(let ((values    (if (occ-obj-intf-list-p ',property)
                         ,values
                       (list ,values)))
          (total-rank 0))

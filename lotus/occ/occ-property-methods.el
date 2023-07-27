@@ -80,7 +80,7 @@
     (let ((currfile (occ-ctx-file ctx)))
       currfile)))
 
-(cl-defmethod occ-obj-list-p ((prop (eql currfile)))
+(cl-defmethod occ-obj-impl-list-p ((prop (eql currfile)))
   (ignore prop)
   t)
 
@@ -158,7 +158,7 @@
   (let ((file (occ-ctx-file ctx)))
       (when file (dirname-of-file file))))
 
-(cl-defmethod occ-obj-list-p ((prop (eql root)))
+(cl-defmethod occ-obj-impl-list-p ((prop (eql root)))
   (ignore prop)
   t)
 
@@ -217,7 +217,7 @@
                  clocked-time)
             0)))))
 
-(cl-defmethod occ-obj-list-p ((prop (eql timebeing)))
+(cl-defmethod occ-obj-impl-list-p ((prop (eql timebeing)))
   (ignore prop)
   nil)
 
@@ -272,7 +272,7 @@
   (ignore values)
   (let ((tsk    (occ-obj-tsk obj)))
     (ignore tsk)
-    (if (occ-obj-list-p prop)
+    (if (occ-obj-intf-list-p prop)
         (occ-error "Implement it.")
       (occ-error "Implement it."))))
 
@@ -285,7 +285,7 @@
   (ignore values)
   (let ((prop-string (symbol-name prop)))
     (ignore prop-string)
-    (if (occ-obj-list-p prop
+    (if (occ-obj-intf-list-p prop
             (occ-error "Implement it.")
           (occ-error "Implement it.")))))
 

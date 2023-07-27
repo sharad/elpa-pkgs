@@ -114,7 +114,7 @@ prop GET and VALUES"
   (ignore operation)
   (ignore values)
   (let ((prop-string (symbol-name prop)))
-      (if (occ-obj-list-p prop)
+      (if (occ-obj-intf-list-p prop)
           (occ-org-entry-get-multivalued-property pom
                                                     prop-string)
         (list (occ-org-entry-get pom
@@ -128,7 +128,7 @@ prop GET and VALUES"
 prop ADD and VALUES"
   (ignore operation)
   (let ((prop-string (symbol-name prop)))
-      (if (occ-obj-list-p prop)
+      (if (occ-obj-intf-list-p prop)
           (occ-org-entry-add-to-multivalued-property pom
                                                      prop-string
                                                      (cl-first values))
@@ -144,7 +144,7 @@ prop ADD and VALUES"
 for prop PUT and VALUES"
   (ignore operation)
   (let ((prop-string (symbol-name prop)))
-      (if (occ-obj-list-p prop)
+      (if (occ-obj-intf-list-p prop)
           (occ-org-entry-put-multivalued-property pom
                                                   prop-string
                                                   values)
@@ -160,7 +160,7 @@ for prop PUT and VALUES"
 for prop REMOVE and VALUES"
   (ignore operation)
   (let ((prop-string (symbol-name prop)))
-      (if (occ-obj-list-p prop)
+      (if (occ-obj-intf-list-p prop)
           (occ-org-entry-remove-from-multivalued-property pom
                                                           prop-string
                                                           (cl-first values))
@@ -174,7 +174,7 @@ for prop REMOVE and VALUES"
 for prop MEMBER and VALUES"
   (ignore operation)
   (let ((prop-string (symbol-name prop)))
-      (if (occ-obj-list-p prop)
+      (if (occ-obj-intf-list-p prop)
           (occ-org-entry-member-in-multivalued-property pom
                                                         prop-string
                                                         (cl-first values))

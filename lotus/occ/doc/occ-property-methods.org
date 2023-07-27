@@ -60,19 +60,19 @@
   "OBJ has property PROPERTY"
   (let* ((tsk            (occ-obj-tsk obj))
          (tsk-prop-value (occ-obj-get-property tsk prop)))
-    (if (occ-obj-list-p prop)
+    (if (occ-obj-intf-list-p prop)
         (member value tsk-prop-value)
       (equal value tsk-prop-value))))
 (cl-defmethod occ-obj-impl-get ((obj occ-ctx
                                                (prop (eql _template1_))))
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
 
-(cl-defmethod occ-obj-format-prop ((obj occ-obj-tsk)
+(cl-defmethod occ-obj-impl-format ((obj occ-obj-tsk)
                                    (property symbol)
                                    value)
   "Return format printable value of property PROPERTY."
   value)
-(cl-defmethod occ-obj-list-p ((prop (eql _template1_)))
+(cl-defmethod occ-obj-impl-list-p ((prop (eql _template1_)))
   "Is the property _TEMPLATE1_ has VALUES in list, Method tell
          property represent list or not.")
 (cl-defmethod occ-obj-prop-to-org ((prop (eql _template1_))
@@ -88,7 +88,7 @@
 (cl-defmethod occ-obj-impl-get ((user occ-user-agent)
                                 (prop (eql _template1_))
                                 (obj occ-tsk))
-  "Read value of list of elements if (occ-obj-list-p PROPERTY)
+  "Read value of list of elements if (occ-obj-intf-list-p PROPERTY)
         else element for property PROPERTY from user for OCC-TSK OBJ,
         must return ORG compatible value.")
 (cl-defmethod occ-obj-require-p ((obj occ-obj-tsk)
@@ -128,12 +128,12 @@
                                                    (prop (eql _template2_))))
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
 
-(cl-defmethod occ-obj-format-prop ((obj occ-obj-tsk)
+(cl-defmethod occ-obj-impl-format ((obj occ-obj-tsk)
                                    (property symbol)
                                    value)
   "Return format printable value of property PROPERTY."
   value)
-(cl-defmethod occ-obj-list-p ((prop (eql _template2_)))
+(cl-defmethod occ-obj-impl-list-p ((prop (eql _template2_)))
   "Is the property _TEMPLATE2_ has VALUES in list, Method tell
          property represent list or not."
   nil)
@@ -185,7 +185,7 @@
                                  values)
   "Do the actual _OPERATION_."
   (let ((tsk (occ-obj-tsk obj)))
-    (if (occ-obj-list-p prop)
+    (if (occ-obj-intf-list-p prop)
         (occ-error "Implement it.")
       (occ-error "Implement it."))))
 
@@ -233,7 +233,7 @@
     (let ((currfile (occ-ctx-file ctx)))
       currfile)))
 
-(cl-defmethod occ-obj-list-p ((prop (eql currfile)))
+(cl-defmethod occ-obj-impl-list-p ((prop (eql currfile)))
   (ignore prop)
   t)
 
@@ -312,7 +312,7 @@
   (let ((file (occ-ctx-file ctx)))
       (when file (dirname-of-file file))))
 
-(cl-defmethod occ-obj-list-p ((prop (eql root)))
+(cl-defmethod occ-obj-impl-list-p ((prop (eql root)))
   (ignore prop)
   t)
 
@@ -371,7 +371,7 @@
                  clocked-time)
             0)))))
 
-(cl-defmethod occ-obj-list-p ((prop (eql timebeing)))
+(cl-defmethod occ-obj-impl-list-p ((prop (eql timebeing)))
   (ignore prop)
   nil)
 
@@ -426,7 +426,7 @@
   (ignore values)
   (let ((tsk    (occ-obj-tsk obj)))
     (ignore tsk)
-    (if (occ-obj-list-p prop)
+    (if (occ-obj-intf-list-p prop)
         (occ-error "Implement it.")
       (occ-error "Implement it."))))
 
@@ -439,7 +439,7 @@
   (ignore values)
   (let ((prop-string (symbol-name prop)))
     (ignore prop-string)
-    (if (occ-obj-list-p prop
+    (if (occ-obj-intf-list-p prop
             (occ-error "Implement it.")
           (occ-error "Implement it.")))))
 

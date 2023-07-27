@@ -71,7 +71,7 @@
 ;;   (ignore values)
 ;;   (let ((tsk (occ-obj-tsk obj)))
 ;;       (occ-debug "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
-;;       (if (occ-obj-list-p prop)
+;;       (if (occ-obj-intf-list-p prop)
 ;;           (occ-obj-get-property tsk
 ;;                                 prop)
 ;;         (list (occ-obj-get-property tsk
@@ -83,7 +83,7 @@
                                  values)
   (let ((tsk (occ-obj-tsk obj)))
     (occ-debug "(occ-obj-operation occ-obj-tsk add): operation %s prop %s" operation prop)
-    (if (occ-obj-list-p prop)
+    (if (occ-obj-intf-list-p prop)
         (occ-obj-set-property tsk prop
                               (nconc (occ-obj-get-property tsk prop)
                                      (list (cl-first values))))
@@ -96,7 +96,7 @@
                                  values)
   (let ((tsk (occ-obj-tsk obj)))
     (occ-debug "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
-    (if (occ-obj-list-p prop)
+    (if (occ-obj-intf-list-p prop)
         (occ-obj-set-property tsk prop
                               values)
       (occ-obj-set-property tsk prop
@@ -108,7 +108,7 @@
                                  values)
   (let ((tsk (occ-obj-tsk obj)))
     (occ-debug "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
-    (if (occ-obj-list-p prop
+    (if (occ-obj-intf-list-p prop
                         (occ-obj-set-property tsk prop
                                               (remove (cl-first values)
                                                       (occ-obj-get-property tsk prop))))
@@ -171,7 +171,7 @@
                                         &optional
                                         value)
   (occ-assert prop)
-  (if (occ-obj-list-p prop)
+  (if (occ-obj-intf-list-p prop)
       ;; TODO: where are generated actions?? (occ-obj-operations-for-prop 'occ-obj-tsk 'root)
       (let* ((operations (occ-obj-operations-for-prop obj
                                                       prop))

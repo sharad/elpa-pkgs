@@ -102,7 +102,7 @@
 ;; (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk)
 (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk)
                                           (property symbol))
-  "Read value of list of elements if (occ-obj-list-p PROPERTY) else
+  "Read value of list of elements if (occ-obj-intf-list-p PROPERTY) else
 element for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value."
   (ignore obj)
@@ -111,7 +111,7 @@ return ORG compatible value."
 (cl-defmethod occ-obj-intf-get ((user occ-user-agent)
                                 (property symbol)
                                 (ctsk occ-obj-tsk))
-  "Read value of list of elements if (occ-obj-list-p PROPERTY) else
+  "Read value of list of elements if (occ-obj-intf-list-p PROPERTY) else
 element for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value."
   (occ-obj-impl-get user property ctsk))
