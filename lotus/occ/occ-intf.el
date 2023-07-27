@@ -161,7 +161,7 @@ representation.")
 convert value VALUE of property PROPERTY from occ to org string
 representation."
   ;; (occ-error "Implement method occ-obj-intf-to-org for property %s" property)
-  (occ-debug "occ-obj-prop-to-org: no method for property %s using default."
+  (occ-debug "occ-obj-intf-to-org: no method for property %s using default."
              property)
   (occ-obj-impl-to-org property value))
 
@@ -178,7 +178,7 @@ org string to occ representation.")
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
   ;; (occ-error "Implement method occ-obj-intf-from-org for property %s" property)
-  (occ-debug "occ-obj-prop-from-org: no method for property %s using default." property)
+  (occ-debug "occ-obj-intf-from-org: no method for property %s using default." property)
   (occ-obj-impl-prop-from-org property value))
 (cl-defmethod occ-obj-intf-from-org ((property symbol)
                                      (value string))
@@ -186,7 +186,7 @@ org string to occ representation."
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
   ;; (occ-error "Implement method occ-obj-intf-from-org for property %s" property)
-  (occ-debug "occ-obj-prop-from-org: no method for property %s using default." property)
+  (occ-debug "occ-obj-intf-from-org: no method for property %s using default." property)
   (occ-obj-impl-from-org property value))
 
 
@@ -201,7 +201,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   (ignore operation)
   (ignore property)
   (ignore values)
-  (occ-debug "occ-obj-require-p0 is called"))
+  (occ-debug "occ-obj-intf-require-p0 is called"))
 (cl-defmethod occ-obj-intf-require-p ((obj occ-obj-tsk)
                                       (operation (eql _operation_))
                                       (property  symbol)

@@ -131,7 +131,7 @@ representation.")
 convert value VALUE of property PROPERTY from occ to org string
 representation."
   ;; (occ-error "Implement method occ-obj-impl-to-org for property %s" property)
-  (occ-debug "occ-obj-prop-to-org: no method for property %s using default."
+  (occ-debug "occ-obj-impl-to-org: no method for property %s using default."
              property)
   value)
 
@@ -149,7 +149,7 @@ org string to occ representation.")
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
   ;; (occ-error "Implement method occ-obj-impl-from-org for property %s" property)
-  (occ-debug "occ-obj-prop-from-org: no method for property %s using default." property)
+  (occ-debug "occ-obj-impl-from-org: no method for property %s using default." property)
   value)
 ;; (cl-defmethod occ-obj-impl-from-org ((property symbol)
 (cl-defmethod occ-obj-impl-from-org ((property symbol)
@@ -158,7 +158,7 @@ org string to occ representation."
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
   ;; (occ-error "Implement method occ-obj-impl-from-org for property %s" property)
-  (occ-debug "occ-obj-prop-from-org: no method for property %s using default." property)
+  (occ-debug "occ-obj-impl-from-org: no method for property %s using default." property)
   value)
 
 
@@ -183,7 +183,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   (ignore operation)
   (ignore property)
   (ignore values)
-  (occ-debug "occ-obj-require-p0 is called"))
+  (occ-debug "occ-obj-impl-require-p0 is called"))
 (cl-defmethod occ-obj-impl-require-p ((obj occ-obj-tsk)
                                       (operation (eql _operation_))
                                       (property  symbol)
@@ -194,7 +194,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   (ignore operation)
   (ignore property)
   (ignore values)
-  (occ-debug "occ-obj-require-p1 is called")
+  (occ-debug "occ-obj-impl-require-p1 is called")
   t)
 
 
@@ -301,7 +301,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
    (ignore operation)
    (ignore prop)
    (ignore values)
-   (occ-debug "occ-obj-require-p3 is called"))
+   (occ-debug "occ-obj-impl-require-p3 is called"))
  (cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
                                      (prop (eql _template_))
                                      (operation (eql _operation_)))

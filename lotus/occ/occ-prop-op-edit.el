@@ -45,7 +45,7 @@
                                                        prop
                                                        operation
                                                        ;; going to org world
-                                                       (occ-obj-prop-to-org prop
+                                                       (occ-obj-intf-to-org prop
                                                                             values))))
       (occ-debug "occ-obj-operation: (occ-obj-org-call-operation-at-point mrk) returnd %s" retval)
       retval)))
@@ -175,7 +175,7 @@
       ;; TODO: where are generated actions?? (occ-obj-operations-for-prop 'occ-obj-tsk 'root)
       (let* ((operations (occ-obj-operations-for-prop obj
                                                       prop))
-             ;; (operations (cl-remove-if #'(lambda (op) (occ-obj-require-p obj op prop value))
+             ;; (operations (cl-remove-if #'(lambda (op) (occ-obj-intf-require-p obj op prop value))
              ;;                           (occ-obj-operations-for-prop obj
              ;;                                                        prop)))
 

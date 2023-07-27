@@ -103,10 +103,10 @@ only argument required for some other further processing"
                                             (operation symbol)
                                             value
                                             &key param-only)
-  (when (occ-obj-require-p obj
-                           operation
-                           prop
-                           value)
+  (when (occ-obj-intf-require-p obj
+                                operation
+                                prop
+                                value)
     (occ-obj-gen-edit obj
                       prop
                       operation
@@ -121,9 +121,9 @@ only argument required for some other further processing"
   (ignore operation)
   (let* ((ops      (occ-obj-operations-for-prop obj prop))
          (edit-ops (mapcar #'(lambda (operation)
-                               (let ((value (occ-obj-prop-default-value obj
-                                                                        prop
-                                                                        operation)))
+                               (let ((value (occ-obj-intf-default obj
+                                                                  prop
+                                                                  operation)))
                                  (when value
                                    (occ-obj-gen-edit-if-required obj
                                                                  prop

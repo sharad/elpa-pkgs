@@ -262,7 +262,7 @@ PROP and VALUES"
                                                         prop
                                                         'get)))
       (mapcar #'(lambda (v)
-                  (occ-obj-prop-from-org prop
+                  (occ-obj-intf-from-org prop
                                          v))
               values))))
 
@@ -275,7 +275,7 @@ PROP and VALUES"
     (let* ((values (occ-obj-get-property tsk prop))
            (values (if (consp values) values (list values)))
            (values (mapcar #'(lambda (v)
-                               (occ-obj-prop-to-org prop v))
+                               (occ-obj-intf-to-org prop v))
                            values)))
       (occ-obj-org-call-operation-at-point (occ-obj-marker tsk)
                                            prop
