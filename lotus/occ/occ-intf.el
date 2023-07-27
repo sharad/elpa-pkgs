@@ -29,6 +29,7 @@
 
 (require 'occ-impl)
 
+
 ;; (cl-defgeneric occ-obj-intf-rankprop (obj
 (cl-defgeneric occ-obj-intf-rank (obj
                                   property)
