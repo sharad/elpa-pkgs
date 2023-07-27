@@ -849,6 +849,24 @@
                           :level level)))
 
 
+(let ((instance))
+  (defun occ-obj-get-user-agent ()
+    (unless instance
+      (setq instance (make-occ-obj-user-agent)))
+    instance))
+
+(let ((instance))
+  (defun occ-obj-get-org-agent ()
+    (unless instance
+      (setq instance (make-occ-obj-org-agent)))
+    instance))
+
+(let ((instance))
+  (defun occ-obj-get-emacs-agent ()
+    (unless instance
+      (setq instance (make-occ-obj-emacs-agent)))
+    instance))
+
 (occ-testing
  (let* ((obj       (occ-obj-make-ctx-at-point))
         (ap-obj    (occ-obj-make-ap-transf '(t actions general)))

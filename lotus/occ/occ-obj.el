@@ -82,13 +82,13 @@
 ;;
 ;;                                                                                               obj
 ;;                                                                                                |
-;;                                       +--------------------------------------------------------+--------------------------------------------------------+---------------------------------------+-------------------------+
-;;                                       |                                                        |                                                        |                                       |                          |
-;;                                    obj-tsk                                                 obj-prop                                                  obj-ctx                                   stat                      action
-;;                                       |                                                        |                                                        |                                                                  |
-;;          +----------------------------+----------------------------+                         prop                               +-----------------------+-----------------------+                               +----------+-----------+
-;;          |                                                         |                                                            |                                               |                               |                      |
-;;     obj-ctx-tsk                                                   tsk                                                    obj-collection                                        ctx                             direct                transformer
+;;                                       +--------------------------------------------------------+--------------------------------------------------------+---------------------------------------+-------------------------+-----------------------------------------------+
+;;                                       |                                                        |                                                        |                                       |                          |                                              |
+;;                                    obj-tsk                                                 obj-prop                                                  obj-ctx                                   stat                      action                                         agent
+;;                                       |                                                        |                                                        |                                                                  |                                              |
+;;          +----------------------------+----------------------------+                         prop                               +-----------------------+-----------------------+                               +----------+-----------+                       +----------+-----------+
+;;          |                                                         |                                                            |                                               |                               |                      |                       |                      |
+;;     obj-ctx-tsk                                                   tsk                                                    obj-collection                                        ctx                             direct                transformer             user                    emacs
 ;;          |                                                         |                                                            |
 ;;        ctsk                                             +----------+----------+                                      +----------+----------+
 ;;          |                                              |                     |                                      |                     |
@@ -250,4 +250,16 @@
 (cl-defstruct (occ-hsrc-source (:include occ-hsrc))
   "helm select source")
 
-;;; occ-obj.el ends here
+
+(cl-defstruct (occ-obj-agent (:include occ-obj))
+  "Will hold dummy agent")
+
+(cl-defstruct (occ-obj-user-agent (:include occ-obj-agent))
+  "Will hold dummy user agent")
+
+(cl-defstruct (occ-obj-org-agent (:include occ-obj-agent))
+  "Will hold dummy org agent")
+
+(cl-defstruct (occ-obj-emacs-agent (:include occ-obj-agent))
+  "Will hold dummy org agent")
+;;; occ-obj.el ends here

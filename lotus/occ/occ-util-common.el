@@ -243,7 +243,7 @@
 (defun occ-clouser-call-obj-on-cand (obj)
   "Closed OBJ will be called on CANDIDATE arg"
   #'(lambda (candidate)
-      (message "occ-clouser-call-obj-on-cand: Running fun %s on %s" obj (occ-obj-format candidate))
+      (occ-debug "occ-clouser-call-obj-on-cand: Running fun %s on %s" obj (occ-obj-format candidate))
       (if (functionp obj)
           (funcall obj candidate)
         obj)))
@@ -252,7 +252,7 @@
 (defun occ-clouser-call-cand-on-obj (obj)
   "CANDIDATE-FUN arguemnt will be called on closed OBJ"
   #'(lambda (candidate-fun)
-      (message "occ-clouser-call-cand-on-obj: Running fun %s on %s" candidate-fun (occ-obj-format obj))
+      (occ-debug "occ-clouser-call-cand-on-obj: Running fun %s on %s" candidate-fun (occ-obj-format obj))
       (funcall candidate-fun obj)))
 
 
