@@ -146,8 +146,6 @@ return ORG compatible value."
              property)
   (occ-obj-impl-list-p property))
 
-;; TODO: RESUME HERE
-
 
 ;; (cl-defgeneric occ-obj-prop-to-org (property
 (cl-defgeneric occ-obj-intf-to-org (property
@@ -226,6 +224,8 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                     (operation symbol))
   "Return a default VALUE of property _TEMPLATE_."
   (occ-obj-impl-default obj property operation))
+
+;; TODO: RESUME HERE
 
 
 ;; (cl-defgeneric occ-obj-operation (obj
