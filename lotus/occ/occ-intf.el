@@ -39,19 +39,19 @@
   "Return the RANK (number) for OBJ based on the property PROPERTY"
   ;; too much output
   ;; (occ-debug "occ-obj-rank(tsk-pair=%s ctx=%s)" tsk-pair ctx)
-  (occ-debug "occ-obj-rankprop(obj=%s symbol=%s)" obj property)
+  (occ-debug "occ-obj-intf-rank(obj=%s symbol=%s)" obj property)
   (occ-obj-impl-rank obj property))
 (cl-defmethod occ-obj-intf-rank ((obj  occ-tsk)
                                  (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-debug "occ-obj-rankprop(obj=%s symbol=%s)"
+  (occ-debug "occ-obj-intf-rank(obj=%s symbol=%s)"
              obj
              property)
   (occ-obj-impl-rank obj property))
 (cl-defmethod occ-obj-intf-rank ((obj  occ-obj-ctx-tsk)
                                  (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-debug "occ-obj-rankprop(obj=%s symbol=%s)" obj property)
+  (occ-debug "occ-obj-intf-rank(obj=%s symbol=%s)" obj property)
   (occ-obj-impl-rank obj property))
 
 
@@ -59,14 +59,14 @@
 (cl-defmethod occ-obj-intf-rank ((obj  occ-tsk)
                                  (property (eql nil)))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-debug "occ-obj-rankprop(obj=%s symbol=%s)"
+  (occ-debug "occ-obj-intf-rank(obj=%s symbol=%s)"
              obj
              property)
   (occ-obj-impl-rank obj property))
 (cl-defmethod occ-obj-intf-rank ((obj  occ-obj-ctx-tsk)
                                  (property (eql nil)))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-debug "occ-obj-rankprop(obj=%s symbol=%s)" obj property)
+  (occ-debug "occ-obj-intf-rank(obj=%s symbol=%s)" obj property)
   (occ-obj-impl-rank obj property))
 
 
@@ -89,9 +89,32 @@
 
 (cl-defgeneric occ-obj-intf-get (ctx
                                  property
-                                 obj)
+                                 arg)
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
   ;; (occ-error "must return occ compatible value.")
+(cl-defmethod occ-obj-intf-get ((ctx occ-ctx)
+                                (property symbol)
+                                (arg null))
+  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
+  (occ-obj-impl-get ctx property arg))
+
+
+;; (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk)
+(cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk)
+                                          (property symbol))
+  "Read value of list of elements if (occ-obj-list-p PROPERTY) else
+element for property PROPERTY from user for OCC-TSK OBJ, must
+return ORG compatible value."
+  (ignore obj)
+  (occ-error "Implement method occ-obj-readprop-from-user for property %s" property))
+
+(cl-defmethod occ-obj-intf-get ((user occ-obj-user-agent)
+                                (property symbol)
+                                (ctsk occ-obj-tsk))
+  "Read value of list of elements if (occ-obj-list-p PROPERTY) else
+element for property PROPERTY from user for OCC-TSK OBJ, must
+return ORG compatible value."
+  (occ-obj-impl-get user property ctsk))
 
 
 ;; (cl-defgeneric occ-obj-format-prop (obj
@@ -102,6 +125,11 @@
   (ignore obj)
   (ignore property)
   value)
+(cl-defmethod occ-obj-intf-format (obj
+                                   property
+                                   value)
+  "Return format printable value of property PROPERTY."
+  (occ-obj-impl-format obj property value))
 
 
 ;; (cl-defgeneric occ-obj-list-p (property)
@@ -160,25 +188,6 @@ org string to occ representation."
   (occ-obj-impl-from-org property value))
 
 
-;; (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk)
-(cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk)
-                                          (property symbol))
-  "Read value of list of elements if (occ-obj-list-p PROPERTY) else
-element for property PROPERTY from user for OCC-TSK OBJ, must
-return ORG compatible value."
-  (ignore obj)
-  (occ-error "Implement method occ-obj-readprop-from-user for property %s" property))
-
-(cl-defmethod occ-obj-intf-get ((user occ-obj-user-agent)
-                                (property symbol)
-                                (ctsk occ-obj-tsk))
-  "Read value of list of elements if (occ-obj-list-p PROPERTY) else
-element for property PROPERTY from user for OCC-TSK OBJ, must
-return ORG compatible value."
-  (ignore obj)
-  (occ-obj-impl-get user property ctsk))
-
-
 ;; (cl-defgeneric occ-obj-require-p (obj
 (cl-defgeneric occ-obj-intf-require-p (obj
                                        operation
@@ -209,10 +218,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                     (property symbol)
                                     (operation symbol))
   "Return a default VALUE of property _TEMPLATE_."
-  (ignore obj)
-  (ignore property)
-  (ignore operation)
-  nil)
+  (occ-obj-impl-default obj property operation))
 (cl-defmethod occ-obj-intf-default ((obj occ-obj-ctx-tsk)
                                     (property symbol)
                                     (operation symbol))
@@ -232,11 +238,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                       values)
   "Do the actual OPERATION."
   (occ-obj-impl-operation obj operation property values))
-;; (cl-defmethod occ-obj-intf-operation ((obj occ-obj-tsk)
-;;                              (operation (eql XYZ))
-;;                              (property      (eql x))
-;;                              values)
-;;   ())
 
 (cl-defgeneric occ-do-intf-operation (obj
                                       operation

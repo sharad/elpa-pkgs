@@ -145,14 +145,14 @@
 (cl-defmethod occ-obj-priority-rankprop ((obj occ-tsk)
                                          (prop symbol))
   "Get prioritised rank."
-  (occ-obj-priority-rankprop (occ-obj-rankprop obj prop)
+  (occ-obj-priority-rankprop (occ-obj-intf-rank obj prop)
                              prop))
 
 
 (cl-defmethod occ-obj-priority-rankprop ((obj  occ-obj-ctx-tsk)
                                          (prop symbol))
   "Get prioritised rank."
-  (occ-obj-priority-rankprop (occ-obj-rankprop obj prop)
+  (occ-obj-priority-rankprop (occ-obj-intf-rank obj prop)
                              prop))                             
 
 
@@ -278,7 +278,7 @@ method provided."
 
 (cl-defmethod occ-obj-properties-to-calculate-rank ((class symbol))
   "return PROPERTIES list that can be used in calculating rank."
-  (occ-cl-method-param-values 'occ-obj-rankprop
+  (occ-cl-method-param-values 'occ-obj-impl-rank
                               (list '\` `(,class (eql ,'(\, val))))
                               'val))
 
@@ -387,8 +387,8 @@ method provided."))))
   (occ-debug "occ-obj-require-p7 prop %s operation %s values %s is called" prop operation values)
   (message "tsk %s, operation %s prop %s values %s" (occ-obj-Format obj) operation prop
            values)
-  (not (occ-obj-has-p obj prop
-                      values)))
+  (not (occ-obj-intf-has-p obj prop
+                           values)))
 
 (cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
                                  (operation (eql put))
@@ -409,8 +409,8 @@ method provided."))))
   (message "tsk %s, operation %s prop %s values %s" (occ-obj-Format obj) operation prop
            values)
   (occ-debug "occ-obj-require-p8 prop %s operation %s values %s is called" prop operation values)
-  (occ-obj-has-p obj prop
-                 values))
+  (occ-obj-intf-has-p obj prop
+                      values))
 
 ;; (cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
 ;;                                  (operation (eql member))

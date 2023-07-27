@@ -120,7 +120,7 @@
 ;;                                  values)
 ;;   (let ((tsk (occ-obj-tsk obj)))
 ;;     (occ-debug "(occ-obj-operation occ-obj-tsk): operation %s prop %s" operation prop)
-;;     (occ-obj-has-p tsk prop
+;;     (occ-obj-intf-has-p tsk prop
 ;;                    values)))
 
 
