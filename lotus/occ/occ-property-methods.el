@@ -94,8 +94,9 @@
   (ignore prop)
   value)
 
-(cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-ctx-tsk)
-                                          (prop (eql currfile)))
+(cl-defmethod occ-obj-impl-get ((user occ-user-agent)
+                                (prop (eql currfile))
+                                (obj occ-obj-ctx-tsk))
   "currfile property for tsk aka org entry"
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
@@ -171,8 +172,9 @@
   (ignore prop)
   value)
 
-(cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-ctx-tsk)
-                                          (prop (eql root)))
+(cl-defmethod occ-obj-impl-get ((user occ-user-agent)
+                                (prop (eql root))
+                                (obj occ-obj-ctx-tsk))
   "READ"
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
@@ -234,8 +236,9 @@
           0)
     0))
 
-(cl-defmethod occ-obj-readprop-from-user ((obj occ-tsk)
-                                          (prop (eql timebeing)))
+(cl-defmethod occ-obj-impl-get ((user occ-user-agent)
+                                (prop (eql timebeing))
+                                (obj occ-tsk))
   "READ"
   (let ((tsk (occ-obj-tsk obj)))
     (ignore tsk)

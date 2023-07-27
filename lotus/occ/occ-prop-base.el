@@ -94,13 +94,13 @@
   "Test"
   :expected-result :passed
   :tags '(occ)
-  (should (equal (occ-obj-cl-method-sigs-matched-arg '(occ-obj-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
-                                                     '(occ-obj-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
+  (should (equal (occ-obj-cl-method-sigs-matched-arg '(occ-obj-impl-get     (`(occ-user-agent (eql ,val) occ-obj-ctx-tsk) val))
+                                                     '(occ-obj-impl-get (`(occ-ctx (eql ,val) null) val))
                                                      (occ-obj-make-ctx-at-point))
                  '(timebeing)))
   ;; do this test in buffer of a temporary file.
-  (should (equal (occ-obj-cl-method-sigs-matched-arg '(occ-obj-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
-                                                     '(occ-obj-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
+  (should (equal (occ-obj-cl-method-sigs-matched-arg '(occ-obj-impl-get     (`(occ-user-agent (eql ,val) occ-obj-ctx-tsk) val))
+                                                     '(occ-obj-impl-get (`(occ-ctx (eql ,val) null) val))
                                                      (occ-obj-make-ctx-at-point))
                  '(timebeing root currfile))))
 
@@ -211,29 +211,31 @@ method provided."))))
 
 ;; NOTE: These two around methods not belongs to occ-prop-intf.el
 ;;       they belongs here only.
-(cl-defmethod occ-obj-readprop-from-user :around ((obj  occ-obj-tsk)
-                                                  (prop symbol))
+(cl-defmethod occ-obj-impl-get :around ((user occ-user-agent)
+                                        (prop symbol)
+                                        (obj  occ-obj-tsk))
   "Read value of element of list for property PROP from user for
 OCC-TSK OBJ."
   (ignore obj)
   (condition-case e ;; if (cl-next-method-p)
       (cl-call-next-method)
     ((cl-no-next-method) (occ-error "No
-(cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk) (prop (eql %s)))
+(cl-defmethod occ-obj-impl-get ((obj occ-obj-tsk) (prop (eql %s)))
   ...)
 
 method provided."
                prop))))
 
-(cl-defmethod occ-obj-readprop-from-user :around ((obj  occ-obj-tsk)
-                                                  (prop symbol))
+(cl-defmethod occ-obj-impl-get :around ((user occ-user-agent)
+                                        (prop symbol)
+                                        (obj  occ-obj-tsk))
   "Read value of element of list for property PROP from user for
 OCC-TSK OBJ."
   (ignore obj)
   (condition-case e ;; if (cl-next-method-p)
       (cl-call-next-method)
     ((cl-no-next-method) (occ-error "No
-(cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk) (prop (eql %s)))
+(cl-defmethod occ-obj-impl-get ((obj occ-obj-tsk) (prop (eql %s)))
    ...)
 
 method provided."
@@ -242,8 +244,8 @@ method provided."
 
 (cl-defmethod occ-obj-properties-to-edit ((class symbol))
   "return PROPERTIES list that can be edited."
-  (occ-cl-method-param-values 'occ-obj-readprop-from-user
-                              (list '\` `(,class (eql ,'(\, val))))
+  (occ-cl-method-param-values 'occ-obj-impl-get
+                              (list '\` `(occ-user-agent (eql ,'(\, val)) ,class))
                               'val))
 
 (cl-defmethod occ-obj-properties-to-edit ((obj occ-tsk))
@@ -254,15 +256,15 @@ method provided."
 ;; TODO: improve
 (cl-defmethod occ-obj-properties-to-edit ((obj occ-obj-ctx-tsk))
   "return PROPERTIES list that can be edited."
-  (occ-obj-cl-method-sigs-matched-arg '(occ-obj-readprop-from-user     (`(occ-obj-ctx-tsk (eql ,val)) val))
-                                      '(occ-obj-get-property-value-from-ctx (`(occ-ctx (eql ,val)) val))
+  (occ-obj-cl-method-sigs-matched-arg '(occ-obj-impl-get     (`(occ-user-agent (eql ,val) occ-obj-ctx-tsk) val))
+                                      '(occ-obj-impl-get     (`(occ-ctx (eql ,val) null) val))
                                       (occ-obj-ctx obj)))
 
 
 (cl-defmethod occ-obj-properties-to-inherit ((class symbol))
   "return PROPERTIES list that can be inherited."
-  (occ-cl-method-param-values 'occ-obj-readprop-from-user
-                              (list '\` `(,class (eql ,'(\, val))))
+  (occ-cl-method-param-values 'occ-obj-impl-get
+                              (list '\` `(occ-user-agent (eql ,'(\, val)) ,class))
                               'val))
 
 (cl-defmethod occ-obj-properties-to-inherit ((obj occ-obj-tsk))

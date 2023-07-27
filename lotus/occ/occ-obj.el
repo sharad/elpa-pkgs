@@ -254,12 +254,12 @@
 (cl-defstruct (occ-obj-agent (:include occ-obj))
   "Will hold dummy agent")
 
-(cl-defstruct (occ-obj-user-agent (:include occ-obj-agent))
+(cl-defstruct (occ-user-agent (:include occ-obj-agent))
   "Will hold dummy user agent")
 
-(cl-defstruct (occ-obj-org-agent (:include occ-obj-agent))
+(cl-defstruct (occ-org-agent (:include occ-obj-agent))
   "Will hold dummy org agent")
 
-(cl-defstruct (occ-obj-emacs-agent (:include occ-obj-agent))
+(cl-defstruct (occ-emacs-agent (:include occ-obj-agent))
   "Will hold dummy org agent")
 ;;; occ-obj.el ends here

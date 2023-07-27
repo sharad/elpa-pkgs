@@ -850,21 +850,21 @@
 
 
 (let ((instance))
-  (defun occ-obj-get-user-agent ()
+  (defun occ-get-user-agent ()
     (unless instance
-      (setq instance (make-occ-obj-user-agent)))
+      (setq instance (make-occ-user-agent)))
     instance))
 
 (let ((instance))
-  (defun occ-obj-get-org-agent ()
+  (defun occ-get-org-agent ()
     (unless instance
-      (setq instance (make-occ-obj-org-agent)))
+      (setq instance (make-occ-org-agent)))
     instance))
 
 (let ((instance))
-  (defun occ-obj-get-emacs-agent ()
+  (defun occ-get-emacs-agent ()
     (unless instance
-      (setq instance (make-occ-obj-emacs-agent)))
+      (setq instance (make-occ-emacs-agent)))
     instance))
 
 (occ-testing

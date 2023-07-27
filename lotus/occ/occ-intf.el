@@ -108,7 +108,7 @@ return ORG compatible value."
   (ignore obj)
   (occ-error "Implement method occ-obj-readprop-from-user for property %s" property))
 
-(cl-defmethod occ-obj-intf-get ((user occ-obj-user-agent)
+(cl-defmethod occ-obj-intf-get ((user occ-user-agent)
                                 (property symbol)
                                 (ctsk occ-obj-tsk))
   "Read value of list of elements if (occ-obj-list-p PROPERTY) else

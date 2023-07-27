@@ -207,15 +207,16 @@
                                    &optional
                                    operation
                                    value)
-  ;; TODO: change this to use OCC VALUE like with corresponding changes to occ-obj-readprop-from-user
+  ;; TODO: change this to use OCC VALUE like with corresponding changes to occ-obj-intf-get
   "Accept occ compatible VALUES"
   (occ-debug "occ-do-op-prop-edit: prop: %s, value: %s" prop value)
   (occ-assert prop)
   (let ((operation  (or operation
                         (occ-obj-select-operation obj prop value)))
         (prop-value (or value
-                        (occ-obj-readprop-from-user obj
-                                                    prop))))
+                        (occ-obj-intf-get (occ-get-user-agent)
+                                          obj
+                                          prop))))
     (occ-assert operation)
     (occ-debug "(occ-do-op-prop-edit occ-obj-tsk): operation %s prop %s" operation prop)
     (occ-obj-call-operation obj
