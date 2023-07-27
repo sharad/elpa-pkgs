@@ -199,7 +199,7 @@
   builder)
 
 
-(defun occ-make-tsk-at-point (collection file)
+(defun occ-make-tsk-at-point (collection)
   ;; (occ-debug "occ-make-tsk-at-point: Builder %s" builder)
   (let ((builder (occ-obj-tsk-builder collection))
         (tsk                      nil)
@@ -258,19 +258,19 @@
         (progn "set :plist here"))
       (occ-obj-reread-props tsk)      ;reset list properties
       tsk)))
-(cl-defmethod occ-obj-make-tsk-at-point ((collection occ-obj-collection) file)
-  (occ-make-tsk-at-point (occ-obj-collection collection) file))
-(cl-defmethod occ-obj-make-tsk-at-point ((tsk occ-obj-tsk) file)
-  (occ-obj-make-tsk-at-point (occ-obj-collection tsk) file))
+(cl-defmethod occ-obj-make-tsk-at-point ((collection occ-obj-collection))
+  (occ-make-tsk-at-point (occ-obj-collection collection)))
+(cl-defmethod occ-obj-make-tsk-at-point ((tsk occ-obj-tsk))
+  (occ-obj-make-tsk-at-point (occ-obj-collection tsk)))
 
 
 (cl-defmethod occ-obj-tsk-builder-at-point ((collection occ-obj-collection))
-  #'(lambda (file)
-      (occ-obj-make-tsk-at-point (occ-obj-collection collection) file)))
+  #'(lambda ()
+      (occ-obj-make-tsk-at-point (occ-obj-collection collection))))
 
 (cl-defmethod occ-obj-tsk-builder-at-point ((collection null))
-  #'(lambda (file)
-      (occ-obj-make-tsk-at-point (occ-default-collection) file)))
+  #'(lambda ()
+      (occ-obj-make-tsk-at-point (occ-default-collection))))
 
 
 (cl-defmethod occ-obj-make-tsk ((obj number)
