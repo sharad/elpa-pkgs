@@ -177,7 +177,8 @@
                 (aref method-instances 3)))))
 
 (cl-defun occ-cl-method-param-case (signature-val-spec)
-  "signature-val-spec = (METHOD (PARAMS VAL))"
+  "Return all matched VAL for all matched METHOD with PARAM,
+ where signature-val-spec = (METHOD `(PARAMS ,VAL)) "
   (cl-destructuring-bind (method (param-spec val)) signature-val-spec
     (remove nil
             (mapcar #'(lambda (fspec)
@@ -188,7 +189,8 @@
                     (occ-cl-method-param-signs method)))))
 
 (cl-defun occ-cl-method-param-case-with-value (signature-val-spec obj)
-  "signature-val-spec = (METHOD PARAMS VAL)"
+  "Return all VAL for all matched METHOD with PARAM which return non nil value of METHOD call on PARAM with OBJ,
+ where signature-val-spec = (METHOD `(PARAMS ,VAL))"
   (cl-destructuring-bind (method (param-spec val)) signature-val-spec
     (remove nil
             (mapcar #'(lambda (fspec)
@@ -203,7 +205,8 @@
                     (occ-cl-method-param-signs method)))))
 
 (defun occ-cl-method-param-case-with-value-new (signature-val-spec obj)
-  "signature-val-spec = (METHOD PARAMS VAL)"
+  "Return all VAL for all matched METHOD with PARAM which return non nil value of METHOD call on PARAM with OBJ,
+ where signature-val-spec = (METHOD `(PARAMS ,VAL))"
   (cl-destructuring-bind (method (param-spec val)) signature-val-spec
     (remove nil
             (mapcar #'(lambda (fspec)
@@ -219,7 +222,8 @@
                     (occ-cl-method-param-signs method)))))
 
 (defun occ-cl-method-param-case-with-value-new (signature-val-spec args)
-  "signature-val-spec = (METHOD PARAMS VAL)"
+  "Return all VAL for all matched METHOD with PARAM which return non nil value of METHOD call on PARAM with OBJ,
+ where signature-val-spec = (METHOD `(PARAMS ,VAL))"
   (cl-destructuring-bind (method (param-spec val)) signature-val-spec
     (remove nil
             (mapcar #'(lambda (fspec)
@@ -230,11 +234,39 @@
                           (when (and first-arg
                                      ;; (funcall method (cons first-arg obj))) -- TODO BUG make it general
                                      ;; funcall method (rest arg according to param-spec)
-                                     (apply method (args first-arg)))
+                                     (funcall `(lambda ()
+                                                 (pcase-let ((`,val ',first-arg))
+                                                   (,method ,@args)))))
                             first-arg)))
                     (occ-cl-method-param-signs method)))))
 
-;; (occ-cl-method-param-signs 'occ-obj-impl-get)
+(ignore
+ ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Destructuring-with-pcase-Patterns.html
+ (pcase '(occ-ctx (eql git-branch) null)
+   (`(occ-ctx (eql ,val) null) val)
+   (_ nil))
+
+ (pcase '(add a b)
+   (`(add ,x ,y)  (message "Contains %S and %S" x y)))
+
+ (pcase-let ((`(add ,x ,y) '(add a b)))
+   (message "Contains %S and %S" x y))
+
+ (pcase-let ((`(,x ,y) '(a b)))
+   (message "Contains %S and %S" x y))
+
+ ;; (pcase-let (( `(,(occ-obj-make-ctx-at-point) val nil)  )))
+
+ ;; (occ-cl-method-param-signs 'occ-obj-impl-get)
+
+ (let ((z 'x))
+   (funcall `(lambda ()
+               (pcase-let ((`,x 1))
+                 (list ,z))))))
+
+
+
+
 
 (defun occ-cl-method-arg-get (method fn)
   (mapcar fn

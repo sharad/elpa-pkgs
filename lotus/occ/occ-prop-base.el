@@ -106,6 +106,16 @@
                  '(timebeing root currfile))))
 
 
+(cl-defmethod occ-obj-cl-method-sigs-matched-arg ((method-sig1 cons)
+                                                  (method-sig2 cons)
+                                                  (ctx occ-ctx))
+  (let ((slots (occ-cl-method-param-case-with-value-new method-sig2 ctx)))
+    (cl-remove-if-not #'(lambda (arg) (memq arg slots))
+                      (occ-cl-method-param-case method-sig1))))
+
+;; (occ-cl-method-param-case-with-value-new  '(occ-obj-impl-get (`(occ-ctx (eql ,val) null) val)) '((occ-obj-make-ctx-at-point) val nil))
+
+
 ;; (occ-cl-method-param-signs 'occ-obj-impl-get)
 ;; ((occ-user-agent symbol occ-obj-tsk) (occ-ctx (eql git-branch) null) (occ-user-agent (eql timebeing) occ-tsk) (occ-user-agent (eql root) occ-obj-ctx-tsk) (occ-ctx (eql root) null) (occ-user-agent (eql currfile) occ-obj-ctx-tsk) (occ-ctx (eql currfile) null) (occ-user-agent symbol occ-obj-tsk))
 

@@ -259,6 +259,7 @@
 (cl-defmethod occ-obj-cl-method-sigs-matched-arg ((method-sig1 cons)
                                                   (method-sig2 cons)
                                                   (ctx occ-ctx))
+  "Find common properties of METHOD-SIG1 and properties of METHOD-SIG2, which return non nil on METHOD-SIG2 calls."
   (let ((slots (occ-cl-method-param-case-with-value-new method-sig2 ctx)))
     (cl-remove-if-not #'(lambda (arg) (memq arg slots))
                       (occ-cl-method-param-case method-sig1))))
