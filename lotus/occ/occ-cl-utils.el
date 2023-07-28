@@ -170,7 +170,7 @@
 
 
 (cl-defun occ-cl-method-param-signs (method)
-  "Get params signatures for all defined methods"
+  "Return all params signatures for all defined METHOD"
   (let ((method-instances (cl--generic method)))
     (mapcar #'(lambda (x) (aref x 1))
             (if method-instances
