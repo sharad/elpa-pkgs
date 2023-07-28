@@ -213,9 +213,28 @@
                                                        (_ nil))))))
                           (when (and first-arg
                                      ;; (funcall method (cons first-arg obj))) -- TODO BUG make it general
+                                     ;; funcall method (rest arg according to param-spec)
                                      (funcall method obj first-arg))
                             first-arg)))
                     (occ-cl-method-param-signs method)))))
+
+(defun occ-cl-method-param-case-with-value-new (signature-val-spec args)
+  "signature-val-spec = (METHOD PARAMS VAL)"
+  (cl-destructuring-bind (method (param-spec val)) signature-val-spec
+    (remove nil
+            (mapcar #'(lambda (fspec)
+                        (let ((first-arg (funcall `(lambda ()
+                                                     (pcase ',fspec
+                                                       (,param-spec ,val)
+                                                       (_ nil))))))
+                          (when (and first-arg
+                                     ;; (funcall method (cons first-arg obj))) -- TODO BUG make it general
+                                     ;; funcall method (rest arg according to param-spec)
+                                     (apply method (args first-arg)))
+                            first-arg)))
+                    (occ-cl-method-param-signs method)))))
+
+;; (occ-cl-method-param-signs 'occ-obj-impl-get)
 
 (defun occ-cl-method-arg-get (method fn)
   (mapcar fn

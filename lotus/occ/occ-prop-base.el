@@ -102,8 +102,13 @@
   ;; do this test in buffer of a temporary file.
   (should (equal (occ-obj-cl-method-sigs-matched-arg '(occ-obj-impl-get (`(occ-user-agent (eql ,val) occ-obj-ctx-tsk) val))
                                                      '(occ-obj-impl-get (`(occ-ctx (eql ,val) null) val))
-                                                     (occ-obj-make-ctx-at-point))
+                                                     `(,(occ-obj-make-ctx-at-point) val nil))
                  '(timebeing root currfile))))
+
+
+;; (occ-cl-method-param-signs 'occ-obj-impl-get)
+;; ((occ-user-agent symbol occ-obj-tsk) (occ-ctx (eql git-branch) null) (occ-user-agent (eql timebeing) occ-tsk) (occ-user-agent (eql root) occ-obj-ctx-tsk) (occ-ctx (eql root) null) (occ-user-agent (eql currfile) occ-obj-ctx-tsk) (occ-ctx (eql currfile) null) (occ-user-agent symbol occ-obj-tsk))
+
 
 
 (cl-defgeneric occ-do-add-ineq (property
@@ -224,8 +229,8 @@ OCC-TSK OBJ."
 (cl-defmethod occ-obj-impl-get ((obj occ-obj-tsk) (prop (eql %s)))
   ...)
 
-method provided."
-               prop))))
+method provided.")
+               prop)))
 
 (cl-defmethod occ-obj-impl-get :around ((user occ-user-agent)
                                         (prop symbol)
@@ -239,8 +244,8 @@ OCC-TSK OBJ."
 (cl-defmethod occ-obj-impl-get ((obj occ-obj-tsk) (prop (eql %s)))
    ...)
 
-method provided."
-               prop))))
+method provided.")
+               prop)))
 
 
 (cl-defmethod occ-obj-properties-to-edit ((class symbol))

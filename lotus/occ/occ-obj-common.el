@@ -262,5 +262,6 @@
   (let ((slots (occ-cl-method-param-case-with-value-new method-sig2 ctx)))
     (cl-remove-if-not #'(lambda (arg) (memq arg slots))
                       (occ-cl-method-param-case method-sig1))))
+;; ;; (occ-cl-method-param-signs 'occ-obj-impl-get)
 
 ;;; occ-obj-common.el ends here
