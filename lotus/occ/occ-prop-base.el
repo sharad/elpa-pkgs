@@ -95,12 +95,12 @@
   "Test"
   :expected-result :passed
   :tags '(occ)
-  (should (equal (occ-obj-cl-method-sigs-matched-arg '(occ-obj-impl-get     (`(occ-user-agent (eql ,val) occ-obj-ctx-tsk) val))
+  (should (equal (occ-obj-cl-method-sigs-matched-arg '(occ-obj-impl-get (`(occ-user-agent (eql ,val) occ-obj-ctx-tsk) val))
                                                      '(occ-obj-impl-get (`(occ-ctx (eql ,val) null) val))
                                                      (occ-obj-make-ctx-at-point))
                  '(timebeing)))
   ;; do this test in buffer of a temporary file.
-  (should (equal (occ-obj-cl-method-sigs-matched-arg '(occ-obj-impl-get     (`(occ-user-agent (eql ,val) occ-obj-ctx-tsk) val))
+  (should (equal (occ-obj-cl-method-sigs-matched-arg '(occ-obj-impl-get (`(occ-user-agent (eql ,val) occ-obj-ctx-tsk) val))
                                                      '(occ-obj-impl-get (`(occ-ctx (eql ,val) null) val))
                                                      (occ-obj-make-ctx-at-point))
                  '(timebeing root currfile))))
