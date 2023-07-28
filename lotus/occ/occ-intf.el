@@ -241,6 +241,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   "Do the actual OPERATION."
   (occ-obj-impl-operation obj operation property values))
 
+;; (cl-defgeneric occ-do-operation (obj
 (cl-defgeneric occ-do-intf-operation (obj
                                       operation
                                       property

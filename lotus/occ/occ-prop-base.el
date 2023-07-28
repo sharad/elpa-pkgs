@@ -305,10 +305,10 @@ method provided."
 (cl-defmethod occ-obj-operations-for-prop ((class symbol)
                                            (prop  symbol))
   ;; check about (occ-obj-intf-list-p prop) also
-  (let ((ops (append (occ-cl-method-param-values 'occ-obj-operation
+  (let ((ops (append (occ-cl-method-param-values 'occ-do-operation
                                                  (list '\` `(,class (eql ,'(\, val)) symbol t))
                                                  'val)
-                     (occ-cl-method-param-values 'occ-obj-operation
+                     (occ-cl-method-param-values 'occ-do-operation
                                                  (list '\` `(,class (eql ,'(\, val)) (eql ,prop) t))
                                                  'val))))
     (delete-dups ops)))
