@@ -177,7 +177,7 @@ PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
   ;; (occ-error "Implement method occ-obj-intf-from-org for property %s" property)
   (occ-debug "occ-obj-intf-from-org: no method for property %s using default." property)
-  (occ-obj-impl-prop-from-org property value))
+  (occ-obj-impl-from-org property value))
 (cl-defmethod occ-obj-intf-from-org ((property symbol)
                                      (value string))
   "Return the Actual Object representation for property
