@@ -147,10 +147,10 @@
                                       values)
   "Accept occ compatible VALUES"
   (occ-debug "(occ-obj-call-operation occ-obj-tsk): operation %s prop %s" operation prop)
-  (if (occ-do-intf-operation (occ-obj-marker obj
+  (if (occ-do-intf-operation (occ-obj-marker obj)
                              operation
                              prop
-                             values))
+                             values)
       (occ-do-intf-operation obj
                              operation
                              prop
@@ -186,7 +186,7 @@
              (actions    (mapcar #'(lambda (op)
                                      (cons (format "%s [%s]" (symbol-name op) existing-value) op))
                                  operations)))
-             
+
         (occ-assert actions)
         (let ((action  (completing-read (format "%s [%s] action: " prop existing-value) actions)))
           (occ-assert action)
