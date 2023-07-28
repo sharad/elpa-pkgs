@@ -162,7 +162,7 @@ org string to occ representation."
   value)
 
 
-(cl-defmethod occ-obj-impl-get ((user occ-obj-user-agent)
+(cl-defmethod occ-obj-impl-get ((user occ-user-agent)
                                 (property symbol)
                                 (ctsk occ-obj-tsk))
   "Read value of list of elements if (occ-obj-intf-list-p PROPERTY) else
@@ -283,7 +283,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
    property represent list or not."
    (ignore prop))
 ;;  (cl-defmethod occ-obj-impl-readprop-from-user ((obj occ-tsk))
- (cl-defmethod  occ-obj-impl-get ((user occ-obj-user-agent)
+ (cl-defmethod  occ-obj-impl-get ((user occ-user-agent)
                                   (prop (eql _template_))
                                   (ctsk occ-obj-tsk))
    "Read value of list of elements if (occ-obj-intf-list-p PROPERTY) else
