@@ -39,7 +39,7 @@
 (cl-defmethod occ-do-op-prop-misc ((obj  occ-obj-tsk)
                                    (prop symbol))
   "Misc property PROP for forced clock-in."
-  (occ-do-checkout-prop obj
+  (occ-do-intf-checkout obj
                         prop))
 
 

@@ -228,18 +228,18 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
 ;; TODO: RESUME HERE
 
 
-;; (cl-defgeneric occ-obj-operation (obj
-(cl-defgeneric occ-obj-intf-operation (obj
-                                       operation
-                                       property
-                                       values)
-  "Do the actual OPERATION.")
-(cl-defmethod occ-obj-intf-operation (obj
-                                      operation
-                                      property
-                                      values)
-  "Do the actual OPERATION."
-  (occ-obj-impl-operation obj operation property values))
+;; ;; (cl-defgeneric occ-obj-operation (obj
+;; (cl-defgeneric occ-obj-intf-operation (obj
+;;                                        operation
+;;                                        property
+;;                                        values)
+;;   "Do the actual OPERATION.")
+;; (cl-defmethod occ-obj-intf-operation (obj
+;;                                       operation
+;;                                       property
+;;                                       values)
+;;   "Do the actual OPERATION."
+;;   (occ-obj-impl-operation obj operation property values))
 
 ;; (cl-defgeneric occ-do-operation (obj
 (cl-defgeneric occ-do-intf-operation (obj
@@ -252,7 +252,10 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                      property
                                      values)
   "Do the actual OPERATION."
-  (occ-do-impl-operation obj operation property values))
+  (occ-do-impl-operation obj
+                         operation
+                         property
+                         values))
 
 
 ;; (cl-defgeneric occ-do-checkout-prop (obj
@@ -262,7 +265,8 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
 (cl-defmethod occ-do-intf-checkout ((obj occ-obj-tsk)
                                     (property symbol))
   "Checkout property in case of force clock-in."
-  (occ-do-impl-checkout obj property))
+  (occ-do-impl-checkout obj
+                        property))
 
 
 

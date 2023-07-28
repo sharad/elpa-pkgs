@@ -107,14 +107,14 @@
            (prompt       (concat (symbol-name prop) ": ")))
       (ido-read-file-name prompt ctx-dir ctx-currfile))))
 
-(cl-defmethod occ-do-checkout-prop ((obj occ-obj-tsk)
+(cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
                                     (prop (eql currfile)))
   (let* ((tsk        (occ-obj-tsk      obj))
          (files      (occ-obj-get-property tsk prop))
          (first-file (cl-first files)))
        (if first-file
            (find-file first-file)
-         (occ-debug "occ-do-checkout-prop: %s value ruturned for prop %s" first-file prop))))
+         (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" first-file prop))))
       ;;}}
 
 ;; Current File property of task:1 ends here
@@ -184,14 +184,14 @@
            (prompt     (concat (symbol-name prop) ": ")))
       (ido-read-directory-name prompt ctx-dir ctx-dir))))
 
-(cl-defmethod occ-do-checkout-prop ((obj occ-obj-tsk)
+(cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
                                     (prop (eql root)))
   (let* ((tsk       (occ-obj-tsk      obj))
          (dirs      (occ-obj-get-property tsk prop))
          (first-dir (cl-first dirs)))
     (if first-dir
         (find-file first-dir)
-      (occ-debug "occ-do-checkout-prop: %s value ruturned for prop %s" first-dir prop))))
+      (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" first-dir prop))))
       ;;}}
 
 ;; Root dir property of task:1 ends here
@@ -264,10 +264,10 @@
   (when (occ-obj-current-p obj)
     10))
 
-(cl-defmethod occ-do-operation ((obj occ-obj-tsk)
-                                (operation (eql increment))
-                                (prop (eql timebeing))
-                                values)
+(cl-defmethod occ-do-impl-operation ((obj occ-obj-tsk)
+                                     (operation (eql increment))
+                                     (prop (eql timebeing))
+                                     values)
   (ignore operation)
   (ignore values)
   (let ((tsk    (occ-obj-tsk obj)))

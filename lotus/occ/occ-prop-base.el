@@ -292,7 +292,7 @@ method provided."
 
 (cl-defmethod occ-obj-properties-to-checkout ((class symbol))
   "return PROPERTIES list that can be checked-out."
-  (occ-cl-method-param-values 'occ-do-checkout-prop ;NOTE: user have to define them for each properties.
+  (occ-cl-method-param-values 'occ-do-impl-checkout ;NOTE: user have to define them for each properties.
                               (list '\` `(,class (eql ,'(\, val))))
                               'val))
 
@@ -305,10 +305,10 @@ method provided."
 (cl-defmethod occ-obj-operations-for-prop ((class symbol)
                                            (prop  symbol))
   ;; check about (occ-obj-intf-list-p prop) also
-  (let ((ops (append (occ-cl-method-param-values 'occ-do-operation
+  (let ((ops (append (occ-cl-method-param-values 'occ-do-impl-operation
                                                  (list '\` `(,class (eql ,'(\, val)) symbol t))
                                                  'val)
-                     (occ-cl-method-param-values 'occ-do-operation
+                     (occ-cl-method-param-values 'occ-do-impl-operation
                                                  (list '\` `(,class (eql ,'(\, val)) (eql ,prop) t))
                                                  'val))))
     (delete-dups ops)))
