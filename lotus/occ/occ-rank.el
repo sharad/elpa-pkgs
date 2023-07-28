@@ -51,8 +51,8 @@
          (rank       (cl-reduce #'+
                                 (mapcar #'(lambda (slot)
                                             (let ((prop (downcase-sym slot)))
-                                              (occ-obj-priority-rankprop obj
-                                                                         prop)))
+                                              (occ-obj-priority-rank obj
+                                                                     prop)))
                                         properties))))
     ;; (occ-debug "occ-obj-calculate-rank(obj occ-tsk): rank = %d" rank)
     rank))
@@ -71,8 +71,8 @@
            (rank       (cl-reduce #'+
                                   (mapcar #'(lambda (slot)
                                               (let ((prop (downcase-sym slot)))
-                                                (occ-obj-priority-rankprop obj
-                                                                           prop)))
+                                                (occ-obj-priority-rank obj
+                                                                       prop)))
                                           properties))))
       (occ-debug "occ-obj-calculate-rank(obj occ-obj-ctx-tsk): rank = %d" rank)
       rank)))
