@@ -30,6 +30,7 @@
 (require 'occ-obj-accessor)
 (require 'occ-debug-method)
 (require 'occ-prop-intf)
+(require 'occ-intf)
 
 
 (defvar occ-property-rank-hierarchy '(t))

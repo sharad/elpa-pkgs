@@ -39,6 +39,7 @@
 (require 'occ-obj-accessor)
 (require 'occ-debug-method)
 (require 'occ-prop-intf)
+(require 'occ-intf)
 
 ;; * Required libraries:1 ends here
 ;;

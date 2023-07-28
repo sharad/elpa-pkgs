@@ -34,6 +34,7 @@
 
 (require 'occ-obj)
 (require 'occ-prop-intf)
+(require 'occ-intf)
 
 
 (defvar occ-property-priority-inequalities nil)

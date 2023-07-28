@@ -40,6 +40,7 @@
 (require 'occ-obj-common)
 (require 'occ-util-common)
 (require 'occ-prop-intf)
+(require 'occ-intf)
 (require 'occ-prop-org)
 (require 'occ-obj-clock-method)
 (require 'occ-obj-accessor)

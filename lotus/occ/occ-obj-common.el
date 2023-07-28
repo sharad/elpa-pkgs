@@ -28,6 +28,7 @@
 
 (require 'occ-obj)
 (require 'occ-prop-intf)
+(require 'occ-intf)
 (require 'occ-assert)
 (require 'occ-cl-utils)
 (require 'occ-obj-accessor)

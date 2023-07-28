@@ -32,6 +32,7 @@
 (require 'org-misc-utils-lotus)
 
 (require 'occ-prop-intf)
+(require 'occ-intf)
 (require 'occ-obj-common)
 (require 'occ-property-methods)
 (require 'occ-obj-accessor)

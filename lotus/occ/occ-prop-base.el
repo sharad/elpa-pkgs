@@ -78,6 +78,7 @@
 (require 'occ-obj-method)
 (require 'occ-rank)
 (require 'occ-prop-intf)
+(require 'occ-intf)
 (require 'occ-prop-org)
 (require 'occ-assert)
 
