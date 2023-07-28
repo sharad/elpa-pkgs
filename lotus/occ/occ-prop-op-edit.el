@@ -226,7 +226,7 @@
                                 prop-value
                               (list prop-value)))))
 
-%;; Usage not implemented
+;; Usage not implemented
 ;; (occ-do-op-props-edit obj '(timebeing add 10)) in occ-obj-try-fast-clock-in and occ-obj-try-until-associable-p
 
 (cl-defgeneric occ-do-op-props-edit (obj)

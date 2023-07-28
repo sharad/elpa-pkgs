@@ -262,4 +262,5 @@
 
 (cl-defstruct (occ-emacs-agent (:include occ-obj-agent))
   "Will hold dummy org agent")
-;;; occ-obj.el ends here
+
+;;; occ-obj.el ends here
