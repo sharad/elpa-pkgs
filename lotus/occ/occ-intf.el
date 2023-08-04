@@ -199,14 +199,15 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   (ignore operation)
   (ignore property)
   (ignore values)
-  (occ-debug "occ-obj-intf-require-p0 is called"))
-(cl-defmethod occ-obj-intf-require-p ((obj occ-obj-tsk)
-                                      (operation (eql _operation_))
-                                      (property  symbol)
-                                      values)
-  "Used by OCC-OBJ-INTF-GEN-EDIT-IF-REQUIRED to decide for this property
-_TEMPLATE_ if CALLABLE (helm method) should be generated."
+  (occ-debug "occ-obj-intf-require-p0 is called")
   (occ-obj-impl-require-p obj operation property values))
+;; (cl-defmethod occ-obj-intf-require-p ((obj occ-obj-tsk)
+;;                                       (operation (eql _operation_))
+;;                                       (property  symbol)
+;;                                       values)
+;;   "Used by OCC-OBJ-INTF-GEN-EDIT-IF-REQUIRED to decide for this property
+;; _TEMPLATE_ if CALLABLE (helm method) should be generated."
+;;   (occ-obj-impl-require-p obj operation property values))
 
 
 ;; (cl-defgeneric occ-obj-prop-default-value (obj
