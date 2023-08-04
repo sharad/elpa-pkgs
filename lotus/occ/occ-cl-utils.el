@@ -176,6 +176,17 @@
             (if method-instances
                 (aref method-instances 3)))))
 
+;; http://newartisans.com/2016/01/pattern-matching-with-pcase/
+;; (pcase '(1 a)
+;;   (`(,(pred numberp) ,var) var)
+;;   (_ nil))
+;; (cl-defstruct xxx1)
+;; (cl-defstruct (xxx2 (:include xxx1)))
+;; (cl--struct-get-class class)
+;; (cl--struct-class-name (car (cl--struct-class-parents (cl--struct-get-class 'xxx2))))
+;; (cl--struct-class-name (car (cl--struct-class-parents (cl--struct-get-class 'xxx2))))
+;; (occ-cl-class-parent-names (cl--struct-get-class 'xxx2))
+
 (cl-defun occ-cl-method-param-case (signature-val-spec)
   "Return all matched VAL for all matched METHOD with PARAM,
  where signature-val-spec = (METHOD `(PARAMS ,VAL)) "
@@ -188,56 +199,21 @@
                                       (_ nil)))))
                     (occ-cl-method-param-signs method)))))
 
-(cl-defun occ-cl-method-param-case-with-value (signature-val-spec obj)
-  "Return all VAL for all matched METHOD with PARAM which return non nil value of METHOD call on PARAM with OBJ,
- where signature-val-spec = (METHOD `(PARAMS ,VAL))"
-  (cl-destructuring-bind (method (param-spec val)) signature-val-spec
+(defun occ-cl-method-param-case-with-value-new (signature-vars-spec args)
+  "Return all VARS for all matched METHOD with PARAM which return non nil value of METHOD call on PARAM with OBJ,
+ where signature-vars-spec = (METHOD `(PARAMS ,VARS))"
+  (cl-destructuring-bind (method (param-spec vars)) signature-vars-spec
     (remove nil
             (mapcar #'(lambda (fspec)
-                        (let ((first-arg (funcall `(lambda ()
+                        (let ((arg-names (funcall `(lambda ()
                                                      (pcase ',fspec
-                                                       (,param-spec ,val)
+                                                       (,param-spec ,vars)
                                                        (_ nil))))))
-                          (when (and first-arg
-                                     (funcall method (cons first-arg
-                                                           obj)))
-                            first-arg)))
-                    (occ-cl-method-param-signs method)))))
-
-(defun occ-cl-method-param-case-with-value-new (signature-val-spec obj)
-  "Return all VAL for all matched METHOD with PARAM which return non nil value of METHOD call on PARAM with OBJ,
- where signature-val-spec = (METHOD `(PARAMS ,VAL))"
-  (cl-destructuring-bind (method (param-spec val)) signature-val-spec
-    (remove nil
-            (mapcar #'(lambda (fspec)
-                        (let ((first-arg (funcall `(lambda ()
-                                                     (pcase ',fspec
-                                                       (,param-spec ,val)
-                                                       (_ nil))))))
-                          (when (and first-arg
-                                     ;; (funcall method (cons first-arg obj))) -- TODO BUG make it general
-                                     ;; funcall method (rest arg according to param-spec)
-                                     (funcall method obj first-arg))
-                            first-arg)))
-                    (occ-cl-method-param-signs method)))))
-
-(defun occ-cl-method-param-case-with-value-new (signature-val-spec args)
-  "Return all VAL for all matched METHOD with PARAM which return non nil value of METHOD call on PARAM with OBJ,
- where signature-val-spec = (METHOD `(PARAMS ,VAL))"
-  (cl-destructuring-bind (method (param-spec val)) signature-val-spec
-    (remove nil
-            (mapcar #'(lambda (fspec)
-                        (let ((first-arg (funcall `(lambda ()
-                                                     (pcase ',fspec
-                                                       (,param-spec ,val)
-                                                       (_ nil))))))
-                          (when (and first-arg
-                                     ;; (funcall method (cons first-arg obj))) -- TODO BUG make it general
-                                     ;; funcall method (rest arg according to param-spec)
+                          (when (and arg-names
                                      (funcall `(lambda ()
-                                                 (pcase-let ((`,val ',first-arg))
+                                                 (pcase-let ((,vars ',arg-names))
                                                    (,method ,@args)))))
-                            first-arg)))
+                            arg-names)))
                     (occ-cl-method-param-signs method)))))
 
 (ignore
@@ -294,5 +270,63 @@
   (mapcan #'(lambda (class)
               (funcall fn class))
           (occ-cl-inst-class-names inst)))
+
+
+
+
+
+(cl-defun occ-cl-method-param-signs (method)
+  "Return all params signatures for all defined METHOD"
+  (let ((method-instances (cl--generic method)))
+    (mapcar #'(lambda (x) (aref x 1))
+            (if method-instances
+                (aref method-instances 3)))))
+(occ-cl-method-param-signs 'occ-obj-impl-get)
+
+
+(cl-defun occ-cl-method-param-case (signature-vars-spec)
+  "Return all matched VARS for all matched METHOD with PARAM,
+ where signature-vars-spec = (METHOD `(PARAMS ,VARS)) "
+  (cl-destructuring-bind (method (param-spec vars)) signature-vars-spec
+    (remove nil
+            (mapcar #'(lambda (fspec)
+                        (funcall `(lambda ()
+                                    (pcase ',fspec
+                                      (,param-spec ,vars)
+                                      (_ nil)))))
+                    (occ-cl-method-param-signs method)))))
+
+
+(cl-defun occ-cl-method-param-case-1 (method sign vars)
+  "Return all matched VAL for all matched METHOD with PARAM,
+ where signature-val-spec = (METHOD `(PARAMS ,VAL)) "
+  (cl-destructuring-bind (method param-spec vars) (list method sign vars)
+    (remove nil
+            (mapcar #'(lambda (fspec)
+                        (funcall `(lambda ()
+                                    (pcase ',fspec
+                                      (,param-spec ,vars)
+                                      (_ nil)))))
+                    (occ-cl-method-param-signs method)))))
+
+(ignore (occ-cl-method-param-case '(occ-obj-impl-list-p (`((eql ,val)) `(,val))))
+        (occ-cl-method-param-case '(occ-obj-impl-list-p (`((eql ,val)) `(,val)))))
+
+(defun occ-cl-method-param-case-with-vars-value (signature-vars-spec args)
+  "Return all VARS for all matched METHOD with PARAM which return non nil varsue of METHOD call on PARAM with OBJ,
+ where signature-vars-spec = (METHOD `(PARAMS ,VARS))"
+  (cl-destructuring-bind (method (param-spec vars)) signature-vars-spec
+    (remove nil
+            (mapcar #'(lambda (fspec)
+                        (let ((arg-names (funcall `(lambda ()
+                                                     (pcase ',fspec
+                                                       (,param-spec ,vars)
+                                                       (_ nil))))))
+                          (when (and arg-names
+                                     (funcall `(lambda ()
+                                                 (pcase-let ((,vars ',arg-names))
+                                                   (,method ,@args)))))
+                            arg-names)))
+                    (occ-cl-method-param-signs method)))))
 
 ;;; occ-cl-utils.el ends here

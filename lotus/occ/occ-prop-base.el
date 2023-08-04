@@ -106,12 +106,12 @@
                  '(timebeing root currfile))))
 
 
-(cl-defmethod occ-obj-cl-method-sigs-matched-arg ((method-sig1 cons)
-                                                  (method-sig2 cons)
-                                                  (ctx occ-ctx))
-  (let ((slots (occ-cl-method-param-case-with-value-new method-sig2 ctx)))
-    (cl-remove-if-not #'(lambda (arg) (memq arg slots))
-                      (occ-cl-method-param-case method-sig1))))
+;; (cl-defmethod occ-obj-cl-method-sigs-matched-arg ((method-sig1 cons)
+;;                                                   (method-sig2 cons)
+;;                                                   (args cons))
+;;   (let ((slots (occ-cl-method-param-case-with-value-new method-sig2 args)))
+;;     (cl-remove-if-not #'(lambda (arg) (memq arg slots))
+;;                       (occ-cl-method-param-case method-sig1))))
 
 ;; (occ-cl-method-param-case-with-value-new  '(occ-obj-impl-get (`(occ-ctx (eql ,val) null) val)) '((occ-obj-make-ctx-at-point) val nil))
 
@@ -161,8 +161,8 @@
 (cl-defmethod occ-obj-priority-rank ((obj occ-tsk)
                                      (prop symbol))
   "Get prioritised rank."
-  (occ-obj-priority-rank (occ-obj-intf-rank obj prop
-                             prop)))
+  (occ-obj-priority-rank (occ-obj-intf-rank obj prop)
+                         prop))
 
 
 (cl-defmethod occ-obj-priority-rank ((obj  occ-obj-ctx-tsk)
@@ -274,7 +274,7 @@ method provided.")
   "return PROPERTIES list that can be edited."
   (occ-obj-cl-method-sigs-matched-arg '(occ-obj-impl-get     (`(occ-user-agent (eql ,val) occ-obj-ctx-tsk) val))
                                       '(occ-obj-impl-get     (`(occ-ctx (eql ,val) null) val))
-                                      (occ-obj-ctx obj)))
+                                      `(,(occ-obj-ctx obj) val nil)))
 
 
 (cl-defmethod occ-obj-properties-to-inherit ((class symbol))
@@ -366,7 +366,7 @@ method provided.")
 (cl-defmethod occ-obj-reread-props ((obj occ-tsk))
   "Read all org string properties for task TSK to occ representation."
   (let ((props-by-is-list   (occ-cl-method-param-case '(occ-obj-impl-list-p (`((eql ,val)) val))))
-        (props-by-converter (occ-cl-method-param-case '(occ-obj-intf-from-org (`((eql ,val) t) val)))))
+        (props-by-converter (occ-cl-method-param-case '(occ-obj-impl-from-org (`((eql ,val) t) val)))))
     (let ((props (-union props-by-is-list
                          props-by-converter))) ;dash
       (dolist (p props)

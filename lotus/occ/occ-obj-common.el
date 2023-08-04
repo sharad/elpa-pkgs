@@ -205,7 +205,7 @@
                                     value &key not-recursive)
   (occ-debug "(occ-obj-set-property (obj occ-obj-ctx)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
   (occ-obj-set-property (occ-obj-ctx obj) prop
-                    value :not-recursive not-recursive))
+                        value :not-recursive not-recursive))
 
 
 (cl-defmethod occ-obj-class-slots ((obj occ-obj))
@@ -256,11 +256,17 @@
   (let ((slots (occ-obj-defined-slots-with-value ctx))) ;; ((slots (occ-obj-defined-slots-with-value-new ctx)))
     (cl-remove-if-not #'(lambda (arg) (memq arg slots))
                       (occ-cl-method-param-case method-sig))))
+;; (cl-defmethod occ-obj-cl-method-sigs-matched-arg ((method-sig1 cons)
+;;                                                   (method-sig2 cons)
+;;                                                   (ctx occ-ctx))
+;;   "Find common properties of METHOD-SIG1 and properties of METHOD-SIG2, which return non nil on METHOD-SIG2 calls."
+;;   (let ((slots (occ-cl-method-param-case-with-value-new method-sig2 ctx)))
+;;     (cl-remove-if-not #'(lambda (arg) (memq arg slots))
+;;                       (occ-cl-method-param-case method-sig1))))
 (cl-defmethod occ-obj-cl-method-sigs-matched-arg ((method-sig1 cons)
                                                   (method-sig2 cons)
-                                                  (ctx occ-ctx))
-  "Find common properties of METHOD-SIG1 and properties of METHOD-SIG2, which return non nil on METHOD-SIG2 calls."
-  (let ((slots (occ-cl-method-param-case-with-value-new method-sig2 ctx)))
+                                                  (args cons))
+  (let ((slots (occ-cl-method-param-case-with-value-new method-sig2 args)))
     (cl-remove-if-not #'(lambda (arg) (memq arg slots))
                       (occ-cl-method-param-case method-sig1))))
 ;; ;; (occ-cl-method-param-signs 'occ-obj-impl-get)

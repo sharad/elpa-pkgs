@@ -103,6 +103,10 @@ only argument required for some other further processing"
                                             (operation symbol)
                                             value
                                             &key param-only)
+  (message "occ-obj-gen-edit-if-required: req %s" (occ-obj-intf-require-p obj
+                                                                          operation
+                                                                          prop
+                                                                          value))
   (when (occ-obj-intf-require-p obj
                                 operation
                                 prop
@@ -124,13 +128,16 @@ only argument required for some other further processing"
                                (let ((value (occ-obj-intf-default obj
                                                                   prop
                                                                   operation)))
+                                 (message "occ-obj-gen-edits-if-required: value %s, prop %s operation %s" value prop operation)
                                  (when value
+                                   (message "hello")
                                    (occ-obj-gen-edit-if-required obj
                                                                  prop
                                                                  operation
                                                                  value
                                                                  :param-only param-only))))
                            ops)))
+    (message "occ-obj-gen-edits-if-required: ops %s" ops)
     (remove nil
             edit-ops)))
 
