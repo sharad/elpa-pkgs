@@ -24,7 +24,10 @@
 
 ;;; Code:
 
-(provide 'occ-impl-buildtin)
+(provide 'occ-impl-builtin)
+
+
+(require 'occ-prop-org)
 
 
 ;; (cl-defmethod occ-obj-impl-require-p ((obj       occ-obj-tsk)
@@ -79,5 +82,127 @@
 ;;   nil)
 
 
+
+(cl-defmethod occ-do-impl-operation ((obj       marker)
+                                     (operation symbol)
+                                     (prop      symbol)
+                                     values)
+  "Accept occ compatible VALUES"
+  (occ-debug "(occ-do-impl-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
+  (let ((mrk (occ-obj-marker obj)))
+    (let ((retval (occ-obj-org-call-operation-at-point mrk ;work in org file
+                                                       prop
+                                                       operation
+                                                       ;; going to org world
+                                                       (occ-obj-intf-to-org prop
+                                                                            values))))
+      (occ-debug "occ-do-impl-operation: (occ-obj-org-call-operation-at-point mrk) returnd %s" retval)
+      retval)))
+
+(cl-defmethod occ-do-impl-operation ((obj       occ-obj-tsk)
+                                     (operation symbol)
+                                     (prop      symbol)
+                                     values)
+  "Accept occ compatible VALUES"
+  (occ-debug "(occ-do-impl-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
+  (occ-do-intf-operation (occ-obj-marker obj)
+                         operation
+                         prop
+                         values))
 
-;;; occ-impl-builtin.el ends here
+
+;;; * few frequent operations
+
+;; (cl-defmethod occ-do-impl-operation ((obj       occ-obj-tsk)
+;;                                  (operation (eql get))
+;;                                  (prop      symbol)
+;;                                  values)
+;;   (ignore values)
+;;   (let ((tsk (occ-obj-tsk obj)))
+;;       (occ-debug "(occ-do-impl-operation occ-obj-tsk): operation %s prop %s" operation prop)
+;;       (if (occ-obj-intf-list-p prop)
+;;           (occ-obj-get-property tsk
+;;                                 prop)
+;;         (list (occ-obj-get-property tsk
+;;                                     prop)))))
+
+(cl-defmethod occ-do-impl-operation ((obj       occ-obj-tsk)
+                                     (operation (eql add))
+                                     (prop      symbol)
+                                     values)
+  (let ((tsk (occ-obj-tsk obj)))
+    (occ-debug "(occ-do-impl-operation occ-obj-tsk add): operation %s prop %s" operation prop)
+    (if (occ-obj-intf-list-p prop)
+        (occ-obj-set-property tsk prop
+                              (nconc (occ-obj-get-property tsk prop)
+                                     (list (cl-first values))))
+      (occ-obj-set-property tsk prop
+                            (cl-first values)))))
+
+(cl-defmethod occ-do-impl-operation ((obj       occ-obj-tsk)
+                                     (operation (eql put))
+                                     (prop      symbol)
+                                     values)
+  (let ((tsk (occ-obj-tsk obj)))
+    (occ-debug "(occ-do-impl-operation occ-obj-tsk): operation %s prop %s" operation prop)
+    (if (occ-obj-intf-list-p prop)
+        (occ-obj-set-property tsk prop
+                              values)
+      (occ-obj-set-property tsk prop
+                            (cl-first values)))))
+
+(cl-defmethod occ-do-impl-operation ((obj       occ-obj-tsk)
+                                     (operation (eql remove))
+                                     (prop      symbol)
+                                     values)
+  (let ((tsk (occ-obj-tsk obj)))
+    (occ-debug "(occ-do-impl-operation occ-obj-tsk): operation %s prop %s" operation prop)
+    (if (occ-obj-intf-list-p prop
+                             (occ-obj-set-property tsk prop
+                                                   (remove (cl-first values)
+                                                           (occ-obj-get-property tsk prop))))
+        (occ-error "Implement it."))))
+
+(cl-defmethod occ-do-impl-operation ((obj       occ-obj-tsk)
+                                     (operation (eql delete))
+                                     (prop      symbol)
+                                     values)
+  (occ-error "Implement it."))
+
+;; (cl-defmethod occ-do-impl-operation ((obj       occ-obj-tsk)
+;;                                  (operation (eql member))
+;;                                  (prop      symbol)
+;;                                  values)
+;;   (let ((tsk (occ-obj-tsk obj)))
+;;     (occ-debug "(occ-do-impl-operation occ-obj-tsk): operation %s prop %s" operation prop)
+;;     (occ-obj-intf-has-p tsk prop
+;;                    values)))
+
+
+(cl-defmethod occ-do-impl-operation ((obj       marker)
+                                     (operation (eql add))
+                                     (prop      symbol)
+                                     values)
+  (occ-do-org-operation marker
+                        operation
+                        prop
+                        values))
+
+(cl-defmethod occ-do-impl-operation ((obj       marker)
+                                     (operation (eql put))
+                                     (prop      symbol)
+                                     values)
+  (occ-do-org-operation marker
+                        operation
+                        prop
+                        values))
+
+(cl-defmethod occ-do-impl-operation ((obj       marker)
+                                     (operation (eql remove))
+                                     (prop      symbol)
+                                     values)
+  (occ-do-org-operation marker
+                        operation
+                        prop
+                        values))
+;;; occ-impl-builtin.el ends here

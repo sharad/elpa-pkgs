@@ -168,6 +168,18 @@ for prop REMOVE and VALUES"
         (occ-error "Implement it."))))
 
 (cl-defmethod occ-do-org-operation ((pom  marker)
+                                    (operation (eql delete))
+                                    (prop symbol)
+                                    values)
+  "Org operation implementation of OPERATION on POINT-OF-MARKER
+for prop REMOVE and VALUES"
+  (ignore operation)
+  (let ((prop-string (symbol-name prop)))
+    (occ-org-entry-delete pom
+                          prop-string
+                          values)))
+
+(cl-defmethod occ-do-org-operation ((pom  marker)
                                     (operation (eql member))
                                     (prop symbol)
                                     values)
@@ -196,28 +208,29 @@ PROP and VALUES"
                         values))
 
 
-(cl-defgeneric occ-obj-org-call-operation (pom
-                                           prop
-                                           operation
-                                           values)
-  "occ-obj-org-call-operation")
+;; (cl-defgeneric occ-obj-org-call-operation (pom
+;;                                            prop
+;;                                            operation
+;;                                            values)
+;;   "occ-obj-org-call-operation")
 
-(cl-defmethod occ-obj-org-call-operation ((pom  marker)
-                                          (prop symbol)
-                                          (operation symbol)
-                                          values)
-  "Accept org compatible VALUES"
-  ;; (unless (occ-obj-valid-p prop operation)
-  ;;   (occ-error "occ-obj-org-call-operation: operation %s is not allowed for prop %s" operation prop))
-  (occ-do-org-operation pom
-                        operation
-                        prop
-                        values))
+;; (cl-defmethod occ-obj-org-call-operation ((pom  marker)
+;;                                           (prop symbol)
+;;                                           (operation symbol)
+;;                                           values)
+;;   "Accept org compatible VALUES"
+;;   ;; (unless (occ-obj-valid-p prop operation)
+;;   ;;   (occ-error "occ-obj-org-call-operation: operation %s is not allowed for prop %s" operation prop))
+;;   (occ-do-org-operation pom
+;;                         operation
+;;                         prop
+;;                         values))
+
 
-(cl-defmethod occ-obj-org-call-operation-at-point ((mrk  marker)
-                                                   (prop symbol)
-                                                   operation
-                                                   values)
+(cl-defmethod occ-obj-org-operation-at-point ((mrk  marker)
+                                              (prop symbol)
+                                              operation
+                                              values)
   "Accept org compatible VALUES"
   (unless (occ-obj-valid-p operation prop)
     (occ-error "occ-obj-org-call-operation: operation %s is not allowed for prop %s" operation prop))
@@ -225,29 +238,29 @@ PROP and VALUES"
     (unless (org-get-property-block)
       ;; create property drawer
       ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
-      (occ-debug "occ-obj-org-call-operation-at-point: property block not exist so creating it.")
+      (occ-debug "occ-obj-org-operation-at-point: property block not exist so creating it.")
       (let* ((range (org-get-property-block (point) 'force))
              (start (when (consp range) (1- (cl-first range)))))
         (if (and range
                  start)
             (when (numberp start)
               (goto-char start))
-          (occ-error "occ-obj-org-call-operation-at-point: not able to create property block to add property %s: %s"
+          (occ-error "occ-obj-org-operation-at-point: not able to create property block to add property %s: %s"
                      prop
                      values))))
 
     (if (org-get-property-block)
         (progn
-          (occ-debug "occ-obj-org-call-operation-at-point: adding prop: %s value: %s using (org-set-property)."
+          (occ-debug "occ-obj-org-operation-at-point: adding prop: %s value: %s using (org-set-property)."
                      prop
                      values)
-          (let ((retval (occ-obj-org-call-operation mrk
-                                                    prop
-                                                    operation
-                                                    values)))
-            (occ-debug "occ-obj-org-call-operation: (occ-obj-org-call-operation mrk) returned %s" retval)
+          (let ((retval (occ-obj-org-operation mrk
+                                               prop
+                                               operation
+                                               values)))
+            (occ-debug "occ-obj-org-operation: (occ-obj-org-operation mrk) returned %s" retval)
             retval))
-        (occ-error "occ-obj-org-call-operation-at-point: can not get property block to add property %s: %s"
+        (occ-error "occ-obj-org-operation-at-point: can not get property block to add property %s: %s"
                    prop
                    values))))
 
@@ -259,9 +272,9 @@ PROP and VALUES"
         (ctx (occ-obj-ctx obj)))
     (ignore ctx)
     (let* ((mrk    (or (occ-obj-marker tsk) (point)))
-           (values (occ-obj-org-call-operation-at-point mrk
-                                                        prop
-                                                        'get)))
+           (values (occ-obj-org-operation-at-point mrk
+                                                   prop
+                                                   'get)))
       (mapcar #'(lambda (v)
                   (occ-obj-intf-from-org prop
                                          v))
@@ -278,9 +291,9 @@ PROP and VALUES"
            (values (mapcar #'(lambda (v)
                                (occ-obj-intf-to-org prop v))
                            values)))
-      (occ-obj-org-call-operation-at-point (occ-obj-marker tsk)
-                                           prop
-                                           'put
-                                           values))))
+      (occ-obj-org-operation-at-point (occ-obj-marker tsk)
+                                      prop
+                                      'put
+                                      values))))
 
 ;;; occ-prop-org.el ends here
