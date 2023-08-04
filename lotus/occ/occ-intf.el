@@ -47,12 +47,14 @@
   (occ-debug "occ-obj-intf-rank(obj=%s symbol=%s)"
              obj
              property)
-  (occ-obj-impl-rank obj property))
+  (occ-obj-impl-rank obj
+                     property))
 (cl-defmethod occ-obj-intf-rank ((obj  occ-obj-ctx-tsk)
                                  (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
   (occ-debug "occ-obj-intf-rank(obj=%s symbol=%s)" obj property)
-  (occ-obj-impl-rank obj property))
+  (occ-obj-impl-rank obj
+                     property))
 
 
 ;; adding base propetry NIL for helping to add relative properties
@@ -62,12 +64,14 @@
   (occ-debug "occ-obj-intf-rank(obj=%s symbol=%s)"
              obj
              property)
-  (occ-obj-impl-rank obj property))
+  (occ-obj-impl-rank obj
+                     property))
 (cl-defmethod occ-obj-intf-rank ((obj  occ-obj-ctx-tsk)
                                  (property (eql nil)))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
   (occ-debug "occ-obj-intf-rank(obj=%s symbol=%s)" obj property)
-  (occ-obj-impl-rank obj property))
+  (occ-obj-impl-rank obj
+                     property))
 
 
 ;; (cl-defgeneric occ-obj-has-p (obj
@@ -79,7 +83,9 @@
                                   (prop symbol)
                                   value)
   "OBJ has property VALUE for PROPERTY"
-  (occ-obj-impl-has-p obj prop value))
+  (occ-obj-impl-has-p obj
+                      prop
+                      value))
 
 
 ;; (cl-defgeneric occ-obj-get-property-value-from-ctx (obj
@@ -96,7 +102,9 @@
                                 (property symbol)
                                 (arg null))
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
-  (occ-obj-impl-get ctx property arg))
+  (occ-obj-impl-get ctx
+                    property
+                    arg))
 
 
 ;; (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk)
@@ -114,7 +122,9 @@ return ORG compatible value."
   "Read value of list of elements if (occ-obj-intf-list-p PROPERTY) else
 element for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value."
-  (occ-obj-impl-get user property ctsk))
+  (occ-obj-impl-get user
+                    property
+                    ctsk))
 
 
 ;; (cl-defgeneric occ-obj-format-prop (obj
@@ -161,7 +171,8 @@ representation."
   ;; (occ-error "Implement method occ-obj-intf-to-org for property %s" property)
   (occ-debug "occ-obj-intf-to-org: no method for property %s using default."
              property)
-  (occ-obj-impl-to-org property value))
+  (occ-obj-impl-to-org property
+                       value))
 
 
 ;; (cl-defgeneric occ-obj-prop-from-org (property
@@ -177,7 +188,8 @@ PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
   ;; (occ-error "Implement method occ-obj-intf-from-org for property %s" property)
   (occ-debug "occ-obj-intf-from-org: no method for property %s using default." property)
-  (occ-obj-impl-from-org property value))
+  (occ-obj-impl-from-org property
+                         value))
 (cl-defmethod occ-obj-intf-from-org ((property symbol)
                                      (value string))
   "Return the Actual Object representation for property
@@ -185,7 +197,8 @@ PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
   ;; (occ-error "Implement method occ-obj-intf-from-org for property %s" property)
   (occ-debug "occ-obj-intf-from-org: no method for property %s using default." property)
-  (occ-obj-impl-from-org property value))
+  (occ-obj-impl-from-org property
+                         value))
 
 
 ;; (cl-defgeneric occ-obj-require-p (obj
@@ -200,7 +213,10 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   (ignore property)
   (ignore values)
   (occ-debug "occ-obj-intf-require-p0 is called")
-  (occ-obj-impl-require-p obj operation property values))
+  (occ-obj-impl-require-p obj
+                          operation
+                          property
+                          values))
 ;; (cl-defmethod occ-obj-intf-require-p ((obj occ-obj-tsk)
 ;;                                       (operation (eql _operation_))
 ;;                                       (property  symbol)
@@ -219,12 +235,16 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                     (property symbol)
                                     (operation symbol))
   "Return a default VALUE of property _TEMPLATE_."
-  (occ-obj-impl-default obj property operation))
+  (occ-obj-impl-default obj
+                        property
+                        operation))
 (cl-defmethod occ-obj-intf-default ((obj occ-obj-ctx-tsk)
                                     (property symbol)
                                     (operation symbol))
   "Return a default VALUE of property _TEMPLATE_."
-  (occ-obj-impl-default obj property operation))
+  (occ-obj-impl-default obj
+                        property
+                        operation))
 
 
 ;; ;; (cl-defgeneric occ-obj-operation (obj
