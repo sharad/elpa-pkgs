@@ -99,7 +99,9 @@
 (cl-defstruct occ-obj
   (name "occ-obj"))
 (cl-defstruct (occ-obj-tsk (:include occ-obj))
-  "Object to hold tsk ctx obj-ctx-tsk")
+  "Object to hold tsk ctx obj-ctx-tsk"
+  prop-ranks-plist
+  method-rank-plist)
 (cl-defstruct (occ-obj-ctx-tsk (:include occ-obj-tsk))
   "Object to hold ctsk occ-ctxual-tsk")
 ;; (cl-defstruct (occ-obj-prop (:include occ-obj))

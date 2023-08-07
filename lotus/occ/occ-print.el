@@ -250,8 +250,9 @@ pointing to it."
     (concat (when case (concat (occ-obj-title obj case) ": "))
             (when rank (format "[%4d] " (or (occ-obj-rank obj) -128)))
             (occ-obj-format tsk case nil nil no-propterties)
-            (unless no-curr-clock
-              (when (occ-obj-current-p obj) "          🕑")))))
+            ;; (unless no-curr-clock
+            ;;   (when (occ-obj-current-p obj) "          🕑"))
+            )))
 
 (cl-defmethod occ-obj-format ((obj occ-ctxual-tsk)
                               &optional
@@ -264,8 +265,9 @@ pointing to it."
             (when rank (format "[c%4d] " (or (occ-obj-rank obj) -128)))
             ;; (occ-obj-format tsk case rank no-curr-clock no-propterties)
             (format "%s" (occ-obj-format tsk case rank no-curr-clock no-propterties))
-            (unless no-curr-clock
-              (when (occ-obj-current-p obj) "          🕑")))))
+            ;; (unless no-curr-clock
+            ;;   (when (occ-obj-current-p obj) "          🕑"))
+            )))
 
 (cl-defmethod occ-obj-format ((obj occ-return)
                               &optional

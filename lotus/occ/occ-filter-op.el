@@ -46,7 +46,7 @@
   "Return matched Sequence for context CTX"
   (ignore obj)
   (if (occ-default-collection)
-      (let* ((rankslist  (mapcar #'occ-obj-rank       sequence))
+      (let* ((rankslist  (mapcar rank       sequence))
              (avgrank    (apply  #'occ-stats-average  rankslist))
              (varirank   (apply  #'occ-stats-variance avgrank rankslist)))
         ;; (occ-debug "occ-collection-obj-matches :around finish")

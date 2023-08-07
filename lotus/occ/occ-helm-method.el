@@ -240,18 +240,18 @@
                (length candidates-unfiltered)
                called-never)
     (let ((candidates-visible (if called-never
-                                                              (progn
-                                                                (setq called-never nil)
-                                                                candidates-unfiltered)
-                                                            (let* ((candidates-new-unfiltered (occ-obj-list-with obj
-                                                                                                                 collection
-                                                                                                                 :builder builder))
-                                                                   (candidates-new-filtered   (occ-obj-filter obj
-                                                                                                              filters
-                                                                                                              candidates-new-unfiltered)))
-                                                              (setq filtered-new-count (length candidates-new-filtered))
-                                                              (ignore filtered-new-count)
-                                                              candidates-new-filtered))))
+                                  (progn
+                                    (setq called-never nil)
+                                    candidates-unfiltered)
+                                (let* ((candidates-new-unfiltered (occ-obj-list-with obj
+                                                                                     collection
+                                                                                     :builder builder))
+                                       (candidates-new-filtered   (occ-obj-filter obj
+                                                                                  filters
+                                                                                  candidates-new-unfiltered)))
+                                  (setq filtered-new-count (length candidates-new-filtered))
+                                  (ignore filtered-new-count)
+                                  candidates-new-filtered))))
          (occ-assert candidates-visible)
          (mapcar #'occ-obj-candidate
                  candidates-visible))

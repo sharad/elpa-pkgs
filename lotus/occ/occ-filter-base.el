@@ -143,5 +143,11 @@
     ;; (occ-debug "occ-obj-filter: seq = %s"
     ;;              seq)
     seq))
+
+
+(defmethod occ-obj-points ((filter occ-filter) seq)
+  )
+(defmethod occ-obj-cmp ((filter occ-filter))
+  )
 
 ;;; occ-filter-base.el ends here
