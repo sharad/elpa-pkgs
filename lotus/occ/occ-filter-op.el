@@ -52,7 +52,7 @@
         ;; (occ-debug "occ-collection-obj-matches :around finish")
         (occ-debug "matched ctxtsks %s" (length sequence))
         (occ-debug "occ-filter-mutual-deviation: avgrank = %d varirank = %d"
-                          avgrank varirank)
+                   avgrank varirank)
         (cl-remove-if-not #'(lambda (tsk)
                               (>= (funcall rank tsk)
                                   avgrank))
