@@ -218,7 +218,15 @@
   "occ-filter"
   keyword
   fun)
-;; (cl-defstruct (occ-callable-normal (:include occ-callable))
+
+(cl-defstruct (occ-dyn-filter (:include occ-obj))
+  "occ-filter"
+  filter
+  points
+  pivot
+  incement
+  decrement);
+; (cl-defstruct (occ-callable-normal (:include occ-callable))
 ;;   "occ-callable-normal")
 ;; (cl-defstruct (occ-callable-generator (:include occ-callable))
 ;;   "occ-callable-generator")
