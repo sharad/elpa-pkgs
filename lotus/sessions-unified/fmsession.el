@@ -150,13 +150,14 @@ return a new alist whose car is the new pair and cdr is ALIST."
                      (mapcar
                       (lambda (window)
                         (with-current-buffer (window-buffer window)
-                          (or (elscreen-get-alist-to-nickname
-                               elscreen-mode-to-nickname-alist-internal
-                               'string-match (symbol-name major-mode))
-                              (elscreen-get-alist-to-nickname
-                               elscreen-buffer-to-nickname-alist-internal
-                               'string-match (buffer-name))
-                              (cons 'buffer-name (cons (buffer-name) (buffer-file-name))))))
+                          (or (elscreen-get-alist-to-nickname elscreen-mode-to-nickname-alist-internal
+                                                              'string-match
+                                                              (symbol-name major-mode))
+                              (elscreen-get-alist-to-nickname elscreen-buffer-to-nickname-alist-internal
+                                                              'string-match
+                                                              (buffer-name))
+                              (cons 'buffer-name (cons (buffer-name)
+                                                       (buffer-file-name))))))
                       (window-list)))
 
                (let (nickname-list)

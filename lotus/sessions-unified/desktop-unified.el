@@ -314,8 +314,8 @@ so returns nil if pid is nil."
                                                  #'(lambda (f)        ;predicate  BUG failing this cause bugs
                                                      (message "f: %s" f)
                                                      (string-match (concat "^"
-                                                                           (file-truename (expand-file-name default-file desktop-dir)) "-")
-                                                                   ;; (concat "^" desktop-dir "/" default-file "-")
+                                                                           (file-truename (expand-file-name default-file desktop-dir))
+                                                                           "-")
                                                                    (file-truename f))))))
                (expand-file-name file desktop-dir))))
       (error "desktop directory %s don't exists." desktop-dir))))

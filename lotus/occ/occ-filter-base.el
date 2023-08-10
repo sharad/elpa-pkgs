@@ -149,5 +149,22 @@
   (funcall (occ-filter-point-gen filter) seq))
 (defmethod occ-obj-cmp ((filter occ-filter))
   (occ-filter-comparator filter))
+
+(cl-defmethod occ-obj-filter-ops ((obj occ-ctx)
+                                  methods
+                                  sequence
+                                  &key rank)
+  (let* (;; (points (occ-obj-points filter sequence rank))
+         (points (mapcar rank sequence))
+         (pivot 0))
+    
+    (list #'(lambda (seq)
+              (cl-remove-if-not #'(lambda (s) (> (funcall rank s) (nth pivot points)))
+                                seq))
+          #'(lambda ()
+              (mod (cl-incf pivot) (length points)))
+          #'(lambda ()
+              (mod (cl-decf pivot) (length points))))))
+              
 
 ;;; occ-filter-base.el ends here
