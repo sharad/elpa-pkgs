@@ -375,6 +375,10 @@ select candidate from it."
 
 
          ;; TODO: HERE
+         ;; (ops (occ-obj-filter-ops obj nil candidates-unfiltered))
+         ;; (filter (nth 0 ops))
+         ;; (incf-fn (nth 1 ops))
+         ;; (decf-fn (nth 2 ops))
 
 
          (unfiltered-count      (length candidates-unfiltered))
