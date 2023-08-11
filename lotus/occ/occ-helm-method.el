@@ -372,6 +372,11 @@ select candidate from it."
          (level (occ-obj-collection-level collection))
          (timeout               (or timeout occ-idle-timeout))
          (candidates-unfiltered (occ-obj-list-with obj collection :builder builder)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
+
+
+         ;; TODO: HERE
+
+
          (unfiltered-count      (length candidates-unfiltered))
          (candidates-filtered   (occ-obj-filter obj
                                                 filters

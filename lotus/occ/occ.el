@@ -286,8 +286,9 @@
     (occ-ctx-clrhash)
     (occ-uninitialize-hooks))
   (dolist (prop (occ-obj-properties-to-inherit nil))
-    (let ((propstr
-           (upcase (if (keywordp prop) (substring (symbol-name prop) 1) (symbol-name prop)))))
+    (let ((propstr (upcase (if (keywordp prop)
+                               (substring (symbol-name prop) 1)
+                             (symbol-name prop)))))
       (unless (member propstr org-use-property-inheritance)
         (delete propstr org-use-property-inheritance))))
   (setq occ-mode nil))
@@ -399,7 +400,8 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
          ;; (feature-re "^\\(org\\|ob\\|ox\\)\\(-.*\\)?")
          (occ-deps       (cons (symbol-name pkg)
                                (mapcar #'(lambda (x) (symbol-name (cl-first x)))
-                                       (package-desc-reqs (nth 1 (assoc 'occ package-alist))))))
+                                       (package-desc-reqs (nth 1 (assoc 'occ
+                                                                        package-alist))))))
          (occ-pkg-regexp (regexp-opt occ-deps))
          (feature-re     (concat "^" occ-pkg-regexp "$"))
          (remove-re      (format "\\`%s\\'"
@@ -407,15 +409,14 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
          (feats          (delete-dups (mapcar #'file-name-sans-extension
                                               (mapcar 'file-name-nondirectory
                                                       (delq nil (mapcar 'feature-file features))))))
-         (lfeat          (append (sort (setq feats
-                                             (delq nil (mapcar (lambda (f)
-                                                                 (if (and (string-match feature-re f)
-                                                                          (not (string-match remove-re f)))
-                                                                     (progn
-                                                                       (occ-debug "%s matched." f)
-                                                                       f)
-                                                                   nil))
-                                                               feats)))
+         (lfeat          (append (sort (setq feats (delq nil (mapcar #'(lambda (f)
+                                                                         (if (and (string-match feature-re f)
+                                                                                  (not (string-match remove-re f)))
+                                                                             (progn
+                                                                               (occ-debug "%s matched." f)
+                                                                               f)
+                                                                           nil))
+                                                                     feats)))
                                        'string-lessp)
                           (list "occ-version" "occ")))
          (load-suffixes  (when (boundp 'load-suffixes) load-suffixes))
@@ -435,7 +436,8 @@ With prefix arg UNCOMPILED, load the uncompiled versions."
     (occ-debug "starting")
     (when load-uncore
       (occ-debug "The following feature%s found in load-path, please check if that's correct:\n%s"
-               (if (> (length load-uncore) 1) "s were" " was") load-uncore))
+                 (if (> (length load-uncore) 1) "s were" " was")
+                 load-uncore))
     (if load-misses
         (occ-debug "Some error occurred while reloading Org feature%s\n%s\nPlease check *Messages*!\n%s"
                      (if (> (length load-misses) 1) "s" "")

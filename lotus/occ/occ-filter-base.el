@@ -149,6 +149,26 @@
   (funcall (occ-filter-point-gen filter) seq))
 (defmethod occ-obj-cmp ((filter occ-filter))
   (occ-filter-comparator filter))
+
+
+(cl-defmethod occ-obj-filter ((obj occ-ctx)
+                              methods
+                              sequence
+                              &key rank)
+  (let* ((rank (or rank
+                   #'occ-obj-rank))
+         (seq  (occ-obj-apply-recursively obj
+                                          methods
+                                          sequence
+                                          :rank rank)))
+    ;; (occ-debug "occ-obj-filter: (length seq) = %d"
+    ;;              (length seq))
+    ;; (occ-debug "occ-obj-filter: seq = %s"
+    ;;              seq)
+    seq))
+
+
+
 
 (cl-defmethod occ-obj-filter-ops ((obj occ-ctx)
                                   methods
