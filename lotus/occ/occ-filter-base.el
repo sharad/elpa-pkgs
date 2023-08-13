@@ -167,9 +167,6 @@
     ;;              seq)
     seq))
 
-
-
-
 (cl-defmethod occ-obj-filter-ops ((obj occ-ctx)
                                   methods
                                   sequence
@@ -178,15 +175,18 @@
                    #'occ-obj-rank))
          (seq sequence)
          (points (occ-obj-filter-mutual-deviation-points obj sequence :rank rank))
-         (pivot (/ (length points) 2)))
-    (occ-message "Hello points: %s" points)
+         (default-pivot (/ (length points) 2))
+         (pivot default-pivot))
+    ;; (occ-message "Hello points: %s, pivot %d" points pivot)
     (list #'(lambda () seq)
           #'(lambda ()
               (cl-remove-if-not #'(lambda (s) (>= (funcall rank s) (nth pivot points)))
                                 seq))
           #'(lambda ()
-              (mod (cl-incf pivot) (length points)))
+              (setf pivot (mod (cl-incf pivot) (length points))))
           #'(lambda ()
-              (mod (cl-decf pivot) (length points))))))
+              (setf pivot (mod (cl-decf pivot) (length points))))
+          #'(lambda ()
+              (setf pivot default-pivot)))))
 
 ;;; occ-filter-base.el ends here
