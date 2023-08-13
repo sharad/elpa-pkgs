@@ -367,15 +367,21 @@
          (incf-fn (nth 2 filter-ops))
          (decf-fn (nth 3 filter-ops))) ;; TODO: make a separate function for it.
     (ignore timeout)
-    (ignore filtered-count)
-    (ignore filtered-new-count)
-    (ignore candidates-new-unfiltered)
-    (ignore candidates-new-filtered)
-    (occ-debug "occ-obj-helm-build-collection-source: (length candidates-unfiltered) = %d, called-never = %s"
-               (length candidates-unfiltered)
-               called-never)
+    ;; (ignore filtered-count)
+    ;; (ignore filtered-new-count)
+    ;; (ignore candidates-new-unfiltered)
+    ;; (ignore candidates-new-filtered)
+    ;; (occ-debug "occ-obj-helm-build-collection-source: (length candidates-unfiltered) = %d, called-never = %s"
+    ;;            (length candidates-unfiltered)
+    ;;            called-never)
     (let* ((default-filters filters)
            (filters         filters)
+
+           (candidates-unfiltered (funcall seq-fn)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
+           (unfiltered-count      (length candidates-unfiltered))
+           (candidates-filtered   (funcall filter-fn))
+           (filtered-count        (length candidates-filtered))
+
            (gen-candidates  #'(lambda ()
                                 (mapcar #'occ-obj-candidate
                                         (funcall filter-fn))))
@@ -503,7 +509,7 @@ select candidate from it."
                                     :level level)
         (let ((source (occ-obj-helm-build-real-collection-source obj
                                                                  collection ;; (nth 0 (occ-collections-default))
-                                                                 filter-ops
+                                                                 ops
                                                                  :filters filters
                                                                  :builder builder
                                                                  :ap-normal ap-normal

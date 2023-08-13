@@ -178,8 +178,8 @@
                    #'occ-obj-rank))
          (seq sequence)
          (points (occ-obj-filter-mutual-deviation-points obj sequence :rank rank))
-         (pivot (nth (/ (length points) 2) points)))
-
+         (pivot (/ (length points) 2)))
+    (occ-message "Hello points: %s" points)
     (list #'(lambda () seq)
           #'(lambda ()
               (cl-remove-if-not #'(lambda (s) (>= (funcall rank s) (nth pivot points)))
