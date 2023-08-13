@@ -227,13 +227,6 @@
          (decf-fn (nth 3 filter-ops))
          (reset-fn (nth 4 filter-ops))) ;; TODO: make a separate function for it.
     (ignore timeout)
-    ;; (ignore filtered-count)
-    ;; (ignore filtered-new-count)
-    ;; (ignore candidates-new-unfiltered)
-    ;; (ignore candidates-new-filtered)
-    ;; (occ-debug "occ-obj-helm-build-collection-source: (length candidates-unfiltered) = %d, called-never = %s"
-    ;;            (length candidates-unfiltered)
-    ;;            called-never)
     (let* ((default-filters filters)
            (filters         filters)
 
@@ -266,15 +259,15 @@
                                  ;; ;; (setf level (1+ level))
                                  ;; (setf filters default-filters)
                                  ;; ;; (funcall gen-candidates)
-                                 (funcall incf-fn)
-                                 (helm-refresh)))
+                                 (funcall incf-fn)))
+                                 ;; (helm-refresh)
            (filter-dec-fn    #'(lambda ()
                                  (interactive)
                                  ;; ;; (setf level (1- level))
                                  ;; (setf filters default-filters)
                                  ;; ;; (funcall gen-candidates)
-                                 (funcall decf-fn)
-                                 (helm-refresh)))
+                                 (funcall decf-fn)))
+                                 ;; (helm-refresh)
            (h-map            (let ((map (make-sparse-keymap)))
                                (set-keymap-parent map occ-helm-map)
                                (define-key map (kbd "M-<up>")     filter-inc-fn)
@@ -291,17 +284,8 @@
                                                                              unfiltered-count
                                                                              filtered-count
                                                                              :prompt prompt)))
-          ;; (occ-debug "occ-obj-helm-build-collection-source: ap-normal: %s" ap-normal)
-          ;; (occ-debug "occ-obj-helm-build-collection-source: ap-transf: %s" ap-transf)
           (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
                 (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
-            ;; (progn
-            ;;   (occ-debug "occ-obj-helm-build-collection-source: helm-transfm: %s" helm-transfm)
-            ;;   (occ-debug "occ-obj-helm-build-collection-source: helm-actions:")
-            ;;   (dolist (a helm-actions)
-            ;;     (occ-debug " occ-obj-helm-build-collection-source: helm-action: %s" a))
-            ;;   (occ-debug "occ-obj-helm-build-collection-source: helm-transfm: %s" helm-transfm))
-
             ;; * Dynamic Match based templates
             ;; https://kitchingroup.cheme.cmu.edu/blog/2016/01/24/Modern-use-of-helm-sortable-candidates/
             (helm-make-source source-name 'occ-helm-source-sync ;; 'helm-source-sync
