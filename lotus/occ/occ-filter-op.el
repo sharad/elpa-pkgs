@@ -37,7 +37,20 @@
   (ignore obj)
   (ignore sequence)
   (ignore rank)
-  ())
+  (let* ((rank (or rank
+                   #'occ-obj-rank))
+         (rankslist  (mapcar rank       sequence))
+         (avgrank    (apply  #'occ-stats-average  rankslist))
+         (varirank   (apply  #'occ-stats-variance avgrank rankslist)))
+    (delete-dups (mapcar rank sequence))))
+
+(cl-defmethod occ-obj-filter-mutual-deviation-points ((obj occ-ctx)
+                                                      sequence
+                                                      &key rank) ;TODO: make it after method
+  (ignore obj)
+  (ignore sequence)
+  (ignore rank)
+  (delete-dups (mapcar rank sequence)))
 
 
 (cl-defmethod occ-obj-filter-mutual-deviation ((obj occ-ctx)

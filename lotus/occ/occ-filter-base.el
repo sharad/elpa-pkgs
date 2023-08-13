@@ -174,17 +174,19 @@
                                   methods
                                   sequence
                                   &key rank)
-  (let* (;; (points (occ-obj-points filter sequence rank))
-         (points (mapcar rank sequence))
-         (pivot 0))
-    
-    (list #'(lambda (seq)
-              (cl-remove-if-not #'(lambda (s) (> (funcall rank s) (nth pivot points)))
+  (let* ((rank (or rank
+                   #'occ-obj-rank))
+         (seq sequence)
+         (points (occ-obj-filter-mutual-deviation-points obj sequence :rank rank))
+         (pivot (nth (/ (length points) 2) points)))
+
+    (list #'(lambda () seq)
+          #'(lambda ()
+              (cl-remove-if-not #'(lambda (s) (>= (funcall rank s) (nth pivot points)))
                                 seq))
           #'(lambda ()
               (mod (cl-incf pivot) (length points)))
           #'(lambda ()
               (mod (cl-decf pivot) (length points))))))
-              
 
 ;;; occ-filter-base.el ends here

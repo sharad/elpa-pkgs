@@ -27,6 +27,11 @@
 (provide 'occ-impl)
 
 
+(eval-when-compile
+  (require 'occ-macros))
+(require 'occ-macros)
+
+
 ;; (cl-defgeneric occ-obj-rankprop (obj
 (cl-defgeneric occ-obj-impl-rank (obj
                                   property)

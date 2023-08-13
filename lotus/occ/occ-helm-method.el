@@ -211,8 +211,7 @@
 
 (cl-defmethod occ-obj-helm-build-real-collection-source ((obj        occ-ctx)
                                                          (collection occ-obj-collection) ;; (nth 0 (occ-collections-default))
-                                                         candidates-unfiltered
-                                                         candidates-filtered
+                                                         filter-ops
                                                          &key
                                                          filters
                                                          builder
@@ -222,6 +221,10 @@
                                                          prompt)
   (let* ((timeout               (or timeout occ-idle-timeout))
          ;; (candidates-unfiltered (occ-obj-list-with obj collection :builder builder)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
+         (seq-fn (nth 0 filter-ops))
+         (filter-fn (nth 1 filter-ops))
+         (incf-fn (nth 2 filter-ops))
+         (decf-fn (nth 3 filter-ops))
          (unfiltered-count      (length candidates-unfiltered))
          ;; (candidates-filtered   (occ-obj-filter obj
          ;;                                        filters
@@ -346,6 +349,106 @@
               :filtered-candidate-transformer nil ;; (lambda (candidates source) candidates)
               :history                        'org-refile-history)))))))
 
+
+(cl-defmethod occ-obj-helm-build-real-collection-source ((obj        occ-ctx)
+                                                         (collection occ-obj-collection) ;; (nth 0 (occ-collections-default))
+                                                         filter-ops
+                                                         &key
+                                                         filters
+                                                         builder
+                                                         ap-normal
+                                                         ap-transf
+                                                         timeout
+                                                         prompt)
+  (let* ((timeout               (or timeout occ-idle-timeout))
+         ;; (candidates-unfiltered (occ-obj-list-with obj collection :builder builder)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
+         (seq-fn (nth 0 filter-ops))
+         (filter-fn (nth 1 filter-ops))
+         (incf-fn (nth 2 filter-ops))
+         (decf-fn (nth 3 filter-ops))) ;; TODO: make a separate function for it.
+    (ignore timeout)
+    (ignore filtered-count)
+    (ignore filtered-new-count)
+    (ignore candidates-new-unfiltered)
+    (ignore candidates-new-filtered)
+    (occ-debug "occ-obj-helm-build-collection-source: (length candidates-unfiltered) = %d, called-never = %s"
+               (length candidates-unfiltered)
+               called-never)
+    (let* ((default-filters filters)
+           (filters         filters)
+           (gen-candidates  #'(lambda ()
+                                (mapcar #'occ-obj-candidate
+                                        (funcall filter-fn))))
+           (filter-manage-fn  #'(lambda ()
+                                  (interactive)
+                                  (with-helm-buffer
+                                    (progn ;; code to manager filters
+                                      ;; TODO: check https://github.com/emacsmirror/edit-list/blob/master/edit-list.el
+                                      ;; TODO: implement list editor
+                                      ;; TODO: search emacs elisp interactively modify list
+                                      (occ-debug "Manage filters here.")
+                                      (setf filters default-filters)))
+                                  ;; (funcall gen-candidates)
+                                  (helm-refresh)))
+           (filter-reset-fn  #'(lambda ()
+                                 (interactive)
+                                 (setf filters default-filters)
+                                 ;; (funcall gen-candidates)
+                                 (helm-refresh)))
+           (filter-inc-fn    #'(lambda ()
+                                 (interactive)
+                                 ;; ;; (setf level (1+ level))
+                                 ;; (setf filters default-filters)
+                                 ;; ;; (funcall gen-candidates)
+                                 (funcall incf-fn)
+                                 (helm-refresh)))
+           (filter-dec-fn    #'(lambda ()
+                                 (interactive)
+                                 ;; ;; (setf level (1- level))
+                                 ;; (setf filters default-filters)
+                                 ;; ;; (funcall gen-candidates)
+                                 (funcall decf-fn)
+                                 (helm-refresh)))
+           (h-map            (let ((map (make-sparse-keymap)))
+                               (set-keymap-parent map occ-helm-map)
+                               (define-key map (kbd "M-<up>")     filter-inc-fn)
+                               (define-key map (kbd "M-<down>")   filter-dec-fn)
+                               (define-key map (kbd "M-<space>")  filter-reset-fn)
+                               (define-key map (kbd "M-<return>") filter-manage-fn)
+                               map)))
+
+      (when (> filtered-count 0) ;; (> unfiltered-count 0)
+        (let ((gen-candidate-lambda #'(lambda () (funcall gen-candidates)))
+              (source-name          (occ-helm-build-collection-source-prompt obj
+                                                                             collection
+                                                                             (symbol-name (occ-cl-inst-classname (cl-first candidates-unfiltered)))
+                                                                             10 ;; unfiltered-count
+                                                                             10 ;; filtered-count
+                                                                             :prompt prompt)))
+          ;; (occ-debug "occ-obj-helm-build-collection-source: ap-normal: %s" ap-normal)
+          ;; (occ-debug "occ-obj-helm-build-collection-source: ap-transf: %s" ap-transf)
+          (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
+                (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
+            ;; (progn
+            ;;   (occ-debug "occ-obj-helm-build-collection-source: helm-transfm: %s" helm-transfm)
+            ;;   (occ-debug "occ-obj-helm-build-collection-source: helm-actions:")
+            ;;   (dolist (a helm-actions)
+            ;;     (occ-debug " occ-obj-helm-build-collection-source: helm-action: %s" a))
+            ;;   (occ-debug "occ-obj-helm-build-collection-source: helm-transfm: %s" helm-transfm))
+
+            ;; * Dynamic Match based templates
+            ;; https://kitchingroup.cheme.cmu.edu/blog/2016/01/24/Modern-use-of-helm-sortable-candidates/
+            (helm-make-source source-name 'occ-helm-source-sync ;; 'helm-source-sync
+              :candidates                     gen-candidate-lambda
+              ;; :header-name
+              :keymap                         h-map
+              :action                         helm-actions
+              :persistent-action              helm-actions
+              :persistent-help                "I don't want this line here"
+              :action-transformer             helm-transfm
+              :filtered-candidate-transformer nil ;; (lambda (candidates source) candidates)
+              :history                        'org-refile-history)))))))
+
 ;; * Dynamic Match based templates
 ;; https://kitchingroup.cheme.cmu.edu/blog/2016/01/24/Modern-use-of-helm-sortable-candidates/
 
@@ -371,20 +474,16 @@ select candidate from it."
   (let* ((rank  (occ-obj-collection-rank collection))
          (level (occ-obj-collection-level collection))
          (timeout               (or timeout occ-idle-timeout))
-         (candidates-unfiltered (occ-obj-list-with obj collection :builder builder)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
-
 
          ;; TODO: HERE
-         ;; (ops (occ-obj-filter-ops obj nil candidates-unfiltered))
-         ;; (filter (nth 0 ops))
-         ;; (incf-fn (nth 1 ops))
-         ;; (decf-fn (nth 2 ops))
-
-
+         (ops (occ-obj-filter-ops obj nil (occ-obj-list-with obj collection :builder builder)))
+         (seq-fn (nth 0 ops))
+         (filter-fn (nth 1 ops))
+         (incf-fn (nth 2 ops))
+         (decf-fn (nth 3 ops))
+         (candidates-unfiltered (funcall seq-fn)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
          (unfiltered-count      (length candidates-unfiltered))
-         (candidates-filtered   (occ-obj-filter obj
-                                                filters
-                                                candidates-unfiltered))
+         (candidates-filtered   (funcall filter-fn))
          (filtered-count        (length candidates-filtered)))
 
     (occ-debug "len candidates-unfiltered %d" unfiltered-count)
@@ -404,8 +503,7 @@ select candidate from it."
                                     :level level)
         (let ((source (occ-obj-helm-build-real-collection-source obj
                                                                  collection ;; (nth 0 (occ-collections-default))
-                                                                 candidates-unfiltered
-                                                                 candidates-filtered
+                                                                 filter-ops
                                                                  :filters filters
                                                                  :builder builder
                                                                  :ap-normal ap-normal
