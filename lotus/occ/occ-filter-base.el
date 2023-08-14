@@ -51,21 +51,21 @@
                                   (eq key
                                       (occ-filter-keyword filter)))
                               occ-obj-filters)))
-(defun occ-obj-filters-get (keylist)
-  (mapcan #'(lambda (key)
-              (cl-remove-if-not #'(lambda (filter)
-                                    (eq key
-                                        (occ-filter-keyword filter)))
-                                occ-obj-filters))
-          keylist))
+;; (defun occ-obj-filters-get (keylist)
+;;   (mapcan #'(lambda (key)
+;;               (cl-remove-if-not #'(lambda (filter)
+;;                                     (eq key
+;;                                         (occ-filter-keyword filter)))
+;;                                 occ-obj-filters))
+;;           keylist))
 
 
-(cl-defmethod occ-obj-get-filters ((obj occ-obj-ctx)
-                                   keylist)
-  ;; TODO: do we require (apply #'append ...)
-  (ignore obj)
-  (occ-debug "(OCC-OBJ-GET-FILTERS OCC-OBJ-TSK): called")
-  (occ-obj-filters-get keylist))
+;; (cl-defmethod occ-obj-get-filters ((obj occ-obj-ctx)
+;;                                    keylist)
+;;   ;; TODO: do we require (apply #'append ...)
+;;   (ignore obj)
+;;   (occ-debug "(OCC-OBJ-GET-FILTERS OCC-OBJ-TSK): called")
+;;   (occ-obj-filters-get keylist))
 
 
 (cl-defmethod occ-obj-average ((obj occ-stat)
@@ -213,7 +213,7 @@
                          (helm-refresh)))
           (reset #'(lambda ()
                      (setf pivot default-pivot)))))
-    (occ-obj-build-dyn-filter "test"
+    (occ-obj-build-dyn-filter (occ-obj-name filter)
                               :filter filter
                               :increment increment
                               :decrement decrement
