@@ -189,5 +189,8 @@
               (helm-refresh))
           #'(lambda ()
               (setf pivot default-pivot)))))
+
+;; (occ-obj-get-filters (occ-obj-make-ctx-at-point) (occ-match-filters))
+;; (occ-obj-filters-get (occ-match-filters))
 
 ;;; occ-filter-base.el ends here

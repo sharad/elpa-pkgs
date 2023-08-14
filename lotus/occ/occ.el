@@ -118,14 +118,16 @@
                    *occ-collector-unnamed-key*))
 
 (defun occ-collections-all ()
-  (apply #'occ-collections (occ-collector-keys)))
+  (apply #'occ-collections
+         (occ-collector-keys)))
 
 ;; (defun occ-switch-buffer-run-curr-ctx-timer-function (prev next)
 ;;   (occ-run-curr-ctx-timer))
 
 ;;;###autoload
 (defun occ-add-after-save-hook-fun-in-org-mode ()
-  (add-hook 'after-save-hook 'occ-after-save-hook-fun t t))
+  (add-hook 'after-save-hook
+            'occ-after-save-hook-fun t t))
 
 
 (defun occ-reset-collection-spec (&optional key)
