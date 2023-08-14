@@ -167,30 +167,77 @@
     ;;              seq)
     seq))
 
+(cl-defmethod occ-obj-filter-points ((filter occ-filter)
+                                     (obj occ-ctx)
+                                     sequence
+                                     :rank rank)
+  (let ((points-gen-fn (occ-filter-points-gen-fn filter)))
+    (funcall points-gen-fn obj
+             sequence
+             :rank rank)))
+
+(cl-defmethod occ-obj-filter-default-pivot ((filter occ-filter)
+                                            (obj occ-ctx)
+                                            points)
+  (let ((default-pivot-fn (occ-filter-default-pivot-fn filter)))
+    (funcall default-pivot-fn obj
+             points)))
+
+(cl-defmethod occ-obj-get-dync-filter ((filter occ-filter)
+                                       (obj occ-ctx)
+                                       methods
+                                       sequence
+                                       &key rank)
+  (let* ((rank          (or rank
+                            #'occ-obj-rank))
+         (points        (occ-obj-filter-points filter
+                                               obj
+                                               sequence
+                                               :rank rank))
+         ;; (default-pivot (/ (length points) 2))
+         (default-pivot (occ-obj-filter-default-pivot filter
+                                                      obj
+                                                      points))
+         (pivot default-pivot))
+    (let ((seq #'(lambda () sequence))
+          (filter #'(lambda ()
+                      (cl-remove-if-not #'(lambda (s) (>= (funcall rank s) (nth pivot points)))
+                                        seq)))
+          (increment #'(lambda ()
+                         (setf pivot (mod (1+ pivot)
+                                          (length points)))
+                         (helm-refresh)))
+          (decrement #'(lambda ()
+                         (setf pivot (mod (1- pivot)
+                                          (length points)))
+                         (helm-refresh)))
+          (reset #'(lambda ()
+                     (setf pivot default-pivot)))))
+    (occ-obj-build-dyn-filter "test"
+                              :filter filter
+                              :increment increment
+                              :decrement decrement
+                              :reset reset)))
+
 (cl-defmethod occ-obj-filter-ops ((obj occ-ctx)
                                   methods
                                   sequence
                                   &key rank)
-  (let* ((rank (or rank
-                   #'occ-obj-rank))
-         (seq sequence)
-         (points (occ-obj-filter-mutual-deviation-points obj sequence :rank rank))
-         (default-pivot (/ (length points) 2))
-         (pivot default-pivot))
-    (list #'(lambda () seq)
-          #'(lambda ()
-              (cl-remove-if-not #'(lambda (s) (>= (funcall rank s) (nth pivot points)))
-                                seq))
-          #'(lambda ()
-              (setf pivot (mod (1+ pivot) (length points)))
-              (helm-refresh))
-          #'(lambda ()
-              (setf pivot (mod (1- pivot) (length points)))
-              (helm-refresh))
-          #'(lambda ()
-              (setf pivot default-pivot)))))
+  (let* ((filterkw-rank (cl-first methods))
+         (filter        (occ-obj-filter-get (or (car-safe filterkw-rank)
+                                                filterkw-rank)))
+         (rank          (if (consp filterkw-rank)
+                            (nth 1 filterkw-rank)
+                          (or rank
+                              #'occ-obj-rank))))
+    (occ-obj-get-dync-filter filter
+                             obj
+                             (cdr methods)
+                             sequences
+                             :rankt rank)))
 
 ;; (occ-obj-get-filters (occ-obj-make-ctx-at-point) (occ-match-filters))
 ;; (occ-obj-filters-get (occ-match-filters))
+;; (occ-obj-filters-get '(:identity :positive))
 
 ;;; occ-filter-base.el ends here

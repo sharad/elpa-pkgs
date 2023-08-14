@@ -624,21 +624,65 @@
 
 (defun occ-obj-make-filter (keyword
                             name
-                            fun)
+                            ;; fun
+                            points-gen-fn
+                            compare-fn
+                            default-pivot-fn
+                            rank-fn)
   "Dynamic object"
   (make-occ-filter :keyword keyword
                    :name    name
-                   :fun     fun))
+                   ;; :fun     fun
+                   :points-gen-fn points-gen-fn
+                   :compare-fn compare-fn
+                   :default-pivot-fn default-pivot-fn
+                   :rank-fn rank-fn))
 
 (defun occ-obj-build-filter (keyword
                              name
-                             fun)
+                             ;; fun
+                             points-gen-fn
+                             compare-fn
+                             default-pivot-fn
+                             rank-fn)
+                             
   "Filter creation and to be stored via (OCC-HELM-FILTER-ADD FILTER)"
   (let ((filter (occ-obj-make-filter keyword
                                      name
-                                     fun)))
+                                     ;; fun
+                                     points-gen-fn
+                                     compare-fn
+                                     default-pivot-fn
+                                     rank-fn)))
     (occ-obj-filter-add filter)
     filter))
+
+
+(defun occ-obj-make-dyn-filter (name &keys
+                                filter
+                                points
+                                pivot
+                                incement
+                                decrement)
+  (make-occ-dyn-filter :name name
+                       :filter filter
+                       :points points
+                       :pivot pivot
+                       :incement incement
+                       :decrement decrement))
+
+(defun occ-obj-build-dyn-filter (name &keys
+                                 filter
+                                 points
+                                 pivot
+                                 incement
+                                 decrement)
+  (occ-obj-make-dyn-filter name
+                           :filter filter
+                           :points points
+                           :pivot pivot
+                           :incement incement
+                           :decrement decrement))
 
 
 ;; ctors

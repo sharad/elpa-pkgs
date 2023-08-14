@@ -217,15 +217,21 @@
 (cl-defstruct (occ-filter (:include occ-obj))
   "occ-filter"
   keyword
-  fun)
+  ;; fun
+  points-gen-fn
+  compare-fn
+  default-pivot-fn
+  rank-fn)
 
 (cl-defstruct (occ-dyn-filter (:include occ-obj))
   "occ-filter"
+  seq
   filter
   points
-  pivot
+  ;; pivot
   incement
-  decrement);
+  decrement
+  reset);
 ; (cl-defstruct (occ-callable-normal (:include occ-callable))
 ;;   "occ-callable-normal")
 ;; (cl-defstruct (occ-callable-generator (:include occ-callable))
