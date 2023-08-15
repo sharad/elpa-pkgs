@@ -226,10 +226,9 @@
     (let* ((default-filters filters)
            (filters         filters)
            (candidates-unfiltered (occ-obj-dyn-filter-seq dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
-           (unfiltered-count      (length candidates-unfiltered))
            (candidates-filtered   (occ-obj-dyn-filter-filter dyn-filter))
+           (unfiltered-count      (length candidates-unfiltered))
            (filtered-count        (length candidates-filtered))
-
            (gen-candidates  #'(lambda ()
                                 (mapcar #'occ-obj-candidate
                                         (occ-obj-dyn-filter-filter dyn-filter))))
