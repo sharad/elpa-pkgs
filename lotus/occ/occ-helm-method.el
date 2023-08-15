@@ -211,7 +211,7 @@
 
 (cl-defmethod occ-obj-helm-build-real-collection-source ((obj        occ-ctx)
                                                          (collection occ-obj-collection) ;; (nth 0 (occ-collections-default))
-                                                         filter-ops
+                                                         dyn-filter
                                                          &key
                                                          filters
                                                          builder
@@ -219,25 +219,20 @@
                                                          ap-transf
                                                          timeout
                                                          prompt)
-  (let* ((timeout               (or timeout occ-idle-timeout))
-         ;; (candidates-unfiltered (occ-obj-list-with obj collection :builder builder)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
-         (seq-fn (nth 0 filter-ops))
-         (filter-fn (nth 1 filter-ops))
-         (incf-fn (nth 2 filter-ops))
-         (decf-fn (nth 3 filter-ops))
-         (reset-fn (nth 4 filter-ops))) ;; TODO: make a separate function for it.
+  (let* ((timeout               (or timeout occ-idle-timeout)))
+    ;; (candidates-unfiltered (occ-obj-list-with obj collection :builder builder)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
+    ;; TODO: make a separate function for it.
     (ignore timeout)
     (let* ((default-filters filters)
            (filters         filters)
-
-           (candidates-unfiltered (funcall seq-fn)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
+           (candidates-unfiltered (occ-obj-dyn-filter-seq dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
            (unfiltered-count      (length candidates-unfiltered))
-           (candidates-filtered   (funcall filter-fn))
+           (candidates-filtered   (occ-obj-dyn-filter-filter dyn-filter))
            (filtered-count        (length candidates-filtered))
 
            (gen-candidates  #'(lambda ()
                                 (mapcar #'occ-obj-candidate
-                                        (funcall filter-fn))))
+                                        (occ-obj-dyn-filter-filter dyn-filter))))
            (filter-manage-fn  #'(lambda ()
                                   (interactive)
                                   (with-helm-buffer
@@ -249,35 +244,16 @@
                                       (setf filters default-filters)))
                                   ;; (funcall gen-candidates)
                                   (helm-refresh)))
-           (filter-reset-fn  #'(lambda ()
-                                 (interactive)
-                                 (funcall reset-fn)
-                                 ;; (funcall gen-candidates)
-                                 (helm-refresh)))
-           (filter-inc-fn    #'(lambda ()
-                                 (interactive)
-                                 ;; ;; (setf level (1+ level))
-                                 ;; (setf filters default-filters)
-                                 ;; ;; (funcall gen-candidates)
-                                 (funcall incf-fn)))
-                                 ;; (helm-refresh)
-           (filter-dec-fn    #'(lambda ()
-                                 (interactive)
-                                 ;; ;; (setf level (1- level))
-                                 ;; (setf filters default-filters)
-                                 ;; ;; (funcall gen-candidates)
-                                 (funcall decf-fn)))
-                                 ;; (helm-refresh)
            (h-map            (let ((map (make-sparse-keymap)))
                                (set-keymap-parent map occ-helm-map)
-                               (define-key map (kbd "M-<up>")     filter-inc-fn)
-                               (define-key map (kbd "M-<down>")   filter-dec-fn)
-                               (define-key map (kbd "M-<return>")  filter-reset-fn)
+                               (define-key map (kbd "M-<up>")     (occ-obj-dyn-filter-increment-fn dyn-filter))
+                               (define-key map (kbd "M-<down>")   (occ-obj-dyn-filter-decrement-fn dyn-filter))
+                               (define-key map (kbd "M-<return>") (occ-obj-dyn-filter-reset-fn dyn-filter))
                                (define-key map (kbd "M-<space>") filter-manage-fn)
                                map)))
 
       (when (> filtered-count 0) ;; (> unfiltered-count 0)
-        (let ((gen-candidate-lambda #'(lambda () (funcall gen-candidates)))
+        (let ((gen-candidate-lambda gen-candidates)
               (source-name          (occ-helm-build-collection-source-prompt obj
                                                                              collection
                                                                              (symbol-name (occ-cl-inst-classname (cl-first candidates-unfiltered)))
@@ -326,14 +302,12 @@ select candidate from it."
          (timeout               (or timeout occ-idle-timeout))
 
          ;; TODO: HERE
-         (ops (occ-obj-filter-ops obj nil (occ-obj-list-with obj collection :builder builder)))
-         (seq-fn (nth 0 ops))
-         (filter-fn (nth 1 ops))
-         ;; (incf-fn (nth 2 ops))
-         ;; (decf-fn (nth 3 ops))
-         (candidates-unfiltered (funcall seq-fn)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
+         (dyn-filter (occ-obj-filter-ops obj
+                                         filters
+                                         (occ-obj-list-with obj collection :builder builder)))
+         (candidates-unfiltered (occ-obj-dyn-filter-seq dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
          (unfiltered-count      (length candidates-unfiltered))
-         (candidates-filtered   (funcall filter-fn))
+         (candidates-filtered   (occ-obj-dyn-filter-filter dyn-filter))
          (filtered-count        (length candidates-filtered)))
 
     (occ-debug "len candidates-unfiltered %d" unfiltered-count)
@@ -353,7 +327,7 @@ select candidate from it."
                                     :level level)
         (let ((source (occ-obj-helm-build-real-collection-source obj
                                                                  collection ;; (nth 0 (occ-collections-default))
-                                                                 ops
+                                                                 dyn-filter
                                                                  :filters filters
                                                                  :builder builder
                                                                  :ap-normal ap-normal

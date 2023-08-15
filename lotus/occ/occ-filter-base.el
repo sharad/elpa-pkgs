@@ -166,6 +166,7 @@
     ;; (occ-debug "occ-obj-filter: seq = %s"
     ;;              seq)
     seq))
+
 
 (cl-defmethod occ-obj-filter-points ((filter occ-filter)
                                      (obj occ-ctx)
@@ -182,12 +183,32 @@
   (let ((default-pivot-fn (occ-filter-default-pivot-fn filter)))
     (funcall default-pivot-fn obj
              points)))
+
 
-(cl-defmethod occ-obj-get-dync-filter ((filter occ-filter)
-                                       (obj occ-ctx)
-                                       methods
-                                       sequence
-                                       &key rank)
+(cl-defmethod occ-obj-dyn-filter-seq ((dyn-filter occ-dyn-filter))
+  (funcall (occ-dyn-filter-seq-fn dyn-filter)))
+
+(cl-defmethod occ-obj-dyn-filter-filter ((dyn-filter occ-dyn-filter))
+  (funcall (occ-dyn-filter-filter-fn dyn-filter)))
+
+(cl-defmethod occ-obj-dyn-filter-points ((dyn-filter occ-dyn-filter))
+  (funcall (occ-dyn-filter-points-fn dyn-filter)))
+
+(cl-defmethod occ-obj-dyn-filter-increment ((dyn-filter occ-dyn-filter))
+  (funcall (occ-dyn-filter-increment-fn dyn-filter)))
+
+(cl-defmethod occ-obj-dyn-filter-decrement ((dyn-filter occ-dyn-filter))
+  (funcall (occ-dyn-filter-decrement-fn dyn-filter)))
+
+(cl-defmethod occ-obj-dyn-filter-reset ((dyn-filter occ-dyn-filter))
+  (funcall (occ-dyn-filter-reset-fn dyn-filter)))
+
+
+(cl-defmethod occ-obj-get-dyn-filter ((filter occ-filter)
+                                      (obj occ-ctx)
+                                      methods
+                                      sequence
+                                      &key rank)
   (let* ((rank          (or rank
                             #'occ-obj-rank))
          (points        (occ-obj-filter-points filter
@@ -199,7 +220,7 @@
                                                       obj
                                                       points))
          (pivot default-pivot))
-    (let ((seq #'(lambda () sequence))
+    (let ((seq    #'(lambda () sequence))
           (filter #'(lambda ()
                       (cl-remove-if-not #'(lambda (s) (>= (funcall rank s) (nth pivot points)))
                                         seq)))
@@ -230,11 +251,11 @@
                             (nth 1 filterkw-rank)
                           (or rank
                               #'occ-obj-rank))))
-    (occ-obj-get-dync-filter filter
-                             obj
-                             (cdr methods)
-                             sequences
-                             :rankt rank)))
+    (occ-obj-get-dyn-filter filter
+                            obj
+                            (cdr methods)
+                            sequences
+                            :rankt rank)))
 
 ;; (occ-obj-get-filters (occ-obj-make-ctx-at-point) (occ-match-filters))
 ;; (occ-obj-filters-get (occ-match-filters))
