@@ -208,7 +208,7 @@
 (setq occ-global-filter
       (occ-obj-build-filter :positive
                           "Positive"
-                          :points-gen-fn #'(lambda (obj sequence &keys rank)
+                          :points-gen-fn #'(lambda (obj sequence &key rank)
                                             (delete-dups (mapcar rank sequence)))
                           :compare-fn nil
                           :default-pivot-fn #'(lambda (obj points)
