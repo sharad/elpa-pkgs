@@ -206,16 +206,23 @@
 
 
 (setq occ-global-filter
-      (occ-obj-build-filter :positive
-                          "Positive"
-                          :points-gen-fn #'(lambda (obj sequence &key rank)
-                                            (delete-dups (mapcar rank sequence)))
-                          :compare-fn nil
-                          :default-pivot-fn #'(lambda (obj points)
-                                                (/ (length points) 2))
-                          :rank-fn nil))
+      (occ-obj-build-filter :incremental
+                            "Incremental"
+                            :points-gen-fn #'(lambda (obj sequence &key rank)
+                                              (delete-dups (mapcar rank sequence)))
+                            :compare-fn nil
+                            :default-pivot-fn #'(lambda (obj points)
+                                                  (/ (length points) 2))
+                            :rank-fn nil))
                                      
-                      
+(occ-obj-build-filter :positive
+                      "Positive"
+                      :points-gen-fn #'(lambda (obj sequence &key rank)
+                                         (list 0))
+                      :compare-fn nil
+                      :default-pivot-fn #'(lambda (obj points)
+                                            (/ (length points) 2))
+                      :rank-fn nil)                      
 
 
 (cl-defmethod occ-obj-get-dyn-filter ((filter occ-filter)
