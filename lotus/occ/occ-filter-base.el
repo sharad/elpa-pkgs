@@ -214,7 +214,7 @@
                             :default-pivot-fn #'(lambda (obj points)
                                                   (/ (length points) 2))
                             :rank-fn nil))
-                                     
+
 (occ-obj-build-filter :positive
                       "Positive"
                       :points-gen-fn #'(lambda (obj sequence &key rank)
@@ -222,7 +222,7 @@
                       :compare-fn nil
                       :default-pivot-fn #'(lambda (obj points)
                                             (/ (length points) 2))
-                      :rank-fn nil)                      
+                      :rank-fn nil)
 
 (occ-obj-build-filter :non-negative
                       "Non-Negative"
@@ -231,7 +231,7 @@
                       :compare-fn nil
                       :default-pivot-fn #'(lambda (obj points)
                                             (/ (length points) 2))
-                      :rank-fn nil)                      
+                      :rank-fn nil)
 
 
 (cl-defmethod occ-obj-get-dyn-filter ((filter occ-filter)

@@ -646,14 +646,14 @@
                                 compare-fn
                                 default-pivot-fn
                                 rank-fn)
-                             
+
   "Filter creation and to be stored via (OCC-HELM-FILTER-ADD FILTER)"
   (let ((filter (occ-obj-make-filter keyword
                                      name
                                      ;; fun
                                      :points-gen-fn points-gen-fn
                                      :compare-fn compare-fn
-                                     :default-pivot-fn default-pivot-fn
+                                     :defaux0lt-pivot-fn default-pivot-fn
                                      :rank-fn rank-fn)))
     (occ-obj-filter-add filter)
     filter))
