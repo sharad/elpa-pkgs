@@ -210,7 +210,7 @@
                             "Incremental"
                             :points-gen-fn #'(lambda (obj sequence &key rank)
                                               (delete-dups (mapcar rank sequence)))
-                            :compare-fn nil
+                            :compare-fn #'>=
                             :default-pivot-fn #'(lambda (obj points)
                                                   (/ (length points) 2))
                             :rank-fn nil))
@@ -219,7 +219,7 @@
                       "Positive"
                       :points-gen-fn #'(lambda (obj sequence &key rank)
                                          (list 0))
-                      :compare-fn nil
+                      :compare-fn #'>
                       :default-pivot-fn #'(lambda (obj points)
                                             (/ (length points) 2))
                       :rank-fn nil)
@@ -228,11 +228,19 @@
                       "Non-Negative"
                       :points-gen-fn #'(lambda (obj sequence &key rank)
                                          (list 0))
-                      :compare-fn nil
+                      :compare-fn #'>=
                       :default-pivot-fn #'(lambda (obj points)
                                             (/ (length points) 2))
                       :rank-fn nil)
 
+(occ-obj-build-filter :identity
+                      "Identity"
+                      :points-gen-fn #'(lambda (obj sequence &key rank)
+                                         (list 0))
+                      :compare-fn #'(lambda (rank pivot) t)
+                      :default-pivot-fn #'(lambda (obj points)
+                                            0)
+                      :rank-fn nil)
 
 (cl-defmethod occ-obj-get-dyn-filter ((filter occ-filter)
                                       (obj occ-ctx)
@@ -244,14 +252,16 @@
                                                obj
                                                sequence
                                                :rank rank))
-         ;; (default-pivot (/ (length points) 2))
          (default-pivot (occ-obj-filter-default-pivot filter
                                                       obj
                                                       points))
          (pivot         default-pivot))
     (let ((seq-fn       #'(lambda () sequence))
           (filter-fn    #'(lambda ()
-                           (cl-remove-if-not #'(lambda (s) (>= (funcall rank s) (nth pivot points)))
+                            (cl-remove-if-not (lambda (s)
+                                                (funcall (occ-filter-compare-fn filter)
+                                                         (funcall rank s)
+                                                         (nth pivot points)))
                                              sequence)))
           (increment-fn #'(lambda ()
                             (interactive)
