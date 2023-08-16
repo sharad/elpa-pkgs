@@ -230,6 +230,9 @@
            (unfiltered-count      (length candidates-unfiltered))
            (filtered-count        (length candidates-filtered))
            (gen-candidates  #'(lambda ()
+                                ;; (helm--source (helm-get-current-source))
+                                (let ((source (helm-get-current-source)))
+                                  (setf (slot-value source 'name) "TEST"))
                                 (mapcar #'occ-obj-candidate
                                         (occ-obj-dyn-filter-filter dyn-filter))))
            (filter-manage-fn  #'(lambda ()
@@ -259,6 +262,7 @@
                                                                              unfiltered-count
                                                                              filtered-count
                                                                              :prompt prompt)))
+              ;; (helm-get-current-source)
           (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
                 (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
             ;; * Dynamic Match based templates
