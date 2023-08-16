@@ -224,6 +224,15 @@
                                             (/ (length points) 2))
                       :rank-fn nil)                      
 
+(occ-obj-build-filter :non-negative
+                      "Non-Negative"
+                      :points-gen-fn #'(lambda (obj sequence &key rank)
+                                         (list 0))
+                      :compare-fn nil
+                      :default-pivot-fn #'(lambda (obj points)
+                                            (/ (length points) 2))
+                      :rank-fn nil)                      
+
 
 (cl-defmethod occ-obj-get-dyn-filter ((filter occ-filter)
                                       (obj occ-ctx)
