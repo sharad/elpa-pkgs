@@ -71,6 +71,7 @@
                                   avgrank))
                           sequence))
     (occ-error "(occ-default-collection) returned nil")))
+
 
 (cl-defmethod occ-obj-filter-positive ((obj occ-ctx)
                                        sequence
@@ -80,6 +81,7 @@
                         (> (funcall rank tsk)
                            0))
                     sequence))
+
 
 (cl-defmethod occ-obj-filter-nonnegative ((obj occ-ctx)
                                           sequence
@@ -89,12 +91,14 @@
                         (>= (funcall rank tsk)
                             0))
                     sequence))
+
 
 (cl-defmethod occ-obj-filter-identity ((obj occ-ctx)
                                        sequence
                                        &key rank)
   (ignore obj)
   sequence)
+
 
 (defvar occ-filter-min 0)
 (cl-defmethod occ-obj-filter-min ((obj occ-ctx)
@@ -105,6 +109,7 @@
                         (>= (funcall rank tsk)
                             occ-filter-min))
                     sequence))
+
 
 (defvar occ-filter-max 0)
 (cl-defmethod occ-obj-filter-max ((obj occ-ctx)

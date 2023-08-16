@@ -229,9 +229,9 @@
   filter-fn
   points-fn
   ;; pivot
-  incement-fn
+  increment-fn
   decrement-fn
-  reset-fn);
+  reset-fn)
 ; (cl-defstruct (occ-callable-normal (:include occ-callable))
 ;;   "occ-callable-normal")
 ;; (cl-defstruct (occ-callable-generator (:include occ-callable))

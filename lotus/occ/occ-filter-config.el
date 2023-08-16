@@ -38,6 +38,7 @@
   (occ-obj-build-filter :identity "Identity" #'occ-obj-filter-identity)
   (occ-obj-build-filter :min "Minimum" #'occ-obj-filter-min)
   (occ-obj-build-filter :max "Maximum" #'occ-obj-filter-max))
+(defun occ-filter-config-initialize ())
 
 
 ;; Filter should be list of keys or cons of key and customized rank function

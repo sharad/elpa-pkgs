@@ -245,9 +245,9 @@
                                   (helm-refresh)))
            (h-map            (let ((map (make-sparse-keymap)))
                                (set-keymap-parent map occ-helm-map)
-                               (define-key map (kbd "M-<up>")     (occ-obj-dyn-filter-increment-fn dyn-filter))
-                               (define-key map (kbd "M-<down>")   (occ-obj-dyn-filter-decrement-fn dyn-filter))
-                               (define-key map (kbd "M-<return>") (occ-obj-dyn-filter-reset-fn dyn-filter))
+                               (define-key map (kbd "M-<up>")     (occ-dyn-filter-increment-fn dyn-filter))
+                               (define-key map (kbd "M-<down>")   (occ-dyn-filter-decrement-fn dyn-filter))
+                               (define-key map (kbd "M-<return>") (occ-dyn-filter-reset-fn dyn-filter))
                                (define-key map (kbd "M-<space>") filter-manage-fn)
                                map)))
 

@@ -622,13 +622,13 @@
     callable))
 
 
-(defun occ-obj-make-filter (keyword
-                            name
-                            ;; fun
-                            points-gen-fn
-                            compare-fn
-                            default-pivot-fn
-                            rank-fn)
+(cl-defun occ-obj-make-filter (keyword
+                               name
+                               &key
+                               points-gen-fn
+                               compare-fn
+                               default-pivot-fn
+                               rank-fn)
   "Dynamic object"
   (make-occ-filter :keyword keyword
                    :name    name
@@ -638,51 +638,58 @@
                    :default-pivot-fn default-pivot-fn
                    :rank-fn rank-fn))
 
-(defun occ-obj-build-filter (keyword
-                             name
-                             ;; fun
-                             points-gen-fn
-                             compare-fn
-                             default-pivot-fn
-                             rank-fn)
+(cl-defun occ-obj-build-filter (keyword
+                                name
+                                ;; fun
+                                &key
+                                points-gen-fn
+                                compare-fn
+                                default-pivot-fn
+                                rank-fn)
                              
   "Filter creation and to be stored via (OCC-HELM-FILTER-ADD FILTER)"
   (let ((filter (occ-obj-make-filter keyword
                                      name
                                      ;; fun
-                                     points-gen-fn
-                                     compare-fn
-                                     default-pivot-fn
-                                     rank-fn)))
+                                     :points-gen-fn points-gen-fn
+                                     :compare-fn compare-fn
+                                     :default-pivot-fn default-pivot-fn
+                                     :rank-fn rank-fn)))
     (occ-obj-filter-add filter)
     filter))
 
 
-(defun occ-obj-make-dyn-filter (name &keys
-                                filter
-                                points
-                                pivot
-                                incement
-                                decrement)
+(cl-defun occ-obj-make-dyn-filter (name
+                                   &key
+                                   seq-fn
+                                   filter-fn
+                                   points-fn
+                                   increment-fn
+                                   decrement-fn
+                                   reset-fn)
   (make-occ-dyn-filter :name name
-                       :filter filter
-                       :points points
-                       :pivot pivot
-                       :incement incement
-                       :decrement decrement))
+                       :seq-fn seq-fn
+                       :filter-fn filter-fn
+                       :points-fn points-fn
+                       :increment-fn increment-fn
+                       :decrement-fn decrement-fn
+                       :reset-fn reset-fn))
 
-(defun occ-obj-build-dyn-filter (name &keys
-                                 filter
-                                 points
-                                 pivot
-                                 incement
-                                 decrement)
+(cl-defun occ-obj-build-dyn-filter (name
+                                    &key
+                                    seq-fn
+                                    filter-fn
+                                    points-fn
+                                    increment-fn
+                                    decrement-fn
+                                    reset-fn)
   (occ-obj-make-dyn-filter name
-                           :filter filter
-                           :points points
-                           :pivot pivot
-                           :incement incement
-                           :decrement decrement))
+                           :seq-fn seq-fn
+                           :filter-fn filter-fn
+                           :points-fn points-fn
+                           :increment-fn increment-fn
+                           :decrement-fn decrement-fn
+                           :reset-fn reset-fn))
 
 
 ;; ctors
