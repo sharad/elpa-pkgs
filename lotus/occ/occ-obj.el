@@ -215,7 +215,7 @@
 
 
 (cl-defstruct (occ-static-filter (:include occ-obj))
-  "occ-filter"
+  "occ-static-filter"
   keyword
   ;; fun
   points-gen-fn
@@ -224,7 +224,7 @@
   rank-fn)
 
 (cl-defstruct (occ-obj-dyn-filter (:include occ-obj))
-  "occ-filter"
+  "occ-obj-dyn-filter"
   seq-closure-fn
   filter-closure-fn
   points-closure-fn
@@ -234,20 +234,15 @@
   reset-closure-fn)
 
 (cl-defstruct (occ-dyn-filter (:include occ-obj-dyn-filter))
-  "occ-filter"
+  "occ-dyn-filter"
   prev
   next)
 
 (cl-defstruct (occ-combined-dyn-filter (:include occ-obj-dyn-filter))
-  "occ-filter"
+  "occ-combined-dyn-filter"
   curr-closure-fn
   prev-closure-fn
   next-closure-fn)
-
-; (cl-defstruct (occ-callable-normal (:include occ-callable))
-;;   "occ-callable-normal")
-;; (cl-defstruct (occ-callable-generator (:include occ-callable))
-;;   "occ-callable-generator")
 
 
 (cl-defstruct (occ-ap (:include occ-obj))

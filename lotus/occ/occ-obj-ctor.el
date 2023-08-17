@@ -711,7 +711,6 @@
                                             increment-closure-fn
                                             decrement-closure-fn
                                             reset-closure-fn)
-                                            
   (make-occ-combined-dyn-filter :name name
                                 :seq-closure-fn seq-closure-fn
                                 :filter-closure-fn filter-closure-fn
@@ -733,9 +732,7 @@
                                              points-closure-fn
                                              increment-closure-fn
                                              decrement-closure-fn
-                                             reset-closure-fn)
-                                             
-                                             
+                                             reset-closure-fn)                                             
   (occ-obj-make-combined-dyn-filter name
                                     :curr-closure-fn curr-closure-fn
                                     :prev-closure-fn prev-closure-fn
