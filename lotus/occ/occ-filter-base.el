@@ -189,7 +189,7 @@
   (funcall (occ-dyn-filter-reset-closure-fn dyn-filter)))
 
 
-(cl-defmethod occ-obj-static-to-dyn-filter ((filter occ-static-filter)
+(cl-defmethod occ-obj-static-to-dyn-filter ((static-filter occ-static-filter)
                                             (obj occ-ctx)
                                             (sequence list)
                                             prev ;; (prev occ-dyn-filter)
@@ -241,18 +241,18 @@
                             (nth 1 static-filterkw-rank)
                           (or rank
                               #'occ-obj-rank))))
+    (occ-assert static-filter)
     (let* ((prev (if (cdr static-filter-methods)
                      (occ-obj-build-dyn-filters-recursive obj
                                                           (cdr static-filter-methods)
                                                           sequence
                                                           :rank rank)
                    nil))
-           (next (if static-filter
-                     (occ-obj-static-to-dyn-filter static-filter
-                                                   obj
-                                                   sequence
-                                                   prev
-                                                   :rank rank))))
+           (next (occ-obj-static-to-dyn-filter static-filter
+                                               obj
+                                               sequence
+                                               prev
+                                               :rank rank)))
       (when prev
         (setf (occ-dyn-filter-next prev) next))
       next)))
