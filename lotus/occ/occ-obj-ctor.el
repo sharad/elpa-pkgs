@@ -661,35 +661,39 @@
 
 (cl-defun occ-obj-make-dyn-filter (name
                                    &key
-                                   seq-fn
-                                   filter-fn
-                                   points-fn
-                                   increment-fn
-                                   decrement-fn
-                                   reset-fn)
+                                   seq-closure-fn
+                                   filter-closure-fn
+                                   points-closure-fn
+                                   increment-closure-fn
+                                   decrement-closure-fn
+                                   reset-closure-fn)
   (make-occ-dyn-filter :name name
-                       :seq-fn seq-fn
-                       :filter-fn filter-fn
-                       :points-fn points-fn
-                       :increment-fn increment-fn
-                       :decrement-fn decrement-fn
-                       :reset-fn reset-fn))
+                       :seq-closure-fn seq-closure-fn
+                       :filter-closure-fn filter-closure-fn
+                       :points-closure-fn points-closure-fn
+                       :increment-closure-fn increment-closure-fn
+                       :decrement-closure-fn decrement-closure-fn
+                       :reset-closure-fn reset-closure-fn
+                       :prev-dyn-filter prev-dyn-filter
+                       :next-dyn-filter next-dyn-filter))
 
 (cl-defun occ-obj-build-dyn-filter (name
                                     &key
-                                    seq-fn
-                                    filter-fn
-                                    points-fn
-                                    increment-fn
-                                    decrement-fn
-                                    reset-fn)
+                                    seq-closure-fn
+                                    filter-closure-fn
+                                    points-closure-fn
+                                    increment-closure-fn
+                                    decrement-closure-fn
+                                    reset-closure-fn)
   (occ-obj-make-dyn-filter name
-                           :seq-fn seq-fn
-                           :filter-fn filter-fn
-                           :points-fn points-fn
-                           :increment-fn increment-fn
-                           :decrement-fn decrement-fn
-                           :reset-fn reset-fn))
+                           :seq-closure-fn seq-closure-fn
+                           :filter-closure-fn filter-closure-fn
+                           :points-closure-fn points-closure-fn
+                           :increment-closure-fn increment-closure-fn
+                           :decrement-closure-fn decrement-closure-fn
+                           :reset-closure-fn reset-closure-fn
+                           :prev-dyn-filter prev-dyn-filter
+                           :next-dyn-filter next-dyn-filter))
 
 
 ;; ctors

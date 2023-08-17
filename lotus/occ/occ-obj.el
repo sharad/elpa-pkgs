@@ -225,13 +225,15 @@
 
 (cl-defstruct (occ-dyn-filter (:include occ-obj))
   "occ-filter"
-  seq-fn
-  filter-fn
-  points-fn
+  seq-closure-fn
+  filter-closure-fn
+  points-closure-fn
   ;; pivot
-  increment-fn
-  decrement-fn
-  reset-fn)
+  increment-closure-fn
+  decrement-closure-fn
+  reset-closure-fn
+  prev-dyn-filter
+  next-dyn-filter)
 ; (cl-defstruct (occ-callable-normal (:include occ-callable))
 ;;   "occ-callable-normal")
 ;; (cl-defstruct (occ-callable-generator (:include occ-callable))

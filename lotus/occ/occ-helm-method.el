@@ -233,7 +233,7 @@
                                 ;; (helm--source (helm-get-current-source))
                                 (let ((source (helm-get-current-source)))
                                   ;; (setf (slot-value source 'name) "TEST: ")
-                                  (message "source: %s" source))
+                                  (message "source: %s" (type-of source)))
                                 (mapcar #'occ-obj-candidate
                                         (occ-obj-dyn-filter-filter dyn-filter))))
            (filter-manage-fn  #'(lambda ()

@@ -204,44 +204,6 @@
   (funcall (occ-dyn-filter-reset-fn dyn-filter)))
 
 
-
-(setq occ-global-filter
-      (occ-obj-build-filter :incremental
-                            "Incremental"
-                            :points-gen-fn #'(lambda (obj sequence &key rank)
-                                              (delete-dups (mapcar rank sequence)))
-                            :compare-fn #'>=
-                            :default-pivot-fn #'(lambda (obj points)
-                                                  (/ (length points) 2))
-                            :rank-fn nil))
-
-(occ-obj-build-filter :positive
-                      "Positive"
-                      :points-gen-fn #'(lambda (obj sequence &key rank)
-                                         (list 0))
-                      :compare-fn #'>
-                      :default-pivot-fn #'(lambda (obj points)
-                                            (/ (length points) 2))
-                      :rank-fn nil)
-
-(occ-obj-build-filter :non-negative
-                      "Non-Negative"
-                      :points-gen-fn #'(lambda (obj sequence &key rank)
-                                         (list 0))
-                      :compare-fn #'>=
-                      :default-pivot-fn #'(lambda (obj points)
-                                            (/ (length points) 2))
-                      :rank-fn nil)
-
-(occ-obj-build-filter :identity
-                      "Identity"
-                      :points-gen-fn #'(lambda (obj sequence &key rank)
-                                         (list 0))
-                      :compare-fn #'(lambda (rank pivot) t)
-                      :default-pivot-fn #'(lambda (obj points)
-                                            0)
-                      :rank-fn nil)
-
 (cl-defmethod occ-obj-get-dyn-filter ((filter occ-filter)
                                       (obj occ-ctx)
                                       sequence
@@ -256,32 +218,32 @@
                                                       obj
                                                       points))
          (pivot         default-pivot))
-    (let ((seq-fn       #'(lambda () sequence))
-          (filter-fn    #'(lambda ()
-                            (cl-remove-if-not (lambda (s)
-                                                (funcall (occ-filter-compare-fn filter)
-                                                         (funcall rank s)
-                                                         (nth pivot points)))
-                                             sequence)))
-          (increment-fn #'(lambda ()
-                            (interactive)
-                            (setf pivot (mod (1+ pivot)
-                                             (length points)))
-                           (helm-refresh)))
-          (decrement-fn #'(lambda ()
-                            (interactive)
-                            (setf pivot (mod (1- pivot)
-                                             (length points)))
-                           (helm-refresh)))
-          (reset-fn     #'(lambda ()
-                            (interactive)
-                            (setf pivot default-pivot))))
+    (let ((seq-closure-fn       #'(lambda () sequence))
+          (filter-closure-fn    #'(lambda ()
+                                    (cl-remove-if-not (lambda (s)
+                                                        (funcall (occ-filter-compare-fn filter)
+                                                                 (funcall rank s)
+                                                                 (nth pivot points)))
+                                                     sequence)))
+          (increment-closure-fn #'(lambda ()
+                                    (interactive)
+                                    (setf pivot (mod (1+ pivot)
+                                                     (length points)))
+                                   (helm-refresh)))
+          (decrement-closure-fn #'(lambda ()
+                                    (interactive)
+                                    (setf pivot (mod (1- pivot)
+                                                     (length points)))
+                                   (helm-refresh)))
+          (reset-closure-fn     #'(lambda ()
+                                    (interactive)
+                                    (setf pivot default-pivot))))
       (occ-obj-build-dyn-filter (occ-obj-name filter)
-                                :seq-fn seq-fn
-                                :filter-fn filter-fn
-                                :increment-fn increment-fn
-                                :decrement-fn decrement-fn
-                                :reset-fn reset-fn))))
+                                :seq-closure-fn seq-closure-fn
+                                :filter-closure-fn filter-closure-fn
+                                :increment-closure-fn increment-closure-fn
+                                :decrement-closure-fn decrement-closure-fn
+                                :reset-closure-fn reset-closure-fn))))
 
 (cl-defmethod occ-obj-filter-ops ((obj occ-ctx)
                                   methods
@@ -290,7 +252,7 @@
   (let* ((filterkw-rank (cl-first methods))
          ;; (filter        (occ-obj-filter-get (or (car-safe filterkw-rank)
          ;;                                        filterkw-rank)))
-         (filter        occ-global-filter)
+         (filter        (occ-obj-filter-get :incremental))
          (rank          (if (consp filterkw-rank)
                             (nth 1 filterkw-rank)
                           (or rank
