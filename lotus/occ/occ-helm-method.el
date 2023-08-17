@@ -209,9 +209,29 @@
               (format " %s" (or prompt ""))))))
 
 
+(cl-defmethod occ-obj-build-helm-map ((combined-dyn-filter occ-combined-dyn-filter))
+  (let (filter-manage-fn  #'(lambda ()
+                              (interactive)
+                              (with-helm-buffer
+                                (progn ;; code to manager filters
+                                  ;; TODO: check https://github.com/emacsmirror/edit-list/blob/master/edit-list.el
+                                  ;; TODO: implement list editor
+                                  ;; TODO: search emacs elisp interactively modify list
+                                  (occ-debug "Manage filters here.")
+                                  (setf filters default-filters)))
+                              ;; (funcall gen-candidates)
+                              (helm-refresh)))
+    (let ((map (make-sparse-keymap)))
+      (set-keymap-parent map occ-helm-map)
+      (define-key map (kbd "M-<up>")     (occ-dyn-filter-increment-closure-fn combined-dyn-filter))
+      (define-key map (kbd "M-<down>")   (occ-dyn-filter-decrement-closure-fn combined-dyn-filter))
+      (define-key map (kbd "M-<return>") (occ-dyn-filter-reset-closure-fn combined-dyn-filter))
+      (define-key map (kbd "M-<space>") filter-manage-fn)
+      map)))
+
 (cl-defmethod occ-obj-helm-build-real-collection-source ((obj        occ-ctx)
                                                          (collection occ-obj-collection) ;; (nth 0 (occ-collections-default))
-                                                         dyn-filter
+                                                         combined-dyn-filter
                                                          &key
                                                          filters
                                                          builder
@@ -225,8 +245,8 @@
     (ignore timeout)
     (let* ((default-filters filters)
            (filters         filters)
-           (candidates-unfiltered (occ-obj-dyn-filter-seq dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
-           (candidates-filtered   (occ-obj-dyn-filter-filter dyn-filter))
+           (candidates-unfiltered (occ-obj-dyn-filter-seq    combined-dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
+           (candidates-filtered   (occ-obj-dyn-filter-filter combined-dyn-filter))
            (unfiltered-count      (length candidates-unfiltered))
            (filtered-count        (length candidates-filtered))
            (gen-candidates  #'(lambda ()
@@ -235,25 +255,8 @@
                                   ;; (setf (slot-value source 'name) "TEST: ")
                                   (message "source: %s" (type-of source)))
                                 (mapcar #'occ-obj-candidate
-                                        (occ-obj-dyn-filter-filter dyn-filter))))
-           (filter-manage-fn  #'(lambda ()
-                                  (interactive)
-                                  (with-helm-buffer
-                                    (progn ;; code to manager filters
-                                      ;; TODO: check https://github.com/emacsmirror/edit-list/blob/master/edit-list.el
-                                      ;; TODO: implement list editor
-                                      ;; TODO: search emacs elisp interactively modify list
-                                      (occ-debug "Manage filters here.")
-                                      (setf filters default-filters)))
-                                  ;; (funcall gen-candidates)
-                                  (helm-refresh)))
-           (h-map            (let ((map (make-sparse-keymap)))
-                               (set-keymap-parent map occ-helm-map)
-                               (define-key map (kbd "M-<up>")     (occ-dyn-filter-increment-closure-fn dyn-filter))
-                               (define-key map (kbd "M-<down>")   (occ-dyn-filter-decrement-closure-fn dyn-filter))
-                               (define-key map (kbd "M-<return>") (occ-dyn-filter-reset-closure-fn dyn-filter))
-                               (define-key map (kbd "M-<space>") filter-manage-fn)
-                               map)))
+                                        (occ-obj-dyn-filter-filter combined-dyn-filter))))
+           (h-map            (occ-obj-build-helm-map combined-dyn-filter)))
 
       (when (> filtered-count 0) ;; (> unfiltered-count 0)
         (let ((gen-candidate-lambda gen-candidates)
@@ -306,12 +309,12 @@ select candidate from it."
          (timeout               (or timeout occ-idle-timeout))
 
          ;; TODO: HERE
-         (dyn-filter (occ-obj-combined-dyn-filter obj
-                                                  filters
-                                                  (occ-obj-list-with obj collection :builder builder)))
-         (candidates-unfiltered (occ-obj-dyn-filter-seq dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
+         (combined-dyn-filter   (occ-obj-combined-dyn-filter obj
+                                                             filters
+                                                             (occ-obj-list-with obj collection :builder builder)))
+         (candidates-unfiltered (occ-obj-dyn-filter-seq combined-dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
          (unfiltered-count      (length candidates-unfiltered))
-         (candidates-filtered   (occ-obj-dyn-filter-filter dyn-filter))
+         (candidates-filtered   (occ-obj-dyn-filter-filter combined-dyn-filter))
          (filtered-count        (length candidates-filtered)))
 
     (occ-debug "len candidates-unfiltered %d" unfiltered-count)
@@ -331,7 +334,7 @@ select candidate from it."
                                     :level level)
         (let ((source (occ-obj-helm-build-real-collection-source obj
                                                                  collection ;; (nth 0 (occ-collections-default))
-                                                                 dyn-filter
+                                                                 combined-dyn-filter
                                                                  :filters filters
                                                                  :builder builder
                                                                  :ap-normal ap-normal

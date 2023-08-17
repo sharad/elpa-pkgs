@@ -228,24 +228,24 @@
                                 :prev prev))))
 
 (cl-defmethod occ-obj-build-dyn-filters-recursive ((obj occ-ctx)
-                                                   (filter-methods list)
+                                                   (static-filter-methods list)
                                                    (sequence list)
                                                    &key rank)
-  (let* ((filterkw-rank (cl-first filter-methods))
-         (filter        (occ-obj-static-filter-get (or (car-safe filterkw-rank)
-                                                       filterkw-rank)))
+  (let* ((static-filterkw-rank (cl-first static-filter-methods))
+         (static-filter (occ-obj-static-filter-get (or (car-safe static-filterkw-rank)
+                                                       static-filterkw-rank)))
          ;; (filter        (occ-obj-filter-get :incremental))
-         (rank          (if (consp filterkw-rank)
-                            (nth 1 filterkw-rank)
+         (rank          (if (consp static-filterkw-rank)
+                            (nth 1 static-filterkw-rank)
                           (or rank
                               #'occ-obj-rank))))
-    (let* ((prev (if (cdr methods)
+    (let* ((prev (if (cdr static-filter-methods)
                      (occ-obj-build-dyn-filters-recursive obj
-                                                          (cdr methods)
+                                                          (cdr static-filter-methods)
                                                           sequence
                                                           :rank rank)
                    nil))
-           (next (occ-obj-static-to-dyn-filter filter
+           (next (occ-obj-static-to-dyn-filter static-filter
                                                obj
                                                prev
                                                sequence
@@ -261,11 +261,11 @@
       (helm-refresh)))
 
 (cl-defmethod occ-obj-combined-dyn-filter ((obj occ-ctx)
-                                           (filter-methods list)
+                                           (static-filter-methods list)
                                            (sequence list)
                                            &key rank)
   (let ((curr-dyn-filter (occ-obj-build-dyn-filters-recursive obj
-                                                              filter-methods
+                                                              static-filter-methods
                                                               sequence :rank rank)))
     (let ((curr-closure-fn #'(lambda () curr-dyn-filter))
           (prev-closure-fn (occ-obj-build-helm-command #'(lambda ()
