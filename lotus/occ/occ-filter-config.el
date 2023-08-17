@@ -40,41 +40,41 @@
 ;;   (occ-obj-build-filter :max "Maximum" #'occ-obj-filter-max))
 
 (defun occ-filter-config-initialize ()
-  (setq occ-obj-filters nil)
-  (occ-obj-build-filter :incremental
-                      "Incremental"
-                      :points-gen-fn #'(lambda (ctx sequence &key rank)
-                                         (delete-dups (mapcar rank sequence)))
-                      :compare-fn #'>=
-                      :default-pivot-fn #'(lambda (ctx points)
-                                            (/ (length points) 2))
-                      :rank-fn nil)
+  (setq occ-obj-static-filters nil)
+  (occ-obj-build-static-filter :incremental
+                               "Incremental"
+                               :points-gen-fn #'(lambda (ctx sequence &key rank)
+                                                  (delete-dups (mapcar rank sequence)))
+                               :compare-fn #'>=
+                               :default-pivot-fn #'(lambda (ctx points)
+                                                     (/ (length points) 2))
+                               :rank-fn nil)
 
- (occ-obj-build-filter :positive
-                       "Positive"
-                       :points-gen-fn #'(lambda (ctx sequence &key rank)
-                                          (list 0))
-                       :compare-fn #'>
-                       :default-pivot-fn #'(lambda (ctx points) 0)
-                       :rank-fn nil)
+  (occ-obj-build-static-filter :positive
+                                "Positive"
+                                :points-gen-fn #'(lambda (ctx sequence &key rank
+                                                           (list 0)))
+                                :compare-fn #'>
+                                :default-pivot-fn #'(lambda (ctx points) 0)
+                                :rank-fn nil)
 
- (occ-obj-build-filter :non-negative
-                       "Non-Negative"
-                       :points-gen-fn #'(lambda (ctx sequence &key rank)
-                                          (list -1))
-                       :compare-fn #'>
-                       :default-pivot-fn #'(lambda (ctx points)
-                                             (/ (length points) 2))
-                       :rank-fn nil)
+  (occ-obj-build-static-filter :non-negative
+                                "Non-Negative"
+                                :points-gen-fn #'(lambda (ctx sequence &key rank
+                                                           (list -1)))
+                                :compare-fn #'>
+                                :default-pivot-fn #'(lambda (ctx points
+                                                              (/ (length points) 2)))
+                                :rank-fn nil)
 
- (occ-obj-build-filter :identity
-                       "Identity"
-                       :points-gen-fn #'(lambda (ctx sequence &key rank)
-                                          (list 0))
-                       :compare-fn #'(lambda (rank pivot) t)
-                       :default-pivot-fn #'(lambda (obj points)
-                                             0)
-                       :rank-fn nil))
+  (occ-obj-build-static-filter :identity
+                                "Identity"
+                                :points-gen-fn #'(lambda (ctx sequence &key rank
+                                                           (list 0)))
+                                :compare-fn #'(lambda (rank pivot) t)
+                                :default-pivot-fn #'(lambda (obj points
+                                                              0))
+                                :rank-fn nil))
 
 
 ;; Filter should be list of keys or cons of key and customized rank function

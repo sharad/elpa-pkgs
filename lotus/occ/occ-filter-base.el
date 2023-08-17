@@ -44,6 +44,8 @@
 
 (defvar occ-obj-static-filters nil)
 (defun occ-obj-static-filter-add (static-filter)
+  (message "test")
+  (debug)
   (cl-pushnew static-filter
               occ-obj-static-filters))
 (defun occ-obj-static-filter-get (key)
@@ -245,11 +247,12 @@
                                                           sequence
                                                           :rank rank)
                    nil))
-           (next (occ-obj-static-to-dyn-filter static-filter
+           (next (if static-filter
+                     (occ-obj-static-to-dyn-filter static-filter
                                                obj
                                                prev
                                                sequence
-                                               :rank rank)))
+                                               :rank rank))))
       (when prev
         (setf (occ-dyn-filter-next prev) next))
       next)))
