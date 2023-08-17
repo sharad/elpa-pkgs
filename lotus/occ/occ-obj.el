@@ -214,7 +214,7 @@
   "occ-callable-generator")
 
 
-(cl-defstruct (occ-filter (:include occ-obj))
+(cl-defstruct (occ-static-filter (:include occ-obj))
   "occ-filter"
   keyword
   ;; fun
@@ -223,7 +223,7 @@
   default-pivot-fn
   rank-fn)
 
-(cl-defstruct (occ-common-dyn-filter (:include occ-obj))
+(cl-defstruct (occ-obj-dyn-filter (:include occ-obj))
   "occ-filter"
   seq-closure-fn
   filter-closure-fn
@@ -233,12 +233,12 @@
   decrement-closure-fn
   reset-closure-fn)
 
-(cl-defstruct (occ-dyn-filter (:include occ-common-dyn-filter))
+(cl-defstruct (occ-dyn-filter (:include occ-obj-dyn-filter))
   "occ-filter"
   prev
   next)
 
-(cl-defstruct (occ-combined-dyn-filter (:include occ-common-dyn-filter))
+(cl-defstruct (occ-combined-dyn-filter (:include occ-obj-dyn-filter))
   "occ-filter"
   curr-closure-fn
   prev-closure-fn

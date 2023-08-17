@@ -622,40 +622,40 @@
     callable))
 
 
-(cl-defun occ-obj-make-filter (keyword
-                               name
-                               &key
-                               points-gen-fn
-                               compare-fn
-                               default-pivot-fn
-                               rank-fn)
+(cl-defun occ-obj-make-static-filter (keyword
+                                      name
+                                      &key
+                                      points-gen-fn
+                                      compare-fn
+                                      default-pivot-fn
+                                      rank-fn)
   "Dynamic object"
-  (make-occ-filter :keyword keyword
-                   :name    name
-                   ;; :fun     fun
-                   :points-gen-fn points-gen-fn
-                   :compare-fn compare-fn
-                   :default-pivot-fn default-pivot-fn
-                   :rank-fn rank-fn))
+  (make-occ-static-filter :keyword keyword
+                          :name    name
+                          ;; :fun     fun
+                          :points-gen-fn points-gen-fn
+                          :compare-fn compare-fn
+                          :default-pivot-fn default-pivot-fn
+                          :rank-fn rank-fn))
 
-(cl-defun occ-obj-build-filter (keyword
-                                name
-                                ;; fun
-                                &key
-                                points-gen-fn
-                                compare-fn
-                                default-pivot-fn
-                                rank-fn)
+(cl-defun occ-obj-build-static-filter (keyword
+                                       name
+                                       ;; fun
+                                       &key
+                                       points-gen-fn
+                                       compare-fn
+                                       default-pivot-fn
+                                       rank-fn)
 
-  "Filter creation and to be stored via (OCC-HELM-FILTER-ADD FILTER)"
-  (let ((filter (occ-obj-make-filter keyword
-                                     name
-                                     ;; fun
-                                     :points-gen-fn points-gen-fn
-                                     :compare-fn compare-fn
-                                     :defaux0lt-pivot-fn default-pivot-fn
-                                     :rank-fn rank-fn)))
-    (occ-obj-filter-add filter)
+  "Filter creation and to be stored via (OCC-HELM-STATIC-FILTER-ADD FILTER)"
+  (let ((filter (occ-obj-make-static-filter keyword
+                                            name
+                                            ;; fun
+                                            :points-gen-fn points-gen-fn
+                                            :compare-fn compare-fn
+                                            :default-pivot-fn default-pivot-fn
+                                            :rank-fn rank-fn)))
+    (occ-obj-static-filter-add filter)
     filter))
 
 
