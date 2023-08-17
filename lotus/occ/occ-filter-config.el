@@ -89,10 +89,12 @@
 ;;         :mutual-deviation
 ;;         (list :positive #'occ-obj-member-tsk-rank)))
 (defun occ-match-filters ()
-  (list :identity ;; :positive
+  (list :incremental
         ;; :mutual-deviation
         (list :positive
-              #'occ-obj-rank)))
+              #'occ-obj-rank)
+        :non-negative
+        :identity))
 ;; (list :mutual-deviation #'occ-obj-member-tsk-rank)
 
 (defun occ-never-filters ()
