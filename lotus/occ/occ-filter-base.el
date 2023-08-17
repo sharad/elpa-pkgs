@@ -267,11 +267,12 @@
                                                sequence
                                                nil ;; prev
                                                :rank rank)))
+      (message "occ-obj-build-dyn-filters-recursive: next %s" next)
       (when nil ;; prev
         (message "occ-obj-build-dyn-filters-recursive: prev 1")
         ;; (debug)
         (setf (occ-dyn-filter-next prev) next)
-        (message "occ-obj-build-dyn-filters-recursive: prev 2"))
+        (message "occ-obj-build-dyn-filters-recursive: prev 2 next %s" next))
       next)))
 
 (defun occ-obj-build-helm-command (closure-fn)
@@ -286,9 +287,10 @@
                                            &key rank)
   (message "occ-obj-combined-dyn-filter: Going in")
   (let ((curr-dyn-filter (occ-obj-build-dyn-filters-recursive obj
-                                                              static-filter-methods
+                                                              (list :incremental);; static-filter-methods
                                                               sequence :rank rank)))
     (message "occ-obj-combined-dyn-filter: Coming out")
+    (message "occ-obj-combined-dyn-filter: curr-dyn-filter %s" curr-dyn-filter)
     (let ((curr-closure-fn #'(lambda ()
                                (message "curr-closure-fn")
                                curr-dyn-filter))
