@@ -666,7 +666,9 @@
                                    points-closure-fn
                                    increment-closure-fn
                                    decrement-closure-fn
-                                   reset-closure-fn)
+                                   reset-closure-fn
+                                   prev
+                                   next)
   (make-occ-dyn-filter :name name
                        :seq-closure-fn seq-closure-fn
                        :filter-closure-fn filter-closure-fn
@@ -674,8 +676,8 @@
                        :increment-closure-fn increment-closure-fn
                        :decrement-closure-fn decrement-closure-fn
                        :reset-closure-fn reset-closure-fn
-                       :prev-dyn-filter prev-dyn-filter
-                       :next-dyn-filter next-dyn-filter))
+                       :prev prev
+                       :next next))
 
 (cl-defun occ-obj-build-dyn-filter (name
                                     &key
@@ -684,7 +686,9 @@
                                     points-closure-fn
                                     increment-closure-fn
                                     decrement-closure-fn
-                                    reset-closure-fn)
+                                    reset-closure-fn
+                                    prev
+                                    next)
   (occ-obj-make-dyn-filter name
                            :seq-closure-fn seq-closure-fn
                            :filter-closure-fn filter-closure-fn
@@ -692,8 +696,8 @@
                            :increment-closure-fn increment-closure-fn
                            :decrement-closure-fn decrement-closure-fn
                            :reset-closure-fn reset-closure-fn
-                           :prev-dyn-filter prev-dyn-filter
-                           :next-dyn-filter next-dyn-filter))
+                           :prev prev
+                           :next next))
 
 
 ;; ctors

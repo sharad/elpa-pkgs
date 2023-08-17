@@ -185,22 +185,22 @@
              points)))
 
 
-(cl-defmethod occ-obj-dyn-filter-seq ((dyn-filter occ-dyn-filter))
+(cl-defmethod occ-obj-dyn-filter-seq ((dyn-filter occ-common-dyn-filter))
   (funcall (occ-dyn-filter-seq-closure-fn dyn-filter)))
 
-(cl-defmethod occ-obj-dyn-filter-filter ((dyn-filter occ-dyn-filter))
+(cl-defmethod occ-obj-dyn-filter-filter ((dyn-filter occ-common-dyn-filter))
   (funcall (occ-dyn-filter-filter-closure-fn dyn-filter)))
 
-(cl-defmethod occ-obj-dyn-filter-points ((dyn-filter occ-dyn-filter))
+(cl-defmethod occ-obj-dyn-filter-points ((dyn-filter occ-common-dyn-filter))
   (funcall (occ-dyn-filter-points-closure-fn dyn-filter)))
 
-(cl-defmethod occ-obj-dyn-filter-increment ((dyn-filter occ-dyn-filter))
+(cl-defmethod occ-obj-dyn-filter-increment ((dyn-filter occ-common-dyn-filter))
   (funcall (occ-dyn-filter-increment-closure-fn dyn-filter)))
 
-(cl-defmethod occ-obj-dyn-filter-decrement ((dyn-filter occ-dyn-filter))
+(cl-defmethod occ-obj-dyn-filter-decrement ((dyn-filter occ-common-dyn-filter))
   (funcall (occ-dyn-filter-decrement-closure-fn dyn-filter)))
 
-(cl-defmethod occ-obj-dyn-filter-reset ((dyn-filter occ-dyn-filter))
+(cl-defmethod occ-obj-dyn-filter-reset ((dyn-filter occ-common-dyn-filter))
   (funcall (occ-dyn-filter-reset-closure-fn dyn-filter)))
 
 
@@ -272,31 +272,36 @@
                                          sequence
                                          prev
                                          :rank rank)))
-      (setf (occ-dyn-filter-next prev) next)
+      (when prev
+        (setf (occ-dyn-filter-next prev) next))
       next)))
 
 (cl-defmethod occ-obj-filter-ops ((obj occ-ctx)
                                   methods
                                   sequence
                                   &key rank)
-  (occ-obj-filter-recursive obj methods sequence :rank rank))
- 
-;; (cl-defmethod occ-obj-filter-ops ((obj occ-ctx)
-;;                                   methods
-;;                                   sequence
-;;                                   &key rank)
-;;   (let* ((filterkw-rank (cl-first methods))
-;;          ;; (filter        (occ-obj-filter-get (or (car-safe filterkw-rank)
-;;          ;;                                        filterkw-rank)))
-;;          (filter        (occ-obj-filter-get :incremental))
-;;          (rank          (if (consp filterkw-rank)
-;;                             (nth 1 filterkw-rank)
-;;                           (or rank
-;;                               #'occ-obj-rank))))
-;;     (occ-obj-get-dyn-filter filter
-;;                             obj
-;;                             sequence
-;;                             :rank rank)))
+  (let ((current-dyn-filter (occ-obj-filter-recursive obj
+                                                      methods
+                                                      sequence :rank rank)))
+    (make-occ-combined-dyn-filter :name "Test"
+                                  :seq-closure-fn #'(lambda () (occ-dyn-filter-seq-closure-fn current-dyn-filter))
+                                  :filter-closure-fn #'(lambda () (occ-dyn-filter-filter-closure-fn  current-dyn-filter))
+                                  :increment-closure-fn #'(lambda () (occ-dyn-filter-increment-closure-fn current-dyn-filter))
+                                  :decrement-closure-fn #'(lambda () (occ-dyn-filter-decrement-closure-fn current-dyn-filter))
+                                  :reset-closure-fn #'(lambda () (occ-dyn-filter-reset-closure-fn current-dyn-filter))
+                                  :curr-closure-fn #'(lambda () current-dyn-filter)
+                                  :prev-closure-fn #'(lambda ()
+                                                       (let ((prev (occ-dyn-filter-prev current-dyn-filter)))
+                                                         (if prev
+                                                             (setf current-dyn-filter prev)
+                                                           (beep)
+                                                           (occ-message "No prev"))))
+                                  :next-closure-fn #'(lambda ()
+                                                       (let ((next (occ-dyn-filter-next current-dyn-filter)))
+                                                         (if next
+                                                             (setf current-dyn-filter next)
+                                                           (beep)
+                                                           (occ-message "No next")))))))
 
 ;; (occ-obj-get-filters (occ-obj-make-ctx-at-point) (occ-match-filters))
 ;; (occ-obj-filters-get (occ-match-filters))
