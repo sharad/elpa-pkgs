@@ -193,6 +193,7 @@
                                             (sequence list)
                                             prev ;; (prev occ-dyn-filter)
                                             &key rank)
+  (message "occ-obj-static-to-dyn-filter in 1")
   (let* ((rank          (or rank
                             #'occ-obj-rank))
          (points        (occ-obj-static-filter-points static-filter
@@ -205,12 +206,15 @@
          (pivot         default-pivot))
     (let* ((seq-closure-fn       (if prev
                                      (occ-obj-dyn-filter-filter-closure-fn prev)
-                                     #'(lambda () sequence)))
+                                   #'(lambda ()
+                                       (message "seq-closure-fn(%s): calling last sequence fun" (occ-obj-name occ-static-filter))
+                                       sequence)))
            (filter-closure-fn    #'(lambda ()
-                                     (cl-remove-if-not (lambda (s)
-                                                         (funcall (occ-static-filter-compare-fn static-filter)
-                                                                  (funcall rank s)
-                                                                  (nth pivot points)))
+                                     (cl-remove-if-not #'(lambda (ctsk)
+                                                           (message "filter-closure-fn(%s): calling compare"  (occ-obj-name occ-static-filter))
+                                                           (funcall (occ-static-filter-compare-fn static-filter)
+                                                                    (funcall rank ctsk)
+                                                                    (nth pivot points)))
                                                        (funcall seq-closure-fn))))
            (increment-closure-fn #'(lambda ()
                                      (setf pivot (mod (1+ pivot)
@@ -220,6 +224,7 @@
                                                       (length points)))))
            (reset-closure-fn     #'(lambda ()
                                      (setf pivot default-pivot))))
+      (message "occ-obj-static-to-dyn-filter in 2")
       (occ-obj-build-dyn-filter (occ-obj-name static-filter)
                                 :seq-closure-fn       seq-closure-fn
                                 :filter-closure-fn    filter-closure-fn
@@ -241,6 +246,7 @@
                           (or rank
                               #'occ-obj-rank))))
     (occ-assert static-filter)
+    (message "occ-obj-build-dyn-filters-recursive in")
     (let* ((prev (if (cdr static-filter-methods)
                      (occ-obj-build-dyn-filters-recursive obj
                                                           (cdr static-filter-methods)
@@ -266,9 +272,11 @@
                                            (static-filter-methods list)
                                            (sequence list)
                                            &key rank)
+  (message "Going in")
   (let ((curr-dyn-filter (occ-obj-build-dyn-filters-recursive obj
                                                               static-filter-methods
                                                               sequence :rank rank)))
+    (message "Coming out")
     (let ((curr-closure-fn #'(lambda () curr-dyn-filter))
           (prev-closure-fn (occ-obj-build-helm-command #'(lambda ()
                                                            (let ((prev (occ-dyn-filter-prev curr-dyn-filter)))
