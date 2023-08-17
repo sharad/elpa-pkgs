@@ -306,9 +306,9 @@ select candidate from it."
          (timeout               (or timeout occ-idle-timeout))
 
          ;; TODO: HERE
-         (dyn-filter (occ-obj-filter-ops obj
-                                         filters
-                                         (occ-obj-list-with obj collection :builder builder)))
+         (dyn-filter (occ-obj-combined-dyn-filter obj
+                                                  filters
+                                                  (occ-obj-list-with obj collection :builder builder)))
          (candidates-unfiltered (occ-obj-dyn-filter-seq dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
          (unfiltered-count      (length candidates-unfiltered))
          (candidates-filtered   (occ-obj-dyn-filter-filter dyn-filter))
