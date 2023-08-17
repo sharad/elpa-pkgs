@@ -96,54 +96,54 @@
   (plist-get (occ-obj-ctx-stat-plist obj) stat))
 
 
-(cl-defmethod occ-obj-apply-recursively ((obj occ-ctx)
-                                         methods
-                                         sequence
-                                         &key rank)
-  "Main engine it applies filters METHODS recursively to SEQUENCE"
-  (let* ((funkw-rank (cl-first methods))) ;check occ-filter-config.el
-    (let ((funkw (or (car-safe funkw-rank)
-                     funkw-rank))
-          (rank  (if (consp funkw-rank)
-                     (nth 1 funkw-rank)
-                   rank)))
-      (occ-debug "occ-obj-apply-recursively: trying funkw-rank = %s funkw = %s"
-                   funkw-rank
-                   funkw)
-      (occ-debug "occ-obj-apply-recursively: received (length sequence) = %d"
-                   (length sequence))
-      (if funkw
-          (let ((fun (or (occ-filter-fun (occ-obj-static-filter-get funkw))
-                         ;; funkw
-                         #'identity)))
-            (occ-debug "occ-obj-apply-recursively: calling fun = %s rank = %s with (length sequence) = %d"
-                         fun
-                         rank
-                         (length sequence))
-            (occ-obj-apply-recursively obj
-                                       (cl-rest methods)
-                                       (funcall fun obj
-                                                sequence
-                                                :rank rank)
-                                       :rank rank))
-        sequence))))
+;; (cl-defmethod occ-obj-apply-recursively ((obj occ-ctx)
+;;                                          methods
+;;                                          sequence
+;;                                          &key rank)
+;;   "Main engine it applies filters METHODS recursively to SEQUENCE"
+;;   (let* ((funkw-rank (cl-first methods))) ;check occ-filter-config.el
+;;     (let ((funkw (or (car-safe funkw-rank)
+;;                      funkw-rank))
+;;           (rank  (if (consp funkw-rank)
+;;                      (nth 1 funkw-rank)
+;;                    rank)))
+;;       (occ-debug "occ-obj-apply-recursively: trying funkw-rank = %s funkw = %s"
+;;                    funkw-rank
+;;                    funkw)
+;;       (occ-debug "occ-obj-apply-recursively: received (length sequence) = %d"
+;;                    (length sequence))
+;;       (if funkw
+;;           (let ((fun (or (occ-filter-fun (occ-obj-static-filter-get funkw))
+;;                          ;; funkw
+;;                          #'identity)))
+;;             (occ-debug "occ-obj-apply-recursively: calling fun = %s rank = %s with (length sequence) = %d"
+;;                          fun
+;;                          rank
+;;                          (length sequence))
+;;             (occ-obj-apply-recursively obj
+;;                                        (cl-rest methods)
+;;                                        (funcall fun obj
+;;                                                 sequence
+;;                                                 :rank rank)
+;;                                        :rank rank))
+;;         sequence))))
 
-(cl-defmethod occ-obj-filter ((obj occ-ctx)
-                              methods
-                              sequence
-                              &key rank)
-  (let* ((rank (or rank
-                   #'occ-obj-rank))
-         (seq  (occ-obj-apply-recursively obj
-                                          methods
-                                          sequence
-                                          :rank rank)))
-    ;; (occ-debug "occ-obj-filter: (length seq) = %d"
-    ;;              (length seq))
-    ;; (occ-debug "occ-obj-filter: seq = %s"
-    ;;              seq)
-    seq))
-
+;; (cl-defmethod occ-obj-filter ((obj occ-ctx)
+;;                               methods
+;;                               sequence
+;;                               &key rank)
+;;   (let* ((rank (or rank
+;;                    #'occ-obj-rank))
+;;          (seq  (occ-obj-apply-recursively obj
+;;                                           methods
+;;                                           sequence
+;;                                           :rank rank)))
+;;     ;; (occ-debug "occ-obj-filter: (length seq) = %d"
+;;     ;;              (length seq))
+;;     ;; (occ-debug "occ-obj-filter: seq = %s"
+;;     ;;              seq)
+;;     seq))
+
 
 (defmethod occ-obj-points ((filter occ-filter) seq)
   (funcall (occ-filter-point-gen-fn filter) seq))
@@ -151,35 +151,18 @@
   (occ-filter-comparator filter))
 
 
-(cl-defmethod occ-obj-filter ((obj occ-ctx)
-                              methods
-                              sequence
-                              &key rank)
-  (let* ((rank (or rank
-                   #'occ-obj-rank))
-         (seq  (occ-obj-apply-recursively obj
-                                          methods
-                                          sequence
-                                          :rank rank)))
-    ;; (occ-debug "occ-obj-filter: (length seq) = %d"
-    ;;              (length seq))
-    ;; (occ-debug "occ-obj-filter: seq = %s"
-    ;;              seq)
-    seq))
-
-
 (cl-defmethod occ-obj-static-filter-points ((static-filter occ-static-filter)
-                                     (obj occ-ctx)
-                                     sequence
-                                     :rank rank)
+                                            (obj occ-ctx)
+                                            sequence
+                                            :rank rank)
   (let ((points-gen-fn (occ-static-filter-points-gen-fn static-filter)))
     (funcall points-gen-fn obj
              sequence
              :rank rank)))
 
 (cl-defmethod occ-obj-static-filter-default-pivot ((static-filter occ-static-filter)
-                                            (obj occ-ctx)
-                                            points)
+                                                   (obj occ-ctx)
+                                                   points)
   (let ((default-pivot-fn (occ-static-filter-default-pivot-fn static-filter)))
     (funcall default-pivot-fn obj
              points)))
@@ -297,11 +280,11 @@
                                                                  (setf curr-dyn-filter next)
                                                                (beep)
                                                                (occ-message "No next")))))))
-      (let ((seq-closure-fn       #'(lambda () (occ-obj-dyn-filter-seq (funcall curr-closure-fn)))
-            (filter-closure-fn    #'(lambda () (occ-obj-dyn-filter-filter  (funcall curr-closure-fn)))
-            (increment-closure-fn (occ-obj-build-helm-command #'(lambda () (occ-obj-dyn-filter-increment (funcall curr-closure-fn))))
-            (decrement-closure-fn (occ-obj-build-helm-command #'(lambda () (occ-obj-dyn-filter-decrement (funcall curr-closure-fn))))
-            (reset-closure-fn     (occ-obj-build-helm-command #'(lambda () (occ-obj-dyn-filter-reset (funcall curr-closure-fn)))))
+      (let ((seq-closure-fn       #'(lambda () (occ-obj-dyn-filter-seq (funcall curr-closure-fn))))
+            (filter-closure-fn    #'(lambda () (occ-obj-dyn-filter-filter  (funcall curr-closure-fn))))
+            (increment-closure-fn (occ-obj-build-helm-command #'(lambda () (occ-obj-dyn-filter-increment (funcall curr-closure-fn)))))
+            (decrement-closure-fn (occ-obj-build-helm-command #'(lambda () (occ-obj-dyn-filter-decrement (funcall curr-closure-fn)))))
+            (reset-closure-fn     (occ-obj-build-helm-command #'(lambda () (occ-obj-dyn-filter-reset (funcall curr-closure-fn))))))
         (occ-obj-build-combined-dyn-filter "CTX"
                                            :curr-closure-fn      curr-closure-fn
                                            :prev-closure-fn      prev-closure-fn
