@@ -158,7 +158,8 @@
                                             sequence
                                             :rank rank)
   (let ((points-gen-fn (occ-static-filter-points-gen-fn static-filter)))
-    (funcall points-gen-fn obj
+    (funcall points-gen-fn
+             obj
              sequence
              :rank rank)))
 
@@ -204,7 +205,7 @@
                                                              obj
                                                              points))
          (pivot         default-pivot))
-    (let* ((seq-closure-fn       (if prev-dyn-filter
+    (let* ((seq-closure-fn       (if prev
                                      (occ-obj-dyn-filter-filter-closure-fn prev)
                                      #'(lambda () sequence)))
            (filter-closure-fn    #'(lambda ()
@@ -222,12 +223,12 @@
            (reset-closure-fn     #'(lambda ()
                                      (setf pivot default-pivot))))
       (occ-obj-build-dyn-filter (occ-obj-name static-filter)
-                                :seq-closure-fn seq-closure-fn
-                                :filter-closure-fn filter-closure-fn
+                                :seq-closure-fn       seq-closure-fn
+                                :filter-closure-fn    filter-closure-fn
                                 :increment-closure-fn increment-closure-fn
                                 :decrement-closure-fn decrement-closure-fn
-                                :reset-closure-fn reset-closure-fn
-                                :prev prev))))
+                                :reset-closure-fn     reset-closure-fn
+                                :prev                 prev))))
 
 (cl-defmethod occ-obj-build-dyn-filters-recursive ((obj occ-ctx)
                                                    (static-filter-methods list)

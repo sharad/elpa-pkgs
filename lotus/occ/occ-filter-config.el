@@ -52,28 +52,28 @@
 
   (occ-obj-build-static-filter :positive
                                 "Positive"
-                                :points-gen-fn #'(lambda (ctx sequence &key rank
-                                                           (list 0)))
+                                :points-gen-fn #'(lambda (ctx sequence &key rank)
+                                                   (list 0))
                                 :compare-fn #'>
                                 :default-pivot-fn #'(lambda (ctx points) 0)
                                 :rank-fn nil)
 
   (occ-obj-build-static-filter :non-negative
                                 "Non-Negative"
-                                :points-gen-fn #'(lambda (ctx sequence &key rank
-                                                           (list -1)))
+                                :points-gen-fn #'(lambda (ctx sequence &key rank)
+                                                   (list -1))
                                 :compare-fn #'>
-                                :default-pivot-fn #'(lambda (ctx points
-                                                              (/ (length points) 2)))
+                                :default-pivot-fn #'(lambda (ctx points)
+                                                      (/ (length points) 2))
                                 :rank-fn nil)
 
   (occ-obj-build-static-filter :identity
                                 "Identity"
-                                :points-gen-fn #'(lambda (ctx sequence &key rank
-                                                           (list 0)))
+                                :points-gen-fn #'(lambda (ctx sequence &key rank)
+                                                   (list 0))
                                 :compare-fn #'(lambda (rank pivot) t)
-                                :default-pivot-fn #'(lambda (obj points
-                                                              0))
+                                :default-pivot-fn #'(lambda (obj points)
+                                                      0)
                                 :rank-fn nil))
 
 
