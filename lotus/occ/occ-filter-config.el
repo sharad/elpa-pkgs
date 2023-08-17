@@ -28,6 +28,8 @@
 
 
 (require 'occ-filter-op)
+(require 'occ-filter-base)
+(require 'occ-obj-ctor)
 
 
 ;; (defun occ-filter-config-initialize ()
