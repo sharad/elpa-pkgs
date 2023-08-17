@@ -170,13 +170,22 @@
 
 
 (cl-defmethod occ-obj-dyn-filter-seq ((dyn-filter occ-obj-dyn-filter))
-  (funcall (occ-dyn-filter-seq-closure-fn dyn-filter)))
+  (progn
+    (message "occ-obj-dyn-filter-seq: IN (%s)" (occ-obj-name dyn-filter))
+    (prog1
+        (debug)
+        (funcall (occ-dyn-filter-seq-closure-fn dyn-filter))
+      (message "occ-obj-dyn-filter-seq: OUT (%s)" (occ-obj-name dyn-filter)))))
 
 (cl-defmethod occ-obj-dyn-filter-filter ((dyn-filter occ-obj-dyn-filter))
-  (funcall (occ-dyn-filter-filter-closure-fn dyn-filter)))
+  (progn
+    (message "occ-obj-dyn-filter-filter: (%s)" (occ-obj-name dyn-filter))
+    (funcall (occ-dyn-filter-filter-closure-fn dyn-filter))))
 
 (cl-defmethod occ-obj-dyn-filter-points ((dyn-filter occ-obj-dyn-filter))
-  (funcall (occ-dyn-filter-points-closure-fn dyn-filter)))
+  (progn
+    (message "occ-obj-dyn-filter-points: (%s)" (occ-obj-name dyn-filter))
+    (funcall (occ-dyn-filter-points-closure-fn dyn-filter))))
 
 (cl-defmethod occ-obj-dyn-filter-increment ((dyn-filter occ-obj-dyn-filter))
   (funcall (occ-dyn-filter-increment-closure-fn dyn-filter)))
@@ -193,7 +202,7 @@
                                             (sequence list)
                                             prev ;; (prev occ-dyn-filter)
                                             &key rank)
-  (message "occ-obj-static-to-dyn-filter in 1")
+  (message "occ-obj-static-to-dyn-filter in %s" (occ-obj-name static-filter))
   (let* ((rank          (or rank
                             #'occ-obj-rank))
          (points        (occ-obj-static-filter-points static-filter
@@ -224,7 +233,7 @@
                                                       (length points)))))
            (reset-closure-fn     #'(lambda ()
                                      (setf pivot default-pivot))))
-      (message "occ-obj-static-to-dyn-filter in 2")
+      (message "occ-obj-static-to-dyn-filter in %s" (occ-obj-name static-filter))
       (occ-obj-build-dyn-filter (occ-obj-name static-filter)
                                 :seq-closure-fn       seq-closure-fn
                                 :filter-closure-fn    filter-closure-fn
@@ -272,12 +281,14 @@
                                            (static-filter-methods list)
                                            (sequence list)
                                            &key rank)
-  (message "Going in")
+  (message "occ-obj-combined-dyn-filter: Going in")
   (let ((curr-dyn-filter (occ-obj-build-dyn-filters-recursive obj
                                                               static-filter-methods
                                                               sequence :rank rank)))
-    (message "Coming out")
-    (let ((curr-closure-fn #'(lambda () curr-dyn-filter))
+    (message "occ-obj-combined-dyn-filter: Coming out")
+    (let ((curr-closure-fn #'(lambda ()
+                               (message "curr-closure-fn")
+                               curr-dyn-filter))
           (prev-closure-fn (occ-obj-build-helm-command #'(lambda ()
                                                            (let ((prev (occ-dyn-filter-prev curr-dyn-filter)))
                                                              (if prev
