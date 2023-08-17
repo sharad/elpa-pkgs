@@ -248,24 +248,18 @@
            (candidates-unfiltered (occ-obj-dyn-filter-seq    combined-dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
            (candidates-filtered   (occ-obj-dyn-filter-filter combined-dyn-filter))
            (unfiltered-count      (length candidates-unfiltered))
-           (filtered-count        (length candidates-filtered))
-           (gen-candidates  #'(lambda ()
-                                ;; (helm--source (helm-get-current-source))
-                                (let ((source (helm-get-current-source)))
-                                  ;; (setf (slot-value source 'name) "TEST: ")
-                                  (message "source: %s" (type-of source)))
-                                (mapcar #'occ-obj-candidate
-                                        (occ-obj-dyn-filter-filter combined-dyn-filter))))
-           (h-map            (occ-obj-build-helm-map combined-dyn-filter)))
-
+           (filtered-count        (length candidates-filtered)))
       (when (> filtered-count 0) ;; (> unfiltered-count 0)
-        (let ((gen-candidate-lambda gen-candidates)
-              (source-name          (occ-helm-build-collection-source-prompt obj
+        (let ((source-name          (occ-helm-build-collection-source-prompt obj
                                                                              collection
                                                                              (symbol-name (occ-cl-inst-classname (cl-first candidates-unfiltered)))
                                                                              unfiltered-count
                                                                              filtered-count
-                                                                             :prompt prompt)))
+                                                                             :prompt prompt))
+              (gen-candidate-lambda #'(lambda ()
+                                        (mapcar #'occ-obj-candidate
+                                                (occ-obj-dyn-filter-filter combined-dyn-filter))))
+              (h-map            (occ-obj-build-helm-map combined-dyn-filter)))
               ;; (helm-get-current-source)
           (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
                 (helm-transfm (occ-obj-ap-helm-item ap-transf obj)))
