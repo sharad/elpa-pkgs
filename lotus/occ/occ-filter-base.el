@@ -191,8 +191,8 @@
 
 (cl-defmethod occ-obj-static-to-dyn-filter ((filter occ-static-filter)
                                             (obj occ-ctx)
-                                            (prev occ-dyn-filter)
-                                            sequence
+                                            (sequence list)
+                                            prev ;; (prev occ-dyn-filter)
                                             &key rank)
   (let* ((rank          (or rank
                             #'occ-obj-rank))
@@ -249,10 +249,10 @@
                    nil))
            (next (if static-filter
                      (occ-obj-static-to-dyn-filter static-filter
-                                               obj
-                                               prev
-                                               sequence
-                                               :rank rank))))
+                                                   obj
+                                                   sequence
+                                                   prev
+                                                   :rank rank))))
       (when prev
         (setf (occ-dyn-filter-next prev) next))
       next)))
