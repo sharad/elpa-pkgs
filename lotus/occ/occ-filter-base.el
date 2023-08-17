@@ -186,26 +186,27 @@
 
 
 (cl-defmethod occ-obj-dyn-filter-seq ((dyn-filter occ-dyn-filter))
-  (funcall (occ-dyn-filter-seq-fn dyn-filter)))
+  (funcall (occ-dyn-filter-seq-closure-fn dyn-filter)))
 
 (cl-defmethod occ-obj-dyn-filter-filter ((dyn-filter occ-dyn-filter))
-  (funcall (occ-dyn-filter-filter-fn dyn-filter)))
+  (funcall (occ-dyn-filter-filter-closure-fn dyn-filter)))
 
 (cl-defmethod occ-obj-dyn-filter-points ((dyn-filter occ-dyn-filter))
-  (funcall (occ-dyn-filter-points-fn dyn-filter)))
+  (funcall (occ-dyn-filter-points-closure-fn dyn-filter)))
 
 (cl-defmethod occ-obj-dyn-filter-increment ((dyn-filter occ-dyn-filter))
-  (funcall (occ-dyn-filter-increment-fn dyn-filter)))
+  (funcall (occ-dyn-filter-increment-closure-fn dyn-filter)))
 
 (cl-defmethod occ-obj-dyn-filter-decrement ((dyn-filter occ-dyn-filter))
-  (funcall (occ-dyn-filter-decrement-fn dyn-filter)))
+  (funcall (occ-dyn-filter-decrement-closure-fn dyn-filter)))
 
 (cl-defmethod occ-obj-dyn-filter-reset ((dyn-filter occ-dyn-filter))
-  (funcall (occ-dyn-filter-reset-fn dyn-filter)))
+  (funcall (occ-dyn-filter-reset-closure-fn dyn-filter)))
 
 
 (cl-defmethod occ-obj-get-dyn-filter ((filter occ-filter)
                                       (obj occ-ctx)
+                                      prev
                                       sequence
                                       &key rank)
   (let* ((rank          (or rank
@@ -218,49 +219,84 @@
                                                       obj
                                                       points))
          (pivot         default-pivot))
-    (let ((seq-closure-fn       #'(lambda () sequence))
-          (filter-closure-fn    #'(lambda ()
-                                    (cl-remove-if-not (lambda (s)
-                                                        (funcall (occ-filter-compare-fn filter)
-                                                                 (funcall rank s)
-                                                                 (nth pivot points)))
-                                                     sequence)))
-          (increment-closure-fn #'(lambda ()
-                                    (interactive)
-                                    (setf pivot (mod (1+ pivot)
-                                                     (length points)))
-                                   (helm-refresh)))
-          (decrement-closure-fn #'(lambda ()
-                                    (interactive)
-                                    (setf pivot (mod (1- pivot)
-                                                     (length points)))
-                                   (helm-refresh)))
-          (reset-closure-fn     #'(lambda ()
-                                    (interactive)
-                                    (setf pivot default-pivot))))
+    (let* ((seq-closure-fn       (if prev-dyn-filter
+                                     (occ-obj-dyn-filter-filter-closure prev-dyn-filter)
+                                     #'(lambda () sequence)))
+           (filter-closure-fn    #'(lambda ()
+                                     (cl-remove-if-not (lambda (s)
+                                                         (funcall (occ-filter-compare-fn filter)
+                                                                  (funcall rank s)
+                                                                  (nth pivot points)))
+                                                       (funcall seq-closure-fn))))
+           (increment-closure-fn #'(lambda ()
+                                     (interactive)
+                                     (setf pivot (mod (1+ pivot)
+                                                      (length points)))
+                                    (helm-refresh)))
+           (decrement-closure-fn #'(lambda ()
+                                     (interactive)
+                                     (setf pivot (mod (1- pivot)
+                                                      (length points)))
+                                    (helm-refresh)))
+           (reset-closure-fn     #'(lambda ()
+                                     (interactive)
+                                     (setf pivot default-pivot))))
       (occ-obj-build-dyn-filter (occ-obj-name filter)
                                 :seq-closure-fn seq-closure-fn
                                 :filter-closure-fn filter-closure-fn
                                 :increment-closure-fn increment-closure-fn
                                 :decrement-closure-fn decrement-closure-fn
-                                :reset-closure-fn reset-closure-fn))))
+                                :reset-closure-fn reset-closure-fn
+                                :prev prev))))
+
+(cl-defmethod occ-obj-filter-recursive ((obj occ-ctx)
+                                        methods
+                                        sequence
+                                        &key rank)
+  (let* ((filterkw-rank (cl-first methods))
+         (filter        (occ-obj-filter-get (or (car-safe filterkw-rank)
+                                                filterkw-rank)))
+         ;; (filter        (occ-obj-filter-get :incremental))
+         (rank          (if (consp filterkw-rank)
+                            (nth 1 filterkw-rank)
+                          (or rank
+                              #'occ-obj-rank))))
+    (let* ((prev (if (cdr methods)
+                     (occ-obj-filter-recursive obj
+                                               (cdr methods)
+                                               sequence
+                                               :rank rank)
+                   nil))
+           (next (occ-obj-get-dyn-filter filter
+                                         obj
+                                         sequence
+                                         prev
+                                         :rank rank)))
+      (setf (occ-dyn-filter-next prev) next)
+      next)))
 
 (cl-defmethod occ-obj-filter-ops ((obj occ-ctx)
                                   methods
                                   sequence
                                   &key rank)
-  (let* ((filterkw-rank (cl-first methods))
-         ;; (filter        (occ-obj-filter-get (or (car-safe filterkw-rank)
-         ;;                                        filterkw-rank)))
-         (filter        (occ-obj-filter-get :incremental))
-         (rank          (if (consp filterkw-rank)
-                            (nth 1 filterkw-rank)
-                          (or rank
-                              #'occ-obj-rank))))
-    (occ-obj-get-dyn-filter filter
-                            obj
-                            sequence
-                            :rank rank)))
+  (occ-obj-filter-recursive obj methods sequence :rank rank))
+ 
+;; (cl-defmethod occ-obj-filter-ops ((obj occ-ctx)
+;;                                   methods
+;;                                   sequence
+;;                                   &key rank)
+;;   (let* ((filterkw-rank (cl-first methods))
+;;          ;; (filter        (occ-obj-filter-get (or (car-safe filterkw-rank)
+;;          ;;                                        filterkw-rank)))
+;;          (filter        (occ-obj-filter-get :incremental))
+;;          (rank          (if (consp filterkw-rank)
+;;                             (nth 1 filterkw-rank)
+;;                           (or rank
+;;                               #'occ-obj-rank))))
+;;     (occ-obj-get-dyn-filter filter
+;;                             obj
+;;                             sequence
+;;                             :rank rank)))
 
 ;; (occ-obj-get-filters (occ-obj-make-ctx-at-point) (occ-match-filters))
 ;; (occ-obj-filters-get (occ-match-filters))
