@@ -226,8 +226,8 @@
       (define-key map (kbd "M-<up>")     (occ-obj-dyn-filter-increment-closure-fn combined-dyn-filter))
       (define-key map (kbd "M-<down>")   (occ-obj-dyn-filter-decrement-closure-fn combined-dyn-filter))
       (define-key map (kbd "M-<return>") (occ-obj-dyn-filter-reset-closure-fn combined-dyn-filter))
+      (define-key map (kbd "s-<up>") (occ-combined-dyn-filter-next-closure-fn combined-dyn-filter))
       (define-key map (kbd "s-<down>")   (occ-combined-dyn-filter-prev-closure-fn combined-dyn-filter))
-      (define-key map (kbd "s-<return>") (occ-combined-dyn-filter-next-closure-fn combined-dyn-filter))
       (define-key map (kbd "M-<space>")  filter-manage-fn)
       map)))
 

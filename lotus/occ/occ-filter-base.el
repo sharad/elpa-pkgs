@@ -193,7 +193,7 @@
                                             (sequence list)
                                             prev ;; (prev occ-dyn-filter)
                                             &key rank)
-  (message "occ-obj-static-to-dyn-filter in %s 1" (occ-obj-name static-filter))
+  (occ-debug "occ-obj-static-to-dyn-filter in %s 1" (occ-obj-name static-filter))
   (let* ((rank          (or rank
                             #'occ-obj-rank))
          (points        (occ-obj-static-filter-points static-filter
@@ -238,24 +238,18 @@
                           (or rank
                               #'occ-obj-rank))))
     (occ-assert static-filter)
-    (message "occ-obj-build-dyn-filters-recursive in")
+    (occ-debug "occ-obj-build-dyn-filters-recursive in")
     (let* ((prev (if (cdr static-filter-methods)
                      (occ-obj-build-dyn-filters-recursive obj
                                                           (cdr static-filter-methods)
                                                           sequence
                                                           :rank rank)
-                   nil))
-           (next (occ-obj-static-to-dyn-filter static-filter
-                                               obj
-                                               sequence
-                                               prev
-                                               :rank rank)))
-      (message "occ-obj-build-dyn-filters-recursive: next %s" (occ-obj-name next))
-      (when nil ;; prev
-        (message "occ-obj-build-dyn-filters-recursive: prev 1")
-        ;; (debug)
-        (setf (occ-dyn-filter-next prev) next))
-      next)))
+                   nil)))
+      (occ-obj-static-to-dyn-filter static-filter
+                                    obj
+                                    sequence
+                                    prev
+                                    :rank rank))))
 
 (defun occ-obj-build-helm-command (closure-fn)
   #'(lambda ()
@@ -267,30 +261,31 @@
                                            (static-filter-methods list)
                                            (sequence list)
                                            &key rank)
-  (message "occ-obj-combined-dyn-filter: Going in")
+  (occ-debug "occ-obj-combined-dyn-filter: Going in")
   (let ((curr-dyn-filter (occ-obj-build-dyn-filters-recursive obj
                                                               static-filter-methods ;; (list :incremental);; static-filter-methods
-                                                              sequence :rank rank)))
-    (message "occ-obj-combined-dyn-filter: Coming out")
-    (message "occ-obj-combined-dyn-filter: curr-dyn-filter %s" (occ-obj-name curr-dyn-filter))
+                                                              sequence :rank rank))
+        (stack nil))
+    (occ-debug "occ-obj-combined-dyn-filter: Coming out")
+    (occ-debug "occ-obj-combined-dyn-filter: curr-dyn-filter %s" (occ-obj-name curr-dyn-filter))
     (occ-obj-build-combined-dyn-filter "CTX"
                                            :curr-closure-fn      #'(lambda () curr-dyn-filter)
                                            :prev-closure-fn      (occ-obj-build-helm-command #'(lambda ()
                                                                                                  (let ((prev (occ-dyn-filter-prev curr-dyn-filter)))
                                                                                                    (if prev
                                                                                                        (progn
-                                                                                                         (message "Setting prev %s" (occ-obj-name prev))
+                                                                                                         (occ-message "Setting prev %s" (occ-obj-name prev))
+                                                                                                         (push curr-dyn-filter stack)
                                                                                                          (setf curr-dyn-filter prev))
                                                                                                      (ding t)
                                                                                                      (occ-message "No prev")))))
                                            :next-closure-fn      (occ-obj-build-helm-command #'(lambda ()
-                                                                                                 (let ((next (occ-dyn-filter-next curr-dyn-filter)))
-                                                                                                   (if next
-                                                                                                       (progn
-                                                                                                         (message "Setting next %s" (occ-obj-name next))
-                                                                                                         (setf curr-dyn-filter next))
-                                                                                                     (ding t)
-                                                                                                     (occ-message "No next")))))
+                                                                                                 (if stack
+                                                                                                     (let ((next (pop stack)))
+                                                                                                       (occ-message "Setting next %s" (occ-obj-name next))
+                                                                                                       (setf curr-dyn-filter next))
+                                                                                                   (ding t)
+                                                                                                   (occ-message "No next"))))
                                            :seq-closure-fn       #'(lambda ()
                                                                      (occ-obj-dyn-filter-seq curr-dyn-filter))
                                            :filter-closure-fn    #'(lambda () (occ-obj-dyn-filter-filter  curr-dyn-filter))

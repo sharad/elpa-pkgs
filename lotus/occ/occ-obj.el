@@ -235,8 +235,7 @@
 
 (cl-defstruct (occ-dyn-filter (:include occ-obj-dyn-filter))
   "occ-dyn-filter"
-  prev
-  next)
+  prev)
 
 (cl-defstruct (occ-combined-dyn-filter (:include occ-obj-dyn-filter))
   "occ-combined-dyn-filter"
