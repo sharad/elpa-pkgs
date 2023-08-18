@@ -312,7 +312,7 @@ select candidate from it."
          (unfiltered-count      (length candidates-unfiltered))
          (filtered-count        (length candidates-filtered)))
 
-    (occ-message "occ-obj-helm-build-collection-source: combined-dyn-filter: done")
+    (occ-debug "occ-obj-helm-build-collection-source: combined-dyn-filter: done")
     (occ-debug "len candidates-unfiltered %d" unfiltered-count)
     (occ-debug "len candidates-filtered %d" filtered-count)
 

@@ -156,7 +156,9 @@
   :init-value nil
   :global     t
   ;; The indicator for the mode line.
-  :lighter " Occ"
+  :lighter (:eval (if occ-mode
+                      (propertize " Occ" '('mouse-face 'mode-line-highlight) '(:foreground "green"))
+                    ""))
   ;; The minor mode bindings.
   :keymap occ-mode-main-keymap
   :group 'occ
