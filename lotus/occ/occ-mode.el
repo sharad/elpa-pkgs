@@ -150,7 +150,7 @@
 
 (defface occ-mode-lighter
   '((t (:inherit mode-line :foreground "Green")))
-  "Face used for clock display for overrun tasks in mode line."
+  "Face used for lighter tasks in mode line."
   :group 'occ)
 
 ;;;###autoload
