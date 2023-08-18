@@ -261,17 +261,12 @@
     (occ-obj-build-dyn-filter (occ-obj-name static-filter)
                                 :seq-closure-fn       (if prev
                                                           (occ-obj-dyn-filter-filter-closure-fn prev)
-                                                        #'(lambda ()
-                                                            ;; (message "seq-closure-fn(%s): calling last sequence fun" (occ-obj-name static-filter))
-                                                            sequence))
+                                                        #'(lambda () sequence))
                                 :filter-closure-fn    #'(lambda ()
                                                           (cl-remove-if-not #'(lambda (ctsk)
-                                                                                (message "filter-closure-fn(%s): calling compare"  (occ-obj-name static-filter))
                                                                                 (funcall (occ-static-filter-compare-fn static-filter)
                                                                                          (funcall rank ctsk)
                                                                                          (nth pivot points)))
-                                                                            ;; (funcall seq-closure-fn)
-                                                                            ;; sequence
                                                                             (if prev
                                                                                 (occ-obj-dyn-filter-filter prev)
                                                                               sequence)))
