@@ -171,20 +171,17 @@
 
 (cl-defmethod occ-obj-dyn-filter-seq ((dyn-filter occ-obj-dyn-filter))
   (progn
-    (message "occ-obj-dyn-filter-seq: IN (%s)" (occ-obj-name dyn-filter))
-    (prog1
-        ;; (debug)
-        (funcall (occ-obj-dyn-filter-seq-closure-fn dyn-filter))
-      (message "occ-obj-dyn-filter-seq: OUT (%s)" (occ-obj-name dyn-filter)))))
+    ;; (message "occ-obj-dyn-filter-seq: IN (%s)" (occ-obj-name dyn-filter))
+    (funcall (occ-obj-dyn-filter-seq-closure-fn dyn-filter))))
 
 (cl-defmethod occ-obj-dyn-filter-filter ((dyn-filter occ-obj-dyn-filter))
   (progn
-    (message "occ-obj-dyn-filter-filter: (%s)" (occ-obj-name dyn-filter))
+    ;; (message "occ-obj-dyn-filter-filter: (%s)" (occ-obj-name dyn-filter))
     (funcall (occ-obj-dyn-filter-filter-closure-fn dyn-filter))))
 
 (cl-defmethod occ-obj-dyn-filter-points ((dyn-filter occ-obj-dyn-filter))
   (progn
-    (message "occ-obj-dyn-filter-points: (%s)" (occ-obj-name dyn-filter))
+    ;; (message "occ-obj-dyn-filter-points: (%s)" (occ-obj-name dyn-filter))
     (funcall (occ-obj-dyn-filter-points-closure-fn dyn-filter))))
 
 (cl-defmethod occ-obj-dyn-filter-increment ((dyn-filter occ-obj-dyn-filter))
@@ -380,13 +377,17 @@
                                            :prev-closure-fn      (occ-obj-build-helm-command #'(lambda ()
                                                                                                  (let ((prev (occ-dyn-filter-prev curr-dyn-filter)))
                                                                                                    (if prev
-                                                                                                       (setf curr-dyn-filter prev)
+                                                                                                       (progn
+                                                                                                         (message "Setting prev %s" (occ-obj-name prev))
+                                                                                                         (setf curr-dyn-filter prev))
                                                                                                      (beep)
                                                                                                      (occ-message "No prev")))))
                                            :next-closure-fn      (occ-obj-build-helm-command #'(lambda ()
                                                                                                  (let ((next (occ-dyn-filter-next curr-dyn-filter)))
                                                                                                    (if next
-                                                                                                       (setf curr-dyn-filter next)
+                                                                                                       (progn
+                                                                                                         (message "Setting next %s" (occ-obj-name next))
+                                                                                                         (setf curr-dyn-filter next))
                                                                                                      (beep)
                                                                                                      (occ-message "No next")))))
                                            :seq-closure-fn       #'(lambda ()
