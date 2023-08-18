@@ -148,6 +148,11 @@
   (interactive)
   (setq occ-mode-global-allowed nil))
 
+(defface occ-mode-lighter
+  '((t (:inherit mode-line :foreground "Green")))
+  "Face used for clock display for overrun tasks in mode line."
+  :group 'occ)
+
 ;;;###autoload
 (define-minor-mode occ-mode
   "Toggle Occ mode.
@@ -156,9 +161,7 @@
   :init-value nil
   :global     t
   ;; The indicator for the mode line.
-  :lighter (:eval (if occ-mode
-                      (propertize " Occ" '('mouse-face 'mode-line-highlight) '(:foreground "green"))
-                    ""))
+  :lighter (:eval (propertize " Occ" 'face 'occ-mode-lighter))
   ;; The minor mode bindings.
   :keymap occ-mode-main-keymap
   :group 'occ

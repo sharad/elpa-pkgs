@@ -108,10 +108,9 @@
   :group 'org-faces)
 
 
-(setq
- org-work-day-face          'org-mode-line-wday
- org-work-day-face-underrun 'org-mode-line-wday-underrun
- org-work-day-face-overrun  'org-mode-line-wday-overrun)
+(setq org-work-day-face          'org-mode-line-wday
+      org-work-day-face-underrun 'org-mode-line-wday-underrun
+      org-work-day-face-overrun  'org-mode-line-wday-overrun)
 
 ;; (setq
 ;;  org-work-day-face          'org-mode-line-clock
