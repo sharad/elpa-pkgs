@@ -271,7 +271,10 @@
                                                                                          (funcall rank ctsk)
                                                                                          (nth pivot points)))
                                                                             ;; (funcall seq-closure-fn)
-                                                                            sequence))
+                                                                            ;; sequence
+                                                                            (if prev
+                                                                                (occ-obj-dyn-filter-filter prev)
+                                                                              sequence)))
                                 :increment-closure-fn #'(lambda ()
                                                           (setf pivot (mod (1+ pivot)
                                                                            (length points))))
@@ -305,7 +308,7 @@
            (next (occ-obj-static-to-dyn-filter static-filter
                                                obj
                                                sequence
-                                               nil ;; prev
+                                               prev
                                                :rank rank)))
       (message "occ-obj-build-dyn-filters-recursive: next %s" (occ-obj-name next))
       (when nil ;; prev
@@ -373,14 +376,12 @@
                                            &key rank)
   (message "occ-obj-combined-dyn-filter: Going in")
   (let ((curr-dyn-filter (occ-obj-build-dyn-filters-recursive obj
-                                                              (list :incremental);; static-filter-methods
+                                                              static-filter-methods ;; (list :incremental);; static-filter-methods
                                                               sequence :rank rank)))
     (message "occ-obj-combined-dyn-filter: Coming out")
     (message "occ-obj-combined-dyn-filter: curr-dyn-filter %s" (occ-obj-name curr-dyn-filter))
     (occ-obj-build-combined-dyn-filter "CTX"
-                                           :curr-closure-fn      #'(lambda ()
-                                                                     (message "curr-closure-fn")
-                                                                     curr-dyn-filter)
+                                           :curr-closure-fn      #'(lambda () curr-dyn-filter)
                                            :prev-closure-fn      (occ-obj-build-helm-command #'(lambda ()
                                                                                                  (let ((prev (occ-dyn-filter-prev curr-dyn-filter)))
                                                                                                    (if prev
@@ -394,13 +395,7 @@
                                                                                                      (beep)
                                                                                                      (occ-message "No next")))))
                                            :seq-closure-fn       #'(lambda ()
-                                                                     (message "seq-closure-fn COMBINED 1")
-                                                                     (let ((curr curr-dyn-filter))
-                                                                       (message "seq-closure-fn COMBINED 2 curr = %s" (occ-obj-name curr))
-                                                                       (prog1
-                                                                           (occ-obj-dyn-filter-seq curr)
-                                                                         ;; (debug)
-                                                                         (message "seq-closure-fn COMBINED 2"))))
+                                                                     (occ-obj-dyn-filter-seq curr-dyn-filter))
                                            :filter-closure-fn    #'(lambda () (occ-obj-dyn-filter-filter  curr-dyn-filter))
                                            :increment-closure-fn (occ-obj-build-helm-command #'(lambda () (occ-obj-dyn-filter-increment curr-dyn-filter)))
                                            :decrement-closure-fn (occ-obj-build-helm-command #'(lambda () (occ-obj-dyn-filter-decrement curr-dyn-filter)))

@@ -251,6 +251,7 @@
            (candidates-filtered   (occ-obj-dyn-filter-filter combined-dyn-filter))
            (unfiltered-count      (length candidates-unfiltered))
            (filtered-count        (length candidates-filtered)))
+      (message "occ-obj-helm-build-real-collection-source: unfiltered-count = %d, filtered-count = %d" unfiltered-count filtered-count)
       (when (> filtered-count 0) ;; (> unfiltered-count 0)
         (let ((source-name          (occ-helm-build-collection-source-prompt obj
                                                                              collection
