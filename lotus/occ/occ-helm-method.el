@@ -304,23 +304,17 @@ select candidate from it."
   (let* ((rank  (occ-obj-collection-rank collection))
          (level (occ-obj-collection-level collection))
          (timeout               (or timeout occ-idle-timeout))
-
-         ;; TODO: HERE
          (combined-dyn-filter   (occ-obj-combined-dyn-filter obj
                                                              filters
                                                              (occ-obj-list-with obj collection :builder builder)))
-         (candidates-unfiltered (occ-obj-dyn-filter-seq combined-dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
-         (unfiltered-count      (length candidates-unfiltered))
+         (candidates-unfiltered (occ-obj-dyn-filter-seq    combined-dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
          (candidates-filtered   (occ-obj-dyn-filter-filter combined-dyn-filter))
+         (unfiltered-count      (length candidates-unfiltered))
          (filtered-count        (length candidates-filtered)))
 
     (occ-message "occ-obj-helm-build-collection-source: combined-dyn-filter: done")
-
     (occ-debug "len candidates-unfiltered %d" unfiltered-count)
     (occ-debug "len candidates-filtered %d" filtered-count)
-
-    ;; (when (<= filtered-count 3)
-    ;;   (occ-debug "occ-obj-helm-build-collection-source: candidates-filtered = %s" candidates-filtered))
 
     (if (= filtered-count 0)
         (occ-build-hsrc-null nil ;; (cl-first candidates-filtered)
