@@ -143,6 +143,15 @@
 
 (cl-defmethod occ-obj-dyn-filter-reset ((dyn-filter occ-obj-dyn-filter))
   (funcall (occ-obj-dyn-filter-reset-closure-fn dyn-filter)))
+
+(cl-defmethod occ-obj-dyn-filter-next-closure-fn ((dyn-filter occ-combined-dyn-filter))
+  (occ-combined-dyn-filter-next-closure-fn dyn-filter))
+
+(cl-defmethod occ-obj-dyn-filter-prev-closure-fn ((dyn-filter occ-combined-dyn-filter))
+  (occ-combined-dyn-filter-prev-closure-fn dyn-filter))
+
+;; (cl-defmethod occ-obj-dyn-filter-next-closure-fn ((dyn-filter occ-combined-dyn-filter))
+;;   (occ-combined-dyn-filter-next-closure-fn dyn-filter))
 
 
 (cl-defmethod occ-obj-static-to-dyn-filter ((static-filter occ-static-filter)
