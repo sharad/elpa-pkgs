@@ -667,8 +667,7 @@
                                    increment-closure-fn
                                    decrement-closure-fn
                                    reset-closure-fn
-                                   prev
-                                   next)
+                                   prev)
   (make-occ-dyn-filter :name name
                        :seq-closure-fn seq-closure-fn
                        :filter-closure-fn filter-closure-fn
@@ -676,8 +675,7 @@
                        :increment-closure-fn increment-closure-fn
                        :decrement-closure-fn decrement-closure-fn
                        :reset-closure-fn reset-closure-fn
-                       :prev prev
-                       :next next))
+                       :prev prev))
 
 (cl-defun occ-obj-build-dyn-filter (name
                                     &key
@@ -687,8 +685,7 @@
                                     increment-closure-fn
                                     decrement-closure-fn
                                     reset-closure-fn
-                                    prev
-                                    next)
+                                    prev)
   (occ-obj-make-dyn-filter name
                            :seq-closure-fn seq-closure-fn
                            :filter-closure-fn filter-closure-fn
@@ -696,8 +693,7 @@
                            :increment-closure-fn increment-closure-fn
                            :decrement-closure-fn decrement-closure-fn
                            :reset-closure-fn reset-closure-fn
-                           :prev prev
-                           :next next))
+                           :prev prev))
 
 
 (cl-defun occ-obj-make-combined-dyn-filter (name
@@ -732,7 +728,7 @@
                                              points-closure-fn
                                              increment-closure-fn
                                              decrement-closure-fn
-                                             reset-closure-fn)                                             
+                                             reset-closure-fn)
   (occ-obj-make-combined-dyn-filter name
                                     :curr-closure-fn curr-closure-fn
                                     :prev-closure-fn prev-closure-fn
