@@ -251,7 +251,7 @@
            (candidates-filtered   (occ-obj-dyn-filter-filter combined-dyn-filter))
            (unfiltered-count      (length candidates-unfiltered))
            (filtered-count        (length candidates-filtered)))
-      (message "occ-obj-helm-build-real-collection-source: unfiltered-count = %d, filtered-count = %d" unfiltered-count filtered-count)
+      (occ-debug "occ-obj-helm-build-real-collection-source: unfiltered-count = %d, filtered-count = %d" unfiltered-count filtered-count)
       (when (> filtered-count 0) ;; (> unfiltered-count 0)
         (let ((source-name          (occ-helm-build-collection-source-prompt obj
                                                                              collection
@@ -360,8 +360,8 @@ select candidate from it."
 
 (defun occ-helm-build-dummy-sources ()
   (list (occ-obj-helm-build-dummy-source "Create fast child task may use template" #'occ-do-fast-create-child)
-        (occ-obj-helm-build-dummy-source "Create Anonymous task" #'occ-do-create-anonymous-child)
-        (occ-obj-helm-build-dummy-source "Create Anonymous (fast as unnamed)" #'occ-do-fast-create-anonymous-child)))
+        (occ-obj-helm-build-dummy-source "Create Anonymous task"                   #'occ-do-create-anonymous-child)
+        (occ-obj-helm-build-dummy-source "Create Anonymous (fast as unnamed)"      #'occ-do-fast-create-anonymous-child)))
 
 
 (cl-defmethod occ-obj-helm-build-collections-sources ((obj         occ-ctx)
