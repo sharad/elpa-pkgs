@@ -226,9 +226,10 @@
 
 (cl-defstruct (occ-obj-dyn-filter (:include occ-obj))
   "occ-obj-dyn-filter"
+  init-closure-fn
   seq-closure-fn
   filter-closure-fn
-  points-closure-fn
+  ;; points-closure-fn
   ;; pivot
   increment-closure-fn
   decrement-closure-fn
