@@ -199,10 +199,11 @@
   builder)
 
 
-(defun occ-make-tsk-at-point (collection)
+(defun occ-make-tsk-at-point (collection
+                              file)
   ;; (occ-debug "occ-make-tsk-at-point: Builder %s" builder)
   (let ((builder (occ-obj-tsk-builder collection))
-        (tsk                      nil)
+        ;; (tsk                      nil)
         (heading-with-string-prop (if (org-before-first-heading-p)
                                       'noheading
                                     (org-get-heading 'notags))))
@@ -214,7 +215,7 @@
           (marker       (move-marker (make-marker)
                                      (point)
                                      (org-base-buffer (current-buffer))))
-          (file         (buffer-file-name))
+          (file-name    (buffer-file-name))
           (point        (point))
           (clock-sum    (if (org-before-first-heading-p)
                             0
@@ -227,22 +228,21 @@
           ;; NOTE also these two are mixed in one list only
           (tsk-plist    (nth 1 (org-element-at-point))))
       (occ-assert (cl-evenp (length tsk-plist)))
-      (when heading
-        (setf tsk
-              (funcall builder
-                       ;; (occ-obj-intf-from-org) from Org world to Occ world.
-                       :name         (occ-obj-intf-from-org 'name heading)
-                       :collection   collection
-                       :parent       nil
-                       :action       nil
-                       :heading      (occ-obj-intf-from-org 'heading heading)
-                       :heading-prop (occ-obj-intf-from-org 'heading-prop heading-prop)
-                       :marker       (occ-obj-intf-from-org 'marker marker)
-                       :file         (occ-obj-intf-from-org 'file file)
-                       :point        (occ-obj-intf-from-org 'point point)
-                       :clock-sum    (occ-obj-intf-from-org 'clock-sum clock-sum)
-                       :cat          (occ-obj-intf-from-org 'cat (occ-get-tsk-category heading tsk-plist))
-                       :plist        (occ-tsk-plist-from-org tsk-plist)))
+      (let ((tsk (funcall builder
+                          ;; (occ-obj-intf-from-org) from Org world to Occ world.
+                          :name         (occ-obj-intf-from-org 'name heading)
+                          :dummy        (if file :file nil)
+                          :collection   collection
+                          :parent       nil
+                          :action       nil
+                          :heading      (occ-obj-intf-from-org 'heading heading)
+                          :heading-prop (occ-obj-intf-from-org 'heading-prop heading-prop)
+                          :marker       (occ-obj-intf-from-org 'marker marker)
+                          :file         (occ-obj-intf-from-org 'file file-name)
+                          :point        (occ-obj-intf-from-org 'point point)
+                          :clock-sum    (occ-obj-intf-from-org 'clock-sum clock-sum)
+                          :cat          (occ-obj-intf-from-org 'cat (occ-get-tsk-category heading tsk-plist))
+                          :plist        (occ-tsk-plist-from-org tsk-plist))))
         (let ((inherit         t)
               (inherited-props
                ;; is it correct ? - guess it is ok and correct.
@@ -255,22 +255,30 @@
               (unless (occ-obj-get-property tsk prop)
                 ;; What is the solution
                 (occ-obj-set-property tsk prop val :not-recursive t)))))
-        (progn "set :plist here"))
-      (occ-obj-reread-props tsk)      ;reset list properties
-      tsk)))
-(cl-defmethod occ-obj-make-tsk-at-point ((collection occ-obj-collection))
-  (occ-make-tsk-at-point (occ-obj-collection collection)))
-(cl-defmethod occ-obj-make-tsk-at-point ((tsk occ-obj-tsk))
-  (occ-obj-make-tsk-at-point (occ-obj-collection tsk)))
+        (progn "set :plist here")
+        (occ-obj-reread-props tsk)      ;reset list properties
+        tsk))))
+(cl-defmethod occ-obj-make-tsk-at-point ((collection occ-obj-collection)
+                                         &optional
+                                         file)
+  (occ-make-tsk-at-point (occ-obj-collection collection)
+                         file))
+(cl-defmethod occ-obj-make-tsk-at-point ((tsk occ-obj-tsk)
+                                         &optional
+                                         file)
+  (occ-obj-make-tsk-at-point (occ-obj-collection tsk)
+                             file))
 
 
 (cl-defmethod occ-obj-tsk-builder-at-point ((collection occ-obj-collection))
-  #'(lambda ()
-      (occ-obj-make-tsk-at-point (occ-obj-collection collection))))
+  #'(lambda (file)
+      (occ-obj-make-tsk-at-point (occ-obj-collection collection)
+                                 file)))
 
 (cl-defmethod occ-obj-tsk-builder-at-point ((collection null))
-  #'(lambda ()
-      (occ-obj-make-tsk-at-point (occ-default-collection))))
+  #'(lambda (file)
+      (occ-obj-make-tsk-at-point (occ-default-collection)
+                                 file)))
 
 
 (cl-defmethod occ-obj-make-tsk ((obj number)
@@ -281,7 +289,7 @@
       (save-restriction
         (save-excursion
           (goto-char obj)
-          (occ-obj-make-tsk-at-point (occ-obj-collection collection))))))
+          (occ-obj-make-tsk-at-point (occ-obj-collection collection) nil)))))
 
 (cl-defmethod occ-obj-make-tsk ((obj marker)
                                 &optional

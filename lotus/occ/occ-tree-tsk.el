@@ -109,9 +109,9 @@ if node return nil for PREDICATE"
 
 ;; TODO: ADD support for non existing file. and suppose it buffer is present but not file.
 ;; should work with any changes
-(defun occ-tree-tsk-build (&optional
-                           file
+(defun occ-tree-tsk-build (file
                            collection
+                           &optional
                            subtree-level)
   "Build recursive org tsks from org FILE (or current buffer) using
 TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
@@ -131,20 +131,21 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
               (occ-setup-buffer)
               (when file
                 (unless (string= file (buffer-file-name (current-buffer)))
-                  (error "file `%s' and current file %s%d not same, current marker %s."
-                         file
-                         (buffer-file-name (current-buffer))
-                         (point)
-                         (point-marker))))
+                  (occ-error "file `%s' and current file %s%d not same, current marker %s."
+                             file
+                             (buffer-file-name (current-buffer))
+                             (point)
+                             (point-marker))))
               (unless (eq major-mode 'org-mode)
-                (error "Not in `%s:%d' org buffer, current marker %s"
-                       (current-buffer)
-                       (point)
-                       (point-marker)))
+                (occ-error "Not in `%s:%d' org buffer, current marker %s"
+                           (current-buffer)
+                           (point)
+                           (point-marker)))
               (when file
                 (goto-char (point-min)))
               ;; here many time if other call thread come then current buffer gets changed cause issue with tsk-builder-at-point
-              (let ((entry         (funcall tsk-builder-at-point))
+              (let (;; (entry         (funcall tsk-builder-at-point))
+                    (entry         (funcall tsk-builder-at-point file))
                     (subtree-level (if subtree-level subtree-level 1)))
                 (when (numberp subtree-level)
                   (occ-obj-set-property entry 'subtree-level
@@ -195,7 +196,7 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
                     entry))))))))))
 
 (cl-defmethod occ-obj-drived-tsk-builder ((collection occ-tree-collection))
-  #'(lambda (&optional file)
+  #'(lambda (file)
       (occ-tree-tsk-build file
                           collection
                           1)))
