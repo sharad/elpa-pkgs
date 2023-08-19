@@ -119,7 +119,9 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
     (progn  ;; save-restriction
       (let ((depth     (occ-obj-collection-depth collection))
             (curr-buff (if file
-                           (occ-find-file-noselect file)
+                           (prog1
+                               (occ-find-file-noselect file)
+                             (goto-char (point-min)))
                          (current-buffer))))
         (with-current-buffer curr-buff
           (let ((subtree-level        (or subtree-level
@@ -141,8 +143,8 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
                            (current-buffer)
                            (point)
                            (point-marker)))
-              (when file
-                (goto-char (point-min)))
+              ;; (when file
+              ;;   (goto-char (point-min)))
               ;; here many time if other call thread come then current buffer gets changed cause issue with tsk-builder-at-point
               (let (;; (entry         (funcall tsk-builder-at-point))
                     (entry         (funcall tsk-builder-at-point file))

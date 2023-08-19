@@ -37,12 +37,14 @@
 TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
   (let ((tsk-builder-at-point   (occ-obj-tsk-builder-at-point collection)))
     (with-current-buffer (if file
-                             (occ-find-file-noselect file)
+                             (prog1
+                                 (occ-find-file-noselect file)
+                               (goto-char (point-min)))
                            (current-buffer))
       (when (and (buffer-live-p (current-buffer))
                  (> (buffer-size (current-buffer)) 30))
         (occ-setup-buffer)
-        (if file (goto-char (point-min)))
+        ;; (if file (goto-char (point-min)))
         (let ((entry (funcall tsk-builder-at-point file)))
           (cons entry
                 (org-map-entries #'(lambda ()

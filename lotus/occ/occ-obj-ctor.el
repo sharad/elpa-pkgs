@@ -268,6 +268,9 @@
                                          file)
   (occ-obj-make-tsk-at-point (occ-obj-collection tsk)
                              file))
+;; file - string open it and goto to point-min
+;; marker -- got to marker
+;; 
 
 
 (cl-defmethod occ-obj-tsk-builder-at-point ((collection occ-obj-collection))
