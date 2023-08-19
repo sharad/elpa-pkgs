@@ -270,7 +270,7 @@
                              file))
 ;; file - string open it and goto to point-min
 ;; marker -- got to marker
-;; 
+;; nil -- pass to current marker
 
 
 (cl-defmethod occ-obj-tsk-builder-at-point ((collection occ-obj-collection))
