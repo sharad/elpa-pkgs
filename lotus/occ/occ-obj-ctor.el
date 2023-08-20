@@ -672,7 +672,6 @@
                                    init-closure-fn
                                    seq-closure-fn
                                    filter-closure-fn
-                                   ;; points-closure-fn
                                    increment-closure-fn
                                    decrement-closure-fn
                                    reset-closure-fn
@@ -681,7 +680,6 @@
                        :init-closure-fn init-closure-fn
                        :seq-closure-fn seq-closure-fn
                        :filter-closure-fn filter-closure-fn
-                       ;; :points-closure-fn points-closure-fn
                        :increment-closure-fn increment-closure-fn
                        :decrement-closure-fn decrement-closure-fn
                        :reset-closure-fn reset-closure-fn
@@ -692,7 +690,6 @@
                                     init-closure-fn
                                     seq-closure-fn
                                     filter-closure-fn
-                                    ;; points-closure-fn
                                     increment-closure-fn
                                     decrement-closure-fn
                                     reset-closure-fn
@@ -701,7 +698,6 @@
                            :init-closure-fn init-closure-fn
                            :seq-closure-fn seq-closure-fn
                            :filter-closure-fn filter-closure-fn
-                           ;; :points-closure-fn points-closure-fn
                            :increment-closure-fn increment-closure-fn
                            :decrement-closure-fn decrement-closure-fn
                            :reset-closure-fn reset-closure-fn
@@ -716,7 +712,6 @@
                                             init-closure-fn
                                             seq-closure-fn
                                             filter-closure-fn
-                                            ;; points-closure-fn
                                             increment-closure-fn
                                             decrement-closure-fn
                                             reset-closure-fn)
@@ -724,7 +719,6 @@
                                 :init-closure-fn init-closure-fn
                                 :seq-closure-fn seq-closure-fn
                                 :filter-closure-fn filter-closure-fn
-                                ;; :points-closure-fn points-closure-fn
                                 :increment-closure-fn increment-closure-fn
                                 :decrement-closure-fn decrement-closure-fn
                                 :reset-closure-fn reset-closure-fn
@@ -740,7 +734,6 @@
                                              init-closure-fn
                                              seq-closure-fn
                                              filter-closure-fn
-                                             ;; points-closure-fn
                                              increment-closure-fn
                                              decrement-closure-fn
                                              reset-closure-fn)
@@ -751,7 +744,6 @@
                                     :init-closure-fn init-closure-fn
                                     :seq-closure-fn seq-closure-fn
                                     :filter-closure-fn filter-closure-fn
-                                    ;; :points-closure-fn points-closure-fn
                                     :increment-closure-fn increment-closure-fn
                                     :decrement-closure-fn decrement-closure-fn
                                     :reset-closure-fn reset-closure-fn))

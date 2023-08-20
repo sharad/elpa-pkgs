@@ -135,9 +135,6 @@
 (cl-defmethod occ-obj-dyn-filter-filter ((dyn-filter occ-obj-dyn-filter))
   (funcall (occ-obj-dyn-filter-filter-closure-fn dyn-filter)))
 
-;; (cl-defmethod occ-obj-dyn-filter-points ((dyn-filter occ-obj-dyn-filter))
-;;   (funcall (occ-obj-dyn-filter-points-closure-fn dyn-filter)))
-
 (cl-defmethod occ-obj-dyn-filter-increment ((dyn-filter occ-obj-dyn-filter))
   (funcall (occ-obj-dyn-filter-increment-closure-fn dyn-filter)))
 
@@ -152,9 +149,6 @@
 
 (cl-defmethod occ-obj-dyn-filter-prev-closure-fn ((dyn-filter occ-combined-dyn-filter))
   (occ-combined-dyn-filter-prev-closure-fn dyn-filter))
-
-;; (cl-defmethod occ-obj-dyn-filter-next-closure-fn ((dyn-filter occ-combined-dyn-filter))
-;;   (occ-combined-dyn-filter-next-closure-fn dyn-filter))
 
 
 (cl-defmethod occ-obj-static-to-dyn-filter ((static-filter occ-static-filter)
