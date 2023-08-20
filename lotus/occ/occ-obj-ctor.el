@@ -259,12 +259,10 @@
         (occ-obj-reread-props tsk)      ;reset list properties
         tsk))))
 (cl-defmethod occ-obj-make-tsk-at-point ((collection occ-obj-collection)
-                                         &optional
                                          file)
   (occ-make-tsk-at-point (occ-obj-collection collection)
                          file))
 (cl-defmethod occ-obj-make-tsk-at-point ((tsk occ-obj-tsk)
-                                         &optional
                                          file)
   (occ-obj-make-tsk-at-point (occ-obj-collection tsk)
                              file))
