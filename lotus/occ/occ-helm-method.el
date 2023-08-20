@@ -230,7 +230,7 @@
       (define-key map (kbd "M-<return>") (occ-obj-dyn-filter-reset-closure-fn     combined-dyn-filter))
       (define-key map (kbd "s-<up>")     (occ-obj-dyn-filter-next-closure-fn      combined-dyn-filter))
       (define-key map (kbd "s-<down>")   (occ-obj-dyn-filter-prev-closure-fn      combined-dyn-filter))
-      (define-key map (kbd "M-<space>")  filter-manage-fn)
+      (define-key map (kbd "s-z")        filter-manage-fn)
       map)))
 
 (cl-defmethod occ-obj-helm-build-real-collection-source ((obj        occ-ctx)
