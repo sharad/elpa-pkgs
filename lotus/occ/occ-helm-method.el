@@ -84,20 +84,20 @@
 ;; C-h C-f helm-source
 (defclass occ-helm-source-sync (helm-source-sync)
   ((header-name
-    :initform (lambda (name)
-                (concat name (substitute-command-keys
-                              occ-helm-doc-header))))
+    :initform #'(lambda (name)
+                  (concat name (substitute-command-keys
+                                occ-helm-doc-header))))
    (init
-    :initform (lambda ()
-                (setq helm-ff-auto-update-flag
-                      helm-ff-auto-update-initial-value)
-                (setq helm-ff--auto-update-state
-                      helm-ff-auto-update-flag)
-                (helm-set-local-variable 'bookmark-make-record-function
-                                         #'helm-ff-make-bookmark-record)
+    :initform #'(lambda ()
+                  (setq helm-ff-auto-update-flag
+                        helm-ff-auto-update-initial-value)
+                  (setq helm-ff--auto-update-state
+                        helm-ff-auto-update-flag)
+                  (helm-set-local-variable 'bookmark-make-record-function
+                                           #'helm-ff-make-bookmark-record)
                 (require 'helm-external)))
    (candidates :initform 'helm-find-files-get-candidates)
-   (update :initform (lambda ()))
+   (update :initform #'(lambda ()))
    (match-on-real :initform nil)
    (filtered-candidate-transformer
     :initform '(helm-ff-fct
@@ -210,7 +210,7 @@
 
 
 (cl-defmethod occ-obj-build-helm-map ((combined-dyn-filter occ-combined-dyn-filter))
-  (let (filter-manage-fn  #'(lambda ()
+  (let ((filter-manage-fn  #'(lambda ()
                               (interactive)
                               (with-helm-buffer
                                 (progn ;; code to manager filters
@@ -218,11 +218,13 @@
                                   ;; TODO: implement list editor
                                   ;; TODO: search emacs elisp interactively modify list
                                   (occ-debug "Manage filters here.")
-                                  (setf filters default-filters)))
+                                  ;; (setf filters default-filters)
+                                  (read-from-minibuffer "Test: ")))
                               ;; (funcall gen-candidates)
-                              (helm-refresh)))
+                              (helm-refresh))))
     (let ((map (make-sparse-keymap)))
       (set-keymap-parent map occ-helm-map)
+      ;; (define-key map (kbd "M-<up>")     filter-manage-fn)
       (define-key map (kbd "M-<up>")     (occ-obj-dyn-filter-increment-closure-fn combined-dyn-filter))
       (define-key map (kbd "M-<down>")   (occ-obj-dyn-filter-decrement-closure-fn combined-dyn-filter))
       (define-key map (kbd "M-<return>") (occ-obj-dyn-filter-reset-closure-fn     combined-dyn-filter))
