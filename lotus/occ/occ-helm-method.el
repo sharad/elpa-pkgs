@@ -469,17 +469,6 @@ select candidate from it."
   (let* ((helm-action (occ-obj-get-first-helm-actions-for-obj obj
                                                               ap-normal
                                                               ap-transf)))
-    ;; (progn ;; debugs
-    ;;   (occ-debug "occ-obj-helm-act-on-candidate: helm-action %s listp %s" helm-action (consp helm-action))
-    ;;   (occ-debug "occ-obj-helm-act-on-single: (cons p helm-action) %s, (functionp helm-action) %s"
-    ;;              (consp helm-action)
-    ;;              (functionp helm-action))
-    ;;   (occ-debug "occ-obj-helm-act-on-candidate: helm-action1 %s" helm-action)
-    ;;   (occ-debug "occ-obj-helm-act-on-single: (cons p (nth 1 helm-action)) %s, (functionp (nth 1 helm-action)) %s"
-    ;;              (consp (cl-rest helm-action))
-    ;;              (functionp (cl-rest helm-action)))
-    ;;   (occ-debug "occ-obj-helm-act-on-candidate: helm-action2 %s" helm-action))
-
     (if (occ-obj-obj source)
         (funcall helm-action (occ-obj-obj source))
       (occ-warn "occ-obj-helm-act-on-candidate: wrong source"))))
@@ -523,23 +512,11 @@ select candidate from it."
                                                   :ap-transf        ap-transf
                                                   :auto-select-if-only auto-select-if-only
                                                   :prompt           prompt)))
-    ;; (occ-debug "occ-obj-helm-act-on-multiple: %s"
-    ;;              (mapcar #'(lambda (c)
-    ;;                          (list (occ-name (occ-obj-obj c))
-    ;;                                (occ-hsrc-level c)
-    ;;                                (occ-hsrc-rank c)))
-    ;;                      cand-sources))
-    ;; (occ-debug "occ-obj-helm-act-on-multiple: got (len collections) = %d"
-    ;;              (length collections))
-    ;; (occ-debug "occ-obj-helm-act-on-multiple: got (len cand-sources) = %d"
-    ;;              (length cand-sources))
-
     ;; TODO: here decide what to do with cand-sources all has rank and level
     (let* ((candidates          (cl-remove-if-not #'occ-candidate-main-p
                                                   cand-sources))
            (preferred-candidate (cl-first (sort candidates
                                                 #'occ-candidate-compare))))
-      ;; (message "XX: %s" (mapcar #'(lambda (c) (cons (occ-obj-Format c) (occ-obj-rank c))) candidates))
       (occ-debug "candidates: %s" candidates)
       (occ-debug "preferred-candidate: %s" preferred-candidate)
 
