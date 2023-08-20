@@ -180,7 +180,6 @@
                                      (setf default-pivot  (funcall default-pivot-fn obj
                                                                    points))
                                      (setf pivot          default-pivot))))
-      (occ-assert seq-closure-fn)
       (funcall init-closure-fn)
       (occ-obj-build-dyn-filter (occ-obj-name static-filter)
                                 :init-closure-fn      init-closure-fn
@@ -227,12 +226,6 @@
                                     prev
                                     :rank rank))))
 
-(defun occ-obj-build-helm-command (closure-fn)
-  #'(lambda ()
-      (interactive)
-      (funcall closure-fn)
-      (helm-refresh)))
-
 (cl-defmethod occ-obj-combined-dyn-filter ((obj occ-ctx)
                                            (static-filter-methods list)
                                            (sequence list)
@@ -246,30 +239,30 @@
     (occ-debug "occ-obj-combined-dyn-filter: curr-dyn-filter %s" (occ-obj-name curr-dyn-filter))
     (occ-obj-build-combined-dyn-filter "CTX"
                                        :curr-closure-fn      #'(lambda () curr-dyn-filter)
-                                       :prev-closure-fn      (occ-obj-build-helm-command #'(lambda ()
-                                                                                             (let ((prev (occ-dyn-filter-prev curr-dyn-filter)))
-                                                                                               (if prev
-                                                                                                   (progn
-                                                                                                     (occ-message "Setting prev %s" (occ-obj-name prev))
-                                                                                                     (push curr-dyn-filter stack)
-                                                                                                     (setf curr-dyn-filter prev))
-                                                                                                 (ding t)
-                                                                                                 (occ-message "No prev")))))
-                                       :next-closure-fn      (occ-obj-build-helm-command #'(lambda ()
-                                                                                             (if stack
-                                                                                                 (let ((next (pop stack)))
-                                                                                                   (occ-message "Setting next %s" (occ-obj-name next))
-                                                                                                   ;; regenerate points, default-pivot, pivot.
-                                                                                                   (occ-obj-dyn-filter-init next)
-                                                                                                   (setf curr-dyn-filter next))
-                                                                                               (ding t)
-                                                                                               (occ-message "No next"))))
+                                       :prev-closure-fn      #'(lambda ()
+                                                                 (let ((prev (occ-dyn-filter-prev curr-dyn-filter)))
+                                                                   (if prev
+                                                                       (progn
+                                                                         (occ-message "Setting prev %s" (occ-obj-name prev))
+                                                                         (push curr-dyn-filter stack)
+                                                                         (setf curr-dyn-filter prev))
+                                                                     (ding t)
+                                                                     (occ-message "No prev"))))
+                                       :next-closure-fn      #'(lambda ()
+                                                                 (if stack
+                                                                     (let ((next (pop stack)))
+                                                                       (occ-message "Setting next %s" (occ-obj-name next))
+                                                                       ;; regenerate points, default-pivot, pivot.
+                                                                       (occ-obj-dyn-filter-init next)
+                                                                       (setf curr-dyn-filter next))
+                                                                   (ding t)
+                                                                   (occ-message "No next")))
                                        :seq-closure-fn       #'(lambda ()
                                                                  (occ-assert curr-dyn-filter)
                                                                  (occ-obj-dyn-filter-seq curr-dyn-filter))
                                        :filter-closure-fn    #'(lambda () (occ-obj-dyn-filter-filter  curr-dyn-filter))
-                                       :increment-closure-fn (occ-obj-build-helm-command #'(lambda () (occ-obj-dyn-filter-increment curr-dyn-filter)))
-                                       :decrement-closure-fn (occ-obj-build-helm-command #'(lambda () (occ-obj-dyn-filter-decrement curr-dyn-filter)))
-                                       :reset-closure-fn     (occ-obj-build-helm-command #'(lambda () (occ-obj-dyn-filter-reset curr-dyn-filter))))))
+                                       :increment-closure-fn #'(lambda () (occ-obj-dyn-filter-increment curr-dyn-filter))
+                                       :decrement-closure-fn #'(lambda () (occ-obj-dyn-filter-decrement curr-dyn-filter))
+                                       :reset-closure-fn     #'(lambda () (occ-obj-dyn-filter-reset curr-dyn-filter)))))
 
 ;;; occ-filter-base.el ends here

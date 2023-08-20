@@ -233,7 +233,7 @@
 
 (cl-defmethod occ-obj-helm-build-real-collection-source ((obj        occ-ctx)
                                                          (collection occ-obj-collection) ;; (nth 0 (occ-collections-default))
-                                                         combined-dyn-filter
+                                                         (combined-dyn-filter occ-combined-dyn-filter)
                                                          &key
                                                          filters
                                                          builder
@@ -259,9 +259,7 @@
                                                                              unfiltered-count
                                                                              filtered-count
                                                                              :prompt prompt))
-              (gen-candidate-lambda #'(lambda ()
-                                        (mapcar #'occ-obj-candidate
-                                                (occ-obj-dyn-filter-filter combined-dyn-filter))))
+              (gen-candidate-lambda (occ-obj-dyn-filter-filter-closure-fn combined-dyn-filter))
               (h-map            (occ-obj-build-helm-map combined-dyn-filter)))
               ;; (helm-get-current-source)
           (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
@@ -278,6 +276,26 @@
               :action-transformer             helm-transfm
               :filtered-candidate-transformer nil ;; (lambda (candidates source) candidates)
               :history                        'org-refile-history)))))))
+
+(cl-defmethod occ-obj-helmify ((combined-dyn-filter occ-combined-dyn-filter))
+  (cl-flet ((occ-obj-build-helm-command-closure-fn (closure-fn)
+                                                   #'(lambda ()
+                                                       (interactive)
+                                                       (funcall closure-fn)
+                                                       (helm-refresh)))
+            (occ-obj-build-helm-candidate-closure-fn (closure-fn)
+                                                     #'(lambda ()
+                                                         (mapcar #'occ-obj-candidate
+                                                                 (funcall closure-fn)))))
+    (occ-obj-build-combined-dyn-filter (occ-obj-name combined-dyn-filter)
+                                       :curr-closure-fn      (occ-combined-dyn-filter-curr-closure-fn combined-dyn-filter)
+                                       :prev-closure-fn      (occ-obj-build-helm-command-closure-fn (occ-combined-dyn-filter-prev-closure-fn combined-dyn-filter))
+                                       :next-closure-fn      (occ-obj-build-helm-command-closure-fn (occ-combined-dyn-filter-next-closure-fn combined-dyn-filter))
+                                       :seq-closure-fn       (occ-combined-dyn-filter-seq-closure-fn  combined-dyn-filter)
+                                       :filter-closure-fn    (occ-obj-build-helm-candidate-closure-fn (occ-combined-dyn-filter-filter-closure-fn combined-dyn-filter))
+                                       :increment-closure-fn (occ-obj-build-helm-command-closure-fn (occ-combined-dyn-filter-increment-closure-fn combined-dyn-filter))
+                                       :decrement-closure-fn (occ-obj-build-helm-command-closure-fn (occ-combined-dyn-filter-decrement-closure-fn combined-dyn-filter))
+                                       :reset-closure-fn     (occ-obj-build-helm-command-closure-fn (occ-combined-dyn-filter-reset-closure-fn combined-dyn-filter)))))
 
 ;; * Dynamic Match based templates
 ;; https://kitchingroup.cheme.cmu.edu/blog/2016/01/24/Modern-use-of-helm-sortable-candidates/
@@ -327,7 +345,7 @@ select candidate from it."
                                     :level level)
         (let ((source (occ-obj-helm-build-real-collection-source obj
                                                                  collection ;; (nth 0 (occ-collections-default))
-                                                                 combined-dyn-filter
+                                                                 (occ-obj-helmify combined-dyn-filter)
                                                                  :filters filters
                                                                  :builder builder
                                                                  :ap-normal ap-normal
