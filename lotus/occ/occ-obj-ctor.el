@@ -203,7 +203,6 @@
                               file)
   ;; (occ-debug "occ-make-tsk-at-point: Builder %s" builder)
   (let ((builder (occ-obj-tsk-builder collection))
-        ;; (tsk                      nil)
         (heading-with-string-prop (if (org-before-first-heading-p)
                                       'noheading
                                     (org-get-heading 'notags))))
@@ -228,7 +227,7 @@
           ;; NOTE also these two are mixed in one list only
           (tsk-plist    (nth 1 (org-element-at-point))))
       (occ-assert (cl-evenp (length tsk-plist)))
-      (let ((tsk (funcall builder
+      (let ((tsk (funcall builder       ; build = make-occ-tree-tsk, make-occ-list-tsk
                           ;; (occ-obj-intf-from-org) from Org world to Occ world.
                           :name         (occ-obj-intf-from-org 'name heading)
                           :dummy        (if file :file nil)
@@ -266,9 +265,6 @@
                                          file)
   (occ-obj-make-tsk-at-point (occ-obj-collection tsk)
                              file))
-;; file - string open it and goto to point-min
-;; marker -- got to marker
-;; nil -- pass to current marker
 
 
 (cl-defmethod occ-obj-tsk-builder-at-point ((collection occ-obj-collection))
