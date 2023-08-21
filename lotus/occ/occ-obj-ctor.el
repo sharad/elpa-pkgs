@@ -199,6 +199,10 @@
   builder)
 
 
+(defun occ-obj-org-entry-tsk-p (org-element)
+  "Check if or entry qualify to be a Task"
+  t)
+
 (defun occ-make-tsk-at-point (collection
                               file)
   ;; (occ-debug "occ-make-tsk-at-point: Builder %s" builder)
@@ -227,36 +231,37 @@
           ;; NOTE also these two are mixed in one list only
           (tsk-plist    (nth 1 (org-element-at-point))))
       (occ-assert (cl-evenp (length tsk-plist)))
-      (let ((tsk (funcall builder       ; build = make-occ-tree-tsk, make-occ-list-tsk
-                          ;; (occ-obj-intf-from-org) from Org world to Occ world.
-                          :name         (occ-obj-intf-from-org 'name heading)
-                          :dummy        (if file :file nil)
-                          :collection   collection
-                          :parent       nil
-                          :action       nil
-                          :heading      (occ-obj-intf-from-org 'heading heading)
-                          :heading-prop (occ-obj-intf-from-org 'heading-prop heading-prop)
-                          :marker       (occ-obj-intf-from-org 'marker marker)
-                          :file         (occ-obj-intf-from-org 'file file-name)
-                          :point        (occ-obj-intf-from-org 'point point)
-                          :clock-sum    (occ-obj-intf-from-org 'clock-sum clock-sum)
-                          :cat          (occ-obj-intf-from-org 'cat (occ-get-tsk-category heading tsk-plist))
-                          :plist        (occ-tsk-plist-from-org tsk-plist))))
-        (let ((inherit         t)
-              (inherited-props
-               ;; is it correct ? - guess it is ok and correct.
-               (occ-readprop-props)))
-          (dolist (prop inherited-props)
-            (let* ((propstr (if (keywordp prop)
-                                (substring (symbol-name prop) 1)
-                              (symbol-name prop)))
-                   (val (org-entry-get nil propstr inherit)))
-              (unless (occ-obj-get-property tsk prop)
-                ;; What is the solution
-                (occ-obj-set-property tsk prop val :not-recursive t)))))
-        (progn "set :plist here")
-        (occ-obj-reread-props tsk)      ;reset list properties
-        tsk))))
+      (when (occ-obj-org-entry-tsk-p tsk-plist)
+        (let ((tsk (funcall builder       ; build = make-occ-tree-tsk, make-occ-list-tsk
+                            ;; (occ-obj-intf-from-org) from Org world to Occ world.
+                            :name         (occ-obj-intf-from-org 'name heading)
+                            :dummy        (if file :file nil)
+                            :collection   collection
+                            :parent       nil
+                            :action       nil
+                            :heading      (occ-obj-intf-from-org 'heading heading)
+                            :heading-prop (occ-obj-intf-from-org 'heading-prop heading-prop)
+                            :marker       (occ-obj-intf-from-org 'marker marker)
+                            :file         (occ-obj-intf-from-org 'file file-name)
+                            :point        (occ-obj-intf-from-org 'point point)
+                            :clock-sum    (occ-obj-intf-from-org 'clock-sum clock-sum)
+                            :cat          (occ-obj-intf-from-org 'cat (occ-get-tsk-category heading tsk-plist))
+                            :plist        (occ-tsk-plist-from-org tsk-plist))))
+          (let ((inherit         t)
+                (inherited-props
+                 ;; is it correct ? - guess it is ok and correct.
+                 (occ-readprop-props)))
+            (dolist (prop inherited-props)
+              (let* ((propstr (if (keywordp prop)
+                                  (substring (symbol-name prop) 1)
+                                (symbol-name prop)))
+                     (val (org-entry-get nil propstr inherit)))
+                (unless (occ-obj-get-property tsk prop)
+                  ;; What is the solution
+                  (occ-obj-set-property tsk prop val :not-recursive t)))))
+          (progn "set :plist here")
+          (occ-obj-reread-props tsk)      ;reset list properties
+          tsk)))))
 (cl-defmethod occ-obj-make-tsk-at-point ((collection occ-obj-collection)
                                          file)
   (occ-make-tsk-at-point (occ-obj-collection collection)
