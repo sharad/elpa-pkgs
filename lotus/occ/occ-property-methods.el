@@ -309,7 +309,7 @@
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
   (ignore prop)
   (let ((file (occ-ctx-file ctx)))
-      file))
+    file))
 
 ;; Git branch property of task:1 ends here
 
