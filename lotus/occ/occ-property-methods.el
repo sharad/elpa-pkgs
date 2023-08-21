@@ -308,8 +308,10 @@
                                 (arg null))
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
   (ignore prop)
-  (let ((file (occ-ctx-file ctx)))
-    file))
+  (let ((buff (occ-ctx-buffer ctx)))
+    (when buff
+     (with-current-buffer buff
+       (magit-get-current-branch)))))
 
 ;; Git branch property of task:1 ends here
 
