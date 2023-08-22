@@ -64,8 +64,8 @@
     (if (occ-obj-intf-list-p prop)
         (member value tsk-prop-value)
       (equal value tsk-prop-value))))
-(cl-defmethod occ-obj-impl-get ((obj occ-ctx
-                                               (prop (eql _template1_))))
+(cl-defmethod occ-obj-impl-get ((obj occ-ctx)
+                                (prop (eql _template1_)))
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
 
 (cl-defmethod occ-obj-impl-format ((obj occ-obj-tsk)

@@ -301,31 +301,6 @@
 
 ;; Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time:1 ends here
 
-;; Git branch property of task
-
-;; [[file:occ-property-methods.org::*Git branch property of task][Git branch property of task:1]]
-;;{{ git-branch
-(cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
-                                (prop (eql dir-git-branch))
-                                (arg null))
-  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
-  (ignore prop)
-  (let ((buff (occ-ctx-buffer ctx)))
-    (when buff
-     (with-current-buffer buff
-       (magit-get-current-branch)))))
-
-(cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
-                                    (prop (eql dir-git-branch)))
-  (let* ((tsk        (occ-obj-tsk      obj))
-         (files      (occ-obj-get-property tsk prop))
-         (first-file (cl-first files)))
-    (if first-file
-        (find-file first-file)
-      (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" first-file prop))))
-
-
-;; Git branch property of task:1 ends here
 
 ;; STATUS property of task
 
@@ -401,6 +376,199 @@
 ;;}}
 
 ;; SubtreeFile property of task:1 ends here
+
+
+
+;; Git branch property of task
+
+;; [[file:occ-property-methods.org::*Git branch property of task][Git branch property of task:1]]
+;;{{ git-branch
+(cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
+                                (prop (eql git-branch))
+                                (arg null))
+  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
+  (ignore prop)
+  (let ((buff (occ-ctx-buffer ctx)))
+    (when buff
+     (with-current-buffer buff
+       (magit-get-current-branch)))))
+(cl-defmethod occ-obj-impl-get ((user occ-user-agent)
+                                (prop (eql git-branch))
+                                (obj occ-tsk))
+  "Read value of list of elements if (occ-obj-intf-list-p PROPERTY)
+        else element for property PROPERTY from user for OCC-TSK OBJ,
+        must return ORG compatible value."
+  (magit-read-branch "Git branch"))
+
+(cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
+                                    (prop (eql git-branch)))
+  (let* ((tsk        (occ-obj-tsk      obj))
+         (rootdir    (occ-obj-get-property tsk 'root))
+         (git-branch      (occ-obj-get-property tsk prop)))
+    (if (and rootdir
+             git-branch)
+        (progn
+          (occ-message "branch %s" git-branch)
+          (magit-checkout git-branch))
+      (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" first-file prop))))
+
+(cl-defmethod occ-obj-impl-rank ((obj occ-obj-ctx-tsk)
+                                 (prop (eql git-branch)))
+  "Return the RANK (number) for OCC-TSK based on the property GIT-BRANCH"
+  (let ((tsk (occ-obj-tsk obj))
+        (ctx (occ-obj-ctx obj)))
+    (let ((ctx-branch (occ-obj-impl-get ctx prop nil))
+          (tsk-branch (occ-obj-get-property tsk prop)))
+      (if (and (and ctx-branch
+                    tsk-branch)
+               (string= ctx-branch
+                        tsk-branch))
+          100
+        0))))
+(cl-defmethod occ-obj-impl-has-p ((obj occ-obj-tsk)
+                                  (prop (eql git-branch))
+                                  value)
+  "OBJ has property PROPERTY"
+  (let* ((tsk            (occ-obj-tsk obj))
+         (tsk-prop-value (occ-obj-get-property tsk prop)))
+    (if (and value tsk-prop-value)
+        (string= value tsk-prop-value))))
+
+(cl-defmethod occ-obj-impl-format ((obj occ-obj-tsk)
+                                   (prop (eql git-branch))
+                                   value)
+  "Return format printable value of property PROPERTY."
+  value)
+(cl-defmethod occ-obj-impl-list-p ((prop (eql git-branch)))
+  "Is the property GIT-BRANCH has VALUES in list, Method tell
+         property represent list or not."
+  nil)
+(cl-defmethod occ-obj-impl-to-org ((prop (eql git-branch))
+                                   value)
+  "Return string representation for property GIT-BRANCH, Method
+      convert value VALUE of property PROPERTY from occ to org string
+      representation."
+  (format "%s" value))
+(cl-defmethod occ-obj-org-from-imp ((prop (eql git-branch))
+                                     value)
+  "Return the Actual Object representation for property
+      GIT-BRANCH, Method convert value VALUE of property PROPERTY from
+      org string to occ representation."
+  (unless (string= value "")
+    value))
+(cl-defmethod occ-obj-impl-require-p ((obj occ-obj-tsk)
+                                      (operation (eql _operation_))
+                                      (prop (eql git-branch))
+                                      values)
+  "Used by OCC-OBJ-GEN-EDIT-IF-REQUIRED to decide for this property
+      GIT-BRANCH if CALLABLE (helm method) should be generated."
+  nil)
+(cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
+                                    (prop (eql git-branch))
+                                    (operation (eql _operation_)))
+  "Return a default VALUE of property GIT-BRANCH.")
+(cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
+                                    (prop (eql git-branch))
+                                    (operation (eql _operation_)))
+  "Return a default VALUE of property GIT-BRANCH.")
+(cl-defmethod occ-do-impl-operation ((obj occ-obj-tsk)
+                                     (operation (eql _operation_))
+                                     (prop (eql git-branch))
+                                     values)
+  "Do the actual _OPERATION_.")
+
+;; Git branch property of task:1 ends here
+
+
+;; _template1_ property of task
+
+;; [[file:occ-property-methods.org::*_template1_ property of task][_template1_ property of task:1]]
+;;{{ git-branch
+(cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
+                                (prop (eql _template1_))
+                                (arg null))
+  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
+  (ignore prop)
+  (let ((buff (occ-ctx-buffer ctx)))
+    (when buff
+     (with-current-buffer buff
+       (magit-get-current-branch)))))
+
+(cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
+                                    (prop (eql _template1_)))
+  (let* ((tsk        (occ-obj-tsk      obj))
+         (files      (occ-obj-get-property tsk prop))
+         (first-file (cl-first files)))
+    (if first-file
+        (find-file first-file)
+      (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" first-file prop))))
+
+(cl-defmethod occ-obj-impl-rank ((obj occ-obj-ctx-tsk)
+                                 (prop (eql _template1_)))
+  "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE1_")
+(cl-defmethod occ-obj-impl-has-p ((obj occ-obj-tsk)
+                                  (prop (eql _template1_))
+                                  value)
+  "OBJ has property PROPERTY"
+  (let* ((tsk            (occ-obj-tsk obj))
+         (tsk-prop-value (occ-obj-get-property tsk prop)))
+    (if (occ-obj-intf-list-p prop)
+        (member value tsk-prop-value)
+      (equal value tsk-prop-value))))
+(cl-defmethod occ-obj-impl-get ((obj occ-ctx)
+                                (prop (eql _template1_)))
+  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
+
+(cl-defmethod occ-obj-impl-format ((obj occ-obj-tsk)
+                                   (property symbol)
+                                   value)
+  "Return format printable value of property PROPERTY."
+  value)
+(cl-defmethod occ-obj-impl-list-p ((prop (eql _template1_)))
+  "Is the property _TEMPLATE1_ has VALUES in list, Method tell
+         property represent list or not.")
+(cl-defmethod occ-obj-impl-to-org ((prop (eql _template1_))
+                                   value)
+  "Return string representation for property _TEMPLATE1_, Method
+      convert value VALUE of property PROPERTY from occ to org string
+      representation.")
+(cl-defmethod occ-obj-impl-from-org ((prop (eql _template1_))
+                                     value)
+  "Return the Actual Object representation for property
+      _TEMPLATE1_, Method convert value VALUE of property PROPERTY from
+      org string to occ representation.")
+(cl-defmethod occ-obj-impl-get ((user occ-user-agent)
+                                (prop (eql _template1_))
+                                (obj occ-tsk))
+  "Read value of list of elements if (occ-obj-intf-list-p PROPERTY)
+        else element for property PROPERTY from user for OCC-TSK OBJ,
+        must return ORG compatible value.")
+(cl-defmethod occ-obj-impl-require-p ((obj occ-obj-tsk)
+                                      (operation (eql _operation_))
+                                      (prop (eql _template1_))
+                                      values)
+  "Used by OCC-OBJ-GEN-EDIT-IF-REQUIRED to decide for this property
+      _TEMPLATE1_ if CALLABLE (helm method) should be generated.")
+(cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
+                                    (prop (eql _template1_))
+                                    (operation (eql _operation_)))
+  "Return a default VALUE of property _TEMPLATE1_.")
+(cl-defmethod occ-do-impl-operation ((obj occ-obj-tsk)
+                                     (operation (eql _operation_))
+                                     (prop (eql _template1_))
+                                     values)
+  "Do the actual _OPERATION_.")
+(cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
+                                    (prop (eql _template1_)))
+  "Checkout property _TEMPLATE1_ in case of force clock-in.")
+(cl-defmethod occ-obj-impl-list-p ((prop (eql _template2_)))
+  "Is the property _TEMPLATE2_ has VALUES in list, Method tell
+         property represent list or not."
+  nil)
+
+;; _template1_ property of task:1 ends here
+
+
 
 ;; File Ends Here
 

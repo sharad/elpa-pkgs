@@ -272,6 +272,7 @@
     (occ-do-add-ineq 'currfile  "nil > status")
     (occ-do-add-ineq 'timebeing  "nil > currfile")
     (occ-do-add-ineq-internal 'current-clock  '(> current-clock timebeing))
+    (occ-do-add-ineq-internal 'git-branch  '(> git-branch root))
     (occ-do-set-prop-priorities))
   ;; newly added
   ;; (org-clock-load) ;; is getting struck
