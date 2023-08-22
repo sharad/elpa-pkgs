@@ -39,6 +39,7 @@
 (require 'occ-obj-accessor)
 (require 'occ-debug-method)
 (require 'occ-prop-intf)
+(require 'occ-rank)
 (require 'occ-intf)
 
 ;; * Required libraries:1 ends here
@@ -69,8 +70,8 @@
                      tsk-currfile))
         (if (and tsk-currfile ctx-file
                  (string= tsk-currfile ctx-file))
-            100     ;Obsolete: as exact match to files giving double matching points.
-          0)))))
+            (occ-rank-percentage 100)     ;Obsolete: as exact match to files giving double matching points.
+          (occ-rank-percentage 0))))))
 
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
                                 (prop (eql currfile))
@@ -148,8 +149,8 @@
                      (occ-obj-format tsk 'capitalize) tsk-root))
         (if (and tsk-root ctx-dir
                  (string= tsk-root ctx-dir))
-            100
-          0)))))
+            (occ-rank-percentage 100)
+          (occ-rank-percentage 0))))))
 
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
                                 (prop (eql root))
@@ -208,17 +209,17 @@
                                          'timebeing)))
         (let ((timebeing-time (if timebeing
                                   (org-duration-to-minutes timebeing)
-                                0))
+                                (occ-rank-percentage 0)))
               (clocked-time   (occ-obj-get-property tsk
                                                 'clock-sum)))
           (if (and (numberp clocked-time)
                    (numberp timebeing-time)
                    (> timebeing-time clocked-time))
-              (/ (* 100
+              (/ (* (occ-rank-percentage 100)
                   (- timebeing-time
                    clocked-time))
                  timebeing-time)
-            0)))))
+            (occ-rank-percentage 0))))))
 
 (cl-defmethod occ-obj-impl-list-p ((prop (eql timebeing)))
   (ignore prop)
@@ -315,8 +316,8 @@
     (if (or closed
             (eql todo-type 'done)
             (string= status "HOLD"))
-        -100
-      0)))
+        -(occ-rank-percentage 100)
+      (occ-rank-percentage 0))))
 
 ;; STATUS property of task:1 ends here
 
@@ -330,10 +331,10 @@
   (let* ((key (occ-obj-get-property obj 'KEY)))
       (if key
           (let ((nkey (string-to-number key)))
-            (if (> nkey 100)
-                100
+            (if (> nkey (occ-rank-percentage 100))
+                (occ-rank-percentage 100)
               nkey))
-        0)))
+        (occ-rank-percentage 0))))
 
 ;; Key property of task for setting arbitrary rank:1 ends here
 
@@ -347,8 +348,8 @@
     (ignore tsk-marker)
     (if (and org-clock-marker
              (occ-obj-marker= obj org-clock-marker))
-        100
-      0)))
+        (occ-rank-percentage 100)
+      (occ-rank-percentage 0))))
 
 ;; Current clock status property of task (will rank based on task is currently clocking-in or not):1 ends here
 
@@ -423,8 +424,8 @@
                     tsk-branch)
                (string= ctx-branch
                         tsk-branch))
-          100
-        0))))
+          (occ-rank-percentage 100)
+        (occ-rank-percentage 0)))))
 (cl-defmethod occ-obj-impl-has-p ((obj occ-obj-tsk)
                                   (prop (eql git-branch))
                                   value)
@@ -449,8 +450,8 @@
       convert value VALUE of property PROPERTY from occ to org string
       representation."
   (format "%s" value))
-(cl-defmethod occ-obj-org-from-imp ((prop (eql git-branch))
-                                     value)
+(cl-defmethod occ-obj-org-from-imp ((prop (eql git-branch)
+                                     value))
   "Return the Actual Object representation for property
       GIT-BRANCH, Method convert value VALUE of property PROPERTY from
       org string to occ representation."

@@ -201,6 +201,19 @@
   (occ-reset-collection-object (occ-collector-default-key)))
 
 
+(defun occ-do-priority-initialize ()
+  ;; (occ-obj-properties-for-rank)
+  ;; (current-clock key status timebeing root currfile)
+  (occ-do-add-ineq 'root "nil > (key + 20)")
+  (occ-do-add-ineq 'key "nil > 10")
+  (occ-do-add-ineq 'status  "nil > 2 * root")
+  (occ-do-add-ineq 'currfile  "nil > status")
+  (occ-do-add-ineq 'timebeing  "nil > currfile")
+  (occ-do-add-ineq-internal 'current-clock  '(> current-clock timebeing))
+  (occ-do-add-ineq-internal 'git-branch  '(> git-branch root))
+  (occ-do-set-prop-priorities))
+
+
 (defun occ-initialize-hooks (key)
   (let ((spec (occ-collector-spec key)))
     (when (and spec
@@ -263,17 +276,7 @@
           (occ-error "Not able to start occ")
           nil))))
 
-  (progn
-    ;; (occ-obj-properties-for-rank)
-    ;; (current-clock key status timebeing root currfile)
-    (occ-do-add-ineq 'root "nil > (key + 20)")
-    (occ-do-add-ineq 'key "nil > 10")
-    (occ-do-add-ineq 'status  "nil > 2 * root")
-    (occ-do-add-ineq 'currfile  "nil > status")
-    (occ-do-add-ineq 'timebeing  "nil > currfile")
-    (occ-do-add-ineq-internal 'current-clock  '(> current-clock timebeing))
-    (occ-do-add-ineq-internal 'git-branch  '(> git-branch root))
-    (occ-do-set-prop-priorities))
+  (occ-do-priority-initialize)
   ;; newly added
   ;; (org-clock-load) ;; is getting struck
   (run-with-idle-timer 3 nil #'org-clock-load))

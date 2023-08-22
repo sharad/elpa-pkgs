@@ -36,6 +36,14 @@
 
 ;; TODO: graded ranking where ranking will be under priority of properties, where one can not go beyond above one, normally
 
+(defvar occ-rank-max-range 100)
+(defvar occ-rank-quanta 1)
+
+
+(defun occ-rank-percentage (num)
+  num)
+
+
 (cl-defgeneric occ-obj-calculate-rank (obj)
   "occ-obj-rank")
 
@@ -48,12 +56,13 @@
                (occ-obj-Format (occ-obj-tsk obj)))
   (occ-debug "occ-obj-calculate-rank(obj occ-tsk) %s" (occ-obj-properties-to-calculate-rank obj))
   (let* ((properties (occ-obj-properties-to-calculate-rank obj))
-         (rank       (cl-reduce #'+
-                                (mapcar #'(lambda (slot)
-                                            (let ((prop (downcase-sym slot)))
-                                              (occ-obj-priority-rank obj
-                                                                     prop)))
-                                        properties))))
+         (rank       (/ (cl-reduce #'+
+                                 (mapcar #'(lambda (slot)
+                                             (let ((prop (downcase-sym slot)))
+                                               (occ-obj-priority-rank obj
+                                                                      prop)))
+                                         properties))
+                        occ-rank-quanta)))
     ;; (occ-debug "occ-obj-calculate-rank(obj occ-tsk): rank = %d" rank)
     rank))
 
@@ -68,12 +77,13 @@
     (ignore tsk)
     (ignore ctx)
     (let* ((properties (occ-obj-properties-to-calculate-rank obj))
-           (rank       (cl-reduce #'+
-                                  (mapcar #'(lambda (slot)
-                                              (let ((prop (downcase-sym slot)))
-                                                (occ-obj-priority-rank obj
-                                                                       prop)))
-                                          properties))))
+           (rank       (/ (cl-reduce #'+
+                                   (mapcar #'(lambda (slot)
+                                               (let ((prop (downcase-sym slot)))
+                                                 (occ-obj-priority-rank obj
+                                                                        prop)))
+                                           properties))
+                          occ-rank-quanta)))
       (occ-debug "occ-obj-calculate-rank(obj occ-obj-ctx-tsk): rank = %d" rank)
       rank)))
 

@@ -306,6 +306,8 @@
   (setq occ-property-priorities (occ-obj-ineq-map-solution occ-property-priority-inequalities)))
 
 
+
+
 ;; (occ-do-add-ineq-1 "nil > (key + 20)" 'root)
 ;; (occ-do-add-ineq-1 "nil > (key + status + 2)" 'root)
 ;; (occ-do-add-ineq-1 "nil > (key * status + 2)" 'root)
