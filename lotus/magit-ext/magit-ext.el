@@ -24,6 +24,9 @@
 
 ;;; Code:
 
+(provide 'magit-ext)
+
+
 (defun magit-commit-amend-noedit ()
   "Magit commit amend without editing."
   (interactive)
@@ -49,6 +52,5 @@
      (user-error "No branch is checked out")))
   (progn (magit-commit-amend-noedit)
          (magit-push-current-force target args)))
-
-(provide 'magit-ext)
+
 ;;; magit-ext.el ends here
