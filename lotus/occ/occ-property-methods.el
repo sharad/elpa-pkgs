@@ -443,7 +443,7 @@
 (cl-defmethod occ-obj-impl-list-p ((prop (eql git-branch)))
   "Is the property GIT-BRANCH has VALUES in list, Method tell
          property represent list or not."
-  nil)
+  t)
 (cl-defmethod occ-obj-impl-to-org ((prop (eql git-branch))
                                    value)
   "Return string representation for property GIT-BRANCH, Method
@@ -467,16 +467,19 @@
 (cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
                                     (prop (eql git-branch))
                                     (operation (eql _operation_)))
-  "Return a default VALUE of property GIT-BRANCH.")
+  "Return a default VALUE of property GIT-BRANCH."
+  nil)
 (cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
                                     (prop (eql git-branch))
                                     (operation (eql _operation_)))
-  "Return a default VALUE of property GIT-BRANCH.")
+  "Return a default VALUE of property GIT-BRANCH."
+  nil)
 (cl-defmethod occ-do-impl-operation ((obj occ-obj-tsk)
                                      (operation (eql _operation_))
                                      (prop (eql git-branch))
                                      values)
-  "Do the actual _OPERATION_.")
+  "Do the actual _OPERATION_."
+  nil)
 
 ;; Git branch property of task:1 ends here
 
