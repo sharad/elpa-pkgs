@@ -20,7 +20,9 @@
 
 ;;; Commentary:
 
-;;
+;; fmsession = frame + elscreen
+;; centaur-tabs < awasome tabs
+;; tab-line-mode
 
 ;;; Code:
 

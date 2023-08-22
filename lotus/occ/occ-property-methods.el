@@ -69,7 +69,7 @@
                      tsk-currfile))
         (if (and tsk-currfile ctx-file
                  (string= tsk-currfile ctx-file))
-            (* 2 (length tsk-currfile))     ;as exact match to files giving double matching points.
+            100     ;Obsolete: as exact match to files giving double matching points.
           0)))))
 
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
@@ -147,8 +147,8 @@
           (occ-nodisplay "tsk %s tsk-root %s not present."
                      (occ-obj-format tsk 'capitalize) tsk-root))
         (if (and tsk-root ctx-dir
-                 (string-match tsk-root ctx-dir))
-            (length tsk-root)
+                 (string= tsk-root ctx-dir))
+            100
           0)))))
 
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
@@ -214,8 +214,10 @@
           (if (and (numberp clocked-time)
                    (numberp timebeing-time)
                    (> timebeing-time clocked-time))
-              (- timebeing-time
-                 clocked-time)
+              (/ (* 100
+                  (- timebeing-time
+                   clocked-time))
+                 timebeing-time)
             0)))))
 
 (cl-defmethod occ-obj-impl-list-p ((prop (eql timebeing)))
@@ -304,7 +306,7 @@
 ;; [[file:occ-property-methods.org::*Git branch property of task][Git branch property of task:1]]
 ;;{{ git-branch
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
-                                (prop (eql git-branch))
+                                (prop (eql dir-git-branch))
                                 (arg null))
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
   (ignore prop)
@@ -312,6 +314,16 @@
     (when buff
      (with-current-buffer buff
        (magit-get-current-branch)))))
+
+(cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
+                                    (prop (eql dir-git-branch)))
+  (let* ((tsk        (occ-obj-tsk      obj))
+         (files      (occ-obj-get-property tsk prop))
+         (first-file (cl-first files)))
+    (if first-file
+        (find-file first-file)
+      (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" first-file prop))))
+
 
 ;; Git branch property of task:1 ends here
 
@@ -328,7 +340,8 @@
     (if (or closed
             (eql todo-type 'done)
             (string= status "HOLD"))
-        -30 0)))
+        -100
+      0)))
 
 ;; STATUS property of task:1 ends here
 
@@ -340,7 +353,12 @@
   "Predicate funtion to check if ctx matches to tsk's file attribute."
   (ignore prop)
   (let* ((key (occ-obj-get-property obj 'KEY)))
-      (if key (string-to-number key) 0)))
+      (if key
+          (let ((nkey (string-to-number key)))
+            (if (> nkey 100)
+                100
+              nkey))
+        0)))
 
 ;; Key property of task for setting arbitrary rank:1 ends here
 
@@ -389,3 +407,4 @@
 ;; [[file:occ-property-methods.org::*File Ends Here][File Ends Here:1]]
 ;;; occ-property-methods.el ends here
 ;; File Ends Here:1 ends here
+

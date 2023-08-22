@@ -265,6 +265,9 @@ pointing to it."
             (when rank (format "[c%5d] " (or (occ-obj-rank obj) -128)))
             ;; (occ-obj-format tsk case rank no-curr-clock no-propterties)
             (format "%s" (occ-obj-format tsk case rank no-curr-clock no-propterties))
+
+            ;; https://orgmode.org/worg/doc.html#hooks
+
             ;; (unless no-curr-clock
             ;;   (when (occ-obj-current-p obj) "          🕑"))
             )))
