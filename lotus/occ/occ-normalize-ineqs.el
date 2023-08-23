@@ -120,7 +120,6 @@
                (ineq (reinstate-op-char ineq "_" expo-marker)))
           ineq)))))
 ;; (occ-math-read-str-expr "current-clock > time_being")
-
 (defun occ-obj-math-read-expr (ineq)
   "Return normalized calc math expression."
   (calc-normalize (cond ((stringp ineq) (occ-math-read-str-expr ineq)) ;; (math-read-expr ineq)
@@ -264,8 +263,9 @@
                                              occ-property-priority-inequalities)))))
       (let ((eqs (occ-obj-ineqs2eqs (append (occ-obj-ineqs-from-map (assoc-delete-all property
                                                                                       occ-property-priority-inequalities))
-                                            (cons ineq (cdr (assoc property
-                                                                   occ-property-priority-inequalities))))))
+                                            (cons ineq
+                                                  (cdr (assoc property
+                                                              occ-property-priority-inequalities))))))
             (vars (occ-obj-vars-from-syms (delete-dups (cons property
                                                              (mapcar #'car
                                                                      occ-property-priority-inequalities))))))
