@@ -78,9 +78,10 @@
                                 (arg null))
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
   (ignore prop)
-  (occ-debug "calling occ-obj-impl-get(ctx occ-ctx)"
-    (let ((currfile (occ-ctx-file ctx)))
-      currfile)))
+  (occ-debug "calling occ-obj-impl-get(ctx occ-ctx)")
+  (let ((currfile (occ-ctx-file ctx)))
+    ;; (occ-message "currfile %s" currfile)
+    currfile))
 
 (cl-defmethod occ-obj-impl-list-p ((prop (eql currfile)))
   (ignore prop)
@@ -390,12 +391,15 @@
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
   (ignore prop)
   (let ((buff (occ-ctx-buffer ctx)))
+    (occ-message "occ-obj-impl-get: git-branch: buff = %s" buff)
     (when buff
-     (with-current-buffer buff
-       (magit-get-current-branch)))))
+      (with-current-buffer buff
+        (let ((branch (magit-get-current-branch)))
+          (occ-message "occ-obj-impl-get: branch = %s" branch)
+          branch)))))
 (cl-defmethod occ-obj-impl-get ((user occ-user-agent)
                                 (prop (eql git-branch))
-                                (obj occ-tsk))
+                                (obj occ-obj-ctx-tsk))
   "Read value of list of elements if (occ-obj-intf-list-p PROPERTY)
         else element for property PROPERTY from user for OCC-TSK OBJ,
         must return ORG compatible value."
