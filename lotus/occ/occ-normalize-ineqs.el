@@ -100,7 +100,8 @@
   (let ((replace-op-alist '(("-" . "XXXMINUSXXX")
                             ("_" . "XXXEXPOXXX"))))
     (cl-labels ((replace-op-char (str op-char op-replacement)
-                                 (let ((rstr (replace-regexp-in-string (concat "[[:alpha:]]\+[[:alnum:]]\*\\(" op-char "\\)[[:alpha:]]\+[[:alnum:]]\*") op-replacement str nil nil 1)))
+                                 (let* ((op-regex (concat "[[:alpha:]]\+[[:alnum:]]\*\\(" op-char "\\)[[:alpha:]]\+[[:alnum:]]\*"))
+                                        (rstr     (replace-regexp-in-string op-regex op-replacement str nil nil 1)))
                                    (if (string= rstr str)
                                        str
                                      (replace-op-char rstr op-char op-replacement))))
