@@ -131,7 +131,8 @@
 (cl-defmethod occ-do-add-ineq ((property symbol)
                                (ineq string))
   "Add ineq for property PROPERTY."
-  (occ-do-add-ineq-internal property ineq))
+  (occ-do-add-ineq-internal property
+                            ineq))
 
 (cl-defgeneric occ-obj-ineq (property)
   "Add ineq for property PROPERTY.")

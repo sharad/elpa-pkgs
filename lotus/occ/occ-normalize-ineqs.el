@@ -83,34 +83,54 @@
         ((listp ineq)
          (cl-some #'(lambda (e) (occ-do-assert-math-ineq-has-prop-p e property)) ineq))))
 ;; (occ-do-assert-math-ineq-has-prop (occ-obj-ineq-wash (occ-obj-math-read-expr "root + nil") 'key) 'key)
+
+(defun occ-obj-math-var (sym)
+  ;;(math-read-expr (symbol-name sym))
+  `(var ,sym ,(intern (concat "var-" (symbol-name sym)))))
 (defun occ-math-read-sexp-expr (sexp)
   "Converts a Lisp sexp expression SEXP into an equivalent expression."
   (cond ((atom sexp) (cond ((assoc (prin1-to-string sexp) math-standard-opers) (cadr (assoc (symbol-name sexp) math-standard-opers)))
-                           ((symbolp sexp) (occ-obj-math-read-var sexp))
+                           ((symbolp sexp) (occ-obj-math-var sexp))
                            (t sexp)))
         ((listp sexp) (cons (occ-math-read-sexp-expr (car sexp))
                             (mapcar #'occ-math-read-sexp-expr (cdr sexp))))
         (t sexp)))
-;; (defun occ-math-read-str-expr (ineq)
-;;   (let ((ineq (string-replace "-" "AAAA" ineq)))
-;;     ()))
-;; (replace-regexp-in-string "[[:alpha:]]\.[[:alnum:]]\.-" "AAAA" "asdfasdf-fdaf - A")
-
 ;; (occ-math-read-sexp-expr '(> current-clock timebeing))
+(defun occ-math-read-str-expr (ineq-str)
+  (let ((minus-marker "XXXMINUSXXX")
+        (expo-marker  "XXXEXPOXXX"))
+    (cl-labels ((replace-op-char (str op-char op-replacement)
+                                 (let ((rstr (replace-regexp-in-string (concat "[[:alpha:]]\+[[:alnum:]]\*\\(" op-char "\\)[[:alpha:]]\+[[:alnum:]]\*") op-replacement str nil nil 1)))
+                                   (if (string= rstr str)
+                                       str
+                                     (replace-op-char rstr op-char op-replacement))))
+                (reinstate-op-char (ineq op-char op-replacement)
+                              (cond ((and (listp ineq)
+                                          (eql 'var (car ineq))
+                                          (string-match op-replacement (symbol-name (cadr ineq))))
+                                     (occ-obj-math-var (intern (string-replace op-replacement op-char (symbol-name (cadr ineq))))))
+                                    ((atom ineq) ineq)
+                                    ((listp ineq) (cons (reinstate-op-char (car ineq) op-char op-replacement)
+                                                        (mapcar #'(lambda (ineq) (reinstate-op-char ineq op-char op-replacement))
+                                                                (cdr ineq))))
+                                    (t ineq))))
+      (let* ((ineq-str (replace-op-char ineq-str "-" minus-marker))
+             (ineq-str (math-read-expr (replace-op-char ineq-str "_" expo-marker))))
+        (let* ((ineq (reinstate-op-char ineq-str "-" minus-marker))
+               (ineq (reinstate-op-char ineq "_" expo-marker)))
+          ineq)))))
+;; (occ-math-read-str-expr "current-clock > time_being")
 
 (defun occ-obj-math-read-expr (ineq)
   "Return normalized calc math expression."
-  (calc-normalize (cond ((stringp ineq) (math-read-expr ineq))
+  (calc-normalize (cond ((stringp ineq) (occ-math-read-str-expr ineq)) ;; (math-read-expr ineq)
                         ((consp ineq)   (occ-math-read-sexp-expr ineq))
                         (t (occ-error "ineq %s not string or list" ineq)))))
-(defun occ-obj-math-read-var (sym)
-  ;;(math-read-expr (symbol-name sym))
-  `(var ,sym ,(intern (concat "var-" (symbol-name sym)))))
 (defun occ-obj-ineq-wash (ineq property)
   (cond ((and (listp ineq)
               (eql 'var (car ineq))
               (memq (cadr ineq) '(nil this)))
-         (occ-obj-math-read-var property))
+         (occ-obj-math-var property))
         ((atom ineq) ineq)
         ((listp ineq) (cons (occ-obj-ineq-wash (car ineq) property)
                             (mapcar #'(lambda (ineq) (occ-obj-ineq-wash ineq property)) (cdr ineq))))
@@ -162,7 +182,7 @@
   (gensym (concat prefix "")))
 (defun occ-obj-gen-math-constant (prefix)
   (let ((const-var (occ-obj-gen-constant prefix)))
-    `,(occ-obj-math-read-var const-var)))
+    `,(occ-obj-math-var const-var)))
 (defun occ-obj-gen-ineq2eq-constant (op)
   (let* ((calc-const-geq-var (occ-obj-gen-math-constant "cxgeq"))
          (calc-const-gth-var (occ-obj-gen-math-constant "cxgth")))
@@ -191,7 +211,7 @@
   (apply #'append
          (mapcar #'cdr ineqs-map)))
 (defun occ-obj-vars-from-syms (syms)
-  (mapcar #'(lambda (var) (occ-obj-math-read-var var))
+  (mapcar #'(lambda (var) (occ-obj-math-var var))
           syms))
 (defun occ-obj-vars-from-map (ineqs-map)
   (occ-obj-vars-from-syms (mapcar #'car
@@ -242,15 +262,19 @@
                (occ-do-assert-math-ineq ineq)
                (not (member ineq (cdr (assoc property
                                              occ-property-priority-inequalities)))))
-      (let ((eqs (occ-obj-ineqs2eqs (append (occ-obj-ineqs-from-map (assoc-delete-all property occ-property-priority-inequalities))
-                                            (cons ineq (cdr (assoc property occ-property-priority-inequalities))))))
+      (let ((eqs (occ-obj-ineqs2eqs (append (occ-obj-ineqs-from-map (assoc-delete-all property
+                                                                                      occ-property-priority-inequalities))
+                                            (cons ineq (cdr (assoc property
+                                                                   occ-property-priority-inequalities))))))
             (vars (occ-obj-vars-from-syms (delete-dups (cons property
                                                              (mapcar #'car
                                                                      occ-property-priority-inequalities))))))
-        (if (occ-obj-eqs-normalized-p eqs vars)
+        (if (occ-obj-eqs-normalized-p eqs
+                                      vars)
             (if (assoc property
                        occ-property-priority-inequalities)
-                (cl-pushnew ineq (cdr (assoc property occ-property-priority-inequalities)))
+                (cl-pushnew ineq (cdr (assoc property
+                                             occ-property-priority-inequalities)))
               (cl-pushnew (list property ineq)
                           occ-property-priority-inequalities))
           (occ-error "Failed to add inequality %s for property %s may be due to circular dependency"
@@ -272,7 +296,7 @@
 (defun occ-obj-equal-consts-exprs (consts)
   (cons 'vec
         (mapcar #'(lambda (c)
-                    `(calcFunc-eq ,(occ-obj-math-read-var c)
+                    `(calcFunc-eq ,(occ-obj-math-var c)
                                   ,(occ-obj-const-value c)))
                 consts)))
 
@@ -286,7 +310,7 @@
     (while consts
       (let ((const (pop consts)))
         (setq sols (calc-normalize (math-expr-subst sols
-                                                    (occ-obj-math-read-var const)
+                                                    (occ-obj-math-var const)
                                                     (occ-obj-const-value const))))))
     (mapcar #'occ-obj-eqality2pair
             (cdr sols))))
@@ -297,7 +321,7 @@
     (while consts
       (let ((const (pop consts)))
         (setq sols (calc-normalize (math-expr-subst sols
-                                                    (occ-obj-math-read-var const)
+                                                    (occ-obj-math-var const)
                                                     (occ-obj-const-value const))))))
     (mapcar #'occ-obj-eqality2pair
             (cdr sols))))
