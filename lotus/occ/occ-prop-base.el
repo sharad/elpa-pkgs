@@ -267,21 +267,15 @@ method provided.")
 
 (cl-defmethod occ-obj-properties-to-edit ((obj occ-tsk))
   "return PROPERTIES list that can be edited."
-  ;; (occ-message "HELLO obj = %s, %s" (occ-cl-inst-class-names obj) (occ-obj-Format obj))
-  (let ((props (occ-cl-collect-on-classes #'occ-obj-properties-to-edit
-                                        obj)))
-    (occ-message "occ-obj-properties-to-edit: props %s" props)
-    props))
+  (occ-cl-collect-on-classes #'occ-obj-properties-to-edit
+                             obj))
 
 ;; TODO: improve
 (cl-defmethod occ-obj-properties-to-edit ((obj occ-obj-ctx-tsk))
   "return PROPERTIES list that can be edited."
-  ;; (occ-message "XXX")
-  (let ((props (occ-obj-cl-method-sigs-matched-arg '(occ-obj-impl-get     (`(occ-user-agent (eql ,val) occ-obj-ctx-tsk) val))
-                                                   '(occ-obj-impl-get     (`(occ-ctx (eql ,val) null) val))
-                                                   `(,(occ-obj-ctx obj) val nil))))
-    (occ-message "occ-obj-properties-to-edit XXX: props %s" props)
-    props))
+  (occ-obj-cl-method-sigs-matched-arg '(occ-obj-impl-get     (`(occ-user-agent (eql ,val) occ-obj-ctx-tsk) val))
+                                      '(occ-obj-impl-get     (`(occ-ctx (eql ,val) null) val))
+                                      `(,(occ-obj-ctx obj) val nil)))
 
 
 (cl-defmethod occ-obj-properties-to-inherit ((class symbol))
