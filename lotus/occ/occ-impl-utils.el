@@ -30,18 +30,23 @@
 
 
 (defun occ-pu-safe-file-truename (file)
-  (if file
-      (file-truename file)))
+  (and file
+       (file-truename file)))
 
 (defun occ-pu-file-in-dir-p (dir file)
   (let ((dir (occ-pu-safe-file-truename dir))
         (file (occ-pu-safe-file-truename file)))
-    (if (and dir
-             file)
-        (string-prefix-p dir file))))
+    (and dir
+         file
+         (string-prefix-p dir file))))
 
-(defun occ-pu-files-same-p (&rest files)
+(defun occ-pu-file= (&rest files)
   (let ((files (mapcar #'occ-pu-safe-file-truename files)))
     (every #'string= files (rest files))))
+
+(defun occ-pu-string= (str1 str2)
+  (and str1
+       str2
+       (string= str1 str2)))
 
 ;;; occ-impl-utils.el ends here

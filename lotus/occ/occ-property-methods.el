@@ -54,7 +54,7 @@
 (cl-defmethod occ-obj-impl-prop= ((prop (eql currfile))
                                   prop-value
                                   value)
-  (occ-pu-files-same-p prop-value
+  (occ-pu-file= prop-value
                        value))
 (cl-defmethod occ-obj-impl-rank ((obj occ-obj-ctx-tsk)
                                  (prop (eql currfile))) ;; do not use (prop (eql file)) that is another property which represent file in which task defined.
@@ -83,7 +83,7 @@
 ;;   "OBJ has property PROPERTY"
 ;;   (let* ((tsk            (occ-obj-tsk obj))
 ;;          (tsk-prop-value (occ-obj-get-property tsk prop)))
-;;     (occ-pu-files-same-p tsk-prop-value value)))
+;;     (occ-pu-file= tsk-prop-value value)))
 (cl-defmethod occ-obj-impl-list-p ((prop (eql currfile)))
   (ignore prop)
   t)
@@ -373,8 +373,8 @@
 (cl-defmethod occ-obj-impl-prop= ((prop (eql git-branch))
                                   prop-value
                                   value)
-  (string= prop-value
-           value))
+  (occ-pu-string= prop-value
+                  value))
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
                                 (prop (eql git-branch))
                                 (arg null))
@@ -423,28 +423,22 @@
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (occ-aggregate-rank tsk-git-branch prop tsk #'max
-      (if (occ-pu-files-same-p tsk-currfile (occ-ctx-file ctx))
-          (occ-rank-percentage 100)     ;Obsolete: as exact match to files giving double matching points.
-        (occ-rank-percentage 0))))
-  (let ((tsk (occ-obj-tsk obj))
-        (ctx (occ-obj-ctx obj)))
-    (let ((ctx-branch (occ-obj-impl-get ctx prop nil))
-          (tsk-branch (occ-obj-get-property tsk prop)))
-      (if (and (and ctx-branch
-                    tsk-branch)
-               (occ-obj-impl-prop= tsk-branch
-                                   ctx-branch))
-          (occ-rank-percentage 100)
-        (occ-rank-percentage 0)))))
-(cl-defmethod occ-obj-impl-has-p ((obj occ-obj-tsk)
-                                  (prop (eql git-branch))
-                                  value)
-  "OBJ has property PROPERTY"
-  (let* ((tsk            (occ-obj-tsk obj))
-         (tsk-prop-value (occ-obj-get-property tsk prop)))
-    (if (and value tsk-prop-value)
-        (string= value
-                 tsk-prop-value))))
+      (let ((ctx-branch (occ-obj-impl-get ctx prop nil))
+            (tsk-branch (occ-obj-get-property tsk prop)))
+        (if (occ-obj-impl-prop= prop
+                                tsk-branch
+                                ctx-branch)
+            (occ-rank-percentage 100)
+          (occ-rank-percentage 0))))))
+;; (cl-defmethod occ-obj-impl-has-p ((obj occ-obj-tsk)
+;;                                   (prop (eql git-branch))
+;;                                   value)
+;;   "OBJ has property PROPERTY"
+;;   (let* ((tsk            (occ-obj-tsk obj))
+;;          (tsk-prop-value (occ-obj-get-property tsk prop)))
+;;     (if (and value tsk-prop-value)
+;;         (string= value
+;;                  tsk-prop-value))))
 (cl-defmethod occ-obj-impl-format ((obj occ-obj-tsk)
                                    (prop (eql git-branch))
                                    value)
