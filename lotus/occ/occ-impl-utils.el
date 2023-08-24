@@ -26,7 +26,7 @@
 (provide 'occ-impl-utils)
 
 
-(require 'subr)
+;; (require 'subr)
 
 
 (defun occ-pu-safe-file-truename (file)

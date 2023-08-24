@@ -48,7 +48,8 @@
   (occ-debug "occ-obj-impl-require-p7 prop %s operation %s values %s is called" prop operation values)
   (message "tsk %s, operation %s prop %s values %s" (occ-obj-Format obj) operation prop
            values)
-  (not (occ-obj-intf-has-p obj prop
+  (not (occ-obj-intf-has-p obj
+                           prop
                            values)))
 
 (cl-defmethod occ-obj-impl-require-p ((obj       occ-obj-tsk)
@@ -70,7 +71,8 @@
   (message "tsk %s, operation %s prop %s values %s" (occ-obj-Format obj) operation prop
            values)
   (occ-debug "occ-obj-impl-require-p8 prop %s operation %s values %s is called" prop operation values)
-  (occ-obj-intf-has-p obj prop
+  (occ-obj-intf-has-p obj
+                      prop
                       values))
 
 ;; (cl-defmethod occ-obj-impl-require-p ((obj       occ-obj-tsk)

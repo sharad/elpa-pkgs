@@ -73,6 +73,19 @@
 
 
 ;; (cl-defgeneric occ-obj-impl-has-p (obj
+(cl-defgeneric occ-obj-impl-prop= (property
+                                   prop-value
+                                   value)
+  "OBJ has property PROPERTY")
+(cl-defmethod occ-obj-impl-prop= ((prop symbol)
+                                  prop-value
+                                  value)
+  "OBJ has property PROPERTY"
+  (equal prop-value
+         value))
+
+
+;; (cl-defgeneric occ-obj-impl-has-p (obj
 (cl-defgeneric occ-obj-impl-has-p (obj
                                    property
                                    value)
@@ -82,13 +95,16 @@
                                   value)
   "OBJ has property PROPERTY"
   (let* ((tsk            (occ-obj-tsk obj))
-         (tsk-prop-value (occ-obj-get-property tsk prop)))
-    (occ-debug "occ-obj-has-p prop %s, (consp tsk-prop-value) %s" prop (consp tsk-prop-value))
-    (occ-debug "occ-obj-has-p prop %s, (occ-obj-intf-list-p prop) %s, value %s" prop (occ-obj-intf-list-p prop) (prin1-to-string value))
-    (occ-debug "occ-obj-has-p prop %s, (occ-obj-intf-list-p prop) %s, tsk-prop-value %s" prop (occ-obj-intf-list-p prop) (prin1-to-string tsk-prop-value))
+         (prop-value (occ-obj-get-property tsk prop)))
     (if (occ-obj-intf-list-p prop)
-        (member value tsk-prop-value)
-      (equal value tsk-prop-value))))
+        (cl-some #'(lambda (pvalue)
+                     (occ-obj-intf-prop= prop
+                                         pvalue
+                                         value))
+                 prop-value)
+      (occ-obj-intf-prop= prop
+                          (occ-obj-get-property obj prop)
+                          value))))
 
 
 (cl-defgeneric occ-obj-impl-get (ctx

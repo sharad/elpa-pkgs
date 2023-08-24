@@ -51,6 +51,11 @@
 ;;
 ;; [[file:occ-property-methods.org::*Current File property of task][Current File property of task:1]]
 ;;{{ currfile
+(cl-defmethod occ-obj-impl-prop= ((prop (eql currfile))
+                                  prop-value
+                                  value)
+  (occ-pu-files-same-p prop-value
+                       value))
 (cl-defmethod occ-obj-impl-rank ((obj occ-obj-ctx-tsk)
                                  (prop (eql currfile))) ;; do not use (prop (eql file)) that is another property which represent file in which task defined.
   ;; file in which tsk aka org entry exists.
@@ -58,7 +63,9 @@
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (occ-aggregate-rank tsk-currfile 'currfile tsk #'max
-      (if (occ-pu-files-same-p tsk-currfile (occ-ctx-file ctx))
+      (if (occ-obj-impl-prop= prop
+                              tsk-currfile
+                              (occ-ctx-file ctx))
           (occ-rank-percentage 100)     ;Obsolete: as exact match to files giving double matching points.
         (occ-rank-percentage 0)))))
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
@@ -70,7 +77,13 @@
   (let ((currfile (occ-ctx-file ctx)))
     ;; (occ-message "currfile %s" currfile)
     currfile))
-
+;; (cl-defmethod occ-obj-impl-has-p ((obj occ-obj-tsk)
+;;                                   (prop (eql currfile))
+;;                                   value)
+;;   "OBJ has property PROPERTY"
+;;   (let* ((tsk            (occ-obj-tsk obj))
+;;          (tsk-prop-value (occ-obj-get-property tsk prop)))
+;;     (occ-pu-files-same-p tsk-prop-value value)))
 (cl-defmethod occ-obj-impl-list-p ((prop (eql currfile)))
   (ignore prop)
   t)
@@ -114,13 +127,20 @@
 
 ;; [[file:occ-property-methods.org::*Root dir property of task][Root dir property of task:1]]
 ;;{{ root
+(cl-defmethod occ-obj-impl-prop= ((prop (eql root))
+                                  prop-value
+                                  value)
+  (occ-pu-file-in-dir-p prop-value
+                        value))
 (cl-defmethod occ-obj-impl-rank ((obj occ-obj-ctx-tsk)
                                  (prop (eql root)))
   "RANK Predicate funtion to check if ctx matches to tsk's ROOT attribute."
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (occ-aggregate-rank tsk-root 'root tsk #'max
-      (if (occ-pu-file-in-dir-p tsk-root (occ-ctx-file ctx))
+      (if (occ-obj-impl-prop= prop
+                              tsk-root
+                              (occ-ctx-file ctx))
           (occ-rank-percentage 100)
         (occ-rank-percentage 0)))))
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
@@ -130,21 +150,17 @@
   (ignore prop)
   (let ((file (occ-ctx-file ctx)))
       (when file (dirname-of-file file))))
-
 (cl-defmethod occ-obj-impl-list-p ((prop (eql root)))
   (ignore prop)
   t)
-
 (cl-defmethod occ-obj-impl-to-org ((prop (eql root))
                                    value)
   (ignore prop)
   value)
-
 (cl-defmethod occ-obj-impl-from-org ((prop (eql root))
                                      value)
   (ignore prop)
   value)
-
 (cl-defmethod occ-obj-impl-get ((user occ-user-agent)
                                 (prop (eql root))
                                 (obj occ-obj-ctx-tsk))
@@ -156,7 +172,6 @@
            (ctx-dir    (when (stringp ctx-file) (file-name-directory ctx-file)))
            (prompt     (concat (symbol-name prop) ": ")))
       (ido-read-directory-name prompt ctx-dir ctx-dir))))
-
 (cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
                                     (prop (eql root)))
   (let* ((tsk       (occ-obj-tsk      obj))
@@ -355,6 +370,11 @@
 
 ;; [[file:occ-property-methods.org::*Git branch property of task][Git branch property of task:1]]
 ;;{{ git-branch
+(cl-defmethod occ-obj-impl-prop= ((prop (eql git-branch))
+                                  prop-value
+                                  value)
+  (string= prop-value
+           value))
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
                                 (prop (eql git-branch))
                                 (arg null))
@@ -412,8 +432,8 @@
           (tsk-branch (occ-obj-get-property tsk prop)))
       (if (and (and ctx-branch
                     tsk-branch)
-               (string= ctx-branch
-                        tsk-branch))
+               (occ-obj-impl-prop= tsk-branch
+                                   ctx-branch))
           (occ-rank-percentage 100)
         (occ-rank-percentage 0)))))
 (cl-defmethod occ-obj-impl-has-p ((obj occ-obj-tsk)
@@ -423,8 +443,8 @@
   (let* ((tsk            (occ-obj-tsk obj))
          (tsk-prop-value (occ-obj-get-property tsk prop)))
     (if (and value tsk-prop-value)
-        (string= value tsk-prop-value))))
-
+        (string= value
+                 tsk-prop-value))))
 (cl-defmethod occ-obj-impl-format ((obj occ-obj-tsk)
                                    (prop (eql git-branch))
                                    value)

@@ -88,6 +88,20 @@
                       value))
 
 
+;; (cl-defgeneric occ-obj-has-p (obj
+(cl-defgeneric occ-obj-intf-prop= (property
+                                   prop-value
+                                   value)
+  "OBJ has property VALUE for PROPERTY")
+(cl-defmethod occ-obj-intf-prop= ((property symbol)
+                                  prop-value
+                                  value)
+  "OBJ has property VALUE for PROPERTY"
+  (occ-obj-impl-prop= property
+                      prop-value
+                      value))
+
+
 ;; (cl-defgeneric occ-obj-get-property-value-from-ctx (obj
 (cl-defgeneric occ-obj-get-property-value-from-ctx (obj
                                                     property)
