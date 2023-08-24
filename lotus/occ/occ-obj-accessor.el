@@ -153,6 +153,21 @@
 
 (cl-defmethod occ-obj-buffer ((obj occ-obj-tsk))
   (occ-obj-buffer (occ-tsk-marker (occ-obj-tsk obj))))
+
+(cl-defmethod occ-obj-buffer ((obj occ-ctx))
+  (occ-ctx-buffer obj))
+
+(cl-defmethod occ-obj-buffer ((obj occ-ctsk))
+  (let ((ctx (occ-obj-ctx ctx)))
+    (occ-ctx-buffer ctx)))
+
+
+(cl-defmethod occ-obj-file ((obj occ-ctx))
+  (occ-ctx-file obj))
+
+(cl-defmethod occ-obj-file ((obj occ-ctsk))
+  (let ((ctx (occ-obj-ctx ctx)))
+    (occ-ctx-file ctx)))
 
 
 (cl-defmethod occ-obj-callable ((callable occ-callable))

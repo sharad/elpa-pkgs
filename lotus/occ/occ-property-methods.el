@@ -57,7 +57,7 @@
   "Predicate funtion to check if ctx matches to tsk's file attribute."
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (occ-aggregate-rank tsk-currfile 'currfile tsk #'+
+    (occ-aggregate-rank tsk-currfile 'currfile tsk #'max
       (if (occ-pu-files-same-p tsk-currfile (occ-ctx-file ctx))
           (occ-rank-percentage 100)     ;Obsolete: as exact match to files giving double matching points.
         (occ-rank-percentage 0)))))
@@ -364,32 +364,48 @@
     ;; (occ-message "occ-obj-impl-get: git-branch: buff = %s" buff)
     (when buff
       (with-current-buffer buff
-        (let ((branch (magit-get-current-branch)))
+        (let ((vc-root (vc-root-dir))
+              (branch (magit-get-current-branch)))
           ;; (occ-message "occ-obj-impl-get: branch = %s" branch)
-          branch)))))
+          (concat vc-root "::" branch))))))
 (cl-defmethod occ-obj-impl-get ((user occ-user-agent)
                                 (prop (eql git-branch))
                                 (obj occ-obj-ctx-tsk))
   "Read value of list of elements if (occ-obj-intf-list-p PROPERTY)
         else element for property PROPERTY from user for OCC-TSK OBJ,
         must return ORG compatible value."
-  (magit-read-branch "Git branch"))
+  (let ((buff (occ-obj-buffer obj)))
+    ;; (occ-message "occ-obj-impl-get: git-branch: buff = %s" buff)
+    (when buff
+      (with-current-buffer buff
+        (let ((vc-root (vc-root-dir))
+              (branch  (magit-read-branch "Git branch")))
+          ;; (occ-message "occ-obj-impl-get: branch = %s" branch)
+          (concat vc-root "::" branch))))))
 
 (cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
                                     (prop (eql git-branch)))
-  (let* ((tsk        (occ-obj-tsk      obj))
-         (rootdir    (occ-obj-get-property tsk 'root))
-         (git-branch      (occ-obj-get-property tsk prop)))
-    (if (and rootdir
-             git-branch)
-        (progn
-          ;; (occ-message "branch %s" git-branch)
-          (magit-checkout git-branch))
-      (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" first-file prop))))
+  (let* ((tsk             (occ-obj-tsk      obj))
+         (git-branch      (cl-first (occ-obj-get-property tsk prop)))
+         (git-branch-list (when git-branch
+                            (split-string git-branch "::"))))
+    (when git-branch-list
+      (let ((root   (nth 0 git-branch-list))
+            (branch (nth 1 git-branch-list)))
+        (if root
+            (if branch
+                (if (occ-pu-file-in-dir-p root default-directory)
+                    (magit-checkout git-branch))))))))
 
 (cl-defmethod occ-obj-impl-rank ((obj occ-obj-ctx-tsk)
                                  (prop (eql git-branch)))
   "Return the RANK (number) for OCC-TSK based on the property GIT-BRANCH"
+  (let ((tsk (occ-obj-tsk obj))
+        (ctx (occ-obj-ctx obj)))
+    (occ-aggregate-rank tsk-git-branch prop tsk #'max
+      (if (occ-pu-files-same-p tsk-currfile (occ-ctx-file ctx))
+          (occ-rank-percentage 100)     ;Obsolete: as exact match to files giving double matching points.
+        (occ-rank-percentage 0))))
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (let ((ctx-branch (occ-obj-impl-get ctx prop nil))
@@ -413,7 +429,7 @@
                                    (prop (eql git-branch))
                                    value)
   "Return format printable value of property PROPERTY."
-  value)
+  (nth 1 (split-string value "::")))
 (cl-defmethod occ-obj-impl-list-p ((prop (eql git-branch)))
   "Is the property GIT-BRANCH has VALUES in list, Method tell
          property represent list or not."

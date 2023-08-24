@@ -94,7 +94,7 @@
          (setq total-rank
                (funcall ,aggregator total-rank rank))))
      total-rank))
-(put 'occ-aggregate-rank 'lisp-indent-function 3)
+(put 'occ-aggregate-rank 'lisp-indent-function 4)
 
 
 ;;;###autoload

@@ -64,9 +64,9 @@ only argument required for some other further processing"
     #'(lambda (candidate)
         (ignore candidate)
         (occ-do-op-prop-edit obj
-                                     prop
-                                     operation
-                                     value))))
+                             prop
+                             operation
+                             value))))
 
 
 (cl-defgeneric occ-obj-gen-edit (obj
