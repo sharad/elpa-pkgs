@@ -43,11 +43,11 @@
   ;; TODO: Improve it.
   (ignore param-only)
   (let ((list-p (occ-obj-intf-list-p prop)))
-      (format "%s %s %s property %s to %s"
-              (symbol-name operation)
+    (format "%s - property %s: %s %s %s"
+              (capitalize (symbol-name operation))
+              prop
               (occ-obj-intf-format obj prop value)
               (if list-p "in" "from")
-              prop
               (occ-obj-Format obj))))
 
 (cl-defmethod occ-obj-gen-edit-fun ((obj       occ-obj-tsk)

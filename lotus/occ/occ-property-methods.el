@@ -119,10 +119,6 @@
   "RANK Predicate funtion to check if ctx matches to tsk's ROOT attribute."
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (occ-nodisplay "rankprop(%s, %s): begin"
-               (occ-obj-format tsk 'capitalize)
-               (occ-obj-format ctx 'capitalize)
-               prop)
     (occ-aggregate-rank tsk-root 'root tsk #'max
       (if (occ-pu-file-in-dir-p tsk-root (occ-ctx-file ctx))
           (occ-rank-percentage 100)
