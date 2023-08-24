@@ -50,6 +50,39 @@
               (if list-p "in" "from")
               (occ-obj-Format obj))))
 
+
+(cl-defmethod occ-obj-gen-edit-prompt ((obj       occ-obj-tsk)
+                                       (prop      symbol)
+                                       (operation (eql add))
+                                       value
+                                       &key param-only)
+  "Used by occ-obj-gen-edit"
+  ;; TODO: Improve it.
+  (ignore param-only)
+  (let ((list-p (occ-obj-intf-list-p prop)))
+    (format "%s - property %s: %s %s %s"
+            (capitalize (symbol-name operation))
+            prop
+            (occ-obj-intf-format obj prop value)
+            (if list-p "in" "from")
+            (occ-obj-Format obj))))
+
+(cl-defmethod occ-obj-gen-edit-prompt ((obj       occ-obj-tsk)
+                                       (prop      symbol)
+                                       (operation (eql remove))
+                                       value
+                                       &key param-only)
+  "Used by occ-obj-gen-edit"
+  ;; TODO: Improve it.
+  (ignore param-only)
+  (let ((list-p (occ-obj-intf-list-p prop)))
+    (format "%s - property %s: %s %s %s"
+            (capitalize (symbol-name operation))
+            prop
+            (occ-obj-intf-format obj prop (occ-obj-intf-match obj prop value))
+            (if list-p "in" "from")
+            (occ-obj-Format obj))))
+
 (cl-defmethod occ-obj-gen-edit-fun ((obj       occ-obj-tsk)
                                     (prop      symbol)
                                     (operation symbol)

@@ -86,6 +86,29 @@
 
 
 ;; (cl-defgeneric occ-obj-impl-has-p (obj
+(cl-defgeneric occ-obj-impl-matches (obj
+                                     property
+                                     value)
+  "VALUE equal prop-value of OBJ for PROPERTY")
+(cl-defmethod occ-obj-impl-matches ((obj occ-obj-tsk)
+                                    (prop symbol)
+                                    value)
+  "VALUE equal prop-value of OBJ for PROPERTY"
+  (let* ((tsk            (occ-obj-tsk obj))
+         (prop-value (occ-obj-get-property tsk prop)))
+    (if (occ-obj-intf-list-p prop)
+        (cl-remove-if-not #'(lambda (pvalue)
+                              (occ-obj-intf-prop= prop
+                                                  pvalue
+                                                  value))
+                 prop-value)
+      (when (occ-obj-intf-prop= prop
+                              (occ-obj-get-property obj prop)
+                              value)
+        prop-value))))
+
+
+;; (cl-defgeneric occ-obj-impl-has-p (obj
 (cl-defgeneric occ-obj-impl-has-p (obj
                                    property
                                    value)

@@ -133,6 +133,7 @@
     (occ-obj-call-operation obj
                             operation
                             prop
+                            ;; BUG: TODO - add, remove use VALUE of add, use PROP-VALUE for remove
                             (if (consp prop-value)
                                 prop-value
                               (list prop-value)))))

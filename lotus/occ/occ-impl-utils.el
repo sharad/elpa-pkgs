@@ -34,12 +34,12 @@
        (file-truename file)))
 
 (defun occ-pu-file-in-dir-p (dir file)
-  (let ((dir (occ-pu-safe-file-truename dir))
+  (let ((dir  (occ-pu-safe-file-truename dir))
         (file (occ-pu-safe-file-truename file)))
     (and dir
          file
          (string-prefix-p (directory-file-name dir)
-                          (directory-file-name file)))))
+                          file))))
 
 (defun occ-pu-file= (&rest files)
   (let ((files (mapcar #'occ-pu-safe-file-truename files)))

@@ -75,20 +75,6 @@
 
 
 ;; (cl-defgeneric occ-obj-has-p (obj
-(cl-defgeneric occ-obj-intf-has-p (obj
-                                   property
-                                   value)
-  "OBJ has property VALUE for PROPERTY")
-(cl-defmethod occ-obj-intf-has-p ((obj occ-obj-tsk)
-                                  (prop symbol)
-                                  value)
-  "OBJ has property VALUE for PROPERTY"
-  (occ-obj-impl-has-p obj
-                      prop
-                      value))
-
-
-;; (cl-defgeneric occ-obj-has-p (obj
 (cl-defgeneric occ-obj-intf-prop= (property
                                    prop-value
                                    value)
@@ -99,6 +85,51 @@
   "OBJ has property VALUE for PROPERTY"
   (occ-obj-impl-prop= property
                       prop-value
+                      value))
+
+
+;; (cl-defgeneric occ-obj-has-p (obj
+(cl-defgeneric occ-obj-intf-matches (obj
+                                     property
+                                     value)
+  "VALUE equal prop-value of OBJ for PROPERTY")
+(cl-defmethod occ-obj-intf-matches ((obj occ-obj-tsk)
+                                    (prop symbol)
+                                    value)
+  "VALUE equal prop-value of OBJ for PROPERTY"
+  (occ-obj-impl-matches obj
+                        prop
+                        value))
+
+
+;; (cl-defgeneric occ-obj-has-p (obj
+(cl-defgeneric occ-obj-intf-match (obj
+                                   property
+                                   value)
+  "VALUE equal prop-value of OBJ for PROPERTY")
+(cl-defmethod occ-obj-intf-match ((obj occ-obj-tsk)
+                                  (prop symbol)
+                                  value)
+  "VALUE equal prop-value of OBJ for PROPERTY"
+  (let ((matches (occ-obj-intf-matches obj
+                                       prop
+                                       value)))
+    (if (occ-obj-intf-list-p prop)
+        (cl-first matches)
+      matches)))
+
+
+;; (cl-defgeneric occ-obj-has-p (obj
+(cl-defgeneric occ-obj-intf-has-p (obj
+                                   property
+                                   value)
+  "OBJ has property VALUE for PROPERTY")
+(cl-defmethod occ-obj-intf-has-p ((obj occ-obj-tsk)
+                                  (prop symbol)
+                                  value)
+  "OBJ has property VALUE for PROPERTY"
+  (occ-obj-impl-has-p obj
+                      prop
                       value))
 
 

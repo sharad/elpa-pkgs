@@ -55,7 +55,7 @@
                                   prop-value
                                   value)
   (occ-pu-file= prop-value
-                       value))
+                value))
 (cl-defmethod occ-obj-impl-rank ((obj occ-obj-ctx-tsk)
                                  (prop (eql currfile))) ;; do not use (prop (eql file)) that is another property which represent file in which task defined.
   ;; file in which tsk aka org entry exists.
@@ -149,7 +149,8 @@
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
   (ignore prop)
   (let ((file (occ-ctx-file ctx)))
-      (when file (dirname-of-file file))))
+      (when file
+        (directory-file-name (dirname-of-file file)))))
 (cl-defmethod occ-obj-impl-list-p ((prop (eql root)))
   (ignore prop)
   t)
