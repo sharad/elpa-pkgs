@@ -34,6 +34,7 @@
 ;; [[file:occ-property-methods.org::*Required libraries][Required libraries:1]]
 (require 'org)
 
+(require 'occ-impl-utils)
 (require 'occ-print)
 (require 'occ-predicate)
 (require 'occ-obj-accessor)
@@ -56,23 +57,10 @@
   "Predicate funtion to check if ctx matches to tsk's file attribute."
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (occ-debug "occ-obj-impl-rank-with: currfile begin")
-    (occ-aggregate-rank tsk-currfile (occ-obj-get-property tsk prop) #'+
-      (let* ((tsk-currfile (if tsk-currfile (file-truename tsk-currfile)))
-             (ctx-file     (occ-ctx-file ctx))
-             (ctx-file     (if ctx-file (file-truename ctx-file))))
-        (if tsk-currfile
-            (progn
-              (occ-nodisplay "tsk %s tsk-currfile %s" (occ-obj-format tsk 'capitalize) tsk-currfile)
-              (occ-nodisplay "tsk %s ctx-file %s"     (occ-obj-format tsk 'capitalize) ctx-file))
-          (occ-nodisplay "tsk %s tsk-currfile %s not present."
-                     (occ-obj-format tsk 'capitalize)
-                     tsk-currfile))
-        (if (and tsk-currfile ctx-file
-                 (string= tsk-currfile ctx-file))
-            (occ-rank-percentage 100)     ;Obsolete: as exact match to files giving double matching points.
-          (occ-rank-percentage 0))))))
-
+    (occ-aggregate-rank tsk-currfile 'currfile tsk #'+
+      (if (occ-pu-files-same-p tsk-currfile (occ-ctx-file ctx))
+          (occ-rank-percentage 100)     ;Obsolete: as exact match to files giving double matching points.
+        (occ-rank-percentage 0)))))
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
                                 (prop (eql currfile))
                                 (arg null))
@@ -135,24 +123,10 @@
                (occ-obj-format tsk 'capitalize)
                (occ-obj-format ctx 'capitalize)
                prop)
-    (occ-aggregate-rank tsk-root (occ-obj-get-property tsk prop) #'+
-      (let* ((tsk-root (cl-first (occ-obj-get-property tsk prop)))
-             (tsk-root (when tsk-root (file-truename tsk-root)))
-             (ctx-file (occ-ctx-file ctx))
-             ;; (ctx-file (when ctx-file (file-truename ctx-file)))
-             (ctx-dir  (when (stringp ctx-file) (file-name-directory ctx-file)))
-             (ctx-dir  (when (stringp ctx-file) (file-truename ctx-dir))))
-        (if tsk-root
-            (progn
-              (occ-nodisplay "tsk %s tsk-root: %s" (occ-obj-format tsk 'capitalize) tsk-root)
-              (occ-nodisplay "tsk %s ctx-dir:  %s" (occ-obj-format tsk 'capitalize) ctx-dir))
-          (occ-nodisplay "tsk %s tsk-root %s not present."
-                     (occ-obj-format tsk 'capitalize) tsk-root))
-        (if (and tsk-root ctx-dir
-                 (string= tsk-root ctx-dir))
-            (occ-rank-percentage 100)
-          (occ-rank-percentage 0))))))
-
+    (occ-aggregate-rank tsk-root 'root tsk #'max
+      (if (occ-pu-file-in-dir-p tsk-root (occ-ctx-file ctx))
+          (occ-rank-percentage 100)
+        (occ-rank-percentage 0)))))
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
                                 (prop (eql root))
                                 (arg null))
@@ -391,11 +365,11 @@
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
   (ignore prop)
   (let ((buff (occ-ctx-buffer ctx)))
-    (occ-message "occ-obj-impl-get: git-branch: buff = %s" buff)
+    ;; (occ-message "occ-obj-impl-get: git-branch: buff = %s" buff)
     (when buff
       (with-current-buffer buff
         (let ((branch (magit-get-current-branch)))
-          (occ-message "occ-obj-impl-get: branch = %s" branch)
+          ;; (occ-message "occ-obj-impl-get: branch = %s" branch)
           branch)))))
 (cl-defmethod occ-obj-impl-get ((user occ-user-agent)
                                 (prop (eql git-branch))
@@ -413,7 +387,7 @@
     (if (and rootdir
              git-branch)
         (progn
-          (occ-message "branch %s" git-branch)
+          ;; (occ-message "branch %s" git-branch)
           (magit-checkout git-branch))
       (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" first-file prop))))
 
@@ -490,89 +464,6 @@
 
 ;; _template1_ property of task
 
-;; [[file:occ-property-methods.org::*_template1_ property of task][_template1_ property of task:1]]
-;;{{ git-branch
-(cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
-                                (prop (eql _template1_))
-                                (arg null))
-  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
-  (ignore prop)
-  (let ((buff (occ-ctx-buffer ctx)))
-    (when buff
-     (with-current-buffer buff
-       (magit-get-current-branch)))))
-
-(cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
-                                    (prop (eql _template1_)))
-  (let* ((tsk        (occ-obj-tsk      obj))
-         (files      (occ-obj-get-property tsk prop))
-         (first-file (cl-first files)))
-    (if first-file
-        (find-file first-file)
-      (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" first-file prop))))
-
-(cl-defmethod occ-obj-impl-rank ((obj occ-obj-ctx-tsk)
-                                 (prop (eql _template1_)))
-  "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE1_")
-(cl-defmethod occ-obj-impl-has-p ((obj occ-obj-tsk)
-                                  (prop (eql _template1_))
-                                  value)
-  "OBJ has property PROPERTY"
-  (let* ((tsk            (occ-obj-tsk obj))
-         (tsk-prop-value (occ-obj-get-property tsk prop)))
-    (if (occ-obj-intf-list-p prop)
-        (member value tsk-prop-value)
-      (equal value tsk-prop-value))))
-(cl-defmethod occ-obj-impl-get ((obj occ-ctx)
-                                (prop (eql _template1_)))
-  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
-
-(cl-defmethod occ-obj-impl-format ((obj occ-obj-tsk)
-                                   (property symbol)
-                                   value)
-  "Return format printable value of property PROPERTY."
-  value)
-(cl-defmethod occ-obj-impl-list-p ((prop (eql _template1_)))
-  "Is the property _TEMPLATE1_ has VALUES in list, Method tell
-         property represent list or not.")
-(cl-defmethod occ-obj-impl-to-org ((prop (eql _template1_))
-                                   value)
-  "Return string representation for property _TEMPLATE1_, Method
-      convert value VALUE of property PROPERTY from occ to org string
-      representation.")
-(cl-defmethod occ-obj-impl-from-org ((prop (eql _template1_))
-                                     value)
-  "Return the Actual Object representation for property
-      _TEMPLATE1_, Method convert value VALUE of property PROPERTY from
-      org string to occ representation.")
-(cl-defmethod occ-obj-impl-get ((user occ-user-agent)
-                                (prop (eql _template1_))
-                                (obj occ-tsk))
-  "Read value of list of elements if (occ-obj-intf-list-p PROPERTY)
-        else element for property PROPERTY from user for OCC-TSK OBJ,
-        must return ORG compatible value.")
-(cl-defmethod occ-obj-impl-require-p ((obj occ-obj-tsk)
-                                      (operation (eql _operation_))
-                                      (prop (eql _template1_))
-                                      values)
-  "Used by OCC-OBJ-GEN-EDIT-IF-REQUIRED to decide for this property
-      _TEMPLATE1_ if CALLABLE (helm method) should be generated.")
-(cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
-                                    (prop (eql _template1_))
-                                    (operation (eql _operation_)))
-  "Return a default VALUE of property _TEMPLATE1_.")
-(cl-defmethod occ-do-impl-operation ((obj occ-obj-tsk)
-                                     (operation (eql _operation_))
-                                     (prop (eql _template1_))
-                                     values)
-  "Do the actual _OPERATION_.")
-(cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
-                                    (prop (eql _template1_)))
-  "Checkout property _TEMPLATE1_ in case of force clock-in.")
-(cl-defmethod occ-obj-impl-list-p ((prop (eql _template2_)))
-  "Is the property _TEMPLATE2_ has VALUES in list, Method tell
-         property represent list or not."
-  nil)
 
 ;; _template1_ property of task:1 ends here
 
