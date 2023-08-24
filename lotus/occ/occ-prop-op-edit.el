@@ -116,7 +116,7 @@
 (cl-defmethod occ-do-op-prop-edit ((obj  occ-obj-tsk)
                                    (prop symbol)
                                    &optional
-                                   operation
+                                   operation ;; BUG: TODO - ((operation (eql add)) , (operation (eql remove)))
                                    value)
   ;; TODO: change this to use OCC VALUE like with corresponding changes to occ-obj-intf-get
   "Accept occ compatible VALUES"
