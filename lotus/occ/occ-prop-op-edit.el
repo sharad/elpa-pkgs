@@ -94,9 +94,9 @@
              ;;            ("del" . remove)
              ;;            ("put" . put)))
              (existing-value (occ-obj-get-property obj prop))
-             (actions    (mapcar #'(lambda (op)
-                                     (cons (format "%s [%s]" (symbol-name op) existing-value) op))
-                                 operations)))
+             (actions        (mapcar #'(lambda (op)
+                                         (cons (format "%s [%s]" (symbol-name op) existing-value) op))
+                                     operations)))
 
         (occ-assert actions)
         (let ((action  (completing-read (format "%s [%s] action: " prop existing-value) actions)))
