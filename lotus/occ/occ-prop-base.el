@@ -394,6 +394,66 @@ method provided."))))
         '(add remove get put member)))
 
 
+(cl-defmethod occ-do-operation ((obj       occ-obj-tsk)
+                                (operation symbol)
+                                (prop      symbol)
+                                values)
+  "Accept occ compatible VALUES"
+  (occ-message "I should be called FIRST.")
+  (occ-debug "(occ-do-intf-operation occ-obj-tsk): operation %s prop %s" operation prop)
+  (if (occ-do-intf-operation (occ-obj-marker obj)
+                             operation
+                             prop
+                             values)
+      (occ-do-intf-operation obj
+                             operation
+                             prop
+                             values)
+    (occ-error "Failed to %s on marker %s of %s in org world"
+               operation
+               (occ-obj-marker obj)
+               (occ-obj-Format obj))))
+
+
+(cl-defmethod occ-obj-get ((user occ-user-agent)
+                           (ctsk occ-obj-ctx-tsk)
+                           (prop symbol)
+                           build-list-p)
+  (if (occ-obj-intf-list-p prop)
+      (if build-list-p
+          (mapcar #'(lambda (v)
+                      (occ-obj-intf-get user
+                                        ctsk
+                                        prop))
+                  value)
+        (occ-obj-intf-get user
+                          ctsk
+                          prop))
+    (if build-list-p
+        (let ((operation build-list-p))
+          (occ-error "Property `%s' is not type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))
+      (occ-obj-intf-get user
+                        ctsk
+                        prop))))
+(cl-defmethod occ-obj-get ((user occ-user-agent)
+                           (ctsk occ-obj-ctx-tsk)
+                           (property symbol)
+                           (operation symbol))
+  (cl-call-next-method user
+                       ctsk
+                       property
+                       (memq operation
+                             '(put list delete t))))
+(cl-defmethod occ-obj-get ((user occ-user-agent)
+                           (ctsk occ-obj-ctx-tsk)
+                           (property symbol)
+                           (operation null))
+  (cl-call-next-method user
+                       ctsk
+                       property
+                       nil))
+
+
 (cl-defmethod occ-obj-to-org ((property symbol)
                               build-list-p
                               value)
@@ -412,36 +472,11 @@ method provided."))))
                               (operation symbol)
                               value)
   (cl-call-next-method property
-                       nil
+                       (memq operation
+                             '(put list delete t))
                        value))
-
-
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation null)
-                              value)
-  (cl-call-next-method))
-
-
-(cl-defmethod occ-obj-to-org ((property symbol)
-                              (operation (eql put))
-                              value)
-  (cl-call-next-method))
-
-
-(cl-defmethod occ-obj-to-org ((property symbol)
-                              (operation (eql t))
-                              value)
-  (cl-call-next-method))
-
-
-(cl-defmethod occ-obj-to-org ((property symbol)
-                              (operation (eql list))
-                              value)
-  (cl-call-next-method))
-
-
-(cl-defmethod occ-obj-to-org ((property symbol)
-                              (operation (eql delete))
                               value)
   (cl-call-next-method))
 
@@ -459,36 +494,15 @@ method provided."))))
         (let ((operation build-list-p))
           (occ-error "Property `%s' is not type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))
       (occ-obj-intf-from-org prop value))))
-
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation symbol)
                                 value)
   (cl-call-next-method property
-                       nil
+                       (memq operation
+                             '(put list delete t))
                        value))
-
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation null)
-                                value)
-  (cl-call-next-method))
-
-(cl-defmethod occ-obj-from-org ((property symbol)
-                                (operation (eql put))
-                                value)
-  (cl-call-next-method))
-
-(cl-defmethod occ-obj-from-org ((property symbol)
-                                (operation (eql t))
-                                value)
-  (cl-call-next-method))
-
-(cl-defmethod occ-obj-from-org ((property symbol)
-                                (operation (eql list))
-                                value)
-  (cl-call-next-method))
-
-(cl-defmethod occ-obj-from-org ((property symbol)
-                                (operation (eql delete))
                                 value)
   (cl-call-next-method))
 ;; TODO: Implement Plist with title here (??)

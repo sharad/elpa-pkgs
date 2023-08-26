@@ -76,7 +76,7 @@
                                     value)
   "Accept occ compatible VALUES")
 
-(cl-defmethod occ-do-op-prop-edit ((obj  occ-obj-tsk)
+(cl-defmethod occ-do-op-prop-edit ((obj  occ-obj-ctx-tsk) ;; occ-obj-tsk
                                    (prop symbol)
                                    &optional
                                    operation ;; BUG: TODO - ((operation (eql add)) , (operation (eql remove))) .
@@ -88,17 +88,18 @@
   (let ((operation  (or operation
                         (occ-obj-select-operation obj prop value)))
         (prop-value (or value
-                        (occ-obj-intf-get (occ-get-user-agent)
-                                          ;; BUG: TODO: make arrangement to read multiple values
-                                          obj
-                                          prop))))
+                        (occ-obj-get (occ-get-user-agent)
+                                     ;; BUG: TODO: make arrangement to read multiple values
+                                     obj
+                                     prop
+                                     operation))))
     (occ-assert operation)
     (occ-debug "(occ-do-op-prop-edit occ-obj-tsk): operation %s prop %s" operation prop)
-    (occ-do-intf-operation obj
-                           operation
-                           prop
-                           ;; BUG: TODO - add, remove use VALUE of add, use PROP-VALUE for remove . -- (occ-intf-match operation value prop ) -- pass operation to return value or matched value
-                           prop-value)))
+    (occ-do-operation obj
+                      operation
+                      prop
+                      ;; BUG: TODO - add, remove use VALUE of add, use PROP-VALUE for remove . -- (occ-intf-match operation value prop ) -- pass operation to return value or matched value
+                      prop-value)))
 
 ;; Usage not implemented
 ;; (occ-do-op-props-edit obj '(timebeing add 10)) in occ-obj-try-fast-clock-in and occ-obj-try-until-associable-p

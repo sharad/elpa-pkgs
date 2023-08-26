@@ -40,7 +40,8 @@
   ;; too much output
   ;; (occ-debug "occ-obj-rank(tsk-pair=%s ctx=%s)" tsk-pair ctx)
   (occ-debug "occ-obj-intf-rank(obj=%s symbol=%s)" obj property)
-  (occ-obj-impl-rank obj property))
+  (occ-obj-impl-rank obj
+                     property))
 (cl-defmethod occ-obj-intf-rank ((obj  occ-tsk)
                                  (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
@@ -134,9 +135,9 @@
 
 
 ;; (cl-defgeneric occ-obj-get-property-value-from-ctx (obj
-(cl-defgeneric occ-obj-get-property-value-from-ctx (obj
-                                                    property)
-  "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
+;; (cl-defgeneric occ-obj-get-property-value-from-ctx (obj
+;;                                                     property)
+;;   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
 
 (cl-defgeneric occ-obj-intf-get (ctx
                                  property
@@ -153,17 +154,17 @@
 
 
 ;; (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk)
-(cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk)
-                                          (property symbol))
-  "Read value of list of elements if (occ-obj-intf-list-p PROPERTY) else
-element for property PROPERTY from user for OCC-TSK OBJ, must
-return ORG compatible value."
-  (ignore obj)
-  (occ-error "Implement method occ-obj-readprop-from-user for property %s" property))
+;; (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk)
+;;                                           (property symbol))
+;;   "Read value of list of elements if (occ-obj-intf-list-p PROPERTY) else
+;; element for property PROPERTY from user for OCC-TSK OBJ, must
+;; return ORG compatible value."
+;;   (ignore obj)
+;;   (occ-error "Implement method occ-obj-readprop-from-user for property %s" property))
 
 (cl-defmethod occ-obj-intf-get ((user occ-user-agent)
                                 (property symbol)
-                                (ctsk occ-obj-tsk))
+                                (ctsk occ-obj-ctx-tsk))
   "Read value of list of elements if (occ-obj-intf-list-p PROPERTY) else
 element for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value."
@@ -330,27 +331,22 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                          property
                          values))
 
-(cl-defmethod occ-do-intf-operation :around ((obj       occ-obj-tsk)
-                                             (operation symbol)
-                                             (prop      symbol)
-                                             values)
-  "Accept occ compatible VALUES"
-  (occ-message "I should be called FIRST.")
-  (occ-debug "(occ-do-intf-operation occ-obj-tsk): operation %s prop %s" operation prop)
-  (if (occ-do-intf-operation (occ-obj-marker obj)
-                             operation
-                             prop
-                             values)
-      (cl-call-next-method)
-      ;; (occ-do-intf-operation obj
-      ;;                        operation
-      ;;                        prop
-      ;;                        values)
-    (occ-error "Failed to %s on marker %s of %s in org world"
-               operation
-               (occ-obj-marker obj)
-               (occ-obj-Format obj))))
-
+;; (cl-defmethod occ-do-intf-operation :around ((obj       occ-obj-tsk)
+;;                                              (operation symbol)
+;;                                              (prop      symbol)
+;;                                              values)
+;;   "Accept occ compatible VALUES"
+;;   (occ-message "I should be called FIRST.")
+;;   (occ-debug "(occ-do-intf-operation occ-obj-tsk): operation %s prop %s" operation prop)
+;;   (if (occ-do-intf-operation (occ-obj-marker obj)
+;;                              operation
+;;                              prop
+;;                              values)
+;;       (cl-call-next-method)
+;;     (occ-error "Failed to %s on marker %s of %s in org world"
+;;                operation
+;;                (occ-obj-marker obj)
+;;                (occ-obj-Format obj))))
 
 
 ;; (cl-defgeneric occ-do-checkout-prop (obj
