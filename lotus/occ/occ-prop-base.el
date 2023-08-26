@@ -448,10 +448,7 @@ method provided."))))
                            (ctsk occ-obj-ctx-tsk)
                            (property symbol)
                            (operation null))
-  (cl-call-next-method user
-                       ctsk
-                       property
-                       nil))
+  (cl-call-next-method))
 
 
 (cl-defmethod occ-obj-to-org ((property symbol)
