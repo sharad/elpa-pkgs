@@ -394,20 +394,52 @@ method provided."))))
         '(add remove get put member)))
 
 
-
 (cl-defmethod occ-obj-to-org-internal ((property symbol)
-                                       value
-                                       build-list-p)
+                                       build-list-p
+                                       value)
   (if (occ-obj-intf-list-p prop)
       (if build-list-p
-          (mapcar)
-        (occ-obj-intf-to-org prop prop value))
+          (mapcar #'(lambda (v)
+                      (occ-obj-intf-to-org prop v))
+                  value)
+        (occ-obj-intf-to-org prop value))
     (if build-list-p
-        (occ-error ""))))
+        (occ-error "")
+      (occ-obj-intf-to-org prop value))))
 
+(cl-defmethod occ-obj-to-org ((property symbol)
+                              (operation symbol)
+                              value)
+  (occ-obj-to-org-internal property
+                           nil
+                           value))
 
+(cl-defmethod occ-obj-to-org ((property symbol)
+                              (operation (eql put))
+                              value)
+  (if (occ-obj-intf-list-p prop)
+      (occ-obj-to-org-internal property
+                               t
+                               value)
+    (occ-error "Property `%s' is not type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation)))))
+
+(cl-defmethod occ-obj-to-org ((property symbol)
+                              (operation (eql delete))
+                              value)
+  (if (occ-obj-intf-list-p prop)
+      (occ-obj-to-org-internal property
+                               t
+                               value)
+    (occ-error "Property `%s' is not type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation)))))
 
-;; TODO: Implement Plist with title here (??)
+
+(cl-defmethod occ-obj-from-org ((property symbol)
+                                (operation symbol)
+                                value)
+  (occ-obj-to-org-internal property
+                           nil
+                           value))
+;; TODO: Implement Plist with title here (??)
 
 
 ;;; occ-prop.el ends here

@@ -186,9 +186,10 @@ for prop MEMBER and VALUES"
                                                         prop-string
                                                         value)
         (string= value
-                 (occ-obj-intf-to-org prop
-                                      (occ-org-entry-get pom
-                                                         prop-string))))))
+                 (occ-obj-to-org prop
+                                 operation
+                                 (occ-org-entry-get pom
+                                                    prop-string))))))
 
 
 (cl-defmethod occ-do-org-operation :around ((mrk  marker)
@@ -236,8 +237,9 @@ PROP and VALUES"
   (occ-do-org-operation (occ-obj-marker obj)
                         operation
                         prop
-                        (occ-obj-intf-to-org prop
-                                             value)))
+                        (occ-obj-to-org prop
+                                        operation
+                                        value)))
 
 
 (cl-defmethod occ-do-readprop-org ((obj  occ-obj-ctx-tsk)
@@ -264,7 +266,7 @@ PROP and VALUES"
     (let* ((values (occ-obj-get-property tsk prop))
            (values (if (consp values) values (list values)))
            (values (mapcar #'(lambda (v)
-                               (occ-obj-intf-to-org prop v))
+                               (occ-obj-to-org prop 'put v))
                            values)))
       (occ-do-org-operation tsk
                             prop
