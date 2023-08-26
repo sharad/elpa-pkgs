@@ -404,7 +404,8 @@ method provided."))))
                   value)
         (occ-obj-intf-to-org prop value))
     (if build-list-p
-        (occ-error "")
+        (let ((operation build-list-p))
+          (occ-error "Property `%s' is not type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))
       (occ-obj-intf-to-org prop value))))
 
 (cl-defmethod occ-obj-to-org ((property symbol)
@@ -415,30 +416,96 @@ method provided."))))
                            value))
 
 (cl-defmethod occ-obj-to-org ((property symbol)
+                              (operation null)
+                              value)
+  (occ-obj-to-org-internal property
+                           nil
+                           value))
+
+(cl-defmethod occ-obj-to-org ((property symbol)
                               (operation (eql put))
                               value)
-  (if (occ-obj-intf-list-p prop)
-      (occ-obj-to-org-internal property
-                               t
-                               value)
-    (occ-error "Property `%s' is not type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation)))))
+  (occ-obj-to-org-internal property
+                           operation
+                           value))
+
+(cl-defmethod occ-obj-to-org ((property symbol)
+                              (operation (eql t))
+                              value)
+  (occ-obj-to-org-internal property
+                           operation
+                           value))
+
+(cl-defmethod occ-obj-to-org ((property symbol)
+                              (operation (eql list))
+                              value)
+  (occ-obj-to-org-internal property
+                           operation
+                           value))
 
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation (eql delete))
                               value)
-  (if (occ-obj-intf-list-p prop)
-      (occ-obj-to-org-internal property
-                               t
-                               value)
-    (occ-error "Property `%s' is not type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation)))))
+  (occ-obj-to-org-internal property
+                           operatoin
+                           value))
 
+
+(cl-defmethod occ-obj-from-org-internal ((property symbol)
+                                         build-list-p
+                                         value)
+  (if (occ-obj-intf-list-p prop)
+      (if build-list-p
+          (mapcar #'(lambda (v)
+                      (occ-obj-intf-from-org prop v))
+                  value)
+        (occ-obj-intf-from-org prop value))
+    (if build-list-p
+        (let ((operation build-list-p))
+          (occ-error "Property `%s' is not type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))
+      (occ-obj-intf-from-org prop value))))
 
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation symbol)
                                 value)
-  (occ-obj-to-org-internal property
-                           nil
-                           value))
+  (occ-obj-from-org-internal property
+                             nil
+                             value))
+
+(cl-defmethod occ-obj-from-org ((property symbol)
+                                (operation null)
+                                value)
+  (occ-obj-from-org-internal property
+                             nil
+                             value))
+
+(cl-defmethod occ-obj-from-org ((property symbol)
+                                (operation (eql put))
+                                value)
+  (occ-obj-from-org-internal property
+                             operation
+                             value))
+
+(cl-defmethod occ-obj-from-org ((property symbol)
+                                (operation (eql t))
+                                value)
+  (occ-obj-from-org-internal property
+                             operation
+                             value))
+
+(cl-defmethod occ-obj-from-org ((property symbol)
+                                (operation (eql list))
+                                value)
+  (occ-obj-from-org-internal property
+                             operation
+                             value))
+
+(cl-defmethod occ-obj-from-org ((property symbol)
+                                (operation (eql delete))
+                                value)
+  (occ-obj-from-org-internal property
+                             operatoin
+                             value))
 ;; TODO: Implement Plist with title here (??)
 
 
