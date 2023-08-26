@@ -102,18 +102,18 @@
 (cl-defgeneric occ-do-org-operation (pom
                                      operation
                                      prop
-                                     values)
+                                     value)
   "Org operation implementation of OPERATION on POINT-OF-MARKER for
 PROP and VALUES")
 
 (cl-defmethod occ-do-org-operation ((pom  marker)
                                     (operation (eql get))
                                     (prop symbol)
-                                    values)
+                                    value)
   "Org operation implementation of OPERATION on POINT-OF-MARKER for
 prop GET and VALUES"
   (ignore operation)
-  (ignore values)
+  (ignore value)
   (let ((prop-string (symbol-name prop)))
       (if (occ-obj-intf-list-p prop)
           (occ-org-entry-get-multivalued-property pom
@@ -124,7 +124,7 @@ prop GET and VALUES"
 (cl-defmethod occ-do-org-operation ((pom  marker)
                                     (operation (eql add))
                                     (prop symbol)
-                                    values)
+                                    value)
   "Org operation implementation of OPERATION on POINT-OF-MARKER for
 prop ADD and VALUES"
   (ignore operation)
@@ -132,29 +132,25 @@ prop ADD and VALUES"
       (if (occ-obj-intf-list-p prop)
           (occ-org-entry-add-to-multivalued-property pom
                                                      prop-string
-                                                     (cl-first values))
-        (occ-org-entry-put pom
-                           prop-string
-                           (cl-first values)))))
+                                                     value)
+        (occ-error "Property `%s' is type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))))
 
 (cl-defmethod occ-do-org-operation ((pom  marker)
                                     (operation (eql put))
                                     (prop symbol)
-                                    values)
+                                    value)
   "Org operation implementation of OPERATION on POINT-OF-MARKER
 for prop PUT and VALUES"
   (ignore operation)
   (let ((prop-string (symbol-name prop)))
-      (if (occ-obj-intf-list-p prop)
-          (occ-org-entry-put-multivalued-property pom
-                                                  prop-string
-                                                  values)
-        (occ-error "Property `%s' is type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))))
+    (occ-org-entry-put-multivalued-property pom
+                                            prop-string
+                                            value)))
 
 (cl-defmethod occ-do-org-operation ((pom  marker)
                                     (operation (eql remove))
                                     (prop symbol)
-                                    values)
+                                    value)
   "Org operation implementation of OPERATION on POINT-OF-MARKER
 for prop REMOVE and VALUES"
   (ignore operation)
@@ -162,25 +158,25 @@ for prop REMOVE and VALUES"
       (if (occ-obj-intf-list-p prop)
           (occ-org-entry-remove-from-multivalued-property pom
                                                           prop-string
-                                                          (cl-first values))
-        (occ-error "Implement it."))))
+                                                          values)
+        (occ-error "Property `%s' is type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))))
 
 (cl-defmethod occ-do-org-operation ((pom  marker)
                                     (operation (eql delete))
                                     (prop symbol)
-                                    values)
+                                    value)
   "Org operation implementation of OPERATION on POINT-OF-MARKER
 for prop REMOVE and VALUES"
   (ignore operation)
   (let ((prop-string (symbol-name prop)))
     (occ-org-entry-delete pom
                           prop-string
-                          values)))
+                          value)))
 
 (cl-defmethod occ-do-org-operation ((pom  marker)
                                     (operation (eql member))
                                     (prop symbol)
-                                    values)
+                                    value)
   "Org operation implementation of OPERATION on POINT-OF-MARKER
 for prop MEMBER and VALUES"
   (ignore operation)
@@ -188,10 +184,11 @@ for prop MEMBER and VALUES"
       (if (occ-obj-intf-list-p prop)
           (occ-org-entry-member-in-multivalued-property pom
                                                         prop-string
-                                                        (cl-first values))
-        (string= (cl-first values)
-                 (occ-org-entry-get pom
-                                    prop-string)))))
+                                                        value)
+        (string= value
+                 (occ-obj-intf-to-org prop
+                                      (occ-org-entry-get pom
+                                                         prop-string))))))
 
 
 (cl-defmethod occ-do-org-operation :around ((mrk  marker)
@@ -239,26 +236,8 @@ PROP and VALUES"
   (occ-do-org-operation (occ-obj-marker obj)
                         operation
                         prop
-                        value))
-
-
-;; (cl-defgeneric occ-obj-org-call-operation (pom
-;;                                            prop
-;;                                            operation
-;;                                            values)
-;;   "occ-obj-org-call-operation")
-
-;; (cl-defmethod occ-obj-org-call-operation ((pom  marker)
-;;                                           (prop symbol)
-;;                                           (operation symbol)
-;;                                           values)
-;;   "Accept org compatible VALUES"
-;;   ;; (unless (occ-obj-valid-p prop operation)
-;;   ;;   (occ-error "occ-obj-org-call-operation: operation %s is not allowed for prop %s" operation prop))
-;;   (occ-do-org-operation pom
-;;                         operation
-;;                         prop
-;;                         values))
+                        (occ-obj-intf-to-org prop
+                                             value)))
 
 
 (cl-defmethod occ-do-readprop-org ((obj  occ-obj-ctx-tsk)

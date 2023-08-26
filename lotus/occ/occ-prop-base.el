@@ -394,6 +394,19 @@ method provided."))))
         '(add remove get put member)))
 
 
+
+(cl-defmethod occ-obj-to-org-internal ((property symbol)
+                                       value
+                                       build-list-p)
+  (if (occ-obj-intf-list-p prop)
+      (if build-list-p
+          (mapcar)
+        (occ-obj-intf-to-org prop prop value))
+    (if build-list-p
+        (occ-error ""))))
+
+
+
 ;; TODO: Implement Plist with title here (??)
 
 
