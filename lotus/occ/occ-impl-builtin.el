@@ -190,7 +190,7 @@
                               ;;        (list (cl-first values)))
                               (cons value
                                     (occ-obj-get-property tsk prop)))
-      (occ-error "Property `%s' is type of LIST, ADD operation not applied to it."))))
+      (occ-error "Property `%s' is type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))))
       ;; (occ-obj-set-property tsk prop
       ;;                       (cl-first values))
 
@@ -215,7 +215,7 @@
                               ;;         (occ-obj-get-property tsk prop))
                               (remove value
                                       (occ-obj-get-property tsk prop)))
-      (occ-error "Property `%s' is type of LIST, REMOVE operation not applied to it."))))
+      (occ-error "Property `%s' is type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))))
 
 (cl-defmethod occ-do-impl-operation ((obj       occ-obj-tsk)
                                      (operation (eql delete))

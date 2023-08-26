@@ -149,9 +149,7 @@ for prop PUT and VALUES"
           (occ-org-entry-put-multivalued-property pom
                                                   prop-string
                                                   values)
-        (occ-org-entry-put pom
-                           prop-string
-                           (cl-first values)))))
+        (occ-error "Property `%s' is type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))))
 
 (cl-defmethod occ-do-org-operation ((pom  marker)
                                     (operation (eql remove))

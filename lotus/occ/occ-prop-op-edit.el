@@ -35,43 +35,6 @@
 (require 'occ-impl-builtin)
 
 
-;; (cl-defgeneric occ-obj-call-operation (obj
-;;                                        prop
-;;                                        operation
-;;                                        values)
-;;   "Accept occ compatible VALUES")
-
-;; (cl-defmethod occ-obj-call-operation ((obj       marker)
-;;                                       (operation symbol)
-;;                                       (prop      symbol)
-;;                                       values)
-;;   "Accept occ compatible VALUES"
-;;   (occ-debug "(occ-obj-call-operation marker): operation %s prop %s" operation prop)
-;;   (occ-do-intf-operation obj
-;;                          operation
-;;                          prop
-;;                          values))
-
-;; (cl-defmethod occ-obj-call-operation ((obj       occ-obj-tsk)
-;;                                       (operation symbol)
-;;                                       (prop      symbol)
-;;                                       values)
-;;   "Accept occ compatible VALUES"
-;;   (occ-debug "(occ-obj-call-operation occ-obj-tsk): operation %s prop %s" operation prop)
-;;   (if (occ-do-intf-operation (occ-obj-marker obj)
-;;                              operation
-;;                              prop
-;;                              values)
-;;       (occ-do-intf-operation obj
-;;                              operation
-;;                              prop
-;;                              values)
-;;     (occ-error "Failed to %s on marker %s of %s in org world"
-;;                operation
-;;                (occ-obj-marker obj)
-;;                (occ-obj-Format obj))))
-
-
 (cl-defgeneric occ-obj-select-operation (obj
                                          prop)
   "occ-obj-select-operation")
@@ -126,6 +89,7 @@
                         (occ-obj-select-operation obj prop value)))
         (prop-value (or value
                         (occ-obj-intf-get (occ-get-user-agent)
+                                          ;; BUG: TODO: make arrangement to read multiple values
                                           obj
                                           prop))))
     (occ-assert operation)
@@ -133,10 +97,8 @@
     (occ-do-intf-operation obj
                            operation
                            prop
-                           ;; BUG: TODO - add, remove use VALUE of add, use PROP-VALUE for remove .
-                           (if (consp prop-value)
-                               prop-value
-                             (list prop-value)))))
+                           ;; BUG: TODO - add, remove use VALUE of add, use PROP-VALUE for remove . -- (occ-intf-match operation value prop ) -- pass operation to return value or matched value
+                           prop-value)))
 
 ;; Usage not implemented
 ;; (occ-do-op-props-edit obj '(timebeing add 10)) in occ-obj-try-fast-clock-in and occ-obj-try-until-associable-p
