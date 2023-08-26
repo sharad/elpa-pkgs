@@ -253,8 +253,9 @@ PROP and VALUES"
                                                   prop
                                                   'get)))
       (mapcar #'(lambda (v)
-                  (occ-obj-intf-from-org prop
-                                         v))
+                  (occ-obj-from-org prop
+                                    nil
+                                    v))
               values))))
 
 (cl-defmethod occ-do-writeprop-org ((obj  occ-obj-ctx-tsk)
