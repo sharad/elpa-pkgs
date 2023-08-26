@@ -230,8 +230,8 @@ PROP and VALUES"
 (cl-defmethod occ-obj-org-operation-at-point ((mrk  marker)
                                               (prop symbol)
                                               operation
-                                              values)
-  "Accept org compatible VALUES"
+                                              value)
+  "Accept org compatible VALUE"
   (unless (occ-obj-valid-p operation prop)
     (occ-error "occ-obj-org-call-operation: operation %s is not allowed for prop %s" operation prop))
   (lotus-with-marker mrk
@@ -247,22 +247,22 @@ PROP and VALUES"
               (goto-char start))
           (occ-error "occ-obj-org-operation-at-point: not able to create property block to add property %s: %s"
                      prop
-                     values))))
+                     value))))
 
     (if (org-get-property-block)
         (progn
           (occ-debug "occ-obj-org-operation-at-point: adding prop: %s value: %s using (org-set-property)."
                      prop
-                     values)
+                     value)
           (let ((retval (occ-obj-org-operation mrk
                                                prop
                                                operation
-                                               values)))
+                                               value)))
             (occ-debug "occ-obj-org-operation: (occ-obj-org-operation mrk) returned %s" retval)
             retval))
         (occ-error "occ-obj-org-operation-at-point: can not get property block to add property %s: %s"
                    prop
-                   values))))
+                   value))))
 
 
 (cl-defmethod occ-do-readprop-org ((obj  occ-obj-ctx-tsk)
