@@ -419,7 +419,7 @@ method provided."))))
                               (operation null)
                               value)
   (occ-obj-to-org-internal property
-                           nil
+                           operation
                            value))
 
 (cl-defmethod occ-obj-to-org ((property symbol)
@@ -480,7 +480,7 @@ method provided."))))
                                 (operation null)
                                 value)
   (occ-obj-from-org-internal property
-                             nil
+                             operation
                              value))
 
 (cl-defmethod occ-obj-from-org ((property symbol)
