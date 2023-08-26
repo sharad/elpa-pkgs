@@ -341,10 +341,11 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                              operation
                              prop
                              values)
-      (occ-do-intf-operation obj
-                             operation
-                             prop
-                             values)
+      (cl-call-next-method)
+      ;; (occ-do-intf-operation obj
+      ;;                        operation
+      ;;                        prop
+      ;;                        values)
     (occ-error "Failed to %s on marker %s of %s in org world"
                operation
                (occ-obj-marker obj)

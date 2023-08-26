@@ -394,9 +394,9 @@ method provided."))))
         '(add remove get put member)))
 
 
-(cl-defmethod occ-obj-to-org-internal ((property symbol)
-                                       build-list-p
-                                       value)
+(cl-defmethod occ-obj-to-org ((property symbol)
+                              build-list-p
+                              value)
   (if (occ-obj-intf-list-p prop)
       (if build-list-p
           (mapcar #'(lambda (v)
@@ -411,58 +411,67 @@ method provided."))))
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation symbol)
                               value)
-  (occ-obj-to-org-internal property
-                           nil
-                           value))
+  (cl-call-next-method property
+                       nil
+                       value))
+  ;; (occ-obj-to-org-internal property
+  ;;                          nil
+  ;;                          value)
+
 
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation null)
                               value)
-  (occ-obj-to-org-internal property
-                           operation
-                           value))
+  (cl-call-next-method))
+  ;; (occ-obj-to-org-internal property
+  ;;                          operation
+  ;;                          value)
+
 
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation (eql put))
                               value)
-  (occ-obj-to-org-internal property
-                           operation
-                           value))
+  (cl-call-next-method))
+  ;; (occ-obj-to-org-internal property
+  ;;                          operation
+  ;;                          value)
+
 
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation (eql t))
                               value)
-  (occ-obj-to-org-internal property
-                           operation
-                           value))
+  (cl-call-next-method))
+  ;; (occ-obj-to-org-internal property
+  ;;                          operation
+  ;;                          value)
+
 
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation (eql list))
                               value)
-  (occ-obj-to-org-internal property
-                           operation
-                           value))
+  (cl-call-next-method))
+  ;; (occ-obj-to-org-internal property
+  ;;                          operation
+  ;;                          value)
+
 
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation (eql delete))
                               value)
-  (occ-obj-to-org-internal property
-                           operatoin
-                           value))
+  (cl-call-next-method))
+  ;; (occ-obj-to-org-internal property
+  ;;                          operatoin
+  ;;                          value)
 
 
-(cl-defmethod occ-obj-from-org-internal ((property symbol)
-                                         build-list-p
-                                         value)
+(cl-defmethod occ-obj-from-org ((property symbol)
+                                build-list-p
+                                value)
   (if (occ-obj-intf-list-p prop)
       (if build-list-p
-          (if (consp value)             ;BUG: TODO: cut value into list -- check if it is done in org-entry-get-multivalued-property
-              (mapcar #'(lambda (v)
-                          (occ-obj-intf-from-org prop v))
-                      value)
-            (occ-error "VALUE `%s' for PROPERTY `%s' is not list"
-                       value
-                       property))
+          (mapcar #'(lambda (v)
+                      (occ-obj-intf-from-org prop v))
+                  value)
         (occ-obj-intf-from-org prop value))
     (if build-list-p
         (let ((operation build-list-p))
@@ -472,44 +481,57 @@ method provided."))))
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation symbol)
                                 value)
-  (occ-obj-from-org-internal property
-                             nil
-                             value))
+  (cl-call-next-method property
+                       nil
+                       value))
+  ;; (occ-obj-from-org-internal property
+  ;;                          nil
+  ;;                          value)
+
 
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation null)
                                 value)
-  (occ-obj-from-org-internal property
-                             operation
-                             value))
+  (cl-call-next-method))
+  ;; (occ-obj-from-org-internal property
+  ;;                          operation
+  ;;                          value)
+
 
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation (eql put))
                                 value)
-  (occ-obj-from-org-internal property
-                             operation
-                             value))
+  (cl-call-next-method))
+  ;; (occ-obj-from-org-internal property
+  ;;                          operation
+  ;;                          value)
+
 
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation (eql t))
                                 value)
-  (occ-obj-from-org-internal property
-                             operation
-                             value))
+  (cl-call-next-method))
+  ;; (occ-obj-from-org-internal property
+  ;;                          operation
+  ;;                          value)
+
 
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation (eql list))
                                 value)
-  (occ-obj-from-org-internal property
-                             operation
-                             value))
+  (cl-call-next-method))
+  ;; (occ-obj-from-org-internal property
+  ;;                          operation
+  ;;                          value)
+
 
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation (eql delete))
                                 value)
-  (occ-obj-from-org-internal property
-                             operatoin
-                             value))
+  (cl-call-next-method))
+  ;; (occ-obj-from-org-internal property
+  ;;                          operatoin
+  ;;                          value)
 ;; TODO: Implement Plist with title here (??)
 
 
