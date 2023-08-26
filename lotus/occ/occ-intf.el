@@ -311,15 +311,45 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                       property
                                       values)
   "Do the actual OPERATION.")
-(cl-defmethod occ-do-intf-operation (obj
-                                     operation
-                                     property
-                                     values)
+(cl-defmethod occ-do-intf-operation ((obj       marker)
+                                     (operation symbol)
+                                     (prop      symbol)
+                                     value)
   "Do the actual OPERATION."
   (occ-do-impl-operation obj
                          operation
                          property
                          values))
+(cl-defmethod occ-do-intf-operation ((obj       occ-obj-tsk)
+                                     (operation (eql add))
+                                     (prop      symbol)
+                                     value)
+  "Do the actual OPERATION."
+  (occ-do-impl-operation obj
+                         operation
+                         property
+                         values))
+
+(cl-defmethod occ-do-intf-operation :around ((obj       occ-obj-tsk)
+                                             (operation symbol)
+                                             (prop      symbol)
+                                             values)
+  "Accept occ compatible VALUES"
+  (occ-message "I should be called FIRST.")
+  (occ-debug "(occ-do-intf-operation occ-obj-tsk): operation %s prop %s" operation prop)
+  (if (occ-do-intf-operation (occ-obj-marker obj)
+                             operation
+                             prop
+                             values)
+      (occ-do-intf-operation obj
+                             operation
+                             prop
+                             values)
+    (occ-error "Failed to %s on marker %s of %s in org world"
+               operation
+               (occ-obj-marker obj)
+               (occ-obj-Format obj))))
+
 
 
 ;; (cl-defgeneric occ-do-checkout-prop (obj
