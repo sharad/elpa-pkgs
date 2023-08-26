@@ -456,9 +456,13 @@ method provided."))))
                                          value)
   (if (occ-obj-intf-list-p prop)
       (if build-list-p
-          (mapcar #'(lambda (v)
-                      (occ-obj-intf-from-org prop v))
-                  value)
+          (if (consp value)             ;BUG: TODO: cut value into list -- check if it is done in org-entry-get-multivalued-property
+              (mapcar #'(lambda (v)
+                          (occ-obj-intf-from-org prop v))
+                      value)
+            (occ-error "VALUE `%s' for PROPERTY `%s' is not list"
+                       value
+                       property))
         (occ-obj-intf-from-org prop value))
     (if build-list-p
         (let ((operation build-list-p))
