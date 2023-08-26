@@ -227,10 +227,10 @@ PROP and VALUES"
 ;;                         values))
 
 
-(cl-defmethod occ-obj-org-operation-at-point ((mrk  marker)
-                                              (prop symbol)
-                                              operation
-                                              value)
+(cl-defmethod occ-do-org-operation-at-point ((mrk  marker)
+                                             (prop symbol)
+                                             operation
+                                             value)
   "Accept org compatible VALUE"
   (unless (occ-obj-valid-p operation prop)
     (occ-error "occ-obj-org-call-operation: operation %s is not allowed for prop %s" operation prop))
@@ -238,29 +238,29 @@ PROP and VALUES"
     (unless (org-get-property-block)
       ;; create property drawer
       ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
-      (occ-debug "occ-obj-org-operation-at-point: property block not exist so creating it.")
+      (occ-debug "occ-do-org-operation-at-point: property block not exist so creating it.")
       (let* ((range (org-get-property-block (point) 'force))
              (start (when (consp range) (1- (cl-first range)))))
         (if (and range
                  start)
             (when (numberp start)
               (goto-char start))
-          (occ-error "occ-obj-org-operation-at-point: not able to create property block to add property %s: %s"
+          (occ-error "occ-do-org-operation-at-point: not able to create property block to add property %s: %s"
                      prop
                      value))))
 
     (if (org-get-property-block)
         (progn
-          (occ-debug "occ-obj-org-operation-at-point: adding prop: %s value: %s using (org-set-property)."
+          (occ-debug "occ-do-org-operation-at-point: adding prop: %s value: %s using (org-set-property)."
                      prop
                      value)
-          (let ((retval (occ-obj-org-operation mrk
-                                               prop
-                                               operation
-                                               value)))
-            (occ-debug "occ-obj-org-operation: (occ-obj-org-operation mrk) returned %s" retval)
+          (let ((retval (occ-do-org-operation mrk ;; occ-do-org-operation
+                                              prop
+                                              operation
+                                              value)))
+            (occ-debug "occ-do-org-operation: (occ-do-org-operation mrk) returned %s" retval)
             retval))
-        (occ-error "occ-obj-org-operation-at-point: can not get property block to add property %s: %s"
+        (occ-error "occ-do-org-operation-at-point: can not get property block to add property %s: %s"
                    prop
                    value))))
 
@@ -272,9 +272,9 @@ PROP and VALUES"
         (ctx (occ-obj-ctx obj)))
     (ignore ctx)
     (let* ((mrk    (or (occ-obj-marker tsk) (point)))
-           (values (occ-obj-org-operation-at-point mrk
-                                                   prop
-                                                   'get)))
+           (values (occ-do-org-operation-at-point mrk
+                                                  prop
+                                                  'get)))
       (mapcar #'(lambda (v)
                   (occ-obj-intf-from-org prop
                                          v))
@@ -291,9 +291,9 @@ PROP and VALUES"
            (values (mapcar #'(lambda (v)
                                (occ-obj-intf-to-org prop v))
                            values)))
-      (occ-obj-org-operation-at-point (occ-obj-marker tsk)
-                                      prop
-                                      'put
-                                      values))))
+      (occ-do-org-operation-at-point (occ-obj-marker tsk)
+                                     prop
+                                     'put
+                                     values))))
 
 ;;; occ-prop-org.el ends here
