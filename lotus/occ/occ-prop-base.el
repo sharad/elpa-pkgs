@@ -414,54 +414,36 @@ method provided."))))
   (cl-call-next-method property
                        nil
                        value))
-  ;; (occ-obj-to-org-internal property
-  ;;                          nil
-  ;;                          value)
 
 
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation null)
                               value)
   (cl-call-next-method))
-  ;; (occ-obj-to-org-internal property
-  ;;                          operation
-  ;;                          value)
 
 
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation (eql put))
                               value)
   (cl-call-next-method))
-  ;; (occ-obj-to-org-internal property
-  ;;                          operation
-  ;;                          value)
 
 
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation (eql t))
                               value)
   (cl-call-next-method))
-  ;; (occ-obj-to-org-internal property
-  ;;                          operation
-  ;;                          value)
 
 
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation (eql list))
                               value)
   (cl-call-next-method))
-  ;; (occ-obj-to-org-internal property
-  ;;                          operation
-  ;;                          value)
 
 
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation (eql delete))
                               value)
   (cl-call-next-method))
-  ;; (occ-obj-to-org-internal property
-  ;;                          operatoin
-  ;;                          value)
 
 
 (cl-defmethod occ-obj-from-org ((property symbol)
@@ -484,54 +466,31 @@ method provided."))))
   (cl-call-next-method property
                        nil
                        value))
-  ;; (occ-obj-from-org-internal property
-  ;;                          nil
-  ;;                          value)
-
 
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation null)
                                 value)
   (cl-call-next-method))
-  ;; (occ-obj-from-org-internal property
-  ;;                          operation
-  ;;                          value)
-
 
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation (eql put))
                                 value)
   (cl-call-next-method))
-  ;; (occ-obj-from-org-internal property
-  ;;                          operation
-  ;;                          value)
-
 
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation (eql t))
                                 value)
   (cl-call-next-method))
-  ;; (occ-obj-from-org-internal property
-  ;;                          operation
-  ;;                          value)
-
 
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation (eql list))
                                 value)
   (cl-call-next-method))
-  ;; (occ-obj-from-org-internal property
-  ;;                          operation
-  ;;                          value)
-
 
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation (eql delete))
                                 value)
   (cl-call-next-method))
-  ;; (occ-obj-from-org-internal property
-  ;;                          operatoin
-  ;;                          value)
 ;; TODO: Implement Plist with title here (??)
 
 
