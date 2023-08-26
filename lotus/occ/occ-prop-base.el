@@ -431,7 +431,9 @@ method provided."))))
                           prop))
     (if build-list-p
         (let ((operation build-list-p))
-          (occ-error "Property `%s' is not type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))
+          (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
+                     prop
+                     (upcase (symbol-name operation))))
       (occ-obj-intf-get user
                         ctsk
                         prop))))
@@ -462,7 +464,9 @@ method provided."))))
         (occ-obj-intf-to-org prop value))
     (if build-list-p
         (let ((operation build-list-p))
-          (occ-error "Property `%s' is not type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))
+          (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
+                     prop
+                     (upcase (symbol-name operation))))
       (occ-obj-intf-to-org prop value))))
 
 (cl-defmethod occ-obj-to-org ((property symbol)
@@ -489,7 +493,9 @@ method provided."))))
         (occ-obj-intf-from-org prop value))
     (if build-list-p
         (let ((operation build-list-p))
-          (occ-error "Property `%s' is not type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))
+          (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
+                     prop
+                     (upcase (symbol-name operation))))
       (occ-obj-intf-from-org prop value))))
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation symbol)
