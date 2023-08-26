@@ -142,13 +142,13 @@
   "Accept occ compatible VALUES"
   (occ-debug "(occ-do-impl-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
   (let ((mrk (occ-obj-marker obj)))
-    (let ((retval (occ-obj-org-call-operation-at-point mrk ;work in org file
-                                                       prop
-                                                       operation
-                                                       ;; going to org world
-                                                       (occ-obj-intf-to-org prop
-                                                                            value))))
-      (occ-debug "occ-do-impl-operation: (occ-obj-org-call-operation-at-point mrk) returnd %s" retval)
+    (let ((retval (occ-obj-org-operation-at-point mrk ;work in org file
+                                                  prop
+                                                  operation
+                                                  ;; going to org world
+                                                  (occ-obj-intf-to-org prop
+                                                                       value))))
+      (occ-debug "occ-do-impl-operation: (occ-obj-org-operation-at-point mrk) returnd %s" retval)
       retval)))
 
 ;; (cl-defmethod occ-do-impl-operation ((obj       occ-obj-tsk)
