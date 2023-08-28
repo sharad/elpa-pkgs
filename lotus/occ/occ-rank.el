@@ -103,7 +103,7 @@
 (cl-defmethod occ-obj-calculate-varirank ((obj occ-ctx))
   ;; too much output
   (occ-debug "occ-obj-calculate-varirank(occ-ctx=%s)"
-             obj)
+             (occ-obj-format obj))
   (let* ((objs      (occ-obj-list obj
                                   :builder #'occ-obj-build-ctxual-tsk-with))
          (rankslist (mapcar #'occ-obj-rank

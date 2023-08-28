@@ -41,19 +41,19 @@
   "Return the RANK (number) for OBJ based on the property PROPERTY"
   ;; too much output
   ;; (occ-debug "occ-obj-rank(tsk-pair=%s ctx=%s)" tsk-pair ctx)
-  (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)" obj property)
+  (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)" (occ-obj-format obj) property)
   0)
 (cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
                                  (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
   (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)"
-             obj
+             (occ-obj-format obj)
              property)
   0)
 (cl-defmethod occ-obj-impl-rank ((obj  occ-obj-ctx-tsk)
                                  (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)" obj property)
+  (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)" (occ-obj-format obj) property)
   (occ-obj-impl-rank obj property))
 
 
@@ -62,13 +62,13 @@
                                  (property (eql nil)))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
   (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)"
-             obj
+             (occ-obj-format obj)
              property)
   0)
 (cl-defmethod occ-obj-impl-rank ((obj  occ-obj-ctx-tsk)
                                  (property (eql nil)))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)" obj property)
+  (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)" (occ-obj-format obj) property)
   (occ-obj-impl-rank obj property))
 
 
