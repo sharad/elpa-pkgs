@@ -198,8 +198,8 @@ return ORG compatible value."
    property represent list or not."
   ;; 'list
   ;; (occ-error "Implement method occ-obj-intf-list-p for property %s" property)
-  (occ-debug "occ-obj-list-p: no method for property %s using default."
-             property)
+  ;; (occ-debug "occ-obj-list-p: no method for property %s using default."
+  ;;            property)
   (occ-obj-impl-list-p property))
 
 
@@ -215,8 +215,8 @@ representation.")
 convert value VALUE of property PROPERTY from occ to org string
 representation."
   ;; (occ-error "Implement method occ-obj-intf-to-org for property %s" property)
-  (occ-debug "occ-obj-intf-to-org: no method for property %s using default."
-             property)
+  ;; (occ-debug "occ-obj-intf-to-org: no method for property %s using default."
+  ;;            property)
   (occ-obj-impl-to-org property
                        value))
 
@@ -233,7 +233,7 @@ org string to occ representation.")
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
   ;; (occ-error "Implement method occ-obj-intf-from-org for property %s" property)
-  (occ-debug "occ-obj-intf-from-org: no method for property %s using default." property)
+  ;; (occ-debug "occ-obj-intf-from-org: no method for property %s using default." property)
   (occ-obj-impl-from-org property
                          value))
 (cl-defmethod occ-obj-intf-from-org ((property symbol)
@@ -242,7 +242,7 @@ org string to occ representation."
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
   ;; (occ-error "Implement method occ-obj-intf-from-org for property %s" property)
-  (occ-debug "occ-obj-intf-from-org: no method for property %s using default." property)
+  ;; (occ-debug "occ-obj-intf-from-org: no method for property %s using default." property)
   (occ-obj-impl-from-org property
                          value))
 
