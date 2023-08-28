@@ -514,7 +514,11 @@ method provided."))))
                                        (property symbol)
                                        (operation symbol)
                                        value)
-  (if (memq operation '(delete remove))
+  "Return value VALUE for for all except delete and remove
+OPERATION, return value TSK property value for VALUE for delete
+and remove OPERATION."
+  (if (memq operation
+            '(delete remove))
       (occ-obj-intf-match (occ-obj-tsk tsk)
                           property
                           value)
