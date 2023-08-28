@@ -173,19 +173,6 @@
 (cl-defmethod occ-obj-callable ((callable occ-callable))
   callable)
 
-;; (cl-defmethod occ-obj-callable-internal ((callable list)
-;;                                          (type symbol))
-;;   (let ((callable-ctor (if (eq type :normal)
-;;                            #'occ-obj-make-callable-normal
-;;                          (if (eq type :generator)
-;;                              #'occ-obj-make-callable-generator
-;;                            (occ-error "occ-obj-callable-internal: type is not one of (:normal :generator)")))))
-;;     (let ((keyword (nth 0 callable))
-;;           (name    (nth 1 callable))
-;;           (fun     (nth 2 callable)))
-;;       (funcall callable-ctor keyword name fun))))
-
-
 (cl-defmethod occ-obj-callable-build ((callable list)
                                       (type (eql :normal)))
   (if (= (length callable) 3)
@@ -214,13 +201,6 @@
 
 (cl-defmethod occ-obj-callable ((callable list))
   (occ-obj-callable-normal callable))
-
-;; TODO: Consider preparing
-;; (cl-defmethod occ-obj-callable-normal (xyz)
-;;   (occ-error "Implement it"))
-
-;; (cl-defmethod occ-obj-callable-generator (xyz)
-;;   (occ-error "Implement it"))
 
 
 (cl-defmethod occ-callable-desc     ((callable occ-callable))
