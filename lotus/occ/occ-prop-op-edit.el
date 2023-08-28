@@ -89,7 +89,10 @@
                     operation
                     prop
                     ;; BUG: TODO - add, remove use VALUE of add, use PROP-VALUE for remove . -- (occ-intf-match operation value prop ) -- pass operation to return value or matched value
-                    value))
+                    (occ-obj-operation-value (occ-obj-tsk obj)
+                                             prop
+                                             operation ;get value according to operation
+                                             value)))
 
 (cl-defmethod occ-do-op-prop-edit ((obj  occ-obj-ctx-tsk) ;; occ-obj-tsk
                                    (prop symbol)

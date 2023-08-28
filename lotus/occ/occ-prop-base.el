@@ -508,6 +508,33 @@ method provided."))))
                                 (operation null)
                                 value)
   (cl-call-next-method))
+
+
+(cl-defmethod occ-obj-operation-value ((tsk occ-obj-tsk)
+                                       (property symbol)
+                                       (operation symbol)
+                                       value)
+  (if (memq operation '(delete remove))
+      (occ-obj-intf-match (occ-obj-tsk tsk)
+                          property
+                          value)
+      value))
+
+;; (cl-defmethod occ-obj-op-value ((tsk occ-obj-tsk)
+;;                                 (property symbol)
+;;                                 (operation (eql delete))
+;;                                 value)
+;;   (occ-obj-intf-match (occ-obj-tsk tsk)
+;;                       property
+;;                       value))
+
+;; (cl-defmethod occ-obj-op-value ((tsk occ-obj-tsk)
+;;                                 (property symbol)
+;;                                 (operation (eql remove))
+;;                                 value)
+;;   (occ-obj-intf-match (occ-obj-tsk tsk)
+;;                       property
+;;                       value))
 ;; TODO: Implement Plist with title here (??)
 
 
