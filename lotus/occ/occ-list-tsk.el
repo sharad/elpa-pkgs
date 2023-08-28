@@ -57,7 +57,8 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
                           collection)))
 
 (cl-defmethod occ-obj-build-tsks ((collection occ-list-collection))
-  (let ((max-lisp-eval-depth (* 2 max-lisp-eval-depth)))
+  (let ((max-lisp-eval-depth (* 2 max-lisp-eval-depth))
+        (max-specpdl-size (* 2 max-specpdl-size)))
     (let ((depth (occ-obj-collection-depth collection))
           (limit (occ-obj-collection-limit collection))
           ;; TODO: use collection-limit to limit childs it can be null pr 0
