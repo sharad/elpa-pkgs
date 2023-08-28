@@ -71,20 +71,30 @@
 
 (cl-defgeneric occ-do-op-prop-edit (obj
                                     prop
-                                    &optional
                                     operation
                                     value)
   "Accept occ compatible VALUES")
 
 (cl-defmethod occ-do-op-prop-edit ((obj  occ-obj-ctx-tsk) ;; occ-obj-tsk
                                    (prop symbol)
-                                   &optional
-                                   operation ;; BUG: TODO - ((operation (eql add)) , (operation (eql remove))) .
+                                   (operation symbol) ;; BUG: TODO - ((operation (eql add)) , (operation (eql remove))) .
                                    value)
   ;; TODO: change this to use OCC VALUE like with corresponding changes to occ-obj-intf-get
   "Accept occ compatible VALUES"
   (occ-debug "occ-do-op-prop-edit: prop: %s, value: %s" prop value)
   (occ-assert prop)
+  (occ-assert operation)
+  (occ-debug "(occ-do-op-prop-edit occ-obj-tsk): operation %s prop %s" operation prop)
+  (occ-do-operation obj
+                    operation
+                    prop
+                    ;; BUG: TODO - add, remove use VALUE of add, use PROP-VALUE for remove . -- (occ-intf-match operation value prop ) -- pass operation to return value or matched value
+                    value))
+
+(cl-defmethod occ-do-op-prop-edit ((obj  occ-obj-ctx-tsk) ;; occ-obj-tsk
+                                   (prop symbol)
+                                   (operation null) ;; BUG: TODO - ((operation (eql add)) , (operation (eql remove))) .
+                                   value)
   (let ((operation  (or operation
                         (occ-obj-select-operation obj prop value)))
         (prop-value (or value
@@ -93,13 +103,11 @@
                                      obj
                                      prop
                                      operation))))
-    (occ-assert operation)
-    (occ-debug "(occ-do-op-prop-edit occ-obj-tsk): operation %s prop %s" operation prop)
-    (occ-do-operation obj
-                      operation
-                      prop
-                      ;; BUG: TODO - add, remove use VALUE of add, use PROP-VALUE for remove . -- (occ-intf-match operation value prop ) -- pass operation to return value or matched value
-                      prop-value)))
+    (cl-call-next-method obj
+                         operation
+                         prop
+                         ;; BUG: TODO - add, remove use VALUE of add, use PROP-VALUE for remove . -- (occ-intf-match operation value prop ) -- pass operation to return value or matched value
+                         prop-value)))
 
 ;; Usage not implemented
 ;; (occ-do-op-props-edit obj '(timebeing add 10)) in occ-obj-try-fast-clock-in and occ-obj-try-until-associable-p

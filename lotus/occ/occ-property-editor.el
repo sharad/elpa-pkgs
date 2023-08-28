@@ -265,7 +265,9 @@
         ;; No prop or NIL value can happen in CTX like *scratch*
         ;; (occ-assert prop)
         (let ((retval (occ-do-op-prop-edit obj
-                                           prop)))
+                                           prop
+                                           nil
+                                           nil)))
           (when retval
             ;; (occ-tsk-update-tsks t)
             (occ-debug "done with retval %s" retval)
