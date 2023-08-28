@@ -142,14 +142,15 @@
   (occ-obj-get-properties (occ-obj-ctx obj) props))
 
 
-
 (cl-defmethod occ-obj-set-property ((obj occ-obj)
                                     prop
                                     value
                                     &key not-recursive)
   ;; mainly used by occ-tsk only
   (ignore not-recursive)
-  (occ-debug "(occ-obj-set-property occ-obj): prop %s, value %s" (prin1-to-string prop) (prin1-to-string value)
+  (occ-debug "(occ-obj-set-property occ-obj): prop %s, value %s"
+             (prin1-to-string prop)
+             (prin1-to-string (occ-obj-format value))
     (if (memq prop
               (occ-cl-class-slots (occ-cl-inst-classname obj)))
         (setf (cl-struct-slot-value (occ-cl-inst-classname obj) prop obj)
@@ -175,7 +176,9 @@
                                     value &key not-recursive)
   ;; TODO: do it recursively.
   ;; mainly used by occ-tsk only
-  (occ-debug "(occ-obj-set-property (obj occ-tree-tsk)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
+  (occ-debug "(occ-obj-set-property (obj occ-tree-tsk)) prop %s, value %s"
+             (prin1-to-string prop)
+             (prin1-to-string (occ-obj-format value)))
   (cl-call-next-method)
   (when not-recursive
     (dolist (subtsk (occ-tree-tsk-subtree (occ-obj-tsk obj)))
@@ -190,20 +193,26 @@
                                     value &key not-recursive)
   (ignore obj)
   (ignore not-recursive)
-  (occ-debug "(occ-obj-set-property (obj occ-obj-tsk)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
+  (occ-debug "(occ-obj-set-property (obj occ-obj-tsk)) prop %s, value %s"
+             (prin1-to-string prop)
+             (prin1-to-string (occ-obj-format value)))
   (cl-call-next-method))
 
 (cl-defmethod occ-obj-set-property ((obj occ-obj-ctx-tsk)
                                     prop
                                     value &key not-recursive)
-  (occ-debug "(occ-obj-set-property (obj occ-obj-ctx-tsk)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
+  (occ-debug "(occ-obj-set-property (obj occ-obj-ctx-tsk)) prop %s, value %s"
+             (prin1-to-string prop)
+             (prin1-to-string (occ-obj-format value)))
   (occ-obj-set-property (occ-obj-tsk obj) prop
                     value :not-recursive not-recursive))
 
 (cl-defmethod occ-obj-set-property ((obj occ-obj-ctx)
                                     prop
                                     value &key not-recursive)
-  (occ-debug "(occ-obj-set-property (obj occ-obj-ctx)) prop %s, value %s" (prin1-to-string prop) (prin1-to-string value))
+  (occ-debug "(occ-obj-set-property (obj occ-obj-ctx)) prop %s, value %s"
+             (prin1-to-string prop)
+             (prin1-to-string (occ-obj-format value)))
   (occ-obj-set-property (occ-obj-ctx obj) prop
                         value :not-recursive not-recursive))
 
