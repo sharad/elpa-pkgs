@@ -374,8 +374,19 @@
 (cl-defmethod occ-obj-impl-prop= ((prop (eql git-branch))
                                   prop-value
                                   value)
-  (occ-pu-string= prop-value
-                  value))
+  (let ((prop-val-list (when prop-value
+                         (split-string prop-value "::")))
+        (val-list      (when value
+                         (split-string value "::"))))
+    (when (= 2 (length prop-val-list) (length val-list))
+      (let ((pvroot (nth 0 prop-val-list))
+            (vroot  (nth 0 val-list)))
+        (when (occ-pu-file= pvroot vroot)
+          (let ((pvbranch (nth 1 prop-val-list))
+                (vbranch  (nth 1 val-list)))
+            (occ-pu-string= pvbranch
+                            vbranch)))))))
+
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
                                 (prop (eql git-branch))
                                 (arg null))
