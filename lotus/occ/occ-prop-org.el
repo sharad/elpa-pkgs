@@ -61,7 +61,8 @@
 (defun occ-org-entry-get-multivalued-property (pom
                                                prop)
   (lotus-org-with-safe-modification
-    (org-entry-get-multivalued-property pom prop)))
+    (org-entry-get-multivalued-property pom
+                                        prop)))
 
 (defun occ-org-entry-put-multivalued-property (pom
                                                prop

@@ -169,7 +169,8 @@ deletion[s] modification[s] etc.)"
              (setq pos (point))
              (set-buffer buff)
              (goto-char pos))
-           (kill-buffer clone-name))))))
+           (when (get-buffer clone-name)
+             (kill-buffer clone-name)))))))
 (put 'org-with-cloned-buffer 'lisp-indent-function 2)
 
 (defmacro org-with-cloned-marker-widen (marker clone &rest body)
@@ -195,7 +196,8 @@ deletion[s] modification[s] etc.)"
              (setq pos (point))
              (set-buffer buff)
              (goto-char pos))
-           (kill-buffer clone-name))))))
+           (when (get-buffer clone-name)
+             (kill-buffer clone-name)))))))
 (put 'org-with-cloned-marker-widen 'lisp-indent-function 2)
 
 
@@ -222,7 +224,8 @@ deletion[s] modification[s] etc.)"
              (setq pos (point))
              (set-buffer buff)
              (goto-char pos))
-           (kill-buffer clone-name))))))
+           (when (get-buffer clone-name)
+             (kill-buffer clone-name)))))))
 (put 'org-with-cloned-marker 'lisp-indent-function 2)
 
 (defmacro org-with-cloned-marker-plain (marker clone &rest body)
@@ -247,7 +250,8 @@ deletion[s] modification[s] etc.)"
              (setq pos (point))
              (set-buffer buff)
              (goto-char pos))
-           (kill-buffer clone-name))))))
+           (when (get-buffer clone-name)
+             (kill-buffer clone-name)))))))
 (put 'org-with-cloned-marker-plain 'lisp-indent-function 2)
 
 ;; TODO (replace-buffer-in-windows)
@@ -1074,3 +1078,8 @@ With prefix arg C-u, copy region instad of killing it."
 
 
 ;;; org-misc-utils-lotus.el ends here
+
+
+
+
+

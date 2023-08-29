@@ -114,6 +114,10 @@ pointing to it."
   (let ((filename (occ-obj-get-property obj 'file))
         (lcp      (apply #'s-lcp (occ-obj-files))))
     (s-chop-prefix lcp filename)))
+
+(cl-defmethod occ-obj-build-format-file ((obj occ-tsk))
+  (let ((filename (occ-obj-get-property obj 'file)))
+    filename))
 
 
 (defun occ-case (case title)
