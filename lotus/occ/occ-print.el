@@ -115,9 +115,10 @@ pointing to it."
         (lcp      (apply #'s-lcp (occ-obj-files))))
     (s-chop-prefix lcp filename)))
 
-(cl-defmethod occ-obj-build-format-file ((obj occ-tsk))
-  (let ((filename (occ-obj-get-property obj 'file)))
-    filename))
+;; (cl-defmethod occ-obj-build-format-file ((obj occ-tsk))
+;;   (debug)
+;;   (let ((filename (occ-obj-get-property obj 'file)))
+;;     filename))
 
 
 (defun occ-case (case title)
@@ -288,6 +289,13 @@ pointing to it."
     (format "%s: %s"
             (symbol-name label)
             (occ-obj-format value-obj))))
+
+
+(cl-defmethod occ-obj-nonocc-format (obj)
+  obj)
+
+(cl-defmethod occ-obj-nonocc-format ((obj occ-obj-tsk))
+  (type-of obj))
 
 
 (defun occ-obj-Format (obj
