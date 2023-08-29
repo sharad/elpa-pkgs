@@ -58,6 +58,14 @@
                    prop
                    value)))
 
+(defun occ-org-entry-delete (pom
+                          prop
+                          value)
+  (lotus-org-with-safe-modification
+    (org-entry-delete pom
+                      prop
+                      value)))
+
 (defun occ-org-entry-get-multivalued-property (pom
                                                prop)
   (lotus-org-with-safe-modification
@@ -210,7 +218,7 @@ for prop REMOVE and VALUES"
       (if (occ-obj-intf-list-p prop)
           (occ-org-entry-remove-from-multivalued-property pom
                                                           prop-string
-                                                          values)
+                                                          value)
         (occ-error "Property `%s' is type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))))
 
 (cl-defmethod occ-do-org-operation ((pom  marker)
