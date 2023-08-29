@@ -107,13 +107,17 @@
 PROP and VALUES")
 
 (cl-defmethod occ-do-org-operation :around ((mrk  marker)
-                                            (prop symbol)
                                             operation
+                                            (prop symbol)
                                             value)
   "Accept org compatible VALUE"
   (occ-message "I should be called first in case of MARKER")
   (unless (occ-obj-valid-p operation prop)
-    (occ-error "occ-obj-org-call-operation: operation %s is not allowed for prop %s" operation prop))
+    (occ-error "occ-obj-org-call-operation: operation %s(type=%s) is not allowed for prop %s(type=%s)"
+               operation
+               (type-of operation)
+               prop
+               (type-of prop)))
   (lotus-with-marker mrk
     (unless (org-get-property-block)
       ;; create property drawer
@@ -242,6 +246,7 @@ for prop MEMBER and VALUES"
                                     (operation symbol)
                                     (prop symbol)
                                     value)
+  ;; NOTE: Not used
   "Org operation implementation of OPERATION on POINT-OF-MARKER for
 PROP and VALUES"
   (occ-do-org-operation (occ-obj-marker obj)

@@ -312,9 +312,9 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                       prop
                                       value)
   "Do the actual OPERATION.")
-(cl-defmethod occ-do-intf-operation ((obj       marker)
-                                     (operation symbol)
-                                     (prop      symbol)
+(cl-defmethod occ-do-intf-operation (obj
+                                     operation
+                                     prop
                                      value)
   "Do the actual OPERATION."
   (occ-do-impl-operation obj

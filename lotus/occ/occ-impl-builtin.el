@@ -135,22 +135,6 @@
 ;;                         value))
 
 
-(cl-defmethod occ-do-impl-operation ((obj       marker)
-                                     (operation symbol)
-                                     (prop      symbol)
-                                     value)
-  "Accept occ compatible VALUES"
-  (occ-debug "(occ-do-impl-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
-  (let ((mrk (occ-obj-marker obj)))
-    (let ((retval (occ-do-org-operation mrk ;work in org file
-                                        operation
-                                        prop
-                                        ;; going to org world
-                                        (occ-obj-intf-to-org prop
-                                                         value))))
-      (occ-debug "occ-do-impl-operation: (occ-obj-org-operation-at-point mrk) returnd %s" retval)
-      retval)))
-
 ;; (cl-defmethod occ-do-impl-operation ((obj       occ-obj-tsk)
 ;;                                      (operation symbol)
 ;;                                      (prop      symbol)
@@ -177,6 +161,22 @@
 ;;                                 prop)
 ;;         (list (occ-obj-get-property tsk
 ;;                                     prop)))))
+
+(cl-defmethod occ-do-impl-operation ((obj       marker)
+                                     (operation symbol)
+                                     (prop      symbol)
+                                     value)
+  "Accept occ compatible VALUES"
+  (occ-debug "(occ-do-impl-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
+  (let ((mrk (occ-obj-marker obj)))
+    (let ((retval (occ-do-org-operation mrk ;work in org file
+                                        operation
+                                        prop
+                                        ;; going to org world
+                                        (occ-obj-intf-to-org prop
+                                                             value))))
+      (occ-debug "occ-do-impl-operation: (occ-obj-org-operation-at-point mrk) returnd %s" retval)
+      retval)))
 
 (cl-defmethod occ-do-impl-operation ((obj       occ-obj-tsk)
                                      (operation (eql add))
