@@ -309,8 +309,8 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
 ;; (cl-defgeneric occ-do-operation (obj
 (cl-defgeneric occ-do-intf-operation (obj
                                       operation
-                                      property
-                                      values)
+                                      prop
+                                      value)
   "Do the actual OPERATION.")
 (cl-defmethod occ-do-intf-operation ((obj       marker)
                                      (operation symbol)
@@ -319,8 +319,8 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   "Do the actual OPERATION."
   (occ-do-impl-operation obj
                          operation
-                         property
-                         values))
+                         prop
+                         value))
 (cl-defmethod occ-do-intf-operation ((obj       occ-obj-tsk)
                                      (operation (eql add))
                                      (prop      symbol)
@@ -328,8 +328,8 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   "Do the actual OPERATION."
   (occ-do-impl-operation obj
                          operation
-                         property
-                         values))
+                         prop
+                         value))
 
 ;; (cl-defmethod occ-do-intf-operation :around ((obj       occ-obj-tsk)
 ;;                                              (operation symbol)
