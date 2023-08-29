@@ -112,12 +112,12 @@ PROP and VALUES")
                                             value)
   "Accept org compatible VALUE"
   (occ-message "I should be called first in case of MARKER")
-  (unless (occ-obj-valid-p operation prop)
-    (occ-error "occ-obj-org-call-operation: operation %s(type=%s) is not allowed for prop %s(type=%s)"
-               operation
-               (type-of operation)
-               prop
-               (type-of prop)))
+  ;; (unless (occ-obj-valid-p operation prop)
+  ;;   (occ-error "occ-obj-org-call-operation: operation %s(type=%s) is not allowed for prop %s(type=%s)"
+  ;;              operation
+  ;;              (type-of operation)
+  ;;              prop
+  ;;              (type-of prop)))
   (lotus-with-marker mrk
     (unless (org-get-property-block)
       ;; create property drawer

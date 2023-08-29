@@ -185,188 +185,6 @@
 
 ;; Root dir property of task:1 ends here
 
-;; Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time
-
-;; [[file:occ-property-methods.org::*Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time][Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time:1]]
-(cl-defmethod occ-obj-impl-rank ((obj occ-tsk)
-                                 (prop (eql timebeing)))
-  (ignore prop)
-  (let ((tsk (occ-obj-tsk obj)))
-      (let ((timebeing (occ-obj-get-property tsk
-                                         'timebeing)))
-        (let ((timebeing-time (if timebeing
-                                  (org-duration-to-minutes timebeing)
-                                (occ-rank-percentage 0)))
-              (clocked-time   (occ-obj-get-property tsk
-                                                'clock-sum)))
-          (if (and (numberp clocked-time)
-                   (numberp timebeing-time)
-                   (> timebeing-time clocked-time))
-              (/ (* (occ-rank-percentage 100)
-                  (- timebeing-time
-                   clocked-time))
-                 timebeing-time)
-            (occ-rank-percentage 0))))))
-
-(cl-defmethod occ-obj-impl-list-p ((prop (eql timebeing)))
-  (ignore prop)
-  nil)
-
-(cl-defmethod occ-obj-impl-to-org ((prop (eql timebeing))
-                                   value)
-  (ignore prop)
-  (if (numberp value)
-      (number-to-string value)
-    ""))
-
-(cl-defmethod occ-obj-impl-from-org ((prop (eql timebeing))
-                                     value)
-  (ignore prop)
-  (if (stringp value)
-      (or (string-to-number value)
-          0)
-    0))
-
-(cl-defmethod occ-obj-impl-get ((user occ-user-agent)
-                                (prop (eql timebeing))
-                                (obj occ-tsk))
-  "READ"
-  (let ((tsk (occ-obj-tsk obj)))
-    (ignore tsk)
-    (let* ((prompt     (concat (symbol-name prop)
-                               ": ")))
-      (ignore prompt)
-      (read-number "Timebeing mins: "))))
-
-(cl-defmethod occ-obj-impl-require-p ((obj occ-obj-tsk)
-                                      (operation (eql increment))
-                                      (prop (eql timebeing))
-                                      values)
-  (ignore operation)
-  (ignore prop)
-  (ignore values)
-  (occ-obj-current-p obj))
-
-(cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
-                                    (prop (eql timebeing))
-                                    (operation (eql increment)))
-  (ignore prop)
-  (ignore operation)
-  (when (occ-obj-current-p obj)
-    10))
-
-(cl-defmethod occ-do-impl-operation ((obj occ-obj-tsk)
-                                     (operation (eql increment))
-                                     (prop (eql timebeing))
-                                     values)
-  (ignore operation)
-  (ignore values)
-  (let ((tsk    (occ-obj-tsk obj)))
-    (ignore tsk)
-    (if (occ-obj-intf-list-p prop)
-        (occ-error "Implement it.")
-      (occ-error "Implement it."))))
-
-(cl-defmethod occ-do-org-operation ((obj occ-obj-tsk)
-                                    (operation (eql increment))
-                                    (prop (eql timebeing))
-                                    values)
-  (ignore obj)
-  (ignore operation)
-  (ignore values)
-  (let ((prop-string (symbol-name prop)))
-    (ignore prop-string)
-    (if (occ-obj-intf-list-p prop
-            (occ-error "Implement it.")
-          (occ-error "Implement it.")))))
-
-
-(cl-defmethod occ-obj-valid-p ((prop      (eql timebeing))
-                               (operation (eql increment)))
-  (ignore prop)
-  (ignore operation)
-  t)
-
-;; Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time:1 ends here
-
-
-;; STATUS property of task
-
-;; [[file:occ-property-methods.org::*STATUS property of task][STATUS property of task:1]]
-(cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
-                                 (prop (eql status)))
-  "Predicate funtion to check if ctx matches to tsk's status attribute."
-  (ignore prop)
-  (let ((todo-type (occ-obj-get-property obj 'todo-type))
-        (closed    (occ-obj-get-property obj 'closed))
-        (status    (occ-obj-get-property obj 'todo-keyword)))
-    (if (or closed
-            (eql todo-type 'done)
-            (string= status "HOLD"))
-        -(occ-rank-percentage 100)
-      (occ-rank-percentage 0))))
-
-;; STATUS property of task:1 ends here
-
-;; Key property of task for setting arbitrary rank
-
-;; [[file:occ-property-methods.org::*Key property of task for setting arbitrary rank][Key property of task for setting arbitrary rank:1]]
-(cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
-                                 (prop (eql key)))
-  "Predicate funtion to check if ctx matches to tsk's file attribute."
-  (ignore prop)
-  (let* ((key (occ-obj-get-property obj 'KEY)))
-      (if key
-          (let ((nkey (string-to-number key)))
-            (if (> nkey (occ-rank-percentage 100))
-                (occ-rank-percentage 100)
-              nkey))
-        (occ-rank-percentage 0))))
-
-;; Key property of task for setting arbitrary rank:1 ends here
-
-;; Current clock status property of task (will rank based on task is currently clocking-in or not)
-
-;; [[file:occ-property-methods.org::*Current clock status property of task (will rank based on task is currently clocking-in or not)][Current clock status property of task (will rank based on task is currently clocking-in or not):1]]
-(cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
-                                 (prop (eql current-clock)))
-  (ignore prop)
-  (let* ((tsk-marker (occ-obj-get-property obj 'marker)))
-    (ignore tsk-marker)
-    (if (and org-clock-marker
-             (occ-obj-marker= obj org-clock-marker))
-        (occ-rank-percentage 100)
-      (occ-rank-percentage 0))))
-
-;; Current clock status property of task (will rank based on task is currently clocking-in or not):1 ends here
-
-;; SubtreeFile property of task
-
-;; [[file:occ-property-methods.org::*SubtreeFile property of task][SubtreeFile property of task:1]]
-;;{{ sub-tree
-(cl-defmethod occ-obj-readprop ((obj occ-obj-ctx-tsk)
-                                (prop (eql subtree)))
-  (let ((tsk (occ-obj-tsk obj))
-        (ctx (occ-obj-ctx obj)))
-    (ignore tsk)
-    (ignore ctx)
-    (let* ((prompt (concat (symbol-name prop) ": "))
-           ;; org-iread-file-name
-           (filename (ido-read-file-name prompt
-                                         default-directory ;DIR
-                                         nil               ;DEFAULT-FILENAME
-                                         t                 ;MUSTMATCH
-                                         nil               ;PREDICATE
-                                         #'(lambda (f)     ;INITIAL
-                                             (string-match "\.\+.org" f)))))
-      (file-relative-name filename
-                          default-directory))))
-;;}}
-
-;; SubtreeFile property of task:1 ends here
-
-
-
 ;; Git branch property of task
 
 ;; [[file:occ-property-methods.org::*Git branch property of task][Git branch property of task:1]]
@@ -498,6 +316,259 @@
   nil)
 
 ;; Git branch property of task:1 ends here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;; Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time
+
+;; [[file:occ-property-methods.org::*Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time][Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time:1]]
+(cl-defmethod occ-obj-impl-rank ((obj occ-tsk)
+                                 (prop (eql timebeing)))
+  (ignore prop)
+  (let ((tsk (occ-obj-tsk obj)))
+      (let ((timebeing (occ-obj-get-property tsk
+                                         'timebeing)))
+        (let ((timebeing-time (if timebeing
+                                  (org-duration-to-minutes timebeing)
+                                (occ-rank-percentage 0)))
+              (clocked-time   (occ-obj-get-property tsk
+                                                'clock-sum)))
+          (if (and (numberp clocked-time)
+                   (numberp timebeing-time)
+                   (> timebeing-time clocked-time))
+              (/ (* (occ-rank-percentage 100)
+                  (- timebeing-time
+                   clocked-time))
+                 timebeing-time)
+            (occ-rank-percentage 0))))))
+
+(cl-defmethod occ-obj-impl-list-p ((prop (eql timebeing)))
+  (ignore prop)
+  nil)
+
+(cl-defmethod occ-obj-impl-to-org ((prop (eql timebeing))
+                                   value)
+  (ignore prop)
+  (if (numberp value)
+      (number-to-string value)
+    ""))
+
+(cl-defmethod occ-obj-impl-from-org ((prop (eql timebeing))
+                                     value)
+  (ignore prop)
+  (if (stringp value)
+      (or (string-to-number value)
+          0)
+    0))
+
+(cl-defmethod occ-obj-impl-get ((user occ-user-agent)
+                                (prop (eql timebeing))
+                                (obj occ-tsk))
+  "READ"
+  (let ((tsk (occ-obj-tsk obj)))
+    (ignore tsk)
+    (let* ((prompt     (concat (symbol-name prop)
+                               ": ")))
+      (ignore prompt)
+      (read-number "Timebeing mins: "))))
+
+(cl-defmethod occ-obj-impl-require-p ((obj occ-obj-tsk)
+                                      (operation (eql increment))
+                                      (prop (eql timebeing))
+                                      values)
+  (ignore operation)
+  (ignore prop)
+  (ignore values)
+  (occ-obj-current-p obj))
+
+(cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
+                                    (prop (eql timebeing))
+                                    (operation (eql increment)))
+  (ignore prop)
+  (ignore operation)
+  (when (occ-obj-current-p obj)
+    10))
+
+(cl-defmethod occ-do-impl-operation ((obj occ-obj-tsk)
+                                     (operation (eql increment))
+                                     (prop (eql timebeing))
+                                     values)
+  (ignore operation)
+  (ignore values)
+  (let ((tsk    (occ-obj-tsk obj)))
+    (ignore tsk)
+    (if (occ-obj-intf-list-p prop)
+        (occ-error "Implement it.")
+      (occ-error "Implement it."))))
+
+(cl-defmethod occ-do-impl-operation ((obj marker)
+                                     (operation (eql increment))
+                                     (prop (eql timebeing))
+                                     values)
+  (ignore obj)
+  (ignore operation)
+  (ignore values)
+  (let ((prop-string (symbol-name prop)))
+    (ignore prop-string)
+    (if (occ-obj-intf-list-p prop
+            (occ-error "Implement it.")
+          (occ-error "Implement it.")))))
+
+
+(cl-defmethod occ-obj-valid-p ((operation (eql increment))
+                               (prop      (eql timebeing)))
+  (ignore prop)
+  (ignore operation)
+  t)
+
+;; Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time:1 ends here
+
+
+;; STATUS property of task
+
+;; [[file:occ-property-methods.org::*STATUS property of task][STATUS property of task:1]]
+(cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
+                                 (prop (eql status)))
+  "Predicate funtion to check if ctx matches to tsk's status attribute."
+  (ignore prop)
+  (let ((todo-type (occ-obj-get-property obj 'todo-type))
+        (closed    (occ-obj-get-property obj 'closed))
+        (status    (occ-obj-get-property obj 'todo-keyword)))
+    (if (or closed
+            (eql todo-type 'done)
+            (string= status "HOLD"))
+        -(occ-rank-percentage 100)
+      (occ-rank-percentage 0))))
+
+;; STATUS property of task:1 ends here
+
+;; Key property of task for setting arbitrary rank
+
+;; [[file:occ-property-methods.org::*Key property of task for setting arbitrary rank][Key property of task for setting arbitrary rank:1]]
+(cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
+                                 (prop (eql key)))
+  "Predicate funtion to check if ctx matches to tsk's file attribute."
+  (ignore prop)
+  (let* ((key (occ-obj-get-property obj 'KEY)))
+      (if key
+          (let ((nkey (string-to-number key)))
+            (if (> nkey (occ-rank-percentage 100))
+                (occ-rank-percentage 100)
+              nkey))
+        (occ-rank-percentage 0))))
+
+;; Key property of task for setting arbitrary rank:1 ends here
+
+;; Current clock status property of task (will rank based on task is currently clocking-in or not)
+
+;; [[file:occ-property-methods.org::*Current clock status property of task (will rank based on task is currently clocking-in or not)][Current clock status property of task (will rank based on task is currently clocking-in or not):1]]
+(cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
+                                 (prop (eql current-clock)))
+  (ignore prop)
+  (let* ((tsk-marker (occ-obj-get-property obj 'marker)))
+    (ignore tsk-marker)
+    (if (and org-clock-marker
+             (occ-obj-marker= obj org-clock-marker))
+        (occ-rank-percentage 100)
+      (occ-rank-percentage 0))))
+
+;; Current clock status property of task (will rank based on task is currently clocking-in or not):1 ends here
+
+;; SubtreeFile property of task
+
+;; [[file:occ-property-methods.org::*SubtreeFile property of task][SubtreeFile property of task:1]]
+;;{{ sub-tree
+(cl-defmethod occ-obj-readprop ((obj occ-obj-ctx-tsk)
+                                (prop (eql subtree)))
+  (let ((tsk (occ-obj-tsk obj))
+        (ctx (occ-obj-ctx obj)))
+    (ignore tsk)
+    (ignore ctx)
+    (let* ((prompt (concat (symbol-name prop) ": "))
+           ;; org-iread-file-name
+           (filename (ido-read-file-name prompt
+                                         default-directory ;DIR
+                                         nil               ;DEFAULT-FILENAME
+                                         t                 ;MUSTMATCH
+                                         nil               ;PREDICATE
+                                         #'(lambda (f)     ;INITIAL
+                                             (string-match "\.\+.org" f)))))
+      (file-relative-name filename
+                          default-directory))))
+;;}}
+
+;; SubtreeFile property of task:1 ends here
 
 
 ;; _template1_ property of task

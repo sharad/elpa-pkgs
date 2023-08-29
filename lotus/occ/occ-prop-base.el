@@ -295,7 +295,10 @@ method provided."))))
                      (occ-cl-method-param-values 'occ-do-impl-operation
                                                  (list '\` `(,class (eql ,'(\, val)) (eql ,prop) t))
                                                  'val))))
-    (delete-dups ops)))
+    (cl-remove-if-not #'(lambda (op)
+                          (or (occ-obj-intf-list-p prop)
+                              (not (memq op '(add remove)))))
+                  (delete-dups ops))))
 
 (cl-defmethod occ-obj-operations-for-prop ((obj  occ-obj-tsk)
                                            (prop symbol))
@@ -307,7 +310,13 @@ method provided."))))
     (delete-dups ops)))
 
 (occ-testing
- (occ-obj-operations-for-prop 'occ-obj-tsk 'root))
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'currfile)
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'root)
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'git-branch)
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'current-clock)
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'key)
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'status)
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'subtree))
 
 
 (defun occ-internal-remove-template-symbol (prop-list)
@@ -354,11 +363,24 @@ method provided."))))
 method provided."))))
 
 
-(cl-defmethod occ-obj-valid-p ((operation symbol)
-                               (prop      symbol))
+(cl-defmethod occ-obj-operation-valid-p ((obj       occ-obj-tsk)
+                                         (operation symbol)
+                                         (prop      symbol))
+  ;; (memq operation
+  ;;       '(add remove get put member))
   (ignore prop)
   (memq operation
-        '(add remove get put member)))
+        (occ-obj-operations-for-prop obj
+                                     prop)))
+
+(occ-testing
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'currfile)
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'root)
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'git-branch)
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'current-clock)
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'key)
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'status)
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'subtree))
 
 
 (cl-defmethod occ-do-operation ((obj       occ-obj-tsk)
@@ -368,18 +390,19 @@ method provided."))))
   "Accept occ compatible VALUES"
   (occ-message "I should be called FIRST.")
   (occ-debug "(occ-do-intf-operation occ-obj-tsk): operation %s prop %s" operation prop)
-  (if (occ-do-intf-operation (occ-obj-marker obj)
-                             operation
-                             prop
-                             values)
-      (occ-do-intf-operation obj
-                             operation
-                             prop
-                             values)
-    (occ-error "Failed to %s on marker %s of %s in org world"
-               operation
-               (occ-obj-marker obj)
-               (occ-obj-Format obj))))
+  (if (occ-obj-operation-valid-p obj operation prop)
+      (if (occ-do-intf-operation (occ-obj-marker obj)
+                                 operation
+                                 prop
+                                 values)
+          (occ-do-intf-operation obj
+                                 operation
+                                 prop
+                                 values)
+        (occ-error "Failed to %s on marker %s of %s in org world"
+                   operation
+                   (occ-obj-marker obj)
+                   (occ-obj-Format obj)))))
 
 
 (cl-defmethod occ-obj-get ((user occ-user-agent)
