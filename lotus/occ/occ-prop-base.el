@@ -313,6 +313,7 @@ method provided."))))
  (occ-obj-operations-for-prop 'occ-obj-tsk 'currfile)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'root)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'git-branch)
+ (occ-obj-intf-list-p 'git-branch)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'current-clock)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'key)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'status)
@@ -386,23 +387,28 @@ method provided."))))
 (cl-defmethod occ-do-operation ((obj       occ-obj-tsk)
                                 (operation symbol)
                                 (prop      symbol)
-                                values)
+                                value)
   "Accept occ compatible VALUES"
   (occ-message "I should be called FIRST.")
   (occ-debug "(occ-do-intf-operation occ-obj-tsk): operation %s prop %s" operation prop)
-  (if (occ-obj-operation-valid-p obj operation prop)
+  (if (occ-obj-operation-valid-p obj
+                                 operation
+                                 prop)
       (if (occ-do-intf-operation (occ-obj-marker obj)
                                  operation
                                  prop
-                                 values)
+                                 value)
           (occ-do-intf-operation obj
                                  operation
                                  prop
-                                 values)
+                                 value)
         (occ-error "Failed to %s on marker %s of %s in org world"
                    operation
                    (occ-obj-marker obj)
-                   (occ-obj-Format obj)))))
+                   (occ-obj-Format obj)))
+    (occ-error "operation %s not allowed for prop %s"
+               operation
+               prop)))
 
 
 (cl-defmethod occ-obj-get ((user occ-user-agent)

@@ -107,13 +107,13 @@
 PROP and VALUES")
 
 (cl-defmethod occ-do-org-operation :around ((mrk  marker)
-                                            operation
+                                            (operation symbol)
                                             (prop symbol)
                                             value)
   "Accept org compatible VALUE"
   (occ-message "I should be called first in case of MARKER")
   ;; (unless (occ-obj-valid-p operation prop)
-  ;;   (occ-error "occ-obj-org-call-operation: operation %s(type=%s) is not allowed for prop %s(type=%s)"
+  ;;   (occ-error "occ-obj-org-operation[around]: operation %s(type=%s) is not allowed for prop %s(type=%s)"
   ;;              operation
   ;;              (type-of operation)
   ;;              prop
@@ -122,26 +122,26 @@ PROP and VALUES")
     (unless (org-get-property-block)
       ;; create property drawer
       ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
-      (occ-debug "occ-do-org-operation-at-point: property block not exist so creating it.")
+      (occ-debug "occ-do-org-operation[ :around ]: property block not exist so creating it.")
       (let* ((range (org-get-property-block (point) 'force))
              (start (when (consp range) (1- (cl-first range)))))
         (if (and range
                  start)
             (when (numberp start)
               (goto-char start))
-          (occ-error "occ-do-org-operation-at-point: not able to create property block to add property %s: %s"
+          (occ-error "occ-do-org-operation[ :around ]: not able to create property block to add property %s: %s"
                      prop
                      value))))
 
     (if (org-get-property-block)
         (progn
-          (occ-debug "occ-do-org-operation-at-point: adding prop: %s value: %s using (org-set-property)."
+          (occ-debug "occ-do-org-operation[ :around ]: adding prop: %s value: %s using (org-set-property)."
                      prop
                      value)
           (let ((retval (cl-call-next-method)))
             (occ-debug "occ-do-org-operation: (occ-do-org-operation mrk) returned %s" retval)
             retval))
-        (occ-error "occ-do-org-operation-at-point: can not get property block to add property %s: %s"
+        (occ-error "occ-do-org-operation[ :around ]: can not get property block to add property %s: %s"
                    prop
                    value))))
 
