@@ -377,6 +377,42 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
    (ignore obj)
    (ignore prop)))
 
+
+
+
+;; NOTE: These two around methods not belongs to occ-prop-intf.el
+;;       they belongs here only.
+(cl-defmethod occ-obj-impl-get :around ((user occ-user-agent)
+                                        (prop symbol)
+                                        (obj  occ-obj-tsk))
+  "Read value of element of list for property PROP from user for
+OCC-TSK OBJ."
+  (ignore obj)
+  (condition-case e ;; if (cl-next-method-p)
+      (cl-call-next-method)
+    ((cl-no-next-method) (occ-error "No
+(cl-defmethod occ-obj-impl-get ((obj occ-obj-tsk) (prop (eql %s)))
+  ...)
+
+method provided.")
+               prop)))
+
+(cl-defmethod occ-obj-impl-get :around ((user occ-user-agent)
+                                        (prop symbol)
+                                        (obj  occ-obj-tsk))
+  "Read value of element of list for property PROP from user for
+OCC-TSK OBJ."
+  (ignore obj)
+  (condition-case e ;; if (cl-next-method-p)
+      (cl-call-next-method)
+    ((cl-no-next-method) (occ-error "No
+(cl-defmethod occ-obj-impl-get ((obj occ-obj-tsk) (prop (eql %s)))
+   ...)
+
+method provided.")
+               prop)))
+
+
 ;;
 ;;
 ;;

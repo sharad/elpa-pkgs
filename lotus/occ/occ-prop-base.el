@@ -226,39 +226,6 @@ method provided."))))
 method provided."))))
 
 
-;; NOTE: These two around methods not belongs to occ-prop-intf.el
-;;       they belongs here only.
-(cl-defmethod occ-obj-impl-get :around ((user occ-user-agent)
-                                        (prop symbol)
-                                        (obj  occ-obj-tsk))
-  "Read value of element of list for property PROP from user for
-OCC-TSK OBJ."
-  (ignore obj)
-  (condition-case e ;; if (cl-next-method-p)
-      (cl-call-next-method)
-    ((cl-no-next-method) (occ-error "No
-(cl-defmethod occ-obj-impl-get ((obj occ-obj-tsk) (prop (eql %s)))
-  ...)
-
-method provided.")
-               prop)))
-
-(cl-defmethod occ-obj-impl-get :around ((user occ-user-agent)
-                                        (prop symbol)
-                                        (obj  occ-obj-tsk))
-  "Read value of element of list for property PROP from user for
-OCC-TSK OBJ."
-  (ignore obj)
-  (condition-case e ;; if (cl-next-method-p)
-      (cl-call-next-method)
-    ((cl-no-next-method) (occ-error "No
-(cl-defmethod occ-obj-impl-get ((obj occ-obj-tsk) (prop (eql %s)))
-   ...)
-
-method provided.")
-               prop)))
-
-
 (cl-defmethod occ-obj-properties-to-edit ((class symbol))
   "return PROPERTIES list that can be edited."
   (occ-cl-method-param-values 'occ-obj-impl-get
@@ -421,22 +388,23 @@ method provided."))))
                            build-list-p)
   (if (occ-obj-intf-list-p prop)
       (if build-list-p
-          (mapcar #'(lambda (v)
-                      (occ-obj-intf-get user
-                                        ctsk
-                                        prop))
-                  value)
+          ;; (mapcar #'(lambda (v)
+          ;;             (occ-obj-intf-get user
+          ;;                               ctsk
+          ;;                               prop))
+          ;;         value)
+          (occ-error "Implement it.")
         (occ-obj-intf-get user
-                          ctsk
-                          prop))
+                          prop
+                          ctsk))
     (if build-list-p
         (let ((operation build-list-p))
           (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
                      prop
                      (upcase (symbol-name operation))))
       (occ-obj-intf-get user
-                        ctsk
-                        prop))))
+                        prop
+                        ctsk))))
 (cl-defmethod occ-obj-get ((user occ-user-agent)
                            (ctsk occ-obj-ctx-tsk)
                            (property symbol)
@@ -451,6 +419,13 @@ method provided."))))
                            (property symbol)
                            (operation null))
   (cl-call-next-method))
+
+
+(cl-defmethod occ-obj-get ((ctx occ-ctx)
+                           (dummy null)
+                           (property symbol)
+                           (operation null))
+  (occ-obj-intf-get ctx property nil))
 
 
 (cl-defmethod occ-obj-to-org ((property symbol)
