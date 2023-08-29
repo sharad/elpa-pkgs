@@ -268,7 +268,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
 (cl-defgeneric occ-obj-impl-operation (obj
                                        operation
                                        property
-                                       values)
+                                       value)
   "Do the actual OPERATION.")
 ;; (cl-defmethod occ-obj-impl-operation ((obj occ-obj-tsk)
 ;;                              (operation (eql XYZ))
@@ -279,8 +279,17 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
 (cl-defgeneric occ-do-impl-operation (obj
                                       operation
                                       property
-                                      values)
+                                      value)
   "Do the actual OPERATION.")
+
+(cl-defmethod occ-do-impl-operation (obj
+                                     operation
+                                     property
+                                     value)
+  "Do the actual OPERATION."
+  (occ-error "Implement it for obj=%s property %s."
+             (occ-obj-format obj)
+             property))
 
 
 ;; (cl-defgeneric occ-do-impl-checkout-prop (obj

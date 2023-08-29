@@ -106,6 +106,53 @@
   "Org operation implementation of OPERATION on POINT-OF-MARKER for
 PROP and VALUES")
 
+(cl-defmethod occ-do-org-operation :around ((mrk  marker)
+                                            (prop symbol)
+                                            operation
+                                            value)
+  "Accept org compatible VALUE"
+  (occ-message "I should be called first in case of MARKER")
+  (unless (occ-obj-valid-p operation prop)
+    (occ-error "occ-obj-org-call-operation: operation %s is not allowed for prop %s" operation prop))
+  (lotus-with-marker mrk
+    (unless (org-get-property-block)
+      ;; create property drawer
+      ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
+      (occ-debug "occ-do-org-operation-at-point: property block not exist so creating it.")
+      (let* ((range (org-get-property-block (point) 'force))
+             (start (when (consp range) (1- (cl-first range)))))
+        (if (and range
+                 start)
+            (when (numberp start)
+              (goto-char start))
+          (occ-error "occ-do-org-operation-at-point: not able to create property block to add property %s: %s"
+                     prop
+                     value))))
+
+    (if (org-get-property-block)
+        (progn
+          (occ-debug "occ-do-org-operation-at-point: adding prop: %s value: %s using (org-set-property)."
+                     prop
+                     value)
+          (let ((retval (cl-call-next-method)))
+            (occ-debug "occ-do-org-operation: (occ-do-org-operation mrk) returned %s" retval)
+            retval))
+        (occ-error "occ-do-org-operation-at-point: can not get property block to add property %s: %s"
+                   prop
+                   value))))
+
+(cl-defmethod occ-do-org-operation ((pom  marker)
+                                    (operation symbol)
+                                    (prop symbol)
+                                    value)
+  "Org operation implementation of OPERATION on POINT-OF-MARKER
+for prop REMOVE and VALUES"
+  (ignore operation)
+  (occ-do-intf-operation pom
+                         operation
+                         prop
+                         value))
+
 (cl-defmethod occ-do-org-operation ((pom  marker)
                                     (operation (eql get))
                                     (prop symbol)
@@ -190,43 +237,6 @@ for prop MEMBER and VALUES"
                                  operation
                                  (occ-org-entry-get pom
                                                     prop-string))))))
-
-
-(cl-defmethod occ-do-org-operation :around ((mrk  marker)
-                                            (prop symbol)
-                                            operation
-                                            value)
-  "Accept org compatible VALUE"
-  (occ-message "I should be called first in case of MARKER")
-  (unless (occ-obj-valid-p operation prop)
-    (occ-error "occ-obj-org-call-operation: operation %s is not allowed for prop %s" operation prop))
-  (lotus-with-marker mrk
-    (unless (org-get-property-block)
-      ;; create property drawer
-      ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
-      (occ-debug "occ-do-org-operation-at-point: property block not exist so creating it.")
-      (let* ((range (org-get-property-block (point) 'force))
-             (start (when (consp range) (1- (cl-first range)))))
-        (if (and range
-                 start)
-            (when (numberp start)
-              (goto-char start))
-          (occ-error "occ-do-org-operation-at-point: not able to create property block to add property %s: %s"
-                     prop
-                     value))))
-
-    (if (org-get-property-block)
-        (progn
-          (occ-debug "occ-do-org-operation-at-point: adding prop: %s value: %s using (org-set-property)."
-                     prop
-                     value)
-          (let ((retval (cl-call-next-method)))
-            (occ-debug "occ-do-org-operation: (occ-do-org-operation mrk) returned %s" retval)
-            retval))
-        (occ-error "occ-do-org-operation-at-point: can not get property block to add property %s: %s"
-                   prop
-                   value))))
-
 
 (cl-defmethod occ-do-org-operation ((obj occ-obj-tsk)
                                     (operation symbol)
