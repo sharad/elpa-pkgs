@@ -192,6 +192,9 @@
 (cl-defmethod occ-obj-impl-prop= ((prop (eql git-branch))
                                   prop-value
                                   value)
+  (occ-message "impl-prop=: prop-value = %s, value =%s"
+               prop-value
+               value)
   (let ((prop-val-list (when prop-value
                          (split-string prop-value "::")))
         (val-list      (when value
@@ -253,22 +256,11 @@
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
     (occ-aggregate-rank tsk-git-branch prop tsk #'max
-      (let ((ctx-branch (occ-obj-impl-get ctx prop nil))
-            (tsk-branch (occ-obj-get-property tsk prop)))
-        (if (occ-obj-impl-prop= prop
-                                tsk-branch
-                                ctx-branch)
-            (occ-rank-percentage 100)
-          (occ-rank-percentage 0))))))
-;; (cl-defmethod occ-obj-impl-has-p ((obj occ-obj-tsk)
-;;                                   (prop (eql git-branch))
-;;                                   value)
-;;   "OBJ has property PROPERTY"
-;;   (let* ((tsk            (occ-obj-tsk obj))
-;;          (tsk-prop-value (occ-obj-get-property tsk prop)))
-;;     (if (and value tsk-prop-value)
-;;         (string= value
-;;                  tsk-prop-value))))
+      (if (occ-obj-impl-prop= prop
+                              tsk-git-branch
+                              (occ-obj-impl-get ctx prop nil))
+          (occ-rank-percentage 100)
+        (occ-rank-percentage 0)))))
 (cl-defmethod occ-obj-impl-format ((obj occ-obj-tsk)
                                    (prop (eql git-branch))
                                    value)

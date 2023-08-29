@@ -295,6 +295,7 @@ method provided."))))
                      (occ-cl-method-param-values 'occ-do-impl-operation
                                                  (list '\` `(,class (eql ,'(\, val)) (eql ,prop) t))
                                                  'val))))
+    ;; BUG: TODO: inelegant solution fix it,
     (cl-remove-if-not #'(lambda (op)
                           (or (occ-obj-intf-list-p prop)
                               (not (memq op '(add remove)))))
@@ -391,7 +392,13 @@ method provided."))))
   "Accept occ compatible VALUES"
   (occ-message "I should be called FIRST.")
   (occ-debug "(occ-do-intf-operation occ-obj-tsk): operation %s prop %s" operation prop)
-  (if (occ-obj-operation-valid-p obj
+  ;; BUG: TODO: inelegant solution fix it,
+  ;; Valid operation require.
+  ;; 1. occ-do-operation on mark
+  ;; 2. operation to set and get value from ORG file.
+  ;; 3. if both are present then it could be done.
+  ;; -- I guess
+  (if (occ-obj-operation-valid-p obj;; BUG: TODO: inelegant solution fix it,
                                  operation
                                  prop)
       (if (occ-do-intf-operation (occ-obj-marker obj)
