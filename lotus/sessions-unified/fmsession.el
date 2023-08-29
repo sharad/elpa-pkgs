@@ -761,9 +761,8 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 (defun frame-session-restore (nframe &optional try-guessing)
   (when t
     (session-unfiy-notify "in frame-session-restore")
-    (if (and
-         *frame-session-restore*
-         (null *desktop-vc-read-inprogress*))
+    (if (and *frame-session-restore*
+             (null *desktop-vc-read-inprogress*))
         (progn
           (session-unfiy-notify "pass in frame-session-restore")
           (if nframe
@@ -780,9 +779,8 @@ display-about-screen, spacemacs-buffer/goto-buffer")
                    (frame-session-set-this-location (or nframe (selected-frame)) try-guessing))))))
           ;; nframe)
 
-          (when (and
-                 *frame-session-restore-screen-display-function*
-                 (functionp '*frame-session-restore-screen-display-function*))
+          (when (and *frame-session-restore-screen-display-function*
+                     (functionp '*frame-session-restore-screen-display-function*))
             (funcall *frame-session-restore-screen-display-function*))
           nframe)
       (progn

@@ -565,6 +565,45 @@
 ;; SubtreeFile property of task:1 ends here
 
 
+
+;; DEADLINE property of task
+
+;; [[file:occ-property-methods.org::*DEADLINE property of task][DEADLINE property of task:1]]
+(cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
+                                 (prop (eql deadline)))
+  "Predicate funtion to check if ctx matches to tsk's deadline attribute."
+  (ignore prop)
+  (let ((todo-type (occ-obj-get-property obj 'todo-type))
+        (closed    (occ-obj-get-property obj 'closed))
+        (deadline    (occ-obj-get-property obj 'todo-keyword)))
+    (if (or closed
+            (eql todo-type 'done)
+            (string= deadline "HOLD"))
+        -(occ-rank-percentage 100)
+        (occ-rank-percentage 0))))
+
+;; DEADLINE property of task:1 ends here
+
+
+;; SCHEDULED property of task
+
+;; [[file:occ-property-methods.org::*SCHEDULED property of task][SCHEDULED property of task:1]]
+(cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
+                                 (prop (eql scheduled)))
+  "Predicate funtion to check if ctx matches to tsk's scheduled attribute."
+  (ignore prop)
+  (let ((todo-type (occ-obj-get-property obj 'todo-type))
+        (closed    (occ-obj-get-property obj 'closed))
+        (scheduled    (occ-obj-get-property obj 'todo-keyword)))
+    (if (or closed
+            (eql todo-type 'done)
+            (string= scheduled "HOLD"))
+        -(occ-rank-percentage 100)
+        (occ-rank-percentage 0))))
+
+;; SCHEDULED property of task:1 ends here
+
+
 ;; _template1_ property of task
 
 
