@@ -31,6 +31,9 @@
 
 ;;; Code:
 
+;; Libraries required
+
+
 ;; [[file:org-note-mail.org::*Libraries required][Libraries required:1]]
 (defvar lotus-org-mu4e-must-capture-message nil
   "If set, the next composed mu4e message will automatically be captured with the template specified in lotus-mu4e-org-mode-capture-template-for-sent-email")
@@ -112,15 +115,21 @@
   (mu4e-compose-forward))
 ;; Libraries required:1 ends here
 
+;; Org insert log note un-interactively
+
+
 ;; [[file:org-note-mail.org::*Org insert log note un-interactively][Org insert log note un-interactively:1]]
 
 ;; Org insert log note un-interactively:1 ends here
+
+;; Clock out with NOTE
+
 
 ;; [[file:org-note-mail.org::*Clock out with NOTE][Clock out with NOTE:1]]
 
 ;; Clock out with NOTE:1 ends here
 
-
+;; Org add log note with-timed-new-win
 ;; background in name is misleading it at present log-note show org file buffer to
 ;; add note but in this case it is not shown so background word is used.
 
@@ -132,17 +141,26 @@
 
 ;; Org add log note with-timed-new-win:1 ends here
 
+;; Org detect change to log note
+
+
 ;; [[file:org-note-mail.org::*Org detect change to log note][Org detect change to log note:1]]
 
 ;; Org detect change to log note:1 ends here
+
+;; Org log note on change timer
 
 ;; [[file:org-note-mail.org::*Org log note on change timer][Org log note on change timer:1]]
 
 ;; Org log note on change timer:1 ends here
 
+;; Org log note change from different sources
+
 ;; [[file:org-note-mail.org::*Org log note change from different sources][Org log note change from different sources:1]]
 
 ;; Org log note change from different sources:1 ends here
+
+;; Provide this file
 
 ;; [[file:org-note-mail.org::*Provide this file][Provide this file:1]]
 (provide 'org-note-mail)
