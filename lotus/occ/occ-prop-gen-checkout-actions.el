@@ -68,15 +68,15 @@ only argument required for some other further processing"
                                     &key param-only)
   (occ-debug "occ-obj-gen-checkout: checking prop %s" prop)
   (let ((prompt  (occ-obj-gen-checkout-prompt obj
-                                          prop
-                                          :param-only param-only))
+                                              prop
+                                              :param-only param-only))
         (fun     (occ-obj-gen-checkout-fun obj
-                                       prop
-                                       :param-only param-only))
+                                           prop
+                                           :param-only param-only))
         (keyword (sym2key (gensym))))
     (occ-obj-make-callable-normal keyword
-                              prompt
-                              fun)))
+                                  prompt
+                                  fun)))
 
 
 (cl-defmethod occ-obj-gen-checkout-if-required ((obj  occ-obj-tsk)

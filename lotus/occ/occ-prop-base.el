@@ -159,6 +159,15 @@
     (* priority
        value)))
 
+(cl-defmethod occ-obj-priority-rank ((obj number)
+                                     (prop symbol))
+  (let ((value obj)
+        (priority (occ-obj-priority prop)))
+    (if priority
+        (* priority
+           value)
+      0)))
+
 (cl-defmethod occ-obj-priority-rank ((obj occ-tsk)
                                      (prop symbol))
   "Get prioritised rank."
