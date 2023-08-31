@@ -491,7 +491,11 @@ method provided." prop))))
                      prop
                      value)
           (let ((retval (condition-case e ;; if (cl-next-method-p)
-                            (cl-call-next-method)
+                            (cl-call-next-method mrk
+                                                 operation
+                                                 prop
+                                                 (occ-obj-to-org prop
+                                                                 value))
                           ((cl-no-next-method) (occ-error "No
 (cl-defmethod occ-do-impl-operation ((pom marker) (operation (eql %s)) (prop (eql %s)) value)
   ...)

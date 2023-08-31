@@ -191,7 +191,7 @@ prop GET and VALUES"
   (let ((prop-string (symbol-name prop)))
       (if (occ-obj-list-p pom prop)
           (occ-org-entry-get-multivalued-property pom
-                                                    prop-string)
+                                                  prop-string)
         (list (occ-org-entry-get pom
                                  prop-string)))))
 
