@@ -117,7 +117,7 @@
                                   (prop symbol)
                                   value)
   "OBJ has property PROPERTY"
-  (let* ((tsk            (occ-obj-tsk obj))
+  (let* ((tsk        (occ-obj-tsk obj))
          (prop-value (occ-obj-get-property tsk prop)))
     (if (occ-obj-list-p obj prop)
         (cl-some #'(lambda (pvalue)

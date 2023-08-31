@@ -458,20 +458,22 @@ method provided."))))
                               (property symbol))
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not."
- (occ-obj-intf-list-p mrk property))
+  (occ-obj-intf-list-p mrk
+                       property))
 
 (cl-defmethod occ-obj-list-p ((mrk null)
                               (property symbol))
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not."
-  (occ-obj-intf-list-p (make-marker) property))
+  (occ-obj-list-p (make-marker)
+                  property))
 
 (cl-defmethod occ-obj-list-p ((tsk occ-obj-tsk)
                               (property symbol))
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not."
-  (occ-obj-intf-list-p (occ-obj-tsk tsk)
-                       property))
+  (occ-obj-list-p (occ-obj-marker tsk)
+                  property))
 
 
 (cl-defmethod occ-obj-get ((user occ-user-agent)

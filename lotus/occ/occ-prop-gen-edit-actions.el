@@ -136,15 +136,16 @@ only argument required for some other further processing"
                                             (operation symbol)
                                             value
                                             &key param-only)
-  (when (occ-obj-intf-require-p obj
-                                operation
-                                prop
-                                value)
+  (if (occ-obj-intf-require-p obj
+                              operation
+                              prop
+                              value)
     (occ-obj-gen-edit obj
                       prop
                       operation
                       value
-                      :param-only param-only)))
+                      :param-only param-only)
+    (occ-message "No match")))
 
 
 (cl-defmethod occ-obj-gen-edits-if-required ((obj       occ-obj-tsk)
@@ -154,7 +155,7 @@ only argument required for some other further processing"
   (ignore operation)
   (let* ((ops      (occ-obj-operations-for-prop obj prop))
          (edit-ops (mapcar #'(lambda (operation)
-                               (let ((value (occ-obj-intf-default obj
+                               (let ((value (occ-obj-intf-default obj ;BUG: TODO: implement context based values for operation
                                                                   prop
                                                                   operation)))
                                  (when value
@@ -164,6 +165,7 @@ only argument required for some other further processing"
                                                                  value
                                                                  :param-only param-only))))
                            ops)))
+    (occ-message "edit-ops: len %d" (length edit-ops))
     (remove nil
             edit-ops)))
 

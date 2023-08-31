@@ -96,18 +96,18 @@
 
 (defun occ-cl-class (inst)
   ;; BUG: TODO: Improve it.
-  (if (arrayp inst)
+  (if t ;; (arrayp inst)
       (let* ((class-sym (aref inst 0))
              (class-sym (if (boundp class-sym)
                             class-sym
                           (intern (concat "cl-struct-" (symbol-name class-sym))))))
         (if (boundp class-sym)
             (symbol-value class-sym)
-          (cl--struct-get-class (aref inst 0)))))
-  (type-of inst))
+          (cl--struct-get-class (aref inst 0))))
+    (type-of inst)))
 
 (defun occ-cl-classname (class)
-  (if (eql 'cl-structure-class (occ-cl-class class))
+  (if t ;; (eql 'cl-structure-class (occ-cl-class class))
       (cl-struct-slot-value 'cl-structure-class
                             'name
                             class)
@@ -124,10 +124,10 @@
 
 
 (defun occ-cl-class-parents (class)
-  (if (eql 'cl-structure-class (occ-cl-class class))
-      (cl-struct-slot-value 'cl-structure-class
-                            'parents
-                            class)))
+  (unless nil ;; (symbolp (occ-cl-class class))
+    (cl-struct-slot-value 'cl-structure-class
+                          'parents
+                          class)))
 
 (defun occ-cl-class-parent-names (class)
   (mapcar #'(lambda (parent)

@@ -88,7 +88,7 @@
   (occ-do-operation obj
                     operation
                     prop
-                    ;; BUG: TODO - add, remove use VALUE of add, use PROP-VALUE for remove . -- (occ-intf-match operation value prop ) -- pass operation to return value or matched value
+                    ;; FIXED: TODO - add, remove use VALUE of add, use PROP-VALUE for remove . -- (occ-intf-match operation value prop ) -- pass operation to return value or matched value
                     (occ-obj-operation-value (occ-obj-tsk obj)
                                              prop
                                              operation ;get value according to operation
@@ -109,7 +109,7 @@
     (cl-call-next-method obj
                          operation
                          prop
-                         ;; BUG: TODO - add, remove use VALUE of add, use PROP-VALUE for remove . -- (occ-intf-match operation value prop ) -- pass operation to return value or matched value
+                         ;; FIXED: TODO - add, remove use VALUE of add, use PROP-VALUE for remove . -- (occ-intf-match operation value prop ) -- pass operation to return value or matched value
                          prop-value)))
 
 ;; Usage not implemented
