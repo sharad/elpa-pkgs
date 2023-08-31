@@ -327,8 +327,10 @@ method provided."))))
  (occ-obj-operations-for-prop 'occ-obj-tsk 'current-clock)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'key)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'status)
- (occ-obj-operations-for-prop 'occ-obj-tsk 'subtree))
+ (occ-obj-operations-for-prop 'occ-obj-tsk 'subtree)
 
+ (occ-cl-collect-on-classes #'occ-obj-operations-org-operation
+                            (point-marker)))
 
 
 (defun occ-internal-remove-template-symbol (prop-list)
@@ -395,10 +397,29 @@ method provided."))))
  (occ-obj-operations-for-prop 'occ-obj-tsk 'subtree))
 
 
+(cl-defmethod occ-do-operation ((obj       marker)
+                                (operation symbol)
+                                (prop      symbol)
+                                value)
+  (occ-do-intf-operation obj
+                         operation
+                         prop
+                         value))
+
+
 (cl-defmethod occ-do-operation ((obj       occ-obj-tsk)
                                 (operation symbol)
                                 (prop      symbol)
                                 value)
+  (occ-do-intf-operation obj
+                         operation
+                         prop
+                         value))
+
+(cl-defmethod occ-do-operation :around ((obj       occ-obj-tsk)
+                                        (operation symbol)
+                                        (prop      symbol)
+                                        value)
   "Accept occ compatible VALUES"
   (occ-message "I should be called FIRST.")
   (occ-debug "(occ-do-intf-operation occ-obj-tsk): operation %s prop %s" operation prop)
@@ -411,14 +432,11 @@ method provided."))))
   (if (occ-obj-operation-valid-p obj;; BUG: TODO: inelegant solution fix it,
                                  operation
                                  prop)
-      (if (occ-do-intf-operation (occ-obj-marker obj)
-                                 operation
-                                 prop
-                                 value)
-          (occ-do-intf-operation obj
-                                 operation
-                                 prop
-                                 value)
+      (if (cl-call-next-method (occ-obj-marker obj)
+                               operation
+                               prop
+                               value)
+          (cl-call-next-method)
         (occ-error "Failed to %s on marker %s of %s in org world"
                    operation
                    (occ-obj-marker obj)
