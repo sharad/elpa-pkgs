@@ -92,37 +92,42 @@
 ;; (cl--struct-class-slots
 ;;  (cl--struct-get-class 'cl-structure-class))
 
-
+;; (arrayp [(point-marker)])
 
 (defun occ-cl-class (inst)
-
   ;; BUG: TODO: Improve it.
-
-  (let* ((class-sym (aref inst 0))
-         (class-sym (if (boundp class-sym)
-                        class-sym
-                      (intern (concat "cl-struct-" (symbol-name class-sym))))))
-    (if (boundp class-sym)
-        (symbol-value class-sym)
-        (cl--struct-get-class (aref inst 0)))))
+  (if (arrayp inst)
+      (let* ((class-sym (aref inst 0))
+             (class-sym (if (boundp class-sym)
+                            class-sym
+                          (intern (concat "cl-struct-" (symbol-name class-sym))))))
+        (if (boundp class-sym)
+            (symbol-value class-sym)
+          (cl--struct-get-class (aref inst 0)))))
+  (type-of inst))
 
 (defun occ-cl-classname (class)
-  (cl-struct-slot-value 'cl-structure-class
-                        'name
-                        class))
+  (if (eql 'cl-structure-class (occ-cl-class class))
+      (cl-struct-slot-value 'cl-structure-class
+                            'name
+                            class)
+    class))
 
 ;; (cl-struct-slot-value 'cl-structure-class
 ;;                       'parents
 ;;                       (cl--struct-get-class 'occ-ctx))
 
+
+;; (occ-cl-class (cl--struct-get-class 'occ-ctx))
 ;; (occ-cl-class-parents (occ-cl-class test-xyz))
 ;; (occ-cl-class-parent-names (cl--struct-get-class 'occ-tsk))
 
 
 (defun occ-cl-class-parents (class)
-  (cl-struct-slot-value 'cl-structure-class
-                        'parents
-                        class))
+  (if (eql 'cl-structure-class (occ-cl-class class))
+      (cl-struct-slot-value 'cl-structure-class
+                            'parents
+                            class)))
 
 (defun occ-cl-class-parent-names (class)
   (mapcar #'(lambda (parent)

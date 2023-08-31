@@ -450,8 +450,65 @@ OCC-TSK OBJ."
 (cl-defmethod occ-obj-impl-get ((obj occ-obj-tsk) (prop (eql %s)))
    ...)
 
-method provided.")
-               prop)))
+method provided." prop))))
+
+
+;; (cl-defmethod occ-do-impl-operation :around ((obj       marker)
+;;                                              (operation symbol)
+;;                                              (prop      symbol)
+;;                                              value)
+;;   "Accept occ compatible VALUES"
+;;   (if (memq operation
+;;             (occ-obj-operations-org-operation obj))
+;;       (cl-call-next-method)
+;;     (occ-error "Define (cl-defmethod occ-do-impl-operation ((pom marker) (operation (eql %s)) (prop (eql %s)) value) ... )"
+;;                operation prop)))
+
+
+(cl-defmethod occ-do-operation :around ((mrk  marker)
+                                        (operation symbol)
+                                        (prop symbol)
+                                        value)
+  "Accept org compatible VALUE"
+  (occ-message "I should be called first in case of MARKER")
+  ;; (unless (occ-obj-valid-p operation prop)
+  ;;   (occ-error "occ-obj-org-operation[around]: operation %s(type=%s) is not allowed for prop %s(type=%s)"
+  ;;              operation
+  ;;              (type-of operation)
+  ;;              prop
+  ;;              (type-of prop)))
+  (lotus-with-marker mrk
+    (unless (org-get-property-block)
+      ;; create property drawer
+      ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
+      (occ-debug "occ-do-operation[ :around ]: property block not exist so creating it.")
+      (let* ((range (org-get-property-block (point) 'force))
+             (start (when (consp range) (1- (cl-first range)))))
+        (if (and range
+                 start)
+            (when (numberp start)
+              (goto-char start))
+          (occ-error "occ-do-operation[ :around ]: not able to create property block to add property %s: %s"
+                     prop
+                     value))))
+
+    (if (org-get-property-block)
+        (progn
+          (occ-debug "occ-do-operation[ :around ]: adding prop: %s value: %s using (org-set-property)."
+                     prop
+                     value)
+          (let ((retval (condition-case e ;; if (cl-next-method-p)
+                            (cl-call-next-method)
+                          ((cl-no-next-method) (occ-error "No
+(cl-defmethod occ-do-impl-operation ((pom marker) (operation (eql %s)) (prop (eql %s)) value)
+  ...)
+
+method provided." operation prop)))))
+            (occ-debug "occ-do-operation: (occ-do-operation mrk) returned %s" retval)
+            retval))
+        (occ-error "occ-do-operation[ :around ]: can not get property block to add property %s: %s"
+                   prop
+                   value))))
 
 
 ;;

@@ -161,10 +161,8 @@ PROP and VALUES")
   "Org operation implementation of OPERATION on POINT-OF-MARKER
 for prop REMOVE and VALUES"
   (ignore operation)
-  (occ-do-intf-operation pom
-                         operation
-                         prop
-                         value))
+  (occ-error "Define (cl-defmethod occ-do-impl-operation ((pom marker) (operation (eql %s)) (prop (eql %s)) value) ... )"
+             operation prop))
 
 (cl-defmethod occ-do-org-operation ((pom  marker)
                                     (operation (eql get))
@@ -250,20 +248,27 @@ for prop MEMBER and VALUES"
                                  operation
                                  (occ-org-entry-get pom
                                                     prop-string))))))
+
 
-(cl-defmethod occ-do-org-operation ((obj occ-obj-tsk)
-                                    (operation symbol)
-                                    (prop symbol)
-                                    value)
-  ;; NOTE: Not used
-  "Org operation implementation of OPERATION on POINT-OF-MARKER for
-PROP and VALUES"
-  (occ-do-org-operation (occ-obj-marker obj)
-                        operation
-                        prop
-                        (occ-obj-to-org prop
-                                        operation
-                                        value)))
+;; (cl-defmethod occ-do-org-operation ((obj occ-obj-tsk)
+;;                                     (operation symbol)
+;;                                     (prop symbol)
+;;                                     value)
+;;   ;; NOTE: Not used
+;;   "Org operation implementation of OPERATION on POINT-OF-MARKER for
+;; PROP and VALUES"
+;;   (occ-do-org-operation (occ-obj-marker obj)
+;;                         operation
+;;                         prop
+;;                         (occ-obj-to-org prop
+;;                                         operation
+;;                                         value)))
+
+
+(cl-defmethod occ-obj-operations-org-operation ((class symbol))
+  (occ-cl-method-param-values 'occ-do-org-operation
+                              (list '\` `(,class (eql ,'(\, val)) symbol t))
+                              'val))
 
 
 (cl-defmethod occ-do-readprop-org ((obj  occ-obj-ctx-tsk)

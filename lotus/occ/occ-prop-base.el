@@ -328,6 +328,7 @@ method provided."))))
  (occ-obj-operations-for-prop 'occ-obj-tsk 'key)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'status)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'subtree))
+
 
 
 (defun occ-internal-remove-template-symbol (prop-list)
