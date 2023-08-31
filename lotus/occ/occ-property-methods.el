@@ -84,7 +84,8 @@
 ;;   (let* ((tsk            (occ-obj-tsk obj))
 ;;          (tsk-prop-value (occ-obj-get-property tsk prop)))
 ;;     (occ-pu-file= tsk-prop-value value)))
-(cl-defmethod occ-obj-impl-list-p ((prop (eql currfile)))
+(cl-defmethod occ-obj-impl-list-p ((mrk marker)
+                                   (prop (eql currfile)))
   (ignore prop)
   t)
 
@@ -151,7 +152,8 @@
   (let ((file (occ-ctx-file ctx)))
       (when file
         (directory-file-name (dirname-of-file file)))))
-(cl-defmethod occ-obj-impl-list-p ((prop (eql root)))
+(cl-defmethod occ-obj-impl-list-p ((mrk marker)
+                                   (prop (eql root)))
   (ignore prop)
   t)
 (cl-defmethod occ-obj-impl-to-org ((prop (eql root))
@@ -263,7 +265,8 @@
                                    value)
   "Return format printable value of property PROPERTY."
   (nth 1 (split-string value "::")))
-(cl-defmethod occ-obj-impl-list-p ((prop (eql git-branch)))
+(cl-defmethod occ-obj-impl-list-p ((mrk marker)
+                                   (prop (eql git-branch)))
   "Is the property GIT-BRANCH has VALUES in list, Method tell
          property represent list or not."
   t)
@@ -402,7 +405,8 @@
                  timebeing-time)
             (occ-rank-percentage 0))))))
 
-(cl-defmethod occ-obj-impl-list-p ((prop (eql timebeing)))
+(cl-defmethod occ-obj-impl-list-p ((mrk marker)
+                                   (prop (eql timebeing)))
   (ignore prop)
   nil)
 
