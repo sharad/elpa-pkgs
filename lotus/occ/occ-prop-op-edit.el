@@ -45,7 +45,7 @@
                                         &optional
                                         value)
   (occ-assert prop)
-  (if (occ-obj-intf-list-p prop)
+  (if (occ-obj-intf-list-p obj prop)
       ;; TODO: where are generated actions?? (occ-obj-operations-for-prop 'occ-obj-tsk 'root)
       (let* ((operations (occ-obj-operations-for-prop obj
                                                       prop))

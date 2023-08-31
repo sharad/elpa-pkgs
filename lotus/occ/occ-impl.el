@@ -162,6 +162,39 @@
   nil)
 
 
+;; (cl-defgeneric occ-obj-impl-list-p (property)
+(cl-defgeneric occ-obj-impl-list-p (tsk
+                                    property)
+  "Is the property PROPERTY has VALUES in list, Method tell
+   property represent list or not.")
+
+(cl-defmethod occ-obj-impl-list-p ((tsk occ-obj-tsk)
+                                   (property symbol))
+  "Is the property PROPERTY has VALUES in list, Method tell
+   property represent list or not."
+  ;; 'list
+  ;; (occ-error "Implement method occ-obj-impl-list-p for property %s" property)
+  (occ-debug "occ-obj-intf-list-p: no method for property %s using default."
+             property)
+  nil)
+
+
+;; (cl-defgeneric occ-obj-impl-list-p (property)
+(cl-defgeneric occ-obj-impl-list-p (ctx property)
+  "Is the property PROPERTY has VALUES in list, Method tell
+   property represent list or not.")
+
+(cl-defmethod occ-obj-impl-list-p ((tsk occ-obj-ctx)
+                                   (property symbol))
+  "Is the property PROPERTY has VALUES in list, Method tell
+   property represent list or not."
+  ;; 'list
+  ;; (occ-error "Implement method occ-obj-impl-list-p for property %s" property)
+  (occ-debug "occ-obj-intf-list-p: no method for property %s using default."
+             property)
+  nil)
+
+
 ;; (cl-defgeneric occ-obj-impl-to-org (property
 (cl-defgeneric occ-obj-impl-to-org (property
                                     value)
@@ -263,18 +296,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   (occ-obj-get-property (occ-obj-ctx obj)
                         property))
 
-
-;; (cl-defgeneric occ-obj-impl-operation (obj
-(cl-defgeneric occ-obj-impl-operation (obj
-                                       operation
-                                       property
-                                       value)
-  "Do the actual OPERATION.")
-;; (cl-defmethod occ-obj-impl-operation ((obj occ-obj-tsk)
-;;                              (operation (eql XYZ))
-;;                              (property      (eql x))
-;;                              values)
-;;   ())
 
 (cl-defgeneric occ-do-impl-operation (obj
                                       operation

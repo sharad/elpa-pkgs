@@ -115,7 +115,7 @@
   (let ((matches (occ-obj-intf-matches obj
                                        prop
                                        value)))
-    (if (occ-obj-intf-list-p prop)
+    (if (occ-obj-intf-list-p obj prop)
         (cl-first matches)
       matches)))
 
