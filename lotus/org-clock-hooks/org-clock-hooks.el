@@ -29,7 +29,7 @@
 
 
 (require 'org-misc-utils-lotus)
-(provide 'org-clock-daysummary)
+(require 'org-clock-daysummary)
 
 
 (defvar org-clock-default-effort "1:00")
@@ -39,15 +39,15 @@
   "Add a default effort estimation."
   (lotus-org-with-safe-modification
     (unless (org-entry-get (point) "Effort")
-      (org-set-property "Effort" org-clock-default-effort))))
+      (org-set-property "Effort"
+                        org-clock-default-effort))))
 
 (defun lotus-org-mode-ask-effort ()
   "Ask for an effort estimate when clocking in."
   (unless (org-entry-get (point) "Effort")
-    (let ((effort
-           (completing-read
-            "Effort: "
-            (org-entry-get-multivalued-property (point) "Effort"))))
+    (let ((effort (completing-read "Effort: "
+                                   (org-entry-get-multivalued-property (point)
+                                                                       "Effort"))))
       (unless (equal effort "")
         (lotus-org-with-safe-modification
           (org-set-property "Effort" effort))))))
@@ -55,10 +55,8 @@
 (defun org-add-effort-if-not-clockin-hook ()
   "if effort is not present than ask for it."
   (unless (lotus-org-unnamed-task-at-point-p)
-    (when (not
-           (and
-            (boundp' org-timer-countdown-timer)
-            org-timer-countdown-timer))
+    (when (not (and (boundp' org-timer-countdown-timer)
+                    org-timer-countdown-timer))
       (if (org-entry-get nil "Effort")
           (save-excursion
             (forward-line -2)
@@ -94,7 +92,7 @@
   (when (and (boundp' org-timer-countdown-timer)
              org-timer-countdown-timer)
     (org-timer-stop))
-  (org-clock-get-work-day-clock-string t))
+  (org-work-day-get-clock-string t))
   ;; Need some way here to run after org-lognote completed
   ;; (save-buffer) ;; -- what to do ???
 
