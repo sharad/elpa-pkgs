@@ -156,7 +156,7 @@
 ;;   (ignore values)
 ;;   (let ((tsk (occ-obj-tsk obj)))
 ;;       (occ-debug "(occ-do-impl-operation occ-obj-tsk): operation %s prop %s" operation prop)
-;;       (if (occ-obj-intf-list-p obj prop)
+;;       (if (occ-obj-list-p obj prop)
 ;;           (occ-obj-get-property tsk
 ;;                                 prop)
 ;;         (list (occ-obj-get-property tsk
@@ -184,7 +184,7 @@
                                      value)
   (let ((tsk (occ-obj-tsk obj)))
     (occ-debug "(occ-do-impl-operation occ-obj-tsk add): operation %s prop %s" operation prop)
-    (if (occ-obj-intf-list-p obj prop)
+    (if (occ-obj-list-p obj prop)
         (occ-obj-set-property tsk prop
                               ;; (nconc (occ-obj-get-property tsk prop)
                               ;;        (list (cl-first values)))
@@ -209,7 +209,7 @@
                                      value)
   (let ((tsk (occ-obj-tsk obj)))
     (occ-debug "(occ-do-impl-operation occ-obj-tsk): operation %s prop %s" operation prop)
-    (if (occ-obj-intf-list-p obj prop)
+    (if (occ-obj-list-p obj prop)
         (occ-obj-set-property tsk prop
                               ;; (remove (cl-first values)
                               ;;         (occ-obj-get-property tsk prop))

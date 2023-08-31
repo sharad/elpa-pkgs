@@ -221,7 +221,7 @@
 (cl-defmethod occ-obj-impl-get ((user occ-user-agent)
                                 (prop (eql git-branch))
                                 (obj occ-obj-ctx-tsk))
-  "Read value of list of elements if (occ-obj-intf-list-p PROPERTY)
+  "Read value of list of elements if (occ-obj-list-p OBJ PROPERTY)
         else element for property PROPERTY from user for OCC-TSK OBJ,
         must return ORG compatible value."
   (let ((buff (occ-obj-buffer obj)))
@@ -457,7 +457,7 @@
   (ignore values)
   (let ((tsk    (occ-obj-tsk obj)))
     (ignore tsk)
-    (if (occ-obj-intf-list-p prop)
+    (if (occ-obj-list-p obj prop)
         (occ-error "Implement it.")
       (occ-error "Implement it."))))
 
@@ -470,7 +470,7 @@
   (ignore values)
   (let ((prop-string (symbol-name prop)))
     (ignore prop-string)
-    (if (occ-obj-intf-list-p prop
+    (if (occ-obj-list-p obj prop
             (occ-error "Implement it.")
           (occ-error "Implement it.")))))
 

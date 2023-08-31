@@ -297,7 +297,7 @@ method provided."))))
 
 (cl-defmethod occ-obj-operations-for-prop ((class symbol)
                                            (prop  symbol))
-  ;; check about (occ-obj-intf-list-p prop) also
+  ;; check about (occ-obj-list-p prop) also
   (let ((ops (append (occ-cl-method-param-values 'occ-do-impl-operation
                                                  (list '\` `(,class (eql ,'(\, val)) symbol t))
                                                  'val)
@@ -306,13 +306,13 @@ method provided."))))
                                                  'val))))
     ;; BUG: TODO: inelegant solution fix it,
     (cl-remove-if-not #'(lambda (op)
-                          (or (occ-obj-intf-list-p prop)
+                          (or (occ-obj-list-p nil prop)
                               (not (memq op '(add remove)))))
                   (delete-dups ops))))
 
 (cl-defmethod occ-obj-operations-for-prop ((obj  occ-obj-tsk)
                                            (prop symbol))
-  ;; check about (occ-obj-intf-list-p prop) also
+  ;; check about (occ-obj-list-p prop) also
   (let ((ops (occ-cl-collect-on-classes #'(lambda (class)
                                             (occ-obj-operations-for-prop class
                                                                          prop))
@@ -323,7 +323,7 @@ method provided."))))
  (occ-obj-operations-for-prop 'occ-obj-tsk 'currfile)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'root)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'git-branch)
- (occ-obj-intf-list-p 'git-branch)
+ (occ-obj-list-p nil 'git-branch)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'current-clock)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'key)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'status)
@@ -340,7 +340,7 @@ method provided."))))
                                         value)
   "Read org string property PROP to occ representation."
   (occ-assert (not (consp value)))
-  (if (occ-obj-intf-list-p prop)
+  (if (occ-obj-list-p nil prop)
       (let* ((values (and value (split-string value))))
         (mapcar #'(lambda (v)
                     ;; from Org world to Occ world
@@ -427,11 +427,37 @@ method provided."))))
                prop)))
 
 
+;; (cl-defgeneric occ-obj-impl-list-p (property)
+(cl-defgeneric occ-obj-list-p (mrk
+                               property)
+  "Is the property PROPERTY has VALUES in list, Method tell
+   property represent list or not.")
+
+(cl-defmethod occ-obj-list-p ((mrk marker)
+                              (property symbol))
+  "Is the property PROPERTY has VALUES in list, Method tell
+   property represent list or not."
+ (occ-obj-intf-list-p mrk property))
+
+(cl-defmethod occ-obj-list-p ((mrk null)
+                              (property symbol))
+  "Is the property PROPERTY has VALUES in list, Method tell
+   property represent list or not."
+  (occ-obj-intf-list-p (make-marker) property))
+
+(cl-defmethod occ-obj-list-p ((tsk occ-obj-tsk)
+                              (property symbol))
+  "Is the property PROPERTY has VALUES in list, Method tell
+   property represent list or not."
+  (occ-obj-intf-list-p (occ-obj-tsk tsk)
+                       property))
+
+
 (cl-defmethod occ-obj-get ((user occ-user-agent)
                            (ctsk occ-obj-ctx-tsk)
                            (prop symbol)
                            build-list-p)
-  (if (occ-obj-intf-list-p prop)
+  (if (occ-obj-list-p prop)
       (if build-list-p
           ;; (mapcar #'(lambda (v)
           ;;             (occ-obj-intf-get user
@@ -476,7 +502,7 @@ method provided."))))
 (cl-defmethod occ-obj-to-org ((property symbol)
                               build-list-p
                               value)
-  (if (occ-obj-intf-list-p prop)
+  (if (occ-obj-list-p prop)
       (if build-list-p
           (mapcar #'(lambda (v)
                       (occ-obj-intf-to-org prop v))
@@ -505,7 +531,7 @@ method provided."))))
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 build-list-p
                                 value)
-  (if (occ-obj-intf-list-p prop)
+  (if (occ-obj-list-p prop)
       (if build-list-p
           (mapcar #'(lambda (v)
                       (occ-obj-intf-from-org prop v))

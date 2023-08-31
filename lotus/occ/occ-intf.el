@@ -156,7 +156,7 @@
 ;; (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk)
 ;; (cl-defmethod occ-obj-readprop-from-user ((obj occ-obj-tsk)
 ;;                                           (property symbol))
-;;   "Read value of list of elements if (occ-obj-intf-list-p PROPERTY) else
+;;   "Read value of list of elements if (occ-obj-list-p PROPERTY) else
 ;; element for property PROPERTY from user for OCC-TSK OBJ, must
 ;; return ORG compatible value."
 ;;   (ignore obj)
@@ -165,7 +165,7 @@
 (cl-defmethod occ-obj-intf-get ((user occ-user-agent)
                                 (property symbol)
                                 (ctsk occ-obj-ctx-tsk))
-  "Read value of list of elements if (occ-obj-intf-list-p PROPERTY) else
+  "Read value of list of elements if (occ-obj-list-p PROPERTY) else
 element for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value."
   (occ-obj-impl-get user
@@ -189,18 +189,21 @@ return ORG compatible value."
 
 
 ;; (cl-defgeneric occ-obj-list-p (property)
-(cl-defgeneric occ-obj-intf-list-p (property)
+(cl-defgeneric occ-obj-intf-list-p (obj
+                                    property)
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not.")
 
-(cl-defmethod occ-obj-intf-list-p ((property symbol))
+(cl-defmethod occ-obj-intf-list-p (obj
+                                   property)
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not."
   ;; 'list
   ;; (occ-error "Implement method occ-obj-intf-list-p for property %s" property)
   ;; (occ-debug "occ-obj-list-p: no method for property %s using default."
   ;;            property)
-  (occ-obj-impl-list-p property))
+  (occ-obj-impl-list-p obj
+                       property))
 
 
 ;; (cl-defgeneric occ-obj-prop-to-org (property

@@ -96,7 +96,7 @@
   "VALUE equal prop-value of OBJ for PROPERTY"
   (let* ((tsk            (occ-obj-tsk obj))
          (prop-value (occ-obj-get-property tsk prop)))
-    (if (occ-obj-intf-list-p prop)
+    (if (occ-obj-list-p obj prop)
         (cl-remove-if-not #'(lambda (pvalue)
                               (occ-obj-intf-prop= prop
                                                   pvalue
@@ -119,7 +119,7 @@
   "OBJ has property PROPERTY"
   (let* ((tsk            (occ-obj-tsk obj))
          (prop-value (occ-obj-get-property tsk prop)))
-    (if (occ-obj-intf-list-p prop)
+    (if (occ-obj-list-p obj prop)
         (cl-some #'(lambda (pvalue)
                      (occ-obj-intf-prop= prop
                                          pvalue
@@ -147,34 +147,44 @@
   value)
 
 
+;; ;; (cl-defgeneric occ-obj-impl-list-p (property)
 ;; (cl-defgeneric occ-obj-impl-list-p (property)
-(cl-defgeneric occ-obj-impl-list-p (property)
-  "Is the property PROPERTY has VALUES in list, Method tell
-   property represent list or not.")
+;;   "Is the property PROPERTY has VALUES in list, Method tell
+;;    property represent list or not.")
 
-(cl-defmethod occ-obj-impl-list-p ((property symbol))
-  "Is the property PROPERTY has VALUES in list, Method tell
-   property represent list or not."
-  ;; 'list
-  ;; (occ-error "Implement method occ-obj-impl-list-p for property %s" property)
-  (occ-debug "occ-obj-intf-list-p: no method for property %s using default."
-             property)
-  nil)
+;; (cl-defmethod occ-obj-impl-list-p ((property symbol))
+;;   "Is the property PROPERTY has VALUES in list, Method tell
+;;    property represent list or not."
+;;   ;; 'list
+;;   ;; (occ-error "Implement method occ-obj-impl-list-p for property %s" property)
+;;   (occ-debug "occ-obj-impl-list-p: no method for property %s using default."
+;;              property)
+;;   nil)
 
 
 ;; (cl-defgeneric occ-obj-impl-list-p (property)
-(cl-defgeneric occ-obj-impl-list-p (tsk
+(cl-defgeneric occ-obj-impl-list-p (mrk
                                     property)
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not.")
 
-(cl-defmethod occ-obj-impl-list-p ((tsk occ-obj-tsk)
+(cl-defmethod occ-obj-impl-list-p ((mrk marker)
                                    (property symbol))
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not."
   ;; 'list
   ;; (occ-error "Implement method occ-obj-impl-list-p for property %s" property)
-  (occ-debug "occ-obj-intf-list-p: no method for property %s using default."
+  (occ-debug "occ-obj-impl-list-p: no method for property %s using default."
+             property)
+  nil)
+
+(cl-defmethod occ-obj-impl-list-p ((ctx occ-obj-ctx)
+                                   (property symbol))
+  "Is the property PROPERTY has VALUES in list, Method tell
+   property represent list or not."
+  ;; 'list
+  ;; (occ-error "Implement method occ-obj-impl-list-p for property %s" property)
+  (occ-debug "occ-obj-impl-list-p: no method for property %s using default."
              property)
   nil)
 
@@ -190,7 +200,7 @@
    property represent list or not."
   ;; 'list
   ;; (occ-error "Implement method occ-obj-impl-list-p for property %s" property)
-  (occ-debug "occ-obj-intf-list-p: no method for property %s using default."
+  (occ-debug "occ-obj-impl-list-p: no method for property %s using default."
              property)
   nil)
 
@@ -242,7 +252,7 @@ org string to occ representation."
 (cl-defmethod occ-obj-impl-get ((user occ-user-agent)
                                 (property symbol)
                                 (ctsk occ-obj-tsk))
-  "Read value of list of elements if (occ-obj-intf-list-p PROPERTY) else
+  "Read value of list of elements if (occ-obj-impl-list-p PROPERTY) else
 element for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value."
   (ignore obj)
@@ -361,7 +371,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
  (cl-defmethod  occ-obj-impl-get ((user occ-user-agent)
                                   (prop (eql _template_))
                                   (ctsk occ-obj-tsk))
-   "Read value of list of elements if (occ-obj-intf-list-p PROPERTY) else
+   "Read value of list of elements if (occ-obj-list-p CTSK PROPERTY) else
 element for property PROPERTY from user for OCC-TSK OBJ, must
 return ORG compatible value."
    (ignore obj)

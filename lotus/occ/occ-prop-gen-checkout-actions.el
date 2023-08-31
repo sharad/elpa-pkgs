@@ -39,7 +39,7 @@
                                            &key param-only)
   "Used by occ-obj-gen-checkout"
   (ignore param-only)
-  (let ((list-p (occ-obj-intf-list-p prop)))
+  (let ((list-p (occ-obj-list-p obj prop)))
     (ignore list-p)
     (format "%s property %s of %s"
             "Checkout"

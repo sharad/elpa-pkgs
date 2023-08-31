@@ -42,7 +42,7 @@
   "Used by occ-obj-gen-edit"
   ;; TODO: Improve it.
   (ignore param-only)
-  (let ((list-p (occ-obj-intf-list-p prop)))
+  (let ((list-p (occ-obj-list-p obj prop)))
     (format "%s - property %s: %s %s %s"
               (capitalize (symbol-name operation))
               prop
@@ -59,7 +59,7 @@
   "Used by occ-obj-gen-edit"
   ;; TODO: Improve it.
   (ignore param-only)
-  (let ((list-p (occ-obj-intf-list-p prop)))
+  (let ((list-p (occ-obj-list-p obj prop)))
     (format "%s - property %s: %s %s %s"
             (capitalize (symbol-name operation))
             prop
@@ -75,7 +75,7 @@
   "Used by occ-obj-gen-edit"
   ;; TODO: Improve it.
   (ignore param-only)
-  (let ((list-p (occ-obj-intf-list-p prop)))
+  (let ((list-p (occ-obj-list-p obj prop)))
     (format "%s - property %s: %s %s %s"
             (capitalize (symbol-name operation))
             prop

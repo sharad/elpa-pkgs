@@ -84,7 +84,7 @@
 
 
 (defmacro occ-aggregate-rank (var property tsk aggregator &rest body)
-  `(let ((values    (if (occ-obj-intf-list-p ,property)
+  `(let ((values    (if (occ-obj-list-p tsk ,property)
                         (occ-obj-get-property ,tsk ,property)
                       (list (occ-obj-get-property ,tsk ,property))))
          (total-rank 0))
