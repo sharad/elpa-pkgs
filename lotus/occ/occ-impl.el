@@ -435,8 +435,7 @@ OCC-TSK OBJ."
 (cl-defmethod occ-obj-impl-get ((obj occ-obj-tsk) (prop (eql %s)))
   ...)
 
-method provided.")
-               prop)))
+method provided." prop))))
 
 (cl-defmethod occ-obj-impl-get :around ((user occ-user-agent)
                                         (prop symbol)
@@ -471,12 +470,6 @@ method provided." prop))))
                                         value)
   "Accept org compatible VALUE"
   (occ-message "I should be called first in case of MARKER")
-  ;; (unless (occ-obj-valid-p operation prop)
-  ;;   (occ-error "occ-obj-org-operation[around]: operation %s(type=%s) is not allowed for prop %s(type=%s)"
-  ;;              operation
-  ;;              (type-of operation)
-  ;;              prop
-  ;;              (type-of prop)))
   (lotus-with-marker mrk
     (unless (org-get-property-block)
       ;; create property drawer
