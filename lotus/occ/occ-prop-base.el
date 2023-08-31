@@ -364,7 +364,8 @@ method provided."))))
       (dolist (p props)
         (let* ((value         (occ-obj-get-property obj p))
                (rearead-value (occ-obj-rereadprop-value p value)))
-          (occ-obj-set-property obj p rearead-value))))))
+          (occ-obj-set-property obj p
+                                rearead-value))))))
 
 (cl-defmethod occ-obj-reread-props :around (obj)
   "return PROPERTIES list that can be checked-out."
