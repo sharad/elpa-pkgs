@@ -490,9 +490,9 @@ method provided." prop))))
 
 
 (cl-defmethod occ-do-impl-operation :around ((mrk  marker)
-                                        (operation symbol)
-                                        (prop symbol)
-                                        value)
+                                             (operation symbol)
+                                             (prop symbol)
+                                             value)
   "Accept org compatible VALUE"
   (occ-message "I should be called first in case of MARKER")
   (lotus-with-marker mrk
