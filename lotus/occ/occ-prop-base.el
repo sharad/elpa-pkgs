@@ -665,6 +665,19 @@ and remove OPERATION."
       (and (occ-obj-list-p 'operation operation)
            (occ-obj-list-p (occ-obj-tsk tsk) property)
            (not (occ-obj-list-p (occ-obj-ctx ctx) property)))))
+
+(defun occ-obj-operation-valid-p ((tsk occ-obj-tsk)
+                                  (ctx null)
+                                  (property symbol)
+                                  (operation symbol))
+  (or (and (not (occ-obj-list-p 'operation operation))
+           (and (occ-obj-list-p (occ-obj-tsk tsk) property)
+                (occ-obj-list-p (occ-obj-ctx ctx) property))
+           (not (or (occ-obj-list-p (occ-obj-tsk tsk) property)
+                    (occ-obj-list-p (occ-obj-ctx ctx) property))))
+      (and (occ-obj-list-p 'operation operation)
+           (occ-obj-list-p (occ-obj-tsk tsk) property)
+           (not (occ-obj-list-p (occ-obj-ctx ctx) property)))))
 
 
 ;; TODO: Implement Plist with title here (??)
