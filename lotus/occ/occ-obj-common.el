@@ -148,28 +148,28 @@
                                     &key not-recursive)
   ;; mainly used by occ-tsk only
   (ignore not-recursive)
-  (occ-debug "(occ-obj-set-property occ-obj): prop %s, value %s"
-             (prin1-to-string prop)
-             (prin1-to-string (occ-obj-nonocc-format value))
-    (if (memq prop
-              (occ-cl-class-slots (occ-cl-inst-classname obj)))
-        (setf (cl-struct-slot-value (occ-cl-inst-classname obj) prop obj)
-              value)
-      (let ((plist-prop (if (occ-plist-get (occ-cl-obj-plist-value obj)
-                                           prop)
-                            prop
-                          (upcase-sym prop))))
-        (occ-debug "(occ-obj-set-property occ-obj): plist got %s using %s"
-                   prop plist-prop)
-        (occ-plist-set
-         ;; NOTE: as Property block keys return by (org-element-at-point) are in
-         ;; UPCASE even in actual org file it is lower or camel case. so our obj
-         ;; (tsk) also must have to be in line of it as it also got created with
-         ;; same function (org-element-at-point).
-         (cl-struct-slot-value (occ-cl-inst-classname obj)
-                               'plist
-                               obj)
-         plist-prop value)))))
+  ;; (occ-debug "(occ-obj-set-property occ-obj): prop %s, value %s"
+  ;;            (prin1-to-string prop)
+  ;;            (prin1-to-string (occ-obj-nonocc-format value)))
+  (if (memq prop
+            (occ-cl-class-slots (occ-cl-inst-classname obj)))
+      (setf (cl-struct-slot-value (occ-cl-inst-classname obj) prop obj)
+            value)
+    (let ((plist-prop (if (occ-plist-get (occ-cl-obj-plist-value obj)
+                                         prop)
+                          prop
+                        (upcase-sym prop))))
+      (occ-debug "(occ-obj-set-property occ-obj): plist got %s using %s"
+                 prop plist-prop)
+      (occ-plist-set
+       ;; NOTE: as Property block keys return by (org-element-at-point) are in
+       ;; UPCASE even in actual org file it is lower or camel case. so our obj
+       ;; (tsk) also must have to be in line of it as it also got created with
+       ;; same function (org-element-at-point).
+       (cl-struct-slot-value (occ-cl-inst-classname obj)
+                             'plist
+                             obj)
+       plist-prop value))))
 
 (cl-defmethod occ-obj-set-property ((obj occ-tree-tsk)
                                     prop
@@ -177,9 +177,9 @@
   ;; TODO: do it recursively.
   ;; mainly used by occ-tsk only
   ;; NOTE
-  (occ-debug "(occ-obj-set-property (obj occ-tree-tsk)) prop %s, value %s"
-             (prin1-to-string prop)
-             (prin1-to-string (occ-obj-nonocc-format value)))
+  ;; (occ-debug "(occ-obj-set-property (obj occ-tree-tsk)) prop %s, value %s"
+  ;;            (prin1-to-string prop)
+  ;;            (prin1-to-string (occ-obj-nonocc-format value)))
   (cl-call-next-method)
   (when not-recursive
     (dolist (subtsk (occ-tree-tsk-subtree (occ-obj-tsk obj)))
@@ -194,26 +194,26 @@
                                     value &key not-recursive)
   (ignore obj)
   (ignore not-recursive)
-  (occ-debug "(occ-obj-set-property (obj occ-obj-tsk)) prop %s, value %s"
-             (prin1-to-string prop)
-             (prin1-to-string (occ-obj-nonocc-format value)))
+  ;; (occ-debug "(occ-obj-set-property (obj occ-obj-tsk)) prop %s, value %s"
+  ;;            (prin1-to-string prop)
+  ;;            (prin1-to-string (occ-obj-nonocc-format value)))
   (cl-call-next-method))
 
 (cl-defmethod occ-obj-set-property ((obj occ-obj-ctx-tsk)
                                     prop
                                     value &key not-recursive)
-  (occ-debug "(occ-obj-set-property (obj occ-obj-ctx-tsk)) prop %s, value %s"
-             (prin1-to-string prop)
-             (prin1-to-string (occ-obj-nonocc-format value)))
+  ;; (occ-debug "(occ-obj-set-property (obj occ-obj-ctx-tsk)) prop %s, value %s"
+  ;;            (prin1-to-string prop)
+  ;;            (prin1-to-string (occ-obj-nonocc-format value)))
   (occ-obj-set-property (occ-obj-tsk obj) prop
-                    value :not-recursive not-recursive))
+                        value :not-recursive not-recursive))
 
 (cl-defmethod occ-obj-set-property ((obj occ-obj-ctx)
                                     prop
                                     value &key not-recursive)
-  (occ-debug "(occ-obj-set-property (obj occ-obj-ctx)) prop %s, value %s"
-             (prin1-to-string prop)
-             (prin1-to-string (occ-obj-nonocc-format value)))
+  ;; (occ-debug "(occ-obj-set-property (obj occ-obj-ctx)) prop %s, value %s"
+  ;;            (prin1-to-string prop)
+  ;;            (prin1-to-string (occ-obj-nonocc-format value)))
   (occ-obj-set-property (occ-obj-ctx obj) prop
                         value :not-recursive not-recursive))
 
