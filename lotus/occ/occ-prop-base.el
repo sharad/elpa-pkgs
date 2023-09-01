@@ -405,6 +405,33 @@ method provided."))))
         (occ-obj-operations-for-prop obj
                                      prop)))
 
+(defun occ-obj-operation-valid-p-1 ((tsk occ-obj-tsk)
+                                  (ctx occ-obj-ctx)
+                                  (property symbol)
+                                  (operation symbol))
+  (or (and (not (occ-obj-list-p 'operation operation))
+           (and (occ-obj-list-p (occ-obj-tsk tsk) property)
+                (occ-obj-list-p (occ-obj-ctx ctx) property))
+           (not (or (occ-obj-list-p (occ-obj-tsk tsk) property)
+                    (occ-obj-list-p (occ-obj-ctx ctx) property))))
+      (and (occ-obj-list-p 'operation operation)
+           (occ-obj-list-p (occ-obj-tsk tsk) property)
+           (not (occ-obj-list-p (occ-obj-ctx ctx) property)))))
+
+(defun occ-obj-operation-valid-p-1 ((tsk occ-obj-tsk)
+                                  (ctx null)
+                                  (property symbol)
+                                  (operation symbol))
+  (or (and (not (occ-obj-list-p 'operation operation))
+           (and (occ-obj-list-p (occ-obj-tsk tsk) property)
+                (occ-obj-list-p (occ-obj-ctx ctx) property))
+           (not (or (occ-obj-list-p (occ-obj-tsk tsk) property)
+                    (occ-obj-list-p (occ-obj-ctx ctx) property))))
+      (and (occ-obj-list-p 'operation operation)
+           (occ-obj-list-p (occ-obj-tsk tsk) property)
+           (not (occ-obj-list-p (occ-obj-ctx ctx) property)))))
+
+
 (occ-testing
  (occ-obj-operations-for-prop 'occ-obj-tsk 'currfile)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'root)
@@ -447,7 +474,8 @@ method provided."))))
   ;; 2. operation to set and get value from ORG file.
   ;; 3. if both are present then it could be done.
   ;; -- I guess
-  (if (occ-obj-operation-valid-p obj;; BUG: TODO: inelegant solution fix it,
+  (if (occ-obj-operation-valid-p (occ-obj-tsk obj);; BUG: TODO: inelegant solution fix it,
+                                 (occ-obj-ctx obj)
                                  operation
                                  prop)
       (if (cl-call-next-method (occ-obj-marker obj)
@@ -652,32 +680,6 @@ and remove OPERATION."
 
 
 ;; 
-
-(defun occ-obj-operation-valid-p ((tsk occ-obj-tsk)
-                                  (ctx occ-obj-ctx)
-                                  (property symbol)
-                                  (operation symbol))
-  (or (and (not (occ-obj-list-p 'operation operation))
-           (and (occ-obj-list-p (occ-obj-tsk tsk) property)
-                (occ-obj-list-p (occ-obj-ctx ctx) property))
-           (not (or (occ-obj-list-p (occ-obj-tsk tsk) property)
-                    (occ-obj-list-p (occ-obj-ctx ctx) property))))
-      (and (occ-obj-list-p 'operation operation)
-           (occ-obj-list-p (occ-obj-tsk tsk) property)
-           (not (occ-obj-list-p (occ-obj-ctx ctx) property)))))
-
-(defun occ-obj-operation-valid-p ((tsk occ-obj-tsk)
-                                  (ctx null)
-                                  (property symbol)
-                                  (operation symbol))
-  (or (and (not (occ-obj-list-p 'operation operation))
-           (and (occ-obj-list-p (occ-obj-tsk tsk) property)
-                (occ-obj-list-p (occ-obj-ctx ctx) property))
-           (not (or (occ-obj-list-p (occ-obj-tsk tsk) property)
-                    (occ-obj-list-p (occ-obj-ctx ctx) property))))
-      (and (occ-obj-list-p 'operation operation)
-           (occ-obj-list-p (occ-obj-tsk tsk) property)
-           (not (occ-obj-list-p (occ-obj-ctx ctx) property)))))
 
 
 ;; TODO: Implement Plist with title here (??)
