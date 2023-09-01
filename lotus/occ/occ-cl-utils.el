@@ -96,7 +96,7 @@
 
 (defun occ-cl-class (inst)
   ;; BUG: TODO: Improve it.
-  (if t ;; (arrayp inst)
+  (if (cl-struct-p inst);; t ;; (arrayp inst)
       (let* ((class-sym (aref inst 0))
              (class-sym (if (boundp class-sym)
                             class-sym
@@ -107,7 +107,7 @@
     (type-of inst)))
 
 (defun occ-cl-classname (class)
-  (if t ;; (eql 'cl-structure-class (occ-cl-class class))
+  (if (cl-struct-p class) ;; t ;; (eql 'cl-structure-class (occ-cl-class class))
       (cl-struct-slot-value 'cl-structure-class
                             'name
                             class)
@@ -122,9 +122,27 @@
 ;; (occ-cl-class-parents (occ-cl-class test-xyz))
 ;; (occ-cl-class-parent-names (cl--struct-get-class 'occ-tsk))
 
+(when nil
+  (type-of (occ-cl-class (occ-get-debug-obj)))
+  (type-of (occ-cl-class (occ-cl-class (occ-get-debug-obj))))
+  (cl- (occ-get-debug-obj))
+  (occ-cl-class (make-marker))
+  (type-of (make-marker))
+
+  (occ-cl-inst-classname (occ-get-debug-obj))
+  (occ-cl-inst-classname (cl-struct-p (occ-get-debug-obj))) 
+  (occ-cl-inst-classname (make-marker))
+
+  (cl-struct-p (occ-get-debug-obj))
+  (cl-struct-p (make-marker))
+
+  (length (occ-cl-class-parent-names (occ-cl-class (occ-get-debug-obj))))
+  (occ-cl-class-parent-names (occ-cl-class (make-marker)))
+)
+
 
 (defun occ-cl-class-parents (class)
-  (unless nil ;; (symbolp (occ-cl-class class))
+  (when (cl-struct-p class) ;; (symbolp (occ-cl-class class))
     (cl-struct-slot-value 'cl-structure-class
                           'parents
                           class)))

@@ -180,10 +180,10 @@
 ;;       retval)))
 
 
-(cl-defmethod occ-do-operation ((pom  marker)
-                                (operation (eql get))
-                                (prop symbol)
-                                value)
+(cl-defmethod occ-do-impl-operation ((pom  marker)
+                                     (operation (eql get))
+                                     (prop symbol)
+                                     value)
   "Org operation implementation of OPERATION on POINT-OF-MARKER for
 prop GET and VALUES"
   (ignore operation)
@@ -195,10 +195,10 @@ prop GET and VALUES"
         (list (occ-org-entry-get pom
                                  prop-string)))))
 
-(cl-defmethod occ-do-operation ((pom  marker)
-                                (operation (eql add))
-                                (prop symbol)
-                                value)
+(cl-defmethod occ-do-impl-operation ((pom  marker)
+                                     (operation (eql add))
+                                     (prop symbol)
+                                     value)
   "Org operation implementation of OPERATION on POINT-OF-MARKER for
 prop ADD and VALUES"
   (ignore operation)
@@ -209,10 +209,10 @@ prop ADD and VALUES"
                                                      value)
         (occ-error "Property `%s' is type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))))
 
-(cl-defmethod occ-do-operation ((pom  marker)
-                                (operation (eql put))
-                                (prop symbol)
-                                value)
+(cl-defmethod occ-do-impl-operation ((pom  marker)
+                                     (operation (eql put))
+                                     (prop symbol)
+                                     value)
   "Org operation implementation of OPERATION on POINT-OF-MARKER
 for prop PUT and VALUES"
   (ignore operation)
@@ -221,10 +221,10 @@ for prop PUT and VALUES"
                                             prop-string
                                             value)))
 
-(cl-defmethod occ-do-operation ((pom  marker)
-                                (operation (eql remove))
-                                (prop symbol)
-                                value)
+(cl-defmethod occ-do-impl-operation ((pom  marker)
+                                     (operation (eql remove))
+                                     (prop symbol)
+                                     value)
   "Org operation implementation of OPERATION on POINT-OF-MARKER
 for prop REMOVE and VALUES"
   (ignore operation)
@@ -235,10 +235,10 @@ for prop REMOVE and VALUES"
                                                           value)
         (occ-error "Property `%s' is type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))))
 
-(cl-defmethod occ-do-operation ((pom  marker)
-                                (operation (eql delete))
-                                (prop symbol)
-                                value)
+(cl-defmethod occ-do-impl-operation ((pom  marker)
+                                     (operation (eql delete))
+                                     (prop symbol)
+                                     value)
   "Org operation implementation of OPERATION on POINT-OF-MARKER
 for prop REMOVE and VALUES"
   (ignore operation)
@@ -247,10 +247,10 @@ for prop REMOVE and VALUES"
                           prop-string
                           value)))
 
-(cl-defmethod occ-do-operation ((pom  marker)
-                                (operation (eql member))
-                                (prop symbol)
-                                value)
+(cl-defmethod occ-do-impl-operation ((pom  marker)
+                                     (operation (eql member))
+                                     (prop symbol)
+                                     value)
   "Org operation implementation of OPERATION on POINT-OF-MARKER
 for prop MEMBER and VALUES"
   (ignore operation)

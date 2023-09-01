@@ -319,6 +319,16 @@ method provided."))))
                                     obj)))
     (delete-dups ops)))
 
+(cl-defmethod occ-obj-operations-for-prop ((obj  marker)
+                                           (prop symbol))
+  ;; check about (occ-obj-list-p prop) also
+  (let ((ops (occ-cl-collect-on-classes #'(lambda (class)
+                                            (occ-obj-operations-for-prop class
+                                                                         prop))
+                                        obj)))
+    (delete-dups ops)))
+
+
 (occ-testing
  (occ-obj-operations-for-prop 'occ-obj-tsk 'currfile)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'root)
@@ -330,7 +340,13 @@ method provided."))))
  (occ-obj-operations-for-prop 'occ-obj-tsk 'subtree)
 
  (occ-cl-collect-on-classes #'occ-obj-operations-org-operation
-                            (point-marker)))
+                            (point-marker))
+
+ (occ-obj-operations-for-prop (make-marker) 'git-branch)
+ (occ-obj-operations-for-prop (make-marker) 'root)
+ (occ-obj-operations-for-prop (occ-get-debug-obj) 'root))
+
+
 
 
 (defun occ-internal-remove-template-symbol (prop-list)
@@ -473,6 +489,13 @@ method provided."))))
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not."
   (occ-obj-list-p (occ-obj-marker tsk)
+                  property))
+
+(cl-defmethod occ-obj-list-p ((ctx occ-obj-ctx)
+                              (property symbol))
+  "Is the property PROPERTY has VALUES in list, Method tell
+   property represent list or not."
+  (occ-obj-list-p ctx
                   property))
 
 

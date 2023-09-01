@@ -464,7 +464,7 @@ method provided." prop))))
 ;;                operation prop)))
 
 
-(cl-defmethod occ-do-operation :around ((mrk  marker)
+(cl-defmethod occ-do-impl-operation :around ((mrk  marker)
                                         (operation symbol)
                                         (prop symbol)
                                         value)
