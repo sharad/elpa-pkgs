@@ -133,9 +133,8 @@ The time returned includes the time spent on this task in
 previous clocking intervals."
   (if (not (org-clock-is-active))
       0
-    (let ((currently-clocked-time
-           (floor (- (org-float-time)
-                     (org-float-time org-clock-start-time)))))
+    (let ((currently-clocked-time (floor (- (org-float-time)
+                                            (org-float-time org-clock-start-time)))))
       currently-clocked-time)))
 
 (defun org-work-day-clock-files-secs (files &optional all)
@@ -151,7 +150,7 @@ previous clocking intervals."
   (interactive "P")
   (if org-work-day-clock-monitor-files
       (let* ((today-clock-secs (org-work-day-clock-files-secs org-work-day-clock-monitor-files force))
-             (secs (- (* org-work-day-clock-hours 60 60) today-clock-secs))
+             (secs             (- (* org-work-day-clock-hours 60 60) today-clock-secs))
              (remiain-today-clock-hms (org-timer-secs-to-hms secs)))
         (message "%s left for today." (format "%s" remiain-today-clock-hms)))))
 
@@ -229,14 +228,10 @@ If not, show simply the clocked time like 01:50."
               ;; (org-minutes-to-clocksum-string (* org-work-day-clock-hours 60))
               (funcall org-timer-secs-to-time-fmt-fn (* org-work-day-clock-hours 60 60)))
              (clockstr (org-propertize
-                        (concat
-                         (if org-work-day-get-clock-string-separator " " "")
-                         "["
-                         "%s %s/%s %s"
-                         "]"
+                        (concat (if org-work-day-get-clock-string-separator " " "")
+                                "[" "%s %s/%s %s" "]")
                          ;; (if org-work-day-clock-msg
                          ;;     (concat " (" (replace-regexp-in-string "%" "%%" org-work-day-clock-msg) ")"))
-                         )
                         'face org-work-day-face)))
         (format clockstr
                 work-day-over-str
@@ -305,12 +300,13 @@ If not, show simply the clocked time like 01:50."
   ;;           (append global-mode-string
   ;;                   '(org-work-day-mode-mode-line-string))))
 
-  (when (and
-         (boundp 'global-mode-line-list)
-         global-mode-line-list)
+  (when (and (boundp 'global-mode-line-list)
+             global-mode-line-list)
     (progn
-      (or global-mode-line-list (setq global-mode-string '("")))
-      (or (memq 'org-work-day-mode-mode-line-string global-mode-line-list)
+      (or global-mode-line-list
+          (setq global-mode-string '("")))
+      (or (memq 'org-work-day-mode-mode-line-string
+                global-mode-line-list)
           (setq global-mode-line-list
                 (append global-mode-line-list
                         '(org-work-day-mode-mode-line-string))))))
@@ -318,8 +314,7 @@ If not, show simply the clocked time like 01:50."
   (when (fboundp 'spaceline-define-segment)
     (spaceline-define-segment workdaysummary
       ;; "Test"
-      (powerline-raw
-       (s-trim org-work-day-mode-mode-line-string)))
+      (powerline-raw (s-trim org-work-day-mode-mode-line-string)))
     (spaceline-toggle-workdaysummary-on)
     (spaceline-spacemacs-theme 'workdaysummary))
 
