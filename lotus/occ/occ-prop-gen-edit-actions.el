@@ -169,6 +169,8 @@ only argument required for some other further processing"
     (remove nil
             edit-ops)))
 
+;; (occ-obj-intf-default (occ-get-debug-obj) 'git-branch 'add)
+
 (cl-defmethod occ-obj-gen-edits-if-required ((obj       occ-obj-tsk)
                                              (prop      null)
                                              (operation symbol)

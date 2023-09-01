@@ -198,7 +198,9 @@
                          (split-string prop-value "::")))
         (val-list      (when value
                          (split-string value "::"))))
-    (when (= 2 (length prop-val-list) (length val-list))
+    (when (= 2
+             (length prop-val-list)
+             (length val-list))
       (let ((pvroot (nth 0 prop-val-list))
             (vroot  (nth 0 val-list)))
         (when (occ-pu-file= pvroot vroot)
@@ -206,7 +208,6 @@
                 (vbranch  (nth 1 val-list)))
             (occ-pu-string= pvbranch
                             vbranch)))))))
-
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
                                 (prop (eql git-branch))
                                 (arg null))
@@ -219,7 +220,8 @@
         (let ((vc-root (vc-root-dir))
               (branch (magit-get-current-branch)))
           ;; (occ-message "occ-obj-impl-get: branch = %s" branch)
-          (concat vc-root "::" branch))))))
+          (when (and vc-root branch)
+              (concat vc-root "::" branch)))))))
 (cl-defmethod occ-obj-impl-get ((user occ-user-agent)
                                 (prop (eql git-branch))
                                 (obj occ-obj-ctx-tsk))

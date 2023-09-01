@@ -497,6 +497,13 @@ method provided."))))
    property represent list or not."
   (occ-obj-list-p ctx
                   property))
+
+(cl-defmethod occ-obj-list-p ((obj (eql operation))
+                              (operation symbol))
+  "Is the property PROPERTY has VALUES in list, Method tell
+   property represent list or not."
+  (occ-obj-intf-list-p obj
+                       operation))
 
 
 (cl-defmethod occ-obj-get ((user occ-user-agent)
