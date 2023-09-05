@@ -154,6 +154,7 @@ only argument required for some other further processing"
                                              &key param-only)
   (ignore operation)
   (let* ((ops      (occ-obj-operations-for-prop obj prop))
+         ;; will use occ-obj-mapper onward
          (edit-ops (mapcar #'(lambda (operation)
                                (let ((value (occ-obj-intf-default obj ;BUG: TODO: implement context based values for operation
                                                                   prop

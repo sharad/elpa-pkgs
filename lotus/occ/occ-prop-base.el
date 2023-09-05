@@ -395,15 +395,15 @@ method provided."))))
 method provided."))))
 
 
-(cl-defmethod occ-obj-operation-valid-p ((obj       occ-obj-tsk)
-                                         (operation symbol)
-                                         (prop      symbol))
-  ;; (memq operation
-  ;;       '(add remove get put member))
-  (ignore prop)
-  (memq operation
-        (occ-obj-operations-for-prop obj
-                                     prop)))
+;; (cl-defmethod occ-obj-operation-valid-p ((obj       occ-obj-tsk)
+;;                                          (operation symbol)
+;;                                          (prop      symbol))
+;;   ;; (memq operation
+;;   ;;       '(add remove get put member))
+;;   (ignore prop)
+;;   (memq operation
+;;         (occ-obj-operations-for-prop obj
+;;                                      prop)))
 
 (cl-defmethod occ-obj-operation-valid-p ((tsk occ-obj-tsk)
                                          (ctx occ-obj-ctx)
@@ -446,6 +446,30 @@ method provided."))))
  (occ-obj-operations-for-prop 'occ-obj-tsk 'key)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'status)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'subtree))
+
+
+
+;; (or (and (not (occ-obj-list-p 'operation operation))
+;;          (and (occ-obj-list-p (occ-obj-tsk obj) property)
+;;               (occ-obj-list-p (occ-obj-ctx obj) property))
+;;          (not (or (occ-obj-list-p (occ-obj-tsk obj) property)
+;;                   (occ-obj-list-p (occ-obj-ctx obj) property))))
+;;     (and (occ-obj-list-p 'operation operation)
+;;          (occ-obj-list-p (occ-obj-tsk obj) property)
+;;          (not (occ-obj-list-p (occ-obj-ctx obj) property))))
+(cl-defmethod occ-obj-mapper ((tsk occ-obj-tsk)
+                              (ctx occ-obj-ctx)
+                              (property symbol)
+                              (operation symbol)
+                              func)
+  )
+(cl-defmethod occ-obj-mapper ((tsk occ-obj-tsk)
+                              (ctx null)
+                              (property symbol)
+                              (operation symbol)
+                              func)
+  )
+
 
 
 (cl-defmethod occ-do-operation ((obj       marker)
