@@ -451,7 +451,6 @@ method provided."))))
                          prop
                          value))
 
-
 (cl-defmethod occ-do-operation ((obj       occ-obj-tsk)
                                 (operation symbol)
                                 (prop      symbol)
@@ -460,6 +459,12 @@ method provided."))))
                          operation
                          prop
                          value))
+
+(cl-defmethod occ-do-operation ((obj       occ-obj-ctx)
+                                (operation symbol)
+                                (prop      symbol)
+                                value)
+  (occ-error "OCC-CTX is read only."))
 
 (cl-defmethod occ-do-operation :around ((obj       occ-obj-tsk)
                                         (operation symbol)
@@ -474,10 +479,12 @@ method provided."))))
   ;; 2. operation to set and get value from ORG file.
   ;; 3. if both are present then it could be done.
   ;; -- I guess
-  (if (occ-obj-operation-valid-p (occ-obj-tsk obj);; BUG: TODO: inelegant solution fix it,
-                                 (occ-obj-ctx obj)
-                                 operation
-                                 prop)
+
+  ;;  Not check just continue, correct later
+  (if t ;; (occ-obj-operation-valid-p (occ-obj-tsk obj);; BUG: TODO: inelegant solution fix it,
+        ;;                          (occ-obj-ctx obj)
+        ;;                          operation
+        ;;                          prop)
       (if (cl-call-next-method (occ-obj-marker obj)
                                operation
                                prop
@@ -634,7 +641,8 @@ method provided."))))
           (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
                      prop
                      (upcase (symbol-name operation))))
-      (occ-obj-intf-from-org prop value))))
+      (occ-obj-intf-from-org prop
+                             value))))
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation symbol)
                                 value)
