@@ -84,8 +84,8 @@ only argument required for some other further processing"
                                                 &key param-only)
   (if (occ-obj-get-property obj prop)
       (occ-obj-gen-checkout obj
-                        prop
-                        :param-only param-only)
+                            prop
+                            :param-only param-only)
     (occ-debug "occ-obj-gen-checkout-if-required: no value for prop %s present for %s"
                  prop
                  (occ-obj-Format obj))))
@@ -102,8 +102,8 @@ only argument required for some other further processing"
   (let* ((props        (occ-obj-properties-to-checkout (occ-obj-tsk obj)))
          (checkout-ops (mapcar #'(lambda (prop)
                                    (occ-obj-gen-checkout-if-required obj
-                                                                 prop
-                                                                 :param-only param-only))
+                                                                     prop
+                                                                     :param-only param-only))
                                props)))
     (occ-assert props)
     (remove nil
