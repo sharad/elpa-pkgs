@@ -475,9 +475,26 @@ method provided."))))
                               (ctx null)
                               (property symbol)
                               (operation symbol)
-                              func)
-  )
+                              func))
+
 
+(cl-defmethod occ-obj-values ((tsk occ-obj-tsk)
+                              (ctx occ-obj-ctx)
+                              (property symbol)
+                              (operation symbol))
+  (occ-obj-intf-values tsk
+                       ctx
+                       property
+                       operation))
+
+(cl-defmethod occ-obj-values ((tsk occ-obj-tsk)
+                              (ctx null)
+                              (property symbol)
+                              (operation symbol))
+  (occ-obj-intf-values tsk
+                       ctx
+                       property
+                       operation))
 
 
 (cl-defmethod occ-do-operation ((obj       marker)

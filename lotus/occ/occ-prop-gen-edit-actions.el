@@ -148,6 +148,28 @@ only argument required for some other further processing"
     (occ-message "No match")))
 
 
+;; (cl-defmethod occ-obj-gen-edits-if-required ((obj       occ-obj-tsk)
+;;                                              (prop      symbol)
+;;                                              (operation null)
+;;                                              &key param-only)
+;;   (ignore operation)
+;;   (let* ((ops      (occ-obj-operations-for-prop obj prop))
+;;          ;; will use occ-obj-mapper onward
+;;          (edit-ops (mapcar #'(lambda (operation)
+;;                                (let ((value (occ-obj-intf-default obj ;BUG: TODO: implement context based values for operation
+;;                                                                   prop
+;;                                                                   operation)))
+;;                                  (when value
+;;                                    (occ-obj-gen-edit-if-required obj
+;;                                                                  prop
+;;                                                                  operation
+;;                                                                  value
+;;                                                                  :param-only param-only))))
+;;                            ops)))
+;;     (occ-message "edit-ops: len %d" (length edit-ops))
+;;     (remove nil
+;;             edit-ops)))
+
 (cl-defmethod occ-obj-gen-edits-if-required ((obj       occ-obj-tsk)
                                              (prop      symbol)
                                              (operation null)
@@ -155,20 +177,23 @@ only argument required for some other further processing"
   (ignore operation)
   (let* ((ops      (occ-obj-operations-for-prop obj prop))
          ;; will use occ-obj-mapper onward
-         (edit-ops (mapcar #'(lambda (operation)
-                               (let ((value (occ-obj-intf-default obj ;BUG: TODO: implement context based values for operation
-                                                                  prop
-                                                                  operation)))
-                                 (when value
-                                   (occ-obj-gen-edit-if-required obj
-                                                                 prop
-                                                                 operation
-                                                                 value
-                                                                 :param-only param-only))))
-                           ops)))
+         (edit-ops (apply #'append
+                          (mapcar #'(lambda (operation)
+                                      (mapcar #'(lambda (val)
+                                                  (occ-obj-gen-edit-if-required obj
+                                                                                prop
+                                                                                operation
+                                                                                val
+                                                                                :param-only param-only))
+                                              (occ-obj-values (occ-obj-tsk obj) ;BUG: TODO: implement context based values for operation
+                                                              (occ-obj-ctx obj)
+                                                              prop
+                                                              operation)))
+                                  ops))))
     (occ-message "edit-ops: len %d" (length edit-ops))
     (remove nil
             edit-ops)))
+
 
 ;; (occ-obj-intf-default (occ-get-debug-obj) 'git-branch 'add)
 
