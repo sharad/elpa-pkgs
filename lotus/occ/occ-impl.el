@@ -344,11 +344,12 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                    (operation symbol))
   (let ((tsk   (occ-obj-tsk tsk))
         (ctx   (occ-obj-ctx ctx))
-        (value (occ-obj-get-property (occ-obj-ctx obj)
+        (value (occ-obj-get-property ctx
                                      property)))
-    (occ-error "Define for op %s and prop %s"
-               operation
-               property)))
+    ;; (occ-error "Define for op %s and prop %s"
+    ;;            operation
+    ;;            property)
+    nil))
 
 (cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)
                                    (ctx occ-obj-ctx)
@@ -356,7 +357,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                    (operation (eql add)))
   (let ((tsk   (occ-obj-tsk tsk))
         (ctx   (occ-obj-ctx ctx))
-        (value (occ-obj-get-property (occ-obj-ctx obj)
+        (value (occ-obj-get-property ctx
                                      property)))
     (if (occ-obj-list-p 'operation operation)
         (if (not (occ-obj-list-p tsk property))
@@ -371,7 +372,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                    (operation (eql remove)))
   (let ((tsk   (occ-obj-tsk tsk))
         (ctx   (occ-obj-ctx ctx))
-        (value (occ-obj-get-property (occ-obj-ctx obj)
+        (value (occ-obj-get-property ctx
                                      property)))
     (if (occ-obj-list-p 'operation operation)
         (if (not (occ-obj-list-p tsk property))
@@ -386,7 +387,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                    (operation (eql put)))
   (let ((tsk   (occ-obj-tsk tsk))
         (ctx   (occ-obj-ctx ctx))
-        (value (occ-obj-get-property (occ-obj-ctx obj)
+        (value (occ-obj-get-property ctx
                                      property)))
     (if (not (occ-obj-list-p 'operation operation))
         (if (not (or (occ-obj-list-p tsk property)
@@ -400,7 +401,7 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                    (operation (eql delete)))
   (let ((tsk   (occ-obj-tsk tsk))
         (ctx   (occ-obj-ctx ctx))
-        (value (occ-obj-get-property (occ-obj-ctx obj)
+        (value (occ-obj-get-property ctx
                                      property)))
     (if (not (occ-obj-list-p 'operation operation))
         (if (not (or (occ-obj-list-p tsk property)
