@@ -107,6 +107,65 @@
 ;;   nil)
 
 
+(cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)
+                                   (ctx occ-obj-ctx)
+                                   (property symbol)
+                                   (operation (eql add)))
+  (let ((tsk   (occ-obj-tsk tsk))
+        (ctx   (occ-obj-ctx ctx))
+        (value (occ-obj-get-property ctx
+                                     property)))
+    (if (occ-obj-list-p 'operation operation)
+        (if (not (occ-obj-list-p tsk property))
+            (if (occ-obj-list-p ctx property)
+                value
+              (list value)))
+      (occ-erro "error"))))
+
+(cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)
+                                   (ctx occ-obj-ctx)
+                                   (property symbol)
+                                   (operation (eql remove)))
+  (let ((tsk   (occ-obj-tsk tsk))
+        (ctx   (occ-obj-ctx ctx))
+        (value (occ-obj-get-property ctx
+                                     property)))
+    (if (occ-obj-list-p 'operation operation)
+        (if (not (occ-obj-list-p tsk property))
+            (if (occ-obj-list-p ctx property)
+                value
+              (list value)))
+      (occ-erro "error"))))
+
+(cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)
+                                   (ctx occ-obj-ctx)
+                                   (property symbol)
+                                   (operation (eql put)))
+  (let ((tsk   (occ-obj-tsk tsk))
+        (ctx   (occ-obj-ctx ctx))
+        (value (occ-obj-get-property ctx
+                                     property)))
+    (if (not (occ-obj-list-p 'operation operation))
+        (if (not (or (occ-obj-list-p tsk property)
+                     (occ-obj-list-p ctx property)))
+            value)
+      (occ-erro "error"))))
+
+(cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)
+                                   (ctx occ-obj-ctx)
+                                   (property symbol)
+                                   (operation (eql delete)))
+  (let ((tsk   (occ-obj-tsk tsk))
+        (ctx   (occ-obj-ctx ctx))
+        (value (occ-obj-get-property ctx
+                                     property)))
+    (if (not (occ-obj-list-p 'operation operation))
+        (if (not (or (occ-obj-list-p tsk property)
+                     (occ-obj-list-p ctx property)))
+            value)
+      (occ-erro "error"))))
+
+
 ;; (cl-defmethod occ-do-impl-operation ((obj       marker)
 ;;                                      (operation (eql add))
 ;;                                      (prop      symbol)
