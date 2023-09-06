@@ -389,9 +389,10 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
         (value (occ-obj-get-property (occ-obj-ctx obj)
                                      property)))
     (if (not (occ-obj-list-p 'operation operation))
-        (when (eql (occ-obj-list-p tsk property)
-                   (occ-obj-list-p ctx property))
-          (list (apply func value))))))
+        (if (not (or (occ-obj-list-p tsk property)
+                     (occ-obj-list-p ctx property)))
+            value)
+      (occ-erro "error"))))
 
 (cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)
                                    (ctx occ-obj-ctx)
@@ -402,9 +403,10 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
         (value (occ-obj-get-property (occ-obj-ctx obj)
                                      property)))
     (if (not (occ-obj-list-p 'operation operation))
-        (when (eql (occ-obj-list-p tsk property)
-                   (occ-obj-list-p ctx property))
-          (list (apply func value))))))
+        (if (not (or (occ-obj-list-p tsk property)
+                     (occ-obj-list-p ctx property)))
+            value)
+      (occ-erro "error"))))
 
 
 (cl-defgeneric occ-do-impl-operation (obj
