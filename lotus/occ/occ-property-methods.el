@@ -285,29 +285,32 @@
       org string to occ representation."
   (unless (string= value "")
     value))
-(cl-defmethod occ-obj-impl-require-p ((obj occ-obj-tsk)
-                                      (operation (eql _operation_))
-                                      (prop (eql git-branch))
-                                      values)
-  "Used by OCC-OBJ-GEN-EDIT-IF-REQUIRED to decide for this property
-      GIT-BRANCH if CALLABLE (helm method) should be generated."
-  nil)
-(cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
-                                    (prop (eql git-branch))
-                                    (operation (eql _operation_)))
-  "Return a default VALUE of property GIT-BRANCH."
-  nil)
-(cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
-                                    (prop (eql git-branch))
-                                    (operation (eql _operation_)))
-  "Return a default VALUE of property GIT-BRANCH."
-  nil)
-(cl-defmethod occ-do-impl-operation ((obj occ-obj-tsk)
-                                     (operation (eql _operation_))
-                                     (prop (eql git-branch))
-                                     values)
-  "Do the actual _OPERATION_."
-  nil)
+
+;; (cl-defmethod occ-obj-impl-require-p ((obj occ-obj-tsk)
+;;                                       (operation (eql _operation_))
+;;                                       (prop (eql git-branch))
+;;                                       values)
+;;   "Used by OCC-OBJ-GEN-EDIT-IF-REQUIRED to decide for this property
+;;       GIT-BRANCH if CALLABLE (helm method) should be generated."
+;;   nil)
+
+
+;; (cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
+;;                                     (prop (eql git-branch))
+;;                                     (operation (eql _operation_)))
+;;   "Return a default VALUE of property GIT-BRANCH."
+;;   nil)
+;; (cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
+;;                                     (prop (eql git-branch))
+;;                                     (operation (eql _operation_)))
+;;   "Return a default VALUE of property GIT-BRANCH."
+;;   nil)
+;; (cl-defmethod occ-do-impl-operation ((obj occ-obj-tsk)
+;;                                      (operation (eql _operation_))
+;;                                      (prop (eql git-branch))
+;;                                      values)
+;;   "Do the actual _OPERATION_."
+;;   nil)
 
 ;; Git branch property of task:1 ends here
 
