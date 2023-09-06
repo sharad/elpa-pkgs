@@ -275,25 +275,25 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
 ;;   (occ-obj-impl-require-p obj operation property values))
 
 
-;; (cl-defgeneric occ-obj-prop-default-value (obj
-(cl-defgeneric occ-obj-intf-default (obj
-                                     property
-                                     operation)
-  "Return a default VALUE of property _TEMPLATE_.")
-(cl-defmethod occ-obj-intf-default ((obj occ-obj-tsk)
-                                    (property symbol)
-                                    (operation symbol))
-  "Return a default VALUE of property _TEMPLATE_."
-  (occ-obj-impl-default obj
-                        property
-                        operation))
-(cl-defmethod occ-obj-intf-default ((obj occ-obj-ctx-tsk)
-                                    (property symbol)
-                                    (operation symbol))
-  "Return a default VALUE of property _TEMPLATE_."
-  (occ-obj-impl-default obj
-                        property
-                        operation))
+;; ;; (cl-defgeneric occ-obj-prop-default-value (obj
+;; (cl-defgeneric occ-obj-intf-default (obj
+;;                                      property
+;;                                      operation)
+;;   "Return a default VALUE of property _TEMPLATE_.")
+;; (cl-defmethod occ-obj-intf-default ((obj occ-obj-tsk)
+;;                                     (property symbol)
+;;                                     (operation symbol))
+;;   "Return a default VALUE of property _TEMPLATE_."
+;;   (occ-obj-impl-default obj
+;;                         property
+;;                         operation))
+;; (cl-defmethod occ-obj-intf-default ((obj occ-obj-ctx-tsk)
+;;                                     (property symbol)
+;;                                     (operation symbol))
+;;   "Return a default VALUE of property _TEMPLATE_."
+;;   (occ-obj-impl-default obj
+;;                         property
+;;                         operation))
 
 
 (cl-defmethod occ-obj-intf-values ((tsk occ-obj-tsk)
