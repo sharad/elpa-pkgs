@@ -175,7 +175,8 @@ only argument required for some other further processing"
                                              (operation null)
                                              &key param-only)
   (ignore operation)
-  (let* ((ops      (occ-obj-operations-for-prop obj prop))
+  (let* ((ops      (occ-obj-operations-for-prop obj
+                                                prop))
          ;; will use occ-obj-mapper onward
          (edit-ops (apply #'append
                           (mapcar #'(lambda (operation)
@@ -185,7 +186,7 @@ only argument required for some other further processing"
                                                                                 operation
                                                                                 val
                                                                                 :param-only param-only))
-                                              (occ-obj-values (occ-obj-tsk obj) ;BUG: TODO: implement context based values for operation
+                                              (occ-obj-values (occ-obj-tsk obj)
                                                               (occ-obj-ctx obj)
                                                               prop
                                                               operation)))
