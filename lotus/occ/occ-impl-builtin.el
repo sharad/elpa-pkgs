@@ -115,8 +115,9 @@
         (ctx   (occ-obj-ctx ctx))
         (value (occ-obj-get-property ctx
                                      property)))
+    (occ-message "occ-obj-impl-values[add] value = %s" value)
     (if (occ-obj-list-p 'operation operation)
-        (if (not (occ-obj-list-p tsk property))
+        (if (occ-obj-list-p tsk property)
             (if (occ-obj-list-p ctx property)
                 value
               (list value)))
@@ -131,7 +132,7 @@
         (value (occ-obj-get-property ctx
                                      property)))
     (if (occ-obj-list-p 'operation operation)
-        (if (not (occ-obj-list-p tsk property))
+        (if (occ-obj-list-p tsk property)
             (if (occ-obj-list-p ctx property)
                 value
               (list value)))
