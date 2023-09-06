@@ -181,11 +181,13 @@ only argument required for some other further processing"
          (edit-ops (apply #'append
                           (mapcar #'(lambda (operation)
                                       (mapcar #'(lambda (val)
-                                                  (occ-obj-gen-edit-if-required obj
-                                                                                prop
-                                                                                operation
-                                                                                val
-                                                                                :param-only param-only))
+                                                  (occ-message "Val: %s" val)
+                                                  (when val
+                                                    (occ-obj-gen-edit-if-required obj
+                                                                                  prop
+                                                                                  operation
+                                                                                  val
+                                                                                  :param-only param-only)))
                                               (occ-obj-values (occ-obj-tsk obj)
                                                               (occ-obj-ctx obj)
                                                               prop

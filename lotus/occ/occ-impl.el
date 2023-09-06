@@ -350,6 +350,17 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
     ;;            operation
     ;;            property)
     nil))
+
+(cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)
+                                   (ctx null)
+                                   (property symbol)
+                                   (operation symbol))
+  (let ((tsk   (occ-obj-tsk tsk))
+        (ctx   (occ-obj-ctx ctx)))
+    ;; (occ-error "Define for op %s and prop %s"
+    ;;            operation
+    ;;            property)
+    nil))
 
 
 (cl-defgeneric occ-do-impl-operation (obj
