@@ -107,6 +107,9 @@
 ;; will also cover occ-ctxual-tsk
 (cl-defmethod occ-obj-ctx ((obj occ-ctsk))
   (occ-ctsk-ctx obj))
+
+(cl-defmethod occ-obj-ctx ((obj occ-obj-tsk))
+  nil)
 
 
 (cl-defmethod occ-obj-marker ((obj null))
