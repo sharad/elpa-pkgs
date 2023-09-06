@@ -296,6 +296,25 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                         operation))
 
 
+(cl-defmethod occ-obj-intf-values ((tsk occ-obj-tsk)
+                                   (ctx occ-obj-ctx)
+                                   (property symbol)
+                                   (operation symbol))
+  (occ-obj-impl-values tsk
+                       ctx
+                       property
+                       operation))
+
+(cl-defmethod occ-obj-intf-values ((tsk occ-obj-tsk)
+                                   (ctx null)
+                                   (property symbol)
+                                   (operation symbol))
+  (occ-obj-impl-values tsk
+                       ctx
+                       property
+                       operation))
+
+
 ;; ;; (cl-defgeneric occ-obj-operation (obj
 ;; (cl-defgeneric occ-obj-intf-operation (obj
 ;;                                        operation
