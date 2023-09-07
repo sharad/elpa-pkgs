@@ -457,22 +457,22 @@ method provided."))))
 ;;     (and (occ-obj-list-p 'operation operation)
 ;;          (occ-obj-list-p (occ-obj-tsk obj) property)
 ;;          (not (occ-obj-list-p (occ-obj-ctx obj) property))))
-(cl-defmethod occ-obj-mapper ((tsk occ-obj-tsk)
-                              (ctx occ-obj-ctx)
-                              (property symbol)
-                              (operation symbol)
-                              func)
+(cl-defmethod occ-obj-map ((tsk occ-obj-tsk)
+                           (ctx occ-obj-ctx)
+                           (property symbol)
+                           (operation symbol)
+                           func)
   (mapcar func
           (occ-obj-values tsk
                           ctx
                           property
                           operation)))
   
-(cl-defmethod occ-obj-mapper ((tsk occ-obj-tsk)
-                              (ctx null)
-                              (property symbol)
-                              (operation symbol)
-                              func)
+(cl-defmethod occ-obj-map ((tsk occ-obj-tsk)
+                           (ctx null)
+                           (property symbol)
+                           (operation symbol)
+                           func)
   (mapcar func
           (occ-obj-values tsk
                           ctx
