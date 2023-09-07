@@ -45,7 +45,9 @@
     (format "%s property %s: %s of %s"
             "Checkout"
             prop
-            (occ-obj-pvalue obj prop vdirector)
+            (occ-obj-pvalue obj
+                            prop
+                            vdirector)
             (occ-obj-Format obj))))
 
 (cl-defmethod occ-obj-gen-checkout-fun ((obj  occ-obj-tsk)

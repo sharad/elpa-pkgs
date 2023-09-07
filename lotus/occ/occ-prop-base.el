@@ -448,15 +448,6 @@ method provided."))))
  (occ-obj-operations-for-prop 'occ-obj-tsk 'subtree))
 
 
-
-;; (or (and (not (occ-obj-list-p 'operation operation))
-;;          (and (occ-obj-list-p (occ-obj-tsk obj) property)
-;;               (occ-obj-list-p (occ-obj-ctx obj) property))
-;;          (not (or (occ-obj-list-p (occ-obj-tsk obj) property)
-;;                   (occ-obj-list-p (occ-obj-ctx obj) property))))
-;;     (and (occ-obj-list-p 'operation operation)
-;;          (occ-obj-list-p (occ-obj-tsk obj) property)
-;;          (not (occ-obj-list-p (occ-obj-ctx obj) property))))
 (cl-defmethod occ-obj-map ((tsk occ-obj-tsk)
                            (ctx occ-obj-ctx)
                            (property symbol)
