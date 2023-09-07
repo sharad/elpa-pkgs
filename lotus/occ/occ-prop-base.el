@@ -493,12 +493,20 @@ method provided."))))
 (cl-defmethod occ-obj-vdirectors ((tsk occ-obj-tsk)
                                   (property symbol))
   (if (occ-obj-list-p tsk property)
-      ((occ-obj-get-property tsk property))
-    (list t)))
+      (loop for i from 1 to (length (occ-obj-get-property tsk property))
+            collect i)
+    (list null)))
 
 (cl-defmethod occ-obj-pvalue ((tsk occ-obj-tsk)
                               (property symbol)
-                              vdirector))
+                              (vdirector number))
+  (nth (-1 vdirector)
+       (occ-obj-get-property tsk property)))
+
+(cl-defmethod occ-obj-pvalue ((tsk occ-obj-tsk)
+                              (property symbol)
+                              (vdirector null))
+  (occ-obj-get-property tsk property))
 
 
 (cl-defmethod occ-do-operation ((obj       marker)
@@ -729,18 +737,18 @@ and remove OPERATION."
                           value)
       value))
 
-;; (cl-defmethod occ-obj-op-value ((tsk occ-obj-tsk)
-;;                                 (property symbol)
-;;                                 (operation (eql delete))
-;;                                 value)
+;; (cl-defmethod occ-obj-operation-value ((tsk occ-obj-tsk)
+;;                                        (property symbol)
+;;                                        (operation (eql delete))
+;;                                         value)
 ;;   (occ-obj-intf-match (occ-obj-tsk tsk)
 ;;                       property
 ;;                       value))
 
-;; (cl-defmethod occ-obj-op-value ((tsk occ-obj-tsk)
-;;                                 (property symbol)
-;;                                 (operation (eql remove))
-;;                                 value)
+;; (cl-defmethod occ-obj-operation-value ((tsk occ-obj-tsk)
+;;                                        (property symbol)
+;;                                        (operation (eql remove))
+;;                                        value)
 ;;   (occ-obj-intf-match (occ-obj-tsk tsk)
 ;;                       property
 ;;                       value))
