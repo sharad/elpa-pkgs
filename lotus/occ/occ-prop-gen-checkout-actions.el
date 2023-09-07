@@ -36,42 +36,52 @@
 
 (cl-defmethod occ-obj-gen-checkout-prompt ((obj  occ-obj-tsk)
                                            (prop symbol)
+                                           vdirector
                                            &key param-only)
   "Used by occ-obj-gen-checkout"
   (ignore param-only)
   (let ((list-p (occ-obj-list-p obj prop)))
     (ignore list-p)
-    (format "%s property %s of %s"
+    (format "%s property %s: %s of %s"
             "Checkout"
             prop
+            (occ-obj-pvalue obj prop vdirector)
             (occ-obj-Format obj))))
 
 (cl-defmethod occ-obj-gen-checkout-fun ((obj  occ-obj-tsk)
                                         (prop symbol)
+                                        vdirector
                                         &key param-only)
   "Generate helm function, purpose PARAM-ONLY for the case where
 only argument required for some other further processing"
   (ignore obj)
   (if param-only
-      (list prop)
+      (list prop
+            vdirector)
     #'(lambda (obj)
-        (occ-do-op-prop-checkout obj prop))))
+        (occ-do-op-prop-checkout obj
+                                 prop
+                                 vdirector))))
 
 
 (cl-defgeneric occ-obj-gen-checkout (obj
                                      prop
+                                     vdirector
                                      &key param-only)
   "occ-obj-gen-checkout")
 
 (cl-defmethod occ-obj-gen-checkout ((obj       occ-obj-tsk)
                                     (prop      symbol)
+                                    vdirector
                                     &key param-only)
   (occ-debug "occ-obj-gen-checkout: checking prop %s" prop)
   (let ((prompt  (occ-obj-gen-checkout-prompt obj
                                               prop
+                                              vdirector
                                               :param-only param-only))
         (fun     (occ-obj-gen-checkout-fun obj
                                            prop
+                                           vdirector
                                            :param-only param-only))
         (keyword (sym2key (gensym))))
     (occ-obj-make-callable-normal keyword
@@ -83,9 +93,13 @@ only argument required for some other further processing"
                                                 (prop symbol)
                                                 &key param-only)
   (if (occ-obj-get-property obj prop)
-      (occ-obj-gen-checkout obj
-                            prop
-                            :param-only param-only)
+      (mapcar #'(lambda (vdirector)
+                  (occ-obj-gen-checkout obj
+                                        prop
+                                        vdirector
+                                        :param-only param-only))
+              (occ-obj-vdirectors obj
+                                  prop))
     (occ-debug "occ-obj-gen-checkout-if-required: no value for prop %s present for %s"
                  prop
                  (occ-obj-Format obj))))
@@ -100,11 +114,12 @@ only argument required for some other further processing"
 (cl-defmethod occ-obj-gen-checkouts-if-required ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
                                                  &key param-only)
   (let* ((props        (occ-obj-properties-to-checkout (occ-obj-tsk obj)))
-         (checkout-ops (mapcar #'(lambda (prop)
-                                   (occ-obj-gen-checkout-if-required obj
-                                                                     prop
-                                                                     :param-only param-only))
-                               props)))
+         (checkout-ops (apply #'append
+                              (mapcar #'(lambda (prop)
+                                          (occ-obj-gen-checkout-if-required obj
+                                                                            prop
+                                                                            :param-only param-only))
+                                    props))))
     (occ-assert props)
     (remove nil
             checkout-ops)))

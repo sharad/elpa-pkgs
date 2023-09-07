@@ -499,6 +499,17 @@ method provided."))))
                        operation))
 
 
+(cl-defmethod occ-obj-vdirectors ((tsk occ-obj-tsk)
+                                  (property symbol))
+  (if (occ-obj-list-p tsk property)
+      ((occ-obj-get-property tsk property))
+    (list t)))
+
+(cl-defmethod occ-obj-pvalue ((tsk occ-obj-tsk)
+                              (property symbol)
+                              vdirector))
+
+
 (cl-defmethod occ-do-operation ((obj       marker)
                                 (operation symbol)
                                 (prop      symbol)
