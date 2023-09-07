@@ -113,13 +113,15 @@
       (ido-read-file-name prompt ctx-dir ctx-currfile))))
 
 (cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
-                                    (prop (eql currfile)))
-  (let* ((tsk        (occ-obj-tsk      obj))
-         (files      (occ-obj-get-property tsk prop))
-         (first-file (cl-first files)))
-       (if first-file
-           (find-file first-file)
-         (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" first-file prop))))
+                                    (prop (eql currfile))
+                                    (vdirector number))
+  (let* ((tsk  (occ-obj-tsk obj))
+         (file (occ-obj-pvalue tsk
+                               prop
+                               vdirector)))
+       (if file
+           (find-file file)
+         (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" file prop))))
       ;;}}
 
 ;; Current File property of task:1 ends here
@@ -176,13 +178,15 @@
            (prompt     (concat (symbol-name prop) ": ")))
       (ido-read-directory-name prompt ctx-dir ctx-dir))))
 (cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
-                                    (prop (eql root)))
-  (let* ((tsk       (occ-obj-tsk      obj))
-         (dirs      (occ-obj-get-property tsk prop))
-         (first-dir (cl-first dirs)))
-    (if first-dir
-        (find-file first-dir)
-      (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" first-dir prop))))
+                                    (prop (eql root))
+                                    (vdirector number))
+  (let* ((tsk (occ-obj-tsk obj))
+         (dir (occ-obj-pvalue tsk
+                              prop
+                              vdirector)))
+    (if dir
+        (find-file dir)
+      (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" dir prop))))
       ;;}}
 
 ;; Root dir property of task:1 ends here
@@ -238,9 +242,12 @@
           (concat vc-root "::" branch))))))
 
 (cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
-                                    (prop (eql git-branch)))
-  (let* ((tsk             (occ-obj-tsk      obj))
-         (git-branch      (cl-first (occ-obj-get-property tsk prop)))
+                                    (prop (eql git-branch))
+                                    (vdirector number))
+  (let* ((tsk        (occ-obj-tsk obj))
+         (git-branch (occ-obj-pvalue tsk
+                                     prop
+                                     vdirector))
          (git-branch-list (when git-branch
                             (split-string git-branch "::"))))
     (when git-branch-list

@@ -382,10 +382,18 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
 
 ;; (cl-defgeneric occ-do-impl-checkout-prop (obj
 (cl-defgeneric occ-do-impl-checkout (obj
-                                     property)
+                                     property
+                                     vdirector)
   "Checkout property PROPERTY in case of force clock-in.")
 (cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
-                                    (property symbol))
+                                    (property symbol)
+                                    (vdirector number))
+  "Checkout property in case of force clock-in."
+  (ignore obj)
+  (occ-error "Implement it for %s: Checkout property in case of force clock-in." property))
+(cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
+                                    (property symbol)
+                                    (vdirector null))
   "Checkout property in case of force clock-in."
   (ignore obj)
   (occ-error "Implement it for %s: Checkout property in case of force clock-in." property))

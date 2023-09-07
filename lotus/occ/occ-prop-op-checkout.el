@@ -34,16 +34,16 @@
 
 (cl-defgeneric occ-do-op-prop-checkout (obj
                                         prop
-                                        value)
+                                        vdirector)
   "Checkout property PROP for forced clock-in.")
 
 (cl-defmethod occ-do-op-prop-checkout ((obj  occ-obj-tsk)
                                        (prop symbol)
-                                       value)
+                                       vdirector)
   "Checkout property PROP for forced clock-in."
   (occ-do-intf-checkout obj
                         prop
-                        value))
+                        vdirector))
 
 
 (cl-defgeneric occ-do-op-props-checkout (obj)
