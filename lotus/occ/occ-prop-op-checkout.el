@@ -53,11 +53,10 @@
   "Checkout all property for forced clock-in."
   (dolist (prop (occ-obj-properties-to-checkout obj))
     (occ-debug "occ-do-op-props-checkout: checkout prop %s" prop)
-    (dolist (vdir (occ-do-op-prop-checkout obj
-                                           prop))
+    (let ((vdir (implement-select-one (occ-obj-vdirectors obj
+                                                          prop))))
       (occ-do-op-prop-checkout obj
                                prop
                                vdir))))
-    
 
 ;;; occ-prop-checkout.el ends here
