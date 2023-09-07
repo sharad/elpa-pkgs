@@ -500,13 +500,15 @@ method provided."))))
 (cl-defmethod occ-obj-pvalue ((tsk occ-obj-tsk)
                               (property symbol)
                               (vdirector number))
-  (nth (-1 vdirector)
-       (occ-obj-get-property tsk property)))
+  (nth (1- vdirector)
+       (occ-obj-get-property tsk
+                             property)))
 
 (cl-defmethod occ-obj-pvalue ((tsk occ-obj-tsk)
                               (property symbol)
                               (vdirector null))
-  (occ-obj-get-property tsk property))
+  (occ-obj-get-property tsk
+                        property))
 
 
 (cl-defmethod occ-do-operation ((obj       marker)
