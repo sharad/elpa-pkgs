@@ -462,20 +462,22 @@ method provided."))))
                               (property symbol)
                               (operation symbol)
                               func)
-  (let ((tsk   (occ-obj-tsk tsk))
-        (ctx   (occ-obj-ctx ctx))
-        (value (occ-obj-get-property (occ-obj-ctx obj)
-                                     property))))
-  (if (not (occ-obj-list-p 'operation operation))
-      (when (eql (occ-obj-list-p tsk property)
-                 (occ-obj-list-p ctx property))
-        (list (apply func value)))))
-
+  (mapcar func
+          (occ-obj-values tsk
+                          ctx
+                          property
+                          operation)))
+  
 (cl-defmethod occ-obj-mapper ((tsk occ-obj-tsk)
                               (ctx null)
                               (property symbol)
                               (operation symbol)
-                              func))
+                              func)
+  (mapcar func
+          (occ-obj-values tsk
+                          ctx
+                          property
+                          operation)))
 
 
 (cl-defmethod occ-obj-values ((tsk occ-obj-tsk)

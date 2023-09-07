@@ -539,13 +539,13 @@ method provided." prop))))
               (goto-char start))
           (occ-error "occ-do-operation[ :around ]: not able to create property block to add property %s: %s"
                      prop
-                     value))))
+                     (occ-obj-nonocc-format value)))))
 
     (if (org-get-property-block)
         (progn
           (occ-debug "occ-do-operation[ :around ]: adding prop: %s value: %s using (org-set-property)."
                      prop
-                     value)
+                     (occ-obj-nonocc-format value))
           (let ((retval (condition-case e ;; if (cl-next-method-p)
                             (cl-call-next-method mrk
                                                  operation
@@ -561,7 +561,7 @@ method provided." operation prop)))))
             retval))
         (occ-error "occ-do-operation[ :around ]: can not get property block to add property %s: %s"
                    prop
-                   value))))
+                   (occ-obj-nonocc-format value)))))
 
 
 ;;
