@@ -568,6 +568,14 @@ method provided."))))
                prop)))
 
 
+(cl-defmethod occ-obj-propfmt (obj
+                               property
+                               value)
+  "Return format printable value of property PROPERTY."
+  (occ-obj-intf-propfmt obj
+                        property
+                        value))
+
 ;; (cl-defgeneric occ-obj-impl-list-p (property)
 (cl-defgeneric occ-obj-list-p (mrk
                                property)

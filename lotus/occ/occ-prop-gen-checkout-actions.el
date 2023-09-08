@@ -42,12 +42,11 @@
   (ignore param-only)
   (let ((list-p (occ-obj-list-p obj prop)))
     (ignore list-p)
-    (format "%s property %s: %s of %s"
-            "Checkout"
+    (format "Checkout property %s: %s of %s"
             prop
-            (occ-obj-pvalue obj
-                            prop
-                            vdirector)
+            (occ-obj-propfmt obj prop (occ-obj-pvalue obj
+                                                      prop
+                                                      vdirector))
             (occ-obj-Format obj))))
 
 (cl-defmethod occ-obj-gen-checkout-fun ((obj  occ-obj-tsk)
@@ -116,12 +115,12 @@ only argument required for some other further processing"
 (cl-defmethod occ-obj-gen-checkouts-if-required ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
                                                  &key param-only)
   (let* ((props        (occ-obj-properties-to-checkout (occ-obj-tsk obj)))
-         (checkout-ops (apply #'append
-                              (mapcar #'(lambda (prop)
-                                          (occ-obj-gen-checkout-if-required obj
-                                                                            prop
-                                                                            :param-only param-only))
-                                    props))))
+         (checkout-ops (mapcon #'(lambda (prop)
+                                   (occ-obj-gen-checkout-if-required obj
+                                                                     prop
+                                                                     :param-only param-only))
+                               props)))
+                              
     (occ-assert props)
     (remove nil
             checkout-ops)))

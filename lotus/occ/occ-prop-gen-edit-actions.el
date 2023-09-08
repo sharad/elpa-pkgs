@@ -46,7 +46,7 @@
     (format "%s - property %s: %s %s %s"
               (capitalize (symbol-name operation))
               prop
-              (occ-obj-intf-format obj prop value)
+              (occ-obj-propfmt obj prop value)
               (if list-p "in" "from")
               (occ-obj-Format obj))))
 
@@ -63,7 +63,7 @@
     (format "%s - property %s: %s %s %s"
             (capitalize (symbol-name operation))
             prop
-            (occ-obj-intf-format obj prop value)
+            (occ-obj-propfmt obj prop value)
             (if list-p "in" "from")
             (occ-obj-Format obj))))
 
@@ -79,7 +79,8 @@
     (format "%s - property %s: %s %s %s"
             (capitalize (symbol-name operation))
             prop
-            (occ-obj-intf-format obj prop (occ-obj-intf-match obj prop value))
+            (occ-obj-propfmt obj prop
+                             (occ-obj-intf-match obj prop value))
             (if list-p "in" "from")
             (occ-obj-Format obj))))
 
@@ -178,21 +179,21 @@ only argument required for some other further processing"
   (let* ((ops      (occ-obj-operations-for-prop obj
                                                 prop))
          ;; will use occ-obj-mapper onward
-         (edit-ops (apply #'append
-                          (mapcar #'(lambda (operation)
-                                      (mapcar #'(lambda (val)
-                                                  (occ-message "Val: %s" val)
-                                                  (when val
-                                                    (occ-obj-gen-edit-if-required obj
-                                                                                  prop
-                                                                                  operation
-                                                                                  val
-                                                                                  :param-only param-only)))
-                                              (occ-obj-values (occ-obj-tsk obj)
-                                                              (occ-obj-ctx obj)
-                                                              prop
-                                                              operation)))
-                                  ops))))
+         (edit-ops (mapcon #'(lambda (operation)
+                                     (mapcar #'(lambda (val)
+                                                 (occ-message "Val: %s" val)
+                                                 (when val
+                                                   (occ-obj-gen-edit-if-required obj
+                                                                                 prop
+                                                                                 operation
+                                                                                 val
+                                                                                 :param-only param-only)))
+                                             (occ-obj-values (occ-obj-tsk obj)
+                                                             (occ-obj-ctx obj)
+                                                             prop
+                                                             operation)))
+                             ops)))
+                          
     (occ-message "edit-ops: len %d" (length edit-ops))
     (remove nil
             edit-ops)))

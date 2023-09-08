@@ -174,18 +174,18 @@ return ORG compatible value."
 
 
 ;; (cl-defgeneric occ-obj-format-prop (obj
-(cl-defgeneric occ-obj-intf-format (obj
-                                    property
-                                    value)
+(cl-defgeneric occ-obj-intf-propfmt (obj
+                                     property
+                                     value)
   "Return format printable value of property PROPERTY."
   (ignore obj)
   (ignore property)
   value)
-(cl-defmethod occ-obj-intf-format (obj
-                                   property
-                                   value)
+(cl-defmethod occ-obj-intf-propfmt (obj
+                                    property
+                                    value)
   "Return format printable value of property PROPERTY."
-  (occ-obj-impl-format obj property value))
+  (occ-obj-impl-propfmt obj property value))
 
 
 ;; (cl-defgeneric occ-obj-list-p (property)

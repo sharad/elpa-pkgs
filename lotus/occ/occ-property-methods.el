@@ -269,9 +269,9 @@
                               (occ-obj-impl-get ctx prop nil))
           (occ-rank-percentage 100)
         (occ-rank-percentage 0)))))
-(cl-defmethod occ-obj-impl-format ((obj occ-obj-tsk)
-                                   (prop (eql git-branch))
-                                   value)
+(cl-defmethod occ-obj-impl-propfmt ((obj occ-obj-tsk)
+                                    (prop (eql git-branch))
+                                    value)
   "Return format printable value of property PROPERTY."
   (nth 1 (split-string value "::")))
 (cl-defmethod occ-obj-impl-list-p ((mrk marker)
