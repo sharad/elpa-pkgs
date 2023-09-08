@@ -32,7 +32,6 @@
 (require 'occ-macros)
 
 
-;; (cl-defgeneric occ-obj-rankprop (obj
 (cl-defgeneric occ-obj-impl-rank (obj
                                   property)
   "Return the RANK (number) for OBJ based on the property PROPERTY")
@@ -40,21 +39,21 @@
                                  property)
   "Return the RANK (number) for OBJ based on the property PROPERTY"
   ;; too much output
-  ;; (occ-debug "occ-obj-rank(tsk-pair=%s ctx=%s)" tsk-pair ctx)
-  (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)" (occ-obj-format obj) property)
+  ;; (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)" (occ-obj-format obj) property)
   0)
 (cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
                                  (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)"
-             (occ-obj-format obj)
-             property)
+  ;; (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)"
+  ;;            (occ-obj-format obj)
+  ;;            property)
   0)
 (cl-defmethod occ-obj-impl-rank ((obj  occ-obj-ctx-tsk)
                                  (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)" (occ-obj-format obj) property)
-  (occ-obj-impl-rank obj property))
+  ;; (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)" (occ-obj-format obj) property)
+  (occ-obj-impl-rank obj
+                     property))
 
 
 ;; adding base propetry NIL for helping to add relative properties
@@ -68,11 +67,10 @@
 (cl-defmethod occ-obj-impl-rank ((obj  occ-obj-ctx-tsk)
                                  (property (eql nil)))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)" (occ-obj-format obj) property)
+  ;; (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)" (occ-obj-format obj) property)
   (occ-obj-impl-rank obj property))
 
 
-;; (cl-defgeneric occ-obj-impl-has-p (obj
 (cl-defgeneric occ-obj-impl-prop= (property
                                    prop-value
                                    value)
@@ -85,7 +83,6 @@
          value))
 
 
-;; (cl-defgeneric occ-obj-impl-has-p (obj
 (cl-defgeneric occ-obj-impl-matches (obj
                                      property
                                      value)
@@ -108,7 +105,6 @@
         prop-value))))
 
 
-;; (cl-defgeneric occ-obj-impl-has-p (obj
 (cl-defgeneric occ-obj-impl-has-p (obj
                                    property
                                    value)
@@ -134,7 +130,6 @@
                                  property
                                  obj)
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ.")
-  ;; (occ-error "must return occ compatible value.")
 
 
 (cl-defgeneric occ-obj-impl-propfmt (obj
@@ -155,8 +150,6 @@
                                    (property symbol))
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not."
-  ;; 'list
-  ;; (occ-error "Implement method occ-obj-impl-list-p for property %s" property)
   (occ-debug "occ-obj-impl-list-p: no method for property %s using default."
              property)
   nil)
@@ -165,53 +158,43 @@
                                    (property symbol))
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not."
-  ;; 'list
-  ;; (occ-error "Implement method occ-obj-impl-list-p for property %s" property)
   (occ-debug "occ-obj-impl-list-p: no method for property %s using default."
              property)
   nil)
 
 
-;; (cl-defgeneric occ-obj-impl-to-org (property
 (cl-defgeneric occ-obj-impl-to-org (property
                                     value)
   "Return string representation for property PROPERTY, Method
 convert value VALUE of property PROPERTY from occ to org string
 representation.")
-;; (cl-defmethod occ-obj-impl-to-org ((property symbol)
 (cl-defmethod occ-obj-impl-to-org ((property symbol)
                                    value)
   "Return string representation for property PROPERTY, Method
 convert value VALUE of property PROPERTY from occ to org string
 representation."
-  ;; (occ-error "Implement method occ-obj-impl-to-org for property %s" property)
   (occ-debug "occ-obj-impl-to-org: no method for property %s using default."
              property)
   value)
 
 
-;; (cl-defgeneric occ-obj-impl-from-org (property
 (cl-defgeneric occ-obj-impl-from-org (property
                                       value)
   "Return the Actual Object representation for property
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation.")
-;; (cl-defmethod occ-obj-impl-from-org ((property symbol)
 (cl-defmethod occ-obj-impl-from-org ((property symbol)
                                      value)
   "Return the Actual Object representation for property
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
-  ;; (occ-error "Implement method occ-obj-impl-from-org for property %s" property)
   (occ-debug "occ-obj-impl-from-org: no method for property %s using default." property)
   value)
-;; (cl-defmethod occ-obj-impl-from-org ((property symbol)
 (cl-defmethod occ-obj-impl-from-org ((property symbol)
                                      (value string))
   "Return the Actual Object representation for property
 PROPERTY, Method convert value VALUE of property PROPERTY from
 org string to occ representation."
-  ;; (occ-error "Implement method occ-obj-impl-from-org for property %s" property)
   (occ-debug "occ-obj-impl-from-org: no method for property %s using default." property)
   value)
 
@@ -226,7 +209,6 @@ return ORG compatible value."
   (occ-error "Implement method occ-obj-impl-readprop-from-user for property %s" property))
 
 
-;; (cl-defgeneric occ-obj-impl-require-p (obj
 (cl-defgeneric occ-obj-impl-require-p (obj
                                        operation
                                        property
@@ -294,7 +276,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
              property))
 
 
-;; (cl-defgeneric occ-do-impl-checkout-prop (obj
 (cl-defgeneric occ-do-impl-checkout (obj
                                      property
                                      vdirector)
@@ -326,7 +307,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
    (ignore obj)
    (ignore property)
    (ignore value))
- ;; (cl-defmethod occ-obj-impl-get-property-value-from-ctx ((obj occ-ctx)
  (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
                                  (property symbol)
                                  arg)
@@ -345,7 +325,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
    "Is the property _TEMPLATE_ has VALUES in list, Method tell
    property represent list or not."
    (ignore prop))
-;;  (cl-defmethod occ-obj-impl-readprop-from-user ((obj occ-tsk))
  (cl-defmethod  occ-obj-impl-get ((user occ-user-agent)
                                   (prop (eql _template_))
                                   (ctsk occ-obj-tsk))
@@ -489,13 +468,6 @@ method provided." operation prop)))))
 ;;
 ;;
 ;;
-;; * read prop value from user
-;; * read prop value from ctx
-;; * read prop value from tsk
-;; * write prop value to tsk
-;; * write prop value to ctx error
-;; * write to user means print
-;; * checkout prop value from tsk
 ;; (org-read-date) (org--deadline-or-schedule arg 'scheduled tim)e
 
 ;;; occ-impl.el ends here
