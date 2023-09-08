@@ -137,7 +137,6 @@
   ;; (occ-error "must return occ compatible value.")
 
 
-;; (cl-defgeneric occ-obj-impl-format-prop (obj
 (cl-defgeneric occ-obj-impl-propfmt (obj
                                      property
                                      value)
@@ -147,22 +146,6 @@
   value)
 
 
-;; ;; (cl-defgeneric occ-obj-impl-list-p (property)
-;; (cl-defgeneric occ-obj-impl-list-p (property)
-;;   "Is the property PROPERTY has VALUES in list, Method tell
-;;    property represent list or not.")
-
-;; (cl-defmethod occ-obj-impl-list-p ((property symbol))
-;;   "Is the property PROPERTY has VALUES in list, Method tell
-;;    property represent list or not."
-;;   ;; 'list
-;;   ;; (occ-error "Implement method occ-obj-impl-list-p for property %s" property)
-;;   (occ-debug "occ-obj-impl-list-p: no method for property %s using default."
-;;              property)
-;;   nil)
-
-
-;; (cl-defgeneric occ-obj-impl-list-p (property)
 (cl-defgeneric occ-obj-impl-list-p (mrk
                                     property)
   "Is the property PROPERTY has VALUES in list, Method tell
@@ -179,31 +162,6 @@
   nil)
 
 (cl-defmethod occ-obj-impl-list-p ((ctx occ-obj-ctx)
-                                   (property symbol))
-  "Is the property PROPERTY has VALUES in list, Method tell
-   property represent list or not."
-  ;; 'list
-  ;; (occ-error "Implement method occ-obj-impl-list-p for property %s" property)
-  (occ-debug "occ-obj-impl-list-p: no method for property %s using default."
-             property)
-  nil)
-
-
-;; (cl-defmethod occ-obj-impl-list-p ((obj (eql operation))
-;;                               (operation symbol))
-;;   "Is the property PROPERTY has VALUES in list, Method tell
-;;    property represent list or not."
-;;   (occ-obj-intf-list-p obj
-;;                        operation))
-
-
-
-;; (cl-defgeneric occ-obj-impl-list-p (property)
-(cl-defgeneric occ-obj-impl-list-p (ctx property)
-  "Is the property PROPERTY has VALUES in list, Method tell
-   property represent list or not.")
-
-(cl-defmethod occ-obj-impl-list-p ((tsk occ-obj-ctx)
                                    (property symbol))
   "Is the property PROPERTY has VALUES in list, Method tell
    property represent list or not."
@@ -292,50 +250,6 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   (ignore values)
   (occ-debug "occ-obj-impl-require-p1 is called")
   t)
-
-
-;; ;; (cl-defgeneric occ-obj-impl-prop-default-value (obj
-;; (cl-defgeneric occ-obj-impl-default (obj
-;;                                      property
-;;                                      operation)
-;;   "Return a default VALUE of property _TEMPLATE_.")
-;; (cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
-;;                                     (property symbol)
-;;                                     (operation symbol))
-;;   "Return a default VALUE of property _TEMPLATE_."
-;;   (ignore obj)
-;;   (ignore property)
-;;   (ignore operation)
-;;   nil)
-;; (cl-defmethod occ-obj-impl-default ((obj occ-obj-ctx-tsk)
-;;                                     (property symbol)
-;;                                     (operation symbol))
-;;   "Return a default VALUE of property _TEMPLATE_."
-;;   (ignore operation)
-
-;;   ;; (or (and (not (occ-obj-list-p 'operation operation))
-;;   ;;          (and (occ-obj-list-p (occ-obj-tsk obj) property)
-;;   ;;               (occ-obj-list-p (occ-obj-ctx obj) property))
-;;   ;;          (not (or (occ-obj-list-p (occ-obj-tsk obj) property)
-;;   ;;                   (occ-obj-list-p (occ-obj-ctx obj) property))))
-;;   ;;     (and (occ-obj-list-p 'operation operation)
-;;   ;;          (occ-obj-list-p (occ-obj-tsk obj) property)
-;;   ;;          (not (occ-obj-list-p (occ-obj-ctx obj) property))))
-
-;;   (if (occ-obj-operation-valid-p (occ-obj-tsk obj)
-;;                                  (occ-obj-ctx obj)
-;;                                  property
-;;                                  operation)
-;;       (occ-obj-get-property (occ-obj-ctx obj)
-;;                             property)))
-
-;; ;; (cl-defmethod occ-obj-impl-default ((obj occ-obj-ctx-tsk)
-;; ;;                                     (property symbol)
-;; ;;                                     (operation symbol))
-;; ;;   "Return a default VALUE of property _TEMPLATE_."
-;; ;;   (ignore operation)
-;; ;;   (occ-obj-get-property (occ-obj-ctx obj)
-;; ;;                         property))
 
 
 (cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)

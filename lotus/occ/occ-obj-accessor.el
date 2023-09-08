@@ -700,7 +700,7 @@ pointing to it."
   (let ((ctxual-tsk (cl-first *occ-clocked-ctxual-tsk-ctx-history*))
         (org-clock  (or (occ-valid-marker org-clock-marker)
                         (occ-valid-marker org-clock-hd-marker))))
-    (when ctxual-tsk
+    (when t ;; ctxual-tsk
       (if (and ctxual-tsk
                org-clock
                (occ-obj-marker= ctxual-tsk
