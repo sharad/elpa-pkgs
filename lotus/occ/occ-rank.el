@@ -51,8 +51,6 @@
 (cl-defmethod occ-obj-calculate-rank ((obj occ-tsk))
   ;; too much output
   (occ-debug "occ-obj-calculate-rank((occ-tsk=%s))"
-             (occ-obj-Format (occ-obj-tsk obj)))
-  (occ-debug "occ-obj-calculate-rank((occ-tsk=%s))"
                (occ-obj-Format (occ-obj-tsk obj)))
   (occ-debug "occ-obj-calculate-rank(obj occ-tsk) %s" (occ-obj-properties-to-calculate-rank obj))
   (let* ((properties (occ-obj-properties-to-calculate-rank obj))
