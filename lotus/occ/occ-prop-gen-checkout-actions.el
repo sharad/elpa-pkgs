@@ -120,7 +120,6 @@ only argument required for some other further processing"
                                                                      prop
                                                                      :param-only param-only))
                                props)))
-                              
     (occ-assert props)
     (remove nil
             checkout-ops)))

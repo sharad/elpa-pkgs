@@ -286,8 +286,14 @@ method provided."))))
 (cl-defmethod occ-obj-properties-to-checkout ((class symbol))
   "return PROPERTIES list that can be checked-out."
   (occ-cl-method-param-values 'occ-do-impl-checkout ;NOTE: user have to define them for each properties.
-                              (list '\` `(,class (eql ,'(\, val))))
+                              (list '\` `(,class (eql ,'(\, val)) ,'(\, _)))
                               'val))
+;; (occ-cl-method-param-signs 'occ-do-impl-checkout)
+;; (occ-obj-properties-to-checkout 'occ-obj-tsk)
+;;
+;; (pcase '(a b c)
+;;   (`(a ,val ,z) val)
+;;   (_ nil))
 
 (cl-defmethod occ-obj-properties-to-checkout ((obj occ-obj-tsk))
   "return PROPERTIES list that can be checked-out."
