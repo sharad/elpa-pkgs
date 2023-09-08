@@ -138,9 +138,9 @@
 
 
 ;; (cl-defgeneric occ-obj-impl-format-prop (obj
-(cl-defgeneric occ-obj-impl-format (obj
-                                    property
-                                    value)
+(cl-defgeneric occ-obj-impl-propfmt (obj
+                                     property
+                                     value)
   "Return format printable value of property PROPERTY."
   (ignore obj)
   (ignore property)

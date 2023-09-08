@@ -115,7 +115,7 @@ only argument required for some other further processing"
 (cl-defmethod occ-obj-gen-checkouts-if-required ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
                                                  &key param-only)
   (let* ((props        (occ-obj-properties-to-checkout (occ-obj-tsk obj)))
-         (checkout-ops (mapcon #'(lambda (prop)
+         (checkout-ops (mapcan #'(lambda (prop)
                                    (occ-obj-gen-checkout-if-required obj
                                                                      prop
                                                                      :param-only param-only))

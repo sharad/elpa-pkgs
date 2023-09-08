@@ -179,7 +179,7 @@ only argument required for some other further processing"
   (let* ((ops      (occ-obj-operations-for-prop obj
                                                 prop))
          ;; will use occ-obj-mapper onward
-         (edit-ops (mapcon #'(lambda (operation)
+         (edit-ops (mapcan #'(lambda (operation)
                                      (mapcar #'(lambda (val)
                                                  (occ-message "Val: %s" val)
                                                  (when val
