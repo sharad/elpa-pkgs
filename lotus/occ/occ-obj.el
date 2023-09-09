@@ -182,7 +182,8 @@
   "occ-ctx"
   buffer
   file
-  tsk-aplist)
+  tsk-aplist
+  tsk-rank-list)
 
 
 (cl-defstruct (occ-ctsk (:include occ-obj-ctx-tsk))
