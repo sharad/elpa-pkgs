@@ -295,6 +295,12 @@ method provided."))))
 ;;   (`(a ,val ,z) val)
 ;;   (_ nil))
 
+;; (let ((class 'CLASS))
+;;  (list '\` `(,class (eql ,'(\, val)) ,'(\, _))))
+
+;; (let ((class 'CLASS))
+;;   `(,class (eql ,'(\, 'val)) _))
+
 (cl-defmethod occ-obj-properties-to-checkout ((obj occ-obj-tsk))
   "return PROPERTIES list that can be checked-out."
   (occ-cl-collect-on-classes #'occ-obj-properties-to-checkout
@@ -452,6 +458,31 @@ method provided."))))
  (occ-obj-operations-for-prop 'occ-obj-tsk 'key)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'status)
  (occ-obj-operations-for-prop 'occ-obj-tsk 'subtree))
+
+
+(cl-defmethod occ-obj-prop-rank ((obj  occ-tsk)
+                                 (property symbol))
+  (let ((rplist (occ-obj-tsk-prop-ranks-plist obj)))
+    (unless (plist-get rplist prop)
+      (plist-put rplist prop
+                 (occ-obj-intf-rank obj
+                                    prop)))
+    (plist-get rplist prop)))
+
+(cl-defmethod occ-obj-prop-rank ((obj  occ-obj-ctx-tsk)
+                                 (property symbol))
+  (let ((tsk (occ-obj-tsk obj))
+        (ctx (occ-obj-ctx obj)))
+    (let ((tsk-aplist (occ-ctx-tsk-aplist ctx)))
+      (unless (cdr (assoc tsk tsk-aplist))
+        (cl-pushnew (list tsk)
+                    tsk-aplist))
+      (let ((rplist (cdr (assoc tsk tsk-aplist))))
+        (unless (plist-get rplist prop)
+          (plist-put rplist prop
+                     (occ-obj-intf-rank obj
+                                        prop)))
+        (plist-get rplist prop)))))
 
 
 (cl-defmethod occ-obj-map ((tsk occ-obj-tsk)

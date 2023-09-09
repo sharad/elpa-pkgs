@@ -181,7 +181,8 @@
 (cl-defstruct (occ-ctx (:include occ-obj-ctx))
   "occ-ctx"
   buffer
-  file)
+  file
+  tsk-aplist)
 
 
 (cl-defstruct (occ-ctsk (:include occ-obj-ctx-tsk))
