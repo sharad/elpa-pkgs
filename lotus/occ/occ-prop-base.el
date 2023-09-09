@@ -460,14 +460,25 @@ method provided."))))
  (occ-obj-operations-for-prop 'occ-obj-tsk 'subtree))
 
 
+
+(cl-defmethod occ-obj-tsk-prop-rank ((obj  occ-tsk)
+                                     prop
+                                     rank)
+  (let ((rplist (occ-obj-tsk-prop-ranks-plist obj)))
+    (unless (plist-get rplist prop)
+      (plist-put (occ-obj-tsk-prop-ranks-plist obj) prop
+                 (occ-obj-intf-rank obj
+                                    prop)))
+    (plist-get (occ-obj-tsk-prop-ranks-plist obj) prop)))
+
 (cl-defmethod occ-obj-prop-rank ((obj  occ-tsk)
                                  (property symbol))
   (let ((rplist (occ-obj-tsk-prop-ranks-plist obj)))
     (unless (plist-get rplist prop)
-      (plist-put rplist prop
+      (plist-put (occ-obj-tsk-prop-ranks-plist obj) prop
                  (occ-obj-intf-rank obj
                                     prop)))
-    (plist-get rplist prop)))
+    (plist-get (occ-obj-tsk-prop-ranks-plist obj) prop)))
 
 (cl-defmethod occ-obj-prop-rank ((obj  occ-obj-ctx-tsk)
                                  (property symbol))
@@ -483,6 +494,14 @@ method provided."))))
                      (occ-obj-intf-rank obj
                                         prop)))
         (plist-get rplist prop)))))
+
+
+(setq tsk-aplist nil)
+(let ((rplist tsk-aplist))
+  (unless (plist-get rplist 'prop)
+    (plist-put tsk-aplist 'prop
+               'pval))
+  (plist-get tsk-aplist 'prop))
 
 
 (cl-defmethod occ-obj-map ((tsk occ-obj-tsk)
