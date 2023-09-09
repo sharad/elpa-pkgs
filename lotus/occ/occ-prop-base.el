@@ -464,7 +464,6 @@ method provided."))))
                           ctx
                           property
                           operation)))
-  
 (cl-defmethod occ-obj-map ((tsk occ-obj-tsk)
                            (ctx null)
                            (property symbol)
@@ -485,7 +484,6 @@ method provided."))))
                        ctx
                        property
                        operation))
-
 (cl-defmethod occ-obj-values ((tsk occ-obj-tsk)
                               (ctx null)
                               (property symbol)
@@ -502,14 +500,12 @@ method provided."))))
       (loop for i from 1 to (length (occ-obj-get-property tsk property))
             collect i)
     (list null)))
-
 (cl-defmethod occ-obj-pvalue ((tsk occ-obj-tsk)
                               (property symbol)
                               (vdirector number))
   (nth (1- vdirector)
        (occ-obj-get-property tsk
                              property)))
-
 (cl-defmethod occ-obj-pvalue ((tsk occ-obj-tsk)
                               (property symbol)
                               (vdirector null))
@@ -525,7 +521,6 @@ method provided."))))
                          operation
                          prop
                          value))
-
 (cl-defmethod occ-do-operation ((obj       occ-obj-tsk)
                                 (operation symbol)
                                 (prop      symbol)
@@ -534,7 +529,6 @@ method provided."))))
                          operation
                          prop
                          value))
-
 (cl-defmethod occ-do-operation ((obj       occ-obj-ctx)
                                 (operation symbol)
                                 (prop      symbol)
@@ -678,7 +672,9 @@ method provided."))))
                            (dummy null)
                            (property symbol)
                            (operation null))
-  (occ-obj-intf-get ctx property nil))
+  (occ-obj-intf-get ctx
+                    property
+                    nil))
 
 
 (cl-defmethod occ-obj-to-org ((property symbol)
@@ -689,13 +685,15 @@ method provided."))))
           (mapcar #'(lambda (v)
                       (occ-obj-intf-to-org prop v))
                   value)
-        (occ-obj-intf-to-org prop value))
+        (occ-obj-intf-to-org prop
+                             value))
     (if build-list-p
         (let ((operation build-list-p))
           (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
                      prop
                      (upcase (symbol-name operation))))
-      (occ-obj-intf-to-org prop value))))
+      (occ-obj-intf-to-org prop
+                           value))))
 
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation symbol)
