@@ -462,23 +462,24 @@ method provided."))))
 
 
 (cl-defmethod occ-obj-tsk-prop-rank ((obj  occ-tsk)
-                                     prop
-                                     rank)
+                                     (prop symbol))
   (let ((rplist (occ-obj-tsk-prop-ranks-plist obj)))
-    (unless (plist-get rplist prop)
-      (plist-put (occ-obj-tsk-prop-ranks-plist obj) prop
-                 (occ-obj-intf-rank obj
-                                    prop)))
-    (plist-get (occ-obj-tsk-prop-ranks-plist obj) prop)))
+    (plist-get rplist prop)))
+(cl-defmethod (setf occ-obj-tsk-prop-rank) (value (obj  occ-tsk)
+                                                  (prop symbol))
+  (let ((rplist (occ-obj-tsk-prop-ranks-plist obj)))
+    (setf (occ-obj-tsk-prop-ranks-plist obj) (plist-put rplist prop))))
+
+
+
 
 (cl-defmethod occ-obj-prop-rank ((obj  occ-tsk)
                                  (property symbol))
-  (let ((rplist (occ-obj-tsk-prop-ranks-plist obj)))
-    (unless (plist-get rplist prop)
-      (plist-put (occ-obj-tsk-prop-ranks-plist obj) prop
-                 (occ-obj-intf-rank obj
-                                    prop)))
-    (plist-get (occ-obj-tsk-prop-ranks-plist obj) prop)))
+  (unless (occ-obj-tsk-prop-rank obj property)
+    (setf (occ-obj-tsk-prop-rank obj property)
+          (occ-obj-intf-rank obj
+                             prop)))
+  (occ-obj-tsk-prop-rank obj property))
 
 (cl-defmethod occ-obj-prop-rank ((obj  occ-obj-ctx-tsk)
                                  (property symbol))
@@ -499,8 +500,8 @@ method provided."))))
 (setq tsk-aplist nil)
 (let ((rplist tsk-aplist))
   (unless (plist-get rplist 'prop)
-    (plist-put tsk-aplist 'prop
-               'pval))
+    (setf rplist (plist-put rplist 'prop
+                            'pval)))
   (plist-get tsk-aplist 'prop))
 
 
