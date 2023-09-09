@@ -465,10 +465,38 @@ method provided."))))
                                      (prop symbol))
   (let ((rplist (occ-obj-tsk-prop-ranks-plist obj)))
     (plist-get rplist prop)))
-(cl-defmethod (setf occ-obj-tsk-prop-rank) (value (obj  occ-tsk)
-                                                  (prop symbol))
+(cl-defmethod (setf occ-obj-tsk-prop-rank) ((rank number)
+                                            (obj  occ-tsk)
+                                            (prop symbol))
   (let ((rplist (occ-obj-tsk-prop-ranks-plist obj)))
-    (setf (occ-obj-tsk-prop-ranks-plist obj) (plist-put rplist prop))))
+    (setf (occ-obj-tsk-prop-ranks-plist obj)
+          (plist-put rplist prop rank))))
+
+
+(cl-defmethod occ-obj-ctx-tsk-plist ((ctx occ-obj-ctx)
+                                     (tsk occ-obj-tsk))
+  (cdr (assoc tsk (occ-obj-ctx-tsk-aplist ctx))))
+
+(cl-defmethod (setf occ-obj-ctx-tsk-plist) (plist
+                                            (ctx occ-obj-ctx)
+                                            (tsk occ-obj-tsk))
+  (if (occ-obj-ctx-tsk-plist ctx tsk)
+      (setf (cdr (assoc tsk (occ-obj-ctx-tsk-aplist ctx))) plist)
+    (cl-pushnew (cons tsk plist)
+                (occ-obj-ctx-tsk-aplist ctx))))
+
+(cl-defmethod occ-obj-ctx-tsk-prop-rank ((ctx occ-obj-ctx)
+                                         (tsk occ-obj-tsk)
+                                         (property symbol))
+  (plist-get (occ-obj-ctx-tsk-plist ctx tsk)
+             property))
+
+(cl-defmethod (setf occ-obj-ctx-tsk-prop-rank) ((rank number)
+                                                (ctx occ-obj-ctx)
+                                                (tsk occ-obj-tsk)
+                                                (property symbol))
+  (setf (occ-obj-ctx-tsk-plist ctx tsk)
+        (plist-put (occ-obj-ctx-tsk-plist ctx tsk) property rank)))
 
 
 
@@ -485,24 +513,12 @@ method provided."))))
                                  (property symbol))
   (let ((tsk (occ-obj-tsk obj))
         (ctx (occ-obj-ctx obj)))
-    (let ((tsk-aplist (occ-ctx-tsk-aplist ctx)))
-      (unless (cdr (assoc tsk tsk-aplist))
-        (cl-pushnew (list tsk)
-                    tsk-aplist))
-      (let ((rplist (cdr (assoc tsk tsk-aplist))))
-        (unless (plist-get rplist prop)
-          (plist-put rplist prop
-                     (occ-obj-intf-rank obj
-                                        prop)))
-        (plist-get rplist prop)))))
-
-
-(setq tsk-aplist nil)
-(let ((rplist tsk-aplist))
-  (unless (plist-get rplist 'prop)
-    (setf rplist (plist-put rplist 'prop
-                            'pval)))
-  (plist-get tsk-aplist 'prop))
+    (unless (occ-obj-ctx-tsk-prop-rank ctx tsk property)
+      (setf (occ-obj-ctx-tsk-prop-rank ctx tsk property)
+            (occ-obj-intf-rank obj
+                               prop)))
+    (occ-obj-ctx-tsk-prop-rank ctx tsk
+                               property)))
 
 
 (cl-defmethod occ-obj-map ((tsk occ-obj-tsk)
