@@ -500,6 +500,21 @@ method provided."))))
 
 
 
+(cl-defmethod occ-obj-ctx-tsk-rank ((ctx occ-obj-ctx)
+                                    (tsk occ-obj-tsk))
+  (cdr (assoc tsk (occ-obj-ctx-tsk-rank-alist ctx))))
+
+(cl-defmethod (setf occ-obj-ctx-tsk-rank) (rank
+                                           (ctx occ-obj-ctx)
+                                           (tsk occ-obj-tsk))
+  (if (occ-obj-ctx-tsk-rank ctx tsk)
+      (setf (cdr (assoc tsk (occ-obj-ctx-tsk-rank-alist ctx))) rank)
+    (cl-pushnew (cons tsk rank)
+                (occ-obj-ctx-tsk-rank-alist ctx))))
+
+
+
+
 
 (cl-defmethod occ-obj-prop-rank ((obj  occ-tsk)
                                  (property symbol))

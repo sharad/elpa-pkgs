@@ -166,11 +166,14 @@
   clock-sum
   file-level
   cat
-  plist
   format-file
   format-string
   sibling-count
-  rank)
+  rank
+  rank-inheritable
+  rank-nonhereditable
+  plist)
+
 (cl-defstruct (occ-tree-tsk (:include occ-tsk))
   "occ-tree-tsk"
   subtree)
@@ -183,7 +186,7 @@
   buffer
   file
   tsk-aplist
-  tsk-rank-list)
+  tsk-rank-alist)
 
 
 (cl-defstruct (occ-ctsk (:include occ-obj-ctx-tsk))

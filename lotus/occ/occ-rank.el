@@ -55,11 +55,11 @@
   (occ-debug "occ-obj-calculate-rank(obj occ-tsk) %s" (occ-obj-properties-to-calculate-rank obj))
   (let* ((properties (occ-obj-properties-to-calculate-rank obj))
          (rank       (/ (cl-reduce #'+
-                                 (mapcar #'(lambda (slot)
-                                             (let ((prop (downcase-sym slot)))
-                                               (occ-obj-priority-rank obj
-                                                                      prop)))
-                                         properties))
+                                   (mapcar #'(lambda (slot)
+                                               (let ((prop (downcase-sym slot)))
+                                                 (occ-obj-priority-rank obj
+                                                                        prop)))
+                                           properties))
                         occ-rank-quanta)))
     ;; (occ-debug "occ-obj-calculate-rank(obj occ-tsk): rank = %d" rank)
     rank))
