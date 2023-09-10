@@ -503,8 +503,10 @@ method provided."))))
 (cl-defmethod occ-obj-ctx-tsk-rank ((ctx occ-obj-ctx)
                                     (tsk occ-obj-tsk))
   (unless (cdr (assoc tsk (occ-ctx-tsk-rank-alist ctx)))
-    (setf (occ-obj-ctx-tsk-rank ctx tsk)
-          (TODO)))
+    (occ-obj-rank-inheritable (occ-obj-make-ctxual-tsk-with tsk ctx)))
+    ;; (setf (occ-obj-ctx-tsk-rank ctx tsk)
+    ;;       ;; (TODO)
+    ;;       (occ-obj-rank-acquired (occ-obj-make-ctxual-tsk-with tsk ctx)))
   (cdr (assoc tsk (occ-ctx-tsk-rank-alist ctx))))
 
 (cl-defmethod (setf occ-obj-ctx-tsk-rank) (rank
@@ -608,7 +610,8 @@ method provided."))))
 (cl-defmethod occ-obj-rank ((tsk occ-obj-tsk))
   (unless (occ-obj-tsk-rank tsk)
     ;; Add code for adding parent ranks
-    (setf (occ-obj-tsk-rank tsk) (occ-obj-rank-acquired tsk)))
+    (setf (occ-obj-tsk-rank tsk) (+ (occ-obj-rank-acquired tsk)
+                                    (occ-obj-acc-parent-rank tsk 0))))
   (occ-assert (occ-obj-tsk-rank tsk))
   (occ-obj-tsk-rank tsk))
 
@@ -619,7 +622,11 @@ method provided."))))
                  (occ-obj-format tsk)
                  (length (occ-ctx-tsk-rank-alist (occ-obj-ctx tsk)))
                  (mapcar #'cdr (occ-ctx-tsk-rank-alist (occ-obj-ctx tsk))))
-    (setf (occ-obj-tsk-rank tsk) (occ-obj-rank-acquired tsk)))
+    (setf (occ-obj-tsk-rank tsk)
+          (+ (occ-obj-rank-acquired tsk)
+             (occ-obj-acc-ctx-parent-rank (occ-obj-ctx tsk)
+                                          (occ-obj-tsk tsk)
+                                          0))))
   (occ-assert (occ-obj-tsk-rank tsk))
   (occ-obj-tsk-rank tsk))
 
@@ -645,10 +652,12 @@ method provided."))))
      (occ-obj-acc-parent-rank (occ-obj-task-parent tsk) 0)))
 
 
+(cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx) (tsk null) (label number))
+  0)
+
 (cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx) (tsk occ-obj-tsk) (label number))
-  ;; (occ-obj-ctx-tsk-rank (occ-obj-ctx tsk) (occ-obj-tsk tsk))
-  (+ (occ-obj-ctx-tsk-rank (occ-obj-ctx tsk) (occ-obj-tsk tsk))
-     (occ-obj-acc-parent-rank (occ-obj-task-parent tsk) 0)))
+  (+ (occ-obj-ctx-tsk-rank ctx tsk)
+     (occ-obj-acc-parent-rank ctx (occ-obj-task-parent tsk) 0)))
 
 (cl-defmethod occ-obj-map ((tsk occ-obj-tsk)
                            (ctx occ-obj-ctx)
