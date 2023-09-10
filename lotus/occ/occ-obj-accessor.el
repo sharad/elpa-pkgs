@@ -486,52 +486,52 @@
   (occ-obj-ap-helm-transformation ap-obj))
 
 
-;; occ-tsk - accessors
-(cl-defmethod occ-obj-rank ((obj occ-tsk))
-  (occ-debug "occ-obj-rank(occ-tsk=%s)" (occ-obj-Format obj))
-  (let ((rank (occ-tsk-rank obj)))
-    (unless rank
-      (setf (occ-tsk-rank obj) (occ-obj-calculate-rank obj)))
-    (occ-debug "occ-obj-rank((obj occ-tsk)) rank = %s" rank)
-    (occ-tsk-rank obj)))
+;; ;; occ-tsk - accessors
+;; (cl-defmethod occ-obj-rank ((obj occ-tsk))
+;;   (occ-debug "occ-obj-rank(occ-tsk=%s)" (occ-obj-Format obj))
+;;   (let ((rank (occ-tsk-rank obj)))
+;;     (unless rank
+;;       (setf (occ-tsk-rank obj) (occ-obj-calculate-rank obj)))
+;;     (occ-debug "occ-obj-rank((obj occ-tsk)) rank = %s" rank)
+;;     (occ-tsk-rank obj)))
 
-(cl-defmethod (setf occ-obj-rank) ((rank number)
-                                   (obj occ-tsk))
-  (occ-debug "setf occ-obj-rank(occ-tsk=%s)" (occ-obj-Format obj))
-  (setf (occ-tsk-rank obj) rank))
-
+;; (cl-defmethod (setf occ-obj-rank) ((rank number)
+;;                                    (obj occ-tsk))
+;;   (occ-debug "setf occ-obj-rank(occ-tsk=%s)" (occ-obj-Format obj))
+;;   (setf (occ-tsk-rank obj) rank))
+;; 
 
-;; occ-ctsk - accessors
-(cl-defmethod occ-obj-rank ((obj occ-ctsk))
-  (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-  (let ((tsk (occ-ctsk-tsk obj)))
-    (occ-obj-rank tsk)))
+;; ;; occ-ctsk - accessors
+;; (cl-defmethod occ-obj-rank ((obj occ-ctsk))
+;;   (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
+;;   (let ((tsk (occ-ctsk-tsk obj)))
+;;     (occ-obj-rank tsk)))
 
-(cl-defmethod (setf occ-obj-rank) ((rank number)
-                                   (obj occ-ctsk))
-  (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-  (let ((tsk (occ-ctsk-tsk obj)))
-    (setf (occ-obj-rank tsk) rank)))
-
+;; (cl-defmethod (setf occ-obj-rank) ((rank number)
+;;                                    (obj occ-ctsk))
+;;   (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
+;;   (let ((tsk (occ-ctsk-tsk obj)))
+;;     (setf (occ-obj-rank tsk) rank)))
+;; 
 
-;; occ-ctxual-tsk - accessors
-(cl-defmethod occ-obj-rank ((obj occ-ctxual-tsk))
-  (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-  (let ((rank (occ-ctxual-tsk-rank obj)))
-    (unless rank
-      (let ((c-rank (occ-obj-calculate-rank obj))
-            (t-rank (occ-obj-rank (occ-ctxual-tsk-tsk obj))))
-        (setf (occ-ctxual-tsk-rank obj) (+ c-rank t-rank))))
-    (occ-debug "occ-obj-rank((obj occ-ctxual-tsk)) rank = %s" rank)
-    ;; (message "occ-obj-rank((obj occ-ctxual-tsk)) rank = %s" rank)
-    (occ-ctxual-tsk-rank obj)))
+;; ;; occ-ctxual-tsk - accessors
+;; (cl-defmethod occ-obj-rank ((obj occ-ctxual-tsk))
+;;   (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
+;;   (let ((rank (occ-ctxual-tsk-rank obj)))
+;;     (unless rank
+;;       (let ((c-rank (occ-obj-calculate-rank obj))
+;;             (t-rank (occ-obj-rank (occ-ctxual-tsk-tsk obj))))
+;;         (setf (occ-ctxual-tsk-rank obj) (+ c-rank t-rank))))
+;;     (occ-debug "occ-obj-rank((obj occ-ctxual-tsk)) rank = %s" rank)
+;;     ;; (message "occ-obj-rank((obj occ-ctxual-tsk)) rank = %s" rank)
+;;     (occ-ctxual-tsk-rank obj)))
 
-(cl-defmethod (setf occ-obj-rank) ((rank number)
-                                   (obj occ-ctxual-tsk))
-  (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-  ;; (setf (occ-obj-ctx-tsk-rank (occ-obj-ctx obj) (occ-obj-tsk obj)) rank) ;insert into map for inheritance
-  (setf (occ-ctxual-tsk-rank obj) rank))
-
+;; (cl-defmethod (setf occ-obj-rank) ((rank number)
+;;                                    (obj occ-ctxual-tsk))
+;;   (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
+;;   ;; (setf (occ-obj-ctx-tsk-rank (occ-obj-ctx obj) (occ-obj-tsk obj)) rank) ;insert into map for inheritance
+;;   (setf (occ-ctxual-tsk-rank obj) rank))
+;; 
 
 (cl-defmethod occ-obj-member-tsk-rank ((obj occ-ctxual-tsk))
   (occ-debug "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
