@@ -502,6 +502,9 @@ method provided."))))
 
 (cl-defmethod occ-obj-ctx-tsk-rank ((ctx occ-obj-ctx)
                                     (tsk occ-obj-tsk))
+  (unless (cdr (assoc tsk (occ-ctx-tsk-rank-alist ctx)))
+    (setf (occ-obj-ctx-tsk-rank ctx tsk)
+          (TODO)))
   (cdr (assoc tsk (occ-ctx-tsk-rank-alist ctx))))
 
 (cl-defmethod (setf occ-obj-ctx-tsk-rank) (rank
@@ -634,6 +637,19 @@ method provided."))))
     (setf (occ-obj-rank tsk) rank)))
 
 
+(cl-defmethod occ-obj-acc-parent-rank ((tsk null) (label number))
+  0)
+
+(cl-defmethod occ-obj-acc-parent-rank ((tsk occ-obj-tsk) (label number))
+  (+ (occ-obj-rank-inheritable tsk)
+     (occ-obj-acc-parent-rank (occ-obj-task-parent tsk) 0)))
+
+
+(cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx) (tsk occ-obj-tsk) (label number))
+  ;; (occ-obj-ctx-tsk-rank (occ-obj-ctx tsk) (occ-obj-tsk tsk))
+  (+ (occ-obj-ctx-tsk-rank (occ-obj-ctx tsk) (occ-obj-tsk tsk))
+     (occ-obj-acc-parent-rank (occ-obj-task-parent tsk) 0)))
+
 (cl-defmethod occ-obj-map ((tsk occ-obj-tsk)
                            (ctx occ-obj-ctx)
                            (property symbol)
