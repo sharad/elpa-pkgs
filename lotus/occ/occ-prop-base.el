@@ -619,6 +619,19 @@ method provided."))))
     (setf (occ-obj-tsk-rank tsk) (occ-obj-rank-acquired tsk)))
   (occ-assert (occ-obj-tsk-rank tsk))
   (occ-obj-tsk-rank tsk))
+
+;; ;; occ-ctsk - accessors
+(cl-defmethod occ-obj-rank ((obj occ-ctsk))
+  (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
+  (let ((tsk (occ-ctsk-tsk obj)))
+    (occ-assert (occ-obj-rank tsk))
+    (occ-obj-rank tsk)))
+
+(cl-defmethod (setf occ-obj-rank) ((rank number)
+                                   (obj occ-ctsk))
+  (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
+  (let ((tsk (occ-ctsk-tsk obj)))
+    (setf (occ-obj-rank tsk) rank)))
 
 
 (cl-defmethod occ-obj-map ((tsk occ-obj-tsk)
