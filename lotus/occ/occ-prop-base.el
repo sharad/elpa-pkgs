@@ -442,7 +442,7 @@ method provided."))))
                                            property))
     (or (and (not (occ-obj-list-p 'operation operation))
              (and (occ-obj-list-p (occ-obj-tsk tsk) property)
-                  (occ-obj-list-p (occ-obj-ctx ctx) property))
+[]                  (occ-obj-list-p (occ-obj-ctx ctx) property))
              (not (or (occ-obj-list-p (occ-obj-tsk tsk) property)
                       (occ-obj-list-p (occ-obj-ctx ctx) property))))
         (and (occ-obj-list-p 'operation operation)
@@ -567,6 +567,13 @@ method provided."))))
 
 (cl-defmethod occ-obj-rank ((tsk occ-obj-tsk))
   (unless (occ-obj-tsk-rank tsk)
+    ;; Add code for adding parent ranks
+    (setf (occ-obj-rank tsk) (occ-obj-rank-acquired tsk)))
+  (occ-obj-tsk-rank tsk))
+
+(cl-defmethod occ-obj-rank ((tsk occ-ctxual-tsk))
+  (unless (occ-obj-tsk-rank tsk)
+    ;; Add code for adding parent ranks
     (setf (occ-obj-rank tsk) (occ-obj-rank-acquired tsk)))
   (occ-obj-tsk-rank tsk))
 
