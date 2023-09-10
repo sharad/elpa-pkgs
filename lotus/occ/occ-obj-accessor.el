@@ -529,7 +529,7 @@
 (cl-defmethod (setf occ-obj-rank) ((rank number)
                                    (obj occ-ctxual-tsk))
   (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-  (setf (occ-obj-ctx-tsk-rank (occ-obj-ctx obj) (occ-obj-tsk obj)) rank) ;insert into map for inheritance
+  ;; (setf (occ-obj-ctx-tsk-rank (occ-obj-ctx obj) (occ-obj-tsk obj)) rank) ;insert into map for inheritance
   (setf (occ-ctxual-tsk-rank obj) rank))
 
 

@@ -536,6 +536,10 @@ method provided."))))
 (cl-defmethod (setf occ-obj-rank-inheritable) ((rank number)
                                                (tsk occ-obj-tsk))
   (setf (occ-obj-tsk-rank-inheritable tsk) rank))
+(cl-defmethod (setf occ-obj-rank-inheritable) ((rank number)
+                                               (tsk occ-ctxual-tsk))
+  (setf (occ-obj-ctx-tsk-rank (occ-obj-ctx obj) (occ-obj-tsk obj)) rank) ;insert into map for inheritance
+  (setf (occ-obj-tsk-rank-inheritable tsk) rank))
 (cl-defmethod (setf occ-obj-rank-nonheritable) ((rank number)
                                                 (tsk occ-obj-tsk))
   (setf (occ-obj-tsk-rank-nonheritable tsk) rank))
@@ -551,7 +555,6 @@ method provided."))))
 
 (cl-defmethod (setf occ-obj-rank-acquired) ((rank number) (tsk occ-obj-tsk))
   (setf (occ-obj-tsk-rank-acquired tsk) rank))
-
 (cl-defmethod occ-obj-rank-acquired ((tsk occ-obj-tsk))
   (unless (occ-obj-tsk-rank-acquired tsk)
     (setf (occ-obj-rank-acquired tsk) (+ (occ-obj-rank-inheritable tsk)
