@@ -196,7 +196,10 @@
   ctx
   tsk)
 (cl-defstruct (occ-ctxual-tsk (:include occ-ctsk))
-  rank)
+  rank
+  rank-inheritable
+  rank-nonhereditable
+  rank-acquired)
 
 
 ;; TODO: need to add ability to be proxy object
