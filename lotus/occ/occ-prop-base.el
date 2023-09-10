@@ -612,6 +612,10 @@ method provided."))))
 (cl-defmethod occ-obj-rank ((tsk occ-ctxual-tsk))
   (unless (occ-obj-tsk-rank tsk)
     ;; Add code for adding parent ranks
+    (occ-message "name: %s Tree: %d - %s"
+                 (occ-obj-format tsk)
+                 (length (occ-ctx-tsk-rank-alist (occ-obj-ctx tsk)))
+                 (mapcar #'cdr (occ-ctx-tsk-rank-alist (occ-obj-ctx tsk))))
     (setf (occ-obj-tsk-rank tsk) (occ-obj-rank-acquired tsk)))
   (occ-assert (occ-obj-tsk-rank tsk))
   (occ-obj-tsk-rank tsk))
