@@ -605,13 +605,15 @@ method provided."))))
 (cl-defmethod occ-obj-rank ((tsk occ-obj-tsk))
   (unless (occ-obj-tsk-rank tsk)
     ;; Add code for adding parent ranks
-    (setf (occ-obj-rank tsk) (occ-obj-rank-acquired tsk)))
+    (setf (occ-obj-tsk-rank tsk) (occ-obj-rank-acquired tsk)))
+  (occ-assert (occ-obj-tsk-rank tsk))
   (occ-obj-tsk-rank tsk))
 
 (cl-defmethod occ-obj-rank ((tsk occ-ctxual-tsk))
   (unless (occ-obj-tsk-rank tsk)
     ;; Add code for adding parent ranks
-    (setf (occ-obj-rank tsk) (occ-obj-rank-acquired tsk)))
+    (setf (occ-obj-tsk-rank tsk) (occ-obj-rank-acquired tsk)))
+  (occ-assert (occ-obj-tsk-rank tsk))
   (occ-obj-tsk-rank tsk))
 
 
