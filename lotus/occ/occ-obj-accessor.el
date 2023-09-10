@@ -519,8 +519,8 @@
   (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
   (let ((rank (occ-ctxual-tsk-rank obj)))
     (unless rank
-      (let* ((c-rank (occ-obj-calculate-rank obj))
-             (t-rank (occ-obj-rank (occ-ctxual-tsk-tsk obj))))
+      (let ((c-rank (occ-obj-calculate-rank obj))
+            (t-rank (occ-obj-rank (occ-ctxual-tsk-tsk obj))))
         (setf (occ-ctxual-tsk-rank obj) (+ c-rank t-rank))))
     (occ-debug "occ-obj-rank((obj occ-ctxual-tsk)) rank = %s" rank)
     ;; (message "occ-obj-rank((obj occ-ctxual-tsk)) rank = %s" rank)

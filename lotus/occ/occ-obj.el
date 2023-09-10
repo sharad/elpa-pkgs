@@ -172,6 +172,7 @@
   rank
   rank-inheritable
   rank-nonhereditable
+  rank-acquired
   plist)
 
 (cl-defstruct (occ-tree-tsk (:include occ-tsk))
