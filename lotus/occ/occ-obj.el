@@ -100,7 +100,7 @@
   (name "occ-obj"))
 (cl-defstruct (occ-obj-tsk (:include occ-obj))
   "Object to hold tsk ctx obj-ctx-tsk"
-  prop-ranks-plist
+  ;; prop-ranks-plist
   filter-rank-plist)
 (cl-defstruct (occ-obj-ctx-tsk (:include occ-obj-tsk))
   "Object to hold ctsk occ-ctxual-tsk")
@@ -144,6 +144,14 @@
 
 ;; (cl-defstruct (occ-prop (:include occ-obj-prop))
 ;;   value)
+
+
+(cl-defstruct (occ-rank (:include occ-obj))
+  prop-plist
+  value
+  inheritable
+  nonhereditable
+  acquired)
 
 ;; NOTE: Remember when adding new attributes, nned to destroy existing object, else it will cause miss-match.
 (cl-defstruct (occ-tsk (:include occ-obj-tsk))

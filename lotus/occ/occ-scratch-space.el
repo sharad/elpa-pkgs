@@ -621,5 +621,16 @@ usage:  (org-get-entries-fn '(6 1 2015) '(6 30 2015))"
  ())
 
 
+
+
+;; (cl-defstruct bbc-class1
+;;   (name1 "bbc-test"))
+
+;; (cl-defstruct bbc-class2
+;;   (name2 "bbc-test"))
+
+;; (cl-defstruct (bbc-class-drived (:include bbc-class1 )  (:include bbc-class2 ) )
+;;   (name3 "bbc-test"))
+
 
 ;;; occ-scratch-space.el ends here
