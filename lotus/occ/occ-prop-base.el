@@ -333,6 +333,8 @@ method provided."))))
 
 (cl-defmethod occ-obj-operations-for-prop ((obj  marker)
                                            (prop symbol))
+
+  s
   ;; check about (occ-obj-list-p prop) also
   (let ((ops (occ-cl-collect-on-classes #'(lambda (class)
                                             (occ-obj-operations-for-prop class
