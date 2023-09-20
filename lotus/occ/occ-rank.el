@@ -146,14 +146,32 @@
 
 (cl-defmethod occ-obj-ctx-tsk-rank ((ctx occ-obj-ctx)
                                     (tsk occ-obj-tsk))
-  (let ((rt (occ-obj-ctx-tsk-rt ctx tsk)))
+  (let ((rt (occ-obj-rt-with tsk
+                             ctx)))
     (occ-obj-rank rt)))
   
 
 (cl-defmethod (setf occ-obj-ctx-tsk-rank) (rank
                                            (ctx occ-obj-ctx)
                                            (tsk occ-obj-tsk))
-  (let ((rt (occ-obj-ctx-tsk-rt ctx tsk)))
+  (let ((rt (occ-obj-rt-with tsk
+                             ctx)))
+    (setf (occ-obj-rank rt) rank)))
+
+
+
+(cl-defmethod occ-obj-rank-with ((tsk occ-obj-tsk)
+                                 (ctx occ-obj-ctx))
+  (let ((rt (occ-obj-rt-with tsk
+                             ctx)))
+    (occ-obj-rank rt)))
+
+
+(cl-defmethod (setf occ-obj-rank-with) (rank
+                                        (tsk occ-obj-tsk)
+                                        (ctx occ-obj-ctx))
+  (let ((rt (occ-obj-rt-with tsk
+                             ctx)))
     (setf (occ-obj-rank rt) rank)))
 
 
@@ -295,7 +313,7 @@
   0)
 
 (cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx) (tsk occ-obj-tsk) (label number))
-  (+ (occ-obj-ctx-tsk-rank ctx tsk)
+  (+ (occ-obj-rank-with tsk ctx)
      (occ-obj-acc-parent-rank ctx (occ-obj-tsk-parent tsk) 0)))
 
 

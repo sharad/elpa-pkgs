@@ -501,18 +501,18 @@
 ;;   (setf (occ-tsk-rank obj) rank))
 
 
-;; ;; occ-ctsk - accessors
-(cl-defmethod occ-obj-rank ((obj occ-ctsk))
-  (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-  (let ((tsk (occ-ctsk-tsk obj)))
-    (occ-assert (occ-obj-rank tsk))
-    (occ-obj-rank tsk)))
+;; ;; ;; occ-ctsk - accessors
+;; (cl-defmethod occ-obj-rank ((obj occ-ctsk))
+;;   (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
+;;   (let ((tsk (occ-ctsk-tsk obj)))
+;;     (occ-assert (occ-obj-rank tsk))
+;;     (occ-obj-rank tsk)))
 
-(cl-defmethod (setf occ-obj-rank) ((rank number)
-                                   (obj occ-ctsk))
-  (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-  (let ((tsk (occ-ctsk-tsk obj)))
-    (setf (occ-obj-rank tsk) rank)))
+;; (cl-defmethod (setf occ-obj-rank) ((rank number)
+;;                                    (obj occ-ctsk))
+;;   (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
+;;   (let ((tsk (occ-ctsk-tsk obj)))
+;;     (setf (occ-obj-rank tsk) rank)))
 
 
 (cl-defmethod occ-obj-rt ((obj occ-obj-tsk))
@@ -538,6 +538,19 @@
         (setf (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx))) rt)
       (cl-pushnew (cons tsk rt)
                   (occ-obj-ctx-tsk-rt-list ctx)))))
+
+(cl-defmethod occ-obj-rt-with ((tsk occ-obj-tsk)
+                               (ctx occ-obj-ctx))
+  (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx)))) ;; -- add unless
+
+(cl-defmethod (setf occ-obj-rt-with) ((rt occ-rank)
+                                      (tsk occ-obj-tsk)
+                                      (ctx occ-obj-ctx))
+                                         
+  (if (occ-obj-rt-with tsk ctx)
+      (setf (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx))) rt)
+    (cl-pushnew (cons tsk rt)
+                (occ-obj-ctx-tsk-rt-list ctx))))
 
 
 (cl-defmethod occ-obj-ctx-tsk-rt ((ctx occ-obj-ctx)
