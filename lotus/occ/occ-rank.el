@@ -44,7 +44,8 @@
   num)
 
 
-(cl-defgeneric occ-obj-calculate-rank (obj)
+(cl-defgeneric occ-obj-calculate-rank (obj
+                                       properties)
   "occ-obj-rank")
 
 
