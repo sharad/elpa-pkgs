@@ -169,8 +169,6 @@
     (setf (occ-obj-rank-nonheritable (occ-obj-rt obj))
           (occ-obj-calculate-rank obj
                                   nil)))
-  ;; (occ-assert (occ-obj-calculate-rank obj
-  ;;                                     nil))
   (occ-obj-rank-nonheritable (occ-obj-rt obj)))
 (cl-defmethod occ-obj-rank-acquired ((obj occ-obj-tsk))
   (unless (occ-obj-rank-acquired (occ-obj-rt obj))
@@ -183,7 +181,7 @@
     (setf (occ-obj-rank (occ-obj-rt obj)) (+ (occ-obj-rank-acquired obj)
                                              (occ-obj-acc-parent-rank obj 0))))
   (occ-obj-rank (occ-obj-rt obj)))
-(cl-defmethod occ-obj-rank ((obj occ-obj-ctx-tsk))
+(cl-defmethod occ-obj-rank ((obj occ-ctxual-tsk))
   (unless (occ-obj-rank (occ-obj-rt obj))
     ;; Add code for adding parent ranks
     (occ-message "name: %s Tree: %d - %s"
@@ -198,13 +196,17 @@
   (occ-assert (occ-obj-rank (occ-obj-rt obj)))
   (occ-obj-rank (occ-obj-rt obj)))
 
-(cl-defmethod (setf occ-obj-rank-inheritable) ((rank number) (obj occ-obj-tsk))
+(cl-defmethod (setf occ-obj-rank-inheritable) ((rank number)
+                                               (obj occ-obj-tsk))
   (setf (occ-obj-rank-inheritable (occ-obj-rt obj)) rank))
-(cl-defmethod (setf occ-obj-rank-nonheritable) ((rank number) (obj occ-obj-tsk))
+(cl-defmethod (setf occ-obj-rank-nonheritable) ((rank number)
+                                                (obj occ-obj-tsk))
   (setf (occ-obj-rank-nonhereditable (occ-obj-rt obj)) rank))
-(cl-defmethod (setf occ-obj-rank-acquired) ((rank number) (obj occ-obj-tsk))
+(cl-defmethod (setf occ-obj-rank-acquired) ((rank number)
+                                            (obj occ-obj-tsk))
   (setf (occ-obj-rank-acquired (occ-obj-rt obj)) rank))
-(cl-defmethod (setf occ-obj-rank) ((rank number) (obj occ-obj-tsk))
+(cl-defmethod (setf occ-obj-rank) ((rank number)
+                                   (obj occ-obj-tsk))
   (setf (occ-obj-rank (occ-obj-rt obj)) rank))
 
 
