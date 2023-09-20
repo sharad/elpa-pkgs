@@ -120,9 +120,9 @@
                                            (tsk occ-obj-tsk)
                                            (label number))
   (+ (occ-obj-rank-with tsk ctx)
-     (occ-obj-acc-parent-rank ctx
-                              (occ-tsk-parent tsk)
-                              0)))
+     (occ-obj-acc-ctx-parent-rank ctx
+                                  (occ-tsk-parent tsk)
+                                  0)))
 
 
 (cl-defmethod occ-obj-rank-with ((tsk occ-obj-tsk)
