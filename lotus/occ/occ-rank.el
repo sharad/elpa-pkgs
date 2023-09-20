@@ -144,21 +144,18 @@
 ;;     (setf (occ-obj-prop-rank rt property) rank)))
 
 
-(cl-defmethod occ-obj-ctx-tsk-rank ((ctx occ-obj-ctx)
-                                    (tsk occ-obj-tsk))
-  (let ((rt (occ-obj-rt-with tsk
-                             ctx)))
-    (occ-obj-rank rt)))
-  
+;; (cl-defmethod occ-obj-ctx-tsk-rank ((ctx occ-obj-ctx)
+;;                                     (tsk occ-obj-tsk))
+;;   (let ((rt (occ-obj-rt-with tsk
+;;                              ctx)))
+;;     (occ-obj-rank rt)))
 
-(cl-defmethod (setf occ-obj-ctx-tsk-rank) (rank
-                                           (ctx occ-obj-ctx)
-                                           (tsk occ-obj-tsk))
-  (let ((rt (occ-obj-rt-with tsk
-                             ctx)))
-    (setf (occ-obj-rank rt) rank)))
-
-
+;; (cl-defmethod (setf occ-obj-ctx-tsk-rank) (rank
+;;                                            (ctx occ-obj-ctx)
+;;                                            (tsk occ-obj-tsk))
+;;   (let ((rt (occ-obj-rt-with tsk
+;;                              ctx)))
+;;     (setf (occ-obj-rank rt) rank)))
 
 (cl-defmethod occ-obj-rank-with ((tsk occ-obj-tsk)
                                  (ctx occ-obj-ctx))
@@ -183,6 +180,12 @@
                                                            (occ-obj-ctx obj) 
                                                            prop)))
     (occ-obj-prop-rank rt prop)))
+
+(cl-defmethod (setf occ-obj-prop-rank) ((rank number)
+                                        (obj  occ-obj-tsk)
+                                        (property symbol))
+  (let ((rt (occ-obj-rt obj)))
+    (setf (occ-obj-prop-rank rt prop) rank)))
 
 
 (cl-defmethod occ-obj-rank-inheritable ((obj occ-obj-tsk))

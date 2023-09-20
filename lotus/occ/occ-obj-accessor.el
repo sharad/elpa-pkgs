@@ -553,17 +553,17 @@
                 (occ-obj-ctx-tsk-rt-list ctx))))
 
 
-(cl-defmethod occ-obj-ctx-tsk-rt ((ctx occ-obj-ctx)
-                                  (tsk occ-obj-tsk))
-  (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx)))) ;; -- add unless
+;; (cl-defmethod occ-obj-ctx-tsk-rt ((ctx occ-obj-ctx)
+;;                                   (tsk occ-obj-tsk))
+;;   (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx)))) ;; -- add unless
 
-(cl-defmethod (setf occ-obj-ctx-tsk-rt) ((rt occ-rank)
-                                         (ctx occ-obj-ctx)
-                                         (tsk occ-obj-tsk))
-  (if (occ-obj-ctx-tsk-rt ctx tsk)
-      (setf (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx))) rt)
-    (cl-pushnew (cons tsk rt)
-                (occ-obj-ctx-tsk-rt-list ctx))))
+;; (cl-defmethod (setf occ-obj-ctx-tsk-rt) ((rt occ-rank)
+;;                                          (ctx occ-obj-ctx)
+;;                                          (tsk occ-obj-tsk))
+;;   (if (occ-obj-ctx-tsk-rt ctx tsk)
+;;       (setf (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx))) rt)
+;;     (cl-pushnew (cons tsk rt)
+;;                 (occ-obj-ctx-tsk-rt-list ctx))))
 
 
 ;; ;; occ-ctxual-tsk - accessors
