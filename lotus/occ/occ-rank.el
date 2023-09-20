@@ -107,30 +107,40 @@
   (let ((rplist (occ-ranktbl-plist obj)))
     (setf (occ-ranktbl-plist obj)
           (plist-put rplist prop rank))))
-(cl-defmethod (setf occ-obj-rank-inheritable) ((rank number) (obj occ-ranktbl))
+(cl-defmethod (setf occ-obj-rank-inheritable) ((rank number)
+                                               (obj occ-ranktbl))
   (setf (occ-ranktbl-inheritable obj) rank))
-(cl-defmethod (setf occ-obj-rank-nonheritable) ((rank number) (obj occ-ranktbl))
+(cl-defmethod (setf occ-obj-rank-nonheritable) ((rank number)
+                                                (obj occ-ranktbl))
   (setf (occ-ranktbl-nonhereditable obj) rank))
-(cl-defmethod (setf occ-obj-rank-acquired) ((rank number) (obj occ-ranktbl))
+(cl-defmethod (setf occ-obj-rank-acquired) ((rank number)
+                                            (obj occ-ranktbl))
   (setf (occ-ranktbl-acquired obj) rank))
-(cl-defmethod (setf occ-obj-rank) ((rank number) (obj occ-ranktbl))
+(cl-defmethod (setf occ-obj-rank) ((rank number)
+                                   (obj occ-ranktbl))
   (setf (occ-ranktbl-value obj) rank))
 
 
-(cl-defmethod occ-obj-acc-parent-rank ((obj null) (label number))
+(cl-defmethod occ-obj-acc-parent-rank ((obj null)
+                                       (label number))
   0)
 
-(cl-defmethod occ-obj-acc-parent-rank ((obj occ-obj-tsk) (label number))
+(cl-defmethod occ-obj-acc-parent-rank ((obj occ-obj-tsk)
+                                       (label number))
   (+ (occ-obj-rank-inheritable obj)
-     (occ-obj-acc-parent-rank (occ-obj-tsk-parent obj) 0)))
+     (occ-obj-acc-parent-rank (occ-tsk-parent obj) 0)))
 
 
-(cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx) (tsk null) (label number))
+(cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx)
+                                           (tsk null)
+                                           (label number))
   0)
 
-(cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx) (tsk occ-obj-tsk) (label number))
+(cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx)
+                                           (tsk occ-obj-tsk)
+                                           (label number))
   (+ (occ-obj-rank-with tsk ctx)
-     (occ-obj-acc-parent-rank ctx (occ-obj-tsk-parent tsk) 0)))
+     (occ-obj-acc-parent-rank ctx (occ-tsk-parent tsk) 0)))
 
 
 ;; (cl-defmethod occ-obj-tsk-prop-rank ((obj  occ-tsk)
