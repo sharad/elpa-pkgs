@@ -129,6 +129,10 @@
                                  (ctx occ-obj-ctx))
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
+
+    (unless (occ-obj-rank rt)
+      )
+
     (occ-obj-rank rt)))
 
 (cl-defmethod (setf occ-obj-rank-with) ((rank number)
