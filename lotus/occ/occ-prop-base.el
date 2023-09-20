@@ -147,10 +147,13 @@
   (occ-obj-priority-internal property))
 
 
-(cl-defgeneric occ-obj-priority-rank (obj prop)
+(cl-defgeneric occ-obj-priority-rank (tsk
+                                      ctx
+                                      prop)
   "Get prioritised rank.")
 
 (cl-defmethod occ-obj-priority-rank ((obj number)
+                                     (ctx null)
                                      (prop symbol))
   (let ((value obj)
         (priority (occ-obj-priority prop)))
@@ -160,6 +163,7 @@
        value)))
 
 (cl-defmethod occ-obj-priority-rank ((obj number)
+                                     (ctx null)
                                      (prop symbol))
   (let ((value obj)
         (priority (occ-obj-priority prop)))
@@ -168,18 +172,20 @@
            value)
       0)))
 
-(cl-defmethod occ-obj-priority-rank ((obj occ-tsk)
+(cl-defmethod occ-obj-priority-rank ((tsk occ-obj-tsk)
+                                     (ctx occ-obj-ctx)
                                      (prop symbol))
   "Get prioritised rank."
-  (occ-obj-priority-rank (occ-obj-intf-rank obj prop)
+  (occ-obj-priority-rank (occ-obj-intf-rank tsk
+                                            ctx
+                                            prop)
+                         nil
                          prop))
-
-
-(cl-defmethod occ-obj-priority-rank ((obj  occ-obj-ctx-tsk)
-                                     (prop symbol))
-  "Get prioritised rank."
-  (occ-obj-priority-rank (occ-obj-intf-rank obj prop)
-                         prop))
+;; (cl-defmethod occ-obj-priority-rank ((obj  occ-obj-ctx-tsk)
+;;                                      (prop symbol))
+;;   "Get prioritised rank."
+;;   (occ-obj-priority-rank (occ-obj-intf-rank obj prop)
+;;                          prop))
 
 
 (cl-defgeneric occ-obj-properties-to-edit (obj)

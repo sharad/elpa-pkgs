@@ -44,12 +44,14 @@
   num)
 
 
-(cl-defgeneric occ-obj-calculate-rank (obj
+(cl-defgeneric occ-obj-calculate-rank (tsk
+                                       ctx
                                        properties)
   "occ-obj-rank")
 
 
-(cl-defmethod occ-obj-calculate-rank ((obj occ-obj-tsk)
+(cl-defmethod occ-obj-calculate-rank ((tsk occ-obj-tsk)
+                                      (ctx occ-obj-tsk)
                                       (properties list))
   ;; too much output
   ;; (occ-obj-properties-to-calculate-rank obj)
@@ -59,8 +61,6 @@
   (/ (cl-reduce #'+
                 (mapcar #'(lambda (slot)
                             (let ((prop (downcase-sym slot)))
-                              ;; (occ-obj-priority-rank obj
-                              ;;                        prop)
                               (occ-obj-prop-rank obj
                                                  prop)))
                         properties))
@@ -131,6 +131,12 @@
                                   ctx)))
 
     (unless (occ-obj-rank rt)
+
+
+      (occ-obj-calculate-rank (occ-obj-tsk obj)
+                              (occ-obj-ctx obj)
+                              (occ-obj-properties-to-calculate-rank obj))
+
       )
 
     (occ-obj-rank rt)))
@@ -148,7 +154,8 @@
   (let ((rt (occ-obj-ranktbl obj)))
     (unless (occ-obj-prop-rank rt property)
       (setf (occ-obj-prop-rank rt property)
-            (occ-obj-priority-rank obj
+            (occ-obj-priority-rank (occ-obj-tsk obj)
+                                   (occ-obj-ctx obj)
                                    property)))
             ;; (occ-obj-intf-rank (occ-obj-tsk obj)
             ;;                    (occ-obj-ctx obj)
@@ -165,13 +172,15 @@
 (cl-defmethod occ-obj-rank-inheritable ((obj occ-obj-tsk))
   (unless (occ-obj-rank-inheritable (occ-obj-ranktbl obj))
     (setf (occ-obj-rank-inheritable (occ-obj-ranktbl obj))
-          (occ-obj-calculate-rank obj
+          (occ-obj-calculate-rank (occ-obj-tsk obj)
+                                  (occ-obj-ctx obj)
                                   (occ-obj-properties-to-calculate-rank obj))))
   (occ-obj-rank-inheritable (occ-obj-ranktbl obj)))
 (cl-defmethod occ-obj-rank-nonheritable ((obj occ-obj-tsk))
   (unless (occ-obj-rank-nonheritable (occ-obj-ranktbl obj))
     (setf (occ-obj-rank-nonheritable (occ-obj-ranktbl obj))
-          (occ-obj-calculate-rank obj
+          (occ-obj-calculate-rank (occ-obj-tsk obj)
+                                  (occ-obj-ctx obj)
                                   nil)))
   (occ-obj-rank-nonheritable (occ-obj-ranktbl obj)))
 (cl-defmethod occ-obj-rank-acquired ((obj occ-obj-tsk))
