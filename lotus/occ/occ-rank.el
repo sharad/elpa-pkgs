@@ -211,12 +211,14 @@
 (cl-defmethod occ-obj-rank-inheritable ((obj occ-obj-tsk))
   (unless (occ-obj-rank-inheritable (occ-obj-rt obj))
     (setf (occ-obj-rank-inheritable (occ-obj-rt obj))
-          (occ-obj-calculate-rank obj (occ-obj-properties-to-calculate-rank obj))))
+          (occ-obj-calculate-rank obj
+                                  (occ-obj-properties-to-calculate-rank obj))))
   (occ-obj-rank-inheritable (occ-obj-rt obj)))
 (cl-defmethod occ-obj-rank-nonheritable ((obj occ-obj-tsk))
   (unless (occ-obj-rank-inheritable (occ-obj-rt obj))
     (setf (occ-obj-rank-inheritable (occ-obj-rt obj))
-          (occ-obj-calculate-rank obj nil)))
+          (occ-obj-calculate-rank obj
+                                  nil)))
   (occ-obj-rank-nonheritable (occ-obj-rt obj)))
 (cl-defmethod occ-obj-rank-acquired ((obj occ-obj-tsk))
   (unless (occ-obj-rank-acquired (occ-obj-rt obj))
