@@ -517,20 +517,31 @@
 
 (cl-defmethod occ-obj-rt-with ((tsk occ-obj-tsk)
                                (ctx occ-obj-ctx))
-  (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx)))) ;; -- add unless
+  (unless (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx)))
+    (setf (occ-obj-rt-with tsk ctx) (occ-make-ranktbl)))
+  (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx))))
+   ;; -- add unless
 
 (cl-defmethod (setf occ-obj-rt-with) ((rt occ-ranktbl)
                                       (tsk occ-obj-tsk)
                                       (ctx occ-obj-ctx))
-  
-  (if (occ-obj-rt-with tsk ctx)
+  (if (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx)))
       (setf (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx))) rt)
     (cl-pushnew (cons tsk rt)
                 (occ-obj-ctx-tsk-rt-list ctx))))
+
+
+;; (setf x nil)
+;; (setf (cdr (assoc 'y x)) 'z)
+;; (cl-pushnew (cons 'y 'y) x)
 
 
 (cl-defmethod occ-obj-rt ((obj occ-obj-tsk))
   (let ((tsk (occ-obj-tsk obj)))
+
+    (unless (occ-tsk-rt tsk)
+      (setf (occ-tsk-rt tsk) (occ-make-ranktbl)))
+
     (occ-assert (occ-tsk-rt tsk))
     (occ-tsk-rt tsk)))
 
@@ -546,7 +557,7 @@
 (cl-defmethod (setf occ-obj-rt) ((rt occ-ranktbl)
                                  (obj occ-obj-ctx-tsk))
   (setf (occ-obj-rt-with (occ-obj-tsk obj)
-                         (occ-obj-ctx obj)) rank))
+                         (occ-obj-ctx obj)) rt))
 
 
 ;; (cl-defmethod occ-obj-ctx-tsk-rt ((ctx occ-obj-ctx)

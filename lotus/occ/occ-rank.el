@@ -116,6 +116,22 @@
   (setf (occ-rank-value obj) rank))
 
 
+(cl-defmethod occ-obj-acc-parent-rank ((obj null) (label number))
+  0)
+
+(cl-defmethod occ-obj-acc-parent-rank ((obj occ-obj-tsk) (label number))
+  (+ (occ-obj-rank-inheritable obj)
+     (occ-obj-acc-parent-rank (occ-obj-tsk-parent obj) 0)))
+
+
+(cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx) (tsk null) (label number))
+  0)
+
+(cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx) (tsk occ-obj-tsk) (label number))
+  (+ (occ-obj-rank-with tsk ctx)
+     (occ-obj-acc-parent-rank ctx (occ-obj-tsk-parent tsk) 0)))
+
+
 ;; (cl-defmethod occ-obj-tsk-prop-rank ((obj  occ-tsk)
 ;;                                      (prop symbol))
 ;;   (let ((rt (occ-obj-rt obj)))
@@ -303,21 +319,6 @@
   (let ((tsk (occ-obj-tsk obj)))
     (setf (occ-obj-rank tsk) rank)))
 
-
-(cl-defmethod occ-obj-acc-parent-rank ((obj null) (label number))
-  0)
-
-(cl-defmethod occ-obj-acc-parent-rank ((obj occ-obj-tsk) (label number))
-  (+ (occ-obj-rank-inheritable obj)
-     (occ-obj-acc-parent-rank (occ-obj-tsk-parent obj) 0)))
-
-
-(cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx) (tsk null) (label number))
-  0)
-
-(cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx) (tsk occ-obj-tsk) (label number))
-  (+ (occ-obj-rank-with tsk ctx)
-     (occ-obj-acc-parent-rank ctx (occ-obj-tsk-parent tsk) 0)))
 
 
 

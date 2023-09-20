@@ -982,4 +982,8 @@
 
  ())
 
+
+(cl-defun occ-make-ranktbl (&key name)
+  (make-occ-ranktbl :name (or name "ranktbl")))
+
 ;;; occ-obj-ctor.el ends here
