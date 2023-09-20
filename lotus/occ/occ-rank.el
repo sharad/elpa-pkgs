@@ -186,8 +186,8 @@
     ;; Add code for adding parent ranks
     (occ-message "name: %s Tree: %d - %s"
                  (occ-obj-format obj)
-                 (length (occ-ctx-tsk-rank-alist (occ-obj-ctx obj)))
-                 (mapcar #'cdr (occ-ctx-tsk-rank-alist (occ-obj-ctx obj))))
+                 (length (occ-ctx-tsk-rt-list (occ-obj-ctx obj)))
+                 (mapcar #'cdr (occ-ctx-tsk-rt-list (occ-obj-ctx obj))))
     (setf (occ-obj-rank (occ-obj-ranktbl obj))
           (+ (occ-obj-rank-acquired obj)
              (occ-obj-acc-ctx-parent-rank (occ-obj-ctx obj)
