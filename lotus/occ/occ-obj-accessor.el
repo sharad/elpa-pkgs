@@ -515,6 +515,17 @@
     (setf (occ-obj-rank tsk) rank)))
 
 
+(cl-defmethod occ-obj-rt ((obj occ-obj-tsk))
+  (let ((tsk (occ-obj-tsk obj)))
+    (occ-assert (occ-tsk-rt tsk))
+    (occ-tsk-rt tsk)))
+
+(cl-defmethod (setf occ-obj-rt) ((rt occ-rank)
+                                 (obj occ-ctsk))
+  (let ((tsk (occ-obj-tsk obj)))
+    (setf (occ-tsk-rt tsk) rt)))
+
+
 ;; ;; occ-ctxual-tsk - accessors
 ;; (cl-defmethod occ-obj-rank ((obj occ-ctxual-tsk))
 ;;   (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))

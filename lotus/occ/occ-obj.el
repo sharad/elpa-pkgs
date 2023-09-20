@@ -147,7 +147,7 @@
 
 
 (cl-defstruct (occ-rank (:include occ-obj))
-  prop-plist
+  plist
   value
   inheritable
   nonhereditable
@@ -177,11 +177,12 @@
   format-file
   format-string
   sibling-count
-  rank
-  rank-inheritable
-  rank-nonhereditable
-  rank-acquired
-  plist)
+  rt)
+  ;; rank-inheritable
+  ;; rank-nonhereditable
+  ;; rank-acquired
+  ;; plist
+  
 
 (cl-defstruct (occ-tree-tsk (:include occ-tsk))
   "occ-tree-tsk"
@@ -194,8 +195,8 @@
   "occ-ctx"
   buffer
   file
-  tsk-aplist
-  tsk-rank-alist)
+  ;; tsk-aplist
+  tsk-rt-list)
 
 
 (cl-defstruct (occ-ctsk (:include occ-obj-ctx-tsk))
@@ -204,10 +205,10 @@
   ctx
   tsk)
 (cl-defstruct (occ-ctxual-tsk (:include occ-ctsk))
-  rank
-  rank-inheritable
-  rank-nonhereditable
-  rank-acquired)
+  )
+  ;; rank-inheritable
+  ;; rank-nonhereditable
+  ;; rank-acquired
 
 
 ;; TODO: need to add ability to be proxy object
