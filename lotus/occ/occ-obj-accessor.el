@@ -501,95 +501,44 @@
 ;;   (setf (occ-tsk-rank obj) rank))
 
 
-;; ;; ;; occ-ctsk - accessors
-;; (cl-defmethod occ-obj-rank ((obj occ-ctsk))
-;;   (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-;;   (let ((tsk (occ-ctsk-tsk obj)))
-;;     (occ-assert (occ-obj-rank tsk))
-;;     (occ-obj-rank tsk)))
-
-;; (cl-defmethod (setf occ-obj-rank) ((rank number)
-;;                                    (obj occ-ctsk))
-;;   (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-;;   (let ((tsk (occ-ctsk-tsk obj)))
-;;     (setf (occ-obj-rank tsk) rank)))
-
-
-(cl-defmethod occ-obj-rt-with ((tsk occ-obj-tsk)
-                               (ctx occ-obj-ctx))
+(cl-defmethod occ-obj-ranktbl-with ((tsk occ-obj-tsk)
+                                    (ctx occ-obj-ctx))
   (unless (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx)))
-    (setf (occ-obj-rt-with tsk ctx) (occ-make-ranktbl)))
+    (setf (occ-obj-ranktbl-with tsk ctx) (occ-make-ranktbl)))
   (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx))))
    ;; -- add unless
 
-(cl-defmethod (setf occ-obj-rt-with) ((rt occ-ranktbl)
-                                      (tsk occ-obj-tsk)
-                                      (ctx occ-obj-ctx))
+(cl-defmethod (setf occ-obj-ranktbl-with) ((rt occ-ranktbl)
+                                           (tsk occ-obj-tsk)
+                                           (ctx occ-obj-ctx))
   (if (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx)))
       (setf (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx))) rt)
     (cl-pushnew (cons tsk rt)
                 (occ-obj-ctx-tsk-rt-list ctx))))
-
-
-;; (setf x nil)
-;; (setf (cdr (assoc 'y x)) 'z)
-;; (cl-pushnew (cons 'y 'y) x)
 
 
-(cl-defmethod occ-obj-rt ((obj occ-obj-tsk))
+(cl-defmethod occ-obj-ranktbl ((obj occ-obj-tsk))
   (let ((tsk (occ-obj-tsk obj)))
 
-    (unless (occ-tsk-rt tsk)
-      (setf (occ-tsk-rt tsk) (occ-make-ranktbl)))
+    (unless (occ-tsk-ranktbl tsk)
+      (setf (occ-tsk-ranktbl tsk) (occ-make-ranktbl)))
 
-    (occ-assert (occ-tsk-rt tsk))
-    (occ-tsk-rt tsk)))
+    (occ-assert (occ-tsk-ranktbl tsk))
+    (occ-tsk-ranktbl tsk)))
 
-(cl-defmethod occ-obj-rt ((obj occ-obj-ctx-tsk))
-  (occ-obj-rt-with (occ-obj-tsk obj)
-                   (occ-obj-ctx obj)))
+(cl-defmethod occ-obj-ranktbl ((obj occ-obj-ctx-tsk))
+  (occ-obj-ranktbl-with (occ-obj-tsk obj)
+                        (occ-obj-ctx obj)))
 
-(cl-defmethod (setf occ-obj-rt) ((rt occ-ranktbl)
-                                 (obj occ-obj-tsk))
+(cl-defmethod (setf occ-obj-ranktbl) ((rt occ-ranktbl)
+                                      (obj occ-obj-tsk))
   (let ((tsk (occ-obj-tsk obj)))
-    (setf (occ-tsk-rt tsk) rt)))
+    (setf (occ-tsk-ranktbl tsk) rt)))
 
-(cl-defmethod (setf occ-obj-rt) ((rt occ-ranktbl)
-                                 (obj occ-obj-ctx-tsk))
-  (setf (occ-obj-rt-with (occ-obj-tsk obj)
-                         (occ-obj-ctx obj)) rt))
-
-
-;; (cl-defmethod occ-obj-ctx-tsk-rt ((ctx occ-obj-ctx)
-;;                                   (tsk occ-obj-tsk))
-;;   (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx)))) ;; -- add unless
-
-;; (cl-defmethod (setf occ-obj-ctx-tsk-rt) ((rt occ-ranktbl)
-;;                                          (ctx occ-obj-ctx)
-;;                                          (tsk occ-obj-tsk))
-;;   (if (occ-obj-ctx-tsk-rt ctx tsk)
-;;       (setf (cdr (assoc tsk (occ-obj-ctx-tsk-rt-list ctx))) rt)
-;;     (cl-pushnew (cons tsk rt)
-;;                 (occ-obj-ctx-tsk-rt-list ctx))))
-
-
-;; ;; occ-ctxual-tsk - accessors
-;; (cl-defmethod occ-obj-rank ((obj occ-ctxual-tsk))
-;;   (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-;;   (let ((rank (occ-ctxual-tsk-rank obj)))
-;;     (unless rank
-;;       (let ((c-rank (occ-obj-calculate-rank obj))
-;;             (t-rank (occ-obj-rank (occ-ctxual-tsk-tsk obj))))
-;;         (setf (occ-ctxual-tsk-rank obj) (+ c-rank t-rank))))
-;;     (occ-debug "occ-obj-rank((obj occ-ctxual-tsk)) rank = %s" rank)
-;;     ;; (message "occ-obj-rank((obj occ-ctxual-tsk)) rank = %s" rank)
-;;     (occ-ctxual-tsk-rank obj)))
-
-;; (cl-defmethod (setf occ-obj-rank) ((rank number)
-;;                                    (obj occ-ctxual-tsk))
-;;   (occ-debug "occ-obj-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-;;   ;; (setf (occ-obj-ctx-tsk-rank (occ-obj-ctx obj) (occ-obj-tsk obj)) rank) ;insert into map for inheritance
-;;   (setf (occ-ctxual-tsk-rank obj) rank))
+(cl-defmethod (setf occ-obj-ranktbl) ((rt occ-ranktbl)
+                                      (obj occ-obj-ctx-tsk))
+  (setf (occ-obj-ranktbl-with (occ-obj-tsk obj)
+                              (occ-obj-ctx obj)) rt))
 
 
 (cl-defmethod occ-obj-member-tsk-rank ((obj occ-ctxual-tsk))
