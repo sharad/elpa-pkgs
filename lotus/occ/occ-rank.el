@@ -58,8 +58,10 @@
   (/ (cl-reduce #'+
                 (mapcar #'(lambda (slot)
                             (let ((prop (downcase-sym slot)))
-                              (occ-obj-priority-rank obj
-                                                     prop)))
+                              ;; (occ-obj-priority-rank obj
+                              ;;                        prop)
+                              (occ-obj-prop-rank obj
+                                                 prop)))
                         properties))
      occ-rank-quanta))
 
@@ -192,16 +194,20 @@
                                  (property symbol))
   (let ((rt (occ-obj-rt obj)))
     (unless (occ-obj-prop-rank rt prop)
-      (setf (occ-obj-prop-rank rt prop) (occ-obj-intf-rank (occ-obj-tsk obj)
-                                                           (occ-obj-ctx obj) 
-                                                           prop)))
-    (occ-obj-prop-rank rt prop)))
+      (setf (occ-obj-prop-rank rt prop)
+            (occ-obj-priority-rank obj
+                                   property)))
+            ;; (occ-obj-intf-rank (occ-obj-tsk obj)
+            ;;                    (occ-obj-ctx obj) 
+            ;;                    prop)
+            
+    (occ-obj-prop-rank rt property)))
 
 (cl-defmethod (setf occ-obj-prop-rank) ((rank number)
                                         (obj  occ-obj-tsk)
                                         (property symbol))
   (let ((rt (occ-obj-rt obj)))
-    (setf (occ-obj-prop-rank rt prop) rank)))
+    (setf (occ-obj-prop-rank rt property) rank)))
 
 
 (cl-defmethod occ-obj-rank-inheritable ((obj occ-obj-tsk))

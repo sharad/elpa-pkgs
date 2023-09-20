@@ -177,6 +177,7 @@
   format-file
   format-string
   sibling-count
+  plist
   rt)
   ;; rank-inheritable
   ;; rank-nonhereditable

@@ -457,8 +457,9 @@
   ;; use occ-obj-build-ctxual-tsk-with
   (make-occ-ctxual-tsk :name nil
                        :tsk  tsk
-                       :ctx  ctx
-                       :rank rank))
+                       :ctx  ctx))
+                       ;; :rank rank
+                       
 
 (cl-defmethod occ-obj-build-ctxual-tsk-with ((tsk occ-tsk) ;ctor
                                              (ctx occ-ctx))
@@ -484,8 +485,9 @@
         (ctx (occ-obj-ctx obj)))
     (make-occ-ctxual-tsk :name nil
                          :tsk  tsk
-                         :ctx  ctx
-                         :rank rank)))
+                         :ctx  ctx)))
+                         ;; :rank rank
+                         
 
 (cl-defmethod occ-obj-make-ctxual-tsk ((obj occ-ctxual-tsk)
                                        &optional
