@@ -172,7 +172,7 @@
     (setf (occ-obj-rank-inheritable (occ-obj-rt obj))
           (occ-obj-calculate-rank obj (occ-obj-properties-to-calculate-rank obj))))
   (occ-obj-rank-inheritable (occ-obj-rt obj)))
-(cl-defmethod occ-obj-rank-nonheritable ((tsk occ-obj-tsk))
+(cl-defmethod occ-obj-rank-nonheritable ((obj occ-obj-tsk))
   (unless (occ-obj-rank-inheritable (occ-obj-rt obj))
     (setf (occ-obj-rank-inheritable (occ-obj-rt obj))
           (occ-obj-calculate-rank obj nil)))
@@ -182,12 +182,27 @@
     (setf (occ-obj-rank-acquired (occ-obj-rt obj)) (+ (occ-obj-rank-inheritable obj)
                                                       (occ-obj-rank-nonheritable obj))))
   (occ-obj-rank-acquired (occ-obj-rt obj)))
-(cl-defmethod occ-obj-tsk-rank ((tsk occ-obj-tsk))
+(cl-defmethod occ-obj-rank ((obj occ-obj-tsk))
   (unless (occ-obj-rank (occ-obj-rt obj))
     ;; Add code for adding parent ranks
     (setf (occ-obj-rank (occ-obj-rt obj)) (+ (occ-obj-rank-acquired obj)
                                              (occ-obj-acc-parent-rank obj 0))))
   (occ-obj-rank (occ-obj-rt obj)))
+(cl-defmethod occ-obj-rank ((obj occ-obj-ctx-tsk))
+  (unless (occ-obj-tsk-rank tsk)
+    ;; Add code for adding parent ranks
+    (occ-message "name: %s Tree: %d - %s"
+                 (occ-obj-format tsk)
+                 (length (occ-ctx-tsk-rank-alist (occ-obj-ctx tsk)))
+                 (mapcar #'cdr (occ-ctx-tsk-rank-alist (occ-obj-ctx tsk))))
+    (setf (occ-obj-rank obj)
+          (+ (occ-obj-rank-acquired obj)
+             (occ-obj-acc-ctx-parent-rank (occ-obj-ctx obj)
+                                          (occ-obj-tsk obj)
+                                          0))))
+  (occ-assert (occ-obj-rank obj))
+  (occ-obj-rank obj))
+ 
 
 (cl-defmethod (setf occ-obj-rank-inheritable) ((rank number) (obj occ-obj-tsk))
   (setf (occ-obj-rank-inheritable (occ-obj-rt obj)) rank))
@@ -195,7 +210,7 @@
   (setf (occ-obj-rank-nonhereditable (occ-obj-rt obj)) rank))
 (cl-defmethod (setf occ-obj-rank-acquired) ((rank number) (obj occ-obj-tsk))
   (setf (occ-obj-rank-acquired (occ-obj-rt obj)) rank))
-(cl-defmethod (setf occ-obj-tsk-rank) ((rank number) (obj occ-obj-tsk))
+(cl-defmethod (setf occ-obj-rank) ((rank number) (obj occ-obj-tsk))
   (setf (occ-obj-rank (occ-obj-rt obj)) rank))
 
 
@@ -239,20 +254,20 @@
 ;;   (occ-assert (occ-obj-tsk-rank tsk))
 ;;   (occ-obj-tsk-rank tsk))
 
-(cl-defmethod occ-obj-rank ((tsk occ-ctxual-tsk))
-  (unless (occ-obj-tsk-rank tsk)
-    ;; Add code for adding parent ranks
-    (occ-message "name: %s Tree: %d - %s"
-                 (occ-obj-format tsk)
-                 (length (occ-ctx-tsk-rank-alist (occ-obj-ctx tsk)))
-                 (mapcar #'cdr (occ-ctx-tsk-rank-alist (occ-obj-ctx tsk))))
-    (setf (occ-obj-tsk-rank tsk)
-          (+ (occ-obj-rank-acquired tsk)
-             (occ-obj-acc-ctx-parent-rank (occ-obj-ctx tsk)
-                                          (occ-obj-tsk tsk)
-                                          0))))
-  (occ-assert (occ-obj-tsk-rank tsk))
-  (occ-obj-tsk-rank tsk))
+;; (cl-defmethod occ-obj-rank ((tsk occ-ctxual-tsk))
+;;   (unless (occ-obj-tsk-rank tsk)
+;;     ;; Add code for adding parent ranks
+;;     (occ-message "name: %s Tree: %d - %s"
+;;                  (occ-obj-format tsk)
+;;                  (length (occ-ctx-tsk-rank-alist (occ-obj-ctx tsk)))
+;;                  (mapcar #'cdr (occ-ctx-tsk-rank-alist (occ-obj-ctx tsk))))
+;;     (setf (occ-obj-tsk-rank tsk)
+;;           (+ (occ-obj-rank-acquired tsk)
+;;              (occ-obj-acc-ctx-parent-rank (occ-obj-ctx tsk)
+;;                                           (occ-obj-tsk tsk)
+;;                                           0))))
+;;   (occ-assert (occ-obj-tsk-rank tsk))
+;;   (occ-obj-tsk-rank tsk))
 
 ;; ;; occ-ctsk - accessors
 (cl-defmethod occ-obj-rank ((obj occ-ctsk))
@@ -268,12 +283,12 @@
     (setf (occ-obj-rank tsk) rank)))
 
 
-(cl-defmethod occ-obj-acc-parent-rank ((tsk null) (label number))
+(cl-defmethod occ-obj-acc-parent-rank ((obj null) (label number))
   0)
 
-(cl-defmethod occ-obj-acc-parent-rank ((tsk occ-obj-tsk) (label number))
-  (+ (occ-obj-rank-inheritable tsk)
-     (occ-obj-acc-parent-rank (occ-obj-task-parent tsk) 0)))
+(cl-defmethod occ-obj-acc-parent-rank ((obj occ-obj-tsk) (label number))
+  (+ (occ-obj-rank-inheritable obj)
+     (occ-obj-acc-parent-rank (occ-obj-tsk-parent obj) 0)))
 
 
 (cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx) (tsk null) (label number))
@@ -281,7 +296,7 @@
 
 (cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx) (tsk occ-obj-tsk) (label number))
   (+ (occ-obj-ctx-tsk-rank ctx tsk)
-     (occ-obj-acc-parent-rank ctx (occ-obj-task-parent tsk) 0)))
+     (occ-obj-acc-parent-rank ctx (occ-obj-tsk-parent tsk) 0)))
 
 
 
