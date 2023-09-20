@@ -146,7 +146,7 @@
 ;;   value)
 
 
-(cl-defstruct (occ-rank (:include occ-obj))
+(cl-defstruct (occ-ranktbl (:include occ-obj))
   plist
   value
   inheritable

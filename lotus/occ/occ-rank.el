@@ -87,32 +87,32 @@
 
 
 
-(cl-defmethod occ-obj-prop-rank ((obj  occ-rank)
+(cl-defmethod occ-obj-prop-rank ((obj  occ-ranktbl)
                                  (prop symbol))
   (let ((rplist (occ-rank-plist obj)))
     (plist-get rplist prop))) ;; -- add unless
-(cl-defmethod occ-obj-rank-inheritable ((obj occ-rank))
+(cl-defmethod occ-obj-rank-inheritable ((obj occ-ranktbl))
   (occ-rank-inheritable obj))
-(cl-defmethod occ-obj-rank-nonheritable ((obj occ-rank))
+(cl-defmethod occ-obj-rank-nonheritable ((obj occ-ranktbl))
   (occ-rank-nonhereditable obj))
-(cl-defmethod occ-obj-rank-acquired ((obj occ-rank))
+(cl-defmethod occ-obj-rank-acquired ((obj occ-ranktbl))
   (occ-rank-acquired obj))
-(cl-defmethod occ-obj-rank ((obj occ-rank))
+(cl-defmethod occ-obj-rank ((obj occ-ranktbl))
   (occ-rank-value obj))
 
 (cl-defmethod (setf occ-obj-prop-rank) ((rank number)
-                                        (obj  occ-rank)
+                                        (obj  occ-ranktbl)
                                         (prop symbol))
   (let ((rplist (occ-rank-plist obj)))
     (setf (occ-rank-plist obj)
           (plist-put rplist prop rank))))
-(cl-defmethod (setf occ-obj-rank-inheritable) ((rank number) (obj occ-rank))
+(cl-defmethod (setf occ-obj-rank-inheritable) ((rank number) (obj occ-ranktbl))
   (setf (occ-rank-inheritable obj) rank))
-(cl-defmethod (setf occ-obj-rank-nonheritable) ((rank number) (obj occ-rank))
+(cl-defmethod (setf occ-obj-rank-nonheritable) ((rank number) (obj occ-ranktbl))
   (setf (occ-rank-nonhereditable obj) rank))
-(cl-defmethod (setf occ-obj-rank-acquired) ((rank number) (obj occ-rank))
+(cl-defmethod (setf occ-obj-rank-acquired) ((rank number) (obj occ-ranktbl))
   (setf (occ-rank-acquired obj) rank))
-(cl-defmethod (setf occ-obj-rank) ((rank number) (obj occ-rank))
+(cl-defmethod (setf occ-obj-rank) ((rank number) (obj occ-ranktbl))
   (setf (occ-rank-value obj) rank))
 
 
@@ -164,7 +164,7 @@
     (occ-obj-rank rt)))
 
 
-(cl-defmethod (setf occ-obj-rank-with) (rank
+(cl-defmethod (setf occ-obj-rank-with) ((rank number)
                                         (tsk occ-obj-tsk)
                                         (ctx occ-obj-ctx))
   (let ((rt (occ-obj-rt-with tsk
@@ -210,19 +210,19 @@
                                              (occ-obj-acc-parent-rank obj 0))))
   (occ-obj-rank (occ-obj-rt obj)))
 (cl-defmethod occ-obj-rank ((obj occ-obj-ctx-tsk))
-  (unless (occ-obj-tsk-rank tsk)
+  (unless (occ-obj-rank (occ-obj-rt obj))
     ;; Add code for adding parent ranks
     (occ-message "name: %s Tree: %d - %s"
                  (occ-obj-format tsk)
                  (length (occ-ctx-tsk-rank-alist (occ-obj-ctx tsk)))
                  (mapcar #'cdr (occ-ctx-tsk-rank-alist (occ-obj-ctx tsk))))
-    (setf (occ-obj-rank obj)
+    (setf (occ-obj-rank (occ-obj-rt obj))
           (+ (occ-obj-rank-acquired obj)
              (occ-obj-acc-ctx-parent-rank (occ-obj-ctx obj)
                                           (occ-obj-tsk obj)
                                           0))))
-  (occ-assert (occ-obj-rank obj))
-  (occ-obj-rank obj))
+  (occ-assert (occ-obj-rank (occ-obj-rt obj)))
+  (occ-obj-rank (occ-obj-rt obj)))
  
 
 (cl-defmethod (setf occ-obj-rank-inheritable) ((rank number) (obj occ-obj-tsk))
@@ -293,14 +293,14 @@
 ;; ;; occ-ctsk - accessors
 (cl-defmethod occ-obj-rank ((obj occ-ctsk))
   (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-  (let ((tsk (occ-ctsk-tsk obj)))
+  (let ((tsk (occ-obj-tsk obj)))
     (occ-assert (occ-obj-rank tsk))
     (occ-obj-rank tsk)))
 
 (cl-defmethod (setf occ-obj-rank) ((rank number)
                                    (obj occ-ctsk))
   (occ-debug "occ-obj-rank(occ-ctsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-  (let ((tsk (occ-ctsk-tsk obj)))
+  (let ((tsk (occ-obj-tsk obj)))
     (setf (occ-obj-rank tsk) rank)))
 
 
