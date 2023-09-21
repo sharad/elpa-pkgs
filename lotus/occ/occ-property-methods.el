@@ -46,7 +46,7 @@
 ;; * Required libraries:1 ends here
 ;;
 ;;
-;; 
+;;
 ;; Current File property of task
 ;;
 ;; [[file:occ-property-methods.org::*Current File property of task][Current File property of task:1]]
