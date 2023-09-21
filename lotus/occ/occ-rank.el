@@ -61,9 +61,9 @@
   (/ (cl-reduce #'+
                 (mapcar #'(lambda (slot)
                             (let ((prop (downcase-sym slot)))
-                              (occ-obj-prop-rank tsk
-                                                 ctx
-                                                 prop)))
+                              (occ-obj-prop-rank-with tsk
+                                                      ctx
+                                                      prop)))
                         properties))
      occ-rank-quanta))
 
@@ -151,23 +151,52 @@
     (setf (occ-obj-rank rt) rank)))
 
 
-(cl-defmethod occ-obj-prop-rank ((obj  occ-obj-tsk)
-                                 (property symbol))
-  (let ((rt (occ-obj-ranktbl obj)))
+(cl-defmethod occ-obj-prop-rank-with ((tsk  occ-obj-tsk)
+                                      (ctx  occ-obj-ctx)
+                                      (property symbol))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
     (unless (occ-obj-prop-rank rt property)
       (setf (occ-obj-prop-rank rt property)
-            (occ-obj-priority-rank (occ-obj-tsk obj)
-                                   (occ-obj-ctx obj)
+            (occ-obj-priority-rank tsk
+                                   ctx
                                    property)))
             ;; (occ-obj-intf-rank (occ-obj-tsk obj)
             ;;                    (occ-obj-ctx obj)
             ;;                    prop)
     (occ-obj-prop-rank rt property)))
 
-(cl-defmethod (setf occ-obj-prop-rank) ((rank number)
-                                        (obj  occ-obj-tsk)
-                                        (property symbol))
-  (let ((rt (occ-obj-ranktbl obj)))
+(cl-defmethod occ-obj-prop-rank-with ((tsk  occ-obj-tsk)
+                                      (ctx  null)
+                                      (property symbol))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (unless (occ-obj-prop-rank rt property)
+      (setf (occ-obj-prop-rank rt property)
+            (occ-obj-priority-rank tsk
+                                   ctx
+                                   property)))
+    ;; (occ-obj-intf-rank (occ-obj-tsk obj)
+    ;;                    (occ-obj-ctx obj)
+    ;;                    prop)
+    (occ-obj-prop-rank rt property)))
+
+
+(cl-defmethod (setf occ-obj-prop-rank-with) ((rank number)
+                                             (tsk  occ-obj-tsk)
+                                             (ctx  occ-obj-ctx)
+                                             (property symbol))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (setf (occ-obj-prop-rank rt property) rank)))
+
+
+(cl-defmethod (setf occ-obj-prop-rank-with) ((rank number)
+                                             (tsk  occ-obj-tsk)
+                                             (ctx  null)
+                                             (property symbol))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
     (setf (occ-obj-prop-rank rt property) rank)))
 
 

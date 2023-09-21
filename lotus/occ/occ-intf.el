@@ -30,36 +30,47 @@
 (require 'occ-impl)
 
 
-(cl-defgeneric occ-obj-intf-rank (obj
+(cl-defgeneric occ-obj-intf-rank (tsk
+                                  ctx
                                   property)
   "Return the RANK (number) for OBJ based on the property PROPERTY")
-(cl-defmethod occ-obj-intf-rank (obj
+(cl-defmethod occ-obj-intf-rank (tsk
+                                 ctx
                                  property)
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-obj-impl-rank obj
+  (occ-obj-impl-rank tsk
+                     ctx
                      property))
-(cl-defmethod occ-obj-intf-rank ((obj  occ-tsk)
+(cl-defmethod occ-obj-intf-rank ((tsk  occ-obj-tsk)
+                                 (ctx  occ-obj-ctx)
                                  (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-obj-impl-rank obj
+  (occ-obj-impl-rank tsk
+                     ctx
                      property))
-(cl-defmethod occ-obj-intf-rank ((obj  occ-obj-ctx-tsk)
+(cl-defmethod occ-obj-intf-rank ((tsk  occ-obj-tsk)
+                                 (ctx  null)
                                  (property symbol))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-obj-impl-rank obj
+  (occ-obj-impl-rank tsk
+                     ctx
                      property))
 
 
 ;; adding base propetry NIL for helping to add relative properties
-(cl-defmethod occ-obj-intf-rank ((obj  occ-tsk)
+(cl-defmethod occ-obj-intf-rank ((tsk  occ-obj-tsk)
+                                 (ctx  occ-obj-ctx)
                                  (property (eql nil)))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-obj-impl-rank obj
+  (occ-obj-impl-rank tsk
+                     ctx
                      property))
-(cl-defmethod occ-obj-intf-rank ((obj  occ-obj-ctx-tsk)
+(cl-defmethod occ-obj-intf-rank ((tsk  occ-obj-tsk)
+                                 (ctx  occ-obj-ctx)
                                  (property (eql nil)))
   "Return the RANK (number) for OBJ based on the property PROPERTY"
-  (occ-obj-impl-rank obj
+  (occ-obj-impl-rank tsk
+                     ctx
                      property))
 
 

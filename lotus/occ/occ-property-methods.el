@@ -56,18 +56,18 @@
                                   value)
   (occ-pu-file= prop-value
                 value))
-(cl-defmethod occ-obj-impl-rank ((obj occ-obj-ctx-tsk)
+(cl-defmethod occ-obj-impl-rank ((tsk occ-obj-tsk)
+                                 (ctx occ-obj-ctx)
                                  (prop (eql currfile))) ;; do not use (prop (eql file)) that is another property which represent file in which task defined.
   ;; file in which tsk aka org entry exists.
   "Predicate funtion to check if ctx matches to tsk's file attribute."
-  (let ((tsk (occ-obj-tsk obj))
-        (ctx (occ-obj-ctx obj)))
-    (occ-aggregate-rank tsk-currfile 'currfile tsk #'max
-      (if (occ-obj-impl-prop= prop
-                              tsk-currfile
-                              (occ-ctx-file ctx))
-          (occ-rank-percentage 100)     ;Obsolete: as exact match to files giving double matching points.
-        (occ-rank-percentage 0)))))
+  (occ-aggregate-rank tsk-currfile 'currfile tsk #'max
+    (if (occ-obj-impl-prop= prop
+                            tsk-currfile
+                            (occ-ctx-file ctx))
+        (occ-rank-percentage 100)     ;Obsolete: as exact match to files giving double matching points.
+      (occ-rank-percentage 0))))
+
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
                                 (prop (eql currfile))
                                 (arg null))
@@ -135,17 +135,17 @@
                                   value)
   (occ-pu-file-in-dir-p prop-value
                         value))
-(cl-defmethod occ-obj-impl-rank ((obj occ-obj-ctx-tsk)
+(cl-defmethod occ-obj-impl-rank ((tsk occ-obj-tsk)
+                                 (ctx occ-obj-ctx)
                                  (prop (eql root)))
   "RANK Predicate funtion to check if ctx matches to tsk's ROOT attribute."
-  (let ((tsk (occ-obj-tsk obj))
-        (ctx (occ-obj-ctx obj)))
-    (occ-aggregate-rank tsk-root 'root tsk #'max
-      (if (occ-obj-impl-prop= prop
-                              tsk-root
-                              (occ-ctx-file ctx))
-          (occ-rank-percentage 100)
-        (occ-rank-percentage 0)))))
+  (occ-aggregate-rank tsk-root 'root tsk #'max
+    (if (occ-obj-impl-prop= prop
+                            tsk-root
+                            (occ-ctx-file ctx))
+        (occ-rank-percentage 100)
+      (occ-rank-percentage 0))))
+
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
                                 (prop (eql root))
                                 (arg null))
@@ -258,17 +258,17 @@
                 (if (occ-pu-file-in-dir-p root default-directory)
                     (magit-checkout git-branch))))))))
 
-(cl-defmethod occ-obj-impl-rank ((obj occ-obj-ctx-tsk)
+(cl-defmethod occ-obj-impl-rank ((tsk occ-obj-tsk)
+                                 (ctx occ-obj-ctx)
                                  (prop (eql git-branch)))
   "Return the RANK (number) for OCC-TSK based on the property GIT-BRANCH"
-  (let ((tsk (occ-obj-tsk obj))
-        (ctx (occ-obj-ctx obj)))
-    (occ-aggregate-rank tsk-git-branch prop tsk #'max
-      (if (occ-obj-impl-prop= prop
-                              tsk-git-branch
-                              (occ-obj-impl-get ctx prop nil))
-          (occ-rank-percentage 100)
-        (occ-rank-percentage 0)))))
+  (occ-aggregate-rank tsk-git-branch prop tsk #'max
+    (if (occ-obj-impl-prop= prop
+                            tsk-git-branch
+                            (occ-obj-impl-get ctx prop nil))
+        (occ-rank-percentage 100)
+      (occ-rank-percentage 0))))
+
 (cl-defmethod occ-obj-impl-propfmt ((obj occ-obj-tsk)
                                     (prop (eql git-branch))
                                     value)
@@ -397,25 +397,25 @@
 ;; Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time
 
 ;; [[file:occ-property-methods.org::*Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time][Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time:1]]
-(cl-defmethod occ-obj-impl-rank ((obj occ-tsk)
+(cl-defmethod occ-obj-impl-rank ((tsk occ-obj-tsk)
+                                 (ctx null)
                                  (prop (eql timebeing)))
   (ignore prop)
-  (let ((tsk (occ-obj-tsk obj)))
-      (let ((timebeing (occ-obj-get-property tsk
+  (let ((timebeing (occ-obj-get-property tsk
                                          'timebeing)))
-        (let ((timebeing-time (if timebeing
-                                  (org-duration-to-minutes timebeing)
-                                (occ-rank-percentage 0)))
-              (clocked-time   (occ-obj-get-property tsk
+    (let ((timebeing-time (if timebeing
+                              (org-duration-to-minutes timebeing)
+                            (occ-rank-percentage 0)))
+          (clocked-time   (occ-obj-get-property tsk
                                                 'clock-sum)))
-          (if (and (numberp clocked-time)
-                   (numberp timebeing-time)
-                   (> timebeing-time clocked-time))
-              (/ (* (occ-rank-percentage 100)
-                  (- timebeing-time
+      (if (and (numberp clocked-time)
+               (numberp timebeing-time)
+               (> timebeing-time clocked-time))
+          (/ (* (occ-rank-percentage 100)
+                (- timebeing-time
                    clocked-time))
-                 timebeing-time)
-            (occ-rank-percentage 0))))))
+             timebeing-time)
+        (occ-rank-percentage 0)))))
 
 (cl-defmethod occ-obj-impl-list-p ((mrk marker)
                                    (prop (eql timebeing)))
@@ -503,13 +503,14 @@
 ;; STATUS property of task
 
 ;; [[file:occ-property-methods.org::*STATUS property of task][STATUS property of task:1]]
-(cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
+(cl-defmethod occ-obj-impl-rank ((tsk  occ-obj-tsk)
+                                 (ctx  null)
                                  (prop (eql status)))
   "Predicate funtion to check if ctx matches to tsk's status attribute."
   (ignore prop)
-  (let ((todo-type (occ-obj-get-property obj 'todo-type))
-        (closed    (occ-obj-get-property obj 'closed))
-        (status    (occ-obj-get-property obj 'todo-keyword)))
+  (let ((todo-type (occ-obj-get-property tsk 'todo-type))
+        (closed    (occ-obj-get-property tsk 'closed))
+        (status    (occ-obj-get-property tsk 'todo-keyword)))
     (if (or closed
             (eql todo-type 'done)
             (string= status "HOLD"))
@@ -521,11 +522,12 @@
 ;; Key property of task for setting arbitrary rank
 
 ;; [[file:occ-property-methods.org::*Key property of task for setting arbitrary rank][Key property of task for setting arbitrary rank:1]]
-(cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
+(cl-defmethod occ-obj-impl-rank ((tsk  occ-obj-tsk)
+                                 (ctx  null)
                                  (prop (eql key)))
   "Predicate funtion to check if ctx matches to tsk's file attribute."
   (ignore prop)
-  (let* ((key (occ-obj-get-property obj 'KEY)))
+  (let* ((key (occ-obj-get-property tsk 'KEY)))
       (if key
           (let ((nkey (string-to-number key)))
             (if (> nkey (occ-rank-percentage 100))
@@ -538,13 +540,14 @@
 ;; Current clock status property of task (will rank based on task is currently clocking-in or not)
 
 ;; [[file:occ-property-methods.org::*Current clock status property of task (will rank based on task is currently clocking-in or not)][Current clock status property of task (will rank based on task is currently clocking-in or not):1]]
-(cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
+(cl-defmethod occ-obj-impl-rank ((tsk  occ-obj-tsk)
+                                 (ctx  null)
                                  (prop (eql current-clock)))
   (ignore prop)
-  (let* ((tsk-marker (occ-obj-get-property obj 'marker)))
+  (let* ((tsk-marker (occ-obj-get-property tsk 'marker)))
     (ignore tsk-marker)
     (if (and org-clock-marker
-             (occ-obj-marker= obj org-clock-marker))
+             (occ-obj-marker= tsk org-clock-marker))
         (occ-rank-percentage 100)
       (occ-rank-percentage 0))))
 
@@ -580,13 +583,14 @@
 ;; DEADLINE property of task
 
 ;; [[file:occ-property-methods.org::*DEADLINE property of task][DEADLINE property of task:1]]
-(cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
+(cl-defmethod occ-obj-impl-rank ((tsk  occ-obj-tsk)
+                                 (ctx  null)
                                  (prop (eql deadline)))
   "Predicate funtion to check if ctx matches to tsk's deadline attribute."
   (ignore prop)
-  (let ((todo-type (occ-obj-get-property obj 'todo-type))
-        (closed    (occ-obj-get-property obj 'closed))
-        (deadline    (occ-obj-get-property obj 'todo-keyword)))
+  (let ((todo-type (occ-obj-get-property tsk 'todo-type))
+        (closed    (occ-obj-get-property tsk 'closed))
+        (deadline    (occ-obj-get-property tsk 'todo-keyword)))
     (if (or closed
             (eql todo-type 'done)
             (string= deadline "HOLD"))
@@ -599,13 +603,14 @@
 ;; SCHEDULED property of task
 
 ;; [[file:occ-property-methods.org::*SCHEDULED property of task][SCHEDULED property of task:1]]
-(cl-defmethod occ-obj-impl-rank ((obj  occ-tsk)
+(cl-defmethod occ-obj-impl-rank ((tsk  occ-obj-tsk)
+                                 (ctx  null)
                                  (prop (eql scheduled)))
   "Predicate funtion to check if ctx matches to tsk's scheduled attribute."
   (ignore prop)
-  (let ((todo-type (occ-obj-get-property obj 'todo-type))
-        (closed    (occ-obj-get-property obj 'closed))
-        (scheduled    (occ-obj-get-property obj 'todo-keyword)))
+  (let ((todo-type (occ-obj-get-property tsk 'todo-type))
+        (closed    (occ-obj-get-property tsk 'closed))
+        (scheduled    (occ-obj-get-property tsk 'todo-keyword)))
     (if (or closed
             (eql todo-type 'done)
             (string= scheduled "HOLD"))
