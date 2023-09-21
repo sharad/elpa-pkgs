@@ -61,7 +61,8 @@
   (/ (cl-reduce #'+
                 (mapcar #'(lambda (slot)
                             (let ((prop (downcase-sym slot)))
-                              (occ-obj-prop-rank obj
+                              (occ-obj-prop-rank tsk
+                                                 ctx
                                                  prop)))
                         properties))
      occ-rank-quanta))

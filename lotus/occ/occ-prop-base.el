@@ -192,7 +192,7 @@
   "return PROPERTIES list that can be edited.")
 (cl-defgeneric occ-obj-properties-to-inherit (obj)
   "return PROPERTIES list that can be inherited.")
-(cl-defgeneric occ-obj-properties-to-calculate-rank (obj)
+(cl-defgeneric occ-obj-properties-to-calculate-rank (obj1 obj2)
   "return PROPERTIES list that can be used in calculating rank.")
 (cl-defgeneric occ-obj-properties-to-checkout (obj)
   "return PROPERTIES list that can be checked-out.")
@@ -219,13 +219,13 @@ method provided."))))
    ...)
 
 method provided."))))
-(cl-defmethod occ-obj-properties-to-calculate-rank :around (obj)
+(cl-defmethod occ-obj-properties-to-calculate-rank :around (obj1 obj2)
   "return PROPERTIES list that can be used in calculating rank."
   (ignore obj)
   (condition-case e ;; if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
     ((cl-no-next-method) (occ-error "No
-(cl-defmethod occ-obj-properties-to-calculate-rank (obj)
+(cl-defmethod occ-obj-properties-to-calculate-rank (obj1 obj2)
   ...)
 
 method provided."))))
@@ -277,16 +277,19 @@ method provided."))))
   (occ-obj-properties-to-inherit 'occ-obj-ctx-tsk))
 
 
-(cl-defmethod occ-obj-properties-to-calculate-rank ((class symbol))
+(cl-defmethod occ-obj-properties-to-calculate-rank ((class1 symbol)
+                                                    (class2 symbol))
   "return PROPERTIES list that can be used in calculating rank."
   (occ-cl-method-param-values 'occ-obj-impl-rank
-                              (list '\` `(,class (eql ,'(\, val))))
+                              (list '\` `(,class1 ,class2 (eql ,'(\, val))))
                               'val))
 
-(cl-defmethod occ-obj-properties-to-calculate-rank ((obj occ-obj-tsk))
+(cl-defmethod occ-obj-properties-to-calculate-rank ((tsk occ-obj-tsk)
+                                                    (ctx occ-obj-ctx))
   "return PROPERTIES list that can be used in calculating rank."
   (occ-cl-collect-on-classes #'occ-obj-properties-to-calculate-rank ;; occ-properties-to-calcuate-rank
-                             obj))
+                             tsk
+                             ctx))
 
 
 (cl-defmethod occ-obj-properties-to-checkout ((class symbol))

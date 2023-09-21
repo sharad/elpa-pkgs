@@ -293,6 +293,50 @@
   (mapcan #'(lambda (class)
               (funcall fn class))
           (occ-cl-inst-class-names inst)))
+
+
+;; (defun occ-cl-collect-on-classes (fn &rest insts)
+;;   (mapcar #'(lambda (classfn)
+;;               (funcall classfn fn))
+;;           (if (cdr insts)
+;;             (mapcar #'(lambda (c)
+;;                         #'(lambda (cfn) (funcall cfn c) ))
+;;                     (occ-cl-inst-class-names (car insts)))
+;;             (apply #'occ-cl-collect-on-classes fn (cdr insts)))))
+
+
+(defun combination (&rest elem-lists)
+  (when elem-lists
+    (mapcar #'(lambda (ef)
+                (mapcar #'(lambda (e)
+                            (funcall ef #'(lambda (f)
+                                            (funcall f e))))
+                        (combination (cdr elem-lists))))
+            (car elem-lists))))
+
+
+(defun combination (&rest elem-lists)
+  (if (cdr elem-lists)
+      (mapcan #'(lambda (ef)
+                  (mapcar #'(lambda (e)
+                              (funcall ef #'(lambda (f)
+                                              (funcall f e))))
+                          (car elem-lists)))
+              (combination (cdr elem-lists)))
+    (mapcar #'(lambda (e)
+                #'(lambda (f) (funcall f e)))
+            (car elem-lists))))
+
+(combination '(a) '(b))
+
+(defun occ-combination (&rest args)
+  (mapcar #'(lambda ())
+          (occ-combination (cdr args))))
+
+(lambda (x)
+  (lambda (y)
+    (+ y x)))
+  
 
 
 
