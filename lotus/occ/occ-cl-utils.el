@@ -311,7 +311,7 @@
                 (mapcar #'(lambda (e)
                             (funcall ef #'(lambda (f)
                                             (funcall f e))))
-                        (combination (cdr elem-lists))))
+                        (apply #'combination (cdr elem-lists))))
             (car elem-lists))))
 
 
@@ -322,7 +322,7 @@
                               (funcall ef #'(lambda (f)
                                               (funcall f e))))
                           (car elem-lists)))
-              (combination (cdr elem-lists)))
+              (apply #'combination (cdr elem-lists)))
     (mapcar #'(lambda (e)
                 #'(lambda (f) (funcall f e)))
             (car elem-lists))))
@@ -336,6 +336,24 @@
 (lambda (x)
   (lambda (y)
     (+ y x)))
+
+
+
+(defun combination (&rest elem-lists)
+  (if (cdr elem-lists)
+      (mapcan #'(lambda (ef)
+                  (mapcar #'(lambda (e)
+                              (cons e ef))
+                          (car elem-lists)))
+              (apply #'combination (cdr elem-lists)))
+    (mapcar #'(lambda (e)
+                (list e))
+            (car elem-lists))))
+
+
+(combination '(a d) '(b c k))
+
+(combination '(a d))
 
 
 
