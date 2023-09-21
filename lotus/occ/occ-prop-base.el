@@ -181,6 +181,15 @@
                                             prop)
                          nil
                          prop))
+(cl-defmethod occ-obj-priority-rank ((tsk occ-obj-tsk)
+                                     (ctx null)
+                                     (prop symbol))
+  "Get prioritised rank."
+  (occ-obj-priority-rank (occ-obj-intf-rank tsk
+                                            ctx
+                                            prop)
+                         nil
+                         prop))
 ;; (cl-defmethod occ-obj-priority-rank ((obj  occ-obj-ctx-tsk)
 ;;                                      (prop symbol))
 ;;   "Get prioritised rank."
