@@ -133,12 +133,13 @@
 
     (unless (occ-obj-rank rt)
 
-
+      ;; TODO
       (occ-obj-calculate-rank (occ-obj-tsk obj)
                               (occ-obj-ctx obj)
-                              (occ-obj-properties-to-calculate-rank obj))
+                              (occ-obj-properties-to-calculate-rank tsk
+                                                                    ctx)))
 
-      )
+
 
     (occ-obj-rank rt)))
 
@@ -175,7 +176,8 @@
     (setf (occ-obj-rank-inheritable (occ-obj-ranktbl obj))
           (occ-obj-calculate-rank (occ-obj-tsk obj)
                                   (occ-obj-ctx obj)
-                                  (occ-obj-properties-to-calculate-rank obj))))
+                                  (occ-obj-properties-to-calculate-rank (occ-obj-tsk obj)
+                                                                        (occ-obj-ctx obj)))))
   (occ-obj-rank-inheritable (occ-obj-ranktbl obj)))
 (cl-defmethod occ-obj-rank-nonheritable ((obj occ-obj-tsk))
   (unless (occ-obj-rank-nonheritable (occ-obj-ranktbl obj))
