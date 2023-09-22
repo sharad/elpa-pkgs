@@ -2,7 +2,19 @@
 
 * Main
 
-** Timer will call *occ-do-clock-in-if-not*
+** occ-mode
+
+** hooks
+
+** *occ-do-clock-in-curr-ctx-if-not-timer-function* (occ-obj-clock-method.el)
+
+** *occ-run-curr-ctx-chg-timer* (occ-obj-clock-method.el)
+
+** *occ-do-clock-in-curr-ctx-if-not* (occ-obj-clock-method.el)
+
+** *occ-do-clock-in-if-chg* (occ-obj-clock-method.el)
+
+** Timer will call *occ-do-clock-in-if-not* (occ-obj-clock-method.el)
 from file occ-obj-clock-method.el
 #+begin_src emacs-lisp
 (cl-defmethod occ-do-clock-in-if-not ((obj occ-ctx)
@@ -20,7 +32,7 @@ from file occ-obj-clock-method.el
  ...)
 #+end_src
 
-** After that *occ-do-clock-in* will be called
+** After that *occ-do-clock-in* will be called (occ-clock.el)
 from file occ-clock.el
 #+begin_src emacs-lisp
 (cl-defmethod occ-do-clock-in ((obj occ-ctx)
