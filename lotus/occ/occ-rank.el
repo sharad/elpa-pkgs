@@ -66,6 +66,23 @@
                                                       prop)))
                         properties))
      occ-rank-quanta))
+
+(cl-defmethod occ-obj-calculate-rank ((tsk occ-obj-tsk)
+                                      (ctx null)
+                                      (properties list))
+  ;; too much output
+  ;; (occ-obj-properties-to-calculate-rank obj)
+  (occ-debug "occ-obj-calculate-rank((occ-tsk=%s))"
+             (occ-obj-Format (occ-obj-tsk tsk)))
+  (occ-debug "occ-obj-calculate-rank(obj occ-tsk) %s" properties)
+  (/ (cl-reduce #'+
+                (mapcar #'(lambda (slot)
+                            (let ((prop (downcase-sym slot)))
+                              (occ-obj-prop-rank-with tsk
+                                                      ctx
+                                                      prop)))
+                        properties))
+     occ-rank-quanta))
 
 
 (cl-defmethod occ-obj-prop-rank ((obj  occ-ranktbl)
