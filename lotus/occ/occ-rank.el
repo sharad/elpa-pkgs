@@ -184,16 +184,16 @@
 (cl-defmethod occ-obj-ancestor-rank-with ((tsk occ-obj-tsk)
                                           (ctx occ-obj-ctx)
                                           (height number))
-  (+ (occ-obj-rank-acquired-with tsk
-                                 ctx)
+  (+ (occ-obj-rank-inheritable-with tsk
+                                    ctx)
      (occ-obj-ancestor-rank ctx
                             (occ-tsk-parent tsk)
                             height)))
 (cl-defmethod occ-obj-ancestor-rank-with ((tsk occ-obj-tsk)
                                           (ctx null)
                                           (height number))
-  (+ (occ-obj-rank-acquired-with tsk
-                                 ctx)
+  (+ (occ-obj-rank-inheritable-with tsk
+                                    ctx)
      (occ-obj-ancestor-rank ctx
                             (occ-tsk-parent tsk)
                             height)))
@@ -204,7 +204,7 @@
 
 
 (cl-defmethod occ-obj-rank-inheritable-with ((tsk occ-obj-tsk)
-                                             (ctx occ-obj-ctx))
+                                             ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
    (unless (occ-obj-rank-inheritable rt)
@@ -215,7 +215,7 @@
                                                                          ctx))))
    (occ-obj-rank-inheritable rt)))
 (cl-defmethod occ-obj-rank-nonheritable-with ((tsk occ-obj-tsk)
-                                              (ctx occ-obj-ctx))
+                                              ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
    (unless (occ-obj-rank-nonheritable rt)
@@ -225,7 +225,7 @@
                                   nil)))
   (occ-obj-rank-nonheritable rt)))
 (cl-defmethod occ-obj-rank-acquired-with ((tsk occ-obj-tsk)
-                                          (ctx occ-obj-ctx))
+                                          ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
    (unless (occ-obj-rank-acquired rt)
@@ -237,37 +237,40 @@
    (occ-obj-rank-acquired rt)))
 
 (cl-defmethod occ-obj-rank-with ((tsk occ-obj-tsk)
-                                 (ctx occ-obj-ctx))
+                                 ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
     (unless (occ-obj-rank rt)
       ;; Add code for adding parent ranks
-      (setf (occ-obj-rank rt) (occ-obj-ancestor-rank-with tsk
-                                                          ctx
-                                                          0)))
+      (setf (occ-obj-rank rt)
+            (+ (occ-obj-rank-acquired tsk
+                                      ctx)
+               (occ-obj-ancestor-rank-with (occ-tsk-parent tsk)
+                                           ctx
+                                           0))))
     (occ-obj-rank rt)))
 
 (cl-defmethod (setf occ-obj-rank-inheritable-with) ((rank number)
                                                     (tsk occ-obj-tsk)
-                                                    (ctx occ-obj-ctx))
+                                                    ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
     (setf (occ-obj-rank-inheritable rt) rank)))
 (cl-defmethod (setf occ-obj-rank-nonheritable-with) ((rank number)
                                                      (tsk occ-obj-tsk)
-                                                     (ctx occ-obj-ctx))
+                                                     ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
     (setf (occ-obj-rank-nonhereditable rt) rank)))
 (cl-defmethod (setf occ-obj-rank-acquired-with) ((rank number)
                                                  (tsk occ-obj-tsk)
-                                                 (ctx occ-obj-ctx))
+                                                 ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
     (setf (occ-obj-rank-acquired rt) rank)))
 (cl-defmethod (setf occ-obj-rank-with) ((rank number)
                                         (tsk occ-obj-tsk)
-                                        (ctx occ-obj-ctx))
+                                        ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
     (setf (occ-obj-rank rt)
