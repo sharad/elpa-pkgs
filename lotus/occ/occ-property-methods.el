@@ -67,7 +67,6 @@
                             (occ-ctx-file ctx))
         (occ-rank-percentage 100)     ;Obsolete: as exact match to files giving double matching points.
       (occ-rank-percentage 0))))
-
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
                                 (prop (eql currfile))
                                 (arg null))
@@ -77,13 +76,6 @@
   (let ((currfile (occ-ctx-file ctx)))
     ;; (occ-message "currfile %s" currfile)
     currfile))
-;; (cl-defmethod occ-obj-impl-has-p ((obj occ-obj-tsk)
-;;                                   (prop (eql currfile))
-;;                                   value)
-;;   "OBJ has property PROPERTY"
-;;   (let* ((tsk            (occ-obj-tsk obj))
-;;          (tsk-prop-value (occ-obj-get-property tsk prop)))
-;;     (occ-pu-file= tsk-prop-value value)))
 (cl-defmethod occ-obj-impl-list-p ((mrk marker)
                                    (prop (eql currfile)))
   (ignore prop)
@@ -93,12 +85,10 @@
                                    value)
   (ignore prop)
   value)
-
 (cl-defmethod occ-obj-impl-from-org ((prop (eql currfile))
                                      value)
   (ignore prop)
   value)
-
 (cl-defmethod occ-obj-impl-get ((user occ-user-agent)
                                 (prop (eql currfile))
                                 (obj occ-obj-ctx-tsk))
@@ -111,7 +101,6 @@
                            (file-name-directory ctx-currfile)))
            (prompt       (concat (symbol-name prop) ": ")))
       (ido-read-file-name prompt ctx-dir ctx-currfile))))
-
 (cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
                                     (prop (eql currfile))
                                     (vdirector number))
@@ -122,7 +111,6 @@
        (if file
            (find-file file)
          (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" file prop))))
-
 (cl-defmethod occ-obj-impl-inheritable-p ((prop (eql currfile)))
   t)
       ;;}}
