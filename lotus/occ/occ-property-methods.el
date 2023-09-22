@@ -211,6 +211,7 @@
                                 (arg null))
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
   (ignore prop)
+  (require 'magit-git)
   (let ((buff (occ-ctx-buffer ctx)))
     ;; (occ-message "occ-obj-impl-get: git-branch: buff = %s" buff)
     (when buff
@@ -226,6 +227,7 @@
   "Read value of list of elements if (occ-obj-list-p OBJ PROPERTY)
         else element for property PROPERTY from user for OCC-TSK OBJ,
         must return ORG compatible value."
+  (require 'magit-git)
   (let ((buff (occ-obj-buffer obj)))
     ;; (occ-message "occ-obj-impl-get: git-branch: buff = %s" buff)
     (when buff
@@ -238,6 +240,7 @@
 (cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
                                     (prop (eql git-branch))
                                     (vdirector number))
+  (require 'magit-git)
   (let* ((tsk        (occ-obj-tsk obj))
          (git-branch (occ-obj-pvalue tsk
                                      prop
@@ -286,7 +289,6 @@
       org string to occ representation."
   (unless (string= value "")
     value))
-
 (cl-defmethod occ-obj-impl-inheritable-p ((prop (eql git-branch)))
   t)
 
@@ -644,6 +646,101 @@
 ;; _template1_ property of task:1 ends here
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+(occ-testing
+ (cl-defmethod occ-obj-impl-rank ((obj occ-tsk)
+                                  (prop (eql _template_)))
+   "Return the RANK (number) for OCC-TSK based on the property _TEMPLATE_"
+   (ignore obj)
+   (ignore prop))
+ (cl-defmethod occ-obj-impl-has-p ((obj occ-obj-tsk)
+                                   (property symbol)
+                                   value)
+   "OBJ-has-property PROPERTY"
+   (ignore obj)
+   (ignore property)
+   (ignore value))
+ (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
+                                 (property symbol)
+                                 arg)
+   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
+   (ignore obj)
+   (ignore property)
+   (occ-error "must return occ compatible value."))
+ (cl-defmethod occ-obj-impl-format ((obj occ-obj-tsk)
+                                    (property symbol)
+                                    value)
+   "Return format printable value of property PROPERTY."
+   (ignore obj)
+   (ignore property)
+   value)
+ (cl-defmethod occ-obj-impl-list-p ((prop (eql _template_)))
+   "Is the property _TEMPLATE_ has VALUES in list, Method tell
+   property represent list or not."
+   (ignore prop))
+ (cl-defmethod  occ-obj-impl-get ((user occ-user-agent)
+                                  (prop (eql _template_))
+                                  (ctsk occ-obj-tsk))
+   "Read value of list of elements if (occ-obj-list-p CTSK PROPERTY) else
+element for property PROPERTY from user for OCC-TSK OBJ, must
+return ORG compatible value."
+   (ignore obj)
+   (ignore prop))
+ (cl-defmethod occ-obj-impl-require-p ((obj occ-obj-tsk)
+                                       (operation (eql _operation_))
+                                       (prop (eql _template_))
+                                       values)
+   "Used by OCC-OBJ-IMPL-GEN-EDIT-IF-REQUIRED to decide for this property
+_TEMPLATE_ if CALLABLE (helm method) should be generated."
+   (ignore obj)
+   (ignore operation)
+   (ignore prop)
+   (ignore values)
+   (occ-debug "occ-obj-impl-require-p3 is called"))
+ (cl-defmethod occ-obj-impl-default ((obj occ-obj-tsk)
+                                     (prop (eql _template_))
+                                     (operation (eql _operation_)))
+   "Return a default VALUE of property _TEMPLATE_."
+   (ignore obj)
+   (ignore prop)
+   (ignore operation))
+ (cl-defmethod occ-obj-impl-operation ((obj occ-obj-tsk)
+                                       (operation (eql _operation_))
+                                       (prop (eql _template_))
+                                       values)
+   "Do the actual _OPERATION_."
+   (ignore obj)
+   (ignore operation)
+   (ignore prop)
+   (ignore values))
+ (cl-defmethod occ-do-impl-operation ((obj occ-obj-tsk)
+                                      (operation (eql _operation_))
+                                      (prop (eql _template_))
+                                      values)
+   "Do the actual _OPERATION_."
+   (ignore obj)
+   (ignore operation)
+   (ignore prop)
+   (ignore values))
+ (cl-defmethod occ-do-impl-checkout ((obj occ-obj-tsk)
+                                     (prop (eql _template_)))
+   "Checkout property _TEMPLATE_ in case of force clock-in."
+   (ignore obj)
+   (ignore prop)))
+
+
 
 ;; File Ends Here
 
