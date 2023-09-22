@@ -59,11 +59,11 @@
                (occ-obj-Format (occ-obj-tsk tsk)))
   (occ-debug "occ-obj-calculate-rank(obj occ-tsk) %s" properties)
   (/ (cl-reduce #'+
-                (mapcar #'(lambda (slot)
-                            (let ((prop (downcase-sym slot)))
-                              (occ-obj-prop-rank-with tsk
-                                                      ctx
-                                                      prop)))
+                (mapcar #'(lambda (prop)
+                            (occ-obj-prop-rank-with tsk
+                                                    ctx
+                                                    prop ;;(downcase-sym prop)
+                                                    ))
                         properties))
      occ-rank-quanta))
 
@@ -76,11 +76,11 @@
              (occ-obj-Format (occ-obj-tsk tsk)))
   (occ-debug "occ-obj-calculate-rank(obj occ-tsk) %s" properties)
   (/ (cl-reduce #'+
-                (mapcar #'(lambda (slot)
-                            (let ((prop (downcase-sym slot)))
-                              (occ-obj-prop-rank-with tsk
-                                                      ctx
-                                                      prop)))
+                (mapcar #'(lambda (prop)
+                            (occ-obj-prop-rank-with tsk
+                                                    ctx
+                                                    prop ;;(downcase-sym prop)
+                                                    ))
                         properties))
      occ-rank-quanta))
 
@@ -128,9 +128,6 @@
             (occ-obj-priority-rank tsk
                                    ctx
                                    property)))
-            ;; (occ-obj-intf-rank (occ-obj-tsk obj)
-            ;;                    (occ-obj-ctx obj)
-            ;;                    prop)
     (occ-obj-prop-rank rt property)))
 
 (cl-defmethod occ-obj-prop-rank-with ((tsk  occ-obj-tsk)
@@ -143,9 +140,6 @@
             (occ-obj-priority-rank tsk
                                    ctx
                                    property)))
-    ;; (occ-obj-intf-rank (occ-obj-tsk obj)
-    ;;                    (occ-obj-ctx obj)
-    ;;                    prop)
     (occ-obj-prop-rank rt property)))
 
 
@@ -293,7 +287,7 @@
 (cl-defmethod (setf occ-obj-rank-nonheritable) ((rank number)
                                                 (obj occ-obj-tsk))
   (setf (occ-obj-rank-nonheritable-with (occ-obj-tsk obj)
-                                          (occ-obj-ctx obj))
+                                        (occ-obj-ctx obj))
         rank))
 (cl-defmethod (setf occ-obj-rank-acquired) ((rank number)
                                             (obj occ-obj-tsk))
