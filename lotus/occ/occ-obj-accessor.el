@@ -486,29 +486,14 @@
   (occ-obj-ap-helm-transformation ap-obj))
 
 
-;; ;; occ-tsk - accessors
-;; (cl-defmethod occ-obj-rank ((obj occ-tsk))
-;;   (occ-debug "occ-obj-rank(occ-tsk=%s)" (occ-obj-Format obj))
-;;   (let ((rank (occ-tsk-rank obj)))
-;;     (unless rank
-;;       (setf (occ-tsk-rank obj) (occ-obj-calculate-rank obj)))
-;;     (occ-debug "occ-obj-rank((obj occ-tsk)) rank = %s" rank)
-;;     (occ-tsk-rank obj)))
-
-;; (cl-defmethod (setf occ-obj-rank) ((rank number)
-;;                                    (obj occ-tsk))
-;;   (occ-debug "setf occ-obj-rank(occ-tsk=%s)" (occ-obj-Format obj))
-;;   (setf (occ-tsk-rank obj) rank))
-
-
 (cl-defmethod occ-obj-ranktbl-with ((tsk occ-obj-tsk)
                                     (ctx occ-obj-ctx))
   (unless (cdr (assoc tsk
-                      (occ-ctx-tsk-rt-list ctx)))
+                      (occ-ctx-tsk-ranktbl-list ctx)))
     (setf (occ-obj-ranktbl-with tsk
                                 ctx)
           (occ-make-ranktbl)))
-  (cdr (assoc tsk (occ-ctx-tsk-rt-list ctx))))
+  (cdr (assoc tsk (occ-ctx-tsk-ranktbl-list ctx))))
    ;; -- add unless
 
 (cl-defmethod occ-obj-ranktbl-with ((tsk occ-obj-tsk)
@@ -520,13 +505,13 @@
                                            (tsk occ-obj-tsk)
                                            (ctx occ-obj-ctx))
   (if (cdr (assoc tsk
-                  (occ-ctx-tsk-rt-list ctx)))
-      (setf (cdr (assoc tsk (occ-ctx-tsk-rt-list ctx))) rt)
+                  (occ-ctx-tsk-ranktbl-list ctx)))
+      (setf (cdr (assoc tsk (occ-ctx-tsk-ranktbl-list ctx))) rt)
     (cl-pushnew (cons tsk rt)
-                (occ-ctx-tsk-rt-list ctx)))
+                (occ-ctx-tsk-ranktbl-list ctx)))
   (occ-assert rt)
   (occ-assert (cdr (assoc tsk
-                          (occ-ctx-tsk-rt-list ctx)))))
+                          (occ-ctx-tsk-ranktbl-list ctx)))))
 
 
 (cl-defmethod (setf occ-obj-ranktbl-with) ((rt occ-ranktbl)

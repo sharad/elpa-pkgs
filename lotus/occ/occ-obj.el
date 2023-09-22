@@ -150,7 +150,7 @@
   plist
   value
   inheritable
-  nonhereditable
+  nonheritable
   acquired)
 
 ;; NOTE: Remember when adding new attributes, nned to destroy existing object, else it will cause miss-match.
@@ -180,7 +180,7 @@
   plist
   ranktbl)
   ;; rank-inheritable
-  ;; rank-nonhereditable
+  ;; rank-nonheritable
   ;; rank-acquired
   ;; plist
 
@@ -197,7 +197,7 @@
   buffer
   file
   ;; tsk-aplist
-  tsk-rt-list)
+  tsk-ranktbl-list)
 
 
 (cl-defstruct (occ-ctsk (:include occ-obj-ctx-tsk))
@@ -208,7 +208,7 @@
 (cl-defstruct (occ-ctxual-tsk (:include occ-ctsk))
   )
   ;; rank-inheritable
-  ;; rank-nonhereditable
+  ;; rank-nonheritable
   ;; rank-acquired
 
 
