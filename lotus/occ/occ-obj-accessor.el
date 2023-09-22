@@ -493,13 +493,12 @@
     (setf (occ-obj-ranktbl-with tsk
                                 ctx)
           (occ-make-ranktbl)))
-  (cdr (assoc tsk (occ-ctx-tsk-ranktbl-list ctx))))
-   ;; -- add unless
+  (cdr (assoc tsk
+              (occ-ctx-tsk-ranktbl-list ctx))))
 
 (cl-defmethod occ-obj-ranktbl-with ((tsk occ-obj-tsk)
                                     (ctx null))
   (occ-obj-ranktbl tsk))
-;; -- add unless
 
 (cl-defmethod (setf occ-obj-ranktbl-with) ((rt occ-ranktbl)
                                            (tsk occ-obj-tsk)
@@ -508,10 +507,7 @@
                   (occ-ctx-tsk-ranktbl-list ctx)))
       (setf (cdr (assoc tsk (occ-ctx-tsk-ranktbl-list ctx))) rt)
     (cl-pushnew (cons tsk rt)
-                (occ-ctx-tsk-ranktbl-list ctx)))
-  (occ-assert rt)
-  (occ-assert (cdr (assoc tsk
-                          (occ-ctx-tsk-ranktbl-list ctx)))))
+                (occ-ctx-tsk-ranktbl-list ctx))))
 
 
 (cl-defmethod (setf occ-obj-ranktbl-with) ((rt occ-ranktbl)
