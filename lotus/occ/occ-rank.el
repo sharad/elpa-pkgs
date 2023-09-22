@@ -167,32 +167,6 @@
     (setf (occ-obj-prop-rank rt property) rank)))
 
 
-;; (cl-defmethod occ-obj-acc-parent-rank ((obj null)
-;;                                        (label number))
-;;   0)
-
-;; (cl-defmethod occ-obj-acc-parent-rank ((obj occ-obj-tsk)
-;;                                        (label number))
-;;   (+ (occ-obj-rank-inheritable obj)
-;;      (occ-obj-acc-parent-rank (occ-tsk-parent obj)
-;;                               0)))
-
-
-;; (cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx)
-;;                                            (tsk null)
-;;                                            (label number))
-;;   0)
-
-;; (cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx)
-;;                                            (tsk occ-obj-tsk)
-;;                                            (label number))
-;;   (+ (occ-obj-rank-with tsk
-;;                         ctx)
-;;      (occ-obj-acc-ctx-parent-rank ctx
-;;                                   (occ-tsk-parent tsk)
-;;                                   0)))
-
-
 (cl-defmethod occ-obj-ancestor-rank-with ((tsk null)
                                           (ctx occ-obj-ctx)
                                           (height number))
@@ -259,10 +233,9 @@
                                   ctx)))
     (occ-assert rt)
     (unless (occ-obj-rank rt)
-      ;; Add code for adding parent ranks
       (setf (occ-obj-rank rt)
             (+ (occ-obj-rank-acquired-with tsk
-                                           ctx )
+                                           ctx)
                (occ-obj-ancestor-rank-with (occ-tsk-parent tsk)
                                            ctx
                                            0))))
@@ -293,9 +266,6 @@
                                   ctx)))
     (setf (occ-obj-rank rt)
           rank)))
-
-
-;; TODO: Change all below in term of with
 
 
 (cl-defmethod occ-obj-rank-inheritable ((obj occ-obj-tsk))
