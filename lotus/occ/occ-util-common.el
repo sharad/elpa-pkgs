@@ -186,14 +186,15 @@
         (if (= pos 0)
             (cons node list) ;There's no way to be destructive in this case, so just cons.
           (let ((tail (nthcdr pos list)))
-            (if (null tail) (occ-error "There is no position ~D in ~S." pos list))
+            (when (null tail) (occ-error "There is no position ~D in ~S." pos list))
             (push node (cl-rest tail))
             list))
       (occ-error "not able to find element: %s" (occ-obj-format element)))))
 
 
 (defun occ-helm-buffer-p (buffer)
-  (string-match "^*helm" (buffer-name buffer)))
+  (string-match "^*helm"
+                (buffer-name buffer)))
 
 
 ;;;###autoload

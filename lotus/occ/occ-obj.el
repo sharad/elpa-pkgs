@@ -178,12 +178,12 @@
   format-string
   sibling-count
   plist
-  rt)
+  ranktbl)
   ;; rank-inheritable
   ;; rank-nonhereditable
   ;; rank-acquired
   ;; plist
-  
+
 
 (cl-defstruct (occ-tree-tsk (:include occ-tsk))
   "occ-tree-tsk"

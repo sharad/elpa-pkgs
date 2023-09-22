@@ -240,11 +240,12 @@
                                  ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
+    (occ-assert rt)
     (unless (occ-obj-rank rt)
       ;; Add code for adding parent ranks
       (setf (occ-obj-rank rt)
-            (+ (occ-obj-rank-acquired tsk
-                                      ctx)
+            (+ (occ-obj-rank-acquired-with tsk
+                                           ctx )
                (occ-obj-ancestor-rank-with (occ-tsk-parent tsk)
                                            ctx
                                            0))))
