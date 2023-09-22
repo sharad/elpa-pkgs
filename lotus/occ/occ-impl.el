@@ -299,6 +299,13 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
   (occ-error "Implement it for %s: Checkout property in case of force clock-in." property))
 
 
+(cl-defmethod occ-obj-impl-inheritable-p ((property symbol))
+  (occ-error "Define (cl-defmethod occ-obj-impl-inheritable-p ((prop (eql %s))) ... t or nil ...)")
+  t)
+
+
+
+
 (occ-testing
  (cl-defmethod occ-obj-impl-rank ((obj occ-tsk)
                                   (prop (eql _template_)))

@@ -276,6 +276,9 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                         vdirector))
 
 
+(cl-defmethod occ-obj-intf-inheritable-p ((property symbol))
+  (occ-obj-impl-inheritable-p property))
+
 
 ;; (org-read-date) (org--deadline-or-schedule arg 'scheduled tim)e
 
