@@ -152,7 +152,7 @@
   inheritable
   nonheritable)
   ;; acquired
-  
+
 
 ;; NOTE: Remember when adding new attributes, nned to destroy existing object, else it will cause miss-match.
 (cl-defstruct (occ-tsk (:include occ-obj-tsk))
@@ -207,7 +207,7 @@
   ctx
   tsk)
 (cl-defstruct (occ-ctxual-tsk (:include occ-ctsk)))
-  
+
   ;; rank-inheritable
   ;; rank-nonheritable
   ;; rank-acquired
