@@ -137,8 +137,8 @@
   (cl-struct-p (make-marker))
 
   (length (occ-cl-class-parent-names (occ-cl-class (occ-get-debug-obj))))
-  (occ-cl-class-parent-names (occ-cl-class (make-marker)))
-)
+  (occ-cl-class-parent-names (occ-cl-class (make-marker))))
+
 
 
 (defun occ-cl-class-parents (class)
@@ -289,76 +289,17 @@
   (funcall `(lambda ()
               (occ-cl-method-param-case '(,method (,param-exp ,val))))))
 
-(defun occ-cl-collect-on-classes (fn inst)
+;; (defun occ-cl-collect-on-classes (fn inst)
+;;   (mapcan #'(lambda (class)
+;;               (funcall fn class))
+;;           (occ-cl-inst-class-names inst)))
+
+(defun occ-cl-collect-on-classes (fn &rest insts)
   (mapcan #'(lambda (class)
               (funcall fn class))
-          (occ-cl-inst-class-names inst)))
-
-
-;; (defun occ-cl-collect-on-classes (fn &rest insts)
-;;   (mapcar #'(lambda (classfn)
-;;               (funcall classfn fn))
-;;           (if (cdr insts)
-;;             (mapcar #'(lambda (c)
-;;                         #'(lambda (cfn) (funcall cfn c) ))
-;;                     (occ-cl-inst-class-names (car insts)))
-;;             (apply #'occ-cl-collect-on-classes fn (cdr insts)))))
-
-
-(defun combination (&rest elem-lists)
-  (when elem-lists
-    (mapcar #'(lambda (ef)
-                (mapcar #'(lambda (e)
-                            (funcall ef #'(lambda (f)
-                                            (funcall f e))))
-                        (apply #'combination (cdr elem-lists))))
-            (car elem-lists))))
-
-
-(defun combination (&rest elem-lists)
-  (if (cdr elem-lists)
-      (mapcan #'(lambda (ef)
-                  (mapcar #'(lambda (e)
-                              (funcall ef #'(lambda (f)
-                                              (funcall f e))))
-                          (car elem-lists)))
-              (apply #'combination (cdr elem-lists)))
-    (mapcar #'(lambda (e)
-                #'(lambda (f) (funcall f e)))
-            (car elem-lists))))
-
-(combination '(a) '(b))
-
-(defun occ-combination (&rest args)
-  (mapcar #'(lambda ())
-          (occ-combination (cdr args))))
-
-(lambda (x)
-  (lambda (y)
-    (+ y x)))
-
-
-
-(defun combination (&rest elem-lists)
-  (if (cdr elem-lists)
-      (mapcan #'(lambda (ef)
-                  (mapcar #'(lambda (e)
-                              (cons e ef))
-                          (car elem-lists)))
-              (apply #'combination (cdr elem-lists)))
-    (mapcar #'(lambda (e)
-                (list e))
-            (car elem-lists))))
-
-
-(combination '(a d) '(b c k))
-
-(combination '(a d))
-
+          (apply #'occ-util-combine
+                 (mapcar #'occ-cl-inst-class-names insts))))
 
-
-
-
 
 (cl-defun occ-cl-method-param-signs (method)
   "Return all params signatures for all defined METHOD"

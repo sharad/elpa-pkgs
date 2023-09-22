@@ -120,7 +120,8 @@
 (cl-defmethod occ-obj-acc-ctx-parent-rank ((ctx occ-obj-ctx)
                                            (tsk occ-obj-tsk)
                                            (label number))
-  (+ (occ-obj-rank-with tsk ctx)w
+  (+ (occ-obj-rank-with tsk
+                        ctx)
      (occ-obj-acc-ctx-parent-rank ctx
                                   (occ-tsk-parent tsk)
                                   0)))
@@ -199,35 +200,47 @@
 
 (cl-defmethod occ-obj-rank-inheritable-with ((tsk occ-obj-tsk)
                                              (ctx occ-obj-ctx))
-  (unless (occ-obj-rank-inheritable (occ-obj-ranktbl-with tsk ctx))
-    (setf (occ-obj-rank-inheritable (occ-obj-ranktbl-with tsk ctx))
-          (occ-obj-calculate-rank tsk
-                                  ctx
-                                  (occ-obj-properties-to-calculate-rank tsk
-                                                                        ctx))))
-  (occ-obj-rank-inheritable (occ-obj-ranktbl-with tsk ctx)))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+   (unless (occ-obj-rank-inheritable rt)
+     (setf (occ-obj-rank-inheritable rt)
+           (occ-obj-calculate-rank tsk
+                                   ctx
+                                   (occ-obj-properties-to-calculate-rank tsk
+                                                                         ctx))))
+   (occ-obj-rank-inheritable rt)))
 (cl-defmethod occ-obj-rank-nonheritable-with ((tsk occ-obj-tsk)
                                               (ctx occ-obj-ctx))
-  (unless (occ-obj-rank-nonheritable (occ-obj-ranktbl-with tsk ctx))
-    (setf (occ-obj-rank-nonheritable (occ-obj-ranktbl-with tsk ctx))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+   (unless (occ-obj-rank-nonheritable rt)
+    (setf (occ-obj-rank-nonheritable rt)
           (occ-obj-calculate-rank tsk
                                   ctx
                                   nil)))
-  (occ-obj-rank-nonheritable (occ-obj-ranktbl-with tsk ctx)))
+  (occ-obj-rank-nonheritable rt)))
 (cl-defmethod occ-obj-rank-acquired-with ((tsk occ-obj-tsk)
                                           (ctx occ-obj-ctx))
-  (unless (occ-obj-rank-acquired (occ-obj-ranktbl-with tsk ctx))
-    (setf (occ-obj-rank-acquired (occ-obj-ranktbl-with tsk ctx)) (+ (occ-obj-rank-inheritable-with tsk ctx)
-                                                                    (occ-obj-rank-nonheritable-with tsk ctx))))
-  (occ-obj-rank-acquired (occ-obj-ranktbl-with tsk ctx)))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+   (unless (occ-obj-rank-acquired rt)
+     (setf (occ-obj-rank-acquired rt)
+           (+ (occ-obj-rank-inheritable-with  tsk
+                                              ctx)
+              (occ-obj-rank-nonheritable-with tsk
+                                              ctx))))
+   (occ-obj-rank-acquired rt)))
 
 (cl-defmethod occ-obj-rank-with ((tsk occ-obj-tsk)
                                  (ctx occ-obj-ctx))
-  (unless (occ-obj-rank (occ-obj-ranktbl-with tsk ctx))
-    ;; Add code for adding parent ranks
-    (setf (occ-obj-rank (occ-obj-ranktbl-with tsk ctx)) (+ (occ-obj-rank-acquired-with tsk ctx)
-                                                           (occ-obj-acc-parent-rank obj 0))))
-  (occ-obj-rank (occ-obj-ranktbl-with tsk ctx)))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (unless (occ-obj-rank rt)
+      ;; Add code for adding parent ranks
+      (setf (occ-obj-rank rt) (+ (occ-obj-rank-acquired-with tsk
+                                                             ctx)
+                                 (occ-obj-acc-parent-rank obj 0))))
+    (occ-obj-rank rt)))
 
 (cl-defmethod occ-obj-rank-with ((obj occ-ctxual-tsk))
   (unless (occ-obj-rank (occ-obj-ranktbl obj))
@@ -246,16 +259,20 @@
 
 (cl-defmethod (setf occ-obj-rank-inheritable-with) ((rank number)
                                                     (obj occ-obj-tsk))
-  (setf (occ-obj-rank-inheritable (occ-obj-ranktbl obj)) rank))
+  (setf (occ-obj-rank-inheritable (occ-obj-ranktbl obj))
+        rank))
 (cl-defmethod (setf occ-obj-rank-nonheritable-with) ((rank number)
                                                      (obj occ-obj-tsk))
-  (setf (occ-obj-rank-nonhereditable (occ-obj-ranktbl obj)) rank))
+  (setf (occ-obj-rank-nonhereditable (occ-obj-ranktbl obj))
+        rank))
 (cl-defmethod (setf occ-obj-rank-acquired-with) ((rank number)
                                                  (obj occ-obj-tsk))
-  (setf (occ-obj-rank-acquired (occ-obj-ranktbl obj)) rank))
+  (setf (occ-obj-rank-acquired (occ-obj-ranktbl obj))
+        rank))
 (cl-defmethod (setf occ-obj-rank-with) ((rank number)
                                         (obj occ-obj-tsk))
-  (setf (occ-obj-rank (occ-obj-ranktbl obj)) rank))
+  (setf (occ-obj-rank (occ-obj-ranktbl obj))
+        rank))
 
 
 ;; TODO: Change all below in term of with

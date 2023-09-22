@@ -155,6 +155,18 @@
     (intern symstr)))
 
 
+(defun occ-util-combine (&rest elem-lists)
+  (if (cdr elem-lists)
+      (mapcan #'(lambda (ef)
+                  (mapcar #'(lambda (e)
+                              (cons e ef))
+                          (car elem-lists)))
+              (apply #'occ-util-combine (cdr elem-lists)))
+    (mapcar #'(lambda (e)
+                (list e))
+            (car elem-lists))))
+
+
 (defun occ-insert-node-before-element (node element list)
   ;; https://groups.google.com/forum/#!topic/comp.lang.lisp/83g9zkq_CQY
   (let ((pos (cl-position element list)))
