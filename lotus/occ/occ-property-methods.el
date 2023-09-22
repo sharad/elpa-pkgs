@@ -122,6 +122,9 @@
        (if file
            (find-file file)
          (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" file prop))))
+
+(cl-defmethod occ-obj-impl-inheritable-p ((prop (eql currfile)))
+  t)
       ;;}}
 
 ;; Current File property of task:1 ends here
@@ -187,6 +190,9 @@
     (if dir
         (find-file dir)
       (occ-debug "occ-do-impl-checkout: %s value ruturned for prop %s" dir prop))))
+
+(cl-defmethod occ-obj-impl-inheritable-p ((prop (eql root)))
+  t)
       ;;}}
 
 ;; Root dir property of task:1 ends here
@@ -292,6 +298,9 @@
       org string to occ representation."
   (unless (string= value "")
     value))
+
+(cl-defmethod occ-obj-impl-inheritable-p ((prop (eql git-branch)))
+  t)
 
 ;; (cl-defmethod occ-obj-impl-require-p ((obj occ-obj-tsk)
 ;;                                       (operation (eql _operation_))
@@ -496,6 +505,9 @@
   (ignore prop)
   (ignore operation)
   t)
+
+(cl-defmethod occ-obj-impl-inheritable-p ((prop (eql timebeing)))
+  nil)
 
 ;; Timebeing property of task (not fully implemented) will use for keeping a task clocked in for given time:1 ends here
 
@@ -516,6 +528,9 @@
             (string= status "HOLD"))
         -(occ-rank-percentage 100)
       (occ-rank-percentage 0))))
+
+(cl-defmethod occ-obj-impl-inheritable-p ((prop (eql status)))
+  t)
 
 ;; STATUS property of task:1 ends here
 
@@ -534,6 +549,9 @@
                 (occ-rank-percentage 100)
               nkey))
         (occ-rank-percentage 0))))
+
+(cl-defmethod occ-obj-impl-inheritable-p ((prop (eql key)))
+  nil)
 
 ;; Key property of task for setting arbitrary rank:1 ends here
 
@@ -550,6 +568,9 @@
              (occ-obj-marker= tsk org-clock-marker))
         (occ-rank-percentage 100)
       (occ-rank-percentage 0))))
+
+(cl-defmethod occ-obj-impl-inheritable-p ((prop (eql current-clock)))
+  nil)
 
 ;; Current clock status property of task (will rank based on task is currently clocking-in or not):1 ends here
 
@@ -574,6 +595,9 @@
                                              (string-match "\.\+.org" f)))))
       (file-relative-name filename
                           default-directory))))
+
+(cl-defmethod occ-obj-impl-inheritable-p ((prop (eql subtree)))
+  nil)
 ;;}}
 
 ;; SubtreeFile property of task:1 ends here
@@ -596,6 +620,9 @@
             (string= deadline "HOLD"))
         -(occ-rank-percentage 100)
         (occ-rank-percentage 0))))
+
+(cl-defmethod occ-obj-impl-inheritable-p ((prop (eql deadline)))
+  t)
 
 ;; DEADLINE property of task:1 ends here
 
@@ -616,6 +643,9 @@
             (string= scheduled "HOLD"))
         -(occ-rank-percentage 100)
         (occ-rank-percentage 0))))
+
+(cl-defmethod occ-obj-impl-inheritable-p ((prop (eql scheduled)))
+  t)
 
 ;; SCHEDULED property of task:1 ends here
 
