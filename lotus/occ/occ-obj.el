@@ -150,8 +150,9 @@
   plist
   value
   inheritable
-  nonheritable
-  acquired)
+  nonheritable)
+  ;; acquired
+  
 
 ;; NOTE: Remember when adding new attributes, nned to destroy existing object, else it will cause miss-match.
 (cl-defstruct (occ-tsk (:include occ-obj-tsk))
@@ -178,7 +179,7 @@
   format-string
   sibling-count
   plist
-  ranktbl)
+  (ranktbl (occ-make-ranktbl)))
   ;; rank-inheritable
   ;; rank-nonheritable
   ;; rank-acquired
@@ -205,8 +206,8 @@
   ;; Reason to have one more occ-ctsk along with occ-ctxual-tsk to avoid calculating rank.
   ctx
   tsk)
-(cl-defstruct (occ-ctxual-tsk (:include occ-ctsk))
-  )
+(cl-defstruct (occ-ctxual-tsk (:include occ-ctsk)))
+  
   ;; rank-inheritable
   ;; rank-nonheritable
   ;; rank-acquired

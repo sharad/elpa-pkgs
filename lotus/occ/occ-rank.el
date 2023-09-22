@@ -94,7 +94,8 @@
 (cl-defmethod occ-obj-rank-nonheritable ((obj occ-ranktbl))
   (occ-ranktbl-nonheritable obj))
 (cl-defmethod occ-obj-rank-acquired ((obj occ-ranktbl))
-  (occ-ranktbl-acquired obj))
+  (+ (occ-obj-rank-inheritable obj)
+     (occ-obj-rank-nonheritable obj)))
 (cl-defmethod occ-obj-rank ((obj occ-ranktbl))
   (occ-ranktbl-value obj))
 
@@ -112,7 +113,7 @@
   (setf (occ-ranktbl-nonheritable obj) rank))
 (cl-defmethod (setf occ-obj-rank-acquired) ((rank number)
                                             (obj occ-ranktbl))
-  (setf (occ-ranktbl-acquired obj) rank))
+  (occ-error "Error"))
 (cl-defmethod (setf occ-obj-rank) ((rank number)
                                    (obj occ-ranktbl))
   (setf (occ-ranktbl-value obj) rank))
@@ -214,13 +215,10 @@
                                           ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
-   (unless (occ-obj-rank-acquired rt)
-     (setf (occ-obj-rank-acquired rt)
-           (+ (occ-obj-rank-inheritable-with  tsk
-                                              ctx)
-              (occ-obj-rank-nonheritable-with tsk
-                                              ctx))))
-   (occ-obj-rank-acquired rt)))
+    (+ (occ-obj-rank-inheritable-with  tsk
+                                       ctx)
+       (occ-obj-rank-nonheritable-with tsk
+                                       ctx))))
 
 (cl-defmethod occ-obj-rank-with ((tsk occ-obj-tsk)
                                  ctx)
