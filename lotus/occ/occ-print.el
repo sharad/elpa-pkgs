@@ -227,7 +227,7 @@ pointing to it."
                          (concat ":" (mapconcat #'identity tags ":") ":")
                        "")))
     (concat (when case (concat (occ-obj-title obj case) ": "))
-            (when rank (format "[t%5d] " (or (occ-tsk-rank obj) -128)))
+            (when rank (format "[t%5d] " (or (occ-obj-rank obj) -128)))
             (format (format (if tags "%%-%ds         %%s" "%%s")
                             align
                             (if (< headinglen align) (- align headinglen) 0))

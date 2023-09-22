@@ -104,7 +104,9 @@
         (if (boundp class-sym)
             (symbol-value class-sym)
           (cl--struct-get-class (aref inst 0))))
-    (type-of inst)))
+    (if (eq inst nil)
+        'null
+        (type-of inst))))
 
 (defun occ-cl-classname (class)
   (if (cl-struct-p class) ;; t ;; (eql 'cl-structure-class (occ-cl-class class))

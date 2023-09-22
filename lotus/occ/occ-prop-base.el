@@ -299,6 +299,13 @@ method provided."))))
   (occ-cl-collect-on-classes #'occ-obj-properties-to-calculate-rank ;; occ-properties-to-calcuate-rank
                              tsk
                              ctx))
+
+(cl-defmethod occ-obj-properties-to-calculate-rank ((tsk occ-obj-tsk)
+                                                    (ctx null))
+  "return PROPERTIES list that can be used in calculating rank."
+  (occ-cl-collect-on-classes #'occ-obj-properties-to-calculate-rank ;; occ-properties-to-calcuate-rank
+                             tsk
+                             ctx))
 
 
 (cl-defmethod occ-obj-properties-to-checkout ((class symbol))
