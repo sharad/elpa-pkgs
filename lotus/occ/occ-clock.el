@@ -222,6 +222,7 @@
          (not (occ-obj-ignore-p buff)))))
 
 
+;; THIS is the main method
 (cl-defmethod occ-do-clock-in ((obj occ-ctx)
                                &key
                                filters
@@ -240,8 +241,8 @@ for adding properties to heading."
   (if (occ-obj-clockable-p obj)
     (let ((filters   (or filters (occ-match-filters)))
           (builder   (or builder #'occ-obj-build-ctxual-tsk-with))
-          (ap-normal '(t actions general))
-          (ap-transf '(t actions general edit))
+          (ap-normal '(t actions general checkout))
+          (ap-transf '(t actions general edit checkout))
           (timeout   (or timeout occ-idle-timeout)))
       (occ-debug "occ-do-clock-in((obj occ-ctx)): begin")
       (let ((returned-ctxual-tsk (occ-obj-select obj ;TODO: if only one match then where it is selecting that.
@@ -258,7 +259,7 @@ for adding properties to heading."
                           (occ-obj-return-in-labels-p returned-ctxual-tsk occ-return-select-label)
                           (occ-obj-format (occ-obj-obj returned-ctxual-tsk)))
         (if (occ-obj-return-in-labels-p returned-ctxual-tsk ;TODO: should return t if action were done than select[=identity] ;; occ-return-label
-                                    occ-return-select-label)
+                                        occ-return-select-label)
             (let ((ctxual-tsk (occ-obj-obj returned-ctxual-tsk)))
               (prog1
                   (when return-transform ;Here caller know if return value is going to be used.

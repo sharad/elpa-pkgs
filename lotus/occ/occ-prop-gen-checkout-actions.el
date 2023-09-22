@@ -93,7 +93,8 @@ only argument required for some other further processing"
 (cl-defmethod occ-obj-gen-checkout-if-required ((obj  occ-obj-tsk)
                                                 (prop symbol)
                                                 &key param-only)
-  (if (occ-obj-get-property obj prop)
+  (if (occ-obj-get-property obj
+                            prop)
       (mapcar #'(lambda (vdirector)
                   (occ-obj-gen-checkout obj
                                         prop

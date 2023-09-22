@@ -520,84 +520,6 @@
     (occ-debug "occ-do-safe-properties-window-editor((obj marker)): returning %s" selected)
     selected))
 
-(cl-defmethod occ-obj-safe-ignore-quit-properties-window-editor-DEPRECATED ((obj occ-ctx)
-                                                                            &key
-                                                                            filters
-                                                                            builder
-                                                                            return-transform
-                                                                            ap-normal
-                                                                            ap-transf
-                                                                            timeout)
-
-  ;; either this should also be in occ-obj-method
-  ;; or (cl-defmethod occ-do-clock-in ((ctx occ-ctx))
-  ;;    (defun occ-sacha-helm-select (ctxasks)
-  ;; should be here.
-
-  ;; NOTE: presently it is not running on idle time, it simply runs immediately
-
-  "Return value is important to decide next action to (create unnamed tsk.)"
-  (ignore ap-normal)
-  (ignore ap-transf)
-  (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor((obj occ-ctx)): begin")
-  (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor((obj occ-ctx)): begin")
-  (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor((obj[%s] occ-ctx)): begin" (occ-obj-Format obj))
-  (let ((filters   (or filters nil))
-        (builder   (or builder #'occ-obj-build-ctsk-with))
-        (ap-normal '(t actions general))
-        (ap-transf '(t actions general edit))
-        (timeout   (or timeout occ-idle-timeout)))
-    (occ-debug "called occ-obj-safe-ignore-quit-properties-window-editor")
-    (occ-debug "%s: begin: occ-obj-safe-ignore-quit-properties-window-editor" (time-stamp-string))
-    ;; timed-newwin of occ-delayed-select-obj-prop-edit pass quit
-    ;; signal to caller mean here, so need to be handled, else this function can
-    ;; not return any value to its caller, which result into no next-action in
-    ;; caller function.
-
-    ;; (condition-case-control nil
-    ;;   (progn
-    ;;     ;; TODO: Add code to which check if only focus present than only trigger
-    ;;     ;; else postpone it by calling run-with-idle-plus-timer
-    ;;     (occ-debug
-    ;;            :debug
-    ;;            "occ-obj-safe-ignore-quit-properties-window-editor: calling occ-delayed-select-obj-prop-edit with this-command=%s" this-command)
-    ;;     (occ-do-safe-properties-window-editor obj
-    ;;                                 :collector          collector
-    ;;                                 :ap-normal          ap-normal
-    ;;                                 :ap-transf          ap-transf
-    ;;                                 :timeout            timeout))
-
-    ;;   ;; (lotus-with-other-frame-event-debug "occ-obj-safe-ignore-quit-properties-window-editor" :cancel
-    ;;   ;;   (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor: lotus-with-other-frame-event-debug")
-    ;;   ;;   (occ-delayed-select-obj-prop-edit ctx timeout))
-    ;;   ((quit)))
-    (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor: calling occ-delayed-select-obj-prop-edit with this-command=%s"
-               this-command)
-    (prog1
-      ;; TODO: Add code to which check if only focus present than only trigger
-      ;; else postpone it by calling run-with-idle-plus-timer
-        (occ-do-safe-properties-window-editor obj
-                                              :filters          filters
-                                              :builder          builder
-                                              :ap-normal        ap-normal
-                                              :ap-transf        ap-transf
-                                              :return-transform return-transform
-                                              :timeout          timeout)
-      ;; (lotus-with-other-frame-event-debug "occ-obj-safe-ignore-quit-properties-window-editor" :cancel
-      ;;   (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor: lotus-with-other-frame-event-debug")
-      ;;   (occ-delayed-select-obj-prop-edit ctx timeout))
-      (occ-debug "%s: end: occ-obj-safe-ignore-quit-properties-window-editor"
-                   (time-stamp-string)))))
-  ;; (run-with-idle-timer-nonobtrusive-simple
-  ;;  occ-idle-timeout nil
-  ;;  #'(lambda (args)
-  ;;      (apply 'occ-delayed-select-obj-prop-edit args)) (list ctx timeout))
-
-
-
-
-
-
 (cl-defmethod occ-obj-safe-ignore-quit-properties-window-editor ((obj occ-ctx)
                                                                  &key
                                                                  filters
@@ -613,8 +535,8 @@
   (occ-debug "occ-obj-safe-ignore-quit-properties-window-editor((obj[%s] occ-ctx)): begin" (occ-obj-Format obj))
   (let ((filters   (or filters nil))
         (builder   (or builder #'occ-obj-build-ctsk-with))
-        (ap-normal '(t actions general))
-        (ap-transf '(t actions general edit))
+        (ap-normal '(t actions general checkout))
+        (ap-transf '(t actions general edit checkout))
         (timeout   (or timeout occ-idle-timeout)))
     (occ-debug "called occ-obj-safe-ignore-quit-properties-window-editor")
     (occ-debug "%s: begin: occ-obj-safe-ignore-quit-properties-window-editor" (time-stamp-string))
