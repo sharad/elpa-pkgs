@@ -230,7 +230,7 @@ method provided."))))
 method provided."))))
 (cl-defmethod occ-obj-properties-to-calculate-rank :around (obj1 obj2)
   "return PROPERTIES list that can be used in calculating rank."
-  (ignore obj)
+  (ignore obj1 obj2)
   (condition-case e ;; if (cl-next-method-p)
       (occ-internal-remove-template-symbol (cl-call-next-method))
     ((cl-no-next-method) (occ-error "No

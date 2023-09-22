@@ -51,12 +51,12 @@
 
 
 (cl-defmethod occ-obj-calculate-rank ((tsk occ-obj-tsk)
-                                      (ctx occ-obj-tsk)
+                                      (ctx occ-obj-ctx)
                                       (properties list))
   ;; too much output
   ;; (occ-obj-properties-to-calculate-rank obj)
   (occ-debug "occ-obj-calculate-rank((occ-tsk=%s))"
-               (occ-obj-Format (occ-obj-tsk obj)))
+               (occ-obj-Format (occ-obj-tsk tsk)))
   (occ-debug "occ-obj-calculate-rank(obj occ-tsk) %s" properties)
   (/ (cl-reduce #'+
                 (mapcar #'(lambda (slot)
@@ -186,17 +186,17 @@
                                           (height number))
   (+ (occ-obj-rank-inheritable-with tsk
                                     ctx)
-     (occ-obj-ancestor-rank ctx
-                            (occ-tsk-parent tsk)
-                            height)))
+     (occ-obj-ancestor-rank-with (occ-tsk-parent tsk)
+                                 ctx
+                                 height)))
 (cl-defmethod occ-obj-ancestor-rank-with ((tsk occ-obj-tsk)
                                           (ctx null)
                                           (height number))
   (+ (occ-obj-rank-inheritable-with tsk
                                     ctx)
-     (occ-obj-ancestor-rank ctx
-                            (occ-tsk-parent tsk)
-                            height)))
+     (occ-obj-ancestor-rank-with (occ-tsk-parent tsk)
+                                 ctx
+                                 height)))
 (cl-defmethod occ-obj-ancestor-rank-with ((tsk null)
                                           (ctx null)
                                           (height number))

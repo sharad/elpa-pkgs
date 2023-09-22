@@ -296,9 +296,10 @@
 
 (defun occ-cl-collect-on-classes (fn &rest insts)
   (mapcan #'(lambda (class)
-              (funcall fn class))
+              (apply fn class))
           (apply #'occ-util-combine
-                 (mapcar #'occ-cl-inst-class-names insts))))
+                 (mapcar #'occ-cl-inst-class-names
+                         insts))))
 
 
 (cl-defun occ-cl-method-param-signs (method)
