@@ -42,7 +42,7 @@
 
 
 (defun occ-obj-properties-for-rank ()
-  (delete-dups (append (occ-obj-properties-to-calculate-rank 'occ-tsk 'null)
+  (delete-dups (append (occ-obj-properties-to-calculate-rank 'occ-obj-tsk 'null)
                        (occ-obj-properties-to-calculate-rank 'occ-obj-tsk 'occ-obj-ctx))))
 
 (defun occ-do-assert-sexp-ineq (ineq)
