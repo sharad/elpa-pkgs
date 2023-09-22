@@ -511,10 +511,12 @@ method provided."))))
   (occ-obj-intf-inheritable-p property))
 
 (cl-defmethod occ-obj-inheritable ((properties list))
-  (cl-remove-if-not #'occ-obj-inheritable-p properties))
+  (cl-remove-if-not #'occ-obj-inheritable-p
+                    properties))
 
 (cl-defmethod occ-obj-nonheritable ((properties list))
-  (cl-remove-if #'occ-obj-inheritable-p properties))
+  (cl-remove-if #'occ-obj-inheritable-p
+                properties))
 
 
 (cl-defmethod occ-obj-values ((tsk occ-obj-tsk)
