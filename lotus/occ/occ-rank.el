@@ -222,14 +222,13 @@
                                  ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
-    (occ-assert rt)
     (unless (occ-obj-rank rt)
-      (setf (occ-obj-rank rt)
-            (+ (occ-obj-rank-acquired-with tsk
-                                           ctx)
-               (occ-obj-ancestor-rank-with (occ-tsk-parent tsk)
-                                           ctx
-                                           0))))
+      (let ((rank (+ (occ-obj-rank-acquired-with tsk
+                                                 ctx)
+                     (occ-obj-ancestor-rank-with (occ-tsk-parent tsk)
+                                                 ctx
+                                                 0))))
+        (setf (occ-obj-rank rt) rank)))
     (occ-obj-rank rt)))
 
 (cl-defmethod (setf occ-obj-rank-inheritable-with) ((rank number)
