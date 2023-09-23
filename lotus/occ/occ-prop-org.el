@@ -59,8 +59,8 @@
                    value)))
 
 (defun occ-org-entry-delete (pom
-                          prop
-                          value)
+                             prop
+                             value)
   (lotus-org-with-safe-modification
     (org-entry-delete pom
                       prop
