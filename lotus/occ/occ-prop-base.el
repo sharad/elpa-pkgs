@@ -155,7 +155,7 @@
 (cl-defmethod occ-obj-priority-rank ((obj number)
                                      (ctx null)
                                      (prop symbol))
-  (let ((value obj)
+  (let ((value    obj)
         (priority (occ-obj-priority prop)))
     (unless priority
       (occ-error "Priority is not present for property %s" prop))
