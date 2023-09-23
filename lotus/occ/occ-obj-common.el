@@ -119,11 +119,10 @@
                                     (prop symbol))
   "Return occ compatible value of prop PROP from OCC-CTX OBJ."
   (occ-debug "(OCC-OBJ-GET-PROPERTY (OBJ OCC-OBJ-CTX)): calling for prop %s" prop)
-  ;; (occ-obj-get-property-value-from-ctx (occ-obj-ctx obj)
-  ;;                              prop)
-  (occ-obj-intf-get (occ-obj-ctx obj)
-                    prop
-                    nil))
+  (occ-obj-get (occ-obj-ctx obj)
+               nil
+               prop
+               nil))
 
 
 (cl-defmethod occ-obj-get-properties ((obj   occ-obj-tsk)
