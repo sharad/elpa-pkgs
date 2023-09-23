@@ -114,15 +114,6 @@
                             'name
                             class)
     class))
-
-;; (cl-struct-slot-value 'cl-structure-class
-;;                       'parents
-;;                       (cl--struct-get-class 'occ-ctx))
-
-
-;; (occ-cl-class (cl--struct-get-class 'occ-ctx))
-;; (occ-cl-class-parents (occ-cl-class test-xyz))
-;; (occ-cl-class-parent-names (cl--struct-get-class 'occ-tsk))
 
 (when nil
   (type-of (occ-cl-class (occ-get-debug-obj)))
@@ -200,17 +191,7 @@
     (mapcar #'(lambda (x) (aref x 1))
             (if method-instances
                 (aref method-instances 3)))))
-
 ;; http://newartisans.com/2016/01/pattern-matching-with-pcase/
-;; (pcase '(1 a)
-;;   (`(,(pred numberp) ,var) var)
-;;   (_ nil))
-;; (cl-defstruct xxx1)
-;; (cl-defstruct (xxx2 (:include xxx1)))
-;; (cl--struct-get-class class)
-;; (cl--struct-class-name (car (cl--struct-class-parents (cl--struct-get-class 'xxx2))))
-;; (cl--struct-class-name (car (cl--struct-class-parents (cl--struct-get-class 'xxx2))))
-;; (occ-cl-class-parent-names (cl--struct-get-class 'xxx2))
 
 (cl-defun occ-cl-method-param-case (signature-val-spec)
   "Return all matched VAL for all matched METHOD with PARAM,
@@ -265,17 +246,9 @@
                (pcase-let ((`,x 1))
                  (list ,z))))))
 
-
-
-
-
 (defun occ-cl-method-arg-get (method fn)
   (mapcar fn
           (occ-cl-method-param-signs method)))
-
-;; (defun occ-cl-method-first-arg (method)
-;;   (mapcar #'(lambda (fspec) (cadar fspec))
-;;           (occ-cl-method-param-signs method)))
 
 (defun occ-cl-method-first-arg (method)
   (occ-cl-method-arg-get method #'cadar))
@@ -283,18 +256,14 @@
 (defun occ-cl-method-first-arg-with-value (method obj)
   (mapcar #'(lambda (fspec)
               (let ((first-arg (cadar fspec)))
-                (when (funcall method (cons first-arg obj)) first-arg)))
+                (when (funcall method (cons first-arg obj))
+                  first-arg)))
           (occ-cl-method-param-signs method)))
 
 
 (defun occ-cl-method-param-values (method param-exp val)
   (funcall `(lambda ()
               (occ-cl-method-param-case '(,method (,param-exp ,val))))))
-
-;; (defun occ-cl-collect-on-classes (fn inst)
-;;   (mapcan #'(lambda (class)
-;;               (funcall fn class))
-;;           (occ-cl-inst-class-names inst)))
 
 (defun occ-cl-collect-on-classes (fn &rest insts)
   (mapcan #'(lambda (class)
