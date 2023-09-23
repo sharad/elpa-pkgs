@@ -133,8 +133,9 @@
   (let ((ret-plist (mapcan #'identity
                            (occ-util-plist-mapcar #'(lambda (c)
                                                       (list (cl-first c)
-                                                            (occ-obj-intf-from-org (occ-util-keyword2sym (cl-first c))
-                                                                                   (nth 1 c))))
+                                                            (occ-obj-from-org (occ-util-keyword2sym (cl-first c))
+                                                                              t
+                                                                              (nth 1 c))))
                                                   plist))))
     (occ-assert (cl-evenp (length     plist)))
     (occ-debug "occ-tsk-plist-from-org: plist %s" plist)
@@ -234,18 +235,18 @@
       (when (occ-obj-org-entry-tsk-p tsk-plist)
         (let ((tsk (funcall builder       ; build = make-occ-tree-tsk, make-occ-list-tsk
                             ;; (occ-obj-intf-from-org) from Org world to Occ world.
-                            :name         (occ-obj-intf-from-org 'name heading)
+                            :name         (occ-obj-from-org 'name t heading)
                             :dummy        (if file :file nil)
                             :collection   collection
                             :parent       nil
                             :action       nil
-                            :heading      (occ-obj-intf-from-org 'heading heading)
-                            :heading-prop (occ-obj-intf-from-org 'heading-prop heading-prop)
-                            :marker       (occ-obj-intf-from-org 'marker marker)
-                            :file         (occ-obj-intf-from-org 'file file-name)
-                            :point        (occ-obj-intf-from-org 'point point)
-                            :clock-sum    (occ-obj-intf-from-org 'clock-sum clock-sum)
-                            :cat          (occ-obj-intf-from-org 'cat (occ-get-tsk-category heading tsk-plist))
+                            :heading      (occ-obj-from-org 'heading t heading)
+                            :heading-prop (occ-obj-from-org 'heading-prop t heading-prop)
+                            :marker       (occ-obj-from-org 'marker t marker)
+                            :file         (occ-obj-from-org 'file t file-name)
+                            :point        (occ-obj-from-org 'point t point)
+                            :clock-sum    (occ-obj-from-org 'clock-sum t clock-sum)
+                            :cat          (occ-obj-from-org 'cat t (occ-get-tsk-category heading tsk-plist))
                             :plist        (occ-tsk-plist-from-org tsk-plist))))
           (let ((inherit         t)
                 (inherited-props
