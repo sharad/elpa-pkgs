@@ -53,34 +53,22 @@
 (cl-defmethod occ-obj-calculate-rank ((tsk occ-obj-tsk)
                                       (ctx occ-obj-ctx)
                                       (properties list))
-  ;; too much output
-  ;; (occ-obj-properties-to-calculate-rank obj)
-  (occ-debug "occ-obj-calculate-rank((occ-tsk=%s))"
-               (occ-obj-Format (occ-obj-tsk tsk)))
-  (occ-debug "occ-obj-calculate-rank(obj occ-tsk) %s" properties)
   (/ (cl-reduce #'+
                 (mapcar #'(lambda (prop)
                             (occ-obj-prop-rank-with tsk
                                                     ctx
-                                                    prop ;;(downcase-sym prop)
-                                                    ))
+                                                    prop)) ;;(downcase-sym prop)
                         properties))
      occ-rank-quanta))
 
 (cl-defmethod occ-obj-calculate-rank ((tsk occ-obj-tsk)
                                       (ctx null)
                                       (properties list))
-  ;; too much output
-  ;; (occ-obj-properties-to-calculate-rank obj)
-  (occ-debug "occ-obj-calculate-rank((occ-tsk=%s))"
-             (occ-obj-Format (occ-obj-tsk tsk)))
-  (occ-debug "occ-obj-calculate-rank(obj occ-tsk) %s" properties)
   (/ (cl-reduce #'+
                 (mapcar #'(lambda (prop)
                             (occ-obj-prop-rank-with tsk
                                                     ctx
-                                                    prop ;;(downcase-sym prop)
-                                                    ))
+                                                    prop)) ;;(downcase-sym prop)
                         properties))
      occ-rank-quanta))
 
@@ -88,7 +76,8 @@
 (cl-defmethod occ-obj-prop-rank ((obj  occ-ranktbl)
                                  (prop symbol))
   (let ((rplist (occ-ranktbl-plist obj)))
-    (plist-get rplist prop))) ;; -- add unless
+    (plist-get rplist
+               prop)))
 (cl-defmethod occ-obj-rank-inheritable ((obj occ-ranktbl))
   (occ-ranktbl-inheritable obj))
 (cl-defmethod occ-obj-rank-nonheritable ((obj occ-ranktbl))
@@ -124,24 +113,30 @@
                                       (property symbol))
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
-    (unless (occ-obj-prop-rank rt property)
-      (setf (occ-obj-prop-rank rt property)
+    (unless (occ-obj-prop-rank rt
+                               property)
+      (setf (occ-obj-prop-rank rt
+                               property)
             (occ-obj-priority-rank tsk
                                    ctx
                                    property)))
-    (occ-obj-prop-rank rt property)))
+    (occ-obj-prop-rank rt
+                       property)))
 
 (cl-defmethod occ-obj-prop-rank-with ((tsk  occ-obj-tsk)
                                       (ctx  null)
                                       (property symbol))
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
-    (unless (occ-obj-prop-rank rt property)
-      (setf (occ-obj-prop-rank rt property)
+    (unless (occ-obj-prop-rank rt
+                               property)
+      (setf (occ-obj-prop-rank rt
+                               property)
             (occ-obj-priority-rank tsk
                                    ctx
                                    property)))
-    (occ-obj-prop-rank rt property)))
+    (occ-obj-prop-rank rt
+                       property)))
 
 
 (cl-defmethod (setf occ-obj-prop-rank-with) ((rank number)
@@ -150,7 +145,8 @@
                                              (property symbol))
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
-    (setf (occ-obj-prop-rank rt property) rank)))
+    (setf (occ-obj-prop-rank rt
+                             property) rank)))
 
 
 (cl-defmethod (setf occ-obj-prop-rank-with) ((rank number)
@@ -159,7 +155,8 @@
                                              (property symbol))
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
-    (setf (occ-obj-prop-rank rt property) rank)))
+    (setf (occ-obj-prop-rank rt
+                             property) rank)))
 
 
 (cl-defmethod occ-obj-ancestor-rank-with ((tsk null)
@@ -194,27 +191,28 @@
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
    (unless (occ-obj-rank-inheritable rt)
-     (setf (occ-obj-rank-inheritable rt)
-           (occ-obj-calculate-rank tsk
-                                   ctx
-                                   (occ-obj-inheritable (occ-obj-properties-to-calculate-rank tsk
-                                                                                              ctx)))))
+     (let ((rank (occ-obj-calculate-rank tsk
+                                         ctx
+                                         (occ-obj-inheritable (occ-obj-properties-to-calculate-rank tsk
+                                                                                                    ctx)))))
+       (setf (occ-obj-rank-inheritable rt) rank)))
    (occ-obj-rank-inheritable rt)))
 (cl-defmethod occ-obj-rank-nonheritable-with ((tsk occ-obj-tsk)
                                               ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
    (unless (occ-obj-rank-nonheritable rt)
-    (setf (occ-obj-rank-nonheritable rt)
-          (occ-obj-calculate-rank tsk
-                                  ctx
-                                  (occ-obj-nonheritable (occ-obj-properties-to-calculate-rank tsk
-                                                                                              ctx)))))
-  (occ-obj-rank-nonheritable rt)))
+     (let ((rank (occ-obj-calculate-rank tsk
+                                         ctx
+                                         (occ-obj-nonheritable (occ-obj-properties-to-calculate-rank tsk
+                                                                                                     ctx)))))
+       (setf (occ-obj-rank-nonheritable rt) rank)))
+   (occ-obj-rank-nonheritable rt)))
 (cl-defmethod occ-obj-rank-acquired-with ((tsk occ-obj-tsk)
                                           ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
+    ;; TODO
     (+ (occ-obj-rank-inheritable-with  tsk
                                        ctx)
        (occ-obj-rank-nonheritable-with tsk
@@ -276,6 +274,9 @@
 (cl-defmethod occ-obj-rank ((obj occ-ctxual-tsk))
   (occ-obj-rank-with (occ-obj-tsk obj)
                      (occ-obj-ctx obj)))
+(cl-defmethod occ-obj-rank ((obj occ-ctsk))
+  (occ-obj-rank-with (occ-obj-tsk obj)
+                     nil))
 
 (cl-defmethod (setf occ-obj-rank-inheritable) ((rank number)
                                                (obj occ-obj-tsk))
@@ -297,13 +298,6 @@
   (setf (occ-obj-rank-with (occ-obj-tsk obj)
                            (occ-obj-ctx obj))
         rank))
-
-
-;; ;; occ-ctsk - accessors
-(cl-defmethod occ-obj-rank ((obj occ-ctsk))
-  (occ-obj-rank-with (occ-obj-tsk obj)
-                     nil))
-
 (cl-defmethod (setf occ-obj-rank) ((rank number)
                                    (obj occ-ctsk))
   (setf (occ-obj-rank-with (occ-obj-tsk obj)
@@ -312,9 +306,6 @@
 
 
 (cl-defmethod occ-obj-calculate-avgrank ((obj occ-ctx))
-  ;; too much output
-  ;; (occ-debug "occ-obj-calculate-avgrank(occ-ctx=%s)"
-  ;;            obj)
   (let* ((objs      (occ-obj-list obj
                                   :builder #'occ-obj-build-ctxual-tsk-with))
          (rankslist (mapcar #'occ-obj-rank
@@ -324,7 +315,6 @@
     avgrank))
 
 (cl-defmethod occ-obj-calculate-varirank ((obj occ-ctx))
-  ;; too much output
   (occ-debug "occ-obj-calculate-varirank(occ-ctx=%s)"
              (occ-obj-format obj))
   (let* ((objs      (occ-obj-list obj
@@ -337,9 +327,6 @@
 
 
 (cl-defmethod occ-obj-calculate-avgrank ((obj occ-collection))
-  ;; too much output
-  ;; (occ-debug "occ-obj-calculate-avgrank(occ-collection=%s)"
-  ;;            obj)
   (let* ((objs      (occ-obj-list obj))
          (rankslist (mapcar #'occ-obj-rank
                             objs))
@@ -347,9 +334,6 @@
        avgrank))
 
 (cl-defmethod occ-obj-calculate-varirank ((obj occ-collection))
-  ;; too much output
-  ;; (occ-debug "occ-obj-calculate-varirank(occ-collection=%s)"
-  ;;            obj)
   (let* ((objs      (occ-obj-list obj))
          (rankslist (mapcar #'occ-obj-rank
                             objs))
