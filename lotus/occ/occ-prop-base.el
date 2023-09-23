@@ -190,11 +190,6 @@
                                             prop)
                          nil
                          prop))
-;; (cl-defmethod occ-obj-priority-rank ((obj  occ-obj-ctx-tsk)
-;;                                      (prop symbol))
-;;   "Get prioritised rank."
-;;   (occ-obj-priority-rank (occ-obj-intf-rank obj prop)
-;;                          prop))
 
 
 (cl-defgeneric occ-obj-properties-to-edit (obj)
