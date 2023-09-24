@@ -338,7 +338,8 @@ method provided."))))
                                                  'val))))
     ;; BUG: TODO: inelegant solution fix it,
     (cl-remove-if-not #'(lambda (op)
-                          (or (occ-obj-list-p nil prop)
+                          (or (occ-obj-list-p nil
+                                              prop)
                               (not (memq op '(add remove)))))
                   (delete-dups ops))))
 
@@ -353,8 +354,6 @@ method provided."))))
 
 (cl-defmethod occ-obj-operations-for-prop ((obj  marker)
                                            (prop symbol))
-
-  s
   ;; check about (occ-obj-list-p prop) also
   (let ((ops (occ-cl-collect-on-classes #'(lambda (class)
                                             (occ-obj-operations-for-prop class
@@ -393,7 +392,8 @@ method provided."))))
                                         value)
   "Read org string property PROP to occ representation."
   (occ-assert (not (consp value)))
-  (if (occ-obj-list-p nil prop)
+  (if (occ-obj-list-p nil
+                      prop)
       (let* ((values (and value (split-string value))))
         (mapcar #'(lambda (v)
                     ;; from Org world to Occ world
@@ -534,7 +534,8 @@ method provided."))))
 
 (cl-defmethod occ-obj-vdirectors ((tsk occ-obj-tsk)
                                   (property symbol))
-  (if (occ-obj-list-p tsk property)
+  (if (occ-obj-list-p tsk
+                      property)
       (cl-loop for i from 1 to (length (occ-obj-get-property tsk property))
             collect i)
     (list null)))
@@ -756,7 +757,8 @@ method provided."))))
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 build-list-p
                                 value)
-  (if (occ-obj-list-p nil prop)
+  (if (occ-obj-list-p nil
+                      prop)
       (if build-list-p
           (mapcar #'(lambda (v)
                       (occ-obj-intf-from-org prop v))
