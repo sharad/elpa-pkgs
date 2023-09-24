@@ -671,7 +671,8 @@ method provided."))))
                            (ctsk occ-obj-ctx-tsk)
                            (prop symbol)
                            build-list-p)
-  (if (occ-obj-list-p prop)
+  (if (occ-obj-list-p (occ-obj-tsk ctsk)
+                      prop)
       (if build-list-p
           ;; (mapcar #'(lambda (v)
           ;;             (occ-obj-intf-get user
@@ -715,14 +716,17 @@ method provided."))))
                     nil))
 
 
+(defun occ-org-list-value-to-org (value)
+  (string-join value))
+
 (cl-defmethod occ-obj-to-org ((property symbol)
                               build-list-p
                               value)
-  (if (occ-obj-list-p prop)
+  (if (occ-obj-list-p nil prop)
       (if build-list-p
           (mapcar #'(lambda (v)
                       (occ-obj-intf-to-org prop v))
-                  value)
+                  (occ-org-list-value-to-org value))
         (occ-obj-intf-to-org prop
                              value))
     (if build-list-p
@@ -738,7 +742,7 @@ method provided."))))
                               value)
   (cl-call-next-method property
                        (memq operation
-                             '(put list delete t))
+                             '(put list delete get t))
                        value))
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation null)
@@ -746,15 +750,19 @@ method provided."))))
   (cl-call-next-method))
 
 
+(defun occ-org-list-value-from-org (value)
+  (split-string value))
+
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 build-list-p
                                 value)
-  (if (occ-obj-list-p prop)
+  (if (occ-obj-list-p nil prop)
       (if build-list-p
           (mapcar #'(lambda (v)
                       (occ-obj-intf-from-org prop v))
-                  value)
-        (occ-obj-intf-from-org prop value))
+                  (occ-org-list-value-from-org value))
+        (occ-obj-intf-from-org prop
+                               value))
     (if build-list-p
         (let ((operation build-list-p))
           (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
@@ -767,7 +775,7 @@ method provided."))))
                                 value)
   (cl-call-next-method property
                        (memq operation
-                             '(put list delete t))
+                             '(put list delete get t))
                        value))
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation null)
