@@ -668,39 +668,78 @@ method provided."))))
   t)
 
 
-(cl-defmethod occ-obj-get ((user occ-user-agent)
-                           (ctsk occ-obj-ctx-tsk)
-                           (prop symbol)
-                           build-list-p)
-  (if (occ-obj-list-p (occ-obj-tsk ctsk)
-                      prop)
-      (if build-list-p
-          ;; (mapcar #'(lambda (v)
-          ;;             (occ-obj-intf-get user
-          ;;                               ctsk
-          ;;                               prop))
-          ;;         value)
-          (occ-error "Implement it.")
-        (occ-obj-intf-get user
-                          prop
-                          ctsk))
-    (if build-list-p
-        (let ((operation build-list-p))
-          (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
-                     prop
-                     (upcase (symbol-name operation))))
-      (occ-obj-intf-get user
-                        prop
-                        ctsk))))
+;; (cl-defmethod occ-obj-get ((user occ-user-agent)
+;;                            (ctsk occ-obj-ctx-tsk)
+;;                            (prop symbol)
+;;                            build-list-p)
+;;   (if (occ-obj-list-p (occ-obj-tsk ctsk)
+;;                       prop)
+;;       (if build-list-p
+;;           ;; (mapcar #'(lambda (v)
+;;           ;;             (occ-obj-intf-get user
+;;           ;;                               ctsk
+;;           ;;                               prop))
+;;           ;;         value)
+;;           (occ-error "Implement it.")
+;;         (occ-obj-intf-get user
+;;                           prop
+;;                           ctsk))
+;;     (if build-list-p
+;;         (let ((operation build-list-p))
+;;           (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
+;;                      prop
+;;                      (upcase (symbol-name operation))))
+;;       (occ-obj-intf-get user
+;;                         prop
+;;                         ctsk))))
+;; (cl-defmethod occ-obj-get ((user occ-user-agent)
+;;                            (ctsk occ-obj-ctx-tsk)
+;;                            (property symbol)
+;;                            (operation symbol))
+;;   (cl-call-next-method user
+;;                        ctsk
+;;                        property
+;;                        (memq operation
+;;                              '(put list delete t))))
 (cl-defmethod occ-obj-get ((user occ-user-agent)
                            (ctsk occ-obj-ctx-tsk)
                            (property symbol)
                            (operation symbol))
-  (cl-call-next-method user
-                       ctsk
-                       property
-                       (memq operation
-                             '(put list delete t))))
+  (if (occ-obj-list-p (occ-obj-tsk ctsk)
+                      prop)
+      ;; (mapcar #'(lambda (v)
+      ;;             (occ-obj-intf-get user
+      ;;                               ctsk
+      ;;                               prop))
+      ;;         value)
+      (occ-error "Implemention to read list of value for property from user not done.")
+    (occ-obj-intf-get user
+                      prop
+                      ctsk)))
+(cl-defmethod occ-obj-get ((user occ-user-agent)
+                           (ctsk occ-obj-ctx-tsk)
+                           (property symbol)
+                           (operation (eql add)))
+  (if (occ-obj-list-p (occ-obj-tsk ctsk)
+                      prop)
+      (occ-obj-intf-get user
+                        prop
+                        ctsk)
+    (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
+               prop
+               (upcase (symbol-name operation)))))
+(cl-defmethod occ-obj-get ((user occ-user-agent)
+                           (ctsk occ-obj-ctx-tsk)
+                           (property symbol)
+                           (operation (eql remove)))
+  (if (occ-obj-list-p (occ-obj-tsk ctsk)
+                      prop)
+      (occ-obj-intf-get user
+                        prop
+                        ctsk)
+    (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
+               prop
+               (upcase (symbol-name operation)))))
 (cl-defmethod occ-obj-get ((user occ-user-agent)
                            (ctsk occ-obj-ctx-tsk)
                            (property symbol)
@@ -712,6 +751,7 @@ method provided."))))
                            (dummy null)
                            (property symbol)
                            (operation null))
+  (occ-error "Find where it gets called")
   (occ-obj-intf-get ctx
                     property
                     nil))
@@ -721,30 +761,35 @@ method provided."))))
   (string-join value))
 
 (cl-defmethod occ-obj-to-org ((property symbol)
-                              build-list-p
-                              value)
-  (if (occ-obj-list-p nil property)
-      (if build-list-p
-          (mapcar #'(lambda (v)
-                      (occ-obj-intf-to-org prop v))
-                  (occ-org-list-value-to-org value))
-        (occ-obj-intf-to-org property
-                             value))
-    (if build-list-p
-        (let ((operation build-list-p))
-          (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
-                     prop
-                     (upcase (symbol-name operation))))
-      (occ-obj-intf-to-org prop
-                           value))))
-
-(cl-defmethod occ-obj-to-org ((property symbol)
                               (operation symbol)
                               value)
-  (cl-call-next-method property
-                       (memq operation
-                             '(put list delete get t))
-                       value))
+  (if (occ-obj-list-p nil
+                      property)
+      (occ-org-list-value-to-org (mapcar #'(lambda (v)
+                                             (occ-obj-intf-to-org prop v))
+                                         value))
+    (occ-obj-intf-to-org property
+                         value)))
+(cl-defmethod occ-obj-to-org ((property symbol)
+                              (operation (eql add))
+                              value)
+  (if (occ-obj-list-p nil
+                      property)
+      (occ-obj-intf-to-org property
+                           value)
+    (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
+               property
+               (upcase (symbol-name operation)))))
+(cl-defmethod occ-obj-to-org ((property symbol)
+                              (operation (eql remove))
+                              value)
+  (if (occ-obj-list-p nil
+                      property)
+      (occ-obj-intf-to-org property
+                           value)
+    (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
+               property
+               (upcase (symbol-name operation)))))
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation null)
                               value)
@@ -755,31 +800,37 @@ method provided."))))
   (split-string value))
 
 (cl-defmethod occ-obj-from-org ((property symbol)
-                                build-list-p
+                                (operation symbol)
                                 value)
   (if (occ-obj-list-p nil
                       property)
-      (if build-list-p
-          (mapcar #'(lambda (v)
-                      (occ-obj-intf-from-org property
-                                             v))
-                  (occ-org-list-value-from-org value))
-        (occ-obj-intf-from-org property
-                               value))
-    (if build-list-p
-        (let ((operation build-list-p))
-          (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
-                     property
-                     (upcase (symbol-name operation))))
-      (occ-obj-intf-from-org property
-                             value))))
+      (mapcar #'(lambda (v)
+                  (occ-obj-intf-from-org property
+                                         v))
+              (occ-org-list-value-from-org value))
+    (occ-obj-intf-from-org property
+                           value)))
 (cl-defmethod occ-obj-from-org ((property symbol)
-                                (operation symbol)
+                                (operation (eql add))
                                 value)
-  (cl-call-next-method property
-                       (car (memq operation
-                             '(put list delete get t)))
-                       value))
+  (if (occ-obj-list-p nil
+                      property)
+      (occ-obj-intf-from-org property
+                             value)
+    (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
+               property
+               (upcase (symbol-name operation)))))
+(cl-defmethod occ-obj-from-org ((property symbol)
+                                (operation (eql remove))
+                                value)
+  (if (occ-obj-list-p nil
+                      property)
+      (occ-obj-intf-from-org property
+                             value)
+    (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
+               property
+               (upcase (symbol-name operation)))))
+
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation null)
                                 value)
