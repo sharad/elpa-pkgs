@@ -723,12 +723,12 @@ method provided."))))
 (cl-defmethod occ-obj-to-org ((property symbol)
                               build-list-p
                               value)
-  (if (occ-obj-list-p nil prop)
+  (if (occ-obj-list-p nil property)
       (if build-list-p
           (mapcar #'(lambda (v)
                       (occ-obj-intf-to-org prop v))
                   (occ-org-list-value-to-org value))
-        (occ-obj-intf-to-org prop
+        (occ-obj-intf-to-org property
                              value))
     (if build-list-p
         (let ((operation build-list-p))
@@ -758,26 +758,27 @@ method provided."))))
                                 build-list-p
                                 value)
   (if (occ-obj-list-p nil
-                      prop)
+                      property)
       (if build-list-p
           (mapcar #'(lambda (v)
-                      (occ-obj-intf-from-org prop v))
+                      (occ-obj-intf-from-org property
+                                             v))
                   (occ-org-list-value-from-org value))
-        (occ-obj-intf-from-org prop
+        (occ-obj-intf-from-org property
                                value))
     (if build-list-p
         (let ((operation build-list-p))
           (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
-                     prop
+                     property
                      (upcase (symbol-name operation))))
-      (occ-obj-intf-from-org prop
+      (occ-obj-intf-from-org property
                              value))))
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation symbol)
                                 value)
   (cl-call-next-method property
-                       (memq operation
-                             '(put list delete get t))
+                       (car (memq operation
+                             '(put list delete get t)))
                        value))
 (cl-defmethod occ-obj-from-org ((property symbol)
                                 (operation null)
