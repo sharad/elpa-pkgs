@@ -668,39 +668,6 @@ method provided."))))
   t)
 
 
-;; (cl-defmethod occ-obj-get ((user occ-user-agent)
-;;                            (ctsk occ-obj-ctx-tsk)
-;;                            (prop symbol)
-;;                            build-list-p)
-;;   (if (occ-obj-list-p (occ-obj-tsk ctsk)
-;;                       prop)
-;;       (if build-list-p
-;;           ;; (mapcar #'(lambda (v)
-;;           ;;             (occ-obj-intf-get user
-;;           ;;                               ctsk
-;;           ;;                               prop))
-;;           ;;         value)
-;;           (occ-error "Implement it.")
-;;         (occ-obj-intf-get user
-;;                           prop
-;;                           ctsk))
-;;     (if build-list-p
-;;         (let ((operation build-list-p))
-;;           (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
-;;                      prop
-;;                      (upcase (symbol-name operation))))
-;;       (occ-obj-intf-get user
-;;                         prop
-;;                         ctsk))))
-;; (cl-defmethod occ-obj-get ((user occ-user-agent)
-;;                            (ctsk occ-obj-ctx-tsk)
-;;                            (property symbol)
-;;                            (operation symbol))
-;;   (cl-call-next-method user
-;;                        ctsk
-;;                        property
-;;                        (memq operation
-;;                              '(put list delete t))))
 (cl-defmethod occ-obj-get ((user occ-user-agent)
                            (ctsk occ-obj-ctx-tsk)
                            (property symbol)
@@ -770,6 +737,27 @@ method provided."))))
                                          value))
     (occ-obj-intf-to-org property
                          value)))
+
+;; (cl-defmethod occ-obj-to-org ((property symbol)
+;;                               (operation symbol)
+;;                               value)
+;;   (if (occ-obj-list-p nil
+;;                       property)
+;;       (if (occ-obj-list-p nil
+;;                           operation)
+;;           (occ-obj-intf-to-org property
+;;                                value)
+;;           (occ-org-list-value-to-org (mapcar #'(lambda (v)
+;;                                                  (occ-obj-intf-to-org prop v))
+;;                                              value)))
+;;     (if (occ-obj-list-p nil
+;;                         operation)
+;;         (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
+;;                    property
+;;                    (upcase (symbol-name operation)))
+;;       (occ-obj-intf-to-org property
+;;                            value))))
+
 (cl-defmethod occ-obj-to-org ((property symbol)
                               (operation (eql add))
                               value)
@@ -844,28 +832,23 @@ method provided."))))
   "Return value VALUE for for all except delete and remove
 OPERATION, return value TSK property value for VALUE for delete
 and remove OPERATION."
-  (if (memq operation
-            '(delete remove))
-      (occ-obj-intf-match (occ-obj-tsk tsk)
-                          property
-                          value)
-      value))
+  value)
 
-;; (cl-defmethod occ-obj-operation-value ((tsk occ-obj-tsk)
-;;                                        (property symbol)
-;;                                        (operation (eql delete))
-;;                                         value)
-;;   (occ-obj-intf-match (occ-obj-tsk tsk)
-;;                       property
-;;                       value))
+(cl-defmethod occ-obj-operation-value ((tsk occ-obj-tsk)
+                                       (property symbol)
+                                       (operation (eql delete))
+                                        value)
+  (occ-obj-intf-match (occ-obj-tsk tsk)
+                      property
+                      value))
 
-;; (cl-defmethod occ-obj-operation-value ((tsk occ-obj-tsk)
-;;                                        (property symbol)
-;;                                        (operation (eql remove))
-;;                                        value)
-;;   (occ-obj-intf-match (occ-obj-tsk tsk)
-;;                       property
-;;                       value))
+(cl-defmethod occ-obj-operation-value ((tsk occ-obj-tsk)
+                                       (property symbol)
+                                       (operation (eql remove))
+                                       value)
+  (occ-obj-intf-match (occ-obj-tsk tsk)
+                      property
+                      value))
 
 
 ;; 
