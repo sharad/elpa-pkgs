@@ -259,8 +259,8 @@ method provided."))))
 ;; TODO: improve
 (cl-defmethod occ-obj-properties-to-edit ((obj occ-obj-ctx-tsk))
   "return PROPERTIES list that can be edited."
-  (occ-obj-cl-method-sigs-matched-arg '(occ-obj-impl-get     (`(occ-user-agent (eql ,val) occ-obj-ctx-tsk) val))
-                                      '(occ-obj-impl-get     (`(occ-ctx (eql ,val) null) val))
+  (occ-obj-cl-method-sigs-matched-arg '(occ-obj-impl-get   (`(occ-user-agent (eql ,val) occ-obj-ctx-tsk) val))
+                                      '(occ-obj-impl-get   (`(occ-ctx        (eql ,val) null)            val))
                                       `(,(occ-obj-ctx obj) val nil)))
 
 
