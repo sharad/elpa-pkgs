@@ -44,20 +44,27 @@
   (ignore param-only)
   nil)
 
+;; (cl-defmethod occ-obj-gen-misc ((obj occ-obj-ctx-tsk)
+;;                                 &param-only param-only)
+;;   (ignore obj)
+;;   (ignore param-only)
+;;   (let ((continue (occ-obj-build-callable-normal :continue
+;;                                                 "Continue"
+;;                                                 #'(lambda (obj) (occ-message "ok continue"))))
+;;         (checkout (occ-obj-build-callable-normal :checkout
+;;                                                 "Checkout"
+;;                                                 #'(lambda (obj)
+;;                                                     (occ-do-checkout obj)))))
+;;     (list continue
+;;           checkout)))
+
 (cl-defmethod occ-obj-gen-misc ((obj occ-obj-ctx-tsk)
                                 &param-only param-only)
   (ignore obj)
   (ignore param-only)
-  (let ((continue (occ-obj-make-callable-normal :continue
+  (let ((continue (occ-obj-build-callable-normal :continue
                                                 "Continue"
-                                                #'(lambda (obj) (occ-message "ok continue"))))
-        (checkout (occ-obj-make-callable-normal :checkout
-                                                "YY Checkout"
-                                                #'(lambda (obj)
-                                                    (occ-do-checkout obj)))))
-    ;; (list continue
-    ;;       checkout)
-
+                                                #'(lambda (obj) (occ-message "ok continue")))))
     (list continue)))
 
 (cl-defmethod occ-obj-gen-misc ((obj occ-obj-ctx)
