@@ -57,16 +57,14 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
                           collection)))
 
 (cl-defmethod occ-obj-build-tsks ((collection occ-list-collection))
-  (let ((max-lisp-eval-depth (* 2 max-lisp-eval-depth))
-        (max-specpdl-size (* 2 max-specpdl-size)))
-    (let ((depth (occ-obj-collection-depth collection))
-          (limit (occ-obj-collection-limit collection))
-          ;; TODO: use collection-limit to limit childs it can be null pr 0
-          ;; we have to limit on return value of this function
-          (builder (occ-obj-drived-tsk-builder collection)))
-      (ignore depth)
-      (ignore limit)
-      (remove nil (mapcar builder
-                          (occ-list-collection-roots collection))))))
+  (let ((depth (occ-obj-collection-depth collection))
+        (limit (occ-obj-collection-limit collection))
+        ;; TODO: use collection-limit to limit childs it can be null pr 0
+        ;; we have to limit on return value of this function
+        (builder (occ-obj-drived-tsk-builder collection)))
+    (ignore depth)
+    (ignore limit)
+    (remove nil (mapcar builder
+                        (occ-list-collection-roots collection)))))
 
 ;;; occ-list-tsk.el ends here
