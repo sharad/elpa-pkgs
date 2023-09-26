@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -52,11 +52,13 @@
                                                 "Continue"
                                                 #'(lambda (obj) (occ-message "ok continue"))))
         (checkout (occ-obj-make-callable-normal :checkout
-                                                "Checkout"
+                                                "YY Checkout"
                                                 #'(lambda (obj)
                                                     (occ-do-checkout obj)))))
-    (list continue
-          checkout)))
+    ;; (list continue
+    ;;       checkout)
+
+    (list continue)))
 
 (cl-defmethod occ-obj-gen-misc ((obj occ-obj-ctx)
                                 &param-only param-only)
