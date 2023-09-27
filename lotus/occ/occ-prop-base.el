@@ -648,24 +648,6 @@ method provided."))))
    property represent list or not."
   (occ-obj-intf-list-p (occ-obj-ctx ctx)
                        property))
-
-;; (cl-defmethod occ-obj-list-p ((obj (eql operation))
-;;                               (operation symbol))
-;;   "Is the property PROPERTY has VALUES in list, Method tell
-;;    property represent list or not."
-;;   nil)
-
-;; (cl-defmethod occ-obj-list-p ((obj (eql operation))
-;;                               (operation (eql add)))
-;;   "Is the property PROPERTY has VALUES in list, Method tell
-;;    property represent list or not."
-;;   t)
-
-;; (cl-defmethod occ-obj-list-p ((obj (eql operation))
-;;                               (operation (eql remove)))
-;;   "Is the property PROPERTY has VALUES in list, Method tell
-;;    property represent list or not."
-;;   t)
 
 
 (cl-defmethod occ-obj-op-list-p ((operation symbol))
