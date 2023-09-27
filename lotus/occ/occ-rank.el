@@ -167,6 +167,7 @@
 (cl-defmethod occ-obj-ancestor-rank-with ((tsk occ-obj-tsk)
                                           (ctx occ-obj-ctx)
                                           (height number))
+  ;; TODO: sibling-count update parent with max child rank value
   (+ (occ-obj-rank-inheritable-with tsk
                                     ctx)
      (occ-obj-ancestor-rank-with (occ-tsk-parent tsk)
@@ -213,6 +214,7 @@
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
     ;; TODO
+    ;; sibling-count
     (+ (occ-obj-rank-inheritable-with  tsk
                                        ctx)
        (occ-obj-rank-nonheritable-with tsk
