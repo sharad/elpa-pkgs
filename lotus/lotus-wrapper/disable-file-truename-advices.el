@@ -36,11 +36,10 @@
       (let ((max-lisp-eval-depth-new (* 2 max-lisp-eval-depth))
             (max-specpdl-size-new    (* 2 max-specpdl-size)))
         (eval `(defun ,fun (oldfun &rest r)
-                 (let ((max-lisp-eval-depth max-lisp-eval-depth-new) ;Debugger entered--Lisp error: (error "Lisp nesting exceeds ‘max-lisp-eval-depth’")
-                       (max-specpdl-size    max-specpdl-size-new))
-                   (cl-flet ((file-truename (&rest args
-                                                   (apply #'identity args))
-                                            (apply oldfun r)))))))))))
+                 (let ((max-lisp-eval-depth ,max-lisp-eval-depth-new) ;Debugger entered--Lisp error: (error "Lisp nesting exceeds ‘max-lisp-eval-depth’")
+                       (max-specpdl-size    ,max-specpdl-size-new))
+                   (cl-flet ((file-truename (&rest args) (apply #'identity args)))
+                       (apply oldfun r)))))))))
 ;;;###autoload
 (defun disable-file-truename-ad--callers-add-around-advice (f)
   (let ((fun (intern (concat disable-file-truename-advice-prefix (symbol-name f)))))
