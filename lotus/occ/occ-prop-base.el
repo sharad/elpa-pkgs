@@ -514,44 +514,6 @@ method provided."))))
                 properties))
 
 
-(cl-defmethod occ-obj-values ((tsk occ-obj-tsk)
-                              (ctx occ-obj-ctx)
-                              (property symbol)
-                              (operation symbol))
-  (occ-obj-intf-values tsk
-                       ctx
-                       property
-                       operation))
-(cl-defmethod occ-obj-values ((tsk occ-obj-tsk)
-                              (ctx null)
-                              (property symbol)
-                              (operation symbol))
-  (occ-obj-intf-values tsk
-                       ctx
-                       property
-                       operation))
-
-
-(cl-defmethod occ-obj-vdirectors ((tsk occ-obj-tsk)
-                                  (property symbol))
-  (if (occ-obj-list-p tsk
-                      property)
-      (cl-loop for i from 1 to (length (occ-obj-get-property tsk property))
-            collect i)
-    (list null)))
-(cl-defmethod occ-obj-pvalue ((tsk occ-obj-tsk)
-                              (property symbol)
-                              (vdirector number))
-  (nth (1- vdirector)
-       (occ-obj-get-property tsk
-                             property)))
-(cl-defmethod occ-obj-pvalue ((tsk occ-obj-tsk)
-                              (property symbol)
-                              (vdirector null))
-  (occ-obj-get-property tsk
-                        property))
-
-
 (cl-defmethod occ-do-operation ((obj       marker)
                                 (operation symbol)
                                 (prop      symbol)
@@ -716,7 +678,12 @@ method provided."))))
                            (dummy null)
                            (property symbol)
                            (operation null))
-  (occ-error "Find where it gets called")
+  "It done by OCC-OBJ-INTF-GET which has implementations ares in
+  property-methods it handle simple full property extraction from
+  context ctx for mult/single OCC-OBJ-VALUES calls
+  OCC-OBJ-GET-PROPERTY in impl.el file OCC-OBJ-GET-PROPERTY
+  finally rely on OCC-OBJ-GET"
+  ;; (occ-error "Find where it gets called")
   (occ-obj-intf-get ctx
                     property
                     nil))
@@ -874,6 +841,44 @@ and remove OPERATION."
                           value)
     value))
 
+
+
+(cl-defmethod occ-obj-values ((tsk occ-obj-tsk)
+                              (ctx occ-obj-ctx)
+                              (property symbol)
+                              (operation symbol))
+  (occ-obj-intf-values tsk
+                       ctx
+                       property
+                       operation))
+(cl-defmethod occ-obj-values ((tsk occ-obj-tsk)
+                              (ctx null)
+                              (property symbol)
+                              (operation symbol))
+  (occ-obj-intf-values tsk
+                       ctx
+                       property
+                       operation))
+
+
+(cl-defmethod occ-obj-vdirectors ((tsk occ-obj-tsk)
+                                  (property symbol))
+  (if (occ-obj-list-p tsk
+                      property)
+      (cl-loop for i from 1 to (length (occ-obj-get-property tsk property))
+            collect i)
+    (list null)))
+(cl-defmethod occ-obj-pvalue ((tsk occ-obj-tsk)
+                              (property symbol)
+                              (vdirector number))
+  (nth (1- vdirector)
+       (occ-obj-get-property tsk
+                             property)))
+(cl-defmethod occ-obj-pvalue ((tsk occ-obj-tsk)
+                              (property symbol)
+                              (vdirector null))
+  (occ-obj-get-property tsk
+                        property))
 
 
 ;; 
