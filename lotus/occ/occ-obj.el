@@ -150,7 +150,8 @@
   plist
   value
   inheritable
-  nonheritable)
+  nonheritable
+  max-decendent)
   ;; acquired
 
 

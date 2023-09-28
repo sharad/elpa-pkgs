@@ -82,6 +82,8 @@
   (occ-ranktbl-inheritable obj))
 (cl-defmethod occ-obj-rank-nonheritable ((obj occ-ranktbl))
   (occ-ranktbl-nonheritable obj))
+(cl-defmethod occ-obj-rank-max-decendent ((obj occ-ranktbl))
+  (occ-ranktbl-max-decendent obj))
 (cl-defmethod occ-obj-rank-acquired ((obj occ-ranktbl))
   (+ (occ-obj-rank-inheritable obj)
      (occ-obj-rank-nonheritable obj)))
@@ -100,6 +102,9 @@
 (cl-defmethod (setf occ-obj-rank-nonheritable) ((rank number)
                                                 (obj occ-ranktbl))
   (setf (occ-ranktbl-nonheritable obj) rank))
+(cl-defmethod (setf occ-obj-rank-max-decendent) ((rank number)
+                                                 (obj occ-ranktbl))
+  (setf (occ-ranktbl-max-decendent obj) rank))
 (cl-defmethod (setf occ-obj-rank-acquired) ((rank number)
                                             (obj occ-ranktbl))
   (occ-error "Error"))
@@ -157,6 +162,26 @@
                                   ctx)))
     (setf (occ-obj-prop-rank rt
                              property) rank)))
+
+
+(cl-defmethod occ-obj-rank-max-decendent-with ((tsk occ-obj-tsk)
+                                               (ctx occ-obj-ctx))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+   (unless (occ-obj-rank-max-decendent rt)
+     (setf (occ-obj-rank-max-decendent rt)
+           (apply #'max
+                  (occ-obj-rank-with tsk ctx)
+                  (mapcar #'(lambda (t) (occ-obj-rank-max-decendent-with t ctx))
+                          (occ-tree-tsk-subtree tsk)))))
+   (occ-obj-rank-max-decendent rt)))
+
+(cl-defmethod (setf occ-obj-rank-max-decendent-with) ((rank number)
+                                                      (tsk occ-obj-tsk)
+                                                      (ctx occ-obj-ctx))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (setf (occ-obj-rank-max-decendent rt) rank)))
 
 
 (cl-defmethod occ-obj-ancestor-rank-with ((tsk null)
