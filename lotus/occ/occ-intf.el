@@ -100,20 +100,20 @@
                         value))
 
 
-(cl-defgeneric occ-obj-intf-match (obj
-                                   property
-                                   value)
-  "VALUE equal prop-value of OBJ for PROPERTY")
-(cl-defmethod occ-obj-intf-match ((obj occ-obj-tsk)
-                                  (prop symbol)
-                                  value)
-  "VALUE equal prop-value of OBJ for PROPERTY"
-  (let ((matches (occ-obj-intf-matches obj
-                                       prop
-                                       value)))
-    (if (occ-obj-list-p obj prop)
-        (cl-first matches)
-      matches)))
+;; (cl-defgeneric occ-obj-intf-match (obj
+;;                                    property
+;;                                    value)
+;;   "VALUE equal prop-value of OBJ for PROPERTY")
+;; (cl-defmethod occ-obj-intf-match ((obj occ-obj-tsk)
+;;                                   (prop symbol)
+;;                                   value)
+;;   "VALUE equal prop-value of OBJ for PROPERTY"
+;;   (let ((matches (occ-obj-intf-matches obj
+;;                                        prop
+;;                                        value)))
+;;     (if (occ-obj-list-p obj prop)
+;;         (cl-first matches)
+;;       matches)))
 
 
 (cl-defgeneric occ-obj-intf-has-p (obj

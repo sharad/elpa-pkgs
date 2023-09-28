@@ -234,7 +234,7 @@
       (occ-assert (cl-evenp (length tsk-plist)))
       (when (occ-obj-org-entry-tsk-p tsk-plist)
         (let ((tsk (funcall builder       ; build = make-occ-tree-tsk, make-occ-list-tsk
-                            ;; (occ-obj-intf-from-org) from Org world to Occ world.
+                            ;; (occ-obj-iXntf-from-org) from Org world to Occ world.
                             :name         (occ-obj-from-org 'name 'get heading)
                             :dummy        (if file :file nil)
                             :collection   collection

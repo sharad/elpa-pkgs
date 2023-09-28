@@ -39,8 +39,9 @@
 (cl-defmethod occ-do-op-prop-misc ((obj  occ-obj-tsk)
                                    (prop symbol))
   "Misc property PROP for forced clock-in."
-  (occ-do-intf-checkout obj
-                        prop))
+  ;; BUG: Fix
+  (occ-do-checkout obj
+                   prop))
 
 
 (cl-defgeneric occ-do-op-props-misc (obj)
@@ -48,6 +49,7 @@
 
 (cl-defmethod occ-do-op-props-misc ((obj occ-obj-tsk))
   "Misc all property for forced clock-in."
+  ;; BUG: Fix
   (dolist (prop (occ-obj-properties-to-misc obj))
     (occ-debug "occ-do-op-props-misc: checkout prop %s" prop)
     (occ-do-op-prop-misc obj

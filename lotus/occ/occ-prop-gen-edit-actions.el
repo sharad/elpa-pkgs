@@ -80,7 +80,8 @@
             (capitalize (symbol-name operation))
             prop
             (occ-obj-propfmt obj prop
-                             (occ-obj-intf-match obj prop value))
+                             ;; (occ-obj-iXntf-match obj prop value)
+                             value)
             (if list-p "in" "from")
             (occ-obj-Format obj))))
 
@@ -137,10 +138,10 @@ only argument required for some other further processing"
                                             (operation symbol)
                                             value
                                             &key param-only)
-  (if (occ-obj-intf-require-p obj
-                              operation
-                              prop
-                              value)
+  (if (occ-obj-require-p obj
+                         operation
+                         prop
+                         value)
     (occ-obj-gen-edit obj
                       prop
                       operation

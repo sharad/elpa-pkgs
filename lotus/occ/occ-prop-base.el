@@ -804,6 +804,17 @@ method provided."))))
   (cl-call-next-method))
 
 
+(cl-defmethod occ-obj-match ((obj occ-obj-tsk)
+                             (prop symbol)
+                             value)
+  "VALUE equal prop-value of OBJ for PROPERTY"
+  (let ((matches (occ-obj-intf-matches obj
+                                       prop
+                                       value)))
+    (if (occ-obj-list-p obj prop)
+        (cl-first matches)
+      matches)))
+
 (cl-defmethod occ-obj-operation-value ((tsk occ-obj-tsk)
                                        (property symbol)
                                        (operation symbol)
@@ -816,17 +827,15 @@ and remove OPERATION."
                                        (property symbol)
                                        (operation (eql delete))
                                         value)
-  (occ-obj-intf-match (occ-obj-tsk tsk)
-                      property
-                      value))
+  "ANYVAL")
 
 (cl-defmethod occ-obj-operation-value ((tsk occ-obj-tsk)
                                        (property symbol)
                                        (operation (eql remove))
                                        value)
-  (occ-obj-intf-match (occ-obj-tsk tsk)
-                      property
-                      value))
+  (occ-obj-match (occ-obj-tsk tsk)
+                 property
+                 value))
 
 (cl-defmethod occ-obj-operation-value ((tsk occ-obj-tsk)
                                        (property symbol)
@@ -836,11 +845,12 @@ and remove OPERATION."
 OPERATION, return value TSK property value for VALUE for delete
 and remove OPERATION."
   (if (occ-obj-op-delete-p operation)
-      (occ-obj-intf-match (occ-obj-tsk tsk)
-                          property
-                          value)
+      (if (occ-obj-op-list-p operation)
+          (occ-obj-intf-match (occ-obj-tsk tsk)
+                              property
+                              value)
+        "ANYVAL")
     value))
-
 
 
 (cl-defmethod occ-obj-values ((tsk occ-obj-tsk)
@@ -881,10 +891,32 @@ and remove OPERATION."
                         property))
 
 
-;; 
+(cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
+                                 (operation (eql delete))
+                                 (prop      symbol)
+                                 value)
+  "Built in for LIST PROP"
+  (occ-obj-intf-require-p obj
+                          operation
+                          prop
+                          value))
 
 
+(cl-defmethod occ-do-checkout ((obj occ-obj-tsk)
+                               (property symbol)
+                               (vdirector number))
+  "Checkout property in case of force clock-in."
+  (occ-do-impl-checkout obj
+                        property
+                        vdirector))
+(cl-defmethod occ-do-checkout ((obj occ-obj-tsk)
+                               (property symbol)
+                               (vdirector null))
+  "Checkout property in case of force clock-in."
+  (occ-do-impl-checkout obj
+                        property
+                        vdirector))
+
 ;; TODO: Implement Plist with title here (??)
-
 
 ;;; occ-prop.el ends here

@@ -41,9 +41,9 @@
                                        (prop symbol)
                                        vdirector)
   "Checkout property PROP for forced clock-in."
-  (occ-do-intf-checkout obj
-                        prop
-                        vdirector))
+  (occ-do-checkout obj
+                   prop
+                   vdirector))
 
 
 (cl-defgeneric occ-do-op-props-checkout (obj)
