@@ -294,8 +294,11 @@
               occ-property-priorities)))
 
 (defun occ-obj-const-value (const)
-  ;; 10
-  (random 99))
+  (if occ-config-ineq-const-value
+      (if (fboundp occ-config-ineq-const-value)
+          (funcall occ-config-ineq-const-value)
+        occ-config-ineq-const-value)
+      (random 99)))
 
 (defun occ-obj-equal-consts-exprs (consts)
   (cons 'vec

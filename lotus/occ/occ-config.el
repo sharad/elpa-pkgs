@@ -71,6 +71,12 @@
   "occ-clock-in-ctx-auto-select-if-only"
   :type '(boolean)
   :group 'occ)
+
+(defcustom occ-config-ineq-const-value nil
+  "occ-config-ineq-const"
+  :type '(choice (function-item #'(lambda () (random 99)))
+                 (integer :tag "Constant integer value"))
+  :group 'occ)
 
 
 ;; mozilla config

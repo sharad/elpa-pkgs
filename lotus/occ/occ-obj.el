@@ -178,6 +178,9 @@
   format-file
   format-string
   sibling-count
+  children-count
+  descendant-count
+  descendant-weight
   plist
   (ranktbl (occ-make-ranktbl)))
   ;; rank-inheritable
