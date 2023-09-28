@@ -77,9 +77,8 @@
 
 (cl-defmethod occ-do-op-prop-edit ((obj  occ-obj-ctx-tsk) ;; occ-obj-tsk
                                    (prop symbol)
-                                   (operation symbol) ;; BUG: TODO - ((operation (eql add)) , (operation (eql remove))) .
+                                   (operation symbol)
                                    value)
-  ;; TODO: change this to use OCC VALUE like with corresponding changes to occ-obj-iXntf-get
   "Accept occ compatible VALUES"
   (occ-debug "occ-do-op-prop-edit: prop: %s, value: %s" prop value)
   (occ-assert prop)
@@ -91,18 +90,17 @@
                     ;; FIXED: TODO - add, remove use VALUE of add, use PROP-VALUE for remove . -- (occ-intf-match operation value prop ) -- pass operation to return value or matched value
                     (occ-obj-operation-value (occ-obj-tsk obj)
                                              prop
-                                             operation ;get value according to operation
+                                             operation
                                              value)))
 
 (cl-defmethod occ-do-op-prop-edit ((obj  occ-obj-ctx-tsk) ;; occ-obj-tsk
                                    (prop symbol)
-                                   (operation null) ;; BUG: TODO - ((operation (eql add)) , (operation (eql remove))) .
+                                   (operation null)
                                    value)
   (let ((operation  (or operation
                         (occ-obj-select-operation obj prop value)))
         (prop-value (or value
                         (occ-obj-get (occ-get-user-agent)
-                                     ;; BUG: TODO: make arrangement to read multiple values
                                      obj
                                      prop
                                      operation))))
