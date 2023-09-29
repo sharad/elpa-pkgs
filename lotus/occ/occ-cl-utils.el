@@ -222,29 +222,29 @@
                             arg-names)))
                     (occ-cl-method-param-signs method)))))
 
-(ignore
- ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Destructuring-with-pcase-Patterns.html
- (pcase '(occ-ctx (eql git-branch) null)
-   (`(occ-ctx (eql ,val) null) val)
-   (_ nil))
-
- (pcase '(add a b)
-   (`(add ,x ,y)  (message "Contains %S and %S" x y)))
-
- (pcase-let ((`(add ,x ,y) '(add a b)))
-   (message "Contains %S and %S" x y))
-
- (pcase-let ((`(,x ,y) '(a b)))
-   (message "Contains %S and %S" x y))
-
- ;; (pcase-let (( `(,(occ-obj-make-ctx-at-point) val nil)  )))
-
- ;; (occ-cl-method-param-signs 'occ-obj-impl-get)
-
- (let ((z 'x))
-   (funcall `(lambda ()
-               (pcase-let ((`,x 1))
-                 (list ,z))))))
+;; (ignore
+;;  ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Destructuring-with-pcase-Patterns.html
+;;  (pcase '(occ-ctx (eql git-branch) null)
+;;    (`(occ-ctx (eql ,val) null) val)
+;;    (_ nil))
+;;
+;;  (pcase '(add a b)
+;;    (`(add ,x ,y)  (message "Contains %S and %S" x y)))
+;;
+;;  (pcase-let ((`(add ,x ,y) '(add a b)))
+;;    (message "Contains %S and %S" x y))
+;;
+;;  (pcase-let ((`(,x ,y) '(a b)))
+;;    (message "Contains %S and %S" x y))
+;;
+;;  ;; (pcase-let (( `(,(occ-obj-make-ctx-at-point) val nil)  )))
+;;
+;;  ;; (occ-cl-method-param-signs 'occ-obj-impl-get)
+;;
+;;  (let ((z 'x))
+;;    (funcall `(lambda ()
+;;                (pcase-let ((`,x 1))
+;;                  (list ,z))))))
 
 (defun occ-cl-method-arg-get (method fn)
   (mapcar fn

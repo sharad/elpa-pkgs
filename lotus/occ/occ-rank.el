@@ -164,26 +164,6 @@
                              property) rank)))
 
 
-(cl-defmethod occ-obj-rank-max-decendent-with ((tsk occ-obj-tsk)
-                                               (ctx occ-obj-ctx))
-  (let ((rt (occ-obj-ranktbl-with tsk
-                                  ctx)))
-   (unless (occ-obj-rank-max-decendent rt)
-     (setf (occ-obj-rank-max-decendent rt)
-           (apply #'max
-                  (occ-obj-rank-with tsk ctx)
-                  (mapcar #'(lambda (t) (occ-obj-rank-max-decendent-with t ctx))
-                          (occ-tree-tsk-subtree tsk)))))
-   (occ-obj-rank-max-decendent rt)))
-
-(cl-defmethod (setf occ-obj-rank-max-decendent-with) ((rank number)
-                                                      (tsk occ-obj-tsk)
-                                                      (ctx occ-obj-ctx))
-  (let ((rt (occ-obj-ranktbl-with tsk
-                                  ctx)))
-    (setf (occ-obj-rank-max-decendent rt) rank)))
-
-
 (cl-defmethod occ-obj-ancestor-rank-with ((tsk null)
                                           (ctx occ-obj-ctx)
                                           (height number))
@@ -270,6 +250,23 @@
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
     (setf (occ-obj-rank-nonheritable rt) rank)))
+(cl-defmethod occ-obj-rank-max-decendent-with ((tsk occ-obj-tsk)
+                                               (ctx occ-obj-ctx))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (unless (occ-obj-rank-max-decendent rt)
+      (setf (occ-obj-rank-max-decendent rt)
+            (apply #'max
+                   (occ-obj-rank-with tsk ctx)
+                   (mapcar #'(lambda (t) (occ-obj-rank-max-decendent-with t ctx))
+                           (occ-tree-tsk-subtree tsk)))))
+    (occ-obj-rank-max-decendent rt)))
+(cl-defmethod (setf occ-obj-rank-max-decendent-with) ((rank number)
+                                                      (tsk occ-obj-tsk)
+                                                      (ctx occ-obj-ctx))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (setf (occ-obj-rank-max-decendent rt) rank)))
 (cl-defmethod (setf occ-obj-rank-acquired-with) ((rank number)
                                                  (tsk occ-obj-tsk)
                                                  ctx)
