@@ -224,7 +224,6 @@
                                        ctx)
        (occ-obj-rank-nonheritable-with tsk
                                        ctx))))
-
 (cl-defmethod occ-obj-rank-with ((tsk occ-obj-tsk)
                                  ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
