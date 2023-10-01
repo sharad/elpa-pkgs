@@ -65,18 +65,18 @@ if node return nil for PREDICATE"
         (occ-debug "occ-tree-trim: limit %s, count %d" limit count)
         (let ((limit (- limit count)))
           (when subtree
-            (let ((sum (apply #'+ count (mapcar #'occ-tsk-sibling-count subtree))))
+            (let ((sum (apply #'+ count (mapcar #'occ-tsk-children-count subtree))))
               (dolist (entry subtree)
-                (let* ((limit (/ (* limit (1+ (occ-tsk-sibling-count entry))) sum))
+                (let* ((limit (/ (* limit (1+ (occ-tsk-children-count entry))) sum))
                        (subtree (occ-tree-trim limit
                                                 (occ-obj-get-property entry 'subtree))))
                   (occ-obj-set-property entry 'subtree
                                         subtree)
-                  (occ-obj-set-property entry 'sibling-count
+                  (occ-obj-set-property entry 'children-count
                                         (if subtree
                                             (apply #'+
                                                    (length subtree)
-                                                   (mapcar #'occ-tsk-sibling-count subtree))
+                                                   (mapcar #'occ-tsk-children-count subtree))
                                           0)))))))
         (if (> count limit)
             (nthcdr (- count limit) subtree)
@@ -180,16 +180,24 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
                                                                                                          0))))))))))
                                        (append buffer-local-list
                                                subtree-file-list)))))
-                    (when subtree (occ-obj-set-property entry 'subtree
-                                                         subtree))
-                    (occ-obj-set-property entry 'sibling-count
+                    (when subtree
+                      (occ-obj-set-property entry 'subtree
+                                            subtree))
+                    (occ-obj-set-property entry 'descendant-weight
+                                          (if subtree
+                                              (* 1.2
+                                                 (reduce #'+
+                                                         (mapcar #'occ-obj-get-descendant-weight
+                                                                 subtree)))
+                                            1))
+                    (occ-obj-set-property entry 'children-count
                                           (if subtree
                                               (apply #'+
                                                      (length subtree)
-                                                     (mapcar #'occ-tsk-sibling-count subtree))
+                                                     (mapcar #'occ-tsk-children-count subtree))
                                               ;; (reduce #'+ subtree
                                               ;;         :initial-value (length subtree)
-                                              ;;         :key #'occ-tsk-sibling-count)
+                                              ;;         :key #'occ-tsk-children-count)
                                             0))
                     (dolist (child subtree)
                       (occ-obj-set-property child 'parent entry))

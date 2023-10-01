@@ -220,8 +220,9 @@
                                   ctx)))
     ;; TODO
     ;; sibling-count
-    (+ (occ-obj-rank-inheritable-with  tsk
-                                       ctx)
+    (+ (* (occ-tsk-descendant-weight tsk)
+          (occ-obj-rank-inheritable-with  tsk
+                                          ctx))
        (occ-obj-rank-nonheritable-with tsk
                                        ctx))))
 (cl-defmethod occ-obj-rank-with ((tsk occ-obj-tsk)
@@ -231,11 +232,25 @@
     (unless (occ-obj-rank rt)
       (let ((rank (+ (occ-obj-rank-acquired-with tsk
                                                  ctx)
-                     (occ-obj-ancestor-rank-with (occ-tsk-parent tsk)
-                                                 ctx
-                                                 0))))
+                     (* (occ-tsk-descendant-weight tsk)
+                        (occ-obj-ancestor-rank-with (occ-tsk-parent tsk)
+                                                    ctx
+                                                    0)))))
         (setf (occ-obj-rank rt) rank)))
     (occ-obj-rank rt)))
+;; (cl-defmethod occ-obj-rank-with ((tsk occ-obj-tsk)
+;;                                  ctx)
+;;   (let ((rt (occ-obj-ranktbl-with tsk
+;;                                   ctx)))
+;;     (unless (occ-obj-rank rt)
+;;       (let ((rank (+ (occ-obj-rank-nonheritable-with tsk
+;;                                                      ctx)
+;;                      (* (occ-tsk-descendant-weight tsk)
+;;                         (occ-obj-ancestor-rank-with tsk
+;;                                                   ctx
+;;                                                   0)))))
+;;         (setf (occ-obj-rank rt) rank)))
+;;     (occ-obj-rank rt)))
 
 (cl-defmethod (setf occ-obj-rank-inheritable-with) ((rank number)
                                                     (tsk occ-obj-tsk)
