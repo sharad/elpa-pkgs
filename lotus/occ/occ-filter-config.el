@@ -50,7 +50,8 @@
                                :compare-fn #'>=
                                :default-pivot-fn #'(lambda (ctx points)
                                                      (/ (length points) 2))
-                               :rank-fn nil)
+                               :rank-select-fn  nil
+                               :rank-display-fn nil)
 
   (occ-obj-build-static-filter :positive
                                 "Positive"
@@ -58,7 +59,8 @@
                                                    (list 0))
                                 :compare-fn #'>
                                 :default-pivot-fn #'(lambda (ctx points) 0)
-                                :rank-fn nil)
+                                :rank-select-fn  nil
+                                :rank-display-fn nil)
 
   (occ-obj-build-static-filter :non-negative
                                 "Non-Negative"
@@ -67,7 +69,8 @@
                                 :compare-fn #'>
                                 :default-pivot-fn #'(lambda (ctx points)
                                                       (/ (length points) 2))
-                                :rank-fn nil)
+                                :rank-select-fn  nil
+                                :rank-display-fn nil)
 
   (occ-obj-build-static-filter :identity
                                 "Identity"
@@ -76,7 +79,8 @@
                                 :compare-fn #'(lambda (rank pivot) t)
                                 :default-pivot-fn #'(lambda (obj points)
                                                       0)
-                                :rank-fn nil))
+                                :rank-select-fn  nil
+                                :rank-display-fn nil))
 
 
 ;; Filter should be list of keys or cons of key and customized rank function

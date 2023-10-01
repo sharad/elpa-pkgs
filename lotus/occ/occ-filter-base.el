@@ -157,7 +157,9 @@
                                             prev ;; (prev occ-dyn-filter)
                                             &key rank)
   (occ-debug "occ-obj-static-to-dyn-filter in %s 1" (occ-obj-name static-filter))
-  (let ((rank             #'occ-obj-rank-max-decendent);; (or rank #'occ-obj-rank) ;; NOTE
+  (let ((rank             (or rank #'occ-obj-rank)) ;; NOTE
+        (display-rank     (or (occ-static-filter-rank-display-fn static-filter) #'occ-obj-rank-max-decendent))
+        (select-rank      (or (occ-static-filter-rank-select-fn  static-filter) #'occ-obj-rank))
         (points-fn        (occ-static-filter-points-gen-fn    static-filter))
         (default-pivot-fn (occ-static-filter-default-pivot-fn static-filter))
         (compare-fn       (occ-static-filter-compare-fn       static-filter))
@@ -170,7 +172,7 @@
            (init-closure-fn      #'(lambda ()
                                      (setf points         (funcall points-fn obj
                                                                    (funcall seq-closure-fn)
-                                                                   :rank rank))
+                                                                   :rank select-rank))
                                      (setf default-pivot  (funcall default-pivot-fn obj
                                                                    points))
                                      (setf pivot          default-pivot))))
@@ -181,7 +183,7 @@
                                 :filter-closure-fn    #'(lambda ()
                                                           (cl-remove-if-not #'(lambda (ctsk)
                                                                                 (funcall compare-fn
-                                                                                         (funcall rank ctsk)
+                                                                                         (funcall select-rank ctsk)
                                                                                          (nth pivot points)))
                                                                             (funcall seq-closure-fn)))
                                 :increment-closure-fn #'(lambda ()

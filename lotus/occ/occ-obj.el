@@ -246,7 +246,8 @@
   points-gen-fn
   compare-fn
   default-pivot-fn
-  rank-fn)
+  rank-display-fn
+  rank-select-fn)
 
 (cl-defstruct (occ-obj-dyn-filter (:include occ-obj))
   "occ-obj-dyn-filter"
