@@ -161,9 +161,9 @@
         (points-fn        (occ-static-filter-points-gen-fn    static-filter))
         (default-pivot-fn (occ-static-filter-default-pivot-fn static-filter))
         (compare-fn       (occ-static-filter-compare-fn       static-filter))
-        (points nil)
-        (default-pivot nil)
-        (pivot nil))
+        (points           nil)
+        (default-pivot    nil)
+        (pivot            nil))
     (let* ((seq-closure-fn       (if prev
                                      (occ-obj-dyn-filter-filter-closure-fn prev)
                                    #'(lambda () sequence)))
