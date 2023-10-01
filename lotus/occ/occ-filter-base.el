@@ -157,7 +157,7 @@
                                             prev ;; (prev occ-dyn-filter)
                                             &key rank)
   (occ-debug "occ-obj-static-to-dyn-filter in %s 1" (occ-obj-name static-filter))
-  (let ((rank             (or rank #'occ-obj-rank))
+  (let ((rank             #'occ-obj-rank-max-decendent);; (or rank #'occ-obj-rank) ;; NOTE
         (points-fn        (occ-static-filter-points-gen-fn    static-filter))
         (default-pivot-fn (occ-static-filter-default-pivot-fn static-filter))
         (compare-fn       (occ-static-filter-compare-fn       static-filter))
@@ -227,7 +227,8 @@
   (occ-debug "occ-obj-combined-dyn-filter: Going in")
   (let ((curr-dyn-filter (occ-obj-build-dyn-filters-recursive obj
                                                               static-filter-methods ;; (list :incremental);; static-filter-methods
-                                                              sequence :rank rank))
+                                                              sequence
+                                                              :rank rank))
         (stack nil))
     (occ-debug "occ-obj-combined-dyn-filter: Coming out")
     (occ-debug "occ-obj-combined-dyn-filter: curr-dyn-filter %s" (occ-obj-name curr-dyn-filter))
@@ -254,9 +255,9 @@
                                        :seq-closure-fn       #'(lambda ()
                                                                  (occ-assert curr-dyn-filter)
                                                                  (occ-obj-dyn-filter-seq curr-dyn-filter))
-                                       :filter-closure-fn    #'(lambda () (occ-obj-dyn-filter-filter  curr-dyn-filter))
+                                       :filter-closure-fn    #'(lambda () (occ-obj-dyn-filter-filter    curr-dyn-filter))
                                        :increment-closure-fn #'(lambda () (occ-obj-dyn-filter-increment curr-dyn-filter))
                                        :decrement-closure-fn #'(lambda () (occ-obj-dyn-filter-decrement curr-dyn-filter))
-                                       :reset-closure-fn     #'(lambda () (occ-obj-dyn-filter-reset curr-dyn-filter)))))
+                                       :reset-closure-fn     #'(lambda () (occ-obj-dyn-filter-reset     curr-dyn-filter)))))
 
 ;;; occ-filter-base.el ends here
