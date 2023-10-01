@@ -128,7 +128,7 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
             (when (and (buffer-live-p (current-buffer))
                        (> (buffer-size (current-buffer))
                           30))
-              (occ-setup-buffer)
+              (occ-do-setup-buffer)
               (when file
                 (unless (string= file (buffer-file-name (current-buffer)))
                   (occ-error "file `%s' and current file %s%d not same, current marker %s."

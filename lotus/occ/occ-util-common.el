@@ -222,8 +222,10 @@
             (y-or-n-p (format "%s is being used in occ, should kill it." (current-buffer))))
       t)))
 
-(defun occ-setup-buffer ()
+(defun occ-do-setup-buffer ()
   ;; BUG: do necessary steps for occ-buffers
+  (unless (eq major-mode 'org-mode)
+    (org-mode))
   (add-hook 'kill-buffer-query-functions
             'occ-warn-on-buffer-kill t t))
 
