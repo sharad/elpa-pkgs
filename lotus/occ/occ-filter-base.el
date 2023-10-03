@@ -159,8 +159,12 @@
                                             rank-select-fn
                                             rank-display-fn)
   (occ-debug "occ-obj-static-to-dyn-filter in %s 1" (occ-obj-name static-filter))
-  (let ((display-rank     (or (occ-static-filter-rank-display-fn static-filter) rank-display-fn #'occ-obj-rank-max-decendent))
-        (select-rank      (or (occ-static-filter-rank-select-fn  static-filter) rank-select-fn  #'occ-obj-rank))
+  (let ((rank-display-fn  (or (occ-static-filter-rank-display-fn static-filter)
+                              rank-display-fn
+                              #'occ-obj-rank-max-decendent))
+        (rank-select-fn   (or (occ-static-filter-rank-select-fn  static-filter)
+                              rank-select-fn
+                              #'occ-obj-rank))
         (points-fn        (occ-static-filter-points-gen-fn    static-filter))
         (default-pivot-fn (occ-static-filter-default-pivot-fn static-filter))
         (compare-fn       (occ-static-filter-compare-fn       static-filter))
@@ -171,12 +175,12 @@
                                      (occ-obj-dyn-filter-filter-closure-fn prev)
                                    #'(lambda () sequence)))
            (init-closure-fn      #'(lambda ()
-                                     (setf points         (funcall points-fn obj
-                                                                   (funcall seq-closure-fn)
-                                                                   :rank select-rank))
-                                     (setf default-pivot  (funcall default-pivot-fn obj
-                                                                   points))
-                                     (setf pivot          default-pivot))))
+                                     (setf points        (funcall points-fn obj
+                                                                  (funcall seq-closure-fn)
+                                                                  :rank rank-select-fn))
+                                     (setf default-pivot (funcall default-pivot-fn obj
+                                                                  points))
+                                     (setf pivot         default-pivot))))
       (funcall init-closure-fn)
       (occ-obj-build-dyn-filter (occ-obj-name static-filter)
                                 :init-closure-fn      init-closure-fn
@@ -184,7 +188,7 @@
                                 :filter-closure-fn    #'(lambda ()
                                                           (cl-remove-if-not #'(lambda (ctsk)
                                                                                 (funcall compare-fn
-                                                                                         (funcall select-rank ctsk)
+                                                                                         (funcall rank-select-fn ctsk)
                                                                                          (nth pivot points)))
                                                                             (funcall seq-closure-fn)))
                                 :increment-closure-fn #'(lambda ()
