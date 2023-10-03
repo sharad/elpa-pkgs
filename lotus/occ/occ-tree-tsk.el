@@ -187,7 +187,7 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
                                           (if subtree
                                               (* 1.2
                                                  (reduce #'+
-                                                         (mapcar #'occ-obj-get-descendant-weight
+                                                         (mapcar #'occ-tsk-descendant-weight
                                                                  subtree)))
                                             1))
                     (occ-obj-set-property entry 'children-count
