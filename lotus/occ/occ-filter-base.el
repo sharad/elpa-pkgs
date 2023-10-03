@@ -185,7 +185,7 @@
                                                                             (nth pivot points)))
                                                                (funcall seq-closure-fn))))
            (init-closure-fn #'(lambda ()
-                                (occ-message "Seq %s" (funcall seq-closure-fn))
+                                (occ-message "Seq %s" (length (funcall seq-closure-fn)))
                                 (setf points        (funcall points-fn obj
                                                              (funcall seq-closure-fn)
                                                              :rank rank-select-fn))
@@ -240,6 +240,7 @@
                                                    &key
                                                    rank-select-fn
                                                    rank-display-fn)
+  (occ-message "len(static-filter-methods) = %d" (length static-filter-methods))
   (let* ((static-filterkw-rank (cl-first static-filter-methods))
          (static-filter        (occ-obj-static-filter-get (or (car-safe static-filterkw-rank)
                                                               static-filterkw-rank)))
