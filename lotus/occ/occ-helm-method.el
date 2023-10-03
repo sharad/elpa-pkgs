@@ -329,7 +329,7 @@ select candidate from it."
                                                              filters
                                                              (occ-obj-list-with obj collection :builder builder)))
          (candidates-unfiltered (occ-obj-dyn-filter-seq    combined-dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
-         (candidates-filtered   (occ-obj-dyn-filter-display-filter combined-dyn-filter))
+         (candidates-filtered   (occ-obj-dyn-filter-selectable-filter combined-dyn-filter))
          (unfiltered-count      (length candidates-unfiltered))
          (filtered-count        (length candidates-filtered)))
 

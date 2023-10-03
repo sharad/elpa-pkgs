@@ -302,8 +302,8 @@
                                        :seq-closure-fn       #'(lambda ()
                                                                  (occ-assert curr-dyn-filter)
                                                                  (occ-obj-dyn-filter-seq curr-dyn-filter))
-                                       :selectable-filter-closure-fn nil
                                        :display-filter-closure-fn #'(lambda () (occ-obj-dyn-filter-display-filter    curr-dyn-filter))
+                                       :selectable-filter-closure-fn #'(lambda () (occ-obj-dyn-filter-selectable-filter    curr-dyn-filter))
                                        :increment-closure-fn #'(lambda () (occ-obj-dyn-filter-increment curr-dyn-filter))
                                        :decrement-closure-fn #'(lambda () (occ-obj-dyn-filter-decrement curr-dyn-filter))
                                        :reset-closure-fn     #'(lambda () (occ-obj-dyn-filter-reset     curr-dyn-filter)))))
