@@ -102,12 +102,6 @@
   (plist-get (occ-obj-ctx-stat-plist obj) stat))
 
 
-;; (defmethod occ-obj-points ((filter occ-static-filter) seq)
-;;   (funcall (occ-static-filter-points-gen-fn filter) seq))
-;; (defmethod occ-obj-cmp ((filter occ-static-filter))
-;;   (occ-static-filter-compare-fn filter))
-
-
 (cl-defmethod occ-obj-static-filter-points ((static-filter occ-static-filter)
                                             (obj occ-ctx)
                                             sequence
