@@ -186,15 +186,12 @@
                                                                                 (nth pivot points))))
                                                                  (funcall seq-closure-fn)))))
            (init-closure-fn #'(lambda ()
-                                (occ-message "Filter name: %s" (occ-obj-name static-filter))
-                                (occ-message "Seq %s" (length (funcall seq-closure-fn)))
                                 (setf points        (funcall points-fn obj
                                                              (funcall seq-closure-fn)
                                                              :rank rank-select-fn))
                                 (setf default-pivot (funcall default-pivot-fn obj
                                                              points))
-                                (setf pivot         default-pivot)
-                                (occ-message "pivot %s Pivots: %s" pivot points))))
+                                (setf pivot         default-pivot))))
       (funcall init-closure-fn)
       (occ-obj-build-dyn-filter (occ-obj-name static-filter)
                                 :init-closure-fn      init-closure-fn
