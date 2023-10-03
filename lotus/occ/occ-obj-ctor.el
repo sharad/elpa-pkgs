@@ -641,14 +641,16 @@
                                       points-gen-fn
                                       compare-fn
                                       default-pivot-fn
-                                      rank-fn)
+                                      rank-select-fn
+                                      rank-display-fn)
   "Dynamic object"
   (make-occ-static-filter :keyword keyword
                           :name    name
                           :points-gen-fn points-gen-fn
                           :compare-fn compare-fn
                           :default-pivot-fn default-pivot-fn
-                          :rank-fn rank-fn))
+                          :rank-select-fn rank-select-fn
+                          :rank-display-fn rank-display-fn))
 
 (cl-defun occ-obj-build-static-filter (keyword
                                        name
@@ -656,7 +658,8 @@
                                        points-gen-fn
                                        compare-fn
                                        default-pivot-fn
-                                       rank-fn)
+                                       rank-select-fn
+                                       rank-display-fn)
 
   "Filter creation and to be stored via (OCC-HELM-STATIC-FILTER-ADD FILTER)"
   (let ((filter (occ-obj-make-static-filter keyword
@@ -664,7 +667,8 @@
                                             :points-gen-fn points-gen-fn
                                             :compare-fn compare-fn
                                             :default-pivot-fn default-pivot-fn
-                                            :rank-fn rank-fn)))
+                                            :rank-select-fn rank-select-fn
+                                            :rank-display-fn rank-display-fn)))
     (occ-obj-static-filter-add filter)
     filter))
 

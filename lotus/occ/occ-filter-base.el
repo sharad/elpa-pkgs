@@ -155,11 +155,12 @@
                                             (obj occ-ctx)
                                             (sequence list)
                                             prev ;; (prev occ-dyn-filter)
-                                            &key rank)
+                                            &key
+                                            rank-select-fn
+                                            rank-display-fn)
   (occ-debug "occ-obj-static-to-dyn-filter in %s 1" (occ-obj-name static-filter))
-  (let ((rank             (or rank #'occ-obj-rank)) ;; NOTE
-        (display-rank     (or (occ-static-filter-rank-display-fn static-filter) #'occ-obj-rank-max-decendent))
-        (select-rank      (or (occ-static-filter-rank-select-fn  static-filter) #'occ-obj-rank))
+  (let ((display-rank     (or (occ-static-filter-rank-display-fn static-filter) rank-display-fn #'occ-obj-rank-max-decendent))
+        (select-rank      (or (occ-static-filter-rank-select-fn  static-filter) rank-select-fn  #'occ-obj-rank))
         (points-fn        (occ-static-filter-points-gen-fn    static-filter))
         (default-pivot-fn (occ-static-filter-default-pivot-fn static-filter))
         (compare-fn       (occ-static-filter-compare-fn       static-filter))
@@ -200,7 +201,9 @@
 (cl-defmethod occ-obj-build-dyn-filters-recursive ((obj occ-ctx)
                                                    (static-filter-methods list)
                                                    (sequence list)
-                                                   &key rank)
+                                                   &key
+                                                   rank-select-fn
+                                                   rank-display-fn)
   (let* ((static-filterkw-rank (cl-first static-filter-methods))
          (static-filter (occ-obj-static-filter-get (or (car-safe static-filterkw-rank)
                                                        static-filterkw-rank)))
@@ -220,17 +223,21 @@
                                     obj
                                     sequence
                                     prev
-                                    :rank rank))))
+                                    :rank-select-fn rank-select-fn
+                                    :rank-display-fn rank-display-fn))))
 
 (cl-defmethod occ-obj-combined-dyn-filter ((obj occ-ctx)
                                            (static-filter-methods list)
                                            (sequence list)
-                                           &key rank)
+                                           &key
+                                           rank-select-fn
+                                           rank-display-fn)
   (occ-debug "occ-obj-combined-dyn-filter: Going in")
   (let ((curr-dyn-filter (occ-obj-build-dyn-filters-recursive obj
                                                               static-filter-methods ;; (list :incremental);; static-filter-methods
                                                               sequence
-                                                              :rank rank))
+                                                              :rank-select-fn rank-select-fn
+                                                              :rank-display-fn rank-display-fn))
         (stack nil))
     (occ-debug "occ-obj-combined-dyn-filter: Coming out")
     (occ-debug "occ-obj-combined-dyn-filter: curr-dyn-filter %s" (occ-obj-name curr-dyn-filter))
