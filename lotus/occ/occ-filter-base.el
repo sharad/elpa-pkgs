@@ -178,15 +178,13 @@
                                 (occ-obj-dyn-filter-selectable-filter-closure-fn prev)
                               #'(lambda () sequence)))
            (selectable-filter-closure-fn #'(lambda ()
-                                             (progn (identity (occ-assert (nth pivot points))))
-                                             (cl-remove-if-not #'(lambda (ctsk)
-                                                                   (when points
+                                             (when points
+                                               (cl-remove-if-not #'(lambda (ctsk)
                                                                      (let ((rank (funcall rank-select-fn ctsk)))
-                                                                       (occ-message "rank: %s" rank)
                                                                        (funcall compare-fn
                                                                                 rank
-                                                                                (nth pivot points)))))
-                                                               (funcall seq-closure-fn))))
+                                                                                (nth pivot points))))
+                                                                 (funcall seq-closure-fn)))))
            (init-closure-fn #'(lambda ()
                                 (occ-message "Filter name: %s" (occ-obj-name static-filter))
                                 (occ-message "Seq %s" (length (funcall seq-closure-fn)))
@@ -196,8 +194,7 @@
                                 (setf default-pivot (funcall default-pivot-fn obj
                                                              points))
                                 (setf pivot         default-pivot)
-                                (occ-message "pivot %s Pivots: %s" pivot points)
-                                (progn (when (occ-assert (nth pivot points)))))))
+                                (occ-message "pivot %s Pivots: %s" pivot points))))
       (funcall init-closure-fn)
       (occ-obj-build-dyn-filter (occ-obj-name static-filter)
                                 :init-closure-fn      init-closure-fn
@@ -209,10 +206,10 @@
                                                                     (setf (occ-obj-tsk-selectable ctsk) t))
                                                                   (when points
                                                                     (cl-remove-if-not #'(lambda (ctsk)
-                                                                                          (occ-assert (nth pivot points))
-                                                                                          (funcall compare-fn
-                                                                                                   (funcall rank-display-fn ctsk)
-                                                                                                   (nth pivot points)))
+                                                                                          (let ((rank (funcall rank-display-fn ctsk)))
+                                                                                            (funcall compare-fn
+                                                                                                     (funcall rank-display-fn ctsk)
+                                                                                                     (nth pivot points))))
                                                                                       sequence)))
                                 :selectable-filter-closure-fn selectable-filter-closure-fn
                                 :increment-closure-fn #'(lambda ()

@@ -37,7 +37,8 @@
   (occ-obj-build-static-filter :incremental
                                "Incremental"
                                :points-gen-fn #'(lambda (ctx sequence &key rank)
-                                                  (delete-dups (mapcar rank sequence)))
+                                                  (delete-dups (mapcar rank
+                                                                       sequence)))
                                :compare-fn #'>=
                                :default-pivot-fn #'(lambda (ctx points)
                                                      (/ (length points) 2))
