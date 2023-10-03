@@ -32,15 +32,6 @@
 (require 'occ-obj-ctor)
 
 
-;; (defun occ-filter-config-initialize ()
-;;   (setq occ-obj-filters nil)
-;;   ;; (occ-obj-build-filter :mutual-deviation "Mutual Deviation" #'occ-obj-filter-mutual-deviation)
-;;   (occ-obj-build-filter :positive "Positive" #'occ-obj-filter-positive)
-;;   (occ-obj-build-filter :nonnegative "Non negative" #'occ-obj-filter-nonnegative)
-;;   (occ-obj-build-filter :identity "Identity" #'occ-obj-filter-identity)
-;;   (occ-obj-build-filter :min "Minimum" #'occ-obj-filter-min)
-;;   (occ-obj-build-filter :max "Maximum" #'occ-obj-filter-max))
-
 (defun occ-filter-config-initialize ()
   (setq occ-obj-static-filters nil)
   (occ-obj-build-static-filter :incremental
