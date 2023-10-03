@@ -205,19 +205,20 @@
                                                    rank-select-fn
                                                    rank-display-fn)
   (let* ((static-filterkw-rank (cl-first static-filter-methods))
-         (static-filter (occ-obj-static-filter-get (or (car-safe static-filterkw-rank)
-                                                       static-filterkw-rank)))
-         (rank          (if (consp static-filterkw-rank)
-                            (nth 1 static-filterkw-rank)
-                          (or rank
-                              #'occ-obj-rank))))
+         (static-filter        (occ-obj-static-filter-get (or (car-safe static-filterkw-rank)
+                                                              static-filterkw-rank)))
+         (rank-select-fn       (if (consp static-filterkw-rank)
+                                (nth 1 static-filterkw-rank)
+                                (or rank-select-fn
+                                    #'occ-obj-rank))))
     (occ-assert static-filter)
     (occ-debug "occ-obj-build-dyn-filters-recursive in")
     (let* ((prev (if (cdr static-filter-methods)
                      (occ-obj-build-dyn-filters-recursive obj
                                                           (cdr static-filter-methods)
                                                           sequence
-                                                          :rank rank)
+                                                          :rank-select-fn rank-select-fn
+                                                          :rank-display-fn rank-display-fn)
                    nil)))
       (occ-obj-static-to-dyn-filter static-filter
                                     obj
