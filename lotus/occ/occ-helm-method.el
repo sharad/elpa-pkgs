@@ -250,7 +250,7 @@
     (let* ((default-filters filters)
            (filters         filters)
            (candidates-unfiltered (occ-obj-dyn-filter-seq    combined-dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
-           (candidates-filtered   (occ-obj-dyn-filter-filter combined-dyn-filter))
+           (candidates-filtered   (occ-obj-dyn-filter-display-filter combined-dyn-filter))
            (unfiltered-count      (length candidates-unfiltered))
            (filtered-count        (length candidates-filtered)))
       (occ-debug "occ-obj-helm-build-real-collection-source: unfiltered-count = %d, filtered-count = %d" unfiltered-count filtered-count)
@@ -261,7 +261,7 @@
                                                                              unfiltered-count
                                                                              filtered-count
                                                                              :prompt prompt))
-              (gen-candidate-lambda (occ-obj-dyn-filter-filter-closure-fn combined-dyn-filter))
+              (gen-candidate-lambda (occ-obj-dyn-filter-display-filter-closure-fn combined-dyn-filter))
               (h-map            (occ-obj-build-helm-map combined-dyn-filter)))
               ;; (helm-get-current-source)
           (let ((helm-actions (occ-obj-ap-helm-item ap-normal obj))
@@ -294,7 +294,8 @@
                                        :prev-closure-fn      (occ-obj-build-helm-command-closure-fn (occ-combined-dyn-filter-prev-closure-fn combined-dyn-filter))
                                        :next-closure-fn      (occ-obj-build-helm-command-closure-fn (occ-combined-dyn-filter-next-closure-fn combined-dyn-filter))
                                        :seq-closure-fn       (occ-combined-dyn-filter-seq-closure-fn  combined-dyn-filter)
-                                       :filter-closure-fn    (occ-obj-build-helm-candidate-closure-fn (occ-combined-dyn-filter-filter-closure-fn combined-dyn-filter))
+                                       :display-filter-closure-fn (occ-obj-build-helm-candidate-closure-fn (occ-combined-dyn-filter-display-filter-closure-fn combined-dyn-filter))
+                                       :selectable-filter-closure-fn (occ-obj-build-helm-candidate-closure-fn (occ-combined-dyn-filter-selectable-filter-closure-fn combined-dyn-filter))
                                        :increment-closure-fn (occ-obj-build-helm-command-closure-fn (occ-combined-dyn-filter-increment-closure-fn combined-dyn-filter))
                                        :decrement-closure-fn (occ-obj-build-helm-command-closure-fn (occ-combined-dyn-filter-decrement-closure-fn combined-dyn-filter))
                                        :reset-closure-fn     (occ-obj-build-helm-command-closure-fn (occ-combined-dyn-filter-reset-closure-fn combined-dyn-filter)))))
@@ -328,7 +329,7 @@ select candidate from it."
                                                              filters
                                                              (occ-obj-list-with obj collection :builder builder)))
          (candidates-unfiltered (occ-obj-dyn-filter-seq    combined-dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
-         (candidates-filtered   (occ-obj-dyn-filter-filter combined-dyn-filter))
+         (candidates-filtered   (occ-obj-dyn-filter-display-filter combined-dyn-filter))
          (unfiltered-count      (length candidates-unfiltered))
          (filtered-count        (length candidates-filtered)))
 

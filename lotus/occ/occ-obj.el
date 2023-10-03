@@ -101,6 +101,7 @@
 (cl-defstruct (occ-obj-tsk (:include occ-obj))
   "Object to hold tsk ctx obj-ctx-tsk"
   ;; prop-ranks-plist
+  (selectable nil)
   filter-rank-plist)
 (cl-defstruct (occ-obj-ctx-tsk (:include occ-obj-tsk))
   "Object to hold ctsk occ-ctxual-tsk")
@@ -253,7 +254,8 @@
   "occ-obj-dyn-filter"
   init-closure-fn
   seq-closure-fn
-  filter-closure-fn
+  display-filter-closure-fn
+  selectable-filter-closure-fn
   ;; points-closure-fn
   ;; pivot
   increment-closure-fn

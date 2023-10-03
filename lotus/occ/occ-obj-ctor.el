@@ -677,7 +677,8 @@
                                    &key
                                    init-closure-fn
                                    seq-closure-fn
-                                   filter-closure-fn
+                                   display-filter-closure-fn
+                                   selectable-filter-closure-fn
                                    increment-closure-fn
                                    decrement-closure-fn
                                    reset-closure-fn
@@ -685,7 +686,8 @@
   (make-occ-dyn-filter :name name
                        :init-closure-fn init-closure-fn
                        :seq-closure-fn seq-closure-fn
-                       :filter-closure-fn filter-closure-fn
+                       :display-filter-closure-fn display-filter-closure-fn
+                       :selectable-filter-closure-fn selectable-filter-closure-fn
                        :increment-closure-fn increment-closure-fn
                        :decrement-closure-fn decrement-closure-fn
                        :reset-closure-fn reset-closure-fn
@@ -695,7 +697,8 @@
                                     &key
                                     init-closure-fn
                                     seq-closure-fn
-                                    filter-closure-fn
+                                    display-filter-closure-fn
+                                    selectable-filter-closure-fn
                                     increment-closure-fn
                                     decrement-closure-fn
                                     reset-closure-fn
@@ -703,7 +706,8 @@
   (occ-obj-make-dyn-filter name
                            :init-closure-fn init-closure-fn
                            :seq-closure-fn seq-closure-fn
-                           :filter-closure-fn filter-closure-fn
+                           :display-filter-closure-fn display-filter-closure-fn
+                           :selectable-filter-closure-fn selectable-filter-closure-fn
                            :increment-closure-fn increment-closure-fn
                            :decrement-closure-fn decrement-closure-fn
                            :reset-closure-fn reset-closure-fn
@@ -717,14 +721,16 @@
                                             next-closure-fn
                                             init-closure-fn
                                             seq-closure-fn
-                                            filter-closure-fn
+                                            display-filter-closure-fn
+                                            selectable-filter-closure-fn
                                             increment-closure-fn
                                             decrement-closure-fn
                                             reset-closure-fn)
   (make-occ-combined-dyn-filter :name name
                                 :init-closure-fn init-closure-fn
                                 :seq-closure-fn seq-closure-fn
-                                :filter-closure-fn filter-closure-fn
+                                :display-filter-closure-fn display-filter-closure-fn
+                                :selectable-filter-closure-fn selectable-filter-closure-fn
                                 :increment-closure-fn increment-closure-fn
                                 :decrement-closure-fn decrement-closure-fn
                                 :reset-closure-fn reset-closure-fn
@@ -739,7 +745,8 @@
                                              next-closure-fn
                                              init-closure-fn
                                              seq-closure-fn
-                                             filter-closure-fn
+                                             display-filter-closure-fn
+                                             selectable-filter-closure-fn
                                              increment-closure-fn
                                              decrement-closure-fn
                                              reset-closure-fn)
@@ -749,7 +756,8 @@
                                     :next-closure-fn next-closure-fn
                                     :init-closure-fn init-closure-fn
                                     :seq-closure-fn seq-closure-fn
-                                    :filter-closure-fn filter-closure-fn
+                                    :display-filter-closure-fn display-filter-closure-fn
+                                    :selectable-filter-closure-fn selectable-filter-closure-fn
                                     :increment-closure-fn increment-closure-fn
                                     :decrement-closure-fn decrement-closure-fn
                                     :reset-closure-fn reset-closure-fn))

@@ -254,10 +254,9 @@ pointing to it."
   (let ((tsk (occ-ctsk-tsk obj)))
     (concat (when case (concat (occ-obj-title obj case) ": "))
             (when rank (format "[%5d] " (or (occ-obj-rank obj) -128)))
-            (occ-obj-format tsk case nil nil no-propterties)
+            (occ-obj-format tsk case nil nil no-propterties))))
             ;; (unless no-curr-clock
             ;;   (when (occ-obj-current-p obj) "          🕑"))
-            )))
 
 (cl-defmethod occ-obj-format ((obj occ-ctxual-tsk)
                               &optional
@@ -265,17 +264,18 @@ pointing to it."
                               rank
                               no-curr-clock
                               no-propterties)
-  (let ((tsk (occ-ctxual-tsk-tsk obj)))
+  (let* ((tsk (occ-ctxual-tsk-tsk obj))
+         (selectable (occ-obj-tsk-selectable tsk)))
     (concat (when case (concat (occ-obj-title obj case) ": "))
+            (when selectable "S " "U ")
             (when rank (format "[c%5d] " (or (occ-obj-rank obj) -128)))
             ;; (occ-obj-format tsk case rank no-curr-clock no-propterties)
-            (format "%s" (occ-obj-format tsk case rank no-curr-clock no-propterties))
+            (format "%s" (occ-obj-format tsk case rank no-curr-clock no-propterties)))))
 
             ;; https://orgmode.org/worg/doc.html#hooks
 
             ;; (unless no-curr-clock
             ;;   (when (occ-obj-current-p obj) "          🕑"))
-            )))
 
 (cl-defmethod occ-obj-format ((obj occ-return)
                               &optional
