@@ -278,8 +278,7 @@
                                         ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
-    (setf (occ-obj-rank rt)
-          rank)))
+    (setf (occ-obj-rank rt) rank)))
 
 
 (cl-defmethod occ-obj-rank-inheritable ((obj occ-obj-tsk))
