@@ -264,10 +264,10 @@ pointing to it."
                               rank
                               no-curr-clock
                               no-propterties)
-  (let* ((tsk (occ-ctxual-tsk-tsk obj))
-         (selectable (occ-obj-tsk-selectable tsk)))
+  (let ((tsk (occ-ctxual-tsk-tsk obj))
+        (selectable (occ-obj-tsk-selectable obj)))
     (concat (when case (concat (occ-obj-title obj case) ": "))
-            (when selectable "S " "U ")
+            (if selectable "S " "U ")
             (when rank (format "[c%5d] " (or (occ-obj-rank obj) -128)))
             ;; (occ-obj-format tsk case rank no-curr-clock no-propterties)
             (format "%s" (occ-obj-format tsk case rank no-curr-clock no-propterties)))))
