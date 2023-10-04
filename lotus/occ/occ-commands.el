@@ -252,7 +252,7 @@
   (let ((files (cl-remove-if #'(lambda (f)
                                  (with-current-buffer (occ-find-file-noselect f)
                                    org-complex-heading-regexp))
-                             (occ-obj-files))))
+                             (occ-obj-files nil))))
     (occ-debug "files with null regex %s" files)))
 
 ;; testing verification
@@ -261,7 +261,7 @@
   (let ((files (cl-remove-if #'(lambda (f)
                                  (with-current-buffer (occ-find-file-noselect f)
                                    (eq major-mode 'org-mode)))
-                             (occ-obj-files))))
+                             (occ-obj-files nil))))
     (occ-debug "files not in org-mode %s" files)))
 
 
