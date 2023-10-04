@@ -113,8 +113,9 @@
   ;; (occ-message "Inducting child %s in parent %s"
   ;;              (occ-obj-format child)
   ;;              (occ-obj-format obj))
+  (occ-obj-set-property child 'parent obj)
   (occ-obj-set-property child 'subtree-level
-                        (1+ (occ-obj-get-property obj 'subtree-level)))
+                        (occ-obj-get-property obj 'subtree-level))
   (occ-insert-node-after-element child (if (occ-tree-tsk-subtree obj)
                                            (car (last (occ-tree-tsk-subtree obj)))
                                          obj) ;BUG: how to identify correction collection
@@ -125,8 +126,9 @@
 
 (cl-defmethod occ-do-induct-child ((obj   occ-list-tsk)
                                    (child occ-list-tsk))
+  (occ-obj-set-property child 'parent obj)
   (occ-obj-set-property child 'subtree-level
-                        (1+ (occ-obj-get-property obj 'subtree-level)))
+                        (occ-obj-get-property obj 'subtree-level))
   (occ-insert-node-after-element child obj
                                  (occ-obj-list (occ-obj-tsk-collection obj))))
 
@@ -138,7 +140,6 @@
   ;;              (occ-obj-format obj))
   (occ-obj-set-property child 'subtree-level
                         (1+ (occ-obj-get-property obj 'subtree-level)))
-  (occ-obj-set-property child 'parent obj)
   (occ-insert-node-after-element child (if (occ-tree-tsk-subtree obj)
                                            (car (last (occ-tree-tsk-subtree obj)))
                                          obj) ;BUG: how to identify correction collection
@@ -161,8 +162,7 @@
                                immediate-finish)
   "occ-do-capture")
 
-(cl-defmethod occ-do-capture ((obj marker)
-                              &key
+(cl-defmethod occ-do-capture ((obj marker) &key
                               template
                               clock-in
                               immediate-finish)
