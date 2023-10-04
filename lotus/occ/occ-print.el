@@ -264,18 +264,41 @@ pointing to it."
                               rank
                               no-curr-clock
                               no-propterties)
-  (let ((tsk (occ-ctxual-tsk-tsk obj))
+  (let ((tsk        (occ-ctxual-tsk-tsk obj))
         (selectable (occ-obj-tsk-selectable obj)))
-    (concat (when case (concat (occ-obj-title obj case) ": "))
-            (if selectable "S " "U ")
-            (when rank (format "[c%5d] " (or (occ-obj-rank obj) -128)))
-            ;; (occ-obj-format tsk case rank no-curr-clock no-propterties)
-            (format "%s" (occ-obj-format tsk case rank no-curr-clock no-propterties)))))
+    (let ((tsk-str (format "%s" (occ-obj-format tsk case rank no-curr-clock no-propterties))))
+      (concat (when case (concat (occ-obj-title obj case) ": "))
+              (if selectable "S " "U ")
+              (when rank (format "[c%5d] " (or (occ-obj-rank obj) -128)))
+              ;; (occ-obj-format tsk case rank no-curr-clock no-propterties)
+              ;; (propertize)
+              (if selectable
+                  tsk-str
+                tsk-str)))))
+(when nil
+  (propertize (concat tsk-str " XXX ")
+              ;; 'face 'italic
+              'background "gray55"
+              'strike-through t)
 
-            ;; https://orgmode.org/worg/doc.html#hooks
+  ;; https://orgmode.org/worg/doc.html#hooks
 
-            ;; (unless no-curr-clock
-            ;;   (when (occ-obj-current-p obj) "          🕑"))
+  ;; (unless no-curr-clock
+  ;;   (when (occ-obj-current-p obj) "          🕑"))
+
+  ((t (:italic t :foreground "gray55"
+               :strike-through t)))
+  (propertize " Occ" '('mouse-face 'mode-line-highlight) '(:foreground "green"))
+
+  (message "%s -- %s"
+           (org-fontify-like-in-org-mode "** Test" org-odd-levels-only)
+           (propertize (org-fontify-like-in-org-mode "** Test" org-odd-levels-only)
+                       'face 'italic
+                       'foreground "gray55"
+                       'strike-through t))
+
+  (get-text-property 1 'face (org-fontify-like-in-org-mode "** Test" org-odd-levels-only))
+  )
 
 (cl-defmethod occ-obj-format ((obj occ-return)
                               &optional

@@ -614,12 +614,13 @@ method provided."))))
 
 (cl-defmethod occ-obj-op-list-p ((operation symbol))
   nil)
-(cl-defmethod occ-obj-op-delete-p ((operation symbol))
-  nil)
 (cl-defmethod occ-obj-op-list-p ((operation (eql add)))
   t)
-(cl-defmethod occ-obj-op-list-p ((operation (eql delete)))
+(cl-defmethod occ-obj-op-list-p ((operation (eql remove)))
   t)
+
+(cl-defmethod occ-obj-op-delete-p ((operation symbol))
+  nil)
 (cl-defmethod occ-obj-op-delete-p ((operation symbol))
   t)
 (cl-defmethod occ-obj-op-delete-p ((operation (eql remove)))
@@ -892,7 +893,7 @@ and remove OPERATION."
 
 
 (cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
-                                 (operation (eql delete))
+                                 (operation symbol)
                                  (prop      symbol)
                                  value)
   "Built in for LIST PROP"

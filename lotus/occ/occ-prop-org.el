@@ -76,10 +76,9 @@
                                                prop
                                                values)
   (lotus-org-with-safe-modification
-    (apply #'org-entry-put-multivalued-property
-           pom
-           prop
-           values)))
+    (org-entry-put-multivalued-property pom
+                                        prop
+                                        values)))
 
 (defun occ-org-entry-add-to-multivalued-property (pom
                                                   prop

@@ -257,7 +257,7 @@
       (setf (occ-obj-rank-max-decendent rt)
             (apply #'max
                    (occ-obj-rank-with tsk ctx)
-                   (mapcar #'(lambda (t) (occ-obj-rank-max-decendent-with t ctx))
+                   (mapcar #'(lambda (xtsk) (occ-obj-rank-max-decendent-with xtsk ctx))
                            (occ-tree-tsk-subtree tsk)))))
     (occ-assert (occ-obj-rank-max-decendent rt))
     (occ-obj-rank-max-decendent rt)))

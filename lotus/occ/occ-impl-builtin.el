@@ -97,14 +97,6 @@
   (occ-obj-intf-has-p obj
                       prop
                       value))
-
-;; (cl-defmethod occ-obj-impl-require-p ((obj       occ-obj-tsk)
-;;                                  (operation (eql member))
-;;                                  (prop      symbol)
-;;                                  values)
-;;   (ignore obj)
-;;   (occ-debug "occ-obj-impl-require-p9 prop %s operation %s values %s is called" prop operation values)
-;;   nil)
 
 
 (cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)
@@ -116,12 +108,12 @@
         (value (occ-obj-get-property ctx
                                      property)))
     (occ-message "occ-obj-impl-values[add] value = %s" value)
-    (if (occ-obj-list-p 'operation operation)
+    (if (occ-obj-op-list-p operation)
         (if (occ-obj-list-p tsk property)
             (if (occ-obj-list-p ctx property)
                 value
               (list value)))
-      (occ-erro "error"))))
+      (occ-error "error operation %s" operation))))
 
 (cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)
                                    (ctx occ-obj-ctx)
@@ -131,12 +123,12 @@
         (ctx   (occ-obj-ctx ctx))
         (value (occ-obj-get-property ctx
                                      property)))
-    (if (occ-obj-list-p 'operation operation)
+    (if (occ-obj-op-list-p operation)
         (if (occ-obj-list-p tsk property)
             (if (occ-obj-list-p ctx property)
                 value
               (list value)))
-      (occ-erro "error"))))
+      (occ-error "error operation %s" operation))))
 
 (cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)
                                    (ctx occ-obj-ctx)
@@ -146,11 +138,11 @@
         (ctx   (occ-obj-ctx ctx))
         (value (occ-obj-get-property ctx
                                      property)))
-    (if (not (occ-obj-list-p 'operation operation))
+    (if (not (occ-obj-op-list-p operation))
         (if (not (or (occ-obj-list-p tsk property)
                      (occ-obj-list-p ctx property)))
             value)
-      (occ-erro "error"))))
+      (occ-error "error operation %s" operation))))
 
 (cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)
                                    (ctx occ-obj-ctx)
@@ -160,11 +152,11 @@
         (ctx   (occ-obj-ctx ctx))
         (value (occ-obj-get-property ctx
                                      property)))
-    (if (not (occ-obj-list-p 'operation operation))
+    (if (not (occ-obj-op-list-p operation))
         (if (not (or (occ-obj-list-p tsk property)
                      (occ-obj-list-p ctx property)))
             value)
-      (occ-erro "error"))))
+      (occ-error "error operation %s" operation))))
 
 
 ;; (cl-defmethod occ-do-impl-operation ((obj       marker)
@@ -277,9 +269,13 @@ prop ADD and VALUES"
 for prop PUT and VALUES"
   (ignore operation)
   (let ((prop-string (symbol-name prop)))
-    (occ-org-entry-put-multivalued-property pom
-                                            prop-string
-                                            value)))
+    (if (occ-obj-list-p pom prop)
+        (occ-org-entry-put-multivalued-property pom
+                                                prop-string
+                                                value)
+      (occ-org-entry-put pom
+                         prop-string
+                         value))))
 
 (cl-defmethod occ-do-impl-operation ((pom  marker)
                                      (operation (eql remove))
