@@ -276,9 +276,11 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                                      value)
   ;; NOTE: obj == marker -- present in builtin.el
   "Do the actual OPERATION."
-  (occ-error "Implement it for obj=%s property %s."
+  (occ-error "Implement it for obj=%s, operation %s, property %s, value %s."
              (occ-obj-format obj)
-             property))
+             operation
+             property
+             value))
 
 
 (cl-defgeneric occ-do-impl-checkout (obj
