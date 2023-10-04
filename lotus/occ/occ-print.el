@@ -274,53 +274,28 @@ pointing to it."
               (if selectable
                   tsk-str
                 (let* ((start (string-match org-outline-regexp tsk-str))
-                       (end   (string-match " " tsk-str)))
-                  (concat (substring tsk-str 0 (+ 1 start end))
-                          (occ-add-properties (substring tsk-str (+ 2 start end))))))))))
-(when nil
-  (propertize (concat tsk-str " XXX ")
-              ;; 'face 'italic
-              'background "gray55"
-              'strike-through t)
-
-  ;; https://orgmode.org/worg/doc.html#hooks
-
-  ;; (unless no-curr-clock
-  ;;   (when (occ-obj-current-p obj) "          🕑"))
-
-  ((t (:italic t :foreground "gray55"
-               :strike-through t)))
-  (propertize " Occ" '('mouse-face 'mode-line-highlight) '(:foreground "green"))
-
-  (message "%s -- %s"
-           (org-fontify-like-in-org-mode "** Test" org-odd-levels-only)
-           (propertize (org-fontify-like-in-org-mode "** Test" org-odd-levels-only)
-                       'face 'italic
-                       'foreground "gray55"
-                       'strike-through t))
-
-  (get-text-property 1 'face (org-fontify-like-in-org-mode "** Test" org-odd-levels-only))
-
-  (looking-at org-outline-regexp)
-  (string-match " "(substring " ** Test" (string-match org-outline-regexp  " ** Test")))
-
-  (propertize (concat tsk-str " XXX ")
-              'face '( ;; :background "yellow"
-                      :strike-through t))
-
-  )
+                       (end   (1+ (string-match " " (substring tsk-str start))))
+                       (prefix  (substring tsk-str 0 (+ start end)))
+                       (heading (substring tsk-str (+ start end))))
+                  ;; (occ-message "prefix: |%s|" prefix)
+                  ;; (occ-message "heading: |%s|" heading)
+                  (concat prefix
+                          (occ-obj-add-face-properties heading
+                                                       :strike-through t))))))))
 
 
-(defun occ-add-properties (text)
+
+
+(defun occ-obj-add-face-properties (text &rest properties)
   ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Changing-Properties.html
   ;; Create a copy of the text string
   (let ((modified-str (copy-sequence text)))
     ;; Iterate through the text string and modify the background color at each position
     (dotimes (pos (length text))
-      (let ;; ((face-at-pos (text-properties-at pos modified-str)))
-          ((face-at-pos (get-text-property pos 'face text)))
+      (let ((face-at-pos (get-text-property pos 'face text)))
         (add-text-properties pos (1+ pos)
-                             (list 'face (list face-at-pos :strike-through t))
+                             (list 'face (cons face-at-pos
+                                               properties))
                              modified-str)))
     modified-str))
 
