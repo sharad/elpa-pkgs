@@ -856,16 +856,23 @@ pointing to it."
                                      &optional
                                      force)
   (ignore force)
-  (unless (occ-list-collection-files collection)
+  (unless (and (null force)
+               (occ-list-collection-files collection))
     (setf (occ-list-collection-files collection)
           (occ-list-collection-roots collection)))
   (occ-list-collection-files collection))
 
-(cl-defmethod occ-obj-files ((collection occ-list-collection))
-  (occ-obj-collect-files collection))
+(cl-defmethod occ-obj-files ((collection occ-list-collection)
+                             &optional
+                             force)
+  (occ-obj-collect-files collection
+                         force))
 
-(cl-defmethod occ-obj-files ((collection null))
-  (occ-obj-files (occ-default-collection)))
+(cl-defmethod occ-obj-files ((collection null)
+                             &optional
+                             force)
+  (occ-obj-files (occ-default-collection)
+                 force))
 
 
 ;; http://sachachua.com/blog/2015/03/getting-helm-org-refile-clock-create-tasks/
