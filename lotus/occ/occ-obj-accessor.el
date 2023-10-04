@@ -548,12 +548,13 @@
 
 
 ;; occ-tsk - accessors
-(cl-defmethod occ-obj-format-string ((obj occ-tsk) &optional no-propterties)
+(cl-defmethod occ-obj-format-string ((obj occ-tsk) &optional no-propterties disabled)
   ;; (occ-debug "occ-tsk-format-string(occ-tsk=%s)" obj)
   (let ((format-string (occ-tsk-format-string obj)))
     (unless format-string
       (setf (occ-tsk-format-string obj) (occ-obj-build-format-string obj
-                                                                     no-propterties)))
+                                                                     no-propterties
+                                                                     disabled)))
     (occ-tsk-format-string obj)))
 
 (cl-defmethod (setf occ-obj-format-string) (value (obj occ-tsk))

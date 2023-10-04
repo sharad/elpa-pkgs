@@ -216,7 +216,7 @@
                                                    &key
                                                    rank-select-fn
                                                    rank-display-fn)
-  (occ-message "len(static-filter-methods) = %d" (length static-filter-methods))
+  ;; (occ-message "len(static-filter-methods) = %d" (length static-filter-methods))
   (let* ((static-filterkw-rank (cl-first static-filter-methods))
          (static-filter        (occ-obj-static-filter-get (or (car-safe static-filterkw-rank)
                                                               static-filterkw-rank)))
