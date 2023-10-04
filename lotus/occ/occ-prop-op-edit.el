@@ -105,8 +105,8 @@
                                       prop
                                       operation))))
     (cl-call-next-method obj
-                         operation
                          prop
+                         operation
                          ;; FIXED: TODO - add, remove use VALUE of add, use PROP-VALUE for remove . -- (occ-intf-match operation value prop ) -- pass operation to return value or matched value
                          prop-value)))
 

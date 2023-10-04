@@ -366,20 +366,20 @@ method provided." prop))))
     (unless (org-get-property-block)
       ;; create property drawer
       ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
-      (occ-debug "occ-do-operation[ :around ]: property block not exist so creating it.")
+      (occ-debug "occ-do-impl-operation[ :around ]: property block not exist so creating it.")
       (let* ((range (org-get-property-block (point) 'force))
              (start (when (consp range) (1- (cl-first range)))))
         (if (and range
                  start)
             (when (numberp start)
               (goto-char start))
-          (occ-error "occ-do-operation[ :around ]: not able to create property block to add property %s: %s"
+          (occ-error "occ-do-impl-operation[ :around ]: not able to create property block to add property %s: %s"
                      prop
                      (occ-obj-nonocc-format value)))))
 
     (if (org-get-property-block)
         (progn
-          (occ-debug "occ-do-operation[ :around ]: adding prop: %s value: %s using (org-set-property)."
+          (occ-debug "occ-do-impl-operation[ :around ]: adding prop: %s value: %s using (org-set-property)."
                      prop
                      (occ-obj-nonocc-format value))
           (let ((retval (condition-case e ;; if (cl-next-method-p)
@@ -394,9 +394,9 @@ method provided." prop))))
   ...)
 
 method provided." operation prop)))))
-            (occ-debug "occ-do-operation: (occ-do-operation mrk) returned %s" retval)
+            (occ-debug "occ-do-impl-operation: (occ-do-impl-operation mrk) returned %s" retval)
             retval))
-        (occ-error "occ-do-operation[ :around ]: can not get property block to add property %s: %s"
+        (occ-error "occ-do-impl-operation[ :around ]: can not get property block to add property %s: %s"
                    prop
                    (occ-obj-nonocc-format value)))))
 
