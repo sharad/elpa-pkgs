@@ -862,8 +862,11 @@ pointing to it."
      (occ-list-collection-roots collection)))
   (occ-list-collection-files collection))
 
-(cl-defmethod occ-obj-files ()
-  (occ-obj-collect-files (occ-default-collection)))
+(cl-defmethod occ-obj-files ((collection occ-list-collection))
+  (occ-obj-collect-files collection))
+
+(cl-defmethod occ-obj-files ((collection null))
+  (occ-obj-files (occ-default-collection)))
 
 
 ;; http://sachachua.com/blog/2015/03/getting-helm-org-refile-clock-create-tasks/

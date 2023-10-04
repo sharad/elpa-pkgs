@@ -144,8 +144,7 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
               (when file
                 (goto-char (point-min)))
               ;; here many time if other call thread come then current buffer gets changed cause issue with tsk-builder-at-point
-              (let (;; (entry         (funcall tsk-builder-at-point))
-                    (entry         (funcall tsk-builder-at-point file))
+              (let ((entry         (funcall tsk-builder-at-point file))
                     (subtree-level (if subtree-level subtree-level 1)))
                 (when (numberp subtree-level)
                   (occ-obj-set-property entry 'subtree-level
