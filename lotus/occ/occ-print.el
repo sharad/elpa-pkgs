@@ -95,7 +95,8 @@ pointing to it."
          ;; (filename-prefix     (concat " " (make-string (+ level subtree-level) occ-fontify-like-org-file-bullet) " "))
          (heading-prop        (occ-obj-get-property obj 'heading-prop))
          (heading             (if (eq heading-prop 'noheading)
-                                  (concat (make-string 1 occ-fontify-like-org-file-bullet) " " filename)
+                                  (concat (make-string 1 occ-fontify-like-org-file-bullet) (when filename
+                                                                                                 (concat " " filename)))
                                 heading-prop))
          (heading-prefix      " ")
          (prefix              (concat (make-string (+ subtree-level level) ?\*) " "))
