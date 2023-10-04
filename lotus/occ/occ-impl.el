@@ -385,6 +385,7 @@ method provided." prop))))
                                                  operation
                                                  prop
                                                  (occ-obj-to-org prop
+                                                                 operation
                                                                  value))
                           ((cl-no-next-method) (occ-error "No
 (cl-defmethod occ-do-impl-operation ((pom marker) (operation (eql %s)) (prop (eql %s)) value)
