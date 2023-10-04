@@ -857,9 +857,8 @@ pointing to it."
                                      force)
   (ignore force)
   (unless (occ-list-collection-files collection)
-    (setf
-     (occ-list-collection-files collection)
-     (occ-list-collection-roots collection)))
+    (setf (occ-list-collection-files collection)
+          (occ-list-collection-roots collection)))
   (occ-list-collection-files collection))
 
 (cl-defmethod occ-obj-files ((collection occ-list-collection))
