@@ -97,13 +97,13 @@
                                    (prop symbol)
                                    (operation null)
                                    value)
-  (let ((operation  (or operation
-                        (occ-obj-select-operation obj prop value)))
-        (prop-value (or value
-                        (occ-obj-get (occ-get-user-agent)
-                                     obj
-                                     prop
-                                     operation))))
+  (let* ((operation  (or operation
+                         (occ-obj-select-operation obj prop value)))
+         (prop-value (or value
+                         (occ-obj-get (occ-get-user-agent)
+                                      obj
+                                      prop
+                                      operation))))
     (cl-call-next-method obj
                          operation
                          prop

@@ -634,39 +634,39 @@ method provided."))))
                            (property symbol)
                            (operation symbol))
   (if (occ-obj-list-p (occ-obj-tsk ctsk)
-                      prop)
+                      property)
       ;; (mapcar #'(lambda (v)
       ;;             (occ-obj-intf-get user
       ;;                               ctsk
       ;;                               prop))
       ;;         value)
-      (occ-error "Implemention to read list of value for property from user not done.")
+      (occ-error "Implemention to read list of value for property from user not done. property: %s, operation %s" property (upcase (symbol-name operation)))
     (occ-obj-intf-get user
-                      prop
+                      property
                       ctsk)))
 (cl-defmethod occ-obj-get ((user occ-user-agent)
                            (ctsk occ-obj-ctx-tsk)
                            (property symbol)
                            (operation (eql add)))
   (if (occ-obj-list-p (occ-obj-tsk ctsk)
-                      prop)
+                      property)
       (occ-obj-intf-get user
-                        prop
+                        property
                         ctsk)
     (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
-               prop
+               property
                (upcase (symbol-name operation)))))
 (cl-defmethod occ-obj-get ((user occ-user-agent)
                            (ctsk occ-obj-ctx-tsk)
                            (property symbol)
                            (operation (eql remove)))
   (if (occ-obj-list-p (occ-obj-tsk ctsk)
-                      prop)
+                      property)
       (occ-obj-intf-get user
-                        prop
+                        property
                         ctsk)
     (occ-error "Property `%s' is not type of LIST, %s operation not applied to it."
-               prop
+               property
                (upcase (symbol-name operation)))))
 (cl-defmethod occ-obj-get ((user occ-user-agent)
                            (ctsk occ-obj-ctx-tsk)
@@ -827,7 +827,7 @@ and remove OPERATION."
 (cl-defmethod occ-obj-operation-value ((tsk occ-obj-tsk)
                                        (property symbol)
                                        (operation (eql delete))
-                                        value)
+                                       value)
   "ANYVAL")
 
 (cl-defmethod occ-obj-operation-value ((tsk occ-obj-tsk)
