@@ -147,15 +147,15 @@ only argument required for some other further processing"
   (ignore param-only)
   nil)
 
+(cl-defmethod occ-obj-gen-each-prop-checkouts ((obj occ-tsk) ;cover OCC-TSK, OCC-TREE-TSK, OCC-LIST-TSK only
+                                               &key param-only)
+  nil)
+
 (cl-defmethod occ-obj-gen-each-prop-checkouts ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
                                                &key param-only)
   (occ-obj-gen-checkouts-if-required obj
                                      nil
                                      :param-only param-only))
-
-(cl-defmethod occ-obj-gen-each-prop-checkouts ((obj occ-tsk) ;cover OCC-OBJ-CTX-TSK also
-                                               &key param-only)
-  nil)
 
 (cl-defmethod occ-obj-gen-each-prop-checkouts ((obj occ-obj-ctx)
                                                &key param-only)
@@ -167,7 +167,7 @@ only argument required for some other further processing"
 (cl-defun occ-obj-gen-each-prop-fast-checkouts (obj
                                                 &key param-only)
   (append (occ-obj-gen-each-prop-checkouts obj
-                                             :param-only param-only)
+                                           :param-only param-only)
           (occ-obj-gen-each-prop-checkouts (occ-obj-tsk obj)
                                            :param-only param-only)))
           
