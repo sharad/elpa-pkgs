@@ -48,9 +48,9 @@
   (occ-debug "occ-obj-impl-require-p7 prop %s operation %s values %s is called" prop operation value)
   (message "tsk %s, operation %s prop %s values %s" (occ-obj-Format obj) operation prop
            value)
-  (not (occ-obj-intf-has-p obj
-                           prop
-                           value)))
+  (not (occ-obj-has-p obj
+                      prop
+                      value)))
 
 (cl-defmethod occ-obj-impl-require-p ((obj       occ-obj-tsk)
                                       (operation (eql put))
@@ -64,9 +64,9 @@
                value)
   (ignore obj)
   (occ-debug "occ-obj-impl-require-p10 prop %s operation %s values %s is called" prop operation value)
-  (not (occ-obj-intf-has-p obj
-                           prop
-                           value)))
+  (not (occ-obj-has-p obj
+                      prop
+                      value)))
 
 (cl-defmethod occ-obj-impl-require-p ((obj       occ-obj-tsk)
                                       (operation (eql remove))
@@ -79,9 +79,9 @@
                prop
                value)
   (occ-debug "occ-obj-impl-require-p8 prop %s operation %s values %s is called" prop operation value)
-  (occ-obj-intf-has-p obj
-                      prop
-                      value))
+  (occ-obj-has-p obj
+                 prop
+                 value))
 
 (cl-defmethod occ-obj-impl-require-p ((obj       occ-obj-tsk)
                                       (operation (eql delete))
@@ -94,9 +94,25 @@
                prop
                value)
   (occ-debug "occ-obj-impl-require-p8 prop %s operation %s values %s is called" prop operation value)
-  (occ-obj-intf-has-p obj
-                      prop
-                      value))
+  (occ-obj-has-p obj
+                 prop
+                 value))
+
+(cl-defmethod occ-obj-impl-require-p ((obj       occ-obj-ctx)
+                                      (operation (eql checkout))
+                                      (prop      symbol)
+                                      value)
+  "Built in for LIST PROP"
+  (occ-message "tsk %s, operation %s prop %s values %s"
+               (occ-obj-Format obj)
+               operation
+               prop
+               value)
+  (occ-debug "occ-obj-impl-require-p8 prop %s operation %s values %s is called" prop operation value)
+  (and (occ-obj-checkout-p obj prop value)
+       (not (occ-obj-has-p obj
+                           prop
+                           value))))
 
 
 (cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)
@@ -193,10 +209,10 @@
 ;;                                      value)
 ;;   "Accept occ compatible VALUES"
 ;;   (occ-debug "(occ-do-impl-operation occ-obj-tsk symbol symbol): operation %s prop %s" operation prop)
-;;   (occ-do-intf-operation (occ-obj-marker obj)
-;;                          operation
-;;                          prop
-;;                          value))
+;;   (occ-do-operation (occ-obj-marker obj)
+;;                     operation
+;;                     prop
+;;                     value))
 
 
 ;;; * few frequent operations
@@ -226,8 +242,8 @@
 ;;                                         operation
 ;;                                         prop
 ;;                                         ;; going to org world
-;;                                         (occ-obj-intf-to-org prop
-;;                                                              value))))
+;;                                         (occ-obj-to-org prop
+;;                                                         value))))
 ;;       (occ-debug "occ-do-impl-operation: (occ-obj-org-operation-at-point mrk) returnd %s" retval)
 ;;       retval)))
 
@@ -373,7 +389,7 @@ for prop MEMBER and VALUES"
 ;;                                  values)
 ;;   (let ((tsk (occ-obj-tsk obj)))
 ;;     (occ-debug "(occ-do-impl-operation occ-obj-tsk): operation %s prop %s" operation prop)
-;;     (occ-obj-intf-has-p tsk prop
+;;     (occ-obj-has-p tsk prop
 ;;                    values)))
 
 ;;; occ-impl-builtin.el ends here

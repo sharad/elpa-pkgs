@@ -129,6 +129,18 @@
                       value))
 
 
+(cl-defgeneric occ-obj-intf-require-p (obj
+                                       operation
+                                       property
+                                       values)
+  "Used by OCC-OBJ-INTF-GEN-EDIT-IF-REQUIRED to decide for this property
+_TEMPLATE_ if CALLABLE (helm method) should be generated."
+  (occ-obj-impl-require-p obj
+                          operation
+                          property
+                          values))
+
+
 (cl-defgeneric occ-obj-intf-get (ctx
                                  property
                                  arg)
@@ -216,18 +228,6 @@ org string to occ representation."
                          value))
 
 
-(cl-defgeneric occ-obj-intf-require-p (obj
-                                       operation
-                                       property
-                                       values)
-  "Used by OCC-OBJ-INTF-GEN-EDIT-IF-REQUIRED to decide for this property
-_TEMPLATE_ if CALLABLE (helm method) should be generated."
-  (occ-obj-impl-require-p obj
-                          operation
-                          property
-                          values))
-
-
 (cl-defmethod occ-obj-intf-values ((tsk occ-obj-tsk)
                                    (ctx occ-obj-ctx)
                                    (property symbol)
@@ -261,6 +261,19 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
                          operation
                          prop
                          value))
+
+
+(cl-defgeneric occ-obj-intf-checkout-p (obj
+                                        prop
+                                        value)
+  "Return if OBJ support checking-out PROP with VALUE")
+
+(cl-defmethod occ-obj-intf-checkout-p ((obj occ-obj-ctx)
+                                       (prop symbol)
+                                       value)
+  (occ-obj-impl-checkout-p obj
+                           prop
+                           value))
 
 
 (cl-defgeneric occ-do-intf-checkout (obj

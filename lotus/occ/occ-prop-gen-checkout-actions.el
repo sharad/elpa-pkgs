@@ -95,15 +95,19 @@ only argument required for some other further processing"
                                                 vdirector
                                                 &key param-only)
   (occ-debug "occ-obj-gen-checkout: checking prop %s" prop)
-  (if (occ-obj-require-p obj
-                         operation
-                         prop
-                         value)
-      (occ-obj-gen-checkout obj
-                            prop
-                            vdirector
-                            :param-only param-only)
-    (occ-message "No match")))
+  (let ((tsk       (occ-obj-tsk obj))
+        (ctx       (occ-obj-ctx obj))
+        (operation 'checkout)
+        (value     (occ-obj-pvalue tsk prop value)))
+   (if (occ-obj-require-p ctx
+                          operation
+                          prop
+                          value)
+       (occ-obj-gen-checkout obj
+                             prop
+                             vdirector
+                             :param-only param-only)
+     (occ-message "No match"))))
 
 
 (cl-defmethod occ-obj-gen-checkouts-if-required ((obj  occ-obj-tsk)

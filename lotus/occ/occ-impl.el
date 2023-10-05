@@ -96,17 +96,17 @@
                                     (prop symbol)
                                     value)
   "VALUE equal prop-value of OBJ for PROPERTY"
-  (let* ((tsk            (occ-obj-tsk obj))
-         (prop-value (occ-obj-get-property tsk prop)))
+  (let* ((tsk        (occ-obj-tsk obj))
+         (tsk-prop-value (occ-obj-get-property tsk prop)))
     (if (occ-obj-list-p obj prop)
         (cl-remove-if-not #'(lambda (pvalue)
-                              (occ-obj-intf-prop= prop
-                                                  pvalue
-                                                  value))
-                 prop-value)
-      (when (occ-obj-intf-prop= prop
-                              (occ-obj-get-property obj prop)
-                              value)
+                              (occ-obj-prop= prop
+                                             pvalue
+                                             value))
+                          tsk-prop-value)
+      (when (occ-obj-prop= prop
+                           tsk-prop-value
+                           value)
         prop-value))))
 
 
@@ -119,31 +119,45 @@
                                   value)
   "OBJ has property PROPERTY"
   (let* ((tsk        (occ-obj-tsk obj))
-         (prop-value (occ-obj-get-property tsk prop)))
+         (tsk-prop-value (occ-obj-get-property tsk prop)))
     (if (occ-obj-list-p tsk prop)
         (cl-some #'(lambda (pvalue)
-                     (occ-obj-intf-prop= prop
-                                         pvalue
-                                         value))
-                 prop-value)
-      (occ-obj-intf-prop= prop
-                          (occ-obj-get-property tsk prop)
-                          value))))
+                     (occ-obj-prop= prop
+                                    pvalue
+                                    value))
+                 tsk-prop-value)
+      (occ-obj-prop= prop
+                     tsk-prop-value
+                     value))))
 (cl-defmethod occ-obj-impl-has-p ((obj occ-obj-ctx)
                                   (prop symbol)
                                   value)
   "OBJ has property PROPERTY"
-  (let* ((ctx        (occ-obj-ctx obj))
-         (prop-value (occ-obj-get-property ctx prop)))
+  (let* ((ctx            (occ-obj-ctx obj))
+         (ctx-prop-value (occ-obj-get-property ctx prop)))
     (if (occ-obj-list-p ctx prop)
         (cl-some #'(lambda (pvalue)
-                     (occ-obj-intf-prop= prop
-                                         pvalue
-                                         value))
-                 prop-value)
-      (occ-obj-intf-prop= prop
-                          (occ-obj-get-property ctx prop)
-                          value))))
+                     (occ-obj-prop= prop
+                                    pvalue
+                                    value))
+                 ctx-prop-value)
+      (occ-obj-prop= prop
+                     ctx-prop-value
+                     value))))
+
+
+(cl-defgeneric occ-obj-impl-require-p (obj
+                                       operation
+                                       property
+                                       values)
+  "Used by OCC-OBJ-IMPL-GEN-EDIT-IF-REQUIRED to decide for this property
+_TEMPLATE_ if CALLABLE (helm method) should be generated."
+  (ignore obj)
+  (ignore operation)
+  (ignore property)
+  (ignore values)
+  (occ-debug "occ-obj-impl-require-p0 is called")
+  nil)
 
 
 (cl-defgeneric occ-obj-impl-get (ctx
@@ -229,31 +243,6 @@ return ORG compatible value."
   (occ-error "Implement method occ-obj-impl-readprop-from-user for property %s" property))
 
 
-(cl-defgeneric occ-obj-impl-require-p (obj
-                                       operation
-                                       property
-                                       values)
-  "Used by OCC-OBJ-IMPL-GEN-EDIT-IF-REQUIRED to decide for this property
-_TEMPLATE_ if CALLABLE (helm method) should be generated."
-  (ignore obj)
-  (ignore operation)
-  (ignore property)
-  (ignore values)
-  (occ-debug "occ-obj-impl-require-p0 is called"))
-(cl-defmethod occ-obj-impl-require-p ((obj occ-obj-tsk)
-                                      (operation (eql _operation_))
-                                      (property  symbol)
-                                      values)
-  "Used by OCC-OBJ-IMPL-GEN-EDIT-IF-REQUIRED to decide for this property
-_TEMPLATE_ if CALLABLE (helm method) should be generated."
-  (ignore obj)
-  (ignore operation)
-  (ignore property)
-  (ignore values)
-  (occ-debug "occ-obj-impl-require-p1 is called")
-  t)
-
-
 (cl-defmethod occ-obj-impl-values ((tsk occ-obj-tsk)
                                    (ctx occ-obj-ctx)
                                    (property symbol)
@@ -296,6 +285,17 @@ _TEMPLATE_ if CALLABLE (helm method) should be generated."
              operation
              property
              value))
+
+
+(cl-defgeneric occ-obj-impl-checkout-p (obj
+                                   prop
+                                   value)
+  "Return if OBJ support checking-out PROP with VALUE")
+
+(cl-defmethod occ-obj-impl-checkout-p ((obj occ-obj-ctx)
+                                       (prop symbol)
+                                       value)
+  t)
 
 
 (cl-defgeneric occ-do-impl-checkout (obj

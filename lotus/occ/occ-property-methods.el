@@ -62,9 +62,9 @@
   ;; file in which tsk aka org entry exists.
   "Predicate funtion to check if ctx matches to tsk's file attribute."
   (occ-aggregate-rank tsk-currfile 'currfile tsk #'max
-    (if (occ-obj-impl-prop= prop
-                            tsk-currfile
-                            (occ-ctx-file ctx))
+    (if (occ-obj-prop= prop
+                       tsk-currfile
+                       (occ-ctx-file ctx))
         (occ-rank-percentage 100)     ;Obsolete: as exact match to files giving double matching points.
       (occ-rank-percentage 0))))
 (cl-defmethod occ-obj-impl-get ((ctx occ-ctx)
@@ -131,9 +131,9 @@
                                  (prop (eql root)))
   "RANK Predicate funtion to check if ctx matches to tsk's ROOT attribute."
   (occ-aggregate-rank tsk-root 'root tsk #'max
-    (if (occ-obj-impl-prop= prop
-                            tsk-root
-                            (occ-ctx-file ctx))
+    (if (occ-obj-prop= prop
+                       tsk-root
+                       (occ-ctx-file ctx))
         (occ-rank-percentage 100)
       (occ-rank-percentage 0))))
 
@@ -260,9 +260,10 @@
                                  (prop (eql git-branch)))
   "Return the RANK (number) for OCC-TSK based on the property GIT-BRANCH"
   (occ-aggregate-rank tsk-git-branch prop tsk #'max
-    (if (occ-obj-impl-prop= prop
-                            tsk-git-branch
-                            (occ-obj-impl-get ctx prop nil))
+    (if (occ-obj-prop= prop
+                       tsk-git-branch
+                       ;; (occ-obj-impl-get ctx prop nil)
+                       (occ-obj-get ctx nil prop nil))
         (occ-rank-percentage 100)
       (occ-rank-percentage 0))))
 

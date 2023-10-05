@@ -805,6 +805,19 @@ method provided."))))
   (cl-call-next-method))
 
 
+(cl-defgeneric occ-obj-prop= (property
+                              prop-value
+                              value)
+  "OBJ has property VALUE for PROPERTY")
+(cl-defmethod occ-obj-prop= ((property symbol)
+                             prop-value
+                             value)
+  "OBJ has property VALUE for PROPERTY"
+  (occ-obj-intf-prop= property
+                      prop-value
+                      value))
+
+
 (cl-defmethod occ-obj-match ((obj occ-obj-tsk)
                              (prop symbol)
                              value)
@@ -892,6 +905,26 @@ and remove OPERATION."
                         property))
 
 
+(cl-defgeneric occ-obj-has-p (obj
+                              property
+                              value)
+  "OBJ has property VALUE for PROPERTY")
+(cl-defmethod occ-obj-has-p ((obj occ-obj-tsk)
+                             (prop symbol)
+                             value)
+  "OBJ has property VALUE for PROPERTY"
+  (occ-obj-intf-has-p obj
+                      prop
+                      value))
+(cl-defmethod occ-obj-has-p ((obj occ-obj-ctx)
+                             (prop symbol)
+                             value)
+  "OBJ has property VALUE for PROPERTY"
+  (occ-obj-intf-has-p obj
+                      prop
+                      value))
+
+
 (cl-defmethod occ-obj-require-p ((obj       occ-obj-tsk)
                                  (operation symbol)
                                  (prop      symbol)
@@ -903,18 +936,31 @@ and remove OPERATION."
                           value))
 
 
+(cl-defgeneric occ-obj-checkout-p (obj
+                                        prop
+                                        value)
+  "Return if OBJ support checking-out PROP with VALUE")
+
+(cl-defmethod occ-obj-checkout-p ((obj occ-obj-ctx)
+                                       (prop symbol)
+                                       value)
+  (occ-obj-intf-checkout-p obj
+                           prop
+                           value))
+
+
 (cl-defmethod occ-do-checkout ((obj occ-obj-tsk)
                                (property symbol)
                                (vdirector number))
   "Checkout property in case of force clock-in."
-  (occ-do-impl-checkout obj
+  (occ-do-intf-checkout obj
                         property
                         vdirector))
 (cl-defmethod occ-do-checkout ((obj occ-obj-tsk)
                                (property symbol)
                                (vdirector null))
   "Checkout property in case of force clock-in."
-  (occ-do-impl-checkout obj
+  (occ-do-intf-checkout obj
                         property
                         vdirector))
 
