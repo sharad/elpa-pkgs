@@ -829,9 +829,6 @@ pointing to it."
     (run-hooks '*occ-collection-change-hook*))
   (occ-list-collection-list collection))
 
-
-
-
 
 (cl-defmethod occ-obj-collect-files ((collection occ-tree-collection)
                                      &optional
