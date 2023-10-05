@@ -203,7 +203,7 @@
     (when (and file
                (eq major-mode 'org-mode))
       (if (cl-member file
-                     (occ-obj-files nil)
+                     (occ-obj-files)
                      :test #'(lambda (f1 f2)
                                (string= (file-truename f1)
                                         (file-truename f2))))
@@ -217,7 +217,8 @@
 (defun occ-warn-on-buffer-kill ()
   (let ((curr-buff (current-buffer)))
     (if (memq curr-buff
-              (mapcar #'find-buffer-visiting (occ-obj-files nil)))
+              (mapcar #'find-buffer-visiting
+                      (occ-obj-files)))
         (if (called-interactively-p 'interactive)
             (y-or-n-p (format "%s is being used in occ, should kill it." (current-buffer))))
       t)))

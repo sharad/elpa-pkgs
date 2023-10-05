@@ -43,7 +43,7 @@
 (cl-defmethod occ-obj-uniquify-file ((tsk occ-tsk))
   (let* ((filename (occ-obj-get-property tsk 'file))
          (basename (file-name-nondirectory filename))
-         (files (occ-obj-files nil)))
+         (files (occ-obj-files)))
     (ignore basename)
     (ignore files)
     t))

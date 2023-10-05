@@ -463,7 +463,7 @@ then return t else nil"
       (when (< occ-add-inquery 3)
         (let ((file (buffer-file-name buff)))
           (unless (cl-member file
-                             (occ-obj-files nil)
+                             (occ-obj-files)
                              :key #'file-truename)
             (when (and file
                        (file-exists-p file)

@@ -43,7 +43,9 @@
 
 (defun occ-pu-file= (&rest files)
   (let ((files (mapcar #'occ-pu-safe-file-truename files)))
-    (every #'string= files (rest files))))
+    (cl-every #'string=
+              files
+              (cdr-safe files))))
 
 (defun occ-pu-string= (str1 str2)
   (and str1
