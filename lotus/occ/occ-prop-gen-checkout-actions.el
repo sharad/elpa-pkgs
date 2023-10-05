@@ -76,33 +76,49 @@ only argument required for some other further processing"
                                     vdirector
                                     &key param-only)
   (occ-debug "occ-obj-gen-checkout: checking prop %s" prop)
-  (let ((prompt  (occ-obj-gen-checkout-prompt obj
-                                              prop
-                                              vdirector
-                                              :param-only param-only))
-        (fun     (occ-obj-gen-checkout-fun obj
-                                           prop
-                                           vdirector
-                                           :param-only param-only))
+  (let ((prompt (occ-obj-gen-checkout-prompt obj
+                                             prop
+                                             vdirector
+                                             :param-only param-only))
+        (fun    (occ-obj-gen-checkout-fun obj
+                                          prop
+                                          vdirector
+                                          :param-only param-only))
         (keyword (sym2key (gensym))))
     (occ-obj-make-callable-normal keyword
                                   prompt
                                   fun)))
 
 
-(cl-defmethod occ-obj-gen-checkout-if-required ((obj  occ-obj-tsk)
-                                                (prop symbol)
+(cl-defmethod occ-obj-gen-checkout-if-required ((obj       occ-obj-tsk)
+                                                (prop      symbol)
+                                                vdirector
                                                 &key param-only)
+  (occ-debug "occ-obj-gen-checkout: checking prop %s" prop)
+  (if (occ-obj-require-p obj
+                         operation
+                         prop
+                         value)
+      (occ-obj-gen-checkout obj
+                            prop
+                            vdirector
+                            :param-only param-only)
+    (occ-message "No match")))
+
+
+(cl-defmethod occ-obj-gen-checkouts-if-required ((obj  occ-obj-tsk)
+                                                 (prop symbol)
+                                                 &key param-only)
   (if (occ-obj-get-property obj
                             prop)
       (mapcar #'(lambda (vdirector)
-                  (occ-obj-gen-checkout obj
-                                        prop
-                                        vdirector
-                                        :param-only param-only))
+                  (occ-obj-gen-checkout-if-required obj
+                                                    prop
+                                                    vdirector
+                                                    :param-only param-only))
               (occ-obj-vdirectors obj
                                   prop))
-    (occ-debug "occ-obj-gen-checkout-if-required: no value for prop %s present for %s"
+    (occ-debug "occ-obj-gen-checkouts-if-required: no value for prop %s present for %s"
                  prop
                  (occ-obj-Format obj))))
 
@@ -117,9 +133,9 @@ only argument required for some other further processing"
                                                  &key param-only)
   (let* ((props        (occ-obj-properties-to-checkout (occ-obj-tsk obj)))
          (checkout-ops (mapcan #'(lambda (prop)
-                                   (occ-obj-gen-checkout-if-required obj
-                                                                     prop
-                                                                     :param-only param-only))
+                                   (occ-obj-gen-checkouts-if-required obj
+                                                                      prop
+                                                                      :param-only param-only))
                                props)))
     (occ-assert props)
     (remove nil

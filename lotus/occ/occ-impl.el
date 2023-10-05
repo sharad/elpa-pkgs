@@ -120,14 +120,29 @@
   "OBJ has property PROPERTY"
   (let* ((tsk        (occ-obj-tsk obj))
          (prop-value (occ-obj-get-property tsk prop)))
-    (if (occ-obj-list-p obj prop)
+    (if (occ-obj-list-p tsk prop)
         (cl-some #'(lambda (pvalue)
                      (occ-obj-intf-prop= prop
                                          pvalue
                                          value))
                  prop-value)
       (occ-obj-intf-prop= prop
-                          (occ-obj-get-property obj prop)
+                          (occ-obj-get-property tsk prop)
+                          value))))
+(cl-defmethod occ-obj-impl-has-p ((obj occ-obj-ctx)
+                                  (prop symbol)
+                                  value)
+  "OBJ has property PROPERTY"
+  (let* ((ctx        (occ-obj-ctx obj))
+         (prop-value (occ-obj-get-property ctx prop)))
+    (if (occ-obj-list-p ctx prop)
+        (cl-some #'(lambda (pvalue)
+                     (occ-obj-intf-prop= prop
+                                         pvalue
+                                         value))
+                 prop-value)
+      (occ-obj-intf-prop= prop
+                          (occ-obj-get-property ctx prop)
                           value))))
 
 

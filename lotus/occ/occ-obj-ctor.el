@@ -292,7 +292,9 @@
       (save-restriction
         (save-excursion
           (goto-char obj)
-          (occ-obj-make-tsk-at-point (occ-obj-collection collection) nil)))))
+          ;; (occ-obj-make-tsk-at-point (occ-obj-collection collection) nil)
+          (let ((builder (occ-obj-drived-tsk-builder collection)))
+            (funcall builder nil))))))
 
 (cl-defmethod occ-obj-make-tsk ((obj marker)
                                 &optional
