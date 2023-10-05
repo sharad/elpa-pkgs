@@ -125,15 +125,9 @@ only argument required for some other further processing"
     (occ-debug "occ-obj-gen-checkouts-if-required: no value for prop %s present for %s"
                  prop
                  (occ-obj-Format obj))))
-
-
-(cl-defmethod occ-obj-gen-checkouts-if-required ((obj null)
-                                                 &key param-only)
-  (ignore obj)
-  (ignore param-only)
-  nil)
 
 (cl-defmethod occ-obj-gen-checkouts-if-required ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
+                                                 (prop null)
                                                  &key param-only)
   (let* ((props        (occ-obj-properties-to-checkout (occ-obj-tsk obj)))
          (checkout-ops (mapcan #'(lambda (prop)
@@ -144,12 +138,6 @@ only argument required for some other further processing"
     (occ-assert props)
     (remove nil
             checkout-ops)))
-
-(cl-defmethod occ-obj-gen-checkouts-if-required ((obj occ-obj-ctx)
-                                                 &key param-only)
-  (ignore obj)
-  (ignore param-only)
-  nil)
 
 
 (cl-defmethod occ-obj-gen-each-prop-checkouts ((obj null)
@@ -161,7 +149,8 @@ only argument required for some other further processing"
 (cl-defmethod occ-obj-gen-each-prop-checkouts ((obj occ-obj-tsk) ;cover OCC-OBJ-CTX-TSK also
                                                &key param-only)
   (occ-obj-gen-checkouts-if-required obj
-                                 :param-only param-only))
+                                     nil
+                                     :param-only param-only))
 
 (cl-defmethod occ-obj-gen-each-prop-checkouts ((obj occ-obj-ctx)
                                                &key param-only)
