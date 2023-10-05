@@ -934,16 +934,25 @@ and remove OPERATION."
                           operation
                           prop
                           value))
+(cl-defmethod occ-obj-require-p ((obj       occ-obj-ctx)
+                                 (operation symbol)
+                                 (prop      symbol)
+                                 value)
+  "Built in for LIST PROP"
+  (occ-obj-intf-require-p obj
+                          operation
+                          prop
+                          value))
 
 
 (cl-defgeneric occ-obj-checkout-p (obj
-                                        prop
-                                        value)
+                                   prop
+                                   value)
   "Return if OBJ support checking-out PROP with VALUE")
 
 (cl-defmethod occ-obj-checkout-p ((obj occ-obj-ctx)
-                                       (prop symbol)
-                                       value)
+                                  (prop symbol)
+                                  value)
   (occ-obj-intf-checkout-p obj
                            prop
                            value))

@@ -97,12 +97,13 @@ only argument required for some other further processing"
   (occ-debug "occ-obj-gen-checkout: checking prop %s" prop)
   (let ((tsk       (occ-obj-tsk obj))
         (ctx       (occ-obj-ctx obj))
-        (operation 'checkout)
-        (value     (occ-obj-pvalue tsk prop value)))
+        (operation 'checkout))
    (if (occ-obj-require-p ctx
                           operation
                           prop
-                          value)
+                          (occ-obj-pvalue tsk
+                                          prop
+                                          vdirector))
        (occ-obj-gen-checkout obj
                              prop
                              vdirector

@@ -127,6 +127,13 @@
   (occ-obj-impl-has-p obj
                       prop
                       value))
+(cl-defmethod occ-obj-intf-has-p ((obj occ-obj-ctx)
+                                  (prop symbol)
+                                  value)
+  "OBJ has property VALUE for PROPERTY"
+  (occ-obj-impl-has-p obj
+                      prop
+                      value))
 
 
 (cl-defgeneric occ-obj-intf-require-p (obj
