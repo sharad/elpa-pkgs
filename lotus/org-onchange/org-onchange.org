@@ -150,40 +150,38 @@
         (setq txt (replace-match "" t t txt)))
       (setq lines (and (not (equal "" txt)) (org-split-string txt "\n")))
       (when (org-string-nw-p note)
-        (setq note
-              (org-replace-escapes
-               note
-               (list (cons "%u" (user-login-name))
-                     (cons "%U" user-full-name)
-                     (cons "%t" (format-time-string
-                                 (org-time-stamp-format 'long 'inactive)
-                                 org-log-note-effective-time))
-                     (cons "%T" (format-time-string
-                                 (org-time-stamp-format 'long nil)
-                                 org-log-note-effective-time))
-                     (cons "%d" (format-time-string
-                                 (org-time-stamp-format nil 'inactive)
-                                 org-log-note-effective-time))
-                     (cons "%D" (format-time-string
-                                 (org-time-stamp-format nil nil)
-                                 org-log-note-effective-time))
-                     (cons "%s" (cond
-                                  ((not org-log-note-state) "")
-                                  ((string-match-p org-ts-regexp
-                                                   org-log-note-state)
-                                   (format "\"[%s]\""
-                                           (substring org-log-note-state 1 -1)))
-                                  (t (format "\"%s\"" org-log-note-state))))
-                     (cons "%S"
-                           (cond
-                             ((not org-log-note-previous-state) "")
-                             ((string-match-p org-ts-regexp
-                                              org-log-note-previous-state)
-                              (format "\"[%s]\""
-                                      (substring
-                                       org-log-note-previous-state 1 -1)))
-                             (t (format "\"%s\""
-                                        org-log-note-previous-state)))))))
+        (setq note (org-replace-escapes note
+                                        (list (cons "%u" (user-login-name))
+                                              (cons "%U" user-full-name)
+                                              (cons "%t" (format-time-string
+                                                          (org-time-stamp-format 'long 'inactive)
+                                                          org-log-note-effective-time))
+                                              (cons "%T" (format-time-string
+                                                          (org-time-stamp-format 'long nil)
+                                                          org-log-note-effective-time))
+                                              (cons "%d" (format-time-string
+                                                          (org-time-stamp-format nil 'inactive)
+                                                          org-log-note-effective-time))
+                                              (cons "%D" (format-time-string
+                                                          (org-time-stamp-format nil nil)
+                                                          org-log-note-effective-time))
+                                              (cons "%s" (cond
+                                                          ((not org-log-note-state) "")
+                                                          ((string-match-p org-ts-regexp
+                                                                           org-log-note-state)
+                                                           (format "\"[%s]\""
+                                                                   (substring org-log-note-state 1 -1)))
+                                                          (t (format "\"%s\"" org-log-note-state))))
+                                              (cons "%S"
+                                                    (cond
+                                                     ((not org-log-note-previous-state) "")
+                                                     ((string-match-p org-ts-regexp
+                                                                      org-log-note-previous-state)
+                                                      (format "\"[%s]\""
+                                                              (substring
+                                                               org-log-note-previous-state 1 -1)))
+                                                     (t (format "\"%s\""
+                                                                org-log-note-previous-state)))))))
         (when lines (setq note (concat note " \\\\")))
         (push note lines))
       (when (and lines (not org-note-abort))
@@ -207,13 +205,14 @@
                   (let ((struct (save-excursion
                                   (goto-char itemp) (org-list-struct))))
                     (org-list-get-ind (org-list-get-top-point struct) struct)))
-                 (org-indent-line)))
+               (org-indent-line)))
            (insert (org-list-bullet-string "-") (pop lines))
            (let ((ind (org-list-item-body-column (line-beginning-position))))
              (dolist (line lines)
                (insert "\n")
                (indent-line-to ind)
                (insert line)))
+           (org-lotus-modification-post-action)
            (message "Note stored")
            (org-back-to-heading t)
            (org-cycle-hide-drawers 'children))
@@ -237,97 +236,98 @@
 #+BEGIN_SRC elisp
 
   ;; copy of org-store-log-note
-;;;###autoload
-  (defun org-insert-log-note (marker txt &optional purpose effective-time state previous-state)
-    "Finish taking a log note, and insert it to where it belongs."
-    (let* ((note-marker marker)
-           (txt txt)
-           (note-purpose (or purpose 'note))
-           (effective-time (or effective-time (org-current-effective-time)))
-           (note-state state)
-           (note-previous-state previous-state))
-      (if (marker-buffer marker)
-          (let ((note (rest (assq note-purpose org-log-note-headings)))
-                lines)
-            (while (string-match "\\`# .*\n[ \t\n]*" txt)
-              (setq txt (replace-match "" t t txt)))
-            (when (string-match "\\s-+\\'" txt)
-              (setq txt (replace-match "" t t txt)))
-            (setq lines (org-split-string txt "\n"))
-            (when (org-string-nw-p note)
-              (setq note
-                    (org-replace-escapes
-                     note
-                     (list (cons "%u" (user-login-name))
-                           (cons "%U" user-full-name)
-                           (cons "%t" (format-time-string
-                                       (org-time-stamp-format 'long 'inactive)
-                                       effective-time))
-                           (cons "%T" (format-time-string
-                                       (org-time-stamp-format 'long nil)
-                                       effective-time))
-                           (cons "%d" (format-time-string
-                                       (org-time-stamp-format nil 'inactive)
-                                       effective-time))
-                           (cons "%D" (format-time-string
-                                       (org-time-stamp-format nil nil)
-                                       effective-time))
-                           (cons "%s" (cond
-                                        ((not note-state) "")
-                                        ((string-match-p org-ts-regexp note-state)
-                                         (format "\"[%s]\""
-                                                 (substring note-state 1 -1)))
-                                        (t (format "\"%s\"" note-state))))
-                           (cons "%S"
-                                 (cond
-                                   ((not note-previous-state) "")
-                                   ((string-match-p org-ts-regexp
-                                                    note-previous-state)
-                                    (format "\"[%s]\""
-                                            (substring
-                                             note-previous-state 1 -1)))
-                                   (t (format "\"%s\""
-                                              note-previous-state)))))))
-              (when lines (setq note (concat note " \\\\")))
-              (push note lines))
+  ;;;###autoload
+    (defun org-insert-log-note (marker txt &optional purpose effective-time state previous-state)
+      "Finish taking a log note, and insert it to where it belongs."
+      (let* ((note-marker marker)
+             (txt txt)
+             (note-purpose (or purpose 'note))
+             (effective-time (or effective-time (org-current-effective-time)))
+             (note-state state)
+             (note-previous-state previous-state))
+        (if (marker-buffer marker)
+            (let ((note (rest (assq note-purpose org-log-note-headings)))
+                  lines)
+              (while (string-match "\\`# .*\n[ \t\n]*" txt)
+                (setq txt (replace-match "" t t txt)))
+              (when (string-match "\\s-+\\'" txt)
+                (setq txt (replace-match "" t t txt)))
+              (setq lines (org-split-string txt "\n"))
+              (when (org-string-nw-p note)
+                (setq note
+                      (org-replace-escapes
+                       note
+                       (list (cons "%u" (user-login-name))
+                             (cons "%U" user-full-name)
+                             (cons "%t" (format-time-string
+                                         (org-time-stamp-format 'long 'inactive)
+                                         effective-time))
+                             (cons "%T" (format-time-string
+                                         (org-time-stamp-format 'long nil)
+                                         effective-time))
+                             (cons "%d" (format-time-string
+                                         (org-time-stamp-format nil 'inactive)
+                                         effective-time))
+                             (cons "%D" (format-time-string
+                                         (org-time-stamp-format nil nil)
+                                         effective-time))
+                             (cons "%s" (cond
+                                         ((not note-state) "")
+                                         ((string-match-p org-ts-regexp note-state)
+                                          (format "\"[%s]\""
+                                                  (substring note-state 1 -1)))
+                                         (t (format "\"%s\"" note-state))))
+                             (cons "%S"
+                                   (cond
+                                    ((not note-previous-state) "")
+                                    ((string-match-p org-ts-regexp
+                                                     note-previous-state)
+                                     (format "\"[%s]\""
+                                             (substring
+                                              note-previous-state 1 -1)))
+                                    (t (format "\"%s\""
+                                               note-previous-state)))))))
+                (when lines (setq note (concat note " \\\\")))
+                (push note lines))
 
-            (when lines ;; (and lines (not (or current-prefix-arg org-note-abort)))
-              (with-current-buffer (marker-buffer note-marker)
-                (org-with-wide-buffer
-                 ;; Find location for the new note.
-                 (goto-char note-marker)
-                 ;; (set-marker note-marker nil)
+              (when lines ;; (and lines (not (or current-prefix-arg org-note-abort)))
+                (with-current-buffer (marker-buffer note-marker)
+                  (org-with-wide-buffer
+                   ;; Find location for the new note.
+                   (goto-char note-marker)
+                   ;; (set-marker note-marker nil)
 
-                 ;; Note associated to a clock is to be located right after
-                 ;; the clock.  Do not move point.
-                 (unless (eq note-purpose 'clock-out)
-                   (goto-char (org-log-beginning t)))
-                 ;; Make sure point is at the beginning of an empty line.
-                 (cond ((not (bolp)) (let ((inhibit-read-only t)) (insert "\n")))
-                       ((looking-at "[ \t]*\\S-") (save-excursion (insert "\n"))))
-                 ;; In an existing list, add a new item at the top level.
-                 ;; Otherwise, indent line like a regular one.
-                 (let ((itemp (org-in-item-p)))
-                   (if itemp
-                       (indent-line-to
-                        (let ((struct (save-excursion
-                                        (goto-char itemp) (org-list-struct))))
-                          (org-list-get-ind (org-list-get-top-point struct) struct)))
+                   ;; Note associated to a clock is to be located right after
+                   ;; the clock.  Do not move point.
+                   (unless (eq note-purpose 'clock-out)
+                     (goto-char (org-log-beginning t)))
+                   ;; Make sure point is at the beginning of an empty line.
+                   (cond ((not (bolp)) (let ((inhibit-read-only t)) (insert "\n")))
+                         ((looking-at "[ \t]*\\S-") (save-excursion (insert "\n"))))
+                   ;; In an existing list, add a new item at the top level.
+                   ;; Otherwise, indent line like a regular one.
+                   (let ((itemp (org-in-item-p)))
+                     (if itemp
+                         (indent-line-to
+                          (let ((struct (save-excursion
+                                          (goto-char itemp) (org-list-struct))))
+                            (org-list-get-ind (org-list-get-top-point struct) struct)))
                        (org-indent-line)))
-                 (insert (org-list-bullet-string "-") (pop lines))
-                 (let ((ind (org-list-item-body-column (line-beginning-position))))
-                   (dolist (line lines)
-                     (insert "\n")
-                     (indent-line-to ind)
-                     (insert line)))
-                 (message "Note stored")
-                 (org-back-to-heading t)
-                 (org-cycle-hide-drawers 'children))
-                ;; Fix `buffer-undo-list' when `org-store-log-note' is called
-                ;; from within `org-add-log-note' because `buffer-undo-list'
-                ;; is then modified outside of `org-with-remote-undo'.
-                (when (eq this-command 'org-agenda-todo)
-                  (setcdr buffer-undo-list (nthcdr 2 buffer-undo-list))))))
+                   (insert (org-list-bullet-string "-") (pop lines))
+                   (let ((ind (org-list-item-body-column (line-beginning-position))))
+                     (dolist (line lines)
+                       (insert "\n")
+                       (indent-line-to ind)
+                       (insert line)))
+                   (org-lotus-modification-post-action)
+                   (message "Note stored")
+                   (org-back-to-heading t)
+                   (org-cycle-hide-drawers 'children))
+                  ;; Fix `buffer-undo-list' when `org-store-log-note' is called
+                  ;; from within `org-add-log-note' because `buffer-undo-list'
+                  ;; is then modified outside of `org-with-remote-undo'.
+                  (when (eq this-command 'org-agenda-todo)
+                    (setcdr buffer-undo-list (nthcdr 2 buffer-undo-list))))))
           (error "merker %s buffer is nil" marker))))
 
  #+END_SRC
@@ -616,138 +616,137 @@ add note but in this case it is not shown so background word is used.
 
 *** Org log note change from different sources
  #+BEGIN_SRC emacs-lisp
-      ;;{{
-      ;; https://emacs.stackexchange.com/questions/101/how-can-i-create-an-org-link-for-each-email-sent-by-mu4e
-      ;; My first suggestion would be to try the following.
+        ;;{{
+        ;; https://emacs.stackexchange.com/questions/101/how-can-i-create-an-org-link-for-each-email-sent-by-mu4e
+        ;; My first suggestion would be to try the following.
 
- (add-hook 'message-send-hook #'(lambda ()
-                                  (org-store-link nil)))
+   (add-hook 'message-send-hook #'(lambda ()
+                                    (org-store-link nil)))
 
-    ;; Since you said you tried the hook, another way is to just combine
-    ;; org-store-link and message sending into a single function.
+      ;; Since you said you tried the hook, another way is to just combine
+      ;; org-store-link and message sending into a single function.
 
- (defun store-link-then-send-message ()
-   "Call `org-store-link', then send current email message."
-   (interactive)
-   (call-interactively #'org-store-link)
-   (call-interactively #'message-send-and-exit))
+   (defun store-link-then-send-message ()
+     "Call `org-store-link', then send current email message."
+     (interactive)
+     (call-interactively #'org-store-link)
+     (call-interactively #'message-send-and-exit))
 
- (when (and
-        (boundp 'mu4e-compose-mode-map)
-        (keymapp mu4e-compose-mode-map))
-   (define-key mu4e-compose-mode-map "\C-c\C-c" #'store-link-then-send-message)
+   (when (and (boundp 'mu4e-compose-mode-map)
+              (keymapp mu4e-compose-mode-map))
+     (define-key mu4e-compose-mode-map "\C-c\C-c" #'store-link-then-send-message)
 
-   ;; This assumes you're using message-send-and-exit to send the message. You
-   ;; could do something identical with the message-send command.
+     ;; This assumes you're using message-send-and-exit to send the message. You
+     ;; could do something identical with the message-send command.
 
-   (define-key mu4e-compose-mode-map "\C-c\C-c" #'store-link-then-send-message))
-  ;;}}
-
-  ;;{{ http://kitchingroup.cheme.cmu.edu/blog/2014/06/08/Better-integration-of-org-mode-and-email/
-  ;; I like to email org-mode headings and content to people. It would be nice to
-  ;; have some records of when a heading was sent, and to whom. We store this
-  ;; information in a heading. It is pretty easy to write a simple function that
-  ;; emails a selected region.
-
- (defun email-region (start end)
-   "Send region as the body of an email."
-   (interactive "r")
-   (let ((content (buffer-substring start end)))
-     (compose-mail)
-     (message-goto-body)
-     (insert content)
-     (message-goto-to)))
-
-    ;; that function is not glamorous, and you still have to fill in the email
-    ;; fields, and unless you use gnus and org-contacts, the only record keeping is
-    ;; through the email provider.
-
-    ;; What I would like is to send a whole heading in an email. The headline should
-    ;; be the subject, and if there are TO, CC or BCC properties, those should be
-    ;; used. If there is no TO, then I want to grab the TO from the email after you
-    ;; enter it and store it as a property. You should be able to set OTHER-HEADERS
-    ;; as a property (this is just for fun. There is no practical reason for this
-    ;; yet). After you send the email, it should record in the heading when it was
-    ;; sent.
-
-    ;; It turned out that is a relatively tall order. While it is easy to setup the
-    ;; email if you have everything in place, it is tricky to get the information on
-    ;; TO and the time sent after the email is sent. Past lispers had a lot of ideas
-    ;; to make this possible, and a day of digging got me to the answer. You can
-    ;; specify some "action" functions that get called at various times, e.g. after
-    ;; sending, and a return action when the compose window is done. Unfortunately,
-    ;; I could not figure out any way to do things except to communicate through
-    ;; some global variables.
-
-    ;; So here is the code that lets me send org-headings, with the TO, CC, BCC
-    ;; properties, and that records when I sent the email after it is sent.
-
- (defvar *email-heading-point* nil
-   "global variable to store point in for returning")
-
- (defvar *email-to-addresses* nil
-   "global variable to store to address in email")
-
- (defun email-heading-return ()
-   "after returning from compose do this"
-   (switch-to-buffer (marker-buffer  *email-heading-point*))
-   (goto-char (marker-position  *email-heading-point*))
-   (setq *email-heading-point* nil)
-   (org-set-property "SENT-ON" (current-time-string))
-   ;; reset this incase you added new ones
-   (org-set-property "TO" *email-to-addresses*))
-
-
- (defun email-send-action ()
-   "send action for compose-mail"
-   (setq *email-to-addresses* (mail-fetch-field "To")))
-
- (defun email-heading ()
-   "Send the current org-mode heading as the body of an email, with headline as the subject.
-
-      use these properties TO OTHER-HEADERS is an alist specifying
-      additional header fields. Elements look like (HEADER . VALUE)
-      where both HEADER and VALUE are strings.
-
-      save when it was sent as s SENT property. this is overwritten on
-      subsequent sends. could save them all in a logbook?
-      "
-   (interactive)
-   ; store location.
-   (setq *email-heading-point* (set-marker (make-marker) (point)))
-   (org-mark-subtree)
-   (let ((content (buffer-substring (point) (mark)))
-         (TO (org-entry-get (point) "TO" t))
-         (CC (org-entry-get (point) "CC" t))
-         (BCC (org-entry-get (point) "BCC" t))
-         (SUBJECT (nth 4 (org-heading-components)))
-         (OTHER-HEADERS (eval (org-entry-get (point) "OTHER-HEADERS")))
-         (continue nil)
-         (switch-function nil)
-         (yank-action nil)
-         (send-actions '((email-send-action . nil)))
-         (return-action '(email-heading-return)))
-
-     (compose-mail TO SUBJECT OTHER-HEADERS continue switch-function yank-action send-actions return-action)
-     (message-goto-body)
-     (insert content)
-     (when CC
-       (message-goto-cc)
-       (insert CC))
-     (when BCC
-       (message-goto-bcc)
-       (insert BCC))
-     (if TO
-      (message-goto-body)
-      (message-goto-to))))
-
-
-    ;; This works pretty well for me. Since I normally use this to send tasks to
-    ;; people, it keeps the task organized where I want it, and I can embed an
-    ;; org-id in the email so if the person replies to it telling me the task is
-    ;; done, I can easily navigate to the task to mark it off. Pretty handy.
-
+     (define-key mu4e-compose-mode-map "\C-c\C-c" #'store-link-then-send-message))
     ;;}}
+
+    ;;{{ http://kitchingroup.cheme.cmu.edu/blog/2014/06/08/Better-integration-of-org-mode-and-email/
+    ;; I like to email org-mode headings and content to people. It would be nice to
+    ;; have some records of when a heading was sent, and to whom. We store this
+    ;; information in a heading. It is pretty easy to write a simple function that
+    ;; emails a selected region.
+
+   (defun email-region (start end)
+     "Send region as the body of an email."
+     (interactive "r")
+     (let ((content (buffer-substring start end)))
+       (compose-mail)
+       (message-goto-body)
+       (insert content)
+       (message-goto-to)))
+
+      ;; that function is not glamorous, and you still have to fill in the email
+      ;; fields, and unless you use gnus and org-contacts, the only record keeping is
+      ;; through the email provider.
+
+      ;; What I would like is to send a whole heading in an email. The headline should
+      ;; be the subject, and if there are TO, CC or BCC properties, those should be
+      ;; used. If there is no TO, then I want to grab the TO from the email after you
+      ;; enter it and store it as a property. You should be able to set OTHER-HEADERS
+      ;; as a property (this is just for fun. There is no practical reason for this
+      ;; yet). After you send the email, it should record in the heading when it was
+      ;; sent.
+
+      ;; It turned out that is a relatively tall order. While it is easy to setup the
+      ;; email if you have everything in place, it is tricky to get the information on
+      ;; TO and the time sent after the email is sent. Past lispers had a lot of ideas
+      ;; to make this possible, and a day of digging got me to the answer. You can
+      ;; specify some "action" functions that get called at various times, e.g. after
+      ;; sending, and a return action when the compose window is done. Unfortunately,
+      ;; I could not figure out any way to do things except to communicate through
+      ;; some global variables.
+
+      ;; So here is the code that lets me send org-headings, with the TO, CC, BCC
+      ;; properties, and that records when I sent the email after it is sent.
+
+   (defvar *email-heading-point* nil
+     "global variable to store point in for returning")
+
+   (defvar *email-to-addresses* nil
+     "global variable to store to address in email")
+
+   (defun email-heading-return ()
+     "after returning from compose do this"
+     (switch-to-buffer (marker-buffer  *email-heading-point*))
+     (goto-char (marker-position  *email-heading-point*))
+     (setq *email-heading-point* nil)
+     (org-set-property "SENT-ON" (current-time-string))
+     ;; reset this incase you added new ones
+     (org-set-property "TO" *email-to-addresses*))
+
+
+   (defun email-send-action ()
+     "send action for compose-mail"
+     (setq *email-to-addresses* (mail-fetch-field "To")))
+
+   (defun email-heading ()
+     "Send the current org-mode heading as the body of an email, with headline as the subject.
+
+        use these properties TO OTHER-HEADERS is an alist specifying
+        additional header fields. Elements look like (HEADER . VALUE)
+        where both HEADER and VALUE are strings.
+
+        save when it was sent as s SENT property. this is overwritten on
+        subsequent sends. could save them all in a logbook?
+        "
+     (interactive)
+     ; store location.
+     (setq *email-heading-point* (set-marker (make-marker) (point)))
+     (org-mark-subtree)
+     (let ((content (buffer-substring (point) (mark)))
+           (TO (org-entry-get (point) "TO" t))
+           (CC (org-entry-get (point) "CC" t))
+           (BCC (org-entry-get (point) "BCC" t))
+           (SUBJECT (nth 4 (org-heading-components)))
+           (OTHER-HEADERS (eval (org-entry-get (point) "OTHER-HEADERS")))
+           (continue nil)
+           (switch-function nil)
+           (yank-action nil)
+           (send-actions '((email-send-action . nil)))
+           (return-action '(email-heading-return)))
+
+       (compose-mail TO SUBJECT OTHER-HEADERS continue switch-function yank-action send-actions return-action)
+       (message-goto-body)
+       (insert content)
+       (when CC
+         (message-goto-cc)
+         (insert CC))
+       (when BCC
+         (message-goto-bcc)
+         (insert BCC))
+       (if TO
+        (message-goto-body)
+        (message-goto-to))))
+
+
+      ;; This works pretty well for me. Since I normally use this to send tasks to
+      ;; people, it keeps the task organized where I want it, and I can embed an
+      ;; org-id in the email so if the person replies to it telling me the task is
+      ;; done, I can easily navigate to the task to mark it off. Pretty handy.
+
+      ;;}}
 
  #+END_SRC
 

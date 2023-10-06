@@ -90,21 +90,21 @@
                                        (org-time-stamp-format nil nil)
                                        effective-time))
                            (cons "%s" (cond
-                                        ((not note-state) "")
-                                        ((string-match-p org-ts-regexp note-state)
-                                         (format "\"[%s]\""
-                                                 (substring note-state 1 -1)))
-                                        (t (format "\"%s\"" note-state))))
+                                       ((not note-state) "")
+                                       ((string-match-p org-ts-regexp note-state)
+                                        (format "\"[%s]\""
+                                                (substring note-state 1 -1)))
+                                       (t (format "\"%s\"" note-state))))
                            (cons "%S"
                                  (cond
-                                   ((not note-previous-state) "")
-                                   ((string-match-p org-ts-regexp
-                                                    note-previous-state)
-                                    (format "\"[%s]\""
-                                            (substring
-                                             note-previous-state 1 -1)))
-                                   (t (format "\"%s\""
-                                              note-previous-state)))))))
+                                  ((not note-previous-state) "")
+                                  ((string-match-p org-ts-regexp
+                                                   note-previous-state)
+                                   (format "\"[%s]\""
+                                           (substring
+                                            note-previous-state 1 -1)))
+                                  (t (format "\"%s\""
+                                             note-previous-state)))))))
               (when lines (setq note (concat note " \\\\")))
               (push note lines))
 
@@ -130,13 +130,14 @@
                         (let ((struct (save-excursion
                                         (goto-char itemp) (org-list-struct))))
                           (org-list-get-ind (org-list-get-top-point struct) struct)))
-                       (org-indent-line)))
+                     (org-indent-line)))
                  (insert (org-list-bullet-string "-") (pop lines))
                  (let ((ind (org-list-item-body-column (line-beginning-position))))
                    (dolist (line lines)
                      (insert "\n")
                      (indent-line-to ind)
                      (insert line)))
+                 (org-lotus-modification-post-action)
                  (message "Note stored")
                  (org-back-to-heading t)
                  (org-cycle-hide-drawers 'children))
@@ -145,7 +146,7 @@
                 ;; is then modified outside of `org-with-remote-undo'.
                 (when (eq this-command 'org-agenda-todo)
                   (setcdr buffer-undo-list (nthcdr 2 buffer-undo-list))))))
-          (error "merker %s buffer is nil" marker))))
+        (error "merker %s buffer is nil" marker))))
 ;; Org insert log note un-interactively:1 ends here
 
 ;; Clock out with NOTE
@@ -444,9 +445,8 @@
   (call-interactively #'org-store-link)
   (call-interactively #'message-send-and-exit))
 
-(when (and
-       (boundp 'mu4e-compose-mode-map)
-       (keymapp mu4e-compose-mode-map))
+(when (and (boundp 'mu4e-compose-mode-map)
+           (keymapp mu4e-compose-mode-map))
   (define-key mu4e-compose-mode-map "\C-c\C-c" #'store-link-then-send-message)
 
   ;; This assumes you're using message-send-and-exit to send the message. You

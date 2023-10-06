@@ -56,6 +56,13 @@
   '(emacs-lisp-mode org-mode))
 
 (setq safe-org-refile-get-location-modes '(org-mode))
+
+
+;;;###autoload
+(defun org-lotus-modification-post-action ()
+  (when (org-element--cache-active-p)
+    (org-element-cache-reset)))
+
 
 ;; Misc Macros Starts
 
@@ -63,7 +70,10 @@
 
 (defmacro org-with-inhibit-modification-hooks (&rest body)
   `(let ((inhibit-modification-hooks lotus-inhibit-modification-hooks))
-     ,@body))
+     (prog1
+         (progn
+           ,@body)
+       (org-lotus-modification-post-action))))
 (put 'org-with-inhibit-modification-hooks 'lisp-indent-function 0)
 
 (defmacro lotus-org-with-safe-modification (&rest body)
@@ -79,7 +89,9 @@ deletion[s] modification[s] etc.)"
      (when buff
        (with-current-buffer buff
          (let (buffer-read-only)
-           ,@body)))))
+           (prog1
+               (progn ,@body)
+             (org-lotus-modification-post-action)))))))
 (put 'org-with-clock-writeable 'lisp-indent-function 0)
 
 (defmacro org-clock-lotus-with-current-clock (&rest body)
@@ -535,6 +547,7 @@ With prefix arg C-u, copy region instad of killing it."
             (org-end-of-subtree)
             (org-insert-subheading nil)))
         (insert (format org-refile-string-format subheading))
+        (org-lotus-modification-post-action)
         (point)))))
 
 (defun org-insert-grandsubheading-at-point (subheading)
@@ -562,6 +575,7 @@ With prefix arg C-u, copy region instad of killing it."
           (org-end-of-subtree))
         (org-insert-subheading nil)
         (insert (format org-refile-string-format subheading))
+        (org-lotus-modification-post-action)
         (point)))))
 
 
@@ -583,6 +597,7 @@ With prefix arg C-u, copy region instad of killing it."
       (end-of-line 1)
       (org-insert-heading-after-current)
       (insert (format org-refile-string-format subheading))
+      (org-lotus-modification-post-action)
       (point))))
 
 (defun org-insert-grandsubheading-to-headline (text heading &optional create)

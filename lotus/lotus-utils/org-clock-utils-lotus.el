@@ -61,10 +61,9 @@
 
 ;;;###autoload
 (defun lotus-org-clock-resume ()
-  (when (and
-         org-clock-persist
-         ;; may not work as file is already loaded.
-         (not org-clock-loaded))
+  (when (and org-clock-persist
+             ;; may not work as file is already loaded.
+             (not org-clock-loaded))
     (if (not (file-readable-p org-clock-persist-file))
         (message "Not restoring clock data; %S not found" org-clock-persist-file)
       ;; Resume clock.
@@ -80,6 +79,7 @@
              (let ((org-clock-in-resume 'auto-restart)
                    (org-clock-auto-clock-resolution nil))
                (org-clock-in)
+               (org-lotus-modification-post-action)
                (when (org-invisible-p) (org-show-context))))))
         (_ nil)))))
 
@@ -303,6 +303,7 @@ see similar module and try to implement it."
             (org-clock-out)
             (when buff
               (with-current-buffer buff
+                (org-lotus-modification-post-action)
                 (save-buffer)))))))))
 
 ;;; org-clock-utils-lotus.el ends here

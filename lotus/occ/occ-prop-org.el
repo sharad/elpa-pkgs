@@ -46,9 +46,8 @@
 
 (defun occ-org-entry-get (pom
                           prop)
-  (lotus-org-with-safe-modification
-    (org-entry-get pom
-                   prop)))
+  (org-entry-get pom
+                 prop))
 
 (defun occ-org-entry-put (pom
                           prop
@@ -68,9 +67,8 @@
 
 (defun occ-org-entry-get-multivalued-property (pom
                                                prop)
-  (lotus-org-with-safe-modification
-    (org-entry-get-multivalued-property pom
-                                        prop)))
+  (org-entry-get-multivalued-property pom
+                                      prop))
 
 (defun occ-org-entry-put-multivalued-property (pom
                                                prop
@@ -101,10 +99,9 @@
 (defun occ-org-entry-member-in-multivalued-property (pom
                                                      prop
                                                      values)
-  (lotus-org-with-safe-modification
-    (org-entry-member-in-multivalued-property pom
-                                              prop
-                                              values)))
+  (org-entry-member-in-multivalued-property pom
+                                            prop
+                                            values))
 
 
 ;; (cl-defgeneric occ-do-org-operation (pom
