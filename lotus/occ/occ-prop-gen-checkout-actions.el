@@ -170,7 +170,6 @@ only argument required for some other further processing"
                                            :param-only param-only)
           (occ-obj-gen-each-prop-checkouts (occ-obj-tsk obj)
                                            :param-only param-only)))
-          
 
 
 (cl-defmethod occ-obj-gen-simple-checkouts ((obj null)
