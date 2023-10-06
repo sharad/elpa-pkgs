@@ -1,5 +1,5 @@
 (define-package "occ" "20190310.2156" "occ"
-  '((org "20191021")
+  '((org "9.6.9")
     (dash "1")
     (lotus-utils "1")
     (lotus-helm "1")

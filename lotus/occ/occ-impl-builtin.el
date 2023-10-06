@@ -45,9 +45,9 @@
                                       (prop      symbol)
                                       value)
   "Built in for LIST PROP"
-  (occ-debug "occ-obj-impl-require-p7 prop %s operation %s values %s is called" prop operation value)
-  (message "tsk %s, operation %s prop %s values %s" (occ-obj-Format obj) operation prop
-           value)
+  ;; (occ-debug "occ-obj-impl-require-p7 prop %s operation %s values %s is called" prop operation value)
+  ;; (message "tsk %s, operation %s prop %s values %s" (occ-obj-Format obj) operation prop
+  ;;          value)
   (not (occ-obj-has-p obj
                       prop
                       value)))
@@ -57,13 +57,13 @@
                                       (prop      symbol)
                                       value)
   "Built in for LIST PROP"
-  (occ-message "tsk %s, operation %s prop %s values %s"
-               (occ-obj-Format obj)
-               operation
-               prop
-               value)
+  ;; (occ-message "tsk %s, operation %s prop %s values %s"
+  ;;              (occ-obj-Format obj)
+  ;;              operation
+  ;;              prop
+  ;;              value)
   (ignore obj)
-  (occ-debug "occ-obj-impl-require-p10 prop %s operation %s values %s is called" prop operation value)
+  ;; (occ-debug "occ-obj-impl-require-p10 prop %s operation %s values %s is called" prop operation value)
   (not (occ-obj-has-p obj
                       prop
                       value)))
@@ -73,12 +73,12 @@
                                       (prop      symbol)
                                       value)
   "Built in for LIST PROP"
-  (occ-message "tsk %s, operation %s prop %s values %s"
-               (occ-obj-Format obj)
-               operation
-               prop
-               value)
-  (occ-debug "occ-obj-impl-require-p8 prop %s operation %s values %s is called" prop operation value)
+  ;; (occ-message "tsk %s, operation %s prop %s values %s"
+  ;;              (occ-obj-Format obj)
+  ;;              operation
+  ;;              prop
+  ;;              value)
+  ;; (occ-debug "occ-obj-impl-require-p8 prop %s operation %s values %s is called" prop operation value)
   (occ-obj-has-p obj
                  prop
                  value))
@@ -88,12 +88,12 @@
                                       (prop      symbol)
                                       value)
   "Built in for LIST PROP"
-  (occ-message "tsk %s, operation %s prop %s values %s"
-               (occ-obj-Format obj)
-               operation
-               prop
-               value)
-  (occ-debug "occ-obj-impl-require-p8 prop %s operation %s values %s is called" prop operation value)
+  ;; (occ-message "tsk %s, operation %s prop %s values %s"
+  ;;              (occ-obj-Format obj)
+  ;;              operation
+  ;;              prop
+  ;;              value)
+  ;; (occ-debug "occ-obj-impl-require-p8 prop %s operation %s values %s is called" prop operation value)
   (occ-obj-has-p obj
                  prop
                  value))
@@ -103,12 +103,12 @@
                                       (prop      symbol)
                                       value)
   "Built in for LIST PROP"
-  (occ-message "tsk %s, operation %s prop %s values %s"
-               (occ-obj-Format obj)
-               operation
-               prop
-               value)
-  (occ-debug "occ-obj-impl-require-p8 prop %s operation %s values %s is called" prop operation value)
+  ;; (occ-message "tsk %s, operation %s prop %s values %s"
+  ;;              (occ-obj-Format obj)
+  ;;              operation
+  ;;              prop
+  ;;              value)
+  ;; (occ-debug "occ-obj-impl-require-p8 prop %s operation %s values %s is called" prop operation value)
   (and (occ-obj-checkout-p obj prop value)
        (not (occ-obj-has-p obj
                            prop
@@ -123,7 +123,7 @@
         (ctx   (occ-obj-ctx ctx))
         (value (occ-obj-get-property ctx
                                      property)))
-    (occ-message "occ-obj-impl-values[add] value = %s" value)
+    ;; (occ-message "occ-obj-impl-values[add] value = %s" value)
     (if (occ-obj-op-list-p operation)
         (if (occ-obj-list-p tsk property)
             (if (occ-obj-list-p ctx property)
