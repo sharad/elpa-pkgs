@@ -160,7 +160,7 @@ only argument required for some other further processing"
          ;; will use occ-obj-mapper onward
          (edit-ops (mapcan #'(lambda (operation)
                                      (mapcar #'(lambda (val)
-                                                 (occ-message "Val: %s" val)
+                                                 ;; (occ-message "Val: %s" val)
                                                  (when val
                                                    (occ-obj-gen-edit-if-required obj
                                                                                  prop
@@ -172,7 +172,7 @@ only argument required for some other further processing"
                                                              prop
                                                              operation)))
                              ops)))
-    (occ-message "edit-ops: len %d" (length edit-ops))
+    ;; (occ-message "edit-ops: len %d" (length edit-ops))
     (remove nil
             edit-ops)))
 
