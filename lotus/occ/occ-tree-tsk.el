@@ -55,8 +55,8 @@
 (defun occ-remove-if-not-tree-tsks (fn tree args)
   "Tree remove if return TREE with all node and its subtree removed
 if node return nil for PREDICATE"
-  (tree-remove-if-not-nodes
-   'occ-tree-tsk-subtree fn tree args))
+  (tree-remove-if-not-nodes #'occ-tree-tsk-subtree
+                            fn tree args))
 
 
 (defun occ-tree-trim (limit subtree)
@@ -65,18 +65,23 @@ if node return nil for PREDICATE"
         (occ-debug "occ-tree-trim: limit %s, count %d" limit count)
         (let ((limit (- limit count)))
           (when subtree
-            (let ((sum (apply #'+ count (mapcar #'occ-tsk-children-count subtree))))
+            (let ((sum (apply #'+ count
+                              (mapcar #'occ-tsk-children-count
+                                      subtree))))
               (dolist (entry subtree)
-                (let* ((limit (/ (* limit (1+ (occ-tsk-children-count entry))) sum))
+                (let* ((limit (/ (* limit
+                                    (1+ (occ-tsk-children-count entry)))
+                                 sum))
                        (subtree (occ-tree-trim limit
-                                                (occ-obj-get-property entry 'subtree))))
+                                               (occ-obj-get-property entry 'subtree))))
                   (occ-obj-set-property entry 'subtree
                                         subtree)
                   (occ-obj-set-property entry 'children-count
                                         (if subtree
                                             (apply #'+
                                                    (length subtree)
-                                                   (mapcar #'occ-tsk-children-count subtree))
+                                                   (mapcar #'occ-tsk-children-count
+                                                           subtree))
                                           0)))))))
         (if (> count limit)
             (nthcdr (- count limit) subtree)
@@ -131,7 +136,7 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
               (occ-do-setup-buffer)
               (when file
                 (unless (string= file (buffer-file-name (current-buffer)))
-                  (occ-error "file `%s' and current file %s%d not same, current marker %s."
+                  (occ-error "file `%s' and current file %s:%d not same, current marker %s."
                              file
                              (buffer-file-name (current-buffer))
                              (point)
@@ -160,13 +165,14 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
                                                                                                               subtree-level))))
                                            (subtree-file-list (let ((subtree-file-prop (occ-obj-get-property entry :SUBTREEFILE)))
                                                                 (when subtree-file-prop
+                                                                  ;; (occ-message "subtree-file-prop: %s, file: %s" subtree-file-prop file)
                                                                   (let* ((file         (if file file (buffer-file-name)))
                                                                          (subtree-file (if subtree-file-prop
-                                                                                           (file-relative-name subtree-file-prop
-                                                                                                               (expand-file-name subtree-file-prop
-                                                                                                                                 (if file
-                                                                                                                                     (file-name-directory file)
-                                                                                                                                   default-directory))))))
+                                                                                           (expand-file-name subtree-file-prop
+                                                                                                             (if file
+                                                                                                                 (file-name-directory file)
+                                                                                                               default-directory)))))
+                                                                    ;; (occ-message "subtree-file: %s, default-directory %s" subtree-file default-directory)
                                                                     (if (and subtree-file
                                                                              (file-readable-p subtree-file))
                                                                         (list (occ-tree-tsk-build subtree-file
@@ -192,16 +198,22 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
                     (occ-assert (occ-tsk-descendant-weight entry))
                     (occ-obj-set-property entry 'children-count
                                           (if subtree
-                                              (apply #'+
-                                                     (length subtree)
-                                                     (mapcar #'occ-tsk-children-count subtree))
-                                              ;; (reduce #'+ subtree
-                                              ;;         :initial-value (length subtree)
-                                              ;;         :key #'occ-tsk-children-count)
+                                              ;; (apply #'+
+                                              ;;        (length subtree)
+                                              ;;        (mapcar #'occ-tsk-children-count
+                                              ;;                subtree))
+                                              (reduce #'+
+                                                      subtree
+                                                      :initial-value (length subtree)
+                                                      :key #'occ-tsk-children-count)
                                             0))
                     (dolist (child subtree)
                       (occ-obj-set-property child 'parent entry))
                     entry))))))))))
+
+;; (file-relative-name (expand-file-name "meru/report.org"
+;;                                       "/home/s/hell/Documents/mirror/CreatedContent/contents/virtual/org/default/tasks/")
+;;                     "/home/s/hell/Documents/mirror/CreatedContent/contents/virtual/org/default/tasks/")
 
 (cl-defmethod occ-obj-drived-tsk-builder ((collection occ-tree-collection))
   #'(lambda (file)

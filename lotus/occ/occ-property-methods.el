@@ -517,7 +517,7 @@
     (if (or closed
             (eql todo-type 'done)
             (string= status "HOLD"))
-        -(occ-rank-percentage 100)
+        (occ-rank-percentage 100)
       (occ-rank-percentage 0))))
 
 (cl-defmethod occ-obj-impl-inheritable-p ((prop (eql status)))
@@ -609,7 +609,7 @@
     (if (or closed
             (eql todo-type 'done)
             (string= deadline "HOLD"))
-        -(occ-rank-percentage 100)
+        (occ-rank-percentage 100)
         (occ-rank-percentage 0))))
 
 (cl-defmethod occ-obj-impl-inheritable-p ((prop (eql deadline)))
@@ -632,7 +632,7 @@
     (if (or closed
             (eql todo-type 'done)
             (string= scheduled "HOLD"))
-        -(occ-rank-percentage 100)
+        (occ-rank-percentage 100)
         (occ-rank-percentage 0))))
 
 (cl-defmethod occ-obj-impl-inheritable-p ((prop (eql scheduled)))
