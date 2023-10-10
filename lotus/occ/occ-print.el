@@ -327,13 +327,6 @@ pointing to it."
                        rank
                        no-curr-clock
                        no-propterties)
-  ;; (message "Hello In")
-  ;; (prog1
-  ;;     (occ-obj-format obj 'capitalize
-  ;;                   rank
-  ;;                   no-curr-clock
-  ;;                   no-propterties)
-  ;;   (message "Hello Out"))
   (occ-obj-format obj 'capitalize
                   rank
                   no-curr-clock
