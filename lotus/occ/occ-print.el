@@ -312,7 +312,7 @@ pointing to it."
         (value-obj (occ-obj-obj obj)))
     (format "%s: %s"
             (symbol-name label)
-            (occ-obj-format (occ-obj-name value-obj)))))
+            (occ-obj-format (occ-name value-obj)))))
 
 
 (cl-defmethod occ-obj-nonocc-format (obj)
