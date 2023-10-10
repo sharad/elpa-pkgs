@@ -308,7 +308,7 @@ pointing to it."
                               no-curr-clock
                               no-propterties)
   (ignore case rank no-curr-clock no-propterties)
-  (let ((label     (occ-return-label obj))
+  (let ((label     (and obj (occ-return-label obj)))
         (value-obj (occ-obj-obj obj)))
     (format "%s: %s"
             (symbol-name label)
