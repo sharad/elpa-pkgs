@@ -209,6 +209,7 @@ pointing to it."
                               no-propterties)
   (ignore rank)
   (ignore no-curr-clock)
+  ;; TODO: BUG - only in org-mode buffer
   (concat (when case (concat (occ-obj-title obj case) ": "))
           (occ-obj-fontify-like-in-org-mode obj no-propterties)))
 
@@ -245,7 +246,7 @@ pointing to it."
   (ignore rank)
   (ignore no-curr-clock)
   (ignore no-propterties)
-  (format "%s" obj))
+  (format "%s" (occ-obj-name obj)))
 
 (cl-defmethod occ-obj-format ((obj occ-obj-ctx-tsk)
                               &optional
@@ -311,7 +312,7 @@ pointing to it."
         (value-obj (occ-obj-obj obj)))
     (format "%s: %s"
             (symbol-name label)
-            (occ-obj-format value-obj))))
+            (occ-obj-format (occ-obj-name value-obj)))))
 
 
 (cl-defmethod occ-obj-nonocc-format (obj)
@@ -326,10 +327,13 @@ pointing to it."
                        rank
                        no-curr-clock
                        no-propterties)
-  (occ-obj-format obj 'capitalize
-                  rank
-                  no-curr-clock
-                  no-propterties))
+  (message "Hello In")
+  (prog1
+      (occ-obj-format obj 'capitalize
+                    rank
+                    no-curr-clock
+                    no-propterties)
+    (message "Hello Out")))
 
 (defun occ-obj-FORMAT (obj
                        &optional
