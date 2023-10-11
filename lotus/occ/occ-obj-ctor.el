@@ -287,7 +287,7 @@
 (cl-defmethod occ-obj-make-tsk ((obj number)
                                 &optional
                                 collection)
-  (occ-debug "point %s" obj)
+  ;; (occ-debug "point %s" obj)
   (if (<= obj (point-max))
       (save-restriction
         (save-excursion
@@ -299,7 +299,7 @@
 (cl-defmethod occ-obj-make-tsk ((obj marker)
                                 &optional
                                 collection)
-  (occ-debug "point %s" obj)
+  ;; (occ-debug "point %s" obj)
   (if (and (marker-buffer obj)
            (numberp       (marker-position obj)))
       (with-current-buffer (marker-buffer obj)

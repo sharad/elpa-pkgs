@@ -397,51 +397,50 @@
     (occ-assert transform)
     #'(lambda (action
                candidate)
-        (occ-debug "occ-obj-ap-helm-transformation: lambda: transform = %s" transform)
+        ;; (occ-debug "occ-obj-ap-helm-transformation: lambda: transform = %s" transform)
         (occ-assert transform)
         (let* ((candidate-obj (occ-obj-obj candidate))
                (ap-normal-obj (funcall transform
                                        action
                                        candidate-obj)))
           (occ-assert (occ-ap-normal-p ap-normal-obj))
-          (occ-debug "helm-transformation: got ap-normal-obj = %s" ap-normal-obj)
+          ;; (occ-debug "helm-transformation: got ap-normal-obj = %s" (occ-name ap-normal-obj))
           (let ((helm-actions (occ-obj-ap-helm-actions ap-normal-obj
                                                        candidate-obj)))
             (occ-assert helm-actions)
-            (dolist (a helm-actions)
-              (occ-debug "occ-obj-ap-helm-transformation: helm-action: %s" (prin1-to-string a)))
-            (when helm-actions
-              (dolist (x helm-actions)
-                (occ-debug "occ-obj-ap-helm-transformation: %s -> %s -> %s"
-                             (car x)
-                             (cdr x)
-                             (functionp (cdr x))))
-              (dolist (x helm-actions)
-                (let ((prompt (car x))
-                      (action-callback (cdr x)))
-                  (occ-assert (and prompt
-                                   (stringp prompt))
-                              t
-                              "Prompt(%s) is nil of not string for Action-Callback(%s)"
-                              prompt
-                              action-callback)
-                  (occ-assert (and action-callback
-                                   (functionp action-callback))
-                              t
-                              "Action-Callback(%s) is nil of not function for Prompt(%s)"
-                              action-callback
-                              prompt))
-                (occ-debug "occ-obj-ap-helm-transformation: %s -> %s -> %s"
-                              (car x)
-                              (cdr x)
-                              (functionp (cdr x))))
-              (occ-assert (cl-every #'(lambda (x)
-                                        (let ((f (cl-rest x))) (and f (functionp f))))
-                                    helm-actions))
-              (occ-assert (cl-every #'(lambda (x)
-                                        (let ((p (cl-first x))) (and p (stringp p))))
-                                    helm-actions)))
-            (occ-debug "occ-obj-ap-helm-transformation: lambda: helm-actions %s" helm-actions)
+            ;; (dolist (a helm-actions)
+            ;;   (occ-debug "occ-obj-ap-helm-transformation: helm-action: %s" (prin1-to-string (occ-name a))))
+            ;; (when helm-actions
+            ;;   (dolist (x helm-actions)
+            ;;     (occ-debug "occ-obj-ap-helm-transformation: %s -> %s -> %s"
+            ;;                  (car x)
+            ;;                  (cdr x)
+            ;;                  (functionp (cdr x))))
+            ;;   (dolist (x helm-actions)
+            ;;     (let ((prompt (car x))
+            ;;           (action-callback (cdr x)))
+            ;;       (occ-assert (and prompt
+            ;;                        (stringp prompt))
+            ;;                   t
+            ;;                   "Prompt(%s) is nil of not string for Action-Callback(%s)"
+            ;;                   prompt
+            ;;                   action-callback)
+            ;;       (occ-assert (and action-callback
+            ;;                        (functionp action-callback))
+            ;;                   t
+            ;;                   "Action-Callback(%s) is nil of not function for Prompt(%s)"
+            ;;                   action-callback
+            ;;                   prompt))
+            ;;     (occ-debug "occ-obj-ap-helm-transformation: %s -> %s -> %s"
+            ;;                   (car x)
+            ;;                   (cdr x)
+            ;;                   (functionp (cdr x))))
+            ;;   (occ-assert (cl-every #'(lambda (x)
+            ;;                             (let ((f (cl-rest x))) (and f (functionp f))))
+            ;;                         helm-actions))
+            ;;   (occ-assert (cl-every #'(lambda (x)
+            ;;                             (let ((p (cl-first x))) (and p (stringp p))))
+            ;;                         helm-actions)))
             helm-actions)))))
 
 
@@ -540,8 +539,8 @@
 
 
 (cl-defmethod occ-obj-member-tsk-rank ((obj occ-ctxual-tsk))
-  (occ-debug "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
-  (occ-debug "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
+  ;; (occ-debug "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
+  ;; (occ-debug "occ-obj-member-tsk-rank(occ-ctxual-tsk=%s)" (occ-obj-Format (occ-obj-tsk obj)))
   (let ((tsk (occ-ctxual-tsk-tsk obj)))
     ;; (occ-obj-rank tsk) ;; - BUG
     (occ-obj-rank tsk)))
@@ -576,53 +575,53 @@
 
 ;; occ-ctx - accessors
 (cl-defmethod occ-obj-avgrank ((obj occ-ctx))
-  (occ-debug "occ-obj-avgrank(occ-ctx=%s)" obj)
+  ;; (occ-debug "occ-obj-avgrank(occ-ctx=%s)" obj)
   (let ((avgrank (occ-ctx-avgrank obj)))
     (unless avgrank
       (setf (occ-ctx-avgrank obj) (occ-obj-calculate-avgrank obj)))
     (occ-ctx-avgrank obj)))
 
 (cl-defmethod (setf occ-obj-avgrank) (value (obj occ-ctx))
-  (occ-debug "occ-obj-avgrank(occ-ctx=%s)" obj)
+  ;; (occ-debug "occ-obj-avgrank(occ-ctx=%s)" obj)
   (setf (occ-ctx-avgrank obj) value))
 
 
 ;; occ-ctx - accessors
 (cl-defmethod occ-obj-varirank ((obj occ-ctx))
-  (occ-debug "occ-obj-varirank(occ-ctx=%s)" obj)
+  ;; (occ-debug "occ-obj-varirank(occ-ctx=%s)" obj)
   (let ((varirank (occ-ctx-varirank obj)))
     (unless varirank
       (setf (occ-ctx-varirank obj) (occ-obj-calculate-varirank obj)))
     (occ-ctx-varirank obj)))
 
 (cl-defmethod (setf occ-obj-varirank) (value (obj occ-ctx))
-  (occ-debug "occ-obj-varirank(occ-ctx=%s)" obj)
+  ;; (occ-debug "occ-obj-varirank(occ-ctx=%s)" obj)
   (setf (occ-ctx-varirank obj) value))
 
 
 ;; occ-collection - accessors
 (cl-defmethod occ-obj-avgrank ((obj occ-collection))
-  (occ-debug "occ-obj-avgrank(occ-collection=%s)" obj)
+  ;; (occ-debug "occ-obj-avgrank(occ-collection=%s)" obj)
   (let ((avgrank (occ-collection-avgrank obj)))
     (unless avgrank
       (setf (occ-collection-avgrank obj) (occ-obj-calculate-avgrank obj)))
     (occ-collection-avgrank obj)))
 
 (cl-defmethod (setf occ-obj-avgrank) (value (obj occ-collection))
-  (occ-debug "occ-obj-avgrank(occ-collection=%s)" obj)
+  ;; (occ-debug "occ-obj-avgrank(occ-collection=%s)" obj)
   (setf (occ-collection-avgrank obj) value))
 
 
 ;; occ-ctxual-tsk - accessors
 (cl-defmethod occ-obj-varirank ((obj occ-collection))
-  (occ-debug "occ-obj-varirank(occ-collection=%s)" obj)
+  ;; (occ-debug "occ-obj-varirank(occ-collection=%s)" obj)
   (let ((varirank (occ-collection-varirank obj)))
     (unless varirank
       (setf (occ-collection-varirank obj) (occ-obj-calculate-varirank obj)))
     (occ-collection-varirank obj)))
 
 (cl-defmethod (setf occ-obj-varirank) (value (obj occ-collection))
-  (occ-debug "occ-obj-varirank(occ-collection=%s)" obj)
+  ;; (occ-debug "occ-obj-varirank(occ-collection=%s)" obj)
   (setf (occ-collection-varirank obj) value))
 
 

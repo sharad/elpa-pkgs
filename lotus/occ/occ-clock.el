@@ -73,7 +73,7 @@
   (ignore ap-normal)
   (ignore ap-transf)
   (ignore timeout)
-  (occ-debug "occ-do-clock-in(marker=%s)" obj)
+  ;; (occ-debug "occ-do-clock-in(marker=%s)" obj)
   (let ((org-log-note-clock-out nil))
     (when (marker-buffer obj)
       (with-current-buffer (marker-buffer obj)
@@ -97,7 +97,7 @@
   (ignore ap-normal)
   (ignore ap-transf)
   (ignore timeout)
-  (occ-debug "occ-do-clock-in(occ-tsk=%s)" obj)
+  ;; (occ-debug "occ-do-clock-in(occ-tsk=%s)" obj)
   (if (occ-config-clock-in)
       (occ-do-clock-in (occ-obj-marker obj))
     (occ-debug "occ-do-clock-in(obj occ-tsk): clock-in not allowed.")))
@@ -109,7 +109,7 @@
                                ap-normal
                                ap-transf
                                timeout)
-  (occ-debug "occ-do-clock-in(occ-ctsk=%s)" obj)
+  ;; (occ-debug "occ-do-clock-in(occ-ctsk=%s)" obj)
   (if (or (occ-obj-unnamed-p    obj)
           (occ-obj-associable-p obj))
       (occ-do-clock-in (occ-ctsk-tsk obj)
@@ -131,7 +131,7 @@
                                timeout)
   ;;TODO add org-insert-log-not
   "return "
-  (occ-debug "occ-do-clock-in(occ-ctxual-tsk=%s)" obj)
+  ;; (occ-debug "occ-do-clock-in(occ-ctxual-tsk=%s)" obj)
   (let* ((retval         nil)
          (old-ctxual-tsk (cl-first *occ-clocked-ctxual-tsk-ctx-history*))
          (old-tsk        (when old-ctxual-tsk (occ-ctxual-tsk-tsk old-ctxual-tsk)))
@@ -237,7 +237,7 @@ for adding properties to heading."
   (ignore ap-normal)
   (ignore ap-transf)
   (unless builder (error "Builder can not be nil"))
-  (occ-debug "occ-do-clock-in(occ-ctx=%s)" obj)
+  ;; (occ-debug "occ-do-clock-in(occ-ctx=%s)" obj)
   (if (occ-obj-clockable-p obj)
     (let ((filters   (or filters (occ-match-filters)))
           (builder   (or builder #'occ-obj-build-ctxual-tsk-with))
@@ -254,10 +254,10 @@ for adding properties to heading."
                                                  :ap-transf           ap-transf
                                                  :auto-select-if-only auto-select-if-only
                                                  :timeout             timeout)))
-        (occ-debug "occ-do-clock-in((obj occ-ctx)): selected  returned-ctxual-tsk=%s ret-label=%s value=%s"
-                          returned-ctxual-tsk
-                          (occ-obj-return-in-labels-p returned-ctxual-tsk occ-return-select-label)
-                          (occ-obj-format (occ-obj-obj returned-ctxual-tsk)))
+        ;; (occ-debug "occ-do-clock-in((obj occ-ctx)): selected  returned-ctxual-tsk=%s ret-label=%s value=%s"
+        ;;                   (occ-name returned-ctxual-tsk)
+        ;;                   (occ-obj-return-in-labels-p returned-ctxual-tsk occ-return-select-label)
+        ;;                   (occ-obj-format (occ-obj-obj returned-ctxual-tsk)))
         (if (occ-obj-return-in-labels-p returned-ctxual-tsk ;TODO: should return t if action were done than select[=identity] ;; occ-return-label
                                         occ-return-select-label)
             (let ((ctxual-tsk (occ-obj-obj returned-ctxual-tsk)))
@@ -275,14 +275,12 @@ for adding properties to heading."
           (progn
             ;; here create unnamed tsk, no need
             (setq *occ-update-current-ctx-msg* "null clock")
+            ;; (occ-delayed-select-obj-prop-edit-when-idle obj obj occ-idle-timeout)
             (occ-debug "No clock found please set a match for this ctx %s, add it using M-x occ-prop-edit-safe."
                        obj)
             (occ-debug "occ-do-clock-in(ctx):  with this-command=%s" this-command)
-            ;; (occ-delayed-select-obj-prop-edit-when-idle obj obj occ-idle-timeout)
-            (occ-debug "occ-do-clock-in((obj occ-ctx)): calling occ-obj-safe-ignore-quit-properties-window-editor(obj[%s])"
-                       (occ-obj-Format obj))
-            (occ-debug "occ-do-clock-in: Edit properties of a tsk %s to make associable to current context."
-                         (occ-obj-Format obj))
+            ;; (occ-debug "occ-do-clock-in: Edit properties of a tsk %s to make associable to current context."
+            ;;              (occ-obj-Format obj))
             (occ-obj-safe-ignore-quit-properties-window-editor obj
                                                                :filters          (occ-list-filters)
                                                                :builder          #'occ-obj-build-ctsk-with
@@ -290,7 +288,7 @@ for adding properties to heading."
                                                                :ap-normal        ap-normal
                                                                :ap-transf        ap-transf
                                                                :timeout          timeout)))))
-    (occ-debug "ctx %s is not clockable." obj)))
+    (occ-debug "ctx %s is not clockable." (occ-name obj))))
 
 
 (cl-defmethod occ-do-clock-in-if-associable ((obj occ-obj-ctx-tsk)

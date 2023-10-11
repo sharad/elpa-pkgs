@@ -172,7 +172,7 @@ pointing to it."
                                no-propterties)
   "occ-obj-format")
 
-(cl-defmethod occ-obj-format (obj
+(cl-defmethod occ-obj-format ((obj string)
                               &optional
                               case
                               rank
