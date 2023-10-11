@@ -108,7 +108,8 @@ only argument required for some other further processing"
                              prop
                              vdirector
                              :param-only param-only)
-     (occ-message "No match"))))
+     (when nil
+       (occ-message "No match")))))
 
 
 (cl-defmethod occ-obj-gen-checkouts-if-required ((obj  occ-obj-tsk)
