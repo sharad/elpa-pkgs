@@ -90,6 +90,23 @@
 (cl-defmethod occ-obj-rank ((obj occ-ranktbl))
   (occ-ranktbl-value obj))
 
+
+(cl-defmethod (delete occ-obj-prop-rank) ((obj  occ-ranktbl)
+                                          (prop symbol))
+  (let ((rplist (occ-ranktbl-plist obj)))
+    (setf (occ-ranktbl-plist obj)
+          (plist-put rplist prop nil))))
+(cl-defmethod (delete occ-obj-rank-inheritable) ((obj occ-ranktbl))
+  (setf (occ-ranktbl-inheritable obj) nil))
+(cl-defmethod (delete occ-obj-rank-nonheritable) ((obj occ-ranktbl))
+  (setf (occ-ranktbl-nonheritable obj) nil))
+(cl-defmethod (delete occ-obj-rank-max-decendent) ((obj occ-ranktbl))
+  (setf (occ-ranktbl-max-decendent obj) nil))
+(cl-defmethod (delete occ-obj-rank-acquired) ((obj occ-ranktbl))
+  (occ-error "Error"))
+(cl-defmethod (delete occ-obj-rank) ((obj occ-ranktbl))
+  (setf (occ-ranktbl-value obj) nil))
+
 (cl-defmethod (setf occ-obj-prop-rank) ((rank number)
                                         (obj  occ-ranktbl)
                                         (prop symbol))
