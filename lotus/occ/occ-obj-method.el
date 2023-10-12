@@ -76,9 +76,27 @@
     occ-debug-object))
 
 
+(cl-defmethod occ-obj-fmt-tree-p (obj)
+  nil)
+
+(cl-defmethod occ-obj-fmt-tree-p ((obj occ-obj-tsk))
+  t)
+
+(cl-defmethod occ-obj-fmt-tree-p ((obj occ-ranktbl))
+  t)
+
 (defun occ-dformat (level &rest args)
   (let ((levelstr (if (> level 0) (make-string (* 4 level) ?\s) "")))
     (concat levelstr (apply #'format args))))
+
+(defun occ-dformat-kv (level obj slot)
+  (occ-dformat (1+ level) "%s:%s%s\n"
+               slot
+               (if (occ-obj-fmt-tree-p (occ-cl-obj-slot-value obj slot)) "\n" " ")
+               (occ-obj-describe-string (occ-cl-obj-slot-value obj slot)
+                                        (if (occ-obj-fmt-tree-p (occ-cl-obj-slot-value obj slot))
+                                            (+ 2 level)
+                                          0))))
 
 (cl-defmethod occ-obj-describe-string (obj
                                        &optional
@@ -94,11 +112,11 @@
                          (occ-obj-describe-string (occ-obj-ranktbl-with (occ-obj-tsk obj)
                                                                         (occ-obj-ctx obj))
                                                   (+ 2 level)))
-
+            (occ-dformat-kv level obj 'descendant-count)
+            (occ-dformat-kv level obj 'descendant-weight)
             (apply #'concat
                    (loop for p in (occ-cl-class-slots (occ-cl-inst-classname obj))
-                         collect (occ-dformat (1+ level) "%s: %s\n" p
-                                              (occ-obj-describe-string (occ-cl-obj-slot-value obj p) (+ 2 level))))))))
+                         collect (occ-dformat-kv level obj p))))))
 
 (cl-defmethod occ-obj-describe-string ((obj occ-ranktbl)
                                        &optional
@@ -124,6 +142,11 @@
                                        &optional
                                        level)
   (occ-dformat level "Nil"))
+
+(cl-defmethod occ-obj-describe-string ((obj symbol)
+                                       &optional
+                                       level)
+  (occ-dformat level "%s" obj))
 
 
 (cl-defmethod occ-do-describe-obj ((obj occ-obj-tsk))

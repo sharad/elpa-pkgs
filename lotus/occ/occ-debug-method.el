@@ -123,12 +123,6 @@
                        args)))))
 
 
-(defun occ-debug (fmt &rest args)
-  (apply #'occ-debug-index 3 fmt args))
-
-;;;###autoload
-(defun occ-dmessage (fmt &rest args)
-  (apply #'occ-debug-index 3 :dmessage fmt args))
 
 
 (defun occ-critical (fmt &rest args)
@@ -147,28 +141,57 @@
   (apply #'occ-lwarn :warning fmt args))
 
 (defun occ-info (fmt &rest args)
- (apply #'occ-lwarn :info fmt args))
+  (apply #'occ-lwarn :info fmt args))
 
-(defun occ-nodisplay (fmt &rest args)
-  (apply #'occ-lwarn :nodisplay fmt args))
+(when nil
+
+  (defun occ-debug (fmt &rest args)
+    (apply #'occ-debug-index 3 fmt args))
+
+  ;;;### autoload
+  (defun occ-dmessage (fmt &rest args)
+    (apply #'occ-debug-index 3 :dmessage fmt args))
+
+ (defun occ-nodisplay (fmt &rest args)
+   (apply #'occ-lwarn :nodisplay fmt args))
+
+ ;;;### autoload
+ (defun occ-message (fmt &rest args)
+   (apply #'message fmt args)
+   (apply #'occ-debug :debug fmt args))
+
+ ;;;### autoload
+ (defun occ-debug-uncond (&rest args)
+   (when occ-debug-uncond
+     (apply #'occ-lwarn nil args))))
 
 
-;;;###autoload
-(defun occ-message (fmt &rest args)
-  (apply #'message fmt args)
-  (apply #'occ-debug :debug fmt args))
+(fmakunbound 'occ-debug)
+(fmakunbound 'occ-dmessage)
+(fmakunbound 'occ-nodisplay)
+(fmakunbound 'occ-message)
+(fmakunbound 'occ-debug-uncond)
 
-;;;###autoload
-(defun occ-debug-uncond (&rest args)
-  (when occ-debug-uncond
-    (apply #'occ-lwarn nil args)))
+(defmacro occ-debug (fmt &rest args)
+  nil)
+
+(defmacro occ-dmessage (fmt &rest args)
+  nil)
+
+(defmacro occ-nodisplay (fmt &rest args)
+  nil)
+
+(defmacro occ-message (fmt &rest args)
+  nil)
+
+(defmacro occ-debug-uncond (&rest args)
+  nil)
 
 
 (cl-defmethod occ-do-print-tsk ((obj occ-obj-tsk))
   "Dump tsk"
   t)
   ;; (occ-debug "occ-do-print-tsk: %s" obj)
-  
 
 (cl-defmethod occ-do-print-tsk ((obj occ-obj-ctx-tsk))
   "Dump ctx-tsk"
