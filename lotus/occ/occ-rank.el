@@ -166,6 +166,11 @@
                                             (property symbol))
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
+    (if (occ-obj-inheritable-p property)
+        (occ-obj-reset-rank-inheritable tsk
+                                        ctx)
+      (occ-obj-reset-rank-nonheritable tsk
+                                       ctx))
     (occ-obj-reset-prop-rank rt
                              property)))
 
@@ -175,6 +180,11 @@
                                             (property symbol))
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
+    (if (occ-obj-inheritable-p property)
+        (occ-obj-reset-rank-inheritable tsk
+                                        ctx)
+      (occ-obj-reset-rank-nonheritable tsk
+                                       ctx))
     (occ-obj-reset-prop-rank rt
                              property)))
 
@@ -287,7 +297,8 @@
                                                    ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
-    (occ-obj-reset-rank-inheritable rt)))
+    (occ-obj-reset-rank-inheritable rt)
+    (occ-obj-tsk-do-descendant #'occ-obj-reset-rank)))
 (cl-defmethod occ-obj-reset-rank-nonheritable-with ((tsk occ-obj-tsk)
                                                     ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
@@ -302,7 +313,9 @@
                                                 ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
-    (occ-obj-reset-rank-acquired rt)))
+    (occ-obj-reset-rank tsk ctx)
+    (when nil
+      (occ-obj-reset-rank-acquired rt))))
 (cl-defmethod occ-obj-reset-rank-with ((tsk occ-obj-tsk)
                                        ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
