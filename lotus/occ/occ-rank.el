@@ -91,20 +91,20 @@
   (occ-ranktbl-value obj))
 
 
-(cl-defmethod occ-obj-prop-rank-reset ((obj  occ-ranktbl)
+(cl-defmethod occ-obj-reset-prop-rank ((obj  occ-ranktbl)
                                        (prop symbol))
   (let ((rplist (occ-ranktbl-plist obj)))
     (setf (occ-ranktbl-plist obj)
           (plist-put rplist prop nil))))
-(cl-defmethod occ-obj-rank-inheritable-reset ((obj occ-ranktbl))
+(cl-defmethod occ-obj-reset-rank-inheritable ((obj occ-ranktbl))
   (setf (occ-ranktbl-inheritable obj) nil))
-(cl-defmethod occ-obj-rank-nonheritable-reset ((obj occ-ranktbl))
+(cl-defmethod occ-obj-reset-nonheritable-rank ((obj occ-ranktbl))
   (setf (occ-ranktbl-nonheritable obj) nil))
-(cl-defmethod occ-obj-rank-max-decendent-reset ((obj occ-ranktbl))
+(cl-defmethod occ-obj-rank-reset-max-decendent ((obj occ-ranktbl))
   (setf (occ-ranktbl-max-decendent obj) nil))
-(cl-defmethod occ-obj-rank-acquired-reset ((obj occ-ranktbl))
+(cl-defmethod occ-obj-reset-rank-acquired ((obj occ-ranktbl))
   (occ-error "Error"))
-(cl-defmethod occ-obj-rank-reset ((obj occ-ranktbl))
+(cl-defmethod occ-obj-reset-rank ((obj occ-ranktbl))
   (setf (occ-ranktbl-value obj) nil))
 
 (cl-defmethod (setf occ-obj-prop-rank) ((rank number)
@@ -160,6 +160,23 @@
     (occ-obj-prop-rank rt
                        property)))
 
+
+(cl-defmethod occ-obj-reset-prop-rank-with ((tsk  occ-obj-tsk)
+                                            (ctx  occ-obj-ctx)
+                                            (property symbol))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (occ-obj-reset-prop-rank rt
+                             property)))
+
+
+(cl-defmethod occ-obj-reset-prop-rank-with ((tsk  occ-obj-tsk)
+                                            (ctx  null)
+                                            (property symbol))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (occ-obj-reset-prop-rank rt
+                             property)))
 
 (cl-defmethod (setf occ-obj-prop-rank-with) ((rank number)
                                              (tsk  occ-obj-tsk)
@@ -231,6 +248,18 @@
                                                                                                      ctx)))))
        (setf (occ-obj-rank-nonheritable rt) rank)))
    (occ-obj-rank-nonheritable rt)))
+(cl-defmethod occ-obj-rank-max-decendent-with ((tsk occ-obj-tsk)
+                                               (ctx occ-obj-ctx))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (unless (occ-obj-rank-max-decendent rt)
+      (setf (occ-obj-rank-max-decendent rt)
+            (apply #'max
+                   (occ-obj-rank-with tsk ctx)
+                   (mapcar #'(lambda (xtsk) (occ-obj-rank-max-decendent-with xtsk ctx))
+                           (occ-tree-tsk-subtree tsk)))))
+    (occ-assert (occ-obj-rank-max-decendent rt))
+    (occ-obj-rank-max-decendent rt)))
 (cl-defmethod occ-obj-rank-acquired-with ((tsk occ-obj-tsk)
                                           ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
@@ -254,6 +283,32 @@
         (setf (occ-obj-rank rt) rank)))
     (occ-obj-rank rt)))
 
+(cl-defmethod occ-obj-reset-rank-inheritable-with ((tsk occ-obj-tsk)
+                                                   ctx)
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (occ-obj-reset-rank-inheritable rt)))
+(cl-defmethod occ-obj-reset-rank-nonheritable-with ((tsk occ-obj-tsk)
+                                                    ctx)
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (occ-obj-reset-rank-nonheritable rt)))
+(cl-defmethod occ-obj-reset-rank-max-decendent-with ((tsk occ-obj-tsk)
+                                                     (ctx occ-obj-ctx))
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (occ-obj-reset-rank-max-decendent rt)))
+(cl-defmethod occ-obj-reset-rank-acquired-with ((tsk occ-obj-tsk)
+                                                ctx)
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (occ-obj-reset-rank-acquired rt)))
+(cl-defmethod occ-obj-reset-rank-with ((tsk occ-obj-tsk)
+                                       ctx)
+  (let ((rt (occ-obj-ranktbl-with tsk
+                                  ctx)))
+    (occ-obj-reset-rank rt)))
+
 (cl-defmethod (setf occ-obj-rank-inheritable-with) ((rank number)
                                                     (tsk occ-obj-tsk)
                                                     ctx)
@@ -266,18 +321,6 @@
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
     (setf (occ-obj-rank-nonheritable rt) rank)))
-(cl-defmethod occ-obj-rank-max-decendent-with ((tsk occ-obj-tsk)
-                                               (ctx occ-obj-ctx))
-  (let ((rt (occ-obj-ranktbl-with tsk
-                                  ctx)))
-    (unless (occ-obj-rank-max-decendent rt)
-      (setf (occ-obj-rank-max-decendent rt)
-            (apply #'max
-                   (occ-obj-rank-with tsk ctx)
-                   (mapcar #'(lambda (xtsk) (occ-obj-rank-max-decendent-with xtsk ctx))
-                           (occ-tree-tsk-subtree tsk)))))
-    (occ-assert (occ-obj-rank-max-decendent rt))
-    (occ-obj-rank-max-decendent rt)))
 (cl-defmethod (setf occ-obj-rank-max-decendent-with) ((rank number)
                                                       (tsk occ-obj-tsk)
                                                       (ctx occ-obj-ctx))
@@ -305,24 +348,39 @@
   (occ-obj-rank-nonheritable-with (occ-obj-tsk obj)
                                   (occ-obj-ctx obj)))
 (cl-defmethod occ-obj-rank-max-decendent ((obj occ-obj-tsk))
-  ;; (occ-message "occ-obj-rank-max-decendent occ-obj-tsk: %s" (occ-obj-format obj))
   (occ-obj-rank-max-decendent-with (occ-obj-tsk obj)
                                    (occ-obj-ctx obj)))
 (cl-defmethod occ-obj-rank-acquired ((obj occ-obj-tsk))
   (occ-obj-rank-acquired-with (occ-obj-tsk obj)
                               (occ-obj-ctx obj)))
 (cl-defmethod occ-obj-rank ((obj occ-obj-tsk))
-  ;; (occ-message "occ-obj-rank occ-obj-tsk: %s" (occ-obj-format obj))
   (occ-obj-rank-with (occ-obj-tsk obj)
                      (occ-obj-ctx obj)))
 (cl-defmethod occ-obj-rank ((obj occ-ctxual-tsk))
-  ;; (occ-message "occ-obj-rank occ-ctxual-tsk: %s" (occ-obj-format obj))
   (occ-obj-rank-with (occ-obj-tsk obj)
                      (occ-obj-ctx obj)))
 (cl-defmethod occ-obj-rank ((obj occ-ctsk))
-  ;; (occ-message "occ-obj-rank occ-ctsk: %s" (occ-obj-format obj))
   (occ-obj-rank-with (occ-obj-tsk obj)
                      nil))
+
+(cl-defmethod occ-obj-reset-rank-inheritable ((obj occ-obj-tsk))
+  (occ-obj-reset-rank-inheritable-with (occ-obj-tsk obj)
+                                       (occ-obj-ctx obj)))
+(cl-defmethod occ-obj-reset-rank-nonheritable ((obj occ-obj-tsk))
+  (occ-obj-reset-rank-nonheritable-with (occ-obj-tsk obj)
+                                        (occ-obj-ctx obj)))
+(cl-defmethod occ-obj-reset-rank-max-decendent ((obj occ-obj-tsk))
+  (occ-obj-reset-rank-max-decendent-with (occ-obj-tsk obj)
+                                         (occ-obj-ctx obj)))
+(cl-defmethod occ-obj-reset-rank-acquired ((obj occ-obj-tsk))
+  (occ-obj-reset-rank-acquired-with (occ-obj-tsk obj)
+                                    (occ-obj-ctx obj)))
+(cl-defmethod occ-obj-reset-rank ((obj occ-obj-tsk))
+  (occ-obj-reset-rank-with (occ-obj-tsk obj)
+                           (occ-obj-ctx obj)))
+(cl-defmethod occ-obj-reset-rank ((obj occ-ctsk))
+  (occ-obj-reset-rank-with (occ-obj-tsk obj)
+                           nil))
 
 (cl-defmethod (setf occ-obj-rank-inheritable) ((rank number)
                                                (obj occ-obj-tsk))
