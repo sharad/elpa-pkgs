@@ -1064,5 +1064,9 @@ pointing to it."
         ((plist-get 'name obj) (plist-get 'name obj))
         ((plist-get :name obj) (plist-get :name obj))
         ((plist-get "name" obj) (plist-get "name" obj))))
+
+(cl-defmethod occ-name ((obj buffer))
+  "return name"
+  (buffer-name obj))
 
 ;;; occ-obj-accessor.el ends here

@@ -76,6 +76,25 @@
     occ-debug-object))
 
 
+(cl-defmethod occ-obj-describe-string (obj
+                                       &optional
+                                       level)
+  "something")
+
+(cl-defmethod occ-obj-describe-string ((obj occ-obj-tsk)
+                                       &optional
+                                       level)
+  (let* ((level    (or level 0))
+         (levelstr (if (> level 0) (make-string (* 4 level) ?\s) "")))
+    (concat (format "%sObject: %s\n\n" levelstr (occ-obj-Format obj))
+            (apply #'concat
+                   (loop for p in (occ-cl-class-slots (occ-cl-inst-classname obj))
+                         collect (format "%s%s: %s\n"
+                                         levelstr
+                                         p
+                                         (occ-obj-describe-string (occ-cl-obj-slot-value obj p) (1+ level))))))))
+
+
 (cl-defmethod occ-do-describe-obj ((obj occ-obj-tsk))
   (let ((buf (get-buffer-create (format "*helpful occ-object: %s*"
                                         (occ-obj-format obj)))))
@@ -83,22 +102,14 @@
       (let ((inhibit-read-only t))
         (setf (buffer-string) "")
         ;; (cl-prettyprint obj)
-        (insert (format "Object: %s\n\n" (occ-obj-Format obj)))
-        (insert (pp-to-string obj)))
+        (insert (occ-obj-describe-string obj)))
       (read-only-mode 1))
-    (switch-to-buffer-other-window buf)))
+    (switch-to-buffer-other-window buf)
+    nil))
 
 
 (cl-defmethod occ-do-display-obj ((obj occ-obj-tsk))
-  (let ((buf (get-buffer-create (format "*helpful occ-object: %s*"
-                                        (occ-obj-format obj)))))
-    (with-current-buffer buf
-      (let ((inhibit-read-only t))
-        (setf (buffer-string) "")
-        (insert (format "Object: %s\n\n" (occ-obj-display obj)))
-        (insert (pp-to-string obj)))
-      (read-only-mode 1))
-    (switch-to-buffer-other-window buf)))
+  (occ-do-describe-obj obj))
 
 
 ;; do both fast and interactive editing.
