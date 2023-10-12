@@ -88,18 +88,27 @@
 (cl-defmethod occ-obj-describe-string ((obj occ-obj-tsk)
                                        &optional
                                        level)
-  (let ((level    (or level 0)))
+  (let ((level (or level 0)))
     (concat (occ-dformat level "Object: %s\n\n" (occ-obj-Format obj))
             (apply #'concat
                    (loop for p in (occ-cl-class-slots (occ-cl-inst-classname obj))
-                         collect (occ-dformat  (1+ level) "%s: %s\n" p
-                                               (occ-obj-describe-string (occ-cl-obj-slot-value obj p))))))))
+                         collect (occ-dformat (1+ level) "%s: %s\n" p
+                                              (occ-obj-describe-string (occ-cl-obj-slot-value obj p) (+ 2 level))))))))
 
 (cl-defmethod occ-obj-describe-string ((obj occ-ranktbl)
-                                       &optional level)
-  (occ-dformat level "Ranktbl %s" (occ-ranktbl-name obj))
-  (occ-dformat level " Rank: %s\n" (occ-ranktbl-value obj))
-  (occ-dformat level " Plist: %s\n" (occ-ranktbl-plist obj)))
+                                       &optional
+                                       level)
+  (concat (occ-dformat level "Ranktbl %s\n" (occ-ranktbl-name obj))
+          (occ-dformat level " Rank: %s\n" (occ-ranktbl-value obj))
+          (occ-dformat level " Plist: %s\n" (occ-ranktbl-plist obj))
+          (occ-dformat level " Inheritable: %s\n" (occ-ranktbl-inheritable obj))
+          (occ-dformat level " Nonheritable: %s\n" (occ-ranktbl-nonheritable obj))
+          (occ-dformat level " Max-Decendent: %s\n" (occ-ranktbl-max-decendent obj))))
+
+(cl-defmethod occ-obj-describe-string ((obj string)
+                                       &optional
+                                       level)
+  (occ-dformat level obj))
 
 
 (cl-defmethod occ-do-describe-obj ((obj occ-obj-tsk))
