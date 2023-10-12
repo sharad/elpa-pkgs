@@ -76,6 +76,10 @@
     occ-debug-object))
 
 
+(defun occ-dformat (level &rest args)
+  (let ((levelstr (if (> level 0) (make-string (* 4 level) ?\s) "")))
+    (concat levelstr (apply #'format args))))
+
 (cl-defmethod occ-obj-describe-string (obj
                                        &optional
                                        level)
@@ -84,15 +88,18 @@
 (cl-defmethod occ-obj-describe-string ((obj occ-obj-tsk)
                                        &optional
                                        level)
-  (let* ((level    (or level 0))
-         (levelstr (if (> level 0) (make-string (* 4 level) ?\s) "")))
-    (concat (format "%sObject: %s\n\n" levelstr (occ-obj-Format obj))
+  (let ((level    (or level 0)))
+    (concat (occ-dformat level "Object: %s\n\n" (occ-obj-Format obj))
             (apply #'concat
                    (loop for p in (occ-cl-class-slots (occ-cl-inst-classname obj))
-                         collect (format "%s%s: %s\n"
-                                         levelstr
-                                         p
-                                         (occ-obj-describe-string (occ-cl-obj-slot-value obj p) (1+ level))))))))
+                         collect (occ-dformat  (1+ level) "%s: %s\n" p
+                                               (occ-obj-describe-string (occ-cl-obj-slot-value obj p))))))))
+
+(cl-defmethod occ-obj-describe-string ((obj occ-ranktbl)
+                                       &optional level)
+  (occ-dformat level "Ranktbl %s" (occ-ranktbl-name obj))
+  (occ-dformat level " Rank: %s\n" (occ-ranktbl-value obj))
+  (occ-dformat level " Plist: %s\n" (occ-ranktbl-plist obj)))
 
 
 (cl-defmethod occ-do-describe-obj ((obj occ-obj-tsk))
