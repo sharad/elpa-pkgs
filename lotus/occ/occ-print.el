@@ -343,6 +343,31 @@ pointing to it."
                   no-propterties))
 
 
+(cl-defmethod cl-print-object ((obj occ-ctx)
+                               stream)
+  (princ (format "<CTX %s>" (occ-name obj)) stream))
+
+(cl-defmethod cl-print-object ((obj occ-ctsk)
+                               stream)
+  (princ (format "<CTSK %s>" (occ-name obj)) stream))
+
+(cl-defmethod cl-print-object ((obj occ-ranktbl)
+                               stream)
+  (princ (format "<RANKTBL %s>" (occ-name obj)) stream))
+
+(cl-defmethod cl-print-object ((obj occ-ranktbl)
+                               stream)
+  (princ (format "<RANKTBLaa %s>" (occ-name obj)) stream))
+
+;; (type-of (occ-get-debug-obj))
+;; (message "%S" (occ-get-debug-obj))
+
+;; (message "%s" (occ-obj-make-ctx-at-point))
+
+;; (cl-print-object (occ-make-ranktbl) standard-output)
+;; (message "%s" (occ-make-ranktbl) standard-output)
+
+
 (cl-defgeneric occ-obj-display (obj)
   "Neatly Output OBJ with its properties")
 

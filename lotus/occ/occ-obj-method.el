@@ -86,7 +86,7 @@
   t)
 
 (defun occ-dformat (level &rest args)
-  (let ((levelstr (if (> level 0) (make-string (* 4 level) ?\s) "")))
+  (let ((levelstr (if (> level 0) (make-string (* 2 level) ?\s) "")))
     (concat levelstr (apply #'format args))))
 
 (defun occ-dformat-kv (level obj slot)
