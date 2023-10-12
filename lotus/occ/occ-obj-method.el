@@ -94,6 +94,7 @@
                          (occ-obj-describe-string (occ-obj-ranktbl-with (occ-obj-tsk obj)
                                                                         (occ-obj-ctx obj))
                                                   (+ 2 level)))
+
             (apply #'concat
                    (loop for p in (occ-cl-class-slots (occ-cl-inst-classname obj))
                          collect (occ-dformat (1+ level) "%s: %s\n" p
@@ -114,6 +115,10 @@
                                        level)
   (occ-dformat level obj))
 
+(cl-defmethod occ-obj-describe-string ((obj number)
+                                       &optional
+                                       level)
+  (occ-dformat level "%f" obj))
 
 (cl-defmethod occ-obj-describe-string ((obj null)
                                        &optional
