@@ -2,6 +2,19 @@
 
 
 
+
+ Backtrace:
+"  backtrace-to-string(nil)
+  org-element--cache-sync(#<buffer start.org>)
+  apply(org-element--cache-sync #<buffer start.org>)
+  timer-event-handler([t 0 0 599999 nil org-element--cache-sync (#<buffer start.org>) idle 999999 nil])
+  helm-read-from-minibuffer(nil nil nil noresume nil nil nil)
+  helm-internal((... ... ... ... ... ...) nil nil noresume nil \"*helm: occ sel...\" nil nil nil)
+  helm((... ... ... ... ... ...) nil nil noresume nil \"*helm: occ sel...\" nil nil nil)
+  helm(:sources (... ... ... ... ... ...) :buffer \"*helm: occ sel...\" :resume noresume)
+
+
+
 Warning (org-element-cache): org-element--cache: Org parser error in start.org::#<marker at 21419 in start.org>. Resetting.
  The error was: (error "Invalid search bound (wrong side of point)")
  Backtrace:

@@ -161,7 +161,7 @@
   (occ-ctx-buffer obj))
 
 (cl-defmethod occ-obj-buffer ((obj occ-ctsk))
-  (let ((ctx (occ-obj-ctx ctx)))
+  (let ((ctx (occ-obj-ctx obj)))
     (occ-ctx-buffer ctx)))
 
 
@@ -169,7 +169,7 @@
   (occ-ctx-file obj))
 
 (cl-defmethod occ-obj-file ((obj occ-ctsk))
-  (let ((ctx (occ-obj-ctx ctx)))
+  (let ((ctx (occ-obj-ctx obj)))
     (occ-ctx-file ctx)))
 
 
