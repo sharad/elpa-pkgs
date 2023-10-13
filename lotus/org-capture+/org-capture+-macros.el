@@ -30,8 +30,8 @@
 (defmacro with-org-capture-run (marker type target template plist before-body &rest after-body)
   `(let* ((before-finalize #'(lambda (,marker) ,before-body))
           (after-finalize  #'(lambda (,marker) ,@after-body))
-          (plist           (append (list :before-finalize before-finalize
-                                         :after-finalize  after-finalize)
+          (plist           (append (list :cap+before-finalize before-finalize
+                                         :cap+after-finalize  after-finalize)
                                    ,plist)))
      (org-capture+-debug :debug "plist %s \n" plist)
      (apply #'org-capture-run
@@ -59,7 +59,7 @@
 (defmacro before-org-capture-run (marker type target template plist &rest body)
   `(let* ((before-finalize #'(lambda (,marker) ,@body))
           (plist (append
-                  (list :before-finalize before-finalize)
+                  (list :cap+before-finalize before-finalize)
                   ,plist)))
      (org-capture+-debug :debug "plist %s \n" plist)
      (apply #'org-capture-run
