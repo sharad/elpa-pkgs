@@ -142,7 +142,7 @@
                                                0))
           (rank    (occ-obj-rank-with tsk
                                       ctx)))
-      (occ-dformat (1+ level) "acquired(%d) + ancestor-rank(%s) / dweight(%d) = rank(%d)\n"
+      (occ-dformat (1+ level) "acquired(%f) + ancestor-rank(%s) / dweight(%f) = rank(%f)\n"
                    acqrank
                    ancrank
                    dweight
