@@ -208,6 +208,24 @@
                              property) rank)))
 
 
+(cl-defmethod occ-obj-prop-rank ((obj  occ-obj-tsk)
+                                 (property symbol))
+  (occ-obj-prop-rank-with (occ-obj-tsk obj)
+                          (occ-obj-ctx obj)
+                          property))
+(cl-defmethod occ-obj-reset-prop-rank ((obj  occ-obj-tsk)
+                                       (property symbol))
+  (occ-obj-reset-prop-rank-with (occ-obj-tsk obj)
+                                (occ-obj-ctx obj)
+                                property))
+(cl-defmethod (setf occ-obj-prop-rank) ((rank number)
+                                        (obj  occ-obj-tsk)
+                                        (property symbol))
+  (setf (occ-obj-prop-rank-with (occ-obj-tsk obj)
+                                (occ-obj-ctx obj)
+                                property) rank))
+
+
 (cl-defmethod occ-obj-ancestor-rank-with ((tsk null)
                                           (ctx occ-obj-ctx)
                                           (height number))
@@ -429,7 +447,7 @@
                                         (occ-obj-ctx obj))
         rank))
 (cl-defmethod (setf occ-obj-rank-max-decendent) ((rank number)
-                                            (obj occ-obj-tsk))
+                                                 (obj occ-obj-tsk))
   (setf (occ-obj-rank-max-decendent-with (occ-obj-tsk obj)
                                          (occ-obj-ctx obj))
         rank))

@@ -526,10 +526,13 @@ method provided."))))
                                 (operation symbol)
                                 (prop      symbol)
                                 value)
-  (occ-do-intf-operation obj
-                         operation
-                         prop
-                         value))
+  (prog1
+    (occ-do-intf-operation obj
+                           operation
+                           prop
+                           value)
+    (when (occ-obj-op-write-p operation)
+      (occ-obj-reset-prop-rank obj))))
 (cl-defmethod occ-do-operation ((obj       occ-obj-ctx)
                                 (operation symbol)
                                 (prop      symbol)
@@ -627,6 +630,13 @@ method provided."))))
   t)
 (cl-defmethod occ-obj-op-delete-p ((operation (eql delete)))
   t)
+
+(cl-defmethod occ-obj-op-write-p ((operation symbol))
+  t)
+(cl-defmethod occ-obj-op-write-p ((operation (eql get)))
+  nil)
+(cl-defmethod occ-obj-op-write-p ((operation (eql member)))
+  nil)
 
 
 (cl-defmethod occ-obj-get ((user occ-user-agent)
