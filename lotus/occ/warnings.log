@@ -2,6 +2,23 @@
 
 
 
+Warning (org-element-cache): org-element--cache: Org parser error in start.org::#<marker at 21419 in start.org>. Resetting.
+ The error was: (error "Invalid search bound (wrong side of point)")
+ Backtrace:
+"  backtrace-to-string(nil)
+  org-element-at-point(#<marker at 21419 in start.org>)
+  org-element-cache-map(#f(compiled-function (el) #<bytecode -0x808808c66927af9>) :next-re \"^\\\\*+ \" :fail-re \"^\\\\*+ \" :narrow t)
+  org-scan-tags(org-alert--dispatch (lambda (todo tags-list level) (progn (setq org-cached-props nil) (or (and (org-time< (or (org-cached-entry-get nil \"DEADLINE\") \"\") 1697221800.0) (org-time>= (or (org-cached-entry-get nil \"DEADLINE\") \"\") 1697135400.0)) (and (org-time< (or (org-cached-entry-get nil \"SCHEDULED\") \"\") 1697221800.0) (org-time>= (or (org-cached-entry-get nil \"SCHEDULED\") \"\") 1697135400.0))))) nil)
+  org-map-entries(org-alert--dispatch \"SCHEDULED>=\\\"<today>\\\"+SCHEDULED<\\\"<tomorrow>\\\"|DEADLI...\" agenda (org-agenda-skip-entry-if 'todo org-done-keywords-for-agenda))
+  org-alert-check()
+  apply(org-alert-check nil)
+  timer-event-handler([t 25897 15328 938399 300 org-alert-check nil nil 805000 nil])
+"
+ Please report this to Org mode mailing list (M-x org-submit-bug-report). Disable showing Disable logging
+
+
+
+
 The error was: (error "org-element--cache: Emergency exit")
  Backtrace:
 "  backtrace-to-string(nil)
