@@ -32,7 +32,9 @@
 
 
 (defun occ-list-tsk-build (file
-                           collection)
+                           collection
+                           &optional
+                           subtree-level)
   "Build recursive org tsks from org FILE (or current buffer) using
 TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
   (let ((tsk-builder-at-point   (occ-obj-tsk-builder-at-point collection)))
@@ -52,10 +54,13 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
                                  t
                                  file)))))))
 
-(cl-defmethod occ-obj-drived-tsk-builder ((collection occ-list-collection))
+(cl-defmethod occ-obj-drived-tsk-builder ((collection occ-list-collection)
+                                          &optional
+                                          subtree-level)
   #'(lambda (file)
       (occ-list-tsk-build file
-                          collection)))
+                          collection
+                          subtree-level)))
 
 (cl-defmethod occ-obj-build-tsks ((collection occ-list-collection))
   (let ((depth (occ-obj-collection-depth collection))

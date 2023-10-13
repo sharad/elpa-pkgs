@@ -215,11 +215,13 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
 ;;                                       "/home/s/hell/Documents/mirror/CreatedContent/contents/virtual/org/default/tasks/")
 ;;                     "/home/s/hell/Documents/mirror/CreatedContent/contents/virtual/org/default/tasks/")
 
-(cl-defmethod occ-obj-drived-tsk-builder ((collection occ-tree-collection))
+(cl-defmethod occ-obj-drived-tsk-builder ((collection occ-tree-collection)
+                                          &optional
+                                          subtree-level)
   #'(lambda (file)
       (occ-tree-tsk-build file
                           collection
-                          1)))
+                          subtree-level)))
 
 (cl-defmethod occ-obj-build-tsks ((collection occ-tree-collection))
   (let ((depth (occ-obj-collection-depth collection))

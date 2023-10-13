@@ -198,15 +198,20 @@
                                                                             :immediate-finish immediate-finish)
         (progn                          ;before
           (unless immediate-finish        ;*NOTE:
-            (let* ((tmp-tsk  (occ-obj-make-tsk-with marker tsk))
-                   (tmp-ctsk (occ-obj-build-ctsk-with tmp-tsk ctx)))
+            (let* ((tmp-tsk  (occ-obj-make-tsk-with marker
+                                                    tsk))
+                   (tmp-ctsk (occ-obj-build-ctsk-with tmp-tsk
+                                                      ctx)))
               (occ-do-op-props-edit tmp-ctsk)))
           t)
-        (let ((child-tsk (occ-obj-make-tsk-with marker tsk))) ;after
+        (let ((child-tsk (occ-obj-make-tsk-with marker
+                                                tsk))) ;after
           (when child-tsk
-            (occ-do-induct-child tsk child-tsk)
+            (occ-do-induct-child tsk
+                                 child-tsk)
             (when clock-in
-              (let ((child-ctxual-tsk (occ-obj-build-ctxual-tsk-with child-tsk ctx)))
+              (let ((child-ctxual-tsk (occ-obj-build-ctxual-tsk-with child-tsk
+                                                                     ctx)))
                 (occ-do-try-clock-in child-ctxual-tsk)))))))))
 
 (cl-defmethod occ-do-capture ((obj null) &key

@@ -286,19 +286,21 @@
 
 (cl-defmethod occ-obj-make-tsk ((obj number)
                                 &optional
-                                collection)
+                                collection
+                                subtree-level)
   ;; (occ-debug "point %s" obj)
   (if (<= obj (point-max))
       (save-restriction
         (save-excursion
           (goto-char obj)
           ;; (occ-obj-make-tsk-at-point (occ-obj-collection collection) nil)
-          (let ((builder (occ-obj-drived-tsk-builder collection)))
+          (let ((builder (occ-obj-drived-tsk-builder collection subtree-level)))
             (funcall builder nil))))))
 
 (cl-defmethod occ-obj-make-tsk ((obj marker)
                                 &optional
-                                collection)
+                                collection
+                                subtree-level)
   ;; (occ-debug "point %s" obj)
   (if (and (marker-buffer obj)
            (numberp       (marker-position obj)))
@@ -306,15 +308,18 @@
         (if (<= (marker-position obj)
                 (point-max))
             (occ-obj-make-tsk (marker-position obj)
-                              (occ-obj-collection collection))))))
+                              (occ-obj-collection collection)
+                              subtree-level)))))
 
 (cl-defmethod occ-obj-make-tsk ((obj null)
                                 &optional
-                                collection)
+                                collection
+                                subtree-level)
   (ignore obj)
   (occ-debug "current pos %s" (point-marker))
   (occ-obj-make-tsk (point-marker)
-                    (occ-obj-collection collection)))
+                    (occ-obj-collection collection)
+                    subtree-level))
 
 (cl-defmethod occ-obj-make-tsk ((obj occ-tsk)
                                 &optional
@@ -323,33 +328,54 @@
 
 
 (cl-defmethod occ-obj-make-tsk-with ((obj null)
-                                     (collection occ-obj-collection))
+                                     (collection occ-obj-collection)
+                                     &optional
+                                     subtree-level)
   (occ-obj-make-tsk obj
-                    collection))
+                    collection
+                    subtree-level))
 (cl-defmethod occ-obj-make-tsk-with ((obj number)
-                                     (collection occ-obj-collection))
+                                     (collection occ-obj-collection)
+                                     &optional
+                                     subtree-level)
   (occ-obj-make-tsk obj
-                    collection))
+                    collection
+                    subtree-level))
 (cl-defmethod occ-obj-make-tsk-with ((obj marker)
-                                     (collection occ-obj-collection))
+                                     (collection occ-obj-collection)
+                                     &optional
+                                     subtree-level)
   (occ-obj-make-tsk obj
-                    collection))
+                    collection
+                    subtree-level))
 
 (cl-defmethod occ-obj-make-tsk-with ((obj null)
-                                     (tsk occ-obj-tsk))
+                                     (tsk occ-obj-tsk)
+                                     &optional
+                                     subtree-level)
   (occ-obj-make-tsk obj
-                    (occ-obj-collection (occ-obj-tsk tsk))))
+                    (occ-obj-collection (occ-obj-tsk tsk))
+                    (or subtree-level
+                        (occ-obj-set-property tsk 'subtree-level))))
 (cl-defmethod occ-obj-make-tsk-with ((obj number)
-                                     (tsk occ-obj-tsk))
+                                     (tsk occ-obj-tsk)
+                                     &optional
+                                     subtree-level)
   (occ-obj-make-tsk obj
-                    (occ-obj-collection tsk)))
+                    (occ-obj-collection tsk)
+                    subtree-level))
 (cl-defmethod occ-obj-make-tsk-with ((obj marker)
-                                     (tsk occ-obj-tsk))
+                                     (tsk occ-obj-tsk)
+                                     &optional
+                                     subtree-level)
   (occ-obj-make-tsk obj
-                    (occ-obj-collection (occ-obj-tsk tsk))))
+                    (occ-obj-collection (occ-obj-tsk tsk))
+                    subtree-level))
 
 (cl-defmethod occ-obj-make-tsk-with ((obj occ-tsk)
-                                     anything)
+                                     anything
+                                     &optional
+                                     subtree-level)
   obj)
 
 
