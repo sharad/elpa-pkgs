@@ -532,7 +532,8 @@ method provided."))))
                            prop
                            value)
     (when (occ-obj-op-write-p operation)
-      (occ-obj-reset-prop-rank obj))))
+      (occ-obj-reset-prop-rank obj
+                               prop))))
 (cl-defmethod occ-do-operation ((obj       occ-obj-ctx)
                                 (operation symbol)
                                 (prop      symbol)
@@ -558,15 +559,26 @@ method provided."))))
         ;;                          (occ-obj-ctx obj)
         ;;                          operation
         ;;                          prop)
-      (if (cl-call-next-method (occ-obj-marker obj)
-                               operation
-                               prop
-                               value)
-          (cl-call-next-method)
-        (occ-error "Failed to %s on marker %s of %s in org world"
-                   operation
-                   (occ-obj-marker obj)
-                   (occ-obj-Format obj)))
+      ;; (if (cl-call-next-method (occ-obj-marker obj)
+      ;;                          operation
+      ;;                          prop
+      ;;                          value)
+      ;;     (cl-call-next-method)
+      ;;   (occ-error "Failed to %s on marker %s of %s in org world"
+      ;;              operation
+      ;;              (occ-obj-marker obj)
+      ;;              (occ-obj-Format obj)))
+
+
+    (if (occ-do-operation (occ-obj-marker obj)
+                          operation
+                          prop
+                          value)
+        (cl-call-next-method)
+      (occ-error "Failed to %s on marker %s of %s in org world"
+                 operation
+                 (occ-obj-marker obj)
+                 (occ-obj-Format obj)))
     (occ-error "operation %s not allowed for prop %s"
                operation
                prop)))

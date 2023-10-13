@@ -100,7 +100,7 @@
   (setf (occ-ranktbl-inheritable obj) nil))
 (cl-defmethod occ-obj-reset-nonheritable-rank ((obj occ-ranktbl))
   (setf (occ-ranktbl-nonheritable obj) nil))
-(cl-defmethod occ-obj-rank-reset-max-decendent ((obj occ-ranktbl))
+(cl-defmethod occ-obj-reset-rank-max-decendent ((obj occ-ranktbl))
   (setf (occ-ranktbl-max-decendent obj) nil))
 (cl-defmethod occ-obj-reset-rank-acquired ((obj occ-ranktbl))
   (occ-error "Error"))
@@ -167,10 +167,10 @@
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
     (if (occ-obj-inheritable-p property)
-        (occ-obj-reset-rank-inheritable tsk
-                                        ctx)
-      (occ-obj-reset-rank-nonheritable tsk
-                                       ctx))
+        (occ-obj-reset-rank-inheritable-with tsk
+                                             ctx)
+      (occ-obj-reset-rank-nonheritable-with tsk
+                                            ctx))
     (occ-obj-reset-prop-rank rt
                              property)))
 
@@ -181,10 +181,10 @@
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
     (if (occ-obj-inheritable-p property)
-        (occ-obj-reset-rank-inheritable tsk
-                                        ctx)
-      (occ-obj-reset-rank-nonheritable tsk
-                                       ctx))
+        (occ-obj-reset-rank-inheritable-with tsk
+                                             ctx)
+      (occ-obj-reset-rank-nonheritable-with tsk
+                                            ctx))
     (occ-obj-reset-prop-rank rt
                              property)))
 
@@ -334,14 +334,14 @@
                                                 ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
-    (occ-obj-reset-rank tsk ctx)
+    (occ-obj-reset-rank-with tsk ctx)
     (when nil
       (occ-obj-reset-rank-acquired rt))))
 (cl-defmethod occ-obj-reset-rank-with ((tsk occ-obj-tsk)
                                        ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
-    (occ-obj-reset-rank-max-decendent tsk ctx)
+    (occ-obj-reset-rank-max-decendent-with tsk ctx)
     (occ-obj-tsk-do-ancestor-with tsk
                                   ctx
                                   #'occ-obj-reset-rank-max-decendent)
