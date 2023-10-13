@@ -108,6 +108,7 @@
                                        level)
   (let ((level (or level 0)))
     (concat (occ-dformat level "Object: %s\n\n" (occ-obj-Format obj))
+            (occ-obj-rank-desc-str obj level)
             (occ-dformat (1+ level) "Rank: %s"
                          (occ-obj-describe-string (occ-obj-ranktbl-with (occ-obj-tsk obj)
                                                                         (occ-obj-ctx obj))
@@ -127,6 +128,25 @@
           (occ-dformat level " Inheritable: %s\n" (occ-ranktbl-inheritable obj))
           (occ-dformat level " Nonheritable: %s\n" (occ-ranktbl-nonheritable obj))
           (occ-dformat level " Max-Decendent: %s\n" (occ-ranktbl-max-decendent obj))))
+
+(cl-defmethod occ-obj-rank-desc-str ((obj occ-obj-tsk)
+                                     &optional
+                                     level)
+  (let ((tsk (occ-obj-tsk obj))
+        (ctx (occ-obj-ctx obj)))
+    (let ((acqrank (occ-obj-rank-acquired-with tsk
+                                               ctx))
+          (dweight (occ-tsk-descendant-weight tsk))
+          (ancrank (occ-obj-ancestor-rank-with (occ-tsk-parent tsk)
+                                               ctx
+                                               0))
+          (rank    (occ-obj-rank-with tsk
+                                      ctx)))
+      (occ-dformat (1+ level) "acquired(%d) + ancestor-rank(%s) / dweight(%d) = rank(%d)\n"
+                   acqrank
+                   ancrank
+                   dweight
+                   rank))))
 
 (cl-defmethod occ-obj-describe-string ((obj string)
                                        &optional

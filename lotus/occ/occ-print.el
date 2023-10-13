@@ -285,22 +285,6 @@ pointing to it."
                           (occ-obj-add-face-properties heading
                                                        :strike-through t))))))))
 
-
-
-
-(defun occ-obj-add-face-properties (text &rest properties)
-  ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Changing-Properties.html
-  ;; Create a copy of the text string
-  (let ((modified-str (copy-sequence text)))
-    ;; Iterate through the text string and modify the background color at each position
-    (dotimes (pos (length text))
-      (let ((face-at-pos (get-text-property pos 'face text)))
-        (add-text-properties pos (1+ pos)
-                             (list 'face (cons face-at-pos
-                                               properties))
-                             modified-str)))
-    modified-str))
-
 (cl-defmethod occ-obj-format ((obj occ-return)
                               &optional
                               case
@@ -355,9 +339,9 @@ pointing to it."
                                stream)
   (princ (format "<RANKTBL %s>" (occ-name obj)) stream))
 
-(cl-defmethod cl-print-object ((obj occ-ranktbl)
+(cl-defmethod cl-print-object ((obj occ-tree-tsk)
                                stream)
-  (princ (format "<RANKTBLaa %s>" (occ-name obj)) stream))
+  (princ (format "<TSK-TREE %s>" (occ-name obj)) stream))
 
 ;; (type-of (occ-get-debug-obj))
 ;; (message "%S" (occ-get-debug-obj))

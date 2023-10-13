@@ -274,9 +274,9 @@
                                           ctx)
   (let ((rt (occ-obj-ranktbl-with tsk
                                   ctx)))
-    (+ (* (occ-tsk-descendant-weight tsk)
-          (occ-obj-rank-inheritable-with tsk
-                                         ctx))
+    (+ (/ (occ-obj-rank-inheritable-with tsk
+                                         ctx)
+          (occ-tsk-descendant-weight tsk))
        (occ-obj-rank-nonheritable-with tsk
                                        ctx))))
 (cl-defmethod occ-obj-rank-with ((tsk occ-obj-tsk)
@@ -286,10 +286,10 @@
     (unless (occ-obj-rank rt)
       (let ((rank (+ (occ-obj-rank-acquired-with tsk
                                                  ctx)
-                     (* (occ-tsk-descendant-weight tsk)
-                        (occ-obj-ancestor-rank-with (occ-tsk-parent tsk)
+                     (/ (occ-obj-ancestor-rank-with (occ-tsk-parent tsk)
                                                     ctx
-                                                    0)))))
+                                                    0)
+                        (occ-tsk-descendant-weight tsk)))))
         (setf (occ-obj-rank rt) rank)))
     (occ-obj-rank rt)))
 
