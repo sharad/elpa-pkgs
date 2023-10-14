@@ -121,7 +121,7 @@
       (with-current-buffer (marker-buffer marker)
         (goto-char marker)
         (lotus-org-with-safe-modification
-         (org-entry-put nil "Effort" "10")))
+          (org-entry-put nil "Effort" "10")))
       (cons subtask marker))))
 
 (when nil

@@ -46,14 +46,14 @@
 (require 'calendar)
 (require 'org)
 (require 'org-element)
+(require 'org-macs)
 (eval-when-compile
   (require 'org-macs))
 (require 'org-refile)
 (require 'org-agenda)
 
 
-(defvar safe-org-refile-get-location-modes
-  '(emacs-lisp-mode org-mode))
+(defvar safe-org-refile-get-location-modes '(org-mode)) ;; '(emacs-lisp-mode org-mode)
 
 (setq safe-org-refile-get-location-modes '(org-mode))
 
@@ -62,7 +62,13 @@
 (defun org-lotus-modification-post-action ()
   (when (org-element--cache-active-p)
     (org-element-cache-reset)))
-
+;;;###autoload
+(defun lotus-org-insert (&rest args)
+  (prog1
+      (apply #'insert args)
+    (org-lotus-modification-post-action)
+    (with-current-buffer (org-base-buffer (current-buffer))
+      (org-lotus-modification-post-action))))
 
 ;; Misc Macros Starts
 
@@ -442,7 +448,7 @@ With prefix arg C-u, copy region instad of killing it."
               (org-end-of-subtree)
               ;; (org-end-of-meta-data-and-drawers)
               (org-end-of-subtree))
-          (insert (format org-refile-region-format text)))))))
+          (lotus-org-insert (format org-refile-region-format text)))))))
 
 (defvar org-refile-string-format "%s\n")
 
@@ -468,15 +474,15 @@ With prefix arg C-u, copy region instad of killing it."
               ;; (org-end-of-meta-data)
               (org-end-of-subtree))
           (org-insert-subheading nil)
-          (insert
-           (format org-refile-string-format text)))))))
+          (lotus-org-insert (format org-refile-string-format
+                                    text)))))))
 
 (defun org-find-heading-marker (heading &optional create)
   (let ((heading-marker (org-find-exact-headline-in-buffer heading)))
     (when create
       (unless heading-marker
         (goto-char (point-max))
-        (insert (format "* %s\n" heading))
+        (lotus-org-insert (format "* %s\n" heading))
         (setq heading-marker (org-find-exact-headline-in-buffer heading))))
     heading-marker))
 
@@ -546,7 +552,7 @@ With prefix arg C-u, copy region instad of killing it."
             (end-of-line 1)
             (org-end-of-subtree)
             (org-insert-subheading nil)))
-        (insert (format org-refile-string-format subheading))
+        (lotus-org-insert (format org-refile-string-format subheading))
         (org-lotus-modification-post-action)
         (point)))))
 
@@ -574,7 +580,7 @@ With prefix arg C-u, copy region instad of killing it."
           ;; (org-end-of-meta-data)
           (org-end-of-subtree))
         (org-insert-subheading nil)
-        (insert (format org-refile-string-format subheading))
+        (lotus-org-insert (format org-refile-string-format subheading))
         (org-lotus-modification-post-action)
         (point)))))
 
@@ -596,7 +602,7 @@ With prefix arg C-u, copy region instad of killing it."
       (beginning-of-line)
       (end-of-line 1)
       (org-insert-heading-after-current)
-      (insert (format org-refile-string-format subheading))
+      (lotus-org-insert (format org-refile-string-format subheading))
       (org-lotus-modification-post-action)
       (point))))
 
@@ -902,8 +908,8 @@ With prefix arg C-u, copy region instad of killing it."
 ;;            (goto-char org-log-note-marker)
 ;;            (move-marker org-log-note-marker nil)
 ;;            ;; Make sure point is at the beginning of an empty line.
-;;            (cond ((not (bolp)) (let ((inhibit-read-only t)) (insert "\n")))
-;;                  ((looking-at "[ \t]*\\S-") (save-excursion (insert "\n"))))
+;;            (cond ((not (bolp)) (let ((inhibit-read-only t)) (lotus-org-insert "\n")))
+;;                  ((looking-at "[ \t]*\\S-") (save-excursion (lotus-org-insert "\n"))))
 ;;            ;; In an existing list, add a new item at the top level.
 ;;            ;; Otherwise, indent line like a regular one.
 ;;            (let ((itemp (org-in-item-p)))
@@ -913,12 +919,12 @@ With prefix arg C-u, copy region instad of killing it."
 ;;                                   (goto-char itemp) (org-list-struct))))
 ;;                     (org-list-get-ind (org-list-get-top-point struct) struct)))
 ;;                  (org-indent-line)))
-;;            (insert (org-list-bullet-string "-") (pop lines))
+;;            (lotus-org-insert (org-list-bullet-string "-") (pop lines))
 ;;            (let ((ind (org-list-item-body-column (line-beginning-position))))
 ;;              (dolist (line lines)
-;;                (insert "\n")
+;;                (lotus-org-insert "\n")
 ;;                (indent-line-to ind)
-;;                (insert line)))
+;;                (lotus-org-insert line)))
 ;;            (message "Note stored")
 ;;            (org-back-to-heading t)
 ;;            (org-cycle-hide-drawers 'children))
