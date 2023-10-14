@@ -59,16 +59,16 @@
 
 
 ;;;###autoload
-(defun org-lotus-modification-post-action ()
-  (when (org-element--cache-active-p)
+(defun org-lotus-modification-post-action (&optional force)
+  (when (or force
+            (org-element--cache-active-p))
     (org-element-cache-reset)))
+
 ;;;###autoload
 (defun lotus-org-insert (&rest args)
   (prog1
       (apply #'insert args)
-    (org-lotus-modification-post-action)
-    (with-current-buffer (org-base-buffer (current-buffer))
-      (org-lotus-modification-post-action))))
+    (org-lotus-modification-post-action t)))
 
 ;; Misc Macros Starts
 
