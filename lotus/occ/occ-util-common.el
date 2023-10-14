@@ -251,10 +251,11 @@
     ;; Iterate through the text string and modify the background color at each position
     (dotimes (pos (length text))
       (let ((face-at-pos (get-text-property pos 'face text)))
-        (add-text-properties pos (1+ pos)
-                             (list 'face (cons face-at-pos
-                                               properties))
-                             modified-str)))
+        (when (= ?w (char-syntax (aref text pos)))
+          (add-text-properties pos (1+ pos)
+                               (list 'face (cons face-at-pos
+                                                 properties))
+                               modified-str))))
     modified-str))
 
 
