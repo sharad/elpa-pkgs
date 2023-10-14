@@ -1,6 +1,14 @@
 
 
-
+Warning (org-element-cache): org-element--cache: Org parser error in Unnamed.org::33096. Resetting.
+ The error was: (error "Invalid search bound (wrong side of point)")
+ Backtrace:
+"  backtrace-to-string(nil)
+  org-element-at-point()
+  org-back-to-heading(t)
+  org-get-heading(notags)
+  (if (org-before-first-heading-p) 'noheading (org-get-heading 'notags))
+  (let ((builder (occ-obj-tsk-builder collection)) (heading-with-string-prop (if (org-before-first-heading-p) 'noheading (org-get-head
 
 
  Backtrace:

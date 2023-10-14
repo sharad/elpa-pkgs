@@ -37,10 +37,6 @@
 ;;;###autoload
 (defun lotus-wrapper-insinuate ()
   (interactive)
-  (with-eval-after-load "org"
-    (add-function :around
-                  (symbol-function 'org--newline)
-                  #'around--org--newline))
   (with-eval-after-load "files"
     (add-function :override
                   (symbol-function 'file-truename)
@@ -88,8 +84,6 @@
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
   (interactive)
-  (remove-function (symbol-function 'org--newline)
-                   #'around--org--newline)
   (remove-function (symbol-function 'file-truename)
                    #'override--file-truename)
   (remove-function (symbol-function 'pm--run-other-hooks)
