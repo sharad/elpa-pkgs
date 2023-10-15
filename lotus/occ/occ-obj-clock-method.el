@@ -292,7 +292,7 @@ then return t else nil"
 (defvar *occ-tsk-current-ctx*               nil)
 
 
-(defvar occ-ignore-buffer-names   '(" *helm" "*Help*") "occ-ignore-buffer-names")
+(defvar occ-ignore-buffer-names   '("*scratch*" "*Org Note*" " *helm" "*Help*") "occ-ignore-buffer-names")
 (defvar occ-ignore-buffer-regexps '(" *helm" "*Help*" "*helpful") "occ-ignore-buffer-names")
 
 (defun occ-add-ignore-buffer-names ()
@@ -300,6 +300,13 @@ then return t else nil"
   (let ((buffname (buffer-name (current-buffer))))
     (cl-pushnew buffname
                 occ-ignore-buffer-names)))
+
+(defun occ-obj-ignore-ctx-p (ctx-buff)
+  (or (member (buffer-name ctx-buff)
+              occ-ignore-buffer-names)
+      (cl-some #'(lambda (re)
+                   (string-match re (buffer-name ctx-buff)))
+               occ-ignore-buffer-regexps)))
 
 (cl-defmethod occ-do-describe-try-to-clock-in ((curr occ-ctx)
                                                (prev occ-ctx))
@@ -353,8 +360,7 @@ then return t else nil"
   (occ-debug "begin occ-do-clock-in-curr-ctx-if-not")
   ;;TODO: problem
   ;; (lotus-with-other-frame-event-debug "occ-do-clock-in-curr-ctx-if-not" :cancel
-  (if (not (member (buffer-name (current-buffer))
-                   occ-ignore-buffer-names))
+  (if (not (occ-obj-ignore-ctx-p (current-buffer)))
       (progn
         (occ-message "buff: %s" (buffer-name (current-buffer)))
         (occ-debug "%s: occ-do-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug" (time-stamp-string))
