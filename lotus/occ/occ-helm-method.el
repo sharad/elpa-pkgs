@@ -365,13 +365,14 @@ select candidate from it."
                   occ-ignore-buffer-names)
     (let ((source (occ-obj-helm-fun-action-function-call-source "Other Actions"
                                                                 (list (cons (format "Add current buffer %s to ignore list" (current-buffer))
-                                                                            #'(lambda (buff)
-                                                                                (let ((buff (or buff (buffer-name (current-buffer)))))
-                                                                                  (cl-pushnew buff occ-ignore-buffer-names)
+                                                                            #'(lambda ()
+                                                                                (let ((buff (current-buffer)))
+                                                                                  (cl-pushnew (buffer-name buff)
+                                                                                              occ-ignore-buffer-names)
                                                                                   (occ-helm-null-candidate (occ-obj-make-ctx buff)))))))))
-      (occ-build-hsrc-source source
-                             :rank 0
-                             :level :optional))))
+      (list (occ-build-hsrc-source source
+                                   :rank 0
+                                   :level :optional)))))
 
 (defun occ-helm-build-dummy-sources ()
   (list (occ-obj-helm-build-dummy-source "Create fast child task may use template" #'occ-do-fast-create-child)
@@ -432,7 +433,7 @@ select candidate from it."
                                                                     :prompt           prompt)))
     (append collection-sources
             (occ-helm-build-dummy-sources)
-            (list (occ-helm-build-extra-actions-ctx-buffer-source)))))
+            (occ-helm-build-extra-actions-ctx-buffer-source))))
 
 
 
@@ -522,11 +523,10 @@ select candidate from it."
                                                 #'occ-candidate-compare))))
       (occ-debug "candidates: %s" candidates)
       (occ-debug "preferred-candidate: %s" preferred-candidate)
-
       (if preferred-candidate
-                    ;; Mean if first cand-sources has only one element then it will pack
-                    ;; that element using `occ-build-hsrc-source' to be acted by default
-                    ;; action.
+          ;; Mean if first cand-sources has only one element then it will pack
+          ;; that element using `occ-build-hsrc-source' to be acted by default
+          ;; action.
           (occ-obj-helm-act-on-candidate obj
                                          preferred-candidate
                                          :filters          filters
