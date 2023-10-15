@@ -137,7 +137,7 @@
                                                                               'get
                                                                               (nth 1 c))))
                                                   plist))))
-    (occ-assert (cl-evenp (length     plist)))
+    (occ-assert (cl-evenp (length plist)))
     (occ-debug "occ-tsk-plist-from-org: plist %s" plist)
     (occ-assert (cl-evenp (length ret-plist)))
     ret-plist))
