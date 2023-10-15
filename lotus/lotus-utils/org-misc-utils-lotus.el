@@ -479,16 +479,20 @@ With prefix arg C-u, copy region instad of killing it."
 
 (defun org-find-heading-marker (heading &optional create)
   (let ((heading-marker (org-find-exact-headline-in-buffer heading)))
-    (when create
-      (unless heading-marker
-        (goto-char (point-max))
-        (lotus-org-insert (format "* %s\n" heading))
+    (unless (or (not create)
+                heading-marker)
+      (let ((max-point (point-max))
+            (heading-to-insert (format "* %s\n" heading)))
+        (goto-char max-point)
+        (lotus-org-insert heading-to-insert)
+        (goto-char max-point)
         (setq heading-marker (org-find-exact-headline-in-buffer heading))))
     heading-marker))
 
 (defun org-find-file-heading-marker (file heading &optional create)
   (org-with-cloned-buffer (find-file-noselect file) "-<tree>"
-    (org-mode)
+    (unless (eq major-mode 'org-mode)
+      (org-mode))
     ;; (with-current-buffer (find-file-noselect file)
     (org-find-heading-marker heading create)))
 
@@ -544,8 +548,9 @@ With prefix arg C-u, copy region instad of killing it."
         (if (org-heading-has-child-p)
             (progn
               (org-goto-last-child)
-              (beginning-of-line)
-              (end-of-line 1)
+              (org-back-to-heading t)
+              ;; (beginning-of-line)
+              ;; (end-of-line 1)
               (org-insert-heading-after-current))
           (progn
             (beginning-of-line)
@@ -553,7 +558,7 @@ With prefix arg C-u, copy region instad of killing it."
             (org-end-of-subtree)
             (org-insert-subheading nil)))
         (lotus-org-insert (format org-refile-string-format subheading))
-        (org-lotus-modification-post-action)
+        (org-back-to-heading t)
         (point)))))
 
 (defun org-insert-grandsubheading-at-point (subheading)

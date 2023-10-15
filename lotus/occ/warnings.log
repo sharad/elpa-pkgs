@@ -1,5 +1,21 @@
 
 
+
+Debugger entered--Lisp error: (error "Invalid search bound (wrong side of point)")
+  org-element-paragraph-parser(34323 (34323))
+  org-element--current-element(34323 element nil nil)
+  org-element--parse-to(34354)
+  (if cached-only (if (and (org-element--cache-active-p) (or (not org-element--cache-sync-requests) (< pom (aref (car org-element--cache-sync-requests) 1)))) (progn (org-element--cache-find pom))) (org-element--parse-to pom))
+  (setq element (if cached-only (if (and (org-element--cache-active-p) (or (not org-element--cache-sync-requests) (< pom (aref (car org-element--cache-sync-requests) 1)))) (progn (org-element--cache-find pom))) (org-element--parse-to pom)))
+  (let (element) (if (org-element--cache-active-p) (progn (if (not (save-current-buffer (set-buffer (or ... ...)) org-element--cache)) (org-element-cache-reset) (if cached-only nil (org-element--cache-sync (current-buffer) pom))))) (setq element (if cached-only (if (and (org-element--cache-active-p) (or (not org-element--cache-sync-requests) (< pom (aref ... 1)))) (progn (org-element--cache-find pom))) (org-element--parse-to pom))) (if (and (org-element--cache-active-p) element (org-element--cache-verify-element element)) (progn (setq element (org-element--parse-to pom)))) (if (eq 'org-data (org-element-type element)) nil (if (and cached-only (not (and element (or (= pom ...) (and ... ... ...) (and ... ... ...) (and ... ... ...))))) nil (if (not (eq (org-element-type element) 'section)) element (org-element-at-point (1+ pom) cached-only)))))
+  org-element-at-point()
+  org-back-to-heading(t)
+  org-get-heading(notags)
+  (if (org-before-first-heading-p) 'noheading (org-get-heading 'notags))
+  (let ((builder (occ-obj-tsk-builder collection)) (heading-with-string-prop (if (org-before-first-heading-p) 'noheading (org-get-heading 'notags)))) (let ((heading (if heading-with-string-prop (progn (if (eq heading-with-string-prop ...) heading-with-string-prop (substring-no-properties heading-with-string-prop))))) (heading-prop heading-with-string-prop) (marker (move-marker (make-marker) (point) (org-base-buffer (current-buffer)))) (file-name (buffer-file-name)) (point (point)) (clock-sum (if (org-before-first-heading-p) 0 (org-clock-sum-current-item))) (tsk-plist (nth 1 (org-element-at-point)))) (progn (or (cl-evenp (length tsk-plist)) (cl--assertion-failed '(cl-evenp (length tsk-plist)))) nil) (if (occ-obj-org-entry-tsk-p tsk-plist) (progn (let ((tsk (funcall builder :name ... :dummy ... :collection collection :parent nil :action nil :heading ... :heading-prop ... :marker ... :file ... :point ... :clock-sum ... :cat ... :plist ...))) (let ((inherit t) (inherited-props ...)) (let (...) (while --dolist-tail-- ...))) (progn "set :plist here") (occ-obj-reread-props tsk) tsk)))))
+  occ-make-tsk-at-point(#s(occ-tree-collection :name "unnamed" :stat-plist nil :desc "Unnamed" :spec :tree :roots ("/home/s/hell/Documents/mirror/CreatedContent/conte...") :files ("/home/s/hell/Documents/mirror/CreatedContent/conte...") :depth 0 :limit 3 :rank 0 :level :optional :file-lcp nil :list (<TSK-TREE noheading> <TSK-TREE Unnamed tasks> <TSK-TREE STARTED Unnamed task 218>) :tree (<TSK-TREE noheading>)) nil)
+
+
 Warning (org-element-cache): org-element--cache: Org parser error in Unnamed.org::33096. Resetting.
  The error was: (error "Invalid search bound (wrong side of point)")
  Backtrace:

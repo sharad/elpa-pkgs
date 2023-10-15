@@ -110,19 +110,20 @@
                                    (org-number-of-subheadings)
                                  0)))))))
     ;; (assert file)
-    (org-find-file-heading-marker file task t)
-    (let ((marker (org-insert-subheadline-to-file-headline
-                   subtask
-                   file
-                   task
-                   t)))
-      (unless (markerp marker)
-        (error "No marker %s returned" marker))
-      (with-current-buffer (marker-buffer marker)
-        (goto-char marker)
-        (lotus-org-with-safe-modification
-          (org-entry-put nil "Effort" "10")))
-      (cons subtask marker))))
+    (if (org-find-file-heading-marker file task t)
+        (let ((marker (org-insert-subheadline-to-file-headline
+                       subtask
+                       file
+                       task
+                       t)))
+          (unless (markerp marker)
+            (error "No marker %s returned" marker))
+          (with-current-buffer (marker-buffer marker)
+            (goto-char marker)
+            (lotus-org-with-safe-modification
+              (org-entry-put nil "Effort" "10")))
+          (cons subtask marker))
+      (error "Failed to find heading %s" task))))
 
 (when nil
   (progn
