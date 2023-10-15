@@ -123,8 +123,6 @@
                        args)))))
 
 
-
-
 (defun occ-critical (fmt &rest args)
   (apply #'occ-lwarn :critical fmt args)
   (apply #'error fmt args))
@@ -145,8 +143,7 @@
 
 ;;;### autoload
 (defun occ-message (fmt &rest args)
-  (apply #'message fmt args)
-  (apply #'occ-debug :debug fmt args))
+  (apply #'message fmt args))
 
 (when nil
 
@@ -194,22 +191,5 @@
   (let ((tsk (occ-obj-tsk obj)))
     ;; (occ-debug "occ-do-print-tsk: %s" tsk)
     t))
-
-
-
-
-;; (cancel-debug-on-entry 'read-from-minibuffer)
-;; (read-minibuffer)
-;; (read-from-minibuffer "Test: ")
-
-
-
-(when nil
-      ;; todo debug struck issue.
-      ;; run some
-      (run-with-timer 7 nil
-                      #'(lambda ()
-                          (without-active-minibuffer
-                           (read-from-minibuffer "Test: ")))))
 
 ;;; occ-debug-method.el ends here
