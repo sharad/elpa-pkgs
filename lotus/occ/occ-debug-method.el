@@ -143,6 +143,11 @@
 (defun occ-info (fmt &rest args)
   (apply #'occ-lwarn :info fmt args))
 
+;;;### autoload
+(defun occ-message (fmt &rest args)
+  (apply #'message fmt args)
+  (apply #'occ-debug :debug fmt args))
+
 (when nil
 
   (defun occ-debug (fmt &rest args)
@@ -154,11 +159,6 @@
 
  (defun occ-nodisplay (fmt &rest args)
    (apply #'occ-lwarn :nodisplay fmt args))
-
- ;;;### autoload
- (defun occ-message (fmt &rest args)
-   (apply #'message fmt args)
-   (apply #'occ-debug :debug fmt args))
 
  ;;;### autoload
  (defun occ-debug-uncond (&rest args)
@@ -179,9 +179,6 @@
   nil)
 
 (defmacro occ-nodisplay (fmt &rest args)
-  nil)
-
-(defmacro occ-message (fmt &rest args)
   nil)
 
 (defmacro occ-debug-uncond (&rest args)

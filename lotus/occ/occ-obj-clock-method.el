@@ -329,20 +329,21 @@ then return t else nil"
 (defun occ-do-clock-in-curr-ctx (&optional force)
   (interactive "P")
   (ignore force)
-  (let ((filters             (occ-match-filters))
-        (builder             #'occ-obj-build-ctxual-tsk-with)
-        (auto-select-if-only nil) ; (occ-obj-clock-in-ctx-auto-select-if-only))
-        (timeout             occ-idle-timeout))
-    (let* ((ap-normal occ-list-select-ap-transf-keys)
-           ;;  ap-transf will reuse ap-normal if nil
-           (ap-transf nil))
-      (occ-do-clock-in-if-not ctx
-                              :filters             filters
-                              :builder             builder
-                              :ap-normal           ap-normal
-                              :ap-transf           ap-transf
-                              :auto-select-if-only auto-select-if-only
-                              :timeout             timeout))))
+  (let ((ctx (occ-obj-make-ctx-at-point)))
+    (let ((filters             (occ-match-filters))
+          (builder             #'occ-obj-build-ctxual-tsk-with)
+          (auto-select-if-only nil) ; (occ-obj-clock-in-ctx-auto-select-if-only))
+          (timeout             occ-idle-timeout))
+      (let* ((ap-normal occ-list-select-ap-transf-keys)
+             ;;  ap-transf will reuse ap-normal if nil
+             (ap-transf nil))
+        (occ-do-clock-in-if-not ctx
+                                :filters             filters
+                                :builder             builder
+                                :ap-normal           ap-normal
+                                :ap-transf           ap-transf
+                                :auto-select-if-only auto-select-if-only
+                                :timeout             timeout)))))
 
 ;;;###autoload
 (defun occ-do-clock-in-curr-ctx-if-not (&optional force)
@@ -355,6 +356,7 @@ then return t else nil"
   (if (not (member (buffer-name (current-buffer))
                    occ-ignore-buffer-names))
       (progn
+        (occ-message "buff: %s" (buffer-name (current-buffer)))
         (occ-debug "%s: occ-do-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug" (time-stamp-string))
         (if force
             (occ-do-clock-in-curr-ctx force)
