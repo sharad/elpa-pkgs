@@ -169,7 +169,6 @@
 (fmakunbound 'occ-debug)
 (fmakunbound 'occ-dmessage)
 (fmakunbound 'occ-nodisplay)
-(fmakunbound 'occ-message)
 (fmakunbound 'occ-debug-uncond)
 
 (defmacro occ-debug (fmt &rest args)
