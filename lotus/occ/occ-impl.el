@@ -32,6 +32,9 @@
 (require 'occ-macros)
 
 
+
+
+
 (cl-defgeneric occ-obj-impl-rank (tsk
                                   ctx
                                   property)
@@ -74,6 +77,10 @@
   "Return the RANK (number) for OBJ based on the property PROPERTY"
   ;; (occ-debug "occ-obj-impl-rank(obj=%s symbol=%s)" (occ-obj-format obj) property)
   0)
+
+
+(cl-defmethod occ-obj-impl-occ-prop-p ((prop symbol))
+  nil)
 
 
 (cl-defgeneric occ-obj-impl-prop= (property

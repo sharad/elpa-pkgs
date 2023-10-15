@@ -248,21 +248,22 @@
                             :clock-sum    (occ-obj-from-org 'clock-sum 'get clock-sum)
                             :cat          (occ-obj-from-org 'cat 'get (occ-get-tsk-category heading tsk-plist))
                             :plist        (occ-tsk-plist-from-org tsk-plist))))
-          (let ((inherit         t)
-                (inherited-props
+          (let ((inherited-props
                  ;; is it correct ? - guess it is ok and correct.
-                 (occ-readprop-props)))
+                 (occ-obj-properties-to-inherit-ctsk)))
             (dolist (prop inherited-props)
-              (let* ((propstr (if (keywordp prop)
-                                  (substring (symbol-name prop) 1)
-                                (symbol-name prop)))
-                     (val (org-entry-get nil propstr inherit)))
-                (unless (occ-obj-get-property tsk prop)
-                  ;; What is the solution
-                  (occ-obj-set-property tsk prop val :not-recursive t)))))
+              (when (occ-obj-list-p nil prop)
+                ;; Unconditionally Set property as - (tsk-plist    (nth 1 (org-element-at-point)))
+                ;; which is using in occ-obj-get-property and occ-obj-set-property
+                ;; put list also as atom
+                ;; (occ-obj-set-property tsk prop (org-entry-get nil (occ-obj-org-property-name prop)))
+                (occ-obj-set-property tsk
+                                      prop
+                                      (occ-do-operation (point-marker) 'get prop nil)))))
           (progn "set :plist here")
-          (occ-obj-reread-props tsk)      ;reset list properties
+          ;; (occ-obj-reread-props tsk)      ;reset list properties
           tsk)))))
+
 (cl-defmethod occ-obj-make-tsk-at-point ((collection occ-obj-collection)
                                          file)
   (occ-make-tsk-at-point (occ-obj-collection collection)

@@ -74,6 +74,10 @@
                      property))
 
 
+(cl-defmethod occ-obj-intf-occ-prop-p ((prop symbol))
+  (occ-obj-impl-occ-prop-p prop))
+
+
 (cl-defgeneric occ-obj-intf-prop= (property
                                    prop-value
                                    value)

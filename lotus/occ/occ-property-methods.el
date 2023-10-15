@@ -51,6 +51,10 @@
 ;;
 ;; [[file:occ-property-methods.org::*Current File property of task][Current File property of task:1]]
 ;;{{ currfile
+
+(cl-defmethod occ-obj-impl-occ-prop-p ((prop (eql currfile)))
+  t)
+
 (cl-defmethod occ-obj-impl-prop= ((prop (eql currfile))
                                   prop-value
                                   value)
@@ -121,6 +125,10 @@
 
 ;; [[file:occ-property-methods.org::*Root dir property of task][Root dir property of task:1]]
 ;;{{ root
+
+(cl-defmethod occ-obj-impl-occ-prop-p ((prop (eql root)))
+  t)
+
 (cl-defmethod occ-obj-impl-prop= ((prop (eql root))
                                   prop-value
                                   value)
@@ -189,6 +197,11 @@
 
 ;; [[file:occ-property-methods.org::*Git branch property of task][Git branch property of task:1]]
 ;;{{ git-branch
+
+
+(cl-defmethod occ-obj-impl-occ-prop-p ((prop (eql git-branch)))
+  t)
+
 (cl-defmethod occ-obj-impl-prop= ((prop (eql git-branch))
                                   prop-value
                                   value)

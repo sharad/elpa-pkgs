@@ -276,7 +276,7 @@ method provided."))))
                              obj))
 
 
-(defun occ-readprop-props () ;;TODO: check about them
+(defun occ-obj-properties-to-inherit-ctsk () ;;TODO: check about them
   "return PROPERTIES list that can be inherited."
   (occ-obj-properties-to-inherit 'occ-obj-ctx-tsk))
 
@@ -388,45 +388,45 @@ method provided."))))
                 prop-list))
 
 
-(cl-defmethod occ-obj-rereadprop-value ((prop symbol)
-                                        value)
-  "Read org string property PROP to occ representation."
-  (occ-assert (not (consp value)))
-  (if (occ-obj-list-p nil
-                      prop)
-      (let* ((values (and value (split-string value))))
-        (mapcar #'(lambda (v)
-                    ;; from Org world to Occ world
-                    (occ-obj-intf-from-org prop
-                                           v))
-                (mapcar #'org-entry-restore-space
-                        values)))
-    (occ-obj-intf-from-org prop
-                           value)))
+;; (cl-defmethod occ-obj-rereadprop-value ((prop symbol)
+;;                                         value)
+;;   "Read org string property PROP to occ representation."
+;;   (occ-assert (not (consp value)))
+;;   (if (occ-obj-list-p nil
+;;                       prop)
+;;       (let* ((values (and value (split-string value))))
+;;         (mapcar #'(lambda (v)
+;;                     ;; from Org world to Occ world
+;;                     (occ-obj-intf-from-org prop
+;;                                            v))
+;;                 (mapcar #'org-entry-restore-space
+;;                         values)))
+;;     (occ-obj-intf-from-org prop
+;;                            value)))
 
-(cl-defmethod occ-obj-reread-props ((obj occ-tsk))
-  "Read all org string properties for task TSK to occ representation."
-  (let ((props-by-is-list   (occ-cl-method-param-case '(occ-obj-impl-list-p (`(marker (eql ,val)) val))))
-        (props-by-converter (occ-cl-method-param-case '(occ-obj-impl-from-org (`((eql ,val) t) val)))))
-    ;; BUG: TODO: try to check on all properties and check if they are list-p or not.
-    (let ((props (-union props-by-is-list
-                         props-by-converter))) ;dash
-      (dolist (p props)
-        (let* ((value         (occ-obj-get-property obj p))
-               (rearead-value (occ-obj-rereadprop-value p value)))
-          (occ-obj-set-property obj p
-                                rearead-value))))))
+;; (cl-defmethod occ-obj-reread-props ((obj occ-tsk))
+;;   "Read all org string properties for task TSK to occ representation."
+;;   (let ((props-by-is-list   (occ-cl-method-param-case '(occ-obj-impl-list-p (`(marker (eql ,val)) val))))
+;;         (props-by-converter (occ-cl-method-param-case '(occ-obj-impl-from-org (`((eql ,val) t) val)))))
+;;     ;; BUG: TODO: try to check on all properties and check if they are list-p or not.
+;;     (let ((props (-union props-by-is-list
+;;                          props-by-converter))) ;dash
+;;       (dolist (p props)
+;;         (let* ((value         (occ-obj-get-property obj p))
+;;                (rearead-value (occ-obj-rereadprop-value p value)))
+;;           (occ-obj-set-property obj p
+;;                                 rearead-value))))))
 
-(cl-defmethod occ-obj-reread-props :around (obj)
-  "return PROPERTIES list that can be checked-out."
-  (ignore obj)
-  (condition-case e ;; if (cl-next-method-p)
-      (occ-internal-remove-template-symbol (cl-call-next-method))
-    ((cl-no-next-method) (occ-error "No
-(cl-defmethod occ-obj-reread-props (obj)
-  ...)
+;; (cl-defmethod occ-obj-reread-props :around (obj)
+;;   "return PROPERTIES list that can be checked-out."
+;;   (ignore obj)
+;;   (condition-case e ;; if (cl-next-method-p)
+;;       (occ-internal-remove-template-symbol (cl-call-next-method))
+;;     ((cl-no-next-method) (occ-error "No
+;; (cl-defmethod occ-obj-reread-props (obj)
+;;   ...)
 
-method provided."))))
+;; method provided."))))
 
 
 ;; (cl-defmethod occ-obj-operation-valid-p ((obj       occ-obj-tsk)
@@ -512,6 +512,10 @@ method provided."))))
 (cl-defmethod occ-obj-nonheritable ((properties list))
   (cl-remove-if #'occ-obj-inheritable-p
                 properties))
+
+
+(cl-defmethod occ-obj-occ-prop-p ((prop symbol))
+  (occ-obj-intf-occ-prop-p prop))
 
 
 (cl-defmethod occ-do-operation ((obj       marker)

@@ -44,17 +44,25 @@
   (require 'lotus-misc-utils))
 
 
+(cl-defmethod occ-obj-org-property-name ((prop symbol))
+  (concat (and (occ-obj-occ-prop-p prop) "occ-")
+          (symbol-name prop)))
+
+(cl-defmethod occ-obj-org-property-symb ((prop symbol))
+  (occ-symb (occ-obj-org-property-name prop)))
+
+
 (defun occ-org-entry-get (pom
                           prop)
   (org-entry-get pom
-                 prop))
+                 (occ-obj-org-property-name prop)))
 
 (defun occ-org-entry-put (pom
                           prop
                           value)
   (lotus-org-with-safe-modification
     (org-entry-put pom
-                   prop
+                   (occ-obj-org-property-name prop)
                    value)))
 
 (defun occ-org-entry-delete (pom
@@ -62,20 +70,20 @@
                              value)
   (lotus-org-with-safe-modification
     (org-entry-delete pom
-                      prop
+                      (occ-obj-org-property-name prop)
                       value)))
 
 (defun occ-org-entry-get-multivalued-property (pom
                                                prop)
   (org-entry-get-multivalued-property pom
-                                      prop))
+                                      (occ-obj-org-property-name prop)))
 
 (defun occ-org-entry-put-multivalued-property (pom
                                                prop
                                                values)
   (lotus-org-with-safe-modification
     (org-entry-put-multivalued-property pom
-                                        prop
+                                        (occ-obj-org-property-name prop)
                                         values)))
 
 (defun occ-org-entry-add-to-multivalued-property (pom
@@ -83,7 +91,7 @@
                                                   value)
   (lotus-org-with-safe-modification
     (org-entry-add-to-multivalued-property pom
-                                           prop
+                                           (occ-obj-org-property-name prop)
                                            value)
     t))
 
@@ -92,7 +100,7 @@
                                                        value)
   (lotus-org-with-safe-modification
     (org-entry-remove-from-multivalued-property pom
-                                                prop
+                                                (occ-obj-org-property-name prop)
                                                 value)
     t))
 
@@ -100,156 +108,8 @@
                                                      prop
                                                      values)
   (org-entry-member-in-multivalued-property pom
-                                            prop
+                                            (occ-obj-org-property-name prop)
                                             values))
-
-
-;; (cl-defgeneric occ-do-org-operation (pom
-;;                                      operation
-;;                                      prop
-;;                                      value)
-;;   "Org operation implementation of OPERATION on POINT-OF-MARKER for
-;; PROP and VALUES")
-
-;; (cl-defmethod occ-do-org-operation :around ((mrk  marker)
-;;                                             (operation symbol)
-;;                                             (prop symbol)
-;;                                             value)
-;;   "Accept org compatible VALUE"
-;;   (occ-message "I should be called first in case of MARKER")
-;;   ;; (unless (occ-obj-valid-p operation prop)
-;;   ;;   (occ-error "occ-obj-org-operation[around]: operation %s(type=%s) is not allowed for prop %s(type=%s)"
-;;   ;;              operation
-;;   ;;              (type-of operation)
-;;   ;;              prop
-;;   ;;              (type-of prop)))
-;;   (lotus-with-marker mrk
-;;     (unless (org-get-property-block)
-;;       ;; create property drawer
-;;       ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
-;;       (occ-debug "occ-do-org-operation[ :around ]: property block not exist so creating it.")
-;;       (let* ((range (org-get-property-block (point) 'force))
-;;              (start (when (consp range) (1- (cl-first range)))))
-;;         (if (and range
-;;                  start)
-;;             (when (numberp start)
-;;               (goto-char start))
-;;           (occ-error "occ-do-org-operation[ :around ]: not able to create property block to add property %s: %s"
-;;                      prop
-;;                      value))))
-
-;;     (if (org-get-property-block)
-;;         (progn
-;;           (occ-debug "occ-do-org-operation[ :around ]: adding prop: %s value: %s using (org-set-property)."
-;;                      prop
-;;                      value)
-;;           (let ((retval (cl-call-next-method)))
-;;             (occ-debug "occ-do-org-operation: (occ-do-org-operation mrk) returned %s" retval)
-;;             retval))
-;;         (occ-error "occ-do-org-operation[ :around ]: can not get property block to add property %s: %s"
-;;                    prop
-;;                    value))))
-
-;; (cl-defmethod occ-do-org-operation ((pom  marker)
-;;                                     (operation symbol)
-;;                                     (prop symbol)
-;;                                     value)
-;;   "Org operation implementation of OPERATION on POINT-OF-MARKER
-;; for prop REMOVE and VALUES"
-;;   (ignore operation)
-;;   (occ-error "Define (cl-defmethod occ-do-impl-operation ((pom marker) (operation (eql %s)) (prop (eql %s)) value) ... )"
-;;              operation prop))
-
-;; (cl-defmethod occ-do-org-operation ((pom  marker)
-;;                                     (operation (eql get))
-;;                                     (prop symbol)
-;;                                     value)
-;;   "Org operation implementation of OPERATION on POINT-OF-MARKER for
-;; prop GET and VALUES"
-;;   (ignore operation)
-;;   (ignore value)
-;;   (let ((prop-string (symbol-name prop)))
-;;       (if (occ-obj-list-p pom prop)
-;;           (occ-org-entry-get-multivalued-property pom
-;;                                                     prop-string)
-;;         (list (occ-org-entry-get pom
-;;                                  prop-string)))))
-
-;; (cl-defmethod occ-do-org-operation ((pom  marker)
-;;                                     (operation (eql add))
-;;                                     (prop symbol)
-;;                                     value)
-;;   "Org operation implementation of OPERATION on POINT-OF-MARKER for
-;; prop ADD and VALUES"
-;;   (ignore operation)
-;;   (let ((prop-string (symbol-name prop)))
-;;       (if (occ-obj-list-p pom prop)
-;;           (occ-org-entry-add-to-multivalued-property pom
-;;                                                      prop-string
-;;                                                      value)
-;;         (occ-error "Property `%s' is type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))))
-
-;; (cl-defmethod occ-do-org-operation ((pom  marker)
-;;                                     (operation (eql put))
-;;                                     (prop symbol)
-;;                                     value)
-;;   "Org operation implementation of OPERATION on POINT-OF-MARKER
-;; for prop PUT and VALUES"
-;;   (ignore operation)
-;;   (let ((prop-string (symbol-name prop)))
-;;     (occ-org-entry-put-multivalued-property pom
-;;                                             prop-string
-;;                                             value)))
-
-;; (cl-defmethod occ-do-org-operation ((pom  marker)
-;;                                     (operation (eql remove))
-;;                                     (prop symbol)
-;;                                     value)
-;;   "Org operation implementation of OPERATION on POINT-OF-MARKER
-;; for prop REMOVE and VALUES"
-;;   (ignore operation)
-;;   (let ((prop-string (symbol-name prop)))
-;;       (if (occ-obj-list-p pom prop)
-;;           (occ-org-entry-remove-from-multivalued-property pom
-;;                                                           prop-string
-;;                                                           value)
-;;         (occ-error "Property `%s' is type of LIST, %s operation not applied to it." prop (upcase (symbol-name operation))))))
-
-;; (cl-defmethod occ-do-org-operation ((pom  marker)
-;;                                     (operation (eql delete))
-;;                                     (prop symbol)
-;;                                     value)
-;;   "Org operation implementation of OPERATION on POINT-OF-MARKER
-;; for prop REMOVE and VALUES"
-;;   (ignore operation)
-;;   (let ((prop-string (symbol-name prop)))
-;;     (occ-org-entry-delete pom
-;;                           prop-string
-;;                           value)))
-
-;; (cl-defmethod occ-do-org-operation ((pom  marker)
-;;                                     (operation (eql member))
-;;                                     (prop symbol)
-;;                                     value)
-;;   "Org operation implementation of OPERATION on POINT-OF-MARKER
-;; for prop MEMBER and VALUES"
-;;   (ignore operation)
-;;   (let ((prop-string (symbol-name prop)))
-;;       (if (occ-obj-list-p pom prop)
-;;           (occ-org-entry-member-in-multivalued-property pom
-;;                                                         prop-string
-;;                                                         value)
-;;         (string= value
-;;                  (occ-obj-to-org prop
-;;                                  operation
-;;                                  (occ-org-entry-get pom
-;;                                                     prop-string))))))
-
-
-;; (cl-defmethod occ-obj-operations-org-operation ((class symbol))
-;;   (occ-cl-method-param-values 'occ-do-operation
-;;                               (list '\` `(,class (eql ,'(\, val)) symbol t))
-;;                               'val))
 
 
 (cl-defmethod occ-do-readprop-org ((obj  occ-obj-ctx-tsk)
