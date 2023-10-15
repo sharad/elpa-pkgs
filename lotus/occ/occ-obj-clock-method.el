@@ -329,25 +329,20 @@ then return t else nil"
 (defun occ-do-clock-in-curr-ctx (&optional force)
   (interactive "P")
   (ignore force)
-  (let ((ctx (occ-obj-make-ctx-at-point)))
-    (if (not (member (occ-name ctx)
-                     occ-ignore-buffer-names))
-        (let ((filters             (occ-match-filters))
-              (builder             #'occ-obj-build-ctxual-tsk-with)
-              (auto-select-if-only nil) ; (occ-obj-clock-in-ctx-auto-select-if-only))
-              (timeout             occ-idle-timeout))
-          (let* ((ap-normal occ-list-select-ap-transf-keys)
-                 ;;  ap-transf will reuse ap-normal if nil
-                 (ap-transf nil))
-            (occ-do-clock-in-if-not ctx
-                                    :filters             filters
-                                    :builder             builder
-                                    :ap-normal           ap-normal
-                                    :ap-transf           ap-transf
-                                    :auto-select-if-only auto-select-if-only
-                                    :timeout             timeout)))
-      (occ-message "Buffer %s not considered"
-                   (buffer-name (current-buffer))))))
+  (let ((filters             (occ-match-filters))
+        (builder             #'occ-obj-build-ctxual-tsk-with)
+        (auto-select-if-only nil) ; (occ-obj-clock-in-ctx-auto-select-if-only))
+        (timeout             occ-idle-timeout))
+    (let* ((ap-normal occ-list-select-ap-transf-keys)
+           ;;  ap-transf will reuse ap-normal if nil
+           (ap-transf nil))
+      (occ-do-clock-in-if-not ctx
+                              :filters             filters
+                              :builder             builder
+                              :ap-normal           ap-normal
+                              :ap-transf           ap-transf
+                              :auto-select-if-only auto-select-if-only
+                              :timeout             timeout))))
 
 ;;;###autoload
 (defun occ-do-clock-in-curr-ctx-if-not (&optional force)
@@ -357,26 +352,30 @@ then return t else nil"
   (occ-debug "begin occ-do-clock-in-curr-ctx-if-not")
   ;;TODO: problem
   ;; (lotus-with-other-frame-event-debug "occ-do-clock-in-curr-ctx-if-not" :cancel
-  (progn
-    (occ-debug "%s: occ-do-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug" (time-stamp-string))
-    (if force
-        (occ-do-clock-in-curr-ctx force)
-      (let ((ctx (occ-obj-make-ctx-at-point)))
-        (let ((filters             (occ-match-filters))
-              (builder             #'occ-obj-build-ctxual-tsk-with)
-              (auto-select-if-only (occ-obj-clock-in-ctx-auto-select-if-only))
-              (timeout             occ-idle-timeout))
-          (let ((ap-normal '(t actions general edit))
-                ;;  ap-transf will reuse ap-normal if nil
-                (ap-transf nil))
-            (occ-do-clock-in-if-chg ctx
-                                    :filters             filters
-                                    :builder             builder
-                                    :ap-normal           ap-normal
-                                    :ap-transf           ap-transf
-                                    :auto-select-if-only auto-select-if-only
-                                    :timeout             timeout)))))
-    (occ-nodisplay "%s: end occ-do-clock-in-curr-ctx-if-not" (time-stamp-string))))
+  (if (not (member (buffer-name (current-buffer))
+                   occ-ignore-buffer-names))
+      (progn
+        (occ-debug "%s: occ-do-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug" (time-stamp-string))
+        (if force
+            (occ-do-clock-in-curr-ctx force)
+          (let ((ctx (occ-obj-make-ctx-at-point)))
+            (let ((filters             (occ-match-filters))
+                  (builder             #'occ-obj-build-ctxual-tsk-with)
+                  (auto-select-if-only (occ-obj-clock-in-ctx-auto-select-if-only))
+                  (timeout             occ-idle-timeout))
+              (let ((ap-normal '(t actions general edit))
+                    ;;  ap-transf will reuse ap-normal if nil
+                    (ap-transf nil))
+                (occ-do-clock-in-if-chg ctx
+                                        :filters             filters
+                                        :builder             builder
+                                        :ap-normal           ap-normal
+                                        :ap-transf           ap-transf
+                                        :auto-select-if-only auto-select-if-only
+                                        :timeout             timeout)))))
+        (occ-nodisplay "%s: end occ-do-clock-in-curr-ctx-if-not" (time-stamp-string)))
+    (occ-message "Buffer %s not considered"
+                 (buffer-name (current-buffer)))))
 
 
 ;;; Timers
