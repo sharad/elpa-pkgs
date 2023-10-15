@@ -32,9 +32,6 @@
 (require 'occ-macros)
 
 
-
-
-
 (cl-defgeneric occ-obj-impl-rank (tsk
                                   ctx
                                   property)
@@ -367,25 +364,15 @@ OCC-TSK OBJ."
 method provided." prop))))
 
 
-;; (cl-defmethod occ-do-impl-operation :around ((obj       marker)
-;;                                              (operation symbol)
-;;                                              (prop      symbol)
-;;                                              value)
-;;   "Accept occ compatible VALUES"
-;;   (if (memq operation
-;;             (occ-obj-operations-org-operation obj))
-;;       (cl-call-next-method)
-;;     (occ-error "Define (cl-defmethod occ-do-impl-operation ((pom marker) (operation (eql %s)) (prop (eql %s)) value) ... )"
-;;                operation prop)))
-
-
-(cl-defmethod occ-do-impl-operation :around ((mrk  marker)
+(cl-defmethod occ-do-impl-operation :around ((obj  marker)
                                              (operation symbol)
                                              (prop symbol)
                                              value)
-  "Accept org compatible VALUE"
-  (occ-message "I should be called first in case of MARKER")
-  (lotus-with-marker mrk
+  "Around method do necessary setup before actual operation.
+accept org compatible VALUE, "
+  ;; (occ-message "I should be called first in case of MARKER")
+  (occ-debug "I should be called first in case of MARKER")
+  (lotus-with-marker obj
     (unless (org-get-property-block)
       ;; create property drawer
       ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
@@ -406,7 +393,7 @@ method provided." prop))))
                      prop
                      (occ-obj-nonocc-format value))
           (let ((retval (condition-case e ;; if (cl-next-method-p)
-                            (cl-call-next-method mrk
+                            (cl-call-next-method obj
                                                  operation
                                                  prop
                                                  (occ-obj-to-org prop
@@ -417,7 +404,7 @@ method provided." prop))))
   ...)
 
 method provided." operation prop)))))
-            (occ-debug "occ-do-impl-operation: (occ-do-impl-operation mrk) returned %s" retval)
+            (occ-debug "occ-do-impl-operation: (occ-do-impl-operation obj) returned %s" retval)
             retval))
         (occ-error "occ-do-impl-operation[ :around ]: can not get property block to add property %s: %s"
                    prop
