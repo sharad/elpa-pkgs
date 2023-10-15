@@ -80,6 +80,7 @@
 
 
 (cl-defmethod occ-obj-impl-occ-prop-p ((prop symbol))
+  "Return t if PROP is introduced by OCC, else nil"
   nil)
 
 
