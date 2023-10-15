@@ -389,7 +389,7 @@
 ;;;###autoload
 (defun run-at-time-or-now (time fn)
   "Run FN at TIME if numeric is otherwise run now only."
-  (lotus-message-notify "run-at-time-or-now" "will run %s after %d sec" fn time)
+  ;; (lotus-message-notify "run-at-time-or-now" "will run %s after %d sec" fn time)
   (if (numberp time)
       (run-with-timer time nil fn)
     (funcall fn)))
