@@ -370,7 +370,9 @@ select candidate from it."
   (unless (member (buffer-name (current-buffer))
                   occ-ignore-buffer-names)
     (let ((source (occ-obj-helm-fun-action-function-call-source "Other Task Actions"
-                                                                (list (cons (format "Create Anonymous Unnamed task fast.")
+                                                                (list (cons (format "Create Anonymous Unnamed task fast in collection.")
+                                                                            #'occ-do-fast-create-anonymous-child-in-collection)
+                                                                      (cons (format "Create Anonymous Unnamed task fast.")
                                                                             #'occ-do-fast-create-anonymous-child)))))
       (list (occ-build-hsrc-source source
                                    :rank 0
