@@ -360,6 +360,22 @@ select candidate from it."
                                  :level level))))))
 
 
+(defun occ-helm-build-dummy-sources ()
+  (list (occ-obj-helm-build-dummy-source "Create fast child task may use template" #'occ-do-fast-create-child)
+        (occ-obj-helm-build-dummy-source "Create Anonymous task"                   #'occ-do-create-anonymous-child)
+        ;; (occ-obj-helm-build-dummy-source "Create Anonymous (fast as unnamed)"      #'occ-do-fast-create-anonymous-child)
+        ))
+
+(defun occ-helm-build-extra-actions-tsk-source ()
+  (unless (member (buffer-name (current-buffer))
+                  occ-ignore-buffer-names)
+    (let ((source (occ-obj-helm-fun-action-function-call-source "Other Task Actions"
+                                                                (list (cons (format "Create Anonymous Unnamed task fast.")
+                                                                            #'occ-do-fast-create-anonymous-child)))))
+      (list (occ-build-hsrc-source source
+                                   :rank 0
+                                   :level :optional)))))
+
 (defun occ-helm-build-extra-actions-ctx-buffer-source ()
   (unless (member (buffer-name (current-buffer))
                   occ-ignore-buffer-names)
@@ -373,11 +389,6 @@ select candidate from it."
       (list (occ-build-hsrc-source source
                                    :rank 0
                                    :level :optional)))))
-
-(defun occ-helm-build-dummy-sources ()
-  (list (occ-obj-helm-build-dummy-source "Create fast child task may use template" #'occ-do-fast-create-child)
-        (occ-obj-helm-build-dummy-source "Create Anonymous task"                   #'occ-do-create-anonymous-child)
-        (occ-obj-helm-build-dummy-source "Create Anonymous (fast as unnamed)"      #'occ-do-fast-create-anonymous-child)))
 
 
 (cl-defmethod occ-obj-helm-build-collections-sources ((obj         occ-ctx)
@@ -433,6 +444,7 @@ select candidate from it."
                                                                     :prompt           prompt)))
     (append collection-sources
             (occ-helm-build-dummy-sources)
+            (occ-helm-build-extra-actions-tsk-source)
             (occ-helm-build-extra-actions-ctx-buffer-source))))
 
 
