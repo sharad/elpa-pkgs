@@ -362,7 +362,7 @@ then return t else nil"
   ;; (lotus-with-other-frame-event-debug "occ-do-clock-in-curr-ctx-if-not" :cancel
   (if (not (occ-obj-ignore-ctx-p (current-buffer)))
       (progn
-        (occ-message "buff: %s" (buffer-name (current-buffer)))
+        ;; (occ-message "buff: %s" (buffer-name (current-buffer)))
         (occ-debug "%s: occ-do-clock-in-curr-ctx-if-not: lotus-with-other-frame-event-debug" (time-stamp-string))
         (if force
             (occ-do-clock-in-curr-ctx force)

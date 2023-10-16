@@ -116,8 +116,8 @@
             (occ-dformat-kv level obj 'descendant-count)
             (occ-dformat-kv level obj 'descendant-weight)
             (apply #'concat
-                   (loop for p in (occ-cl-class-slots (occ-cl-inst-classname obj))
-                         collect (occ-dformat-kv level obj p))))))
+                   (cl-loop for p in (occ-cl-class-slots (occ-cl-inst-classname obj))
+                            collect (occ-dformat-kv level obj p))))))
 
 (cl-defmethod occ-obj-describe-string ((obj occ-ranktbl)
                                        &optional

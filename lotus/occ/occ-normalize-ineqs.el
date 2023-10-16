@@ -145,10 +145,10 @@
         (in-degree '()))
     (dolist (ineq inequalities)
       (cl-destructuring-bind (op var1 var2) ineq
-        (unless (member* var1 graph :key #'car)
+        (unless (cl-member var1 graph :key #'car)
           (push (list var1) graph)
           (push (cons var1 0) in-degree))
-        (unless (member* var2 graph :key #'car)
+        (unless (cl-member var2 graph :key #'car)
           (push (list var2) graph)
           (push (cons var2 0) in-degree))
         (cond ((eq op 'calcFunc-gt)

@@ -32,22 +32,19 @@
      ,@body))
 
 (defun get-tree-node (tree &rest keys)
-  (clreduce #'(lambda (xtree k)
-                ;; (message "tree %s k %s ret (cdr (assoc k xtree)) %s" xtree k (cdr (assoc k xtree)))
-                (cdr (assoc k xtree)))
-            keys
-            :initial-value tree))
+  (cl-reduce #'(lambda (xtree k)
+                 ;; (message "tree %s k %s ret (cdr (assoc k xtree)) %s" xtree k (cdr (assoc k xtree)))
+                 (cdr (assoc k xtree)))
+             keys
+             :initial-value tree))
 
 (cl-defmacro tree-node (tree &rest keys &key (test 'eql))
   (if keys
-      `(cdr
-        (assoc ,(car (last keys))
-               (pushnew
-                (list ,@(last keys))
-                (tree-node ,tree ,@(butlast keys) :test ,test)
-                :key 'car :test ,test)))
+      `(cdr (assoc ,(car (last keys))
+                   (cl-pushnew (list ,@(last keys))
+                            (tree-node ,tree ,@(butlast keys) :test ,test)
+                            :key 'car :test ,test)))
       tree))
-
 
 (cl-defmacro test-tree-node (tree &rest xkeys &key test)
   `(list ,tree ,@xkeys ,test))
@@ -70,10 +67,9 @@
          (keys (if pos (cl-subseq xkeys 0 pos) xkeys))
          (okeys (if pos (cl-subseq xkeys pos))))
     (if keys
-        `(cdr
-          (assoc* ,(car (last keys))
-                  (tree-node ,tree ,@(butlast keys) ,@okeys)
-                  ,@okeys))
+        `(cdr (assoc* ,(car (last keys))
+                      (tree-node ,tree ,@(butlast keys) ,@okeys)
+                      ,@okeys))
         tree)))
 
 (cl-defmacro tree-node* (tree &rest xkeys)
@@ -137,23 +133,22 @@
   (let ((finish-reading nil)
         (minibuffer-local-map (copy-keymap minibuffer-local-map)))
    (cl-flet (;; (finish-reading nil)
-                     (read-done (
-                                 (throw 'goforlist
-                                   (let (input-string)
-                                     (move-beginning-of-line nil)
-                                     (setq
-                                      finish-reading t
-                                      input-string (buffer-substring (point) (point-max)))
-                                     (catch 'exit (exit-minibuffer))
-                                     input-string)))
-                          (define-key minibuffer-local-map (kbd "S-RET") read-done)
-                          (let ((ret (catch 'goforlist
-                                       (completing-read prompt collection nil t))))
-                            (if finish-reading
-                                (list ret t)
-                                (if (string-equal ret "")
-                                    (list nil t)
-                                    (list ret nil)))))))))
+             (read-done ()
+                        (throw 'goforlist
+                               (let (input-string)
+                                 (move-beginning-of-line nil)
+                                 (setq finish-reading t
+                                       input-string (buffer-substring (point) (point-max)))
+                                 (catch 'exit (exit-minibuffer
+                                               input-string
+                                               (define-key minibuffer-local-map (kbd "S-RET") read-done)
+                                               (let ((ret (catch 'goforlist
+                                                            (completing-read prompt collection nil t))))
+                                                 (if finish-reading
+                                                     (list ret t)
+                                                   (if (string-equal ret "")
+                                                       (list nil t)
+                                                     (list ret nil)))))))))))))
 
 ;; (read-mb "af: " '("afdf" "dasfdsf"))
 

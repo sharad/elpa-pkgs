@@ -33,6 +33,8 @@
 
 ;; [[file:occ-property-methods.org::*Required libraries][Required libraries:1]]
 (require 'org)
+(require 'magit-git)
+
 
 (require 'occ-impl-utils)
 (require 'occ-print)
