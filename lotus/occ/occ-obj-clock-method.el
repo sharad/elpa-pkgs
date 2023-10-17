@@ -178,7 +178,7 @@ then return t else nil"
         (builder          (or builder #'occ-obj-build-ctxual-tsk-with))
         (return-transform t) ;as return value is going to be used.)
         (timeout          (or timeout occ-idle-timeout)))
-    (let* ((ap-normal occ-list-select-ap-transf-keys))
+    (let* ((ap-normal (occ-obj-list-select-ap-transf-keys)))
       (occ-debug "occ-do-clock-in-if-not((obj occ-ctx)): begin")
       (if (occ-obj-try-current-if-unassociated-p obj) ;; (occ-obj-current-unassociated-p obj) ;; (occ-do-edit-current-if-unassociated-p obj)
           (prog1                ;current clock is not matching
@@ -255,7 +255,7 @@ then return t else nil"
   (let ((filters (or filters (occ-match-filters)))
         (builder (or builder #'occ-obj-build-ctxual-tsk-with))
         (timeout (or timeout occ-idle-timeout)))
-    (let* ((ap-normal occ-list-select-ap-transf-keys)
+    (let* ((ap-normal (occ-obj-list-select-ap-transf-keys))
            ;;  ap-transf will reuse ap-normal if nil
            (ap-transf nil))
       (occ-debug "occ-do-clock-in-if-chg((obj occ-ctx)): begin")
@@ -341,7 +341,7 @@ then return t else nil"
           (builder             #'occ-obj-build-ctxual-tsk-with)
           (auto-select-if-only nil) ; (occ-obj-clock-in-ctx-auto-select-if-only))
           (timeout             occ-idle-timeout))
-      (let* ((ap-normal occ-list-select-ap-transf-keys)
+      (let* ((ap-normal (occ-obj-list-select-ap-transf-keys))
              ;;  ap-transf will reuse ap-normal if nil
              (ap-transf nil))
         (occ-do-clock-in-if-not ctx

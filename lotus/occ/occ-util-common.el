@@ -55,6 +55,12 @@
 (defvar occ-list-select-ap-transf-keys '(t actions general edit checkout))
 
 
+(defun occ-obj-list-select-ap-normal-keys ()
+  occ-list-select-ap-normal-keys)
+(defun occ-obj-list-select-ap-transf-keys ()
+  occ-list-select-ap-transf-keys)
+
+
 ;; DEPENDENCY remove it.
 (defun dirname-of-file (file &optional final-slash)
   ;; (ido-no-final-slash

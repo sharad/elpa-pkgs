@@ -35,9 +35,10 @@
 
 (with-eval-after-load "occ-util-common"
   (defvar occ-list-select-keys   occ-list-select-ap-normal-keys))
+
 
-;; (setq occ-list-select-keys '(t actions normal))
-;; (setq occ-list-select-keys occ-list-select-ap-transf-keys)
+(defun occ-obj-list-select-keys ()
+  occ-list-select-keys)
 
 
 ;; NOTE: for naming check devel.org
@@ -55,8 +56,8 @@ be NIL, using (occ-list-filters) for FILTERS"
   (ignore ap-normal)
   (let ((filters          (occ-list-filters))
         (builder          #'occ-obj-build-ctsk-with)
-        (ap-normal        occ-list-select-keys)
-        (ap-transf        occ-list-select-keys)
+        (ap-normal        (occ-obj-list-select-keys))
+        (ap-transf        (occ-obj-list-select-keys))
         (return-transform nil)
         (timeout          occ-idle-timeout))
     (occ-debug "occ-do-run-list-select: ap-normal: %s" ap-normal)
@@ -82,8 +83,8 @@ be NIL, using (occ-match-filters) for FILTERS"
 
   (let ((filters          (occ-match-filters))
         (builder          #'occ-obj-build-ctxual-tsk-with)
-        (ap-normal        occ-list-select-keys)
-        (ap-transf        occ-list-select-ap-transf-keys)
+        (ap-normal        (occ-obj-list-select-keys))
+        (ap-transf        (occ-obj-list-select-ap-transf-keys))
         (return-transform nil)
         (timeout          occ-idle-timeout))
     (occ-obj-select obj
@@ -128,8 +129,8 @@ for testing given ap-normal on selected tsk."
   (ignore ap-normal)
   (let ((filters          (occ-list-filters))
         (builder          #'occ-obj-build-ctsk-with)
-        (ap-normal        occ-list-select-keys)
-        (ap-transf        occ-list-select-ap-transf-keys)
+        (ap-normal        (occ-obj-list-select-keys))
+        (ap-transf        (occ-obj-list-select-ap-transf-keys))
         (return-transform t)
         (timeout          occ-idle-timeout))
       (occ-debug "occ-do-run-list-debug-select: ap-normal: %s" ap-normal)
@@ -178,8 +179,8 @@ must be NIL, using (occ-list-filters) for FILTERS"
   (let ((filters          (occ-list-filters))
         (builder          #'occ-obj-build-ctsk-with)
         (return-transform t)
-        (ap-normal        occ-list-select-keys)
-        (ap-transf        occ-list-select-ap-transf-keys)
+        (ap-normal        (occ-obj-list-select-keys))
+        (ap-transf        (occ-obj-list-select-ap-transf-keys))
         (timeout          occ-idle-timeout))
     (occ-debug "occ-obj-list-launch: ap-normal: %s" ap-normal)
     (occ-debug "occ-obj-list-launch: ap-transf: %s" ap-transf)
