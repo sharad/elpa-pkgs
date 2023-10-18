@@ -212,7 +212,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 ;; [[file:org-onchange.org::*Org add log note with-timed-new-win][Org add log note with-timed-new-win:1]]
 ;; copy of org-add-log-note
 
-(cl-defun org-build-org-store-log-note-function-1 (&key
+(cl-defun org-build-org-store-log-note-function (&key
                                                    success-fun
                                                    fail-fun
                                                    run-before)
@@ -230,16 +230,16 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                   (and fail-fun (funcall fail-fun))
                 (and success-fun (funcall success-fun))))))))
 
-(defmacro org-build-org-store-log-note-function (&rest args)
-  (let ((success-body (plist-get args :success))
-        (fail-body    (plist-get args :fail))
-        (run-before   (plist-get args :run-before)))
-     `(org-build-org-store-log-note-function-1 :success-fun
-                                               #'(lambda () ,@success-body)
-                                              :fail-fun
-                                              #'(lambda () ,@fail-body)
-                                              :run-before
-                                              run-before)))
+;; (defmacro org-build-org-store-log-note-function (&rest args)
+;;   (let ((success-body (plist-get args :success))
+;;         (fail-body    (plist-get args :fail))
+;;         (run-before   (plist-get args :run-before)))
+;;      `(org-build-org-store-log-note-function-1 :success-fun
+;;                                                #'(lambda () ,@success-body)
+;;                                               :fail-fun
+;;                                               #'(lambda () ,@fail-body)
+;;                                               :run-before
+;;                                               run-before)))
 
 ;; *** Org add log note with-timed-new-win
 ;; background in name is misleading it at present log-note show org file buffer to
@@ -248,6 +248,11 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 ;; *Note:* these function prepare buffer or window (timed) to take log note
 ;; main work is only done by _org-store-log-note_
 
+(defvar org-store-log-note-local-function nil)
+(make-variable-buffer-local 'org-store-log-note-local-function)
+
+(defun org-store-log-note-invoke-local-fun ()
+  (funcall org-store-log-note-local-function))
 
 (cl-defun org-add-log-note-buffer (target-buffer &key buff success fail run-before)
   "Prepare buffer for taking a note, to add this note later."
@@ -288,12 +293,14 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                       "refiling")
                      ((eq org-log-note-purpose 'note)
                       "this entry")
-                     (t (error "This should not happen")))))
+                     (t (error "This should not happen")))
+                    buff))
     (when org-log-note-extra (insert org-log-note-extra))
     ;; (setq-local org-finish-function 'org-store-log-note)
-    (setq-local org-finish-function (org-build-org-store-log-note-function :success success
-                                                                           :fail fail
-                                                                           :run-before run-before))
+    (setq-local org-store-log-note-local-function (org-build-org-store-log-note-function :success-fun success
+                                                                                         :fail-fun fail
+                                                                                         :run-before run-before))
+    (setq-local org-finish-function #'org-store-log-note-invoke-local-fun)
     (run-hooks 'org-log-buffer-setup-hook)))
 
 ;; (defun abcd (win-timeout &optional _purpose &key success fail run-before)
@@ -415,13 +422,16 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
           (if (>= chgcount
                   minimal-changes)
               (if (funcall action win-timeout
-                           :buff buff
+                           :buff
+                           buff
                            :success
-                           (with-current-buffer buff
-                             (setq lotus-last-buffer-undo-tree-count chgcount))
+                           #'(lambda ()
+                               (with-current-buffer buff
+                                 (setq lotus-last-buffer-undo-tree-count chgcount)))
                            :fail
-                           (with-current-buffer buff
-                             (setq lotus-last-buffer-undo-tree-count chgcount))
+                           #'(lambda ()
+                               (with-current-buffer buff
+                                 (setq lotus-last-buffer-undo-tree-count chgcount)))
                            :run-before nil)
                   (message "Lunched noter ret t")
                 (message "Lunched noter ret nil"))
