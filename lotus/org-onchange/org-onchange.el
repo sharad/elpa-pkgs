@@ -48,7 +48,11 @@
 (require 'undo-tree)
 (require 'message)
 ;; Libraries required:1 ends here
+
 
+(defvar lotus-minimum-char-changes 70 "minimum char changes")
+(defvar lotus-minimum-changes 70 "minimum changes")
+
 
 ;; *** Base functions
 ;; **** Note start
@@ -439,9 +443,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                           (setq changes (+ changes 1)));; (length (undo-tree-node-next node))
                       (undo-tree-root buffer-undo-tree)))
     changes))
-
-(defvar lotus-minimum-char-changes 70)
-(defvar lotus-minimum-changes 70)
+
 
 (defvar lotus-last-buffer-undo-tree-count 0) ;internal add in session and desktop
 (when (featurep 'desktop)
@@ -483,6 +485,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
     (message "Current buffer %s is not same as %s"
              (current-buffer)
              buff)))
+
 
 (defvar lotus-last-buffer-undo-list-pos nil) ;internal add in session and desktop
 (make-variable-buffer-local 'lotus-last-buffer-undo-list-pos)
@@ -541,6 +544,8 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
          (if (funcall action win-timeout :success nil :fail nil :run-before nil)
              (setq lotus-last-buffer-undo-list-pos undo)))
         (t)))))
+
+
 (defun org-clock-lotus-log-note-on-change (&optional
                                            win-timeout)
   ;; (when (or t (eq buffer (current-buffer)))
