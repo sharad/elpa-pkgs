@@ -212,10 +212,10 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 ;; [[file:org-onchange.org::*Org add log note with-timed-new-win][Org add log note with-timed-new-win:1]]
 ;; copy of org-add-log-note
 
-(defun org-build-org-store-log-note-function-1 (&key
-                                                success-fun
-                                                fail-fun
-                                                run-before)
+(cl-defun org-build-org-store-log-note-function-1 (&key
+                                                   success-fun
+                                                   fail-fun
+                                                   run-before)
   #'(lambda ()
       (let ((org-note-abort-before org-note-abort))
         (if run-before
@@ -223,20 +223,20 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                 (if org-note-abort-before
                     (and fail-fun (funcall fail-fun))
                   (and success-fun (funcall success-fun)))
-              (funcall org-store-log-note))
+              (funcall #'org-store-log-note))
             (unwind-protect
-                (funcall org-store-log-note)
+                (funcall #'org-store-log-note)
               (if org-note-abort-before
                   (and fail-fun (funcall fail-fun))
                 (and success-fun (funcall success-fun))))))))
 
 (defmacro org-build-org-store-log-note-function (&rest args)
-  `(let ((success-body (plist-get args :success))
-         (fail-body    (plist-get args :fail))
-         (run-before   (plist-get args :run-before)))
-     (org-build-org-store-log-note-function-1 :success
-                                              #'(lambda () ,@success-body)
-                                              :fail
+  (let ((success-body (plist-get args :success))
+        (fail-body    (plist-get args :fail))
+        (run-before   (plist-get args :run-before)))
+     `(org-build-org-store-log-note-function-1 :success-fun
+                                               #'(lambda () ,@success-body)
+                                              :fail-fun
                                               #'(lambda () ,@fail-body)
                                               :run-before
                                               run-before)))
@@ -249,7 +249,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 ;; main work is only done by _org-store-log-note_
 
 
-(defun org-add-log-note-buffer (target-buffer &key success fail run-before)
+(cl-defun org-add-log-note-buffer (target-buffer &key buff success fail run-before)
   "Prepare buffer for taking a note, to add this note later."
   ;; (pop-to-buffer-same-window (marker-buffer org-log-note-marker))
   ;; (goto-char org-log-note-marker)
@@ -266,6 +266,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
       (org-mode))
     (insert (format (string-join
                      '("# Insert note for %s."
+                       "# and buffer %s changes"
                        "# Finish with C-c C-c, or cancel with C-c C-k.\n\n")
                      "\n")
                     (cond
@@ -300,7 +301,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 
 
 
-(defun org-add-log-note-with-timed-new-win (win-timeout &key _purpose success fail run-before)
+(cl-defun org-add-log-note-with-timed-new-win (win-timeout &key _purpose buff success fail run-before)
   "Pop up a window for taking a note, and add this note later."
   ;; (remove-hook 'post-command-hook 'org-add-log-note-background)
   ;; (setq org-log-note-window-configuration (current-window-configuration))
@@ -322,6 +323,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
           (condition-case nil
               (let ((target-buffer (get-buffer-create "*Org Note*")))
                 (org-add-log-note-buffer target-buffer
+                                         :buff buff
                                          :success success
                                          :fail fail
                                          :run-before run-before))
@@ -331,7 +333,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                (if timer (cancel-timer timer))
                (signal (cl-first err) (rest err)))))))))
 
-(defun org-add-log-setup-with-timed-new-win (win-timeout &key purpose state prev-state how extra success fail run-before)
+(cl-defun org-add-log-setup-with-timed-new-win (win-timeout &key purpose state prev-state how extra buff success fail run-before)
   "Set up the post command hook to take a note.
       If this is about to TODO state change, the new state is expected in STATE.
       HOW is an indicator what kind of note should be created.
@@ -346,13 +348,14 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
           org-log-note-effective-time (org-current-effective-time))
     ;; (add-hook 'post-command-hook 'org-add-log-note-background 'append)
     (org-add-log-note-with-timed-new-win win-timeout
-                                         :_purpose nil
+                                         :purpose nil
+                                         :buff buff
                                          :success success
                                          :fail fail
                                          :run-before run-before)))
 
   ;;;##autoload
-(defun org-clock-lotus-log-note-current-clock-with-timed-new-win (win-timeout &key fail-quietly success fail run-before)
+(cl-defun org-clock-lotus-log-note-current-clock-with-timed-new-win (win-timeout &key fail-quietly buff success fail run-before)
   (interactive)
   (ignore win-timeout)
   (let ((win-timeout  (or win-timeout  7)))
@@ -364,6 +367,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                                                   :prev-state nil
                                                   :how nil
                                                   :extra (concat "# Task: " (org-get-heading t) "\n\n")
+                                                  :buff buff
                                                   :success success
                                                   :fail fail
                                                   :run-before run-before)))))
@@ -401,18 +405,30 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
   (add-to-list 'session-locals-include 'lotus-last-buffer-undo-tree-count))
 (make-variable-buffer-local 'lotus-last-buffer-undo-tree-count)
 
-(defun lotus-action-on-buffer-undo-tree-change (action &optional minimal-changes win-timeout)
-  (let ((win-timeout (or win-timeout 7))
-        (chgcount (- (lotus-buffer-changes-count)
-                     lotus-last-buffer-undo-tree-count)))
-    (if (>= chgcount minimal-changes)
-        (if (funcall action win-timeout
-                     :success nil
-                     :fail nil
-                     :run-before nil)
-            (setq lotus-last-buffer-undo-tree-count chgcount))
-        (when nil
-         (message "buffer-undo-tree-change: only %d changes not more than %d" chgcount minimal-changes)))))
+(defun lotus-action-on-buffer-undo-tree-change (action buff &optional minimal-changes win-timeout)
+  (if (eq buff (current-buffer))
+      (with-current-buffer buff
+        (let ((minimal-changes (or minimal-changes lotus-minimum-char-changes))
+              (win-timeout (or win-timeout 7))
+              (chgcount (- (lotus-buffer-changes-count)
+                           lotus-last-buffer-undo-tree-count)))
+          (if (>= chgcount
+                  minimal-changes)
+              (if (funcall action win-timeout
+                           :buff buff
+                           :success
+                           (with-current-buffer buff
+                             (setq lotus-last-buffer-undo-tree-count chgcount))
+                           :fail
+                           (with-current-buffer buff
+                             (setq lotus-last-buffer-undo-tree-count chgcount))
+                           :run-before nil)
+                  (message "Lunched noter ret t")
+                (message "Lunched noter ret nil"))
+            (message "buffer-undo-tree-change: only %d changes not more than %d" chgcount minimal-changes))))
+    (message "Current buffer %s is not same as %s"
+             (current-buffer)
+             buff)))
 
 (defvar lotus-last-buffer-undo-list-pos nil) ;internal add in session and desktop
 (make-variable-buffer-local 'lotus-last-buffer-undo-list-pos)
@@ -458,8 +474,8 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
            ;; (setq position (rest (last undo)))
 
           ((and (consp undo) (markerp (cl-first undo)))) ; (MARKER . DISTANCE)
-          ((integerp undo))            		; POSITION
-          ((null undo))            		; nil
+          ((integerp undo))               ; POSITION
+          ((null undo))               ; nil
           (t (error "Invalid undo entry: %s" undo)))
         (setq undo-list (rest undo-list)))
 
@@ -470,11 +486,17 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
         (t)))))
 (defun org-clock-lotus-log-note-on-change (&optional win-timeout)
   ;; (when (or t (eq buffer (current-buffer)))
-  (let ((win-timeout (or win-timeout 7)))
-    (if (and (consp buffer-undo-list)
-             (cl-first buffer-undo-list))
-        (lotus-action-on-buffer-undo-list-change #'org-clock-lotus-log-note-current-clock-with-timed-new-win  lotus-minimum-char-changes win-timeout)
-        (lotus-action-on-buffer-undo-tree-change #'org-clock-lotus-log-note-current-clock-with-timed-new-win lotus-minimum-changes win-timeout))))
+  (let ((buff (current-buffer))
+        (win-timeout (or win-timeout 7))
+        (on-buffer-undo-chg-action (if (and (consp buffer-undo-list)
+                                  (cl-first buffer-undo-list))
+                             #'lotus-action-on-buffer-undo-list-change
+                           #'lotus-action-on-buffer-undo-tree-change)))
+    (funcall on-buffer-undo-chg-action
+             #'org-clock-lotus-log-note-current-clock-with-timed-new-win
+             buff
+             lotus-minimum-char-changes
+             win-timeout)))
 ;; Org detect change to log note:1 ends here
 
 ;; Org log note on change timer
