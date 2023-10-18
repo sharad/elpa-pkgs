@@ -325,7 +325,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 
 (cl-defun org-add-log-note-with-timed-new-win (win-timeout
                                                &key
-                                               _purpose
+                                               npurpose
                                                buff
                                                success
                                                fail
@@ -386,7 +386,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
           org-log-note-effective-time (org-current-effective-time))
     ;; (add-hook 'post-command-hook 'org-add-log-note-background 'append)
     (org-add-log-note-with-timed-new-win win-timeout
-                                         :_purpose nil
+                                         :npurpose nil
                                          :buff buff
                                          :success success
                                          :fail fail
