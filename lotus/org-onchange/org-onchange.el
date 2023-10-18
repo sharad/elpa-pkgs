@@ -86,99 +86,105 @@
 ;; [[file:org-onchange.org::*Org insert log note un-interactively][Org insert log note un-interactively:1]]
 ;; copy of org-store-log-note
 ;;;###autoload
-  (defun org-insert-log-note (marker txt &optional purpose effective-time state previous-state)
-    "Finish taking a log note, and insert it to where it belongs.
+(defun org-insert-log-note (marker
+                            txt
+                            &optional
+                            purpose
+                            effective-time
+                            state
+                            previous-state)
+  "Finish taking a log note, and insert it to where it belongs.
 It is non-interactive re-implementation of org-store-log-note here note is taken from TXT"
-    (let* ((note-marker marker)
-           (txt txt)
-           (note-purpose (or purpose 'note))
-           (effective-time (or effective-time (org-current-effective-time)))
-           (note-state state)
-           (note-previous-state previous-state))
-      (if (marker-buffer marker)
-          (let ((note (rest (assq note-purpose org-log-note-headings)))
-                lines)
-            (while (string-match "\\`# .*\n[ \t\n]*" txt)
-              (setq txt (replace-match "" t t txt)))
-            (when (string-match "\\s-+\\'" txt)
-              (setq txt (replace-match "" t t txt)))
-            (setq lines (org-split-string txt "\n"))
-            (when (org-string-nw-p note)
-              (setq note
-                    (org-replace-escapes
-                     note
-                     (list (cons "%u" (user-login-name))
-                           (cons "%U" user-full-name)
-                           (cons "%t" (format-time-string
-                                       (org-time-stamp-format 'long 'inactive)
-                                       effective-time))
-                           (cons "%T" (format-time-string
-                                       (org-time-stamp-format 'long nil)
-                                       effective-time))
-                           (cons "%d" (format-time-string
-                                       (org-time-stamp-format nil 'inactive)
-                                       effective-time))
-                           (cons "%D" (format-time-string
-                                       (org-time-stamp-format nil nil)
-                                       effective-time))
-                           (cons "%s" (cond
-                                       ((not note-state) "")
-                                       ((string-match-p org-ts-regexp note-state)
-                                        (format "\"[%s]\""
-                                                (substring note-state 1 -1)))
-                                       (t (format "\"%s\"" note-state))))
-                           (cons "%S"
-                                 (cond
-                                  ((not note-previous-state) "")
-                                  ((string-match-p org-ts-regexp
-                                                   note-previous-state)
-                                   (format "\"[%s]\""
-                                           (substring
-                                            note-previous-state 1 -1)))
-                                  (t (format "\"%s\""
-                                             note-previous-state)))))))
-              (when lines (setq note (concat note " \\\\")))
-              (push note lines))
+  (let* ((note-marker marker)
+         (txt txt)
+         (note-purpose (or purpose 'note))
+         (effective-time (or effective-time (org-current-effective-time)))
+         (note-state state)
+         (note-previous-state previous-state))
+    (if (marker-buffer marker)
+        (let ((note (cl-rest (assq note-purpose org-log-note-headings)))
+              lines)
+          (while (string-match "\\`# .*\n[ \t\n]*" txt)
+            (setq txt (replace-match "" t t txt)))
+          (when (string-match "\\s-+\\'" txt)
+            (setq txt (replace-match "" t t txt)))
+          (setq lines (org-split-string txt "\n"))
+          (when (org-string-nw-p note)
+            (setq note
+                  (org-replace-escapes
+                   note
+                   (list (cons "%u" (user-login-name))
+                         (cons "%U" user-full-name)
+                         (cons "%t" (format-time-string
+                                     (org-time-stamp-format 'long 'inactive)
+                                     effective-time))
+                         (cons "%T" (format-time-string
+                                     (org-time-stamp-format 'long nil)
+                                     effective-time))
+                         (cons "%d" (format-time-string
+                                     (org-time-stamp-format nil 'inactive)
+                                     effective-time))
+                         (cons "%D" (format-time-string
+                                     (org-time-stamp-format nil nil)
+                                     effective-time))
+                         (cons "%s" (cond
+                                     ((not note-state) "")
+                                     ((string-match-p org-ts-regexp note-state)
+                                      (format "\"[%s]\""
+                                              (substring note-state 1 -1)))
+                                     (t (format "\"%s\"" note-state))))
+                         (cons "%S"
+                               (cond
+                                ((not note-previous-state) "")
+                                ((string-match-p org-ts-regexp
+                                                 note-previous-state)
+                                 (format "\"[%s]\""
+                                         (substring
+                                          note-previous-state 1 -1)))
+                                (t (format "\"%s\""
+                                           note-previous-state)))))))
+            (when lines (setq note (concat note " \\\\")))
+            (push note lines))
 
-            (when lines ;; (and lines (not (or current-prefix-arg org-note-abort)))
-              (with-current-buffer (marker-buffer note-marker)
-                (org-with-wide-buffer
-                 ;; Find location for the new note.
-                 (goto-char note-marker)
-                 ;; (set-marker note-marker nil)
+          (when lines ;; (and lines (not (or current-prefix-arg org-note-abort)))
+            (with-current-buffer (marker-buffer note-marker)
+              (org-with-wide-buffer
+               ;; Find location for the new note.
+               (goto-char note-marker)
+               ;; (set-marker note-marker nil)
 
-                 ;; Note associated to a clock is to be located right after
-                 ;; the clock.  Do not move point.
-                 (unless (eq note-purpose 'clock-out)
-                   (goto-char (org-log-beginning t)))
-                 ;; Make sure point is at the beginning of an empty line.
-                 (cond ((not (bolp)) (let ((inhibit-read-only t)) (insert "\n")))
-                       ((looking-at "[ \t]*\\S-") (save-excursion (insert "\n"))))
-                 ;; In an existing list, add a new item at the top level.
-                 ;; Otherwise, indent line like a regular one.
-                 (let ((itemp (org-in-item-p)))
-                   (if itemp
-                       (indent-line-to
-                        (let ((struct (save-excursion
-                                        (goto-char itemp) (org-list-struct))))
-                          (org-list-get-ind (org-list-get-top-point struct) struct)))
-                     (org-indent-line)))
-                 (insert (org-list-bullet-string "-") (pop lines))
-                 (let ((ind (org-list-item-body-column (line-beginning-position))))
-                   (dolist (line lines)
-                     (insert "\n")
-                     (indent-line-to ind)
-                     (insert line)))
-                 (org-lotus-modification-post-action)
-                 (message "Note stored")
-                 (org-back-to-heading t)
-                 (org-cycle-hide-drawers 'children))
-                ;; Fix `buffer-undo-list' when `org-store-log-note' is called
-                ;; from within `org-add-log-note' because `buffer-undo-list'
-                ;; is then modified outside of `org-with-remote-undo'.
-                (when (eq this-command 'org-agenda-todo)
-                  (setcdr buffer-undo-list (nthcdr 2 buffer-undo-list))))))
-        (error "merker %s buffer is nil" marker))))
+               ;; Note associated to a clock is to be located right after
+               ;; the clock.  Do not move point.
+               (unless (eq note-purpose 'clock-out)
+                 (goto-char (org-log-beginning t)))
+               ;; Make sure point is at the beginning of an empty line.
+               (cond ((not (bolp)) (let ((inhibit-read-only t)) (insert "\n")))
+                     ((looking-at "[ \t]*\\S-") (save-excursion (insert "\n"))))
+               ;; In an existing list, add a new item at the top level.
+               ;; Otherwise, indent line like a regular one.
+               (let ((itemp (org-in-item-p)))
+                 (if itemp
+                     (indent-line-to
+                      (let ((struct (save-excursion
+                                      (goto-char itemp) (org-list-struct))))
+                        (org-list-get-ind (org-list-get-top-point struct) struct)))
+                   (org-indent-line)))
+               (insert (org-list-bullet-string "-") (pop lines))
+               (let ((ind (org-list-item-body-column (line-beginning-position))))
+                 (dolist (line lines)
+                   (insert "\n")
+                   (indent-line-to ind)
+                   (insert line)))
+               (org-lotus-modification-post-action)
+               (message "Note stored")
+               (org-back-to-heading t)
+               (org-cycle-hide-drawers 'children))
+              ;; Fix `buffer-undo-list' when `org-store-log-note' is called
+              ;; from within `org-add-log-note' because `buffer-undo-list'
+              ;; is then modified outside of `org-with-remote-undo'.
+              (when (eq this-command 'org-agenda-todo)
+                (setcdr buffer-undo-list (nthcdr 2 buffer-undo-list))))))
+      (error "merker %s buffer is nil" marker))))
 ;; Org insert log note un-interactively:1 ends here
 
 ;; Clock out with NOTE
@@ -186,7 +192,11 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 
 ;; [[file:org-onchange.org::*Clock out with NOTE][Clock out with NOTE:1]]
 ;;;###autoload
-(defun org-clock-out-with-note (note &optional switch-to-state fail-quietly at-time) ;BUG TODO will it work or save-excursion save-restriction also required
+(defun org-clock-out-with-note (note
+                                &optional
+                                switch-to-state
+                                fail-quietly
+                                at-time) ;BUG TODO will it work or save-excursion save-restriction also required
   "org-clock-out-with-note"
   (interactive
    (let ((note (read-from-minibuffer "Closing notes: "))
@@ -213,9 +223,9 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 ;; copy of org-add-log-note
 
 (cl-defun org-build-org-store-log-note-function (&key
-                                                   success-fun
-                                                   fail-fun
-                                                   run-before)
+                                                 success-fun
+                                                 fail-fun
+                                                 run-before)
   #'(lambda ()
       (let ((org-note-abort-before org-note-abort))
         (if run-before
@@ -254,7 +264,12 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 (defun org-store-log-note-invoke-local-fun ()
   (funcall org-store-log-note-local-function))
 
-(cl-defun org-add-log-note-buffer (target-buffer &key buff success fail run-before)
+(cl-defun org-add-log-note-buffer (target-buffer
+                                   &key
+                                   buff
+                                   success
+                                   fail
+                                   run-before)
   "Prepare buffer for taking a note, to add this note later."
   ;; (pop-to-buffer-same-window (marker-buffer org-log-note-marker))
   ;; (goto-char org-log-note-marker)
@@ -308,7 +323,13 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 
 
 
-(cl-defun org-add-log-note-with-timed-new-win (win-timeout &key _purpose buff success fail run-before)
+(cl-defun org-add-log-note-with-timed-new-win (win-timeout
+                                               &key
+                                               _purpose
+                                               buff
+                                               success
+                                               fail
+                                               run-before)
   "Pop up a window for taking a note, and add this note later."
   ;; (remove-hook 'post-command-hook 'org-add-log-note-background)
   ;; (setq org-log-note-window-configuration (current-window-configuration))
@@ -338,9 +359,19 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
              (progn
                (funcall cleanupfn-newwin win cleanupfn-local)
                (if timer (cancel-timer timer))
-               (signal (cl-first err) (rest err)))))))))
+               (signal (cl-first err) (cl-rest err)))))))))
 
-(cl-defun org-add-log-setup-with-timed-new-win (win-timeout &key purpose state prev-state how extra buff success fail run-before)
+(cl-defun org-add-log-setup-with-timed-new-win (win-timeout
+                                                &key
+                                                purpose
+                                                state
+                                                prev-state
+                                                how
+                                                extra
+                                                buff
+                                                success
+                                                fail
+                                                run-before)
   "Set up the post command hook to take a note.
       If this is about to TODO state change, the new state is expected in STATE.
       HOW is an indicator what kind of note should be created.
@@ -355,14 +386,20 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
           org-log-note-effective-time (org-current-effective-time))
     ;; (add-hook 'post-command-hook 'org-add-log-note-background 'append)
     (org-add-log-note-with-timed-new-win win-timeout
-                                         :purpose nil
+                                         :_purpose nil
                                          :buff buff
                                          :success success
                                          :fail fail
                                          :run-before run-before)))
 
   ;;;##autoload
-(cl-defun org-clock-lotus-log-note-current-clock-with-timed-new-win (win-timeout &key fail-quietly buff success fail run-before)
+(cl-defun org-clock-lotus-log-note-current-clock-with-timed-new-win (win-timeout
+                                                                     &key
+                                                                     fail-quietly
+                                                                     buff
+                                                                     success
+                                                                     fail
+                                                                     run-before)
   (interactive)
   (ignore win-timeout)
   (let ((win-timeout  (or win-timeout  7)))
@@ -398,6 +435,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
   (let ((changes 0))
     (when buffer-undo-tree
       (undo-tree-mapc #'(lambda (node)
+                          (ignore node)
                           (setq changes (+ changes 1)));; (length (undo-tree-node-next node))
                       (undo-tree-root buffer-undo-tree)))
     changes))
@@ -412,10 +450,15 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
   (add-to-list 'session-locals-include 'lotus-last-buffer-undo-tree-count))
 (make-variable-buffer-local 'lotus-last-buffer-undo-tree-count)
 
-(defun lotus-action-on-buffer-undo-tree-change (action buff &optional minimal-changes win-timeout)
+(defun lotus-action-on-buffer-undo-tree-change (action
+                                                buff
+                                                &optional
+                                                minimal-changes
+                                                win-timeout)
   (if (eq buff (current-buffer))
       (with-current-buffer buff
-        (let* ((minimal-changes (or minimal-changes lotus-minimum-char-changes))
+        (let* ((minimal-changes (or minimal-changes
+                                    lotus-minimum-char-changes))
                (win-timeout (or win-timeout 7))
                (totalchgcount (lotus-buffer-changes-count))
                (chgcount (- totalchgcount
@@ -448,7 +491,10 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 (when (featurep 'session)
   (add-to-list 'session-locals-include 'lotus-last-buffer-undo-list-pos))
 ;;;###autoload
-(defun lotus-action-on-buffer-undo-list-change (action &optional minimal-char-changes win-timeout)
+(defun lotus-action-on-buffer-undo-list-change (action
+                                                &optional
+                                                minimal-char-changes
+                                                win-timeout)
   "Set point to the position of the last change.
   Consecutive calls set point to the position of the previous change.
   With a prefix arg (optional arg MARK-POINT non-nil), set mark so \
@@ -465,8 +511,8 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
       (setq minimal-char-changes 10))
     (let ((char-changes 0)
           (undo-list (if lotus-last-buffer-undo-list-pos
-                         (rest (memq lotus-last-buffer-undo-list-pos
-                                     buffer-undo-list))
+                         (cl-rest (memq lotus-last-buffer-undo-list-pos
+                                        buffer-undo-list))
                          buffer-undo-list))
           undo)
       (while (and undo-list
@@ -474,9 +520,9 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                   (< char-changes minimal-char-changes))
         (setq undo (cl-first undo-list))
         (cond
-          ((and (consp undo) (integerp (cl-first undo)) (integerp (rest undo)))
+          ((and (consp undo) (integerp (cl-first undo)) (integerp (cl-rest undo)))
            ;; (BEG . END)
-           (setq char-changes (+ char-changes (abs (- (cl-first undo) (rest undo))))))
+           (setq char-changes (+ char-changes (abs (- (cl-first undo) (cl-rest undo))))))
           ((and (consp undo) (stringp (cl-first undo))) ; (TEXT . POSITION)
            (setq char-changes (+ char-changes (length (cl-first undo)))))
           ((and (consp undo) (eq (cl-first undo) t))) ; (t HIGH . LOW)
@@ -488,14 +534,15 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
           ((integerp undo))               ; POSITION
           ((null undo))               ; nil
           (t (error "Invalid undo entry: %s" undo)))
-        (setq undo-list (rest undo-list)))
+        (setq undo-list (cl-rest undo-list)))
 
       (cond
         ((>= char-changes minimal-char-changes)
          (if (funcall action win-timeout :success nil :fail nil :run-before nil)
              (setq lotus-last-buffer-undo-list-pos undo)))
         (t)))))
-(defun org-clock-lotus-log-note-on-change (&optional win-timeout)
+(defun org-clock-lotus-log-note-on-change (&optional
+                                           win-timeout)
   ;; (when (or t (eq buffer (current-buffer)))
   (let ((buff (current-buffer))
         (win-timeout (or win-timeout 7))
@@ -520,7 +567,9 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 ;; (unintern 'org-clock-lotus-log-note-on-change-timer)
 
 ;;;###autoload
-(defun org-clock-lotus-log-note-on-change-start-timer (&optional idle-timeout win-timeout)
+(defun org-clock-lotus-log-note-on-change-start-timer (&optional
+                                                       idle-timeout
+                                                       win-timeout)
   (interactive)
   (let ((idle-timeout (or idle-timeout 10))
         (win-timeout (or win-timeout 7)))
