@@ -49,6 +49,37 @@
 (require 'message)
 ;; Libraries required:1 ends here
 
+
+;; *** Base functions
+;; **** Note start
+;; (defun org-add-note ()
+;;   "Add a note to the current entry.
+;;  This is done in the same way as adding a state change note."
+;;   (interactive)
+;;   (org-add-log-setup 'note))
+
+;; **** org-add-log-setup (&optional purpose state prev-state how extra)
+;; Set up the post command hook to take a note.
+;; If this is about to TODO state change, the new state is expected in STATE.
+;; HOW is an indicator what kind of note should be created.
+;; EXTRA is additional text that will be inserted into the notes buffer.
+;; #+BEGIN_SRC emacs-lisp :tangle no
+;; (defun org-add-log-setup (&optional purpose state prev-state how extra) ...)
+
+;; **** org-add-log-note (&optional _purpose)
+;; Pop up a window for taking a note, and add this note later.
+;; (setq-local org-finish-function 'org-store-log-note)
+;; #+BEGIN_SRC elisp :tangle no
+;; (defun org-add-log-note (&optional _purpose) ...)
+
+
+;; **** org-store-log-note ()
+;; Finish taking a log note, and insert it to where it belongs.
+;; #+BEGIN_SRC elisp :tangle no
+;; (defvar org-note-abort nil) ; dynamically scoped
+;; (defun org-store-log-note ()
+
+
 ;; Org insert log note un-interactively
 
 
@@ -151,7 +182,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 ;; Org insert log note un-interactively:1 ends here
 
 ;; Clock out with NOTE
-
+;; *** Clock out with NOTE
 
 ;; [[file:org-onchange.org::*Clock out with NOTE][Clock out with NOTE:1]]
 ;;;###autoload
@@ -209,6 +240,14 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                                               #'(lambda () ,@fail-body)
                                               :run-before
                                               run-before)))
+
+;; *** Org add log note with-timed-new-win
+;; background in name is misleading it at present log-note show org file buffer to
+;; add note but in this case it is not shown so background word is used.
+
+;; *Note:* these function prepare buffer or window (timed) to take log note
+;; main work is only done by _org-store-log-note_
+
 
 (defun org-add-log-note-buffer (target-buffer &key success fail run-before)
   "Prepare buffer for taking a note, to add this note later."
@@ -338,10 +377,11 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
       ;;         (concat "# Task: " (org-get-heading t) "\n\n")))
       ;;       (if fail-quietly (throw 'exit t) (user-error "No active clock"))))
 ;; Org add log note with-timed-new-win:1 ends here
+
 
 ;; Org detect change to log note
 
-
+;; *** Org detect change to log note
 ;; [[file:org-onchange.org::*Org detect change to log note][Org detect change to log note:1]]
 (defun lotus-buffer-changes-count ()
   (let ((changes 0))
@@ -366,7 +406,10 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
         (chgcount (- (lotus-buffer-changes-count)
                      lotus-last-buffer-undo-tree-count)))
     (if (>= chgcount minimal-changes)
-        (if (funcall action win-timeout :success nil :fail nil :run-before nil)
+        (if (funcall action win-timeout
+                     :success nil
+                     :fail nil
+                     :run-before nil)
             (setq lotus-last-buffer-undo-tree-count chgcount))
         (when nil
          (message "buffer-undo-tree-change: only %d changes not more than %d" chgcount minimal-changes)))))
@@ -377,7 +420,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
   (add-to-list 'desktop-locals-to-save 'lotus-last-buffer-undo-list-pos))
 (when (featurep 'session)
   (add-to-list 'session-locals-include 'lotus-last-buffer-undo-list-pos))
-  ;;;###autoload
+;;;###autoload
 (defun lotus-action-on-buffer-undo-list-change (action &optional minimal-char-changes win-timeout)
   "Set point to the position of the last change.
   Consecutive calls set point to the position of the previous change.
@@ -435,7 +478,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 ;; Org detect change to log note:1 ends here
 
 ;; Org log note on change timer
-
+;; *** Org log note on change timer
 ;; [[file:org-onchange.org::*Org log note on change timer][Org log note on change timer:1]]
 (defvar org-clock-lotus-log-note-on-change-timer nil
   "Time for on change log note.")
@@ -476,6 +519,9 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
   ;; message-send-mail-hook
   (org-clock-lotus-log-note-on-change-stop-timer))
 ;; Org log note on change timer:1 ends here
+
+
+
 
 ;; Org log note change from different sources
 
