@@ -415,10 +415,11 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 (defun lotus-action-on-buffer-undo-tree-change (action buff &optional minimal-changes win-timeout)
   (if (eq buff (current-buffer))
       (with-current-buffer buff
-        (let ((minimal-changes (or minimal-changes lotus-minimum-char-changes))
-              (win-timeout (or win-timeout 7))
-              (chgcount (- (lotus-buffer-changes-count)
-                           lotus-last-buffer-undo-tree-count)))
+        (let* ((minimal-changes (or minimal-changes lotus-minimum-char-changes))
+               (win-timeout (or win-timeout 7))
+               (totalchgcount (lotus-buffer-changes-count))
+               (chgcount (- totalchgcount
+                            lotus-last-buffer-undo-tree-count)))
           (if (>= chgcount
                   minimal-changes)
               (if (funcall action win-timeout
@@ -427,11 +428,11 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                            :success
                            #'(lambda ()
                                (with-current-buffer buff
-                                 (setq lotus-last-buffer-undo-tree-count chgcount)))
+                                 (setq lotus-last-buffer-undo-tree-count totalchgcount)))
                            :fail
                            #'(lambda ()
                                (with-current-buffer buff
-                                 (setq lotus-last-buffer-undo-tree-count chgcount)))
+                                 (setq lotus-last-buffer-undo-tree-count totalchgcount)))
                            :run-before nil)
                   (message "Lunched noter ret t")
                 (message "Lunched noter ret nil"))
