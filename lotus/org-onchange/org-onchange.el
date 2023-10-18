@@ -51,7 +51,7 @@
 
 
 (defvar lotus-minimum-char-changes 70 "minimum char changes")
-(defvar lotus-minimum-changes 70 "minimum changes")
+(defvar lotus-minimum-changes      70 "minimum changes")
 
 
 ;; *** Base functions
@@ -210,9 +210,13 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
   (let ((org-log-note-clock-out t))
     (move-marker org-log-note-return-to nil)
     (move-marker org-log-note-marker nil)
-    (org-clock-out switch-to-state fail-quietly at-time)
-    (remove-hook 'post-command-hook 'org-add-log-note)
-    (org-insert-log-note org-clock-marker note)))
+    (org-clock-out switch-to-state
+                   fail-quietly
+                   at-time)
+    (remove-hook 'post-command-hook
+                 'org-add-log-note)
+    (org-insert-log-note org-clock-marker
+                         note)))
 ;; Clock out with NOTE:1 ends here
 
 ;; Org add log note with-timed-new-win
@@ -283,44 +287,47 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
   ;; (set-buffer target-buffer)
   (erase-buffer)
 
-  (if (memq org-log-note-how '(time state))
-      (let (current-prefix-arg)
-        (org-store-log-note))
-    (let ((org-inhibit-startup t))
-      (org-mode))
-    (insert (format (string-join
-                     '("# Insert note for %s."
-                       "# and buffer %s changes"
-                       "# Finish with C-c C-c, or cancel with C-c C-k.\n\n")
-                     "\n")
-                    (cond
-                     ((eq org-log-note-purpose 'clock-out) "stopped clock")
-                     ((eq org-log-note-purpose 'done)  "closed todo item")
-                     ((eq org-log-note-purpose 'state)
-                      (format "state change from \"%s\" to \"%s\""
-                              (or org-log-note-previous-state "")
-                              (or org-log-note-state "")))
-                     ((eq org-log-note-purpose 'reschedule)
-                      "rescheduling")
-                     ((eq org-log-note-purpose 'delschedule)
-                      "no longer scheduled")
-                     ((eq org-log-note-purpose 'redeadline)
-                      "changing deadline")
-                     ((eq org-log-note-purpose 'deldeadline)
-                      "removing deadline")
-                     ((eq org-log-note-purpose 'refile)
-                      "refiling")
-                     ((eq org-log-note-purpose 'note)
-                      "this entry")
-                     (t (error "This should not happen")))
-                    buff))
-    (when org-log-note-extra (insert org-log-note-extra))
-    ;; (setq-local org-finish-function 'org-store-log-note)
-    (setq-local org-store-log-note-local-function (org-build-org-store-log-note-function :success-fun success
-                                                                                         :fail-fun fail
-                                                                                         :run-before run-before))
-    (setq-local org-finish-function #'org-store-log-note-invoke-local-fun)
-    (run-hooks 'org-log-buffer-setup-hook)))
+  (let ((store-log-note-function (org-build-org-store-log-note-function :success-fun success
+                                                                        :fail-fun fail
+                                                                        :run-before run-before)))
+    (if (memq org-log-note-how '(time state))
+        (let (current-prefix-arg)
+          ;; (org-store-log-note)
+          (funcall store-log-note-function))
+      (let ((org-inhibit-startup t))
+        (org-mode))
+      (let ((note-for (cond
+                       ((eq org-log-note-purpose 'clock-out) "stopped clock")
+                       ((eq org-log-note-purpose 'done)  "closed todo item")
+                       ((eq org-log-note-purpose 'state)
+                        (format "state change from \"%s\" to \"%s\""
+                                (or org-log-note-previous-state "")
+                                (or org-log-note-state "")))
+                       ((eq org-log-note-purpose 'reschedule)
+                        "rescheduling")
+                       ((eq org-log-note-purpose 'delschedule)
+                        "no longer scheduled")
+                       ((eq org-log-note-purpose 'redeadline)
+                        "changing deadline")
+                       ((eq org-log-note-purpose 'deldeadline)
+                        "removing deadline")
+                       ((eq org-log-note-purpose 'refile)
+                        "refiling")
+                       ((eq org-log-note-purpose 'note)
+                        "this entry")
+                       (t (error "This should not happen")))))
+        (insert (format (string-join
+                         '("# Insert note for %s."
+                           "# and buffer %s changes"
+                           "# Finish with C-c C-c, or cancel with C-c C-k.\n\n")
+                         "\n")
+                        note-for
+                        (buffer-name buff))))
+      (when org-log-note-extra (insert org-log-note-extra))
+      ;; (setq-local org-finish-function 'org-store-log-note)
+      (setq-local org-store-log-note-local-function store-log-note-function)
+      (setq-local org-finish-function #'org-store-log-note-invoke-local-fun)
+      (run-hooks 'org-log-buffer-setup-hook))))
 
 ;; (defun abcd (win-timeout &optional _purpose &key success fail run-before)
 ;;   (list :win-timeout win-timeout :_purpose _purpose :success success :fail fail :run-before run-before))
@@ -420,14 +427,15 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                                                   :fail fail
                                                   :run-before run-before)))))
 
-      ;; (defun org-clock-lotus-log-note-current-clock-with-timed-new-win (&optional fail-quietly)
-      ;;   (interactive)
-      ;;   (if (org-clocking-p)
-      ;;       (org-clock-lotus-with-current-clock
-      ;;        (org-add-log-setup-background
-      ;;         'note nil nil nil
-      ;;         (concat "# Task: " (org-get-heading t) "\n\n")))
-      ;;       (if fail-quietly (throw 'exit t) (user-error "No active clock"))))
+;; (defun org-clock-lotus-log-note-current-clock-with-timed-new-win (&optional fail-quietly)
+;;   (interactive)
+;;   (if (org-clocking-p)
+;;       (org-clock-lotus-with-current-clock
+;;        (org-add-log-setup-background
+;;         'note nil nil nil
+;;         (concat "# Task: " (org-get-heading t) "\n\n")))
+;;       (if fail-quietly (throw 'exit t) (user-error "No active clock"))))
+
 ;; Org add log note with-timed-new-win:1 ends here
 
 
