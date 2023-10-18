@@ -42,6 +42,8 @@
 (require 'occ-util-common)
 (require 'occ-prop)
 (require 'occ-obj-simple)
+(eval-when-compile
+  (require 'occ-debug-method))
 (require 'occ-debug-method)
 (require 'occ-unnamed)
 (require 'occ-helm)

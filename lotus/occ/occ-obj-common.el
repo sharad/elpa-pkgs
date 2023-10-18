@@ -32,6 +32,8 @@
 (require 'occ-assert)
 (require 'occ-cl-utils)
 (require 'occ-obj-accessor)
+(eval-when-compile
+  (require 'occ-debug-method))
 (require 'occ-debug-method)
 
 ;; TODO org-base-buffer

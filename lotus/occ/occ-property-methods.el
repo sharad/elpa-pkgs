@@ -40,6 +40,8 @@
 (require 'occ-print)
 (require 'occ-predicate)
 (require 'occ-obj-accessor)
+(eval-when-compile
+  (require 'occ-debug-method))
 (require 'occ-debug-method)
 (require 'occ-prop-intf)
 (require 'occ-rank)

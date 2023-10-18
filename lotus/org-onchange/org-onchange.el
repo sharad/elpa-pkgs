@@ -275,6 +275,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 (cl-defun org-add-log-note-buffer (target-buffer
                                    &key
                                    buff
+                                   chgcount
                                    success
                                    fail
                                    run-before)
@@ -318,10 +319,11 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                        (t (error "This should not happen")))))
         (insert (format (string-join
                          '("# Insert note for %s."
-                           "# and buffer %s changes"
+                           "# and %d changes in  buffer %s"
                            "# Finish with C-c C-c, or cancel with C-c C-k.\n\n")
                          "\n")
                         note-for
+                        chgcount
                         (buffer-name buff))))
       (when org-log-note-extra (insert org-log-note-extra))
       ;; (setq-local org-finish-function 'org-store-log-note)
@@ -338,6 +340,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                                                &key
                                                npurpose
                                                buff
+                                               chgcount
                                                success
                                                fail
                                                run-before)
@@ -363,6 +366,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
               (let ((target-buffer (get-buffer-create "*Org Note*")))
                 (org-add-log-note-buffer target-buffer
                                          :buff buff
+                                         :chgcount chgcount
                                          :success success
                                          :fail fail
                                          :run-before run-before))
@@ -380,6 +384,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                                                 how
                                                 extra
                                                 buff
+                                                chgcount
                                                 success
                                                 fail
                                                 run-before)
@@ -399,6 +404,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
     (org-add-log-note-with-timed-new-win win-timeout
                                          :npurpose nil
                                          :buff buff
+                                         :chgcount chgcount
                                          :success success
                                          :fail fail
                                          :run-before run-before)))
@@ -408,6 +414,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                                                                      &key
                                                                      fail-quietly
                                                                      buff
+                                                                     chgcount
                                                                      success
                                                                      fail
                                                                      run-before)
@@ -423,6 +430,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                                                   :how nil
                                                   :extra (concat "# Task: " (org-get-heading t) "\n\n")
                                                   :buff buff
+                                                  :chgcount chgcount
                                                   :success success
                                                   :fail fail
                                                   :run-before run-before)))))
@@ -451,6 +459,9 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                           (setq changes (+ changes 1)));; (length (undo-tree-node-next node))
                       (undo-tree-root buffer-undo-tree)))
     changes))
+
+;; (undo-tree-mapc #'(lambda (n) (message "%s\n" n))
+;;                 (undo-tree-root buffer-undo-tree))
 
 
 (defvar lotus-last-buffer-undo-tree-count 0) ;internal add in session and desktop
@@ -478,6 +489,8 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
               (if (funcall action win-timeout
                            :buff
                            buff
+                           :chgcount
+                           chgcount
                            :success
                            #'(lambda ()
                                (with-current-buffer buff
@@ -503,6 +516,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
   (add-to-list 'session-locals-include 'lotus-last-buffer-undo-list-pos))
 ;;;###autoload
 (defun lotus-action-on-buffer-undo-list-change (action
+                                                buff
                                                 &optional
                                                 minimal-char-changes
                                                 win-timeout)
@@ -528,7 +542,8 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
           undo)
       (while (and undo-list
                   (cl-first undo-list)
-                  (< char-changes minimal-char-changes))
+                  (< char-changes
+                     minimal-char-changes))
         (setq undo (cl-first undo-list))
         (cond
           ((and (consp undo) (integerp (cl-first undo)) (integerp (cl-rest undo)))
@@ -549,7 +564,20 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 
       (cond
         ((>= char-changes minimal-char-changes)
-         (if (funcall action win-timeout :success nil :fail nil :run-before nil)
+         (if (funcall action win-timeout
+                      :buff
+                      buff
+                      :chgcount
+                      char-changes
+                      :success
+                      #'(lambda ()
+                          (with-current-buffer buff
+                            (setq lotus-last-buffer-undo-list-pos undo)))
+                      :fail
+                      #'(lambda ()
+                          (with-current-buffer buff
+                            (setq lotus-last-buffer-undo-list-pos undo)))
+                      :run-before nil)
              (setq lotus-last-buffer-undo-list-pos undo)))
         (t)))))
 

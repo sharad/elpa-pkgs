@@ -38,6 +38,8 @@
 (require 'occ-obj-utils)
 (require 'occ-obj-accessor)
 (require 'occ-obj-ctor)
+(eval-when-compile
+  (require 'occ-debug-method))
 (require 'occ-debug-method)
 (require 'occ-select)
 (require 'occ-obj)

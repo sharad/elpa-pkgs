@@ -27,6 +27,8 @@
 (provide 'occ-tsk)
 
 
+(eval-when-compile
+  (require 'occ-debug-method))
 (require 'occ-debug-method)
 
 

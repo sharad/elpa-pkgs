@@ -44,6 +44,8 @@
 (require 'occ-prop-org)
 (require 'occ-obj-clock-method)
 (require 'occ-obj-accessor)
+(eval-when-compile
+  (require 'occ-debug-method))
 (require 'occ-debug-method)
 
 

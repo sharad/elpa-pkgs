@@ -38,6 +38,8 @@
 (require 'occ-macros)
 (require 'occ-obj)
 (require 'occ-obj-ctor)
+(eval-when-compile
+  (require 'occ-debug-method))
 (require 'occ-debug-method)
 (require 'occ-obj-method)
 (require 'occ-helm-method)

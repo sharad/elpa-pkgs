@@ -38,6 +38,8 @@
 (require 'occ-assert)
 (require 'occ-clock)
 (require 'occ-cl-utils)
+(eval-when-compile
+  (require 'occ-debug-method))
 (require 'occ-debug-method)
 (require 'occ-util-common)
 

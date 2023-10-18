@@ -30,6 +30,9 @@
 (eval-when-compile
   (require 'occ-macros))
 (require 'occ-macros)
+(eval-when-compile
+  (require 'occ-debug-method))
+(require 'occ-debug-method)
 
 
 (cl-defgeneric occ-obj-impl-rank (tsk

@@ -37,6 +37,8 @@
 (require 'occ-assert)
 (require 'occ-commands)
 (require 'occ-util-common)
+(eval-when-compile
+  (require 'occ-debug-method))
 (require 'occ-debug-method)
 
 

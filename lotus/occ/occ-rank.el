@@ -31,6 +31,8 @@
   (require 'occ-macros))
 (require 'occ-util-common)
 (require 'occ-obj-accessor)
+(eval-when-compile
+  (require 'occ-debug-method))
 (require 'occ-debug-method)
 (require 'occ-prop-base)
 

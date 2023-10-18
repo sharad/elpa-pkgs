@@ -36,6 +36,8 @@
 (require 'occ-obj-common)
 (require 'occ-property-methods)
 (require 'occ-obj-accessor)
+(eval-when-compile
+  (require 'occ-debug-method))
 (require 'occ-debug-method)
 
 
