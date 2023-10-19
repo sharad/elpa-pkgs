@@ -69,7 +69,7 @@
                                  (prop (eql currfile))) ;; do not use (prop (eql file)) that is another property which represent file in which task defined.
   ;; file in which tsk aka org entry exists.
   "Predicate funtion to check if ctx matches to tsk's file attribute."
-  (occ-aggregate-rank tsk-currfile 'currfile tsk #'max
+  (occ-aggregate-rank tsk-currfile currfile tsk #'max
     (if (occ-obj-prop= prop
                        tsk-currfile
                        (occ-ctx-file ctx))
@@ -142,7 +142,7 @@
                                  (ctx occ-obj-ctx)
                                  (prop (eql root)))
   "RANK Predicate funtion to check if ctx matches to tsk's ROOT attribute."
-  (occ-aggregate-rank tsk-root 'root tsk #'max
+  (occ-aggregate-rank tsk-root root tsk #'max
     (if (occ-obj-prop= prop
                        tsk-root
                        (occ-ctx-file ctx))
@@ -205,7 +205,6 @@
 
 (cl-defmethod occ-obj-impl-occ-prop-p ((prop (eql git-branch)))
   t)
-
 (cl-defmethod occ-obj-impl-prop= ((prop (eql git-branch))
                                   prop-value
                                   value)
@@ -276,8 +275,8 @@
                                  (ctx occ-obj-ctx)
                                  (prop (eql git-branch)))
   "Return the RANK (number) for OCC-TSK based on the property GIT-BRANCH"
-  (occ-aggregate-rank tsk-git-branch prop tsk #'max
-    (if (occ-obj-prop= prop
+  (occ-aggregate-rank tsk-git-branch git-branch tsk #'max
+    (if (occ-obj-prop= git-branch
                        tsk-git-branch
                        ;; (occ-obj-impl-get ctx prop nil)
                        (occ-obj-get ctx nil prop nil))
@@ -300,7 +299,7 @@
       convert value VALUE of property PROPERTY from occ to org string
       representation."
   (format "%s" value))
-(cl-defmethod occ-obj-org-from-imp ((prop (eql git-branch)
+(cl-defmethod occ-obj-impl-from-org ((prop (eql git-branch)
                                      value))
   "Return the Actual Object representation for property
       GIT-BRANCH, Method convert value VALUE of property PROPERTY from

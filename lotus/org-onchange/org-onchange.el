@@ -510,10 +510,6 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 
 (defvar lotus-last-buffer-undo-list-pos nil) ;internal add in session and desktop
 (make-variable-buffer-local 'lotus-last-buffer-undo-list-pos)
-(when (featurep 'desktop)
-  (add-to-list 'desktop-locals-to-save 'lotus-last-buffer-undo-list-pos))
-(when (featurep 'session)
-  (add-to-list 'session-locals-include 'lotus-last-buffer-undo-list-pos))
 ;;;###autoload
 (defun lotus-action-on-buffer-undo-list-change (action
                                                 buff
@@ -582,6 +578,29 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
         (t)))))
 
 
+(defun org-onchange-register-in-session ()
+  (when (featurep 'desktop)
+    (add-hook 'desktop-locals-to-save 'lotus-last-buffer-undo-tree-count))
+  (when (featurep 'session)
+    (add-hook 'session-locals-include 'lotus-last-buffer-undo-tree-count))
+
+  (when (featurep 'desktop)
+    (add-hook 'desktop-locals-to-save 'lotus-last-buffer-undo-list-pos))
+  (when (featurep 'session)
+    (add-hook 'session-locals-include 'lotus-last-buffer-undo-list-pos)))
+
+(defun org-onchange-unregister-in-session ()
+  (when (featurep 'desktop)
+    (remove-hook 'desktop-locals-to-save 'lotus-last-buffer-undo-tree-count))
+  (when (featurep 'session)
+    (remove-hook 'session-locals-include 'lotus-last-buffer-undo-tree-count))
+
+  (when (featurep 'desktop)
+    (remove-hook 'desktop-locals-to-save 'lotus-last-buffer-undo-list-pos))
+  (when (featurep 'session)
+    (remove-hook 'session-locals-include 'lotus-last-buffer-undo-list-pos)))
+
+
 (defun org-clock-lotus-log-note-on-change (&optional
                                            win-timeout)
   ;; (when (or t (eq buffer (current-buffer)))
@@ -634,12 +653,14 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 (defun org-clock-lotus-log-note-on-change-insinuate ()
   (interactive)
   ;; message-send-mail-hook
+  (org-onchange-register-in-session)
   (org-clock-lotus-log-note-on-change-start-timer 10 7))
 
 ;;;###autoload
 (defun org-clock-lotus-log-note-on-change-uninsinuate ()
   (interactive)
   ;; message-send-mail-hook
+  org-onchange-unregister-in-session
   (org-clock-lotus-log-note-on-change-stop-timer))
 ;; Org log note on change timer:1 ends here
 
