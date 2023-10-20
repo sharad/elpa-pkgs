@@ -292,13 +292,17 @@
                                 collection
                                 subtree-level)
   ;; (occ-debug "point %s" obj)
-  (if (<= obj (point-max))
-      (save-restriction
-        (save-excursion
-          (goto-char obj)
-          ;; (occ-obj-make-tsk-at-point (occ-obj-collection collection) nil)
-          (let ((builder (occ-obj-drived-tsk-builder collection subtree-level)))
-            (funcall builder nil))))))
+  (let ((collection (if collection      ;for when collection were not passed, like in (defun occ-current-tsk (&optional occ-other-allowed) ...)
+                        (occ-obj-collection collection)
+                      (occ-default-collection))))
+   (if (<= obj (point-max))
+     (save-restriction
+       (save-excursion
+         (goto-char obj)
+         ;; (occ-obj-make-tsk-at-point (occ-obj-collection collection) nil)
+         (let ((builder (occ-obj-drived-tsk-builder collection
+                                                    subtree-level)))
+           (funcall builder nil)))))))
 
 (cl-defmethod occ-obj-make-tsk ((obj marker)
                                 &optional
@@ -326,7 +330,8 @@
 
 (cl-defmethod occ-obj-make-tsk ((obj occ-tsk)
                                 &optional
-                                collection)
+                                collection
+                                subtree-level)
   obj)
 
 

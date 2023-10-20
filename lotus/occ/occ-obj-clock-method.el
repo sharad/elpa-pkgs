@@ -59,8 +59,10 @@
 (defvar    *occ-tsk-current-ctx*               nil)
 
 
-(cl-defmethod occ-obj-ctxual-current-tsk ((obj occ-ctx))
-  (let ((curr-tsk (occ-current-tsk)))
+(cl-defmethod occ-obj-ctxual-current-tsk ((obj occ-ctx)
+                                          &key
+                                          other-allowed)
+  (let ((curr-tsk (occ-current-tsk :other-allowed other-allowed)))
     (when curr-tsk
       (occ-obj-build-ctxual-tsk-with curr-tsk
                                      obj))))
@@ -162,7 +164,7 @@ then return t else nil"
 ;;       t)))
 
 (cl-defmethod occ-obj-try-current-if-unassociated-p ((obj occ-obj-ctx)) ;; should handle occ-ctx
-  (occ-obj-try-if-unassociated-p (occ-obj-ctxual-current-tsk obj)))
+  (occ-obj-try-if-unassociated-p (occ-obj-ctxual-current-tsk obj :other-allowed t)))
 
 
 (cl-defmethod occ-do-clock-in-if-not ((obj occ-ctx)
@@ -430,7 +432,7 @@ then return t else nil"
   "Get next timeout to try clock-in"
   (occ-debug "begin")
   (let* ((ctx             (occ-obj-make-ctx-at-point))
-         (ctxual-curr-tsk (occ-obj-ctxual-current-tsk ctx)))
+         (ctxual-curr-tsk (occ-obj-ctxual-current-tsk ctx :other-allowed t)))
     (cond
      ((null ctxual-curr-tsk)              3)
      ((occ-obj-unnamed-p ctxual-curr-tsk) (+ *occ-tsk-current-ctx-time-interval* 10))

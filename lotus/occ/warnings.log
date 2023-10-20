@@ -1,6 +1,24 @@
 
 
 
+
+Debugger entered--Lisp error: (error #("occ-current-ctxual-tsk: Marker: STARTED Unnamed ta..." 32 39 (fontified nil :pm-mode org-mode face ((:foreground "red" :weight bold) org-level-2)) 39 40 (face org-level-2) 40 56 (fontified nil :pm-mode org-mode face org-level-2)))
+  error(#("occ-current-ctxual-tsk: Marker: STARTED Unnamed ta..." 32 39 (fontified nil :pm-mode org-mode face ((:foreground "red" :weight bold) org-level-2)) 39 40 (face org-level-2) 40 56 (fontified nil :pm-mode org-mode face org-level-2)))
+  occ-error(#("occ-current-ctxual-tsk: Marker: STARTED Unnamed ta..." 32 39 (fontified nil :pm-mode org-mode face ((:foreground "red" :weight bold) org-level-2)) 39 40 (face org-level-2) 40 56 (fontified nil :pm-mode org-mode face org-level-2)))
+  occ-current-tsk()
+  #f(compiled-function (obj) #<bytecode -0x1a390003057a45a6>)(<CTX cli_plugin.h>)
+  apply(#f(compiled-function (obj) #<bytecode -0x1a390003057a45a6>) <CTX cli_plugin.h> nil)
+  occ-obj-ctxual-current-tsk(<CTX cli_plugin.h>)
+  occ-obj-try-clock-in-next-timeout()
+  occ-do-try-clock-schedule-next-timeout(buffer-switch)
+  apply(occ-do-try-clock-schedule-next-timeout buffer-switch)
+  timer-event-handler([t 25906 7430 433207 nil occ-do-try-clock-schedule-next-timeout (buffer-switch) nil 63000 nil])
+
+
+
+
+
+
 Debugger entered--Lisp error: (error "Invalid search bound (wrong side of point)")
   org-element-paragraph-parser(34323 (34323))
   org-element--current-element(34323 element nil nil)
