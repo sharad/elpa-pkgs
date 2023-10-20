@@ -432,10 +432,12 @@ then return t else nil"
   "Get next timeout to try clock-in"
   (occ-debug "begin")
   (let* ((ctx             (occ-obj-make-ctx-at-point))
-         (ctxual-curr-tsk (occ-obj-ctxual-current-tsk ctx :other-allowed t)))
+         (ctxual-curr-tsk (occ-obj-ctxual-current-tsk ctx
+                                                      :other-allowed t)))
     (cond
      ((null ctxual-curr-tsk)              3)
-     ((occ-obj-unnamed-p ctxual-curr-tsk) (+ *occ-tsk-current-ctx-time-interval* 10))
+     ((occ-obj-unnamed-p ctxual-curr-tsk) (+ *occ-tsk-current-ctx-time-interval*
+                                             10))
      (t                                   30))))
 
 (cl-defmethod occ-do-try-clock-schedule-next-timeout (event)
