@@ -223,9 +223,9 @@
          (static-filter        (occ-obj-static-filter-get (or (car-safe static-filterkw-rank)
                                                               static-filterkw-rank)))
          (rank-select-fn       (if (consp static-filterkw-rank)
-                                (nth 1 static-filterkw-rank)
-                                (or rank-select-fn
-                                    #'occ-obj-rank))))
+                                   (nth 1 static-filterkw-rank)
+                                 (or rank-select-fn
+                                     #'occ-obj-rank))))
     (occ-assert static-filter)
     (occ-debug "occ-obj-build-dyn-filters-recursive in")
     (let* ((prev (if (cdr static-filter-methods)
@@ -267,7 +267,7 @@
                                                                          (push curr-dyn-filter stack)
                                                                          (setf curr-dyn-filter prev))
                                                                      (ding t)
-                                                                     (occ-message "No prev"))))
+                                                                     (occ-message "No prev (current: %s)" (occ-obj-name curr-dyn-filter)))))
                                        :next-closure-fn      #'(lambda ()
                                                                  (if stack
                                                                      (let ((next (pop stack)))
@@ -276,7 +276,7 @@
                                                                        (occ-obj-dyn-filter-init next)
                                                                        (setf curr-dyn-filter next))
                                                                    (ding t)
-                                                                   (occ-message "No next")))
+                                                                   (occ-message "No next (current: %s)" (occ-obj-name curr-dyn-filter))))
                                        :seq-closure-fn       #'(lambda ()
                                                                  (occ-assert curr-dyn-filter)
                                                                  (occ-obj-dyn-filter-seq curr-dyn-filter))
