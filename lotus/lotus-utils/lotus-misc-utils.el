@@ -339,7 +339,7 @@
              (pos           (marker-position marker)))
          (if target-buffer
              (with-current-buffer target-buffer
-               (message "lotus-with-marker: selecting buf %s" target-buffer)
+               ;; (message "lotus-with-marker: selecting buf %s" target-buffer)
                (if (<= pos (point-max))
                    (progn
                      (goto-char pos)
