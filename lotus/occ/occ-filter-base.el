@@ -255,7 +255,7 @@
                                            :filter-dir static-filterkw-rank
                                            :rank-select-fn rank-select-fn
                                            :rank-display-fn rank-display-fn))))
-        
+
 ;; (cl-defmethod xyz ((x symbol)
 ;;                    &key
 ;;                    (dir t)
@@ -264,7 +264,7 @@
 
 
 ;; (xyz 'a :dir nil)
-    
+
 (cl-defmethod occ-obj-combined-dyn-filter ((obj occ-ctx)
                                            (static-filter-methods list)
                                            (sequence list)

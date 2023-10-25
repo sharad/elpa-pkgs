@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -80,14 +80,19 @@
 
 (defun occ-list-filters ()
   ;; '(:nonnegative)
-  '(:identity))
+  (list t ;; nil
+        :incremental
+        t
+        :non-negative
+        :identity))
 
 ;; (defun occ-match-filters ()
 ;;   (list :positive
 ;;         :mutual-deviation
 ;;         (list :positive #'occ-obj-member-tsk-rank)))
 (defun occ-match-filters ()
-  (list :incremental
+  (list t
+        :incremental
         ;; :mutual-deviation
         (list :positive
               #'occ-obj-rank)

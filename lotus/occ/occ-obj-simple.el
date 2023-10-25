@@ -367,9 +367,8 @@
                                                   immediate-finish)
   "Create Anonymous (fast as unnamed)"
   (ignore template)
-  (let ((ctx (occ-obj-make-ctx-at-point))
+  (let ((ctx     (occ-obj-make-ctx-at-point))
         (heading "Unnamed task"))
-        
     (occ-do-capture nil
                     :clock-in         clock-in ;; helm-current-prefix-arg
                     :template         (occ-obj-tsk-txt ctx heading)
@@ -382,7 +381,7 @@
                                                                 immediate-finish)
   "Create Anonymous tsk in collection (fast as unnamed)"
   (ignore template)
-  (let ((ctx (occ-obj-make-ctx-at-point))
+  (let ((ctx     (occ-obj-make-ctx-at-point))
         (heading "Unnamed task"))
     (let* ((anonymous-heading-marker (cl-rest (org-without-org-clock-persist
                                                 ;; TODO: Implement it.
