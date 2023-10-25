@@ -240,7 +240,6 @@
                                                          (combined-dyn-filter occ-combined-dyn-filter)
                                                          &key
                                                          filters
-                                                         filter-dir
                                                          builder
                                                          ap-normal
                                                          ap-transf
@@ -310,7 +309,6 @@
                                                     (collection occ-obj-collection) ;; (nth 0 (occ-collections-default))
                                                     &key
                                                     filters
-                                                    filter-dir
                                                     builder
                                                     ap-normal
                                                     ap-transf
@@ -331,7 +329,6 @@ select candidate from it."
          (timeout               (or timeout occ-idle-timeout))
          (combined-dyn-filter   (occ-obj-combined-dyn-filter obj
                                                              filters
-                                                             filter-dir
                                                              (occ-obj-list-with obj collection :builder builder)))
          (candidates-unfiltered (occ-obj-dyn-filter-seq    combined-dyn-filter)) ;; (occ-collections-default) -- occ-obj-list-with is in occ-obj-accessor.el
          (candidates-filtered   (occ-obj-dyn-filter-selectable-filter combined-dyn-filter))
@@ -355,7 +352,6 @@ select candidate from it."
                                                                  collection ;; (nth 0 (occ-collections-default))
                                                                  (occ-obj-helmify combined-dyn-filter)
                                                                  :filters filters
-                                                                 :filter-dir filter-dir
                                                                  :builder builder
                                                                  :ap-normal ap-normal
                                                                  :ap-transf ap-transf
@@ -403,7 +399,6 @@ select candidate from it."
                                                       (collections list) ;; (occ-collections-default)
                                                       &key
                                                       filters
-                                                      filter-dir
                                                       builder
                                                       ap-normal
                                                       ap-transf
@@ -419,7 +414,6 @@ select candidate from it."
             (occ-obj-helm-build-collection-source obj
                                                   collection ;; (nth 0 (occ-collections-default))
                                                   :filters          filters
-                                                  :filter-dir       filter-dir
                                                   :builder          builder
                                                   :ap-normal        ap-normal
                                                   :ap-transf        ap-transf
@@ -432,7 +426,6 @@ select candidate from it."
                                           (collections list) ;; (occ-collections-default)
                                           &key
                                           filters
-                                          filter-dir
                                           builder
                                           ap-normal
                                           ap-transf
@@ -448,7 +441,6 @@ select candidate from it."
   (let ((collection-sources (occ-obj-helm-build-collections-sources obj
                                                                     collections ;; (occ-collections-default)
                                                                     :filters          filters
-                                                                    :filter-dir       filter-dir
                                                                     :builder          builder
                                                                     :ap-normal        ap-normal
                                                                     :ap-transf        ap-transf
@@ -482,7 +474,6 @@ select candidate from it."
                                              (source occ-hsrc-candidate)
                                              &key
                                              filters
-                                             filter-dir
                                              builder
                                              ap-normal
                                              ap-transf
@@ -526,7 +517,6 @@ select candidate from it."
                                             (collections list) ;; (occ-collections-default)
                                             &key
                                             filters
-                                            filter-dir
                                             builder
                                             ap-normal
                                             ap-transf
@@ -537,7 +527,6 @@ select candidate from it."
   (let ((cand-sources (occ-obj-helm-build-sources obj
                                                   collections ;; (occ-collections-default)
                                                   :filters          filters
-                                                  :filter-dir       filter-dir
                                                   :builder          builder
                                                   :ap-normal        ap-normal
                                                   :ap-transf        ap-transf
@@ -557,7 +546,6 @@ select candidate from it."
           (occ-obj-helm-act-on-candidate obj
                                          preferred-candidate
                                          :filters          filters
-                                         :filter-dir       filter-dir
                                          :builder          builder
                                          :ap-normal        ap-normal
                                          :ap-transf        ap-transf
@@ -594,7 +582,6 @@ select candidate from it."
                                 (collections list) ;; (occ-collections-default)
                                 &key
                                 filters
-                                filter-dir
                                 builder
                                 ap-normal
                                 ap-transf
@@ -615,7 +602,6 @@ select candidate from it."
         (occ-obj-helm-act-on-multiple obj
                                       collections
                                       :filters             filters
-                                      :filter-dir          filter-dir
                                       :builder             builder
                                       :ap-normal           ap-normal
                                       :ap-transf           ap-transf
