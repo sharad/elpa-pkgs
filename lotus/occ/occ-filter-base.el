@@ -153,6 +153,7 @@
                                             (sequence list)
                                             prev ;; (prev occ-dyn-filter)
                                             &key
+                                            filter-dir
                                             rank-select-fn
                                             rank-display-fn)
   (occ-debug "occ-obj-static-to-dyn-filter in %s 1" (occ-obj-name static-filter))
@@ -198,7 +199,9 @@
                                                                   (when points
                                                                     (cl-remove-if-not #'(lambda (ctsk)
                                                                                           (let ((rank (funcall rank-display-fn ctsk)))
-                                                                                            (funcall compare-fn rank (nth pivot points))))
+                                                                                            (if filter-dir
+                                                                                                (funcall compare-fn rank (nth pivot points))
+                                                                                              (not (funcall compare-fn rank (nth pivot points))))))
                                                                                       sequence)))
                                 :selectable-filter-closure-fn selectable-filter-closure-fn
                                 :increment-closure-fn #'(lambda ()
@@ -216,32 +219,52 @@
                                                    (static-filter-methods list)
                                                    (sequence list)
                                                    &key
+                                                   (filter-dir t)
                                                    rank-select-fn
                                                    rank-display-fn)
   ;; (occ-message "len(static-filter-methods) = %d" (length static-filter-methods))
-  (let* ((static-filterkw-rank (cl-first static-filter-methods))
-         (static-filter        (occ-obj-static-filter-get (or (car-safe static-filterkw-rank)
-                                                              static-filterkw-rank)))
-         (rank-select-fn       (if (consp static-filterkw-rank)
-                                   (nth 1 static-filterkw-rank)
-                                 (or rank-select-fn
-                                     #'occ-obj-rank))))
-    (occ-assert static-filter)
-    (occ-debug "occ-obj-build-dyn-filters-recursive in")
-    (let* ((prev (if (cdr static-filter-methods)
-                     (occ-obj-build-dyn-filters-recursive obj
-                                                          (cdr static-filter-methods)
-                                                          sequence
-                                                          :rank-select-fn rank-select-fn
-                                                          :rank-display-fn rank-display-fn)
-                   nil)))
-      (occ-obj-static-to-dyn-filter static-filter
-                                    obj
-                                    sequence
-                                    prev
-                                    :rank-select-fn rank-select-fn
-                                    :rank-display-fn rank-display-fn))))
+  (let ((static-filterkw-rank (cl-first static-filter-methods)))
+    (if (or (consp static-filterkw-rank)
+            (keywordp static-filterkw-rank))
+        (let ((static-filter        (occ-obj-static-filter-get (or (car-safe static-filterkw-rank)
+                                                                   static-filterkw-rank)))
+              (rank-select-fn       (if (consp static-filterkw-rank)
+                                        (nth 1 static-filterkw-rank)
+                                      (or rank-select-fn
+                                          #'occ-obj-rank))))
+          (occ-assert static-filter)
+          (occ-debug "occ-obj-build-dyn-filters-recursive in")
+          (let* ((prev (if (cdr static-filter-methods)
+                           (occ-obj-build-dyn-filters-recursive obj
+                                                                (cdr static-filter-methods)
+                                                                sequence
+                                                                :filter-dir filter-dir
+                                                                :rank-select-fn rank-select-fn
+                                                                :rank-display-fn rank-display-fn)
+                         nil)))
+            (occ-obj-static-to-dyn-filter static-filter
+                                          obj
+                                          sequence
+                                          prev
+                                          :filter-dir filter-dir
+                                          :rank-select-fn rank-select-fn
+                                          :rank-display-fn rank-display-fn)))
+      (occ-obj-build-dyn-filters-recursive obj
+                                           (cdr static-filter-methods)
+                                           sequence
+                                           :filter-dir static-filterkw-rank
+                                           :rank-select-fn rank-select-fn
+                                           :rank-display-fn rank-display-fn))))
+        
+;; (cl-defmethod xyz ((x symbol)
+;;                    &key
+;;                    (dir t)
+;;                    ris)
+;;   (list x dir ris))
 
+
+;; (xyz 'a :dir nil)
+    
 (cl-defmethod occ-obj-combined-dyn-filter ((obj occ-ctx)
                                            (static-filter-methods list)
                                            (sequence list)
