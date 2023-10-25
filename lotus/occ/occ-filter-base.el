@@ -219,10 +219,14 @@
                                                                                       sequence)))
                                 :selectable-filter-closure-fn selectable-filter-closure-fn
                                 :increment-closure-fn #'(lambda ()
-                                                          (setf pivot (mod (1+ pivot)
+                                                          (setf pivot (mod (if filter-dir
+                                                                               (1+ pivot)
+                                                                             (1- pivot))
                                                                            (length points))))
                                 :decrement-closure-fn #'(lambda ()
-                                                          (setf pivot (mod (1- pivot)
+                                                          (setf pivot (mod (if filter-dir
+                                                                               (1- pivot)
+                                                                             (1+ pivot))
                                                                            (length points))))
                                 :reset-closure-fn     #'(lambda ()
                                                           (setf pivot default-pivot))

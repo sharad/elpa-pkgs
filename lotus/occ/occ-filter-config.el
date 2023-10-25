@@ -41,7 +41,8 @@
                                                                        sequence)))
                                :compare-fn #'>=
                                :default-pivot-fn #'(lambda (ctx points)
-                                                     (/ (length points) 2))
+                                                     (/ (length points)
+                                                        2))
                                :rank-select-fn  nil
                                :rank-display-fn nil)
 
@@ -60,7 +61,8 @@
                                                   (list -1))
                                :compare-fn #'>
                                :default-pivot-fn #'(lambda (ctx points)
-                                                     (/ (length points) 2))
+                                                     (/ (length points)
+                                                        2))
                                :rank-select-fn  nil
                                :rank-display-fn nil)
 
