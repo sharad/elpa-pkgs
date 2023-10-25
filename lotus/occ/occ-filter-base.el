@@ -176,9 +176,16 @@
                                              (when points
                                                (cl-remove-if-not #'(lambda (ctsk)
                                                                      (let ((rank (funcall rank-select-fn ctsk)))
-                                                                       (funcall compare-fn
-                                                                                rank
-                                                                                (nth pivot points))))
+                                                                       ;; (funcall compare-fn
+                                                                       ;;          rank
+                                                                       ;;          (nth pivot points))
+                                                                       (if filter-dir
+                                                                           (funcall compare-fn
+                                                                                    rank
+                                                                                    (nth pivot points))
+                                                                         (not (funcall compare-fn
+                                                                                       rank
+                                                                                       (1+ (nth pivot points)))))))
                                                                  (funcall seq-closure-fn)))))
            (init-closure-fn              #'(lambda ()
                                              (setf points        (funcall points-fn obj
@@ -199,9 +206,16 @@
                                                                   (when points
                                                                     (cl-remove-if-not #'(lambda (ctsk)
                                                                                           (let ((rank (funcall rank-display-fn ctsk)))
+                                                                                            ;; (funcall compare-fn
+                                                                                            ;;          rank
+                                                                                            ;;          (nth pivot points))
                                                                                             (if filter-dir
-                                                                                                (funcall compare-fn rank (nth pivot points))
-                                                                                              (not (funcall compare-fn rank (nth pivot points))))))
+                                                                                                (funcall compare-fn
+                                                                                                         rank
+                                                                                                         (nth pivot points))
+                                                                                              (not (funcall compare-fn
+                                                                                                            rank
+                                                                                                            (1+ (nth pivot points)))))))
                                                                                       sequence)))
                                 :selectable-filter-closure-fn selectable-filter-closure-fn
                                 :increment-closure-fn #'(lambda ()

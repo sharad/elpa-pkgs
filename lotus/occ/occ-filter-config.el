@@ -69,7 +69,7 @@
                                :points-gen-fn #'(lambda (ctx sequence &key rank)
                                                   (list 0))
                                :compare-fn #'(lambda (rank pivot) t)
-                               :default-pivot-fn #'(lambda (obj points)
+                               :default-pivot-fn #'(lambda (ctx points)
                                                      0)
                                :rank-select-fn  nil
                                :rank-display-fn nil))
@@ -79,12 +79,20 @@
 ;; else occ-obj-rank will be used.
 
 (defun occ-list-filters ()
-  ;; '(:nonnegative)
-  (list t ;; nil
+  ;; '(:non-negative)
+  (list nil
         :incremental
-        t
         :non-negative
         :identity))
+
+(defun occ-list-filters ()
+  '(nil
+    :non-negative))
+  ;; (list nil
+  ;;       :incremental
+  ;;       :non-negative
+  ;;       :identity)
+  
 
 ;; (defun occ-match-filters ()
 ;;   (list :positive
