@@ -319,5 +319,33 @@
         (org-back-to-heading t))
     ((error) (occ-error e))))
 
+
+(defun occ-line-to-skeleton (line)
+  `( > ,(trim-string line)  \n))
+(defvar occ-skeleton-file nil)
+(defun occ-buffer-content-to-skeleton (&optional force)
+  (unless (and (not force)
+               occ-skeleton-file)
+    (setq occ-skeleton-file
+          (read-file-name "file:")))
+  (let ((lines (with-current-buffer (find-file-noselect occ-skeleton-file)
+                 ;; skip header
+                 (goto-char (point-min))
+                 (re-search-forward "^[^;]")
+                 (beginning-of-line)
+                 (split-string (buffer-substring-no-properties (point) (point-max)) "\n"))))
+    (apply #'append
+           (mapcar #'occ-line-to-skeleton
+                   lines))))
+(defun occ-make-skeleton (&optional force)
+  (interactive "P")
+  (eval `(define-skeleton occ-skeleton
+           "Test"
+           ,@(occ-buffer-content-to-skeleton force))))
+(defun occ-run-skeleton (&optional force)
+  (interactive "P")
+  (atomic-change-group
+    (skeleton-proxy-new (occ-buffer-content-to-skeleton force))))
+
 ;;; occ-util-common.el ends here
 
