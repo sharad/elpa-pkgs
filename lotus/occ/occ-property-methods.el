@@ -69,7 +69,7 @@
                                  (prop (eql currfile))) ;; do not use (prop (eql file)) that is another property which represent file in which task defined.
   ;; file in which tsk aka org entry exists.
   "Predicate funtion to check if ctx matches to tsk's file attribute."
-  (occ-aggregate-rank tsk-currfile currfile tsk #'max
+  (occ-aggregate-rank tsk-currfile prop tsk #'max
     (if (occ-obj-prop= prop
                        tsk-currfile
                        (occ-ctx-file ctx))
@@ -142,7 +142,7 @@
                                  (ctx occ-obj-ctx)
                                  (prop (eql root)))
   "RANK Predicate funtion to check if ctx matches to tsk's ROOT attribute."
-  (occ-aggregate-rank tsk-root root tsk #'max
+  (occ-aggregate-rank tsk-root prop tsk #'max
     (if (occ-obj-prop= prop
                        tsk-root
                        (occ-ctx-file ctx))
@@ -275,8 +275,8 @@
                                  (ctx occ-obj-ctx)
                                  (prop (eql git-branch)))
   "Return the RANK (number) for OCC-TSK based on the property GIT-BRANCH"
-  (occ-aggregate-rank tsk-git-branch git-branch tsk #'max
-    (if (occ-obj-prop= git-branch
+  (occ-aggregate-rank tsk-git-branch prop tsk #'max
+    (if (occ-obj-prop= prop
                        tsk-git-branch
                        ;; (occ-obj-impl-get ctx prop nil)
                        (occ-obj-get ctx nil prop nil))
