@@ -217,7 +217,8 @@
              (length val-list))
       (let ((pvroot (nth 0 prop-val-list))
             (vroot  (nth 0 val-list)))
-        (when (occ-pu-file= pvroot vroot)
+        (when (occ-pu-file= pvroot
+                            vroot)
           (let ((pvbranch (nth 1 prop-val-list))
                 (vbranch  (nth 1 val-list)))
             (occ-pu-string= pvbranch
@@ -266,10 +267,11 @@
     (when git-branch-list
       (let ((root   (nth 0 git-branch-list))
             (branch (nth 1 git-branch-list)))
-        (if root
-            (if branch
-                (if (occ-pu-file-in-dir-p root default-directory)
-                    (magit-checkout git-branch))))))))
+        (when root
+          (when branch
+            (when (occ-pu-file-in-dir-p root
+                                        default-directory)
+              (magit-checkout git-branch))))))))
 
 (cl-defmethod occ-obj-impl-rank ((tsk occ-obj-tsk)
                                  (ctx occ-obj-ctx)
