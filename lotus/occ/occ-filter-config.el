@@ -66,6 +66,17 @@
                                :rank-select-fn  nil
                                :rank-display-fn nil)
 
+  (occ-obj-build-static-filter :negative
+                               "Negative"
+                               :points-gen-fn #'(lambda (ctx sequence &key rank)
+                                                  (list 0))
+                               :compare-fn #'<
+                               :default-pivot-fn #'(lambda (ctx points)
+                                                     (/ (length points)
+                                                        2))
+                               :rank-select-fn  nil
+                               :rank-display-fn nil)
+
   (occ-obj-build-static-filter :identity
                                "Identity"
                                :points-gen-fn #'(lambda (ctx sequence &key rank)
@@ -80,22 +91,21 @@
 ;; Filter should be list of keys or cons of key and customized rank function
 ;; else occ-obj-rank will be used.
 
-(defun occ-list-filters ()
-  ;; '(:non-negative)
-  (list nil
-        :incremental
-        :non-negative
-        :identity))
 
 (defun occ-list-filters ()
   '(nil
     :non-negative))
-  ;; (list nil
-  ;;       :incremental
-  ;;       :non-negative
-  ;;       :identity)
-  
 
+(defun occ-list-filters ()
+  '(nil
+    :identity))
+(defun occ-list-filters ()
+  ;; '(:non-negative)
+  (list nil
+        :incremental
+        ;; :negative
+        :identity))
+  
 ;; (defun occ-match-filters ()
 ;;   (list :positive
 ;;         :mutual-deviation

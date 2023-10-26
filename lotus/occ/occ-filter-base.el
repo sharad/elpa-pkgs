@@ -148,6 +148,27 @@
   (occ-combined-dyn-filter-prev-closure-fn dyn-filter))
 
 
+(defun occ-obj-filter-comparator (compare-fn
+                                  rank
+                                  pivot
+                                  dir)
+  (if dir
+      (funcall compare-fn
+               rank
+               pivot)
+    (funcall compare-fn
+             pivot
+             rank)))
+(defun occ-obj-filter-incrementor (pivot len dir)
+  (mod (if dir
+           (1+ pivot)
+         (1- pivot))
+       len))
+(defun occ-obj-filter-decrementor (pivot len dir)
+  (mod (if dir
+           (1- pivot)
+         (1+ pivot))
+       len))
 (cl-defmethod occ-obj-static-to-dyn-filter ((static-filter occ-static-filter)
                                             (obj occ-ctx)
                                             (sequence list)
@@ -176,16 +197,10 @@
                                              (when points
                                                (cl-remove-if-not #'(lambda (ctsk)
                                                                      (let ((rank (funcall rank-select-fn ctsk)))
-                                                                       ;; (funcall compare-fn
-                                                                       ;;          rank
-                                                                       ;;          (nth pivot points))
-                                                                       (if filter-dir
-                                                                           (funcall compare-fn
-                                                                                    rank
-                                                                                    (nth pivot points))
-                                                                         (not (funcall compare-fn
-                                                                                       rank
-                                                                                       (1+ (nth pivot points)))))))
+                                                                       (occ-obj-filter-comparator compare-fn
+                                                                                                  rank
+                                                                                                  (nth pivot points)
+                                                                                                  filter-dir)))
                                                                  (funcall seq-closure-fn)))))
            (init-closure-fn              #'(lambda ()
                                              (setf points        (funcall points-fn obj
@@ -206,28 +221,20 @@
                                                                   (when points
                                                                     (cl-remove-if-not #'(lambda (ctsk)
                                                                                           (let ((rank (funcall rank-display-fn ctsk)))
-                                                                                            ;; (funcall compare-fn
-                                                                                            ;;          rank
-                                                                                            ;;          (nth pivot points))
-                                                                                            (if filter-dir
-                                                                                                (funcall compare-fn
-                                                                                                         rank
-                                                                                                         (nth pivot points))
-                                                                                              (not (funcall compare-fn
-                                                                                                            rank
-                                                                                                            (1+ (nth pivot points)))))))
+                                                                                            (occ-obj-filter-comparator compare-fn
+                                                                                                                       rank
+                                                                                                                       (nth pivot points)
+                                                                                                                       filter-dir)))
                                                                                       sequence)))
                                 :selectable-filter-closure-fn selectable-filter-closure-fn
                                 :increment-closure-fn #'(lambda ()
-                                                          (setf pivot (mod (if filter-dir
-                                                                               (1+ pivot)
-                                                                             (1- pivot))
-                                                                           (length points))))
+                                                          (setf pivot (occ-obj-filter-incrementor pivot
+                                                                                                  (length points)
+                                                                                                  filter-dir)))
                                 :decrement-closure-fn #'(lambda ()
-                                                          (setf pivot (mod (if filter-dir
-                                                                               (1- pivot)
-                                                                             (1+ pivot))
-                                                                           (length points))))
+                                                          (setf pivot (occ-obj-filter-decrementor pivot
+                                                                                                  (length points)
+                                                                                                  filter-dir)))
                                 :reset-closure-fn     #'(lambda ()
                                                           (setf pivot default-pivot))
                                 :prev                 prev))))
