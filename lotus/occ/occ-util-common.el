@@ -353,6 +353,12 @@
                         arg)))
 
 
+(defvar occ-store-log-note-local-function nil)
+(make-variable-buffer-local 'occ-store-log-note-local-function)
+
+(defun occ-store-log-note-invoke-local-fun ()
+  (funcall occ-store-log-note-local-function))
+
 (cl-defun occ-add-log-note-buffer (target-buffer
                                    &key
                                    buff
