@@ -319,6 +319,9 @@
         (org-back-to-heading t))
     ((error) (occ-error e))))
 
+(replace-regexp-in-string "\\([A-Z]+\\)"
+                          "\" (setq \\1 (skeleton-read \"\\1\")) \""
+                          "--PROPERTY--")
 
 (defun occ-line-to-skeleton (line)
   `( > ,(trim-string line)  \n))

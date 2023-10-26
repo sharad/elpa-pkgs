@@ -159,16 +159,20 @@
     (funcall compare-fn
              pivot
              rank)))
-(defun occ-obj-filter-incrementor (pivot len dir)
+(defun occ-obj-filter-incrementor (pivot
+                                   length
+                                   dir)
   (mod (if dir
            (1+ pivot)
          (1- pivot))
-       len))
-(defun occ-obj-filter-decrementor (pivot len dir)
+       length))
+(defun occ-obj-filter-decrementor (pivot
+                                   length
+                                   dir)
   (mod (if dir
            (1- pivot)
          (1+ pivot))
-       len))
+       length))
 (cl-defmethod occ-obj-static-to-dyn-filter ((static-filter occ-static-filter)
                                             (obj occ-ctx)
                                             (sequence list)
