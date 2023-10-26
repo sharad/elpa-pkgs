@@ -112,6 +112,6 @@
 
 (defun occ-never-filters ()
   "Used to filter mainly non-tsk"
-  '(:nonnegative))
+  '(:non-negative))
 
 ;;; occ-filter-config.el ends here

@@ -342,10 +342,12 @@
   (eval `(define-skeleton occ-skeleton
            "Test"
            ,@(occ-buffer-content-to-skeleton force))))
-(defun occ-run-skeleton (&optional force)
-  (interactive "P")
+(defun occ-run-skeleton (&optional str arg force)
+  (interactive "P\nP")
   (atomic-change-group
-    (skeleton-proxy-new (occ-buffer-content-to-skeleton force))))
+    (skeleton-proxy-new (occ-buffer-content-to-skeleton force)
+                        str
+                        arg)))
 
 ;;; occ-util-common.el ends here
 
