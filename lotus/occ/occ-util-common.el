@@ -353,6 +353,27 @@
                         arg)))
 
 
+(cl-defun occ-build-org-store-log-note-function (&key
+                                                 success-fun
+                                                 fail-fun
+                                                 run-before)
+  #'(lambda ()
+      (let ((org-note-abort-before org-note-abort))
+        (if run-before
+            (unwind-protect
+                (if org-note-abort-before
+                    (and fail-fun
+                         (funcall fail-fun))
+                  (and success-fun
+                       (funcall success-fun)))
+              (funcall #'org-store-log-note))
+          (unwind-protect
+              (funcall #'org-store-log-note)
+            (if org-note-abort-before
+                (and fail-fun
+                     (funcall fail-fun))
+              (and success-fun
+                   (funcall success-fun))))))))
 (defvar occ-store-log-note-local-function nil)
 (make-variable-buffer-local 'occ-store-log-note-local-function)
 
@@ -367,15 +388,9 @@
                                    fail
                                    run-before)
   "Prepare buffer for taking a note, to add this note later."
-  ;; (pop-to-buffer-same-window (marker-buffer org-log-note-marker))
-  ;; (goto-char org-log-note-marker)
-  ;; (org-switch-to-buffer-other-window "*Org Note*")
-
   (switch-to-buffer target-buffer 'norecord)
-  ;; (set-buffer target-buffer)
   (erase-buffer)
-
-  (let ((store-log-note-function (org-build-org-store-log-note-function :success-fun success
+  (let ((store-log-note-function (occ-build-org-store-log-note-function :success-fun success
                                                                         :fail-fun fail
                                                                         :run-before run-before)))
     (if (memq org-log-note-how '(time state))

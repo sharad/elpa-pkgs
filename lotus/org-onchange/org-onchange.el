@@ -239,14 +239,18 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
         (if run-before
             (unwind-protect
                 (if org-note-abort-before
-                    (and fail-fun (funcall fail-fun))
-                  (and success-fun (funcall success-fun)))
+                    (and fail-fun
+                         (funcall fail-fun))
+                  (and success-fun
+                       (funcall success-fun)))
               (funcall #'org-store-log-note))
             (unwind-protect
                 (funcall #'org-store-log-note)
               (if org-note-abort-before
-                  (and fail-fun (funcall fail-fun))
-                (and success-fun (funcall success-fun))))))))
+                  (and fail-fun
+                       (funcall fail-fun))
+                (and success-fun
+                     (funcall success-fun))))))))
 
 ;; (defmacro org-build-org-store-log-note-function (&rest args)
 ;;   (let ((success-body (plist-get args :success))
