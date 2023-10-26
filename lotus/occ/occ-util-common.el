@@ -352,5 +352,105 @@
                         str
                         arg)))
 
+
+(cl-defun occ-add-log-note-buffer (target-buffer
+                                   &key
+                                   buff
+                                   chgcount
+                                   success
+                                   fail
+                                   run-before)
+  "Prepare buffer for taking a note, to add this note later."
+  ;; (pop-to-buffer-same-window (marker-buffer org-log-note-marker))
+  ;; (goto-char org-log-note-marker)
+  ;; (org-switch-to-buffer-other-window "*Org Note*")
+
+  (switch-to-buffer target-buffer 'norecord)
+  ;; (set-buffer target-buffer)
+  (erase-buffer)
+
+  (let ((store-log-note-function (org-build-org-store-log-note-function :success-fun success
+                                                                        :fail-fun fail
+                                                                        :run-before run-before)))
+    (if (memq org-log-note-how '(time state))
+        (let (current-prefix-arg)
+          ;; (org-store-log-note)
+          (funcall store-log-note-function))
+      (let ((org-inhibit-startup t))
+        (org-mode))
+      (let ((note-for (cond
+                       ((eq org-log-note-purpose 'clock-out) "stopped clock")
+                       ((eq org-log-note-purpose 'done)  "closed todo item")
+                       ((eq org-log-note-purpose 'state)
+                        (format "state change from \"%s\" to \"%s\""
+                                (or org-log-note-previous-state "")
+                                (or org-log-note-state "")))
+                       ((eq org-log-note-purpose 'reschedule)
+                        "rescheduling")
+                       ((eq org-log-note-purpose 'delschedule)
+                        "no longer scheduled")
+                       ((eq org-log-note-purpose 'redeadline)
+                        "changing deadline")
+                       ((eq org-log-note-purpose 'deldeadline)
+                        "removing deadline")
+                       ((eq org-log-note-purpose 'refile)
+                        "refiling")
+                       ((eq org-log-note-purpose 'note)
+                        "this entry")
+                       (t (error "This should not happen")))))
+        (insert (format (string-join
+                         '("# Insert note for %s."
+                           "# and %d changes in  buffer %s"
+                           "# Finish with C-c C-c, or cancel with C-c C-k.\n\n")
+                         "\n")
+                        note-for
+                        chgcount
+                        (buffer-name buff))))
+      (when org-log-note-extra (insert org-log-note-extra))
+      ;; (setq-local org-finish-function 'org-store-log-note)
+      (setq-local org-store-log-note-local-function store-log-note-function)
+      (setq-local org-finish-function #'org-store-log-note-invoke-local-fun)
+      (run-hooks 'org-log-buffer-setup-hook))))
+
+(cl-defun occ-add-log-note-with-timed-new-win (win-timeout
+                                               &key
+                                               npurpose
+                                               buff
+                                               chgcount
+                                               success
+                                               fail
+                                               run-before)
+  "Pop up a window for taking a note, and add this note later."
+  ;; (remove-hook 'post-command-hook 'org-add-log-note-background)
+  ;; (setq org-log-note-window-configuration (current-window-configuration))
+  ;; (delete-other-windows)
+
+  ;; (move-marker org-log-note-return-to (point))
+  (lotus-with-no-active-minibuffer-if
+      (progn                            ;could schedule in little further.
+        (lwarn 'org-onchange :debug "org-add-log-note-with-timed-new-win: [minibuff body] lotus-with-no-active-minibuffer-if")
+        (lwarn 'org-onchange :debug "add-log-note-background: minibuffer already active quitting")
+        (message "add-log-note-background: minibuffer already active quitting")
+        (message nil))
+    (lwarn 'org-onchange :debug "org-add-log-note-with-timed-new-win: [body] lotus-with-no-active-minibuffer-if")
+    (let ((win-timeout (or win-timeout 7))
+          (cleanupfn-local nil))
+      (setq org-log-note-window-configuration (current-window-configuration))
+      (lotus-with-timed-new-win
+          win-timeout timer cleanupfn-newwin cleanupfn-local win
+          (condition-case nil
+              (let ((target-buffer (get-buffer-create "*Org Note*")))
+                (org-add-log-note-buffer target-buffer
+                                         :buff buff
+                                         :chgcount chgcount
+                                         :success success
+                                         :fail fail
+                                         :run-before run-before))
+            ((quit)
+             (progn
+               (funcall cleanupfn-newwin win cleanupfn-local)
+               (if timer (cancel-timer timer))
+               (signal (cl-first err) (cl-rest err)))))))))
+
 ;;; occ-util-common.el ends here
 

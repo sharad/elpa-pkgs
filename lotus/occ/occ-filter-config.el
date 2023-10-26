@@ -105,7 +105,7 @@
         :incremental
         ;; :negative
         :identity))
-  
+
 ;; (defun occ-match-filters ()
 ;;   (list :positive
 ;;         :mutual-deviation
