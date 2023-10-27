@@ -58,6 +58,7 @@
     (define-key map "\C-c\C-c" #'org-capture-plus-finalize)
     (define-key map "\C-c\C-k" #'org-capture-kill)
     (define-key map "\C-c\C-w" #'org-capture-refile)
+    (define-key map "\C-c\C-r" #'org-capture-plus-replace-template)
     map)
   "Keymap for `org-capture-plus-mode', a minor mode.
       Use this map to set additional keybindings for when Org mode is used
@@ -72,12 +73,11 @@
       Turning on this mode runs the normal hook `org-capture-plus-mode-hook'."
   nil " Cap" org-capture-plus-mode-map
   (setq-local org-capture-mode t)
-  (setq-local
-   header-line-format
+  (setq-local header-line-format
    (substitute-command-keys
     "\\<org-capture-plus-mode-map>Capture buffer.  Finish \
       `\\[org-capture-plus-finalize]', refile `\\[org-capture-refile]', \
-      abort `\\[org-capture-kill]'.")))
+      abort `\\[org-capture-kill]', recapture `\\[org-capture-plus-replace-template]'.")))
 ;; Mode definition:1 ends here
 
 ;; org-capture-plus-finalize
@@ -249,23 +249,27 @@
       (error "marker %s buffer is nil" 'marker))))
 
 
-(defalias 'org-capture-plus-place-entry #'org-capture-place-entry)
+(defalias 'org-capture-plus-place-entry      #'org-capture-place-entry)
 (defalias 'org-capture-plus-place-table-line #'org-capture-place-table-line)
 (defalias 'org-capture-plus-place-plain-text #'org-capture-place-plain-text)
-(defalias 'org-capture-plus-place-item #'org-capture-place-item)
-(defalias 'org-capture-place-log-note #'org-capture-plus-place-log-note)
+(defalias 'org-capture-plus-place-item       #'org-capture-place-item)
+(defalias 'org-capture-place-log-note        #'org-capture-plus-place-log-note)
 ;; Providing log note function for capture:1 ends here
 
 ;; Overriding org-capture-place-template function
 
 
 ;; [[file:org-capture+-lib.org::*Overriding org-capture-place-template function][Overriding org-capture-place-template function:1]]
-(defun org-capture-plus-place-template (capture-buffer &optional inhibit-wconf-store nodisplay)
+(defun org-capture-plus-place-template (capture-buffer
+                                        &optional
+                                        inhibit-wconf-store
+                                        nodisplay)
   "Insert the template at the target location, and display the buffer.
      When `inhibit-wconf-store', don't store the window configuration, as it
      may have been stored before."
   (let ((capture-buffer (or capture-buffer
-                            (org-capture-get-indirect-buffer (org-capture-get :buffer) "CAPTURE"))))
+                            (org-capture-get-indirect-buffer (org-capture-get :buffer)
+                                                             "CAPTURE"))))
     (unless inhibit-wconf-store
       (org-capture-put :return-to-wconf (current-window-configuration)))
     (if capture-buffer
@@ -277,6 +281,7 @@
             (widen)
             (outline-show-all)
             (goto-char (org-capture-get :pos))
+            (org-fold-show-all)
             (setq-local outline-level 'org-outline-level)
             (pcase (org-capture-get :type)
               ((or `nil `entry) (org-capture-plus-place-entry))
@@ -292,6 +297,60 @@
 
 (defalias 'org-capture-place-template #'org-capture-plus-place-template)
 ;; Overriding org-capture-place-template function:1 ends here
+
+
+(defun org-capture-plus-replace-template ()
+  (org-capture-kill)
+  (org-capture-plus-set-target-location)
+
+  (condition-case error
+      (org-capture-put :template
+                       (org-capture-fill-template))
+    ((error quit)
+     (when (get-buffer "*Capture*")
+       (kill-buffer "*Capture*"))
+     (error "Capture abort: %s" error)))
+
+  (setq org-capture-clock-keep (org-capture-get :clock-keep))
+  (if (and (not (org-capture-get :target))
+           (eq 'immdediate
+               (cl-first (org-capture-get :target)))) ;; (equal goto 0)
+      ;;insert at point
+      (org-capture-insert-template-here)
+    (let ((capture-buffer (org-capture-get-indirect-buffer (org-capture-get :buffer)
+                                                           "CAPTURE")))
+      (condition-case error
+          (let ((nodisplay           (org-capture-get :nodisplay))
+                (inhibit-wconf-store (eq 'function
+                                         (cl-first (org-capture-get :target)))))
+            (org-capture-plus-place-template capture-buffer
+                                             inhibit-wconf-store
+                                             nodisplay))
+        ((error quit)
+         (if (and (buffer-base-buffer capture-buffer)
+                  (string-prefix-p "CAPTURE-" (buffer-name)))
+             (kill-buffer (current-buffer)))
+         (set-window-configuration (org-capture-get :return-to-wconf))
+         (error "Capture template `%s': %s"
+                (org-capture-get :key)
+                (nth 1 error))))
+      (when (and (derived-mode-p 'org-mode)
+                 (org-capture-get :clock-in))
+        (condition-case nil
+            (progn
+              (when (org-clock-is-active)
+                (org-capture-put :interrupted-clock
+                                 (copy-marker org-clock-marker)))
+              (org-clock-in)
+              (setq-local org-capture-clock-was-started t))
+          (error "Could not start the clock in this capture buffer")))
+      (when (org-capture-get :immediate-finish)
+        (with-current-buffer capture-buffer
+          (org-capture-plus-finalize))))))
+
+
+
+
 
 ;; set target improved
 
@@ -375,48 +434,44 @@
            (widen)
            ;; Make a date/week tree entry, with the current date (or
            ;; yesterday, if we are extending dates for a couple of hours)
-           (funcall
-            (if (eq (org-capture-get :tree-type) 'week)
-                #'org-datetree-find-iso-week-create
-              #'org-datetree-find-date-create)
-            (calendar-gregorian-from-absolute
-             (cond
-              (org-overriding-default-time
-               ;; Use the overriding default time.
-               (time-to-days org-overriding-default-time))
-              ((or (org-capture-get :time-prompt)
-                   (equal current-prefix-arg 1))
-               ;; Prompt for date.
-               (let ((prompt-time
-                      (org-read-date nil t nil "Date for tree entry:" (current-time))))
-                 (org-capture-put
-                  :default-time
-                  (cond ((and
-                          (or (not (boundp 'org-time-was-given))
-                              (not org-time-was-given))
-                          (not (= (time-to-days prompt-time) (org-today))))
-                         ;; Use 00:00 when no time is given for another
-                         ;; date than today?
-                         (apply #'encode-time
-                                (append '(0 0 0)
-                                        (cl-cdddr (decode-time prompt-time)))))
-                        ((string-match "\\([^ ]+\\)--?[^ ]+[ ]+\\(.*\\)"
-                                       org-read-date-final-answer)
-                         ;; Replace any time range by its start.
-                         (apply #'encode-time
-                                (org-read-date-analyze
-                                 (replace-match "\\1 \\2" nil nil
-                                                org-read-date-final-answer)
-                                 prompt-time (decode-time prompt-time))))
-                        (t prompt-time)))
-                 (time-to-days prompt-time)))
-              (t
-               ;; Current date, possibly corrected for late night
-               ;; workers.
-               (org-today))))
-            ;; the following is the keep-restriction argument for
-            ;; org-datetree-find-date-create
-            (if outline-path 'subtree-at-point))))
+           (let ((date (calendar-gregorian-from-absolute
+                        (cond (org-overriding-default-time
+                               ;; Use the overriding default time.
+                               (time-to-days org-overriding-default-time))
+                              ((or (org-capture-get :time-prompt)
+                                   (equal current-prefix-arg 1))
+                               ;; Prompt for date.
+                               (let ((prompt-time
+                                      (org-read-date nil t nil "Date for tree entry:" (current-time))))
+                                 (org-capture-put
+                                  :default-time
+                                  (cond ((and (or (not (boundp 'org-time-was-given))
+                                                  (not org-time-was-given))
+                                              (not (= (time-to-days prompt-time) (org-today))))
+                                         ;; Use 00:00 when no time is given for another
+                                         ;; date than today?
+                                         (apply #'encode-time
+                                                (append '(0 0 0)
+                                                        (cl-cdddr (decode-time prompt-time)))))
+                                        ((string-match "\\([^ ]+\\)--?[^ ]+[ ]+\\(.*\\)"
+                                                       org-read-date-final-answer)
+                                         ;; Replace any time range by its start.
+                                         (apply #'encode-time
+                                                (org-read-date-analyze
+                                                 (replace-match "\\1 \\2" nil nil
+                                                                org-read-date-final-answer)
+                                                 prompt-time (decode-time prompt-time))))
+                                        (t prompt-time)))
+                                 (time-to-days prompt-time)))
+                              (t
+                               ;; Current date, possibly corrected for late night
+                               ;; workers.
+                               (org-today))))))
+             (funcall (if (eq (org-capture-get :tree-type) 'week) #'org-datetree-find-iso-week-create #'org-datetree-find-date-create)
+                      date
+                      ;; the following is the keep-restriction argument for
+                      ;; org-datetree-find-date-create
+                      (if outline-path 'subtree-at-point)))))
         (`(file+function ,path ,function)
          (set-buffer (org-capture-target-buffer path))
          (org-capture-put-target-region-and-position)
@@ -448,9 +503,8 @@
                  ((symbolp hd-marker) (symbol-value hd-marker))
                  (t (error "value %s is not marker" hd-marker)))))
            (message "hd-marker %s" hd-marker)
-           (if (and
-                (markerp hd-marker)
-                (marker-buffer hd-marker))
+           (if (and (markerp hd-marker)
+                    (marker-buffer hd-marker))
                (progn
                  (set-buffer (marker-buffer hd-marker))
                  (org-capture-put-target-region-and-position)
@@ -478,7 +532,11 @@
 ;; capture plus fill template
 
 ;; [[file:org-capture+-lib.org::*capture plus fill template][capture plus fill template:1]]
-(defun org-capture-plus-fill-template (&optional template initial annotation nodisplay)
+(defun org-capture-plus-fill-template (&optional
+                                       template
+                                       initial
+                                       annotation
+                                       nodisplay)
   "Fill a TEMPLATE and return the filled template as a string.
   The template may still contain \"%?\" for cursor positioning.
   INITIAL content and/or ANNOTATION may be specified, but will be overridden
@@ -500,7 +558,7 @@
          (v-x (or (org-get-x-clipboard 'PRIMARY)
                   (org-get-x-clipboard 'CLIPBOARD)
                   (org-get-x-clipboard 'SECONDARY)
-                  ""))                                    			;ensure it is a string
+                  ""))                                          ;ensure it is a string
          ;; `initial' and `annotation' might have been passed.  But if
          ;; the property list has them, we prefer those values.
          (v-i (or (plist-get org-store-link-plist :initial)
@@ -633,7 +691,7 @@
       ;; completion in interactive prompts.
       (let ((org-inhibit-startup t)) (org-mode))
       (org-clone-local-variables buffer "\\`org-")
-      (let (strings)                                    			; Stores interactive answers.
+      (let (strings)                                          ; Stores interactive answers.
         (save-excursion
           (let ((regexp "%\\^\\(?:{\\([^}]*\\)}\\)?\\([CgGLptTuU]\\)?"))
             (while (re-search-forward regexp nil t)
@@ -772,11 +830,10 @@
 
 ;; [[file:org-capture+-lib.org::*new capture][new capture:1]]
 (defun org-capture-plus-get-template (template)
-  (cond
-   ((stringp template) template)
-   ((fboundp template) (funcall template))
-   ((symbolp template) (symbol-value template))
-   (t                  template)))
+  (cond ((stringp template) template)
+        ((fboundp template) (funcall template))
+        ((symbolp template) (symbol-value template))
+        (t                  template)))
 
   ;;;###autoload
 (defun org-capture-run (type target template &rest plist)
@@ -841,8 +898,6 @@
                               '(read-only t)
                               annotation))
 
-
-
     ;; (org-capture-set-plist template)
 
     (setq org-capture-plist plist)
@@ -885,9 +940,11 @@
     (org-capture-plus-set-target-location)
 
     (condition-case error
-        (org-capture-put :template (org-capture-fill-template))
+        (org-capture-put :template
+                         (org-capture-fill-template))
       ((error quit)
-       (if (get-buffer "*Capture*") (kill-buffer "*Capture*"))
+       (when (get-buffer "*Capture*")
+         (kill-buffer "*Capture*"))
        (error "Capture abort: %s" error)))
 
     (setq org-capture-clock-keep (org-capture-get :clock-keep))
@@ -913,20 +970,19 @@
            (error "Capture template `%s': %s"
                   (org-capture-get :key)
                   (nth 1 error))))
-        (if (and (derived-mode-p 'org-mode)
-                 (org-capture-get :clock-in))
-            (condition-case nil
-                (progn
-                  (if (org-clock-is-active)
-                      (org-capture-put :interrupted-clock
-                                       (copy-marker org-clock-marker)))
-                  (org-clock-in)
-                  (setq-local org-capture-clock-was-started t))
-              (error
-               "Could not start the clock in this capture buffer")))
-        (if (org-capture-get :immediate-finish)
-            (with-current-buffer capture-buffer
-              (org-capture-plus-finalize)))))))
+        (when (and (derived-mode-p 'org-mode)
+                   (org-capture-get :clock-in))
+          (condition-case nil
+              (progn
+                (when (org-clock-is-active)
+                  (org-capture-put :interrupted-clock
+                                   (copy-marker org-clock-marker)))
+                (org-clock-in)
+                (setq-local org-capture-clock-was-started t))
+            (error "Could not start the clock in this capture buffer")))
+        (when (org-capture-get :immediate-finish)
+          (with-current-buffer capture-buffer
+            (org-capture-plus-finalize)))))))
 
         ;; (defalias 'org-capture-run 'org-capture-plus)
 ;; new capture:1 ends here
@@ -1020,7 +1076,7 @@
    :empty-lines 1))
 
 
-   
+
 
 (when nil
   (let (helm-sources)
