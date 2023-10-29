@@ -473,5 +473,12 @@
                (if timer (cancel-timer timer))
                (signal (cl-first err) (cl-rest err)))))))))
 
+
+
+(defun occ-add-entity ()
+  (interactive)
+  (get-buffer-create "*Org Note*"))
+
+
 ;;; occ-util-common.el ends here
 
