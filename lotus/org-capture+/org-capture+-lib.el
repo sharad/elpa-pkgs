@@ -42,7 +42,8 @@
   (when org-capture+-debug
     (when (cl-first args)
       (apply #'format args)
-      (when (member level '(:emergency :error :warning :debug))
+      (when (member level
+                    '(:emergency :error :warning :debug))
         ;; (apply #'lwarn 'occ level args)
         (apply #'lwarn 'org-capture+ level args))
       (unless (eq level :nodisplay)

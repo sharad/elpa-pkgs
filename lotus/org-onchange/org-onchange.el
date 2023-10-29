@@ -428,7 +428,8 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
       (when (org-clocking-p)
         (move-marker org-log-note-return-to (point))
         (org-clock-lotus-with-current-clock
-            (org-add-log-setup-with-timed-new-win win-timeout :purpose 'note
+            (org-add-log-setup-with-timed-new-win win-timeout
+                                                  :purpose 'note
                                                   :state nil
                                                   :prev-state nil
                                                   :how nil
