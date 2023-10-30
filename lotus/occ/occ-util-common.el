@@ -355,10 +355,44 @@
 
 
 
-(cl-defun occ-build-org-store-entry-function (&key
-                                              success-fun
-                                              fail-fun
-                                              run-before)
+(defun occ-entity-star ()
+  (interactive)
+  (if (= 0 (current-column))
+      (let ((template (occ-obj-capture+-helm-select-template)))
+        (if template
+            (insert (org-capture-plus-fill-template template))
+          (self-insert-command 1 ?\*)))
+    (self-insert-command 1 ?\*)))
+
+
+(defvar org-entity-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "*" #'occ-entity-star)
+    (define-key map "\C-c\C-c" #'org-entity-finalize)
+    (define-key map "\C-c\C-k" #'org-capture-kill)
+    (define-key map "\C-c\C-w" #'org-capture-refile)
+    (define-key map "\C-c\C-r" #'org-entity-replace-template)
+    map)
+  "Keymap for `org-entity-mode', a minor mode.
+      Use this map to set additional keybindings for when Org mode is used
+      for a capture buffer.")
+
+(define-minor-mode org-entity-mode
+  "Minor mode for special key bindings in a capture buffer.
+
+      Turning on this mode runs the normal hook `org-entity-mode-hook'."
+  nil " Cap" org-entity-mode-map
+  (setq-local org-entity-mode t)
+  (setq-local header-line-format
+              (substitute-command-keys
+               "\\<org-entity-mode-map>Capture buffer.  Finish \
+      `\\[org-entity-finalize]', refile `\\[org-capture-refile]', \
+      abort `\\[org-capture-kill]', recapture `\\[org-entity-replace-template]'.")))
+
+(cl-defun occ-build-org-store-entity-function (&key
+                                               success-fun
+                                               fail-fun
+                                               run-before)
   #'(lambda ()
       (let ((org-note-abort-before org-note-abort))
         (if run-before
@@ -368,21 +402,21 @@
                          (funcall fail-fun))
                   (and success-fun
                        (funcall success-fun)))
-              (funcall #'org-store-entry))
+              (funcall #'org-store-entity))
           (unwind-protect
-              (funcall #'org-store-entry)
+              (funcall #'org-store-entity)
             (if org-note-abort-before
                 (and fail-fun
                      (funcall fail-fun))
               (and success-fun
                    (funcall success-fun))))))))
-(defvar occ-store-entry-local-function nil)
-(make-variable-buffer-local 'occ-store-entry-local-function)
+(defvar occ-store-entity-local-function nil)
+(make-variable-buffer-local 'occ-store-entity-local-function)
 
-(defun occ-store-entry-invoke-local-fun ()
-  (funcall occ-store-entry-local-function))
+(defun occ-store-entity-invoke-local-fun ()
+  (funcall occ-store-entity-local-function))
 
-(cl-defun occ-add-entry-buffer (target-buffer
+(cl-defun occ-add-entity-buffer (target-buffer
                                 &key
                                 buff
                                 chgcount
@@ -392,50 +426,40 @@
   "Prepare buffer for taking a note, to add this note later."
   (switch-to-buffer target-buffer 'norecord)
   (erase-buffer)
-  (let ((store-entry-function (occ-build-org-store-entry-function :success-fun success
-                                                                     :fail-fun fail
-                                                                     :run-before run-before)))
-    (if (memq org-entry-how '(time state))
+  ;; (org-entity-mode t)
+  (let ((store-entity-function (occ-build-org-store-entity-function :success-fun success
+                                                                    :fail-fun fail
+                                                                    :run-before run-before)))
+    (if nil ;; (memq org-entity-how '(time state))
         (let (current-prefix-arg)
-          ;; (org-store-entry)
-          (funcall store-entry-function))
+          ;; (org-store-entity)
+          (funcall store-entity-function))
       (let ((org-inhibit-startup t))
         (org-mode))
+      (org-entity-mode t)
+      (goto-char (point-max))
       (insert "HHHH")
-      (when org-entry-extra (insert org-entry-extra))
-      ;; (setq-local org-finish-function 'org-store-entry)
-      (setq-local org-store-entry-local-function store-entry-function)
-      (setq-local org-finish-function #'org-store-entry-invoke-local-fun)
+      ;; (when org-entity-extra (insert org-entity-extra))
+      ;; (setq-local org-finish-function 'org-store-entity)
+      (setq-local org-store-entity-local-function store-entity-function)
+      (setq-local org-finish-function #'org-store-entity-invoke-local-fun)
       (run-hooks 'org-log-buffer-setup-hook))))
-
-
-(define-minor-mode org-entry-plus-mode
-  "Minor mode for special key bindings in a capture buffer.
-
-      Turning on this mode runs the normal hook `org-capture-plus-mode-hook'."
-  nil " Cap" org-capture-plus-mode-map
-  (setq-local org-capture-mode t)
-  (setq-local header-line-format
-              (substitute-command-keys
-               "\\<org-capture-plus-mode-map>Capture buffer.  Finish \
-      `\\[org-capture-plus-finalize]', refile `\\[org-capture-refile]', \
-      abort `\\[org-capture-kill]', recapture `\\[org-capture-plus-replace-template]'.")))
 
 (defun occ-add-entity ()
   (interactive)
-  ;; (move-marker org-entry-return-to (point))
+  ;; (move-marker org-entity-return-to (point))
   (let ((win-timeout     7)
         (cleanupfn-local nil))
-    (setq org-entry-window-configuration (current-window-configuration))
+    (setq org-entity-window-configuration (current-window-configuration))
     (lotus-with-timed-new-win win-timeout timer cleanupfn-newwin cleanupfn-local win
       (condition-case nil
-          (let ((target-buffer (get-buffer-create "*Org Note*")))
-            (occ-add-entry-buffer target-buffer
-                                     :buff nil
-                                     :chgcount nil
-                                     :success nil
-                                     :fail nil
-                                     :run-before nil))
+          (let ((target-buffer (get-buffer-create "*Org Entity*")))
+            (occ-add-entity-buffer target-buffer
+                                   :buff       nil
+                                   :chgcount   nil
+                                   :success    nil
+                                   :fail       nil
+                                   :run-before nil))
         ((quit)
          (progn
            (funcall cleanupfn-newwin win cleanupfn-local)
