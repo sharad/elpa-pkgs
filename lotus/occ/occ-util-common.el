@@ -355,7 +355,8 @@
 
 (defun occ-entity-star ()
   (interactive)
-  (if (= 0 (current-column))
+  (if (= 0
+         (current-column))
       (let ((template (occ-obj-capture+-helm-select-template)))
         (if template
             (insert (org-capture-plus-fill-template template))
@@ -366,9 +367,13 @@
 (defun occ-entity-finalize ()
   (interactive)
   (funcall occ-entity-finish-function))
-
+(defvar occ-entity-window-configuration nil)
 (defun occ-entity-kill ()
-  (interactive))
+  (interactive)
+  (when occ-entity-window-configuration
+    (set-window-configuration occ-entity-window-configuration)
+    (setq occ-entity-window-configuration nil))
+  (kill-buffer (get-buffer "*Org Entity*")))
 
 (defun occ-entity-refile ()
   (interactive))
@@ -440,7 +445,6 @@
   "Prepare buffer for taking a note, to add this note later."
   (switch-to-buffer target-buffer 'norecord)
   (erase-buffer)
-  ;; (occ-entity-mode t)
   (let ((store-entity-function (occ-build-org-store-entity-function :success-fun success
                                                                     :fail-fun    fail
                                                                     :run-before  run-before)))
@@ -464,7 +468,7 @@
   ;; (move-marker org-entity-return-to (point))
   (let ((win-timeout     7)
         (cleanupfn-local nil))
-    (setq org-entity-window-configuration (current-window-configuration))
+    (setq occ-entity-window-configuration (current-window-configuration))
     (lotus-with-timed-new-win win-timeout timer cleanupfn-newwin cleanupfn-local win
       (condition-case nil
           (let ((target-buffer (get-buffer-create "*Org Entity*")))
