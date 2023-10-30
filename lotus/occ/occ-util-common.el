@@ -319,9 +319,10 @@
         (org-back-to-heading t))
     ((error) (occ-error e))))
 
-(replace-regexp-in-string "\\([A-Z]+\\)"
-                          "\" (setq \\1 (skeleton-read \"\\1\")) \""
-                          "--PROPERTY--")
+
+;; (replace-regexp-in-string "\\([A-Z]+\\)"
+;;                           "\" (setq \\1 (skeleton-read \"\\1\")) \""
+;;                           "--PROPERTY--")
 
 (defun occ-line-to-skeleton (line)
   `( > ,(trim-string line)  \n))
@@ -405,6 +406,8 @@
       `\\[occ-entity-finalize]', refile `\\[occ-entity-refile]', \
       abort `\\[occ-entity-kill]', recapture `\\[occ-entity-replace-template]'.")))
 
+(defvar occ-store-entity-local-org-marker nil)
+(make-variable-buffer-local 'occ-store-entity-local-org-marker)
 (defun org-store-entity ()
   (error "Implement it."))
 
@@ -435,9 +438,11 @@
 (defun occ-store-entity-invoke-local-fun ()
   (funcall occ-store-entity-local-function))
 
+(defvar occ-entityh-buffer-setup-hook nil)
+
 (cl-defun occ-add-entity-buffer (target-buffer
                                  &key
-                                 buff
+                                 org-marker
                                  chgcount
                                  success
                                  fail
@@ -445,6 +450,8 @@
   "Prepare buffer for taking a note, to add this note later."
   (switch-to-buffer target-buffer 'norecord)
   (erase-buffer)
+  (with-current-buffer target-buffer
+    (setq occ-store-entity-local-org-marker org-marker))
   (let ((store-entity-function (occ-build-org-store-entity-function :success-fun success
                                                                     :fail-fun    fail
                                                                     :run-before  run-before)))
@@ -461,7 +468,7 @@
       ;; (setq-local org-finish-function 'org-store-entity)
       (setq-local occ-store-entity-local-function store-entity-function)
       (setq-local occ-entity-finish-function #'occ-store-entity-invoke-local-fun)
-      (run-hooks 'org-log-buffer-setup-hook))))
+      (run-hooks 'occ-entityh-buffer-setup-hook))))
 
 (defun occ-add-entity ()
   (interactive)
@@ -473,7 +480,7 @@
       (condition-case nil
           (let ((target-buffer (get-buffer-create "*Org Entity*")))
             (occ-add-entity-buffer target-buffer
-                                   :buff       nil
+                                   :org-marker nil
                                    :chgcount   nil
                                    :success    nil
                                    :fail       nil
