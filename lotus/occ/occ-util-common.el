@@ -352,8 +352,6 @@
                         str
                         arg)))
 
-
-
 
 (defun occ-entity-star ()
   (interactive)
@@ -399,8 +397,8 @@
   (setq-local header-line-format
               (substitute-command-keys
                "\\<occ-entity-mode-map>Capture buffer.  Finish \
-      `\\[org-entity-finalize]', refile `\\[org-entity-refile]', \
-      abort `\\[org-entity-kill]', recapture `\\[org-entity-replace-template]'.")))
+      `\\[occ-entity-finalize]', refile `\\[occ-entity-refile]', \
+      abort `\\[occ-entity-kill]', recapture `\\[occ-entity-replace-template]'.")))
 
 (defun org-store-entity ()
   (error "Implement it."))
@@ -444,8 +442,8 @@
   (erase-buffer)
   ;; (occ-entity-mode t)
   (let ((store-entity-function (occ-build-org-store-entity-function :success-fun success
-                                                                    :fail-fun fail
-                                                                    :run-before run-before)))
+                                                                    :fail-fun    fail
+                                                                    :run-before  run-before)))
     (if nil ;; (memq org-entity-how '(time state))
         (let (current-prefix-arg)
           ;; (org-store-entity)
