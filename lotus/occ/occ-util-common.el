@@ -364,30 +364,46 @@
           (self-insert-command 1 ?\*)))
     (self-insert-command 1 ?\*)))
 
+(defvar occ-entity-finish-function nil)
+(defun occ-entity-finalize ()
+  (interactive)
+  (funcall occ-entity-finish-function))
 
-(defvar org-entity-mode-map
+(defun occ-entity-kill ()
+  (interactive))
+
+(defun occ-entity-refile ()
+  (interactive))
+
+(defun occ-entity-replace-template ()
+  (interactive))
+
+(defvar occ-entity-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "*" #'occ-entity-star)
-    (define-key map "\C-c\C-c" #'org-entity-finalize)
-    (define-key map "\C-c\C-k" #'org-capture-kill)
-    (define-key map "\C-c\C-w" #'org-capture-refile)
-    (define-key map "\C-c\C-r" #'org-entity-replace-template)
+    (define-key map "\C-c\C-c" #'occ-entity-finalize)
+    (define-key map "\C-c\C-k" #'occ-entity-kill)
+    (define-key map "\C-c\C-w" #'occ-entity-refile)
+    (define-key map "\C-c\C-r" #'occ-entity-replace-template)
     map)
-  "Keymap for `org-entity-mode', a minor mode.
+  "Keymap for `occ-entity-mode', a minor mode.
       Use this map to set additional keybindings for when Org mode is used
       for a capture buffer.")
 
-(define-minor-mode org-entity-mode
+(define-minor-mode occ-entity-mode
   "Minor mode for special key bindings in a capture buffer.
 
-      Turning on this mode runs the normal hook `org-entity-mode-hook'."
-  nil " Cap" org-entity-mode-map
-  (setq-local org-entity-mode t)
+      Turning on this mode runs the normal hook `occ-entity-mode-hook'."
+  nil " Cap" occ-entity-mode-map
+  (setq-local occ-entity-mode t)
   (setq-local header-line-format
               (substitute-command-keys
-               "\\<org-entity-mode-map>Capture buffer.  Finish \
-      `\\[org-entity-finalize]', refile `\\[org-capture-refile]', \
-      abort `\\[org-capture-kill]', recapture `\\[org-entity-replace-template]'.")))
+               "\\<occ-entity-mode-map>Capture buffer.  Finish \
+      `\\[org-entity-finalize]', refile `\\[org-entity-refile]', \
+      abort `\\[org-entity-kill]', recapture `\\[org-entity-replace-template]'.")))
+
+(defun org-store-entity ()
+  (error "Implement it."))
 
 (cl-defun occ-build-org-store-entity-function (&key
                                                success-fun
@@ -417,16 +433,16 @@
   (funcall occ-store-entity-local-function))
 
 (cl-defun occ-add-entity-buffer (target-buffer
-                                &key
-                                buff
-                                chgcount
-                                success
-                                fail
-                                run-before)
+                                 &key
+                                 buff
+                                 chgcount
+                                 success
+                                 fail
+                                 run-before)
   "Prepare buffer for taking a note, to add this note later."
   (switch-to-buffer target-buffer 'norecord)
   (erase-buffer)
-  ;; (org-entity-mode t)
+  ;; (occ-entity-mode t)
   (let ((store-entity-function (occ-build-org-store-entity-function :success-fun success
                                                                     :fail-fun fail
                                                                     :run-before run-before)))
@@ -436,13 +452,13 @@
           (funcall store-entity-function))
       (let ((org-inhibit-startup t))
         (org-mode))
-      (org-entity-mode t)
+      (occ-entity-mode t)
       (goto-char (point-max))
       (insert "HHHH")
       ;; (when org-entity-extra (insert org-entity-extra))
       ;; (setq-local org-finish-function 'org-store-entity)
-      (setq-local org-store-entity-local-function store-entity-function)
-      (setq-local org-finish-function #'org-store-entity-invoke-local-fun)
+      (setq-local occ-store-entity-local-function store-entity-function)
+      (setq-local occ-entity-finish-function #'occ-store-entity-invoke-local-fun)
       (run-hooks 'org-log-buffer-setup-hook))))
 
 (defun occ-add-entity ()
