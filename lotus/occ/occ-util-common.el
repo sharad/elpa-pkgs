@@ -366,54 +366,7 @@
 
 (defvar occ-entity-finalize-local-function nil)
 (make-variable-buffer-local 'occ-entity-finalize-local-function)
-(defun occ-entity-finalize ()
-  (interactive)
-  (funcall occ-entity-finalize-local-function))
-(defvar occ-entity-kill-local-function nil)
-(make-variable-buffer-local 'occ-entity-kill-local-function)
-(defun occ-entity-kill ()
-  (interactive)
-  (funcall occ-entity-kill-local-function))
-
-(defun occ-entity-kill ()
-  (interactive)
-  (when occ-entity-window-configuration
-    (set-window-configuration occ-entity-window-configuration)
-    (setq occ-entity-window-configuration nil))
-  (kill-buffer (get-buffer "*Org Entity*")))
-
-(defun occ-entity-refile ()
-  (interactive))
-
-(defun occ-entity-replace-template ()
-  (interactive))
-
-(defvar occ-entity-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map "*" #'occ-entity-star)
-    (define-key map "\C-c\C-c" #'occ-entity-finalize)
-    (define-key map "\C-c\C-k" #'occ-entity-kill)
-    (define-key map "\C-c\C-w" #'occ-entity-refile)
-    (define-key map "\C-c\C-r" #'occ-entity-replace-template)
-    map)
-  "Keymap for `occ-entity-mode', a minor mode.
-      Use this map to set additional keybindings for when Org mode is used
-      for a capture buffer.")
-
-(define-minor-mode occ-entity-mode
-  "Minor mode for special key bindings in a capture buffer.
-
-      Turning on this mode runs the normal hook `occ-entity-mode-hook'."
-  nil " Cap" occ-entity-mode-map
-  (setq-local occ-entity-mode t)
-  (setq-local header-line-format
-              (substitute-command-keys
-               "\\<occ-entity-mode-map>Capture buffer.  Finish \
-      `\\[occ-entity-finalize]', refile `\\[occ-entity-refile]', \
-      abort `\\[occ-entity-kill]', recapture `\\[occ-entity-replace-template]'.")))
-
-(defvar org-note-abort nil) ; dynamically scoped
-(defun org-store-entity (org-marker
+(defun org-entity-finalize-internal (org-marker
                          window-configuration)
   "Finish taking a log note, and insert it to where it belongs."
   (let ((txt (prog1 (buffer-string)
@@ -501,31 +454,72 @@
   (move-marker org-log-note-return-to nil)
   (when org-log-post-message (message "%s" org-log-post-message)))
 
+(defvar occ-entity-kill-local-function nil)
+(make-variable-buffer-local 'occ-entity-kill-local-function)
+(defun org-entity-kill-internal ()
+  (when occ-entity-window-configuration
+    (set-window-configuration occ-entity-window-configuration)
+    (setq occ-entity-window-configuration nil))
+  (kill-buffer (get-buffer "*Org Entity*")))
 
-(cl-defun occ-build-org-finalize-function (&key
-                                           org-marker
-                                           window-configuration
-                                           success-fun
-                                           fail-fun
-                                           run-before)
-  #'(lambda ()
-      (let ((org-note-abort-before org-note-abort)
-            (marker org-marker))
-        (if run-before
-            (unwind-protect
-                (if org-note-abort-before
-                    (and fail-fun
-                         (funcall fail-fun))
-                  (and success-fun
-                       (funcall success-fun)))
-              (funcall #'org-store-entity marker window-configuration))
-          (unwind-protect
-              (funcall #'org-store-entity marker window-configuration)
-            (if org-note-abort-before
-                (and fail-fun
-                     (funcall fail-fun))
-              (and success-fun
-                   (funcall success-fun))))))))
+(defvar occ-entity-refile-local-function nil)
+(make-variable-buffer-local 'occ-entity-refile-local-function)
+(defun occ-entity-refile ()
+  (interactive))
+
+(defvar occ-entity-replace-template-local-function nil)
+(make-variable-buffer-local 'occ-entity-replace-template-local-function)
+(defun occ-entity-replace-template ()
+  (interactive))
+
+(defvar occ-entity-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "*" #'occ-entity-star)
+    (define-key map "\C-c\C-c" #'(lambda ()
+                                   (interactive)
+                                   (funcall occ-entity-finalize-local-function)))
+    (define-key map "\C-c\C-k" #'(lambda ()
+                                   (interactive)
+                                   (funcall occ-entity-kill-local-function)))
+    (define-key map "\C-c\C-w" #'(lambda ()
+                                   (interactive)
+                                   (funcall occ-entity-refile-local-function)))
+    (define-key map "\C-c\C-r" #'(lambda ()
+                                   (interactive)
+                                   (funcall occ-entity-replace-template-local-function)))
+    map)
+  "Keymap for `occ-entity-mode', a minor mode.
+      Use this map to set additional keybindings for when Org mode is used
+      for a capture buffer.")
+
+(define-minor-mode occ-entity-mode
+  "Minor mode for special key bindings in a capture buffer.
+
+      Turning on this mode runs the normal hook `occ-entity-mode-hook'."
+  nil " Cap" occ-entity-mode-map
+  (setq-local occ-entity-mode t)
+  (setq-local header-line-format
+              (substitute-command-keys
+               "\\<occ-entity-mode-map>Capture buffer.  Finish \
+      `\\[occ-entity-finalize]', refile `\\[occ-entity-refile]', \
+      abort `\\[occ-entity-kill]', recapture `\\[occ-entity-replace-template]'.")))
+
+(cl-defun occ-build-functions (&key
+                               org-marker
+                               window-configuration
+                               success-fun
+                               fail-fun
+                               run-before)
+  (let ((finalize #'(lambda ()
+                      (funcall #'org-entity-finalize-internal
+                               org-marker
+                               window-configuration)))
+        (kill     #'(lambda ()
+                      (funcall #'org-entity-kill-internal
+                               org-marker
+                               window-configuration))))
+    (list :finalize finalize
+          :kill     kill)))
 
 (defvar occ-entityh-buffer-setup-hook nil)
 
@@ -543,14 +537,14 @@
   (setq occ-store-entity-local-org-marker org-marker)
   (with-current-buffer target-buffer
     (setq occ-store-entity-local-org-marker org-marker))
-  (let ((finalize-function (occ-build-org-finalize-function :org-marker org-marker
-                                                                    :window-configuration window-configuration
-                                                                    :success-fun success
-                                                                    :fail-fun    fail
-                                                                    :run-before  run-before)))
+  (let ((functions (occ-build-functions :org-marker org-marker
+                                        :window-configuration window-configuration
+                                        :success-fun success
+                                        :fail-fun    fail
+                                        :run-before  run-before)))
     (if nil ;; (memq org-entity-how '(time state))
         (let (current-prefix-arg)
-          ;; (org-store-entity)
+          ;; (org-entity-finalize-internal)
           (funcall finalize-function))
       (let ((org-inhibit-startup t))
         (org-mode))
@@ -558,8 +552,9 @@
       (goto-char (point-max))
       (insert "HHHH")
       ;; (when org-entity-extra (insert org-entity-extra))
-      ;; (setq-local org-finish-function 'org-store-entity)
-      (setq-local occ-entity-finalize-local-function finalize-function)
+      ;; (setq-local org-finish-function 'org-entity-finalize-internal)
+      (setq-local occ-entity-finalize-local-function (plist-get functions :finalize))
+      (setq-local occ-entity-kill-local-function (plist-get functions :kill))
       (run-hooks 'occ-entityh-buffer-setup-hook))))
 
 (cl-defmethod occ-do-add-entity ((obj marker))
