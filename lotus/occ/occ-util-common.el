@@ -364,11 +364,17 @@
           (self-insert-command 1 ?\*)))
     (self-insert-command 1 ?\*)))
 
-(defvar occ-entity-finish-function nil)
+(defvar occ-entity-finalize-local-function nil)
+(make-variable-buffer-local 'occ-entity-finalize-local-function)
 (defun occ-entity-finalize ()
   (interactive)
-  (funcall occ-entity-finish-function))
-(defvar occ-entity-window-configuration nil)
+  (funcall occ-entity-finalize-local-function))
+(defvar occ-entity-kill-local-function nil)
+(make-variable-buffer-local 'occ-entity-kill-local-function)
+(defun occ-entity-kill ()
+  (interactive)
+  (funcall occ-entity-kill-local-function))
+
 (defun occ-entity-kill ()
   (interactive)
   (when occ-entity-window-configuration
@@ -406,12 +412,9 @@
       `\\[occ-entity-finalize]', refile `\\[occ-entity-refile]', \
       abort `\\[occ-entity-kill]', recapture `\\[occ-entity-replace-template]'.")))
 
-(defvar occ-store-entity-local-org-marker nil)
-(make-variable-buffer-local 'occ-store-entity-local-org-marker)
-(defun org-store-entity ()
-  (error "Implement it."))
 (defvar org-note-abort nil) ; dynamically scoped
-(defun org-store-log-note ()
+(defun org-store-entity (org-marker
+                         window-configuration)
   "Finish taking a log note, and insert it to where it belongs."
   (let ((txt (prog1 (buffer-string)
 	             (kill-buffer)))
@@ -460,12 +463,12 @@
       (when lines (setq note (concat note " \\\\")))
       (push note lines))
     (when (and lines (not org-note-abort))
-      (with-current-buffer (marker-buffer org-log-note-marker)
+      (with-current-buffer (marker-buffer org-marker)
         (org-fold-core-ignore-modifications
 	        (org-with-wide-buffer
 	         ;; Find location for the new note.
-	         (goto-char org-log-note-marker)
-	         (set-marker org-log-note-marker nil)
+	         (goto-char org-marker)
+	         (set-marker org-marker nil)
 	         ;; Note associated to a clock is to be located right after
 	         ;; the clock.  Do not move point.
 	         (unless (eq org-log-note-purpose 'clock-out)
@@ -492,19 +495,22 @@
 	         (message "Note stored")
 	         (org-back-to-heading t))))))
   ;; Don't add undo information when called from `org-agenda-todo'.
-  (set-window-configuration org-log-note-window-configuration)
+  (set-window-configuration occ-entity-window-configuration)
   (with-current-buffer (marker-buffer org-log-note-return-to)
     (goto-char org-log-note-return-to))
   (move-marker org-log-note-return-to nil)
   (when org-log-post-message (message "%s" org-log-post-message)))
 
 
-(cl-defun occ-build-org-store-entity-function (&key
-                                               success-fun
-                                               fail-fun
-                                               run-before)
+(cl-defun occ-build-org-finalize-function (&key
+                                           org-marker
+                                           window-configuration
+                                           success-fun
+                                           fail-fun
+                                           run-before)
   #'(lambda ()
-      (let ((org-note-abort-before org-note-abort))
+      (let ((org-note-abort-before org-note-abort)
+            (marker org-marker))
         (if run-before
             (unwind-protect
                 (if org-note-abort-before
@@ -512,25 +518,21 @@
                          (funcall fail-fun))
                   (and success-fun
                        (funcall success-fun)))
-              (funcall #'org-store-entity))
+              (funcall #'org-store-entity marker window-configuration))
           (unwind-protect
-              (funcall #'org-store-entity)
+              (funcall #'org-store-entity marker window-configuration)
             (if org-note-abort-before
                 (and fail-fun
                      (funcall fail-fun))
               (and success-fun
                    (funcall success-fun))))))))
-(defvar occ-store-entity-local-function nil)
-(make-variable-buffer-local 'occ-store-entity-local-function)
-
-(defun occ-store-entity-invoke-local-fun ()
-  (funcall occ-store-entity-local-function))
 
 (defvar occ-entityh-buffer-setup-hook nil)
 
 (cl-defun occ-add-entity-buffer (target-buffer
                                  &key
                                  org-marker
+                                 window-configuration
                                  chgcount
                                  success
                                  fail
@@ -538,15 +540,18 @@
   "Prepare buffer for taking a note, to add this note later."
   (switch-to-buffer target-buffer 'norecord)
   (erase-buffer)
+  (setq occ-store-entity-local-org-marker org-marker)
   (with-current-buffer target-buffer
     (setq occ-store-entity-local-org-marker org-marker))
-  (let ((store-entity-function (occ-build-org-store-entity-function :success-fun success
+  (let ((finalize-function (occ-build-org-finalize-function :org-marker org-marker
+                                                                    :window-configuration window-configuration
+                                                                    :success-fun success
                                                                     :fail-fun    fail
                                                                     :run-before  run-before)))
     (if nil ;; (memq org-entity-how '(time state))
         (let (current-prefix-arg)
           ;; (org-store-entity)
-          (funcall store-entity-function))
+          (funcall finalize-function))
       (let ((org-inhibit-startup t))
         (org-mode))
       (occ-entity-mode t)
@@ -554,8 +559,7 @@
       (insert "HHHH")
       ;; (when org-entity-extra (insert org-entity-extra))
       ;; (setq-local org-finish-function 'org-store-entity)
-      (setq-local occ-store-entity-local-function store-entity-function)
-      (setq-local occ-entity-finish-function #'occ-store-entity-invoke-local-fun)
+      (setq-local occ-entity-finalize-local-function finalize-function)
       (run-hooks 'occ-entityh-buffer-setup-hook))))
 
 (cl-defmethod occ-do-add-entity ((obj marker))
@@ -567,6 +571,7 @@
           (let ((target-buffer (get-buffer-create "*Org Entity*")))
             (occ-add-entity-buffer target-buffer
                                    :org-marker obj
+                                   :window-configuration (current-window-configuration)
                                    :chgcount   nil
                                    :success    nil
                                    :fail       nil
