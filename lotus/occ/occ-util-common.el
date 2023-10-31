@@ -558,9 +558,7 @@
       (setq-local occ-entity-finish-function #'occ-store-entity-invoke-local-fun)
       (run-hooks 'occ-entityh-buffer-setup-hook))))
 
-(defun occ-add-entity ()
-  (interactive)
-  ;; (move-marker org-entity-return-to (point))
+(cl-defmethod occ-do-add-entity ((obj marker))
   (let ((win-timeout     7)
         (cleanupfn-local nil))
     (setq occ-entity-window-configuration (current-window-configuration))
@@ -568,7 +566,7 @@
       (condition-case nil
           (let ((target-buffer (get-buffer-create "*Org Entity*")))
             (occ-add-entity-buffer target-buffer
-                                   :org-marker nil
+                                   :org-marker obj
                                    :chgcount   nil
                                    :success    nil
                                    :fail       nil
@@ -578,6 +576,20 @@
            (funcall cleanupfn-newwin win cleanupfn-local)
            (if timer (cancel-timer timer))
            (signal (cl-first err) (cl-rest err))))))))
+
+(cl-defmethod occ-do-add-entity ((obj null))
+  (let* ((ctx-tsk (occ-obj-list-select (occ-obj-make-ctx-at-point)
+                                      (occ-collections-all)
+                                      :filters (occ-list-filters)
+                                      :ap-normal '(t actions select)
+                                      :obtrusive t))
+         (tsk (occ-obj-tsk ctx-tsk)))
+    (when tsk
+      (occ-do-add-entity (occ-obj-marker tsk)))))
+
+(defun occ-add-entity ()
+  (interactive)
+  (occ-do-add-entity nil))
 
 ;;; occ-util-common.el ends here
 
