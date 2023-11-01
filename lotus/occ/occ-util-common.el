@@ -353,7 +353,14 @@
                         str
                         arg)))
 
-
+(defun occ-entity-store-entry (org-marker
+                               return-to-marker
+                               win-config)
+  (occ-error "Implement occ-entity-store-entry"))
+(defun occ-entity-store-plain (org-marker
+                               return-to-marker
+                               win-config)
+  (occ-error "Implement occ-entity-store-plain"))
 (defun occ-entity-store-note (org-marker
                               return-to-marker
                               win-config)
@@ -468,10 +475,21 @@
                             win-config)
   "Finish taking a log note, and insert it to where it belongs."
   (cond ((eq occ-entity-type 'entry)
-         (occ-error "Implement it."))
+         (occ-entity-store-entry org-marker
+                                 return-to-marker
+                                 win-config))
+        ((eq occ-entity-type 'plain)
+         (occ-entity-store-plain org-marker
+                                 return-to-marker
+                                 win-config))
         (t (occ-entity-store-note org-marker
                                   return-to-marker
-                                  win-config))))
+                                  win-config)))
+  (set-window-configuration win-config)
+  (with-current-buffer (marker-buffer return-to-marker)
+    (goto-char return-to-marker))
+  ;; (move-marker return-to-marker nil)
+  t)
 
 (defun occ-entity-kill (org-marker
                         win-config)
