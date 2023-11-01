@@ -354,6 +354,8 @@
                         arg)))
 
 
+(defvar occ-entity-buffer-name "*Org Entity*")
+
 (defun occ-entity-store-entry (org-marker
                                return-to-marker
                                win-config)
@@ -505,7 +507,7 @@
         (set-window-configuration win-config)
         (setq win-config nil))
     (occ-error "win-config is nil"))
-  (kill-buffer (get-buffer "*Org Entity*")))
+  (kill-buffer (get-buffer occ-entity-buffer-name)))
 
 (defun occ-entity-refile ()
   (interactive))
@@ -589,9 +591,6 @@
   "Prepare buffer for taking a note, to add this note later."
   (switch-to-buffer target-buffer 'norecord)
   (erase-buffer)
-  ;; (setq occ-store-entity-local-org-marker org-marker)
-  ;; (with-current-buffer target-buffer
-  ;;   (setq occ-store-entity-local-org-marker org-marker))
   (let ((functions (occ-build-functions :org-marker       org-marker
                                         :return-to-marker return-to-marker
                                         :win-config       win-config
@@ -619,7 +618,7 @@
         (cleanupfn-local nil))
     (lotus-with-timed-new-win win-timeout timer cleanupfn-newwin cleanupfn-local win
       (condition-case nil
-          (let ((target-buffer (get-buffer-create "*Org Entity*")))
+          (let ((target-buffer (get-buffer-create occ-entity-buffer-name)))
             (occ-add-entity-buffer target-buffer
                                    :org-marker       marker
                                    :return-to-marker (point-marker)
