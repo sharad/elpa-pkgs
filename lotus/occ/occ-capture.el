@@ -28,7 +28,7 @@
 
 
 
-(defvar occ-capture-buffer-name "*Org Entity*")
+(defvar occ-capture-buffer-name "*Occ Capture*")
 
 (defun occ-capture-store-entry (org-marker
                                 return-to-marker
