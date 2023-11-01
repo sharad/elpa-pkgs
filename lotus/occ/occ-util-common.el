@@ -356,7 +356,7 @@
 
 (defun occ-entity-store-note (org-marker
                               return-to-marker
-                              window-configuration)
+                              win-config)
   "Finish taking a log note, and insert it to where it belongs."
   (let ((txt (prog1 (buffer-string)
                (kill-buffer)))
@@ -441,7 +441,7 @@
            (message "Note stored")
            (org-back-to-heading t))))))
   ;; Don't add undo information when called from `org-agenda-todo'.
-  (set-window-configuration occ-entity-window-configuration)
+  (set-window-configuration win-config)
   (with-current-buffer (marker-buffer return-to-marker)
     (goto-char return-to-marker))
   (move-marker return-to-marker nil)
@@ -465,21 +465,21 @@
 
 (defun occ-entity-finalize (org-marker
                             return-to-marker
-                            window-configuration)
+                            win-config)
   "Finish taking a log note, and insert it to where it belongs."
   (cond ((eq occ-entity-type 'entry)
          (occ-error "Implement it."))
         (t (occ-entity-store-note org-marker
                                   return-to-marker
-                                  window-configuration))))
+                                  win-config))))
 
 (defun occ-entity-kill (org-marker
-                        window-configuration)
-  (if window-configuration
+                        win-config)
+  (if win-config
       (progn
-        (set-window-configuration window-configuration)
-        (setq window-configuration nil))
-    (occ-error "window-configuration is nil"))
+        (set-window-configuration win-config)
+        (setq win-config nil))
+    (occ-error "win-config is nil"))
   (kill-buffer (get-buffer "*Org Entity*")))
 
 (defun occ-entity-refile ()
@@ -534,19 +534,19 @@
 (cl-defun occ-build-functions (&key
                                org-marker
                                return-to-marker
-                               window-configuration
+                               win-config
                                success-fun
                                fail-fun
                                run-before)
-  (let ((window-configuration (or window-configuration
-                                  (current-window-configuration))))
+  (let ((win-config (or win-config
+                        (current-window-configuration))))
    (let ((finalize #'(lambda ()
                        (occ-entity-finalize org-marker
                                             return-to-marker
-                                            window-configuration)))
+                                            win-config)))
          (kill     #'(lambda ()
                        (occ-entity-kill org-marker
-                                        window-configuration))))
+                                        win-config))))
      (list :finalize finalize
            :kill     kill))))
 
@@ -556,7 +556,7 @@
                                  &key
                                  org-marker
                                  return-to-marker
-                                 window-configuration
+                                 win-config
                                  chgcount
                                  success
                                  fail
@@ -564,15 +564,15 @@
   "Prepare buffer for taking a note, to add this note later."
   (switch-to-buffer target-buffer 'norecord)
   (erase-buffer)
-  (setq occ-store-entity-local-org-marker org-marker)
-  (with-current-buffer target-buffer
-    (setq occ-store-entity-local-org-marker org-marker))
-  (let ((functions (occ-build-functions :org-marker           org-marker
-                                        :return-to-marker     return-to-marker
-                                        :window-configuration window-configuration
-                                        :success-fun          success
-                                        :fail-fun             fail
-                                        :run-before           run-before)))
+  ;; (setq occ-store-entity-local-org-marker org-marker)
+  ;; (with-current-buffer target-buffer
+  ;;   (setq occ-store-entity-local-org-marker org-marker))
+  (let ((functions (occ-build-functions :org-marker       org-marker
+                                        :return-to-marker return-to-marker
+                                        :win-config       win-config
+                                        :success-fun      success
+                                        :fail-fun         fail
+                                        :run-before       run-before)))
     (if nil ;; (memq org-entity-how '(time state))
         (let (current-prefix-arg)
           ;; (occ-entity-finalize-internal)
@@ -587,7 +587,7 @@
 
 (cl-defun occ-do-entity-add (marker
                              &key
-                             window-configuration)
+                             win-config)
   (occ-assert marker)
   (occ-assert (marker-buffer marker))
   (let ((win-timeout     7)
@@ -596,13 +596,13 @@
       (condition-case nil
           (let ((target-buffer (get-buffer-create "*Org Entity*")))
             (occ-add-entity-buffer target-buffer
-                                   :org-marker           marker
-                                   :return-to-marker     (point-marker)
-                                   :window-configuration window-configuration
-                                   :chgcount             nil
-                                   :success              nil
-                                   :fail                 nil
-                                   :run-before           nil))
+                                   :org-marker       marker
+                                   :return-to-marker (point-marker)
+                                   :win-config       win-config
+                                   :chgcount         nil
+                                   :success          nil
+                                   :fail             nil
+                                   :run-before       nil))
         ((quit)
          (progn
            (funcall cleanupfn-newwin win cleanupfn-local)
@@ -612,21 +612,20 @@
 
 (cl-defmethod occ-do-add-entity ((obj marker)
                                  &key
-                                 window-configuration)
+                                 win-config)
   (occ-do-entity-add obj
-                     :window-configuration window-configuration))
+                     :win-config win-config))
 
 (cl-defmethod occ-do-add-entity ((obj null))
-  (let* ((window-configuration (current-window-configuration))
-         (ctx-tsk              (occ-obj-list-select (occ-obj-make-ctx-at-point)
-                                                    (occ-collections-all)
-                                                    :filters (occ-list-filters)
-                                                    :ap-normal '(t actions select)
-                                                    :obtrusive t))
-         (tsk (occ-obj-tsk ctx-tsk)))
-    (when tsk
-      (occ-do-add-entity (copy-marker (occ-obj-marker tsk))
-                         :window-configuration window-configuration))))
+  (let* ((win-config (current-window-configuration))
+         (ctx-tsk    (occ-obj-list-select (occ-obj-make-ctx-at-point)
+                                          (occ-collections-all)
+                                          :filters (occ-list-filters)
+                                          :ap-normal '(t actions select)
+                                          :obtrusive t)))
+    (when ctx-tsk
+      (occ-do-add-entity (copy-marker (occ-obj-marker ctx-tsk))
+                         :win-config win-config))))
 
 (defun occ-add-entity ()
   (interactive)
