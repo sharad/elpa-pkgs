@@ -364,15 +364,14 @@
           (self-insert-command 1 ?\*)))
     (self-insert-command 1 ?\*)))
 
-(defvar occ-entity-finalize-local-function nil)
-(make-variable-buffer-local 'occ-entity-finalize-local-function)
-(defun org-entity-finalize-internal (org-marker
-                         window-configuration)
+(defun occ-entity-finalize (org-marker
+                            return-to-marker
+                            window-configuration)
   "Finish taking a log note, and insert it to where it belongs."
   (let ((txt (prog1 (buffer-string)
-	             (kill-buffer)))
-	      (note (cdr (assq org-log-note-purpose org-log-note-headings)))
-	      lines)
+               (kill-buffer)))
+        (note (cdr (assq org-log-note-purpose org-log-note-headings)))
+        lines)
     (while (string-match "\\`# .*\n[ \t\n]*" txt)
       (setq txt (replace-match "" t t txt)))
     (when (string-match "\\s-+\\'" txt)
@@ -380,113 +379,119 @@
     (setq lines (and (not (equal "" txt)) (org-split-string txt "\n")))
     (when (org-string-nw-p note)
       (setq note
-	          (org-replace-escapes
-	           note
-	           (list (cons "%u" (user-login-name))
-		               (cons "%U" user-full-name)
-		               (cons "%t" (format-time-string
-			                         (org-time-stamp-format 'long 'inactive)
-			                         org-log-note-effective-time))
-		               (cons "%T" (format-time-string
-			                         (org-time-stamp-format 'long nil)
-			                         org-log-note-effective-time))
-		               (cons "%d" (format-time-string
-			                         (org-time-stamp-format nil 'inactive)
-			                         org-log-note-effective-time))
-		               (cons "%D" (format-time-string
-			                         (org-time-stamp-format nil nil)
-			                         org-log-note-effective-time))
-		               (cons "%s" (cond
-			                         ((not org-log-note-state) "")
-			                         ((string-match-p org-ts-regexp
-						                                    org-log-note-state)
-				                        (format "\"[%s]\""
-					                              (substring org-log-note-state 1 -1)))
-			                         (t (format "\"%s\"" org-log-note-state))))
-		               (cons "%S"
-			                   (cond
-			                    ((not org-log-note-previous-state) "")
-			                    ((string-match-p org-ts-regexp
-					                                 org-log-note-previous-state)
-			                     (format "\"[%s]\""
-				                           (substring
-				                            org-log-note-previous-state 1 -1)))
-			                    (t (format "\"%s\""
-				                             org-log-note-previous-state)))))))
+            (org-replace-escapes
+             note
+             (list (cons "%u" (user-login-name)
+                         (cons "%U" user-full-name)
+                         (cons "%t" (format-time-string
+                                     (org-time-stamp-format 'long 'inactive)
+                                     org-log-note-effective-time))
+                         (cons "%T" (format-time-string
+                                     (org-time-stamp-format 'long nil)
+                                     org-log-note-effective-time))
+                         (cons "%d" (format-time-string
+                                     (org-time-stamp-format nil 'inactive)
+                                     org-log-note-effective-time))
+                         (cons "%D" (format-time-string
+                                     (org-time-stamp-format nil nil)
+                                     org-log-note-effective-time))
+                         (cons "%s" (cond
+                                     ((not org-log-note-state) "")
+                                     ((string-match-p org-ts-regexp
+                                                      org-log-note-state)
+                                      (format "\"[%s]\""
+                                              (substring org-log-note-state 1 -1)))
+                                     (t (format "\"%s\"" org-log-note-state))))
+                         (cons "%S"
+                               (cond
+                                ((not org-log-note-previous-state) "")
+                                ((string-match-p org-ts-regexp
+                                                 org-log-note-previous-state)
+                                 (format "\"[%s]\""
+                                         (substring
+                                          org-log-note-previous-state 1 -1)))
+                                (t (format "\"%s\""
+                                           org-log-note-previous-state))))))))
       (when lines (setq note (concat note " \\\\")))
       (push note lines))
     (when (and lines (not org-note-abort))
       (with-current-buffer (marker-buffer org-marker)
         (org-fold-core-ignore-modifications
-	        (org-with-wide-buffer
-	         ;; Find location for the new note.
-	         (goto-char org-marker)
-	         (set-marker org-marker nil)
-	         ;; Note associated to a clock is to be located right after
-	         ;; the clock.  Do not move point.
-	         (unless (eq org-log-note-purpose 'clock-out)
-	           (goto-char (org-log-beginning t)))
-	         ;; Make sure point is at the beginning of an empty line.
-	         (cond ((not (bolp)) (let ((inhibit-read-only t)) (insert-and-inherit "\n")))
-	               ((looking-at "[ \t]*\\S-") (save-excursion (insert-and-inherit "\n"))))
-	         ;; In an existing list, add a new item at the top level.
-	         ;; Otherwise, indent line like a regular one.
-	         (let ((itemp (org-in-item-p)))
-	           (if itemp
-	               (indent-line-to
-		              (let ((struct (save-excursion
-				                          (goto-char itemp) (org-list-struct))))
-		                (org-list-get-ind (org-list-get-top-point struct) struct)))
-	             (org-indent-line)))
-	         (insert-and-inherit (org-list-bullet-string "-") (pop lines))
-	         (let ((ind (org-list-item-body-column (line-beginning-position))))
-	           (dolist (line lines)
-	             (insert-and-inherit "\n")
-               (unless (string-empty-p line)
-	               (indent-line-to ind)
-	               (insert-and-inherit line))))
-	         (message "Note stored")
-	         (org-back-to-heading t))))))
+          (org-with-wide-buffer
+           ;; Find location for the new note.
+           (goto-char org-marker)
+           (set-marker org-marker nil)
+           ;; Note associated to a clock is to be located right after
+           ;; the clock.  Do not move point.
+           (unless (eq org-log-note-purpose 'clock-out)
+             (goto-char (org-log-beginning t)))
+           ;; Make sure point is at the beginning of an empty line.
+           (cond ((not (bolp)) (let ((inhibit-read-only t)) (insert-and-inherit "\n"))
+                  ((looking-at "[ \t]*\\S-") (save-excursion (insert-and-inherit "\n")))))
+           ;; In an existing list, add a new item at the top level.
+           ;; Otherwise, indent line like a regular one.
+           (let ((itemp (org-in-item-p)))
+             (if itemp
+                 (indent-line-to
+                  (let ((struct (save-excursion
+                                  (goto-char itemp) (org-list-struct)))
+                        (org-list-get-ind (org-list-get-top-point struct) struct))))
+               (org-indent-line)))
+           (insert-and-inherit (org-list-bullet-string "-") (pop lines))
+           (let ((ind (org-list-item-body-column (line-beginning-position))))
+             (dolist (line lines)
+               (insert-and-inherit "\n"
+                                   (unless (string-empty-p line)
+                                     (indent-line-to ind)
+                                     (insert-and-inherit line)))))
+           (message "Note stored")
+           (org-back-to-heading t))))))
   ;; Don't add undo information when called from `org-agenda-todo'.
   (set-window-configuration occ-entity-window-configuration)
-  (with-current-buffer (marker-buffer org-log-note-return-to)
-    (goto-char org-log-note-return-to))
-  (move-marker org-log-note-return-to nil)
-  (when org-log-post-message (message "%s" org-log-post-message)))
+  (with-current-buffer (marker-buffer return-to-marker)
+    (goto-char return-to-marker))
+  (move-marker return-to-marker nil)
+  ;; (when org-log-post-message (message "%s" org-log-post-message))
+  t)
 
-(defvar occ-entity-kill-local-function nil)
-(make-variable-buffer-local 'occ-entity-kill-local-function)
-(defun org-entity-kill-internal ()
+(defun occ-entity-kill ()
   (when occ-entity-window-configuration
     (set-window-configuration occ-entity-window-configuration)
     (setq occ-entity-window-configuration nil))
   (kill-buffer (get-buffer "*Org Entity*")))
 
-(defvar occ-entity-refile-local-function nil)
-(make-variable-buffer-local 'occ-entity-refile-local-function)
 (defun occ-entity-refile ()
   (interactive))
 
-(defvar occ-entity-replace-template-local-function nil)
-(make-variable-buffer-local 'occ-entity-replace-template-local-function)
 (defun occ-entity-replace-template ()
   (interactive))
+
 
+(defvar occ-entity-cmd-local-plist nil)
+(make-variable-buffer-local 'occ-entity-cmd-local-plist)
+(defun occ-entity-cmd (cmd)
+  (let ((cmd-fn (plist-get occ-entity-cmd-local-plist cmd)))
+    (if cmd-fn
+        (funcall cmd-fn))))
+(defun occ-entity-cmd-finalize ()
+  (interactive)
+  (occ-entity-cmd :finalize))
+(defun occ-entity-cmd-kill ()
+  (interactive)
+  (occ-entity-cmd :kill))
+(defun occ-entity-cmd-refile ()
+  (interactive)
+  (occ-entity-cmd :refile))
+(defun occ-entity-cmd-replace-template ()
+  (interactive)
+  (occ-entity-cmd :replace-template))
 (defvar occ-entity-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "*" #'occ-entity-star)
-    (define-key map "\C-c\C-c" #'(lambda ()
-                                   (interactive)
-                                   (funcall occ-entity-finalize-local-function)))
-    (define-key map "\C-c\C-k" #'(lambda ()
-                                   (interactive)
-                                   (funcall occ-entity-kill-local-function)))
-    (define-key map "\C-c\C-w" #'(lambda ()
-                                   (interactive)
-                                   (funcall occ-entity-refile-local-function)))
-    (define-key map "\C-c\C-r" #'(lambda ()
-                                   (interactive)
-                                   (funcall occ-entity-replace-template-local-function)))
+    (define-key map "\C-c\C-c" #'occ-entity-cmd-finalize)
+    (define-key map "\C-c\C-k" #'occ-entity-cmd-kill)
+    (define-key map "\C-c\C-w" #'occ-entity-cmd-refile)
+    (define-key map "\C-c\C-r" #'occ-entity-cmd-replace-template)
     map)
   "Keymap for `occ-entity-mode', a minor mode.
       Use this map to set additional keybindings for when Org mode is used
@@ -501,31 +506,34 @@
   (setq-local header-line-format
               (substitute-command-keys
                "\\<occ-entity-mode-map>Capture buffer.  Finish \
-      `\\[occ-entity-finalize]', refile `\\[occ-entity-refile]', \
-      abort `\\[occ-entity-kill]', recapture `\\[occ-entity-replace-template]'.")))
+      `\\[occ-entity-cmd-finalize]', refile `\\[occ-entity-cmd-refile]', \
+      abort `\\[occ-entity-cmd-kill]', recapture `\\[occ-entity-cmd-replace-template]'.")))
 
 (cl-defun occ-build-functions (&key
                                org-marker
+                               return-to-marker
                                window-configuration
                                success-fun
                                fail-fun
                                run-before)
   (let ((finalize #'(lambda ()
-                      (funcall #'org-entity-finalize-internal
+                      (funcall #'occ-entity-finalize
                                org-marker
+                               return-to-marker
                                window-configuration)))
         (kill     #'(lambda ()
-                      (funcall #'org-entity-kill-internal
+                      (funcall #'occ-entity-kill-internal
                                org-marker
                                window-configuration))))
     (list :finalize finalize
           :kill     kill)))
 
-(defvar occ-entityh-buffer-setup-hook nil)
+(defvar occ-entity-buffer-setup-hook nil)
 
 (cl-defun occ-add-entity-buffer (target-buffer
                                  &key
                                  org-marker
+                                 return-to-marker
                                  window-configuration
                                  chgcount
                                  success
@@ -538,24 +546,22 @@
   (with-current-buffer target-buffer
     (setq occ-store-entity-local-org-marker org-marker))
   (let ((functions (occ-build-functions :org-marker org-marker
+                                        :return-to-marker return-to-marker
                                         :window-configuration window-configuration
                                         :success-fun success
                                         :fail-fun    fail
                                         :run-before  run-before)))
     (if nil ;; (memq org-entity-how '(time state))
         (let (current-prefix-arg)
-          ;; (org-entity-finalize-internal)
-          (funcall finalize-function))
+          ;; (occ-entity-finalize-internal)
+          (funcall (plist-get functions :finalize)))
       (let ((org-inhibit-startup t))
         (org-mode))
       (occ-entity-mode t)
       (goto-char (point-max))
       (insert "HHHH")
-      ;; (when org-entity-extra (insert org-entity-extra))
-      ;; (setq-local org-finish-function 'org-entity-finalize-internal)
-      (setq-local occ-entity-finalize-local-function (plist-get functions :finalize))
-      (setq-local occ-entity-kill-local-function (plist-get functions :kill))
-      (run-hooks 'occ-entityh-buffer-setup-hook))))
+      (setq-local occ-entity-cmd-local-plist functions)
+      (run-hooks 'occ-entity-buffer-setup-hook))))
 
 (cl-defmethod occ-do-add-entity ((obj marker))
   (let ((win-timeout     7)
@@ -566,6 +572,7 @@
           (let ((target-buffer (get-buffer-create "*Org Entity*")))
             (occ-add-entity-buffer target-buffer
                                    :org-marker obj
+                                   :return-to-marker (point-marker)
                                    :window-configuration (current-window-configuration)
                                    :chgcount   nil
                                    :success    nil
