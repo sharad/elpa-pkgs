@@ -159,12 +159,12 @@
   (let ((type (occ-capture-get-type)))
     (cond ((eq type 'entry)
            (occ-capture-store-entry org-marker
-                                   return-to-marker
-                                   win-config))
+                                    return-to-marker
+                                    win-config))
           ((eq type 'plain)
            (occ-capture-store-plain org-marker
-                                   return-to-marker
-                                   win-config))
+                                    return-to-marker
+                                    win-config))
           (t (occ-capture-store-note org-marker
                                     return-to-marker
                                     win-config)))
@@ -178,8 +178,7 @@
                          win-config)
   (if win-config
       (progn
-        (set-window-configuration win-config)
-        (setq win-config nil))
+        (set-window-configuration win-config))
     (occ-error "win-config is nil"))
   (kill-buffer (get-buffer occ-capture-buffer-name)))
 
