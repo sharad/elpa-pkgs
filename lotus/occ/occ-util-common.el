@@ -354,19 +354,9 @@
                         arg)))
 
 
-(defun occ-entity-star ()
-  (interactive)
-  (if (= 0
-         (current-column))
-      (let ((template (occ-obj-capture+-helm-select-template)))
-        (if template
-            (insert (org-capture-plus-fill-template template))
-          (self-insert-command 1 ?\*)))
-    (self-insert-command 1 ?\*)))
-
-(defun occ-entity-finalize (org-marker
-                            return-to-marker
-                            window-configuration)
+(defun occ-entity-store-note (org-marker
+                              return-to-marker
+                              window-configuration)
   "Finish taking a log note, and insert it to where it belongs."
   (let ((txt (prog1 (buffer-string)
                (kill-buffer)))
@@ -457,6 +447,31 @@
   (move-marker return-to-marker nil)
   ;; (when org-log-post-message (message "%s" org-log-post-message))
   t)
+
+
+(defvar occ-entity-type nil)
+(make-variable-buffer-local 'occ-entity-type)
+(defun occ-entity-star ()
+  (interactive)
+  (if (= 0
+         (current-column))
+      (let ((template (occ-obj-capture+-helm-select-template)))
+        (if template
+            (progn
+              (setq-local occ-entity-type 'entry)
+              (insert (org-capture-plus-fill-template template)))
+          (self-insert-command 1 ?\*)))
+    (self-insert-command 1 ?\*)))
+
+(defun occ-entity-finalize (org-marker
+                            return-to-marker
+                            window-configuration)
+  "Finish taking a log note, and insert it to where it belongs."
+  (cond ((eq occ-entity-type 'entry)
+         (occ-error "Implement it."))
+        (t (occ-entity-store-note org-marker
+                                  return-to-marker
+                                  window-configuration))))
 
 (defun occ-entity-kill (org-marker
                         window-configuration)
