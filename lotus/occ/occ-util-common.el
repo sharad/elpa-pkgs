@@ -420,7 +420,8 @@
           (org-with-wide-buffer
            ;; Find location for the new note.
            (goto-char org-marker)
-           (set-marker org-marker nil)
+           (when nil
+             (set-marker org-marker nil))
            ;; Note associated to a clock is to be located right after
            ;; the clock.  Do not move point.
            (unless (eq org-log-note-purpose 'clock-out)
@@ -434,16 +435,19 @@
              (if itemp
                  (indent-line-to
                   (let ((struct (save-excursion
-                                  (goto-char itemp) (org-list-struct)))
-                        (org-list-get-ind (org-list-get-top-point struct) struct))))
+                                  (goto-char itemp)
+                                  (org-list-struct))))
+                    (org-list-get-ind (org-list-get-top-point struct) struct)))
                (org-indent-line)))
            (insert-and-inherit (org-list-bullet-string "-") (pop lines))
            (let ((ind (org-list-item-body-column (line-beginning-position))))
              (dolist (line lines)
-               (insert-and-inherit "\n"
-                                   (unless (string-empty-p line)
-                                     (indent-line-to ind)
-                                     (insert-and-inherit line)))))
+               (insert-and-inherit "\n")
+               (unless (string-empty-p line)
+                 (indent-line-to ind)
+                 (insert-and-inherit line)))
+             (insert-and-inherit "\n")
+             (org-lotus-modification-post-action))
            (message "Note stored")
            (org-back-to-heading t))))))
   ;; Don't add undo information when called from `org-agenda-todo'.
@@ -566,16 +570,18 @@
       (setq-local occ-entity-cmd-local-plist functions)
       (run-hooks 'occ-entity-buffer-setup-hook))))
 
-(cl-defmethod occ-do-add-entity ((obj marker)
-                                 &key
-                                 window-configuration)
+(cl-defun occ-do-entity-add (marker
+                             &key
+                             window-configuration)
+  (occ-assert marker)
+  (occ-assert (marker-buffer marker))
   (let ((win-timeout     7)
         (cleanupfn-local nil))
     (lotus-with-timed-new-win win-timeout timer cleanupfn-newwin cleanupfn-local win
       (condition-case nil
           (let ((target-buffer (get-buffer-create "*Org Entity*")))
             (occ-add-entity-buffer target-buffer
-                                   :org-marker           obj
+                                   :org-marker           marker
                                    :return-to-marker     (point-marker)
                                    :window-configuration window-configuration
                                    :chgcount             nil
@@ -589,6 +595,12 @@
            (signal (cl-first err)
                    (cl-rest err))))))))
 
+(cl-defmethod occ-do-add-entity ((obj marker)
+                                 &key
+                                 window-configuration)
+  (occ-do-entity-add obj
+                     :window-configuration window-configuration))
+
 (cl-defmethod occ-do-add-entity ((obj null))
   (let* ((window-configuration (current-window-configuration))
          (ctx-tsk              (occ-obj-list-select (occ-obj-make-ctx-at-point)
@@ -598,7 +610,7 @@
                                                     :obtrusive t))
          (tsk (occ-obj-tsk ctx-tsk)))
     (when tsk
-      (occ-do-add-entity (occ-obj-marker tsk)
+      (occ-do-add-entity (copy-marker (occ-obj-marker tsk))
                          :window-configuration window-configuration))))
 
 (defun occ-add-entity ()

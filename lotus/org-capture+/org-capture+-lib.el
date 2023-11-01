@@ -249,7 +249,6 @@
                  (setcdr buffer-undo-list (nthcdr 2 buffer-undo-list)))))))
       (error "marker %s buffer is nil" 'marker))))
 
-
 (defalias 'org-capture-plus-place-entry      #'org-capture-place-entry)
 (defalias 'org-capture-plus-place-table-line #'org-capture-place-table-line)
 (defalias 'org-capture-plus-place-plain-text #'org-capture-place-plain-text)
