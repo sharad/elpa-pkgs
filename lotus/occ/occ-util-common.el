@@ -353,6 +353,7 @@
                         str
                         arg)))
 
+
 (defun occ-entity-store-entry (org-marker
                                return-to-marker
                                win-config)
@@ -456,8 +457,13 @@
   t)
 
 
-(defvar occ-entity-type nil)
-(make-variable-buffer-local 'occ-entity-type)
+(defun occ-entry-set-type (type)
+  (plist-put occ-entity-cmd-local-plist
+             :type type))
+(defun occ-entry-get-type ()
+  (plist-put occ-entity-cmd-local-plist :type))
+
+
 (defun occ-entity-star ()
   (interactive)
   (if (= 0
@@ -465,7 +471,7 @@
       (let ((template (occ-obj-capture+-helm-select-template)))
         (if template
             (progn
-              (setq-local occ-entity-type 'entry)
+              (occ-entry-set-type 'entry)
               (insert (org-capture-plus-fill-template template)))
           (self-insert-command 1 ?\*)))
     (self-insert-command 1 ?\*)))
@@ -474,20 +480,21 @@
                             return-to-marker
                             win-config)
   "Finish taking a log note, and insert it to where it belongs."
-  (cond ((eq occ-entity-type 'entry)
-         (occ-entity-store-entry org-marker
-                                 return-to-marker
-                                 win-config))
-        ((eq occ-entity-type 'plain)
-         (occ-entity-store-plain org-marker
-                                 return-to-marker
-                                 win-config))
-        (t (occ-entity-store-note org-marker
-                                  return-to-marker
-                                  win-config)))
-  (set-window-configuration win-config)
-  (with-current-buffer (marker-buffer return-to-marker)
-    (goto-char return-to-marker))
+  (let ((type (occ-entry-get-type)))
+    (cond ((eq type 'entry)
+           (occ-entity-store-entry org-marker
+                                   return-to-marker
+                                   win-config))
+          ((eq type 'plain)
+           (occ-entity-store-plain org-marker
+                                   return-to-marker
+                                   win-config))
+          (t (occ-entity-store-note org-marker
+                                    return-to-marker
+                                    win-config)))
+    (set-window-configuration win-config)
+    (with-current-buffer (marker-buffer return-to-marker)
+      (goto-char return-to-marker)))
   ;; (move-marker return-to-marker nil)
   t)
 
