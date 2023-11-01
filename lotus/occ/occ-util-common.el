@@ -454,10 +454,13 @@
   ;; (when org-log-post-message (message "%s" org-log-post-message))
   t)
 
-(defun occ-entity-kill ()
-  (when occ-entity-window-configuration
-    (set-window-configuration occ-entity-window-configuration)
-    (setq occ-entity-window-configuration nil))
+(defun occ-entity-kill (org-marker
+                        window-configuration)
+  (if window-configuration
+      (progn
+        (set-window-configuration window-configuration)
+        (setq window-configuration nil))
+    (occ-error "window-configuration is nil"))
   (kill-buffer (get-buffer "*Org Entity*")))
 
 (defun occ-entity-refile ()
@@ -516,17 +519,17 @@
                                success-fun
                                fail-fun
                                run-before)
-  (let ((finalize #'(lambda ()
-                      (funcall #'occ-entity-finalize
-                               org-marker
-                               return-to-marker
-                               window-configuration)))
-        (kill     #'(lambda ()
-                      (funcall #'occ-entity-kill-internal
-                               org-marker
-                               window-configuration))))
-    (list :finalize finalize
-          :kill     kill)))
+  (let ((window-configuration (or window-configuration
+                                  (current-window-configuration))))
+   (let ((finalize #'(lambda ()
+                       (occ-entity-finalize org-marker
+                                            return-to-marker
+                                            window-configuration)))
+         (kill     #'(lambda ()
+                       (occ-entity-kill org-marker
+                                        window-configuration))))
+     (list :finalize finalize
+           :kill     kill))))
 
 (defvar occ-entity-buffer-setup-hook nil)
 
@@ -545,12 +548,12 @@
   (setq occ-store-entity-local-org-marker org-marker)
   (with-current-buffer target-buffer
     (setq occ-store-entity-local-org-marker org-marker))
-  (let ((functions (occ-build-functions :org-marker org-marker
-                                        :return-to-marker return-to-marker
+  (let ((functions (occ-build-functions :org-marker           org-marker
+                                        :return-to-marker     return-to-marker
                                         :window-configuration window-configuration
-                                        :success-fun success
-                                        :fail-fun    fail
-                                        :run-before  run-before)))
+                                        :success-fun          success
+                                        :fail-fun             fail
+                                        :run-before           run-before)))
     (if nil ;; (memq org-entity-how '(time state))
         (let (current-prefix-arg)
           ;; (occ-entity-finalize-internal)
@@ -563,36 +566,40 @@
       (setq-local occ-entity-cmd-local-plist functions)
       (run-hooks 'occ-entity-buffer-setup-hook))))
 
-(cl-defmethod occ-do-add-entity ((obj marker))
+(cl-defmethod occ-do-add-entity ((obj marker)
+                                 &key
+                                 window-configuration)
   (let ((win-timeout     7)
         (cleanupfn-local nil))
-    (setq occ-entity-window-configuration (current-window-configuration))
     (lotus-with-timed-new-win win-timeout timer cleanupfn-newwin cleanupfn-local win
       (condition-case nil
           (let ((target-buffer (get-buffer-create "*Org Entity*")))
             (occ-add-entity-buffer target-buffer
-                                   :org-marker obj
-                                   :return-to-marker (point-marker)
-                                   :window-configuration (current-window-configuration)
-                                   :chgcount   nil
-                                   :success    nil
-                                   :fail       nil
-                                   :run-before nil))
+                                   :org-marker           obj
+                                   :return-to-marker     (point-marker)
+                                   :window-configuration window-configuration
+                                   :chgcount             nil
+                                   :success              nil
+                                   :fail                 nil
+                                   :run-before           nil))
         ((quit)
          (progn
            (funcall cleanupfn-newwin win cleanupfn-local)
            (if timer (cancel-timer timer))
-           (signal (cl-first err) (cl-rest err))))))))
+           (signal (cl-first err)
+                   (cl-rest err))))))))
 
 (cl-defmethod occ-do-add-entity ((obj null))
-  (let* ((ctx-tsk (occ-obj-list-select (occ-obj-make-ctx-at-point)
-                                      (occ-collections-all)
-                                      :filters (occ-list-filters)
-                                      :ap-normal '(t actions select)
-                                      :obtrusive t))
+  (let* ((window-configuration (current-window-configuration))
+         (ctx-tsk              (occ-obj-list-select (occ-obj-make-ctx-at-point)
+                                                    (occ-collections-all)
+                                                    :filters (occ-list-filters)
+                                                    :ap-normal '(t actions select)
+                                                    :obtrusive t))
          (tsk (occ-obj-tsk ctx-tsk)))
     (when tsk
-      (occ-do-add-entity (occ-obj-marker tsk)))))
+      (occ-do-add-entity (occ-obj-marker tsk)
+                         :window-configuration window-configuration))))
 
 (defun occ-add-entity ()
   (interactive)
