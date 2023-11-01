@@ -165,9 +165,10 @@
            (occ-capture-store-plain org-marker
                                     return-to-marker
                                     win-config))
-          (t (occ-capture-store-note org-marker
-                                    return-to-marker
-                                    win-config)))
+          (t
+           (occ-capture-store-note org-marker
+                                   return-to-marker
+                                   win-config)))
     (set-window-configuration win-config)
     (with-current-buffer (marker-buffer return-to-marker)
       (goto-char return-to-marker)))
