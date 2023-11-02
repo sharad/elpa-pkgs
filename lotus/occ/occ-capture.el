@@ -32,56 +32,64 @@
 
 (defun occ-capture-store-entry (org-marker
                                 return-to-marker
-                                win-config)
+                                win-config
+                                lines)
   ;; taken from org-capture-place-entry
   (lotus-with-marker org-marker
-    (let ((level (org-get-valid-level
-                  (if (org-at-heading-p) (org-outline-level) 1)
-                  1)))
+    (let ((org-text (string-join lines "\n"))
+          (level    (org-get-valid-level (if (org-at-heading-p)
+                                             (org-outline-level)
+                                           1)
+                                         1)))
+      (org-end-of-meta-data t)
       (let ((origin (point-marker)))
         (unless (bolp) (insert "\n"))
         (org-capture-empty-lines-before)
         (let ((beg (point)))
           (save-restriction
-            (when insert-here? (narrow-to-region beg beg))
-            (org-paste-subtree level template 'for-yank))
-          (org-capture-position-for-last-stored beg)
+            ;; (when insert-here? (narrow-to-region beg beg))
+            (org-paste-subtree level
+                               org-text
+                               'for-yank))
+          ;; (org-capture-position-for-last-stored beg)
           (org-capture-empty-lines-after)
-          (unless (org-at-heading-p) (outline-next-heading))
-          (org-capture-mark-kill-region origin (point))
-          (org-capture-narrow beg (if (eobp) (point) (1- (point))))
-          (org-capture--position-cursor beg (point))))))
-  (occ-error "Implement occ-capture-store-entry"))
+          ;; (unless (org-at-heading-p) (outline-next-heading))
+          ;; (org-capture-mark-kill-region origin (point))
+          ;; (org-capture-narrow beg (if (eobp) (point) (1- (point))))
+          ;; (org-capture--position-cursor beg (point))
+          t)))))
 
 (defun occ-capture-store-plain (org-marker
                                 return-to-marker
-                                win-config)
-  (if t ;; (org-capture-get :prepend)
-      ;; Skip meta data and drawers.
-      (org-end-of-meta-data t)
-   ;; Go to end of the entry text, before the next headline.
-   (outline-next-heading))
+                                win-config
+                                lines)
+  (lotus-with-marker org-marker
+    (if t ;; (org-capture-get :prepend)
+        ;; Skip meta data and drawers.
+        (org-end-of-meta-data t)
+      ;; Go to end of the entry text, before the next headline.
+      (outline-next-heading))
 
-  (let ((origin (point-marker)))
-    (unless (bolp) (insert "\n"))
-    (org-capture-empty-lines-before)
-    (org-capture-position-for-last-stored (point))
-    (let ((beg (point)))
-      (insert (org-capture-get :template))
+    (let ((origin (point-marker)))
       (unless (bolp) (insert "\n"))
-      ;; Ignore the final newline character so as to not alter data
-      ;; after inserted text.  Yet, if the template is empty, make
-      ;; sure END matches BEG instead of pointing before it.
-      (let ((end (max beg (1- (point)))))
-	      (org-capture-empty-lines-after)
-	      (org-capture-mark-kill-region origin (point))
-	      (org-capture-narrow beg end)
-	      (org-capture--position-cursor beg end))))
-  (occ-error "Implement occ-capture-store-plain"))
+      (org-capture-empty-lines-before)
+      (org-capture-position-for-last-stored (point))
+      (let ((beg (point)))
+        (insert (org-capture-get :template))
+        (unless (bolp) (insert "\n"))
+        ;; Ignore the final newline character so as to not alter data
+        ;; after inserted text.  Yet, if the template is empty, make
+        ;; sure END matches BEG instead of pointing before it.
+        (let ((end (max beg (1- (point)))))
+	        (org-capture-empty-lines-after)
+	        (org-capture-mark-kill-region origin (point))
+	        (org-capture-narrow beg end)
+	        (org-capture--position-cursor beg end))))))
 
 (defun occ-capture-store-note (org-marker
                                return-to-marker
-                               win-config)
+                               win-config
+                               lines)
   "Finish taking a log note, and insert it to where it belongs."
   (let ((txt (prog1 (buffer-string)
                (kill-buffer)))
@@ -175,9 +183,17 @@
   t)
 
 
+;; (defun occ-capture-capture ()
+;;   (let ((txt (prog1 (buffer-string)
+;;                (kill-buffer)))
+;;         lines)
+;;     (while (string-match "\\`# .*\n[ \t\n]*" txt)
+;;       (setq txt (replace-match "" t t txt)))
+;;     (when (string-match "\\s-+\\'" txt)
+;;       (setq txt (replace-match "" t t txt)))
+;;     (setq lines (and (not (equal "" txt)) (org-split-string txt "\n")))))
 (defun occ-capture-capture ()
-  (let ((txt (prog1 (buffer-string)
-               (kill-buffer)))
+  (let ((txt (prog1 (buffer-string)))
         lines)
     (while (string-match "\\`# .*\n[ \t\n]*" txt)
       (setq txt (replace-match "" t t txt)))
@@ -190,7 +206,8 @@
   (plist-put occ-capture-cmd-local-plist
              :type type))
 (defun occ-capture-get-type ()
-  (plist-put occ-capture-cmd-local-plist :type))
+  (plist-get occ-capture-cmd-local-plist
+             :type))
 
 
 (defun occ-capture-star ()
@@ -209,19 +226,23 @@
                              return-to-marker
                              win-config)
   "Finish taking a log note, and insert it to where it belongs."
-  (let ((type (occ-capture-get-type)))
+  (let ((type (occ-capture-get-type))
+        (lines (occ-capture-capture)))
     (cond ((eq type 'entry)
            (occ-capture-store-entry org-marker
                                     return-to-marker
-                                    win-config))
+                                    win-config
+                                    lines))
           ((eq type 'plain)
            (occ-capture-store-plain org-marker
                                     return-to-marker
-                                    win-config))
+                                    win-config
+                                    lines))
           (t
            (occ-capture-store-note org-marker
                                    return-to-marker
-                                   win-config)))
+                                   win-config
+                                   lines)))
     (set-window-configuration win-config)
     (with-current-buffer (marker-buffer return-to-marker)
       (goto-char return-to-marker)))
@@ -306,7 +327,7 @@
 
 (defvar occ-capture-buffer-setup-hook nil)
 
-(cl-defun occ-add-entity-buffer (target-buffer
+(cl-defun occ-add-capture-buffer (target-buffer
                                  &key
                                  org-marker
                                  return-to-marker
@@ -324,7 +345,7 @@
                                         :success-fun      success
                                         :fail-fun         fail
                                         :run-before       run-before)))
-    (if nil ;; (memq org-entity-how '(time state))
+    (if nil ;; (memq org-capture-how '(time state))
         (let (current-prefix-arg)
           ;; (occ-capture-finalize-internal)
           (funcall (plist-get functions :finalize)))
@@ -336,7 +357,7 @@
       (setq-local occ-capture-cmd-local-plist functions)
       (run-hooks 'occ-capture-buffer-setup-hook))))
 
-(cl-defun occ-do-entity-add (marker
+(cl-defun occ-do-capture-add (marker
                              &key
                              win-config)
   (occ-assert marker)
@@ -346,7 +367,7 @@
     (lotus-with-timed-new-win win-timeout timer cleanupfn-newwin cleanupfn-local win
       (condition-case nil
           (let ((target-buffer (get-buffer-create occ-capture-buffer-name)))
-            (occ-add-entity-buffer target-buffer
+            (occ-add-capture-buffer target-buffer
                                    :org-marker       marker
                                    :return-to-marker (point-marker)
                                    :win-config       win-config
