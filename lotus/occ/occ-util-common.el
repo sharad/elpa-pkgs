@@ -337,7 +337,9 @@
                  (goto-char (point-min))
                  (re-search-forward "^[^;]")
                  (beginning-of-line)
-                 (split-string (buffer-substring-no-properties (point) (point-max)) "\n"))))
+                 (split-string (buffer-substring-no-properties (point)
+                                                               (point-max))
+                               "\n"))))
     (apply #'append
            (mapcar #'occ-line-to-skeleton
                    lines))))

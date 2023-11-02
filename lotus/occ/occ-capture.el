@@ -33,11 +33,52 @@
 (defun occ-capture-store-entry (org-marker
                                 return-to-marker
                                 win-config)
+  ;; taken from org-capture-place-entry
+  (lotus-with-marker org-marker
+    (let ((level (org-get-valid-level
+                  (if (org-at-heading-p) (org-outline-level) 1)
+                  1)))
+      (let ((origin (point-marker)))
+        (unless (bolp) (insert "\n"))
+        (org-capture-empty-lines-before)
+        (let ((beg (point)))
+          (save-restriction
+            (when insert-here? (narrow-to-region beg beg))
+            (org-paste-subtree level template 'for-yank))
+          (org-capture-position-for-last-stored beg)
+          (org-capture-empty-lines-after)
+          (unless (org-at-heading-p) (outline-next-heading))
+          (org-capture-mark-kill-region origin (point))
+          (org-capture-narrow beg (if (eobp) (point) (1- (point))))
+          (org-capture--position-cursor beg (point))))))
   (occ-error "Implement occ-capture-store-entry"))
+
 (defun occ-capture-store-plain (org-marker
                                 return-to-marker
                                 win-config)
+  (if t ;; (org-capture-get :prepend)
+      ;; Skip meta data and drawers.
+      (org-end-of-meta-data t)
+   ;; Go to end of the entry text, before the next headline.
+   (outline-next-heading))
+
+  (let ((origin (point-marker)))
+    (unless (bolp) (insert "\n"))
+    (org-capture-empty-lines-before)
+    (org-capture-position-for-last-stored (point))
+    (let ((beg (point)))
+      (insert (org-capture-get :template))
+      (unless (bolp) (insert "\n"))
+      ;; Ignore the final newline character so as to not alter data
+      ;; after inserted text.  Yet, if the template is empty, make
+      ;; sure END matches BEG instead of pointing before it.
+      (let ((end (max beg (1- (point)))))
+	      (org-capture-empty-lines-after)
+	      (org-capture-mark-kill-region origin (point))
+	      (org-capture-narrow beg end)
+	      (org-capture--position-cursor beg end))))
   (occ-error "Implement occ-capture-store-plain"))
+
 (defun occ-capture-store-note (org-marker
                                return-to-marker
                                win-config)
@@ -88,7 +129,8 @@
                                            org-log-note-previous-state))))))))
       (when lines (setq note (concat note " \\\\")))
       (push note lines))
-    (when (and lines (not org-note-abort))
+    (when (and lines
+               (not org-note-abort))
       (with-current-buffer (marker-buffer org-marker)
         (org-fold-core-ignore-modifications
           (org-with-wide-buffer
@@ -107,11 +149,11 @@
            ;; Otherwise, indent line like a regular one.
            (let ((itemp (org-in-item-p)))
              (if itemp
-                 (indent-line-to
-                  (let ((struct (save-excursion
-                                  (goto-char itemp)
-                                  (org-list-struct))))
-                    (org-list-get-ind (org-list-get-top-point struct) struct)))
+                 (let ((column (let ((struct (save-excursion
+                                               (goto-char itemp)
+                                               (org-list-struct))))
+                                 (org-list-get-ind (org-list-get-top-point struct) struct))))
+                   (indent-line-to column))
                (org-indent-line)))
            (insert-and-inherit (org-list-bullet-string "-") (pop lines))
            (let ((ind (org-list-item-body-column (line-beginning-position))))
@@ -131,6 +173,17 @@
   (move-marker return-to-marker nil)
   ;; (when org-log-post-message (message "%s" org-log-post-message))
   t)
+
+
+(defun occ-capture-capture ()
+  (let ((txt (prog1 (buffer-string)
+               (kill-buffer)))
+        lines)
+    (while (string-match "\\`# .*\n[ \t\n]*" txt)
+      (setq txt (replace-match "" t t txt)))
+    (when (string-match "\\s-+\\'" txt)
+      (setq txt (replace-match "" t t txt)))
+    (setq lines (and (not (equal "" txt)) (org-split-string txt "\n")))))
 
 
 (defun occ-capture-set-type (type)
