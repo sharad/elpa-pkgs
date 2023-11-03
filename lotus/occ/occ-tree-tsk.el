@@ -152,11 +152,11 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
               ;; here many time if other call thread come then current buffer gets changed cause issue with tsk-builder-at-point
               (let ((entry         (funcall tsk-builder-at-point file))
                     (subtree-level (if subtree-level subtree-level 1)))
-                (when (numberp subtree-level)
-                  (occ-obj-set-property entry 'subtree-level
-                                        subtree-level))
-                (occ-assert (numberp subtree-level))
                 (when entry
+                  (when (numberp subtree-level)
+                    (occ-obj-set-property entry 'subtree-level
+                                          subtree-level))
+                  (occ-assert (numberp subtree-level))
                   (let* ((subtree (unless (and depth
                                                 (not (zerop depth))
                                                 (> subtree-level depth))
@@ -184,8 +184,8 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
                                                                                                          0)
                                                                                                      (or subtree-level
                                                                                                          0))))))))))
-                                       (append buffer-local-list
-                                               subtree-file-list)))))
+                                       (remove nil (append buffer-local-list
+                                                         subtree-file-list))))))
                     (when subtree
                       (occ-obj-set-property entry 'subtree
                                             subtree))

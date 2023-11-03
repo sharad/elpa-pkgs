@@ -204,7 +204,11 @@
 
 (defun occ-obj-org-entry-tsk-p (org-element)
   "Check if or entry qualify to be a Task"
-  t)
+  (let ((heading (plist-get org-element :raw-value)))
+    (not (if heading
+             (string-match "\\[NONTSK\\]" heading)))))
+
+;; (string-match "\\[NONTSK\\]" "Hello aaa")
 
 (defun occ-make-tsk-at-point (collection
                               file)
