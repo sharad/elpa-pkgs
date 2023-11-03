@@ -104,37 +104,37 @@
       (setq note
             (org-replace-escapes
              note
-             (list (cons "%u" (user-login-name)
-                         (cons "%U" user-full-name)
-                         (cons "%t" (format-time-string
-                                     (org-time-stamp-format 'long 'inactive)
-                                     org-log-note-effective-time))
-                         (cons "%T" (format-time-string
-                                     (org-time-stamp-format 'long nil)
-                                     org-log-note-effective-time))
-                         (cons "%d" (format-time-string
-                                     (org-time-stamp-format nil 'inactive)
-                                     org-log-note-effective-time))
-                         (cons "%D" (format-time-string
-                                     (org-time-stamp-format nil nil)
-                                     org-log-note-effective-time))
-                         (cons "%s" (cond
-                                     ((not org-log-note-state) "")
-                                     ((string-match-p org-ts-regexp
-                                                      org-log-note-state)
-                                      (format "\"[%s]\""
-                                              (substring org-log-note-state 1 -1)))
-                                     (t (format "\"%s\"" org-log-note-state))))
-                         (cons "%S"
-                               (cond
-                                ((not org-log-note-previous-state) "")
-                                ((string-match-p org-ts-regexp
-                                                 org-log-note-previous-state)
-                                 (format "\"[%s]\""
-                                         (substring
-                                          org-log-note-previous-state 1 -1)))
-                                (t (format "\"%s\""
-                                           org-log-note-previous-state))))))))
+             (list (cons "%u" (user-login-name))
+                   (cons "%U" user-full-name)
+                   (cons "%t" (format-time-string
+                               (org-time-stamp-format 'long 'inactive)
+                               org-log-note-effective-time))
+                   (cons "%T" (format-time-string
+                               (org-time-stamp-format 'long nil)
+                               org-log-note-effective-time))
+                   (cons "%d" (format-time-string
+                               (org-time-stamp-format nil 'inactive)
+                               org-log-note-effective-time))
+                   (cons "%D" (format-time-string
+                               (org-time-stamp-format nil nil)
+                               org-log-note-effective-time))
+                   (cons "%s" (cond
+                               ((not org-log-note-state) "")
+                               ((string-match-p org-ts-regexp
+                                                org-log-note-state)
+                                (format "\"[%s]\""
+                                        (substring org-log-note-state 1 -1)))
+                               (t (format "\"%s\"" org-log-note-state))))
+                   (cons "%S"
+                         (cond
+                          ((not org-log-note-previous-state) "")
+                          ((string-match-p org-ts-regexp
+                                           org-log-note-previous-state)
+                           (format "\"[%s]\""
+                                   (substring
+                                    org-log-note-previous-state 1 -1)))
+                          (t (format "\"%s\""
+                                     org-log-note-previous-state))))))))
       (when lines (setq note (concat note " \\\\")))
       (push note lines))
     (when (and lines
@@ -173,12 +173,7 @@
              (insert-and-inherit "\n")
              (org-lotus-modification-post-action))
            (message "Note stored")
-           (org-back-to-heading t))))))
-  ;; Don't add undo information when called from `org-agenda-todo'.
-  (set-window-configuration win-config)
-  (with-current-buffer (marker-buffer return-to-marker)
-    (goto-char return-to-marker))
-  (move-marker return-to-marker nil)
+           (org-back-to-heading t)))))
   ;; (when org-log-post-message (message "%s" org-log-post-message))
   t)
 
@@ -226,6 +221,9 @@
                              return-to-marker
                              win-config)
   "Finish taking a log note, and insert it to where it belongs."
+  (occ-assert return-to-marker)
+  (occ-assert (marker-buffer return-to-marker))
+  (occ-message "finalize: return-to-marker = %s" return-to-marker)
   (let ((type (occ-capture-get-type))
         (lines (occ-capture-capture)))
     (cond ((eq type 'entry)
@@ -313,12 +311,15 @@
                                success-fun
                                fail-fun
                                run-before)
+  (occ-assert return-to-marker)
+  (occ-assert (marker-buffer return-to-marker))
+  (occ-message "build: return-to-marker = %s" return-to-marker)
   (let ((win-config (or win-config
                         (current-window-configuration))))
    (let ((finalize #'(lambda ()
                        (occ-capture-finalize org-marker
-                                            return-to-marker
-                                            win-config)))
+                                             return-to-marker
+                                             win-config)))
          (kill     #'(lambda ()
                        (occ-capture-kill org-marker
                                         win-config))))
@@ -339,6 +340,11 @@
   "Prepare buffer for taking a note, to add this note later."
   (switch-to-buffer target-buffer 'norecord)
   (erase-buffer)
+
+
+  (occ-assert return-to-marker)
+  (occ-assert (marker-buffer return-to-marker))
+
   (let ((functions (occ-build-functions :org-marker       org-marker
                                         :return-to-marker return-to-marker
                                         :win-config       win-config
