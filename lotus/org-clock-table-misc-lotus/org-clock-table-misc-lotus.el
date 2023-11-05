@@ -1286,7 +1286,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 
 
 (setq org-clock-clocktable-alt-default-properties
-      (list :scope '(directory-files-recursive (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t)
+      (list :scope '(directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t)
             ;; :block 'lastweek
             :block 'week
             :compact nil
@@ -1303,9 +1303,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
   (org-create-dblock
    (org-combine-plists
     ;; (list :scope (if (org-before-first-heading-p) 'file 'subtree))
-    (list
-     :scope
-     (directory-files-recursive (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t))
+    (list :scope (directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t))
     org-clock-clocktable-alt-default-properties
     propterties
     '(:name "clocktable-alt"))))
@@ -1368,7 +1366,7 @@ in the buffer and update it."
   (org-dblock-write:clocktable-alt
    (org-combine-plists
     ;; (list :scope (if (org-before-first-heading-p) 'file 'subtree))
-    (list :scope (directory-files-recursive (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t))
+    (list :scope (directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t))
     org-clock-clocktable-alt-default-properties
     ;; propterties
     '(:name "clocktable-alt"))))
