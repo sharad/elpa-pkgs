@@ -1190,7 +1190,9 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
     (let* ((formatter (or (plist-get params :formatter)
                           org-clock-clocktable-alt-formatter
                           'org-clocktable-alt-write-default)))
-      (funcall formatter (point) (org-dblock-table:clocktable-alt params) params))))
+      (funcall formatter (point)
+               (org-dblock-table:clocktable-alt params)
+               params))))
 
 (when nil
  (defun org-dblock-write:clocktable-alt (params)
@@ -1378,16 +1380,14 @@ in the buffer and update it."
   (when org-clock-alt-report-buffer-idle-timer
     (cancel-timer org-clock-alt-report-buffer-idle-timer)
     (setq org-clock-alt-report-buffer-idle-timer nil))
-  (let ((secs
-         (if (and
-              secs
-              (> secs 7))
-             secs
-           30)))
+  (let ((secs (if (and secs
+                       (> secs 7))
+                  secs
+                30)))
     (setq org-clock-alt-report-buffer-idle-timer
-          (run-with-idle-timer
-           secs secs
-           #'org-clock-alt-report-buffer))))
+          (run-with-idle-timer secs
+                               secs
+                               #'org-clock-alt-report-buffer))))
 
 (provide 'org-clock-table-misc-lotus)
 ;;; org-clocktable-alt.el ends here
