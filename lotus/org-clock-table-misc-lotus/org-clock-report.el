@@ -840,15 +840,14 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 		             (org-combine-plists params
                                      ;; (org-dblock-table:clocktable-alt params)
                                      `(:multifile ,multifile)))))))
-
-(let ((scope '("a")))
-  (pcase scope
-    ((or `nil `file `subtree `tree) 'ABC)
-    ((and (pred consp)
-          (guard (symbolp (car scope))))
-     (list 'x scope))
-    ((pred consp) scope)))
-
+
+;; (let ((scope '("a")))
+;;   (pcase scope
+;;     ((or `nil `file `subtree `tree) 'ABC)
+;;     ((and (pred consp)
+;;           (guard (symbolp (car scope))))
+;;      (list 'x scope))
+;;     ((pred consp) scope)))
 
 (setq org-clock-clocktable-alt-default-properties
       (list :scope '(directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t)
@@ -862,6 +861,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
             :level t
             :tcolumns 1
             :formatter 'org-plain-alt-with-content-note-write))
+
 
 (defun org-clocktable-alt-report-insert (&optional propterties)
   (org-clock-remove-overlays)
@@ -901,6 +901,11 @@ clocktable, when not specified in the previous variable, is
       (org-clock-alt-report-in-place))
     (switch-to-buffer buff)))
 
+
+(defun org-clock-alt-report-tree (point)
+  (org-clock-alt-report-buffer :scope 'tree))
+
+
 ;;;###autoload
 (defun org-clock-alt-report (&optional arg)
   "Update or create a table containing a report about clocked time.
@@ -935,7 +940,7 @@ in the buffer and update it."
 ;;     org-clock-clocktable-alt-default-properties
 ;;     ;; propterties
 ;;     '(:name "clocktable-alt"))))
-
+
 (defvar org-clock-alt-report-buffer-idle-timer nil)
 
 (defun org-clock-alt-report-buffer-when-idle (secs)
