@@ -64,7 +64,7 @@ For more information, see `org-clocktable-write-default'."
     (custom-set-max
      max
      (+ (length "• File: ")
-        (length (file-relative-name (cl-first tbl) default-directory))))
+        (length (file-relative-name (or (car tbl) (buffer-file-name)) default-directory))))
     (dolist (hl (nth 2 tbl))
       (let ((level (cl-first hl))
             (headline (nth 1 hl))
@@ -166,201 +166,203 @@ from the dynamic block definition."
 
     (setq max-report-line-len (apply #'max (mapcar 'org-report-get-max-line-length tables)))
 
-    ;; Now we need to output this tsuff
-    (goto-char ipos)
+    (with-current-buffer (marker-buffer ipos)
+      (message "org-plain-alt-with-content-note-write: ipos %s" ipos)
+      ;; Now we need to output this tsuff
+      (goto-char ipos)
 
-    ;; Insert the text *before* the actual table
-    (insert-before-markers
-     (or header
-         ;; Format the standard header
-         (concat
-          "#+CAPTION: "
-          (nth 9 lwords) " ["
-          (substring
-           (format-time-string (cl-rest org-time-stamp-formats))
-           1 -1)
-          "]"
-          (if block (concat ", for " range-text ".") "")
-          "\n")))
+      ;; Insert the text *before* the actual table
+      (insert-before-markers
+       (or header
+           ;; Format the standard header
+           (concat
+            "#+CAPTION: "
+            (nth 9 lwords) " ["
+            (substring
+             (format-time-string (cl-rest org-time-stamp-formats))
+             1 -1)
+            "]"
+            (if block (concat ", for " range-text ".") "")
+            "\n")))
 
-    (when nil
-      ;; Insert the narrowing line
-      (when (and narrow (integerp narrow) (not narrow-cut-p))
+      (when nil
+        ;; Insert the narrowing line
+        (when (and narrow (integerp narrow) (not narrow-cut-p))
+          (insert-before-markers
+           "|"                            ; table line starter
+           (if multifile "|" "")          ; file column, maybe
+           (if level-p   "|" "")          ; level column, maybe
+           (if timestamp "|" "")          ; timestamp column, maybe
+           (if properties (make-string (length properties) ?|) "")  ;properties columns, maybe
+           (format "<%d>| |\n" narrow)))  ; headline and time columns
+
+        ;; Insert the table header line
         (insert-before-markers
-         "|"                            ; table line starter
-         (if multifile "|" "")          ; file column, maybe
-         (if level-p   "|" "")          ; level column, maybe
-         (if timestamp "|" "")          ; timestamp column, maybe
-         (if properties (make-string (length properties) ?|) "")  ;properties columns, maybe
-         (format "<%d>| |\n" narrow)))  ; headline and time columns
-
-      ;; Insert the table header line
-      (insert-before-markers
-       "|"                              ; table line starter
-       (if multifile (concat (nth 1 lwords) "|") "")  ; file column, maybe
-       (if level-p   (concat (nth 2 lwords) "|") "")  ; level column, maybe
-       (if timestamp (concat (nth 3 lwords) "|") "")  ; timestamp column, maybe
-       (if properties (concat (mapconcat 'identity properties "|") "|") "") ;properties columns, maybe
-       (concat (nth 4 lwords) "|"
-               (nth 5 lwords) "|\n")))                 ; headline and time columns
+         "|"                              ; table line starter
+         (if multifile (concat (nth 1 lwords) "|") "")  ; file column, maybe
+         (if level-p   (concat (nth 2 lwords) "|") "")  ; level column, maybe
+         (if timestamp (concat (nth 3 lwords) "|") "")  ; timestamp column, maybe
+         (if properties (concat (mapconcat 'identity properties "|") "|") "") ;properties columns, maybe
+         (concat (nth 4 lwords) "|"
+                 (nth 5 lwords) "|\n")))                 ; headline and time columns
 
 
-    (when nil
-      ;; Insert the total time in the table
-      (insert-before-markers
-       "|-\n"                            ; a hline
-       "|"                               ; table line starter
-       (if multifile (concat "| " (nth 6 lwords) " ") "")
+      (when nil
+        ;; Insert the total time in the table
+        (insert-before-markers
+         "|-\n"                            ; a hline
+         "|"                               ; table line starter
+         (if multifile (concat "| " (nth 6 lwords) " ") "")
                                         ; file column, maybe
-       (if level-p   "|"      "")        ; level column, maybe
-       (if timestamp "|"      "")        ; timestamp column, maybe
-       (if properties (make-string (length properties) ?|) "")  ; properties columns, maybe
-       (concat (format org-clock-total-time-cell-format (nth 7 lwords))  "| ") ; instead of a headline
-       (format org-clock-total-time-cell-format
-               (org-minutes-to-clocksum-string (or total-time 0))) ; the time
-       "|\n"))                          ; close line
+         (if level-p   "|"      "")        ; level column, maybe
+         (if timestamp "|"      "")        ; timestamp column, maybe
+         (if properties (make-string (length properties) ?|) "")  ; properties columns, maybe
+         (concat (format org-clock-total-time-cell-format (nth 7 lwords))  "| ") ; instead of a headline
+         (format org-clock-total-time-cell-format
+                 (org-minutes-to-clocksum-string (or total-time 0))) ; the time
+         "|\n"))                          ; close line
 
 
-    ;; Now iterate over the tables and insert the data
-    ;; but only if any time has been collected
-    (when (and total-time (> total-time 0))
+      ;; Now iterate over the tables and insert the data
+      ;; but only if any time has been collected
+      (when (and total-time (> total-time 0))
 
-      (while (setq tbl (pop tables))
-        ;; now tbl is the table resulting from one file.
-        (setq file-time (nth 1 tbl))
-        (when (or (and file-time (> file-time 0))
-                  (not (plist-get params :fileskip0)))
-          ;; (insert-before-markers "|-\n")  ; a hline because a new file starts
-          ;; First the file time, if we have multiple files
-          (when multifile
-            ;; Summarize the time collected from this file
-            (let ((filename (file-relative-name (cl-first tbl) default-directory)))
+        (while (setq tbl (pop tables))
+          ;; now tbl is the table resulting from one file.
+          (setq file-time (nth 1 tbl))
+          (when (or (and file-time (> file-time 0))
+                    (not (plist-get params :fileskip0)))
+            ;; (insert-before-markers "|-\n")  ; a hline because a new file starts
+            ;; First the file time, if we have multiple files
+            (when multifile
+              ;; Summarize the time collected from this file
+              (let ((filename (file-relative-name (or (car tbl) (buffer-file-name)) default-directory)))
+                (insert-before-markers
+                 (format (concat "File: %s"
+                                 (make-string (- max-report-line-len (+ (length "File: ") (length filename))) ?\ )
+                                 " %s"
+                                 "\n")
+                         ;; (file-name-nondirectory (cl-first tbl))
+                         filename
+                         ;; (if level-p   "| " "") ; level column, maybe
+                         ;; (if timestamp "| " "") ; timestamp column, maybe
+                         ;; (if properties (make-string (length properties) ?|) "")  ;properties columns, maybe
+                         (org-minutes-to-clocksum-string (nth 1 tbl)))))) ; the time
+
+            ;; Get the list of node entries and iterate over it
+            (setq entries (nth 2 tbl))
+            (while (setq entry (pop entries))
+              (setq level (cl-first entry)
+                    headline (nth 1 entry)
+                    content  (nth 5 entry)
+                    notes    (nth 6 entry)
+                    hlc (if emph (or (cl-rest (assoc level hlchars)) "") ""))
+              (when narrow-cut-p
+                (if (and (string-match (concat "\\`" org-bracket-link-regexp
+                                               "\\'")
+                                       headline)
+                         (match-end 3))
+                    (setq headline
+                          (format "[[%s][%s]]"
+                                  (match-string 1 headline)
+                                  (org-shorten-string (match-string 3 headline)
+                                                      narrow)))))
+              ;; (setq headline (org-shorten-string headline narrow))
+
               (insert-before-markers
-               (format (concat "File: %s"
-                               (make-string (- max-report-line-len (+ (length "File: ") (length filename))) ?\ )
-                               " %s"
-                               "\n")
-                       ;; (file-name-nondirectory (cl-first tbl))
-                       filename
-                       ;; (if level-p   "| " "") ; level column, maybe
-                       ;; (if timestamp "| " "") ; timestamp column, maybe
-                       ;; (if properties (make-string (length properties) ?|) "")  ;properties columns, maybe
-                       (org-minutes-to-clocksum-string (nth 1 tbl)))))) ; the time
-
-          ;; Get the list of node entries and iterate over it
-          (setq entries (nth 2 tbl))
-          (while (setq entry (pop entries))
-            (setq level (cl-first entry)
-                  headline (nth 1 entry)
-                  content  (nth 5 entry)
-                  notes    (nth 6 entry)
-                  hlc (if emph (or (cl-rest (assoc level hlchars)) "") ""))
-            (when narrow-cut-p
-              (if (and (string-match (concat "\\`" org-bracket-link-regexp
-                                             "\\'")
-                                     headline)
-                       (match-end 3))
-                  (setq headline
-                        (format "[[%s][%s]]"
-                                (match-string 1 headline)
-                                (org-shorten-string (match-string 3 headline)
-                                                    narrow)))))
-                  ;; (setq headline (org-shorten-string headline narrow))
-
-            (insert-before-markers
-             ;; "|"                      ; start the table line
-             ;; (if multifile "|" "")    ; free space for file name column?
-             ;; (if level-p (format "%d|" (cl-first entry)) "")   ; level, maybe
-             ;; (if timestamp (concat (nth 2 entry) "|") "") ; timestamp, maybe
-             ;; (if properties
-             ;;     (concat
-             ;;      (mapconcat
-             ;;       (lambda (p) (or (cl-rest (assoc p (nth 4 entry))) ""))
-             ;;       properties "|") "|") "")  ;properties columns, maybe
-             ;; (if indent (org-clocktable-indent-string level) "") ; indentation
-             (make-string level
-                          (if (and
-                               headline-single-char-str
-                               (stringp headline-single-char-str)
-                               (> (length headline-single-char-str) 0))
-                              (aref headline-single-char-str 0)
+               ;; "|"                      ; start the table line
+               ;; (if multifile "|" "")    ; free space for file name column?
+               ;; (if level-p (format "%d|" (cl-first entry)) "")   ; level, maybe
+               ;; (if timestamp (concat (nth 2 entry) "|") "") ; timestamp, maybe
+               ;; (if properties
+               ;;     (concat
+               ;;      (mapconcat
+               ;;       (lambda (p) (or (cl-rest (assoc p (nth 4 entry))) ""))
+               ;;       properties "|") "|") "")  ;properties columns, maybe
+               ;; (if indent (org-clocktable-indent-string level) "") ; indentation
+               (make-string level
+                            (if (and
+                                 headline-single-char-str
+                                 (stringp headline-single-char-str)
+                                 (> (length headline-single-char-str) 0))
+                                (aref headline-single-char-str 0)
                               ?*))
-             " "
-             hlc headline hlc                                       ; headline
-             ;; content "|" notes "|"                            ; new added sharad
-             ;; (make-string (min (1- ntcol) (or (- level 1))) ?|)
+               " "
+               hlc headline hlc                                       ; headline
+               ;; content "|" notes "|"                            ; new added sharad
+               ;; (make-string (min (1- ntcol) (or (- level 1))) ?|)
                                         ; empty fields for higher levels
-             (make-string (- max-report-line-len (+ level (length headline))) ?\ )
-             hlc (org-minutes-to-clocksum-string (nth 3 entry)) hlc ; time
-             ;; "|\n"                                             ; close line
-             "\n"
-             (when insert-content
-               (if content  (concat content "\n") ""))
-             (when insert-notes
-               (if notes (mapconcat 'identity notes "\n") "")))))))
-    ;; When exporting subtrees or regions the region might be
-    ;; activated, so let's disable ̀delete-active-region'
-    (let ((delete-active-region nil)) (backward-delete-char 1))
-    (if (setq formula (plist-get params :formula))
-        (cond
-          ((eq formula '%)
-           ;; compute the column where the % numbers need to go
-           (setq pcol (+ 2
-                         (length properties)
-                         (if multifile 1 0)
-                         (if level-p 1 0)
-                         (if timestamp 1 0)
-                         (min maxlevel (or ntcol 100))))
-           ;; compute the column where the total time is
-           (setq tcol (+ 2
-                         (length properties)
-                         (if multifile 1 0)
-                         (if level-p 1 0)
-                         (if timestamp 1 0)))
-           (insert
-            (format
-             "\n#+TBLFM: $%d='(org-clock-time%% @%d$%d $%d..$%d);%%.1f"
-             pcol            ; the column where the % numbers should go
-             (if (and narrow (not narrow-cut-p)) 3 2) ; row of the total time
-             tcol            ; column of the total time
-             tcol (1- pcol)))  ; range of columns where times can be found
+               (make-string (- max-report-line-len (+ level (length headline))) ?\ )
+               hlc (org-minutes-to-clocksum-string (nth 3 entry)) hlc ; time
+               ;; "|\n"                                             ; close line
+               "\n"
+               (when insert-content
+                 (if content  (concat content "\n") ""))
+               (when insert-notes
+                 (if notes (mapconcat 'identity notes "\n") "")))))))
+      ;; When exporting subtrees or regions the region might be
+      ;; activated, so let's disable ̀delete-active-region'
+      (let ((delete-active-region nil)) (backward-delete-char 1))
+      (if (setq formula (plist-get params :formula))
+          (cond
+           ((eq formula '%)
+            ;; compute the column where the % numbers need to go
+            (setq pcol (+ 2
+                          (length properties)
+                          (if multifile 1 0)
+                          (if level-p 1 0)
+                          (if timestamp 1 0)
+                          (min maxlevel (or ntcol 100))))
+            ;; compute the column where the total time is
+            (setq tcol (+ 2
+                          (length properties)
+                          (if multifile 1 0)
+                          (if level-p 1 0)
+                          (if timestamp 1 0)))
+            (insert
+             (format
+              "\n#+TBLFM: $%d='(org-clock-time%% @%d$%d $%d..$%d);%%.1f"
+              pcol            ; the column where the % numbers should go
+              (if (and narrow (not narrow-cut-p)) 3 2) ; row of the total time
+              tcol            ; column of the total time
+              tcol (1- pcol)))  ; range of columns where times can be found
 
-           (setq recalc t))
-          ((stringp formula)
-           (insert "\n#+TBLFM: " formula)
-           (setq recalc t))
-          (t (error "Invalid formula in clocktable")))
+            (setq recalc t))
+           ((stringp formula)
+            (insert "\n#+TBLFM: " formula)
+            (setq recalc t))
+           (t (error "Invalid formula in clocktable")))
         ;; Should we rescue an old formula?
         (when (stringp (setq content (plist-get params :content)))
           (when (string-match "^\\([ \t]*#\\+tblfm:.*\\)" content)
             (setq recalc t)
             (insert "\n" (match-string 1 (plist-get params :content)))
             (beginning-of-line 0))))
-    (when nil
-      ;; Back to beginning, align the table, recalculate if necessary
-      (goto-char ipos)
-      (skip-chars-forward "^|")
-      (org-table-align)
-      (when org-hide-emphasis-markers
-        ;; we need to align a second time
-        (org-table-align))
-      (when sort
-        (save-excursion
-          (org-table-goto-line 3)
-          (org-table-goto-column (cl-first sort))
-          (org-table-sort-lines nil (cl-rest sort))))
-      (when recalc
-        (if (eq formula '%)
-            (save-excursion
-              (if (and narrow (not narrow-cut-p)) (beginning-of-line 2))
-              (org-table-goto-column pcol nil 'force)
-              (insert "%")))
-        (org-table-recalculate 'all))
-      (when rm-file-column
-        ;; The file column is actually not wanted
-        (forward-char 1)
-        (org-table-delete-column)))
-    total-time))
+      (when nil
+        ;; Back to beginning, align the table, recalculate if necessary
+        (goto-char ipos)
+        (skip-chars-forward "^|")
+        (org-table-align)
+        (when org-hide-emphasis-markers
+          ;; we need to align a second time
+          (org-table-align))
+        (when sort
+          (save-excursion
+            (org-table-goto-line 3)
+            (org-table-goto-column (cl-first sort))
+            (org-table-sort-lines nil (cl-rest sort))))
+        (when recalc
+          (if (eq formula '%)
+              (save-excursion
+                (if (and narrow (not narrow-cut-p)) (beginning-of-line 2))
+                (org-table-goto-column pcol nil 'force)
+                (insert "%")))
+          (org-table-recalculate 'all))
+        (when rm-file-column
+          ;; The file column is actually not wanted
+          (forward-char 1)
+          (org-table-delete-column)))
+      total-time)))
 
 (defun org-get-clock-note ()
   ;; TODO: improve to take all not just one.
@@ -372,6 +374,8 @@ from the dynamic block definition."
           (let ((begin (org-element-property :contents-begin ele))
                 (end (org-element-property :contents-end ele)))
             (buffer-substring begin end)))))))
+
+(defun org-get-clock-note ())
 
 ;;;###autoload
 (defun org-clock-sum-with-notes (&optional tstart tend headline-filter propname)
@@ -397,11 +401,13 @@ PROPNAME lets you set a custom text property instead of :org-clock-minutes."
      (if (stringp tend) (setq tend (org-time-string-to-seconds tend)))
      (if (consp tstart) (setq tstart (org-float-time tstart)))
      (if (consp tend) (setq tend (org-float-time tend)))
+     (message "x1")
      (remove-text-properties (point-min) (point-max)
                              `(,(or propname :org-clock-minutes) t
                                 :org-clock-force-headline-inclusion t))
      (save-excursion
        (goto-char (point-max))
+       (message "x2 current %s" (point-marker))
        (while (re-search-backward re nil t)
          (cond
            ((match-end 2)
@@ -417,7 +423,9 @@ PROPNAME lets you set a custom text property instead of :org-clock-minutes."
                   dt (- te ts)
                   t1 (if (> dt 0) (+ t1 (floor (/ dt 60))) t1))
             (when (> dt 0)
-              (push (org-get-clock-note) clock-notes)))
+              (message "x3 current %s" (point-marker))
+              (push (org-get-clock-note) clock-notes)
+              (message "x4 current %s" (point-marker))))
            ((match-end 4)
             ;; A naked time
             (setq t1 (+ t1 (string-to-number (match-string 5))
@@ -529,9 +537,8 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
          (properties (plist-get params :properties))
          (inherit-property-p (plist-get params :inherit-props))
          todo-only
-         (matcher (if tags (cl-rest (org-make-tags-matcher tags))))
+         (matcher (if tags (cdr (org-make-tags-matcher tags))))
          cc range-text st p time org-clock-notes org-heading-content-only level hdl props tsp tbl)
-
     (setq org-clock-file-total-minutes nil)
     (when block
       (setq cc (org-clock-special-range block nil t ws ms)
@@ -740,7 +747,8 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 
 
 ;;;###autoload
-(defun org-dblock-write:clocktable-alt (params)
+;; ORIGINAL intact
+(defun ORIGINAL-org-dblock-write:clocktable-alt (params)
   "Write the standard clocktable."
   (setq params (org-combine-plists org-clock-clocktable-alt-default-properties ;; org-clocktable-defaults
                                    ;; (org-dblock-table:clocktable-alt params)
@@ -841,6 +849,121 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
                                      ;; (org-dblock-table:clocktable-alt params)
                                      `(:multifile ,multifile)))))))
 
+
+
+(defun org-dblock-write:clocktable-alt (params)
+  "Write the standard clocktable."
+  (setq params (org-combine-plists org-clock-clocktable-alt-default-properties ;; org-clocktable-defaults
+                                   ;; (org-dblock-table:clocktable-alt params)
+                                   params))
+  (message "org-dblock-write:clocktable-alt: params %s" params)
+  (catch 'exit
+    (let* ((scope (plist-get params :scope))
+	         (base-buffer (org-base-buffer (current-buffer)))
+	         (files (pcase scope
+		                (`agenda
+		                 (org-agenda-files t))
+		                (`agenda-with-archives
+		                 (org-add-archive-files (org-agenda-files t)))
+		                (`file-with-archives
+		                 (let ((base-file (buffer-file-name base-buffer)))
+		                   (and base-file
+			                      (org-add-archive-files (list base-file)))))
+		                ((or `nil `file `subtree `tree
+			                   (and (pred symbolp)
+			                        (guard (string-match "\\`tree\\([0-9]+\\)\\'"
+						                                       (symbol-name scope)))))
+		                 base-buffer)
+		                ((pred functionp) (funcall scope))
+                    ((and (pred consp)
+                         (guard (symbolp (car scope))))
+                     (eval scope))
+		                ((pred consp) scope)
+		                (_ (user-error "Unknown scope: %S" scope))))
+	         (block (plist-get params :block))
+	         (ts (plist-get params :tstart))
+	         (te (plist-get params :tend))
+	         (ws (plist-get params :wstart))
+	         (ms (plist-get params :mstart))
+	         (step (plist-get params :step))
+	         (hide-files (plist-get params :hidefiles))
+	         (formatter (or (plist-get params :formatter)
+                          org-clock-clocktable-alt-formatter
+                          'org-clocktable-alt-write-default))
+	         cc)
+      ;; Check if we need to do steps
+      (when block
+	      ;; Get the range text for the header
+	      (setq cc (org-clock-special-range block nil t ws ms)
+	            ts (car cc)
+	            te (nth 1 cc)))
+      (when step
+	      ;; Write many tables, in steps
+	      (unless (or block (and ts te))
+	        (user-error "Clocktable `:step' can only be used with `:block' or `:tstart', `:tend'"))
+	      (org-clocktable-steps params)
+	      (throw 'exit nil))
+
+      ;; (org-agenda-prepare-buffers (if (consp files) files (list files)))
+      (message "org-dblock-write:clocktable-alt: point %s" (plist-get params :point))
+      (message "org-dblock-write:clocktable-alt: formatter %s" formatter)
+      (message "org-dblock-write:clocktable-alt: current point %s" (point-marker))
+
+      (let ((origin (or (plist-get params :point)
+                        (point)))
+	          (tables
+	           (if (consp files)
+		             (mapcar (lambda (file)
+			                     (with-current-buffer (find-buffer-visiting file)
+			                       (save-excursion
+			                         (save-restriction
+				                         (org-clock-get-table-data-alt file params)))))
+			                   files)
+	             ;; Get the right restriction for the scope.
+	             (save-restriction
+		             (cond
+		              ((not scope))	     ;use the restriction as it is now
+		              ((eq scope 'file) (widen))
+		              ((eq scope 'subtree)
+                   (message "org-dblock-write:clocktable-alt: subtree")
+                   (org-narrow-to-subtree))
+		              ((eq scope 'tree)
+                   (message "org-dblock-write:clocktable-alt: tree")
+		               (while (org-up-heading-safe))
+		               (org-narrow-to-subtree))
+		              ((and (symbolp scope)
+			                  (string-match "\\`tree\\([0-9]+\\)\\'"
+				                              (symbol-name scope)))
+		               (let ((level (string-to-number
+				                         (match-string 1 (symbol-name scope)))))
+		                 (catch 'exit
+		                   (while (org-up-heading-safe)
+			                   (looking-at org-outline-regexp)
+			                   (when (<= (org-reduced-level (funcall outline-level))
+				                           level)
+			                     (throw 'exit nil))))
+		                 (org-narrow-to-subtree))))
+		             (list (org-clock-get-table-data-alt nil params)))))
+	          (multifile
+	           ;; Even though `file-with-archives' can consist of
+	           ;; multiple files, we consider this is one extended file
+	           ;; instead.
+	           (and (not hide-files)
+		              (consp files)
+		              (not (eq scope 'file-with-archives)))))
+
+
+        (message "org-dblock-write:clocktable-alt: origin %s, point %s" origin (plist-get params :point))
+        (message "org-dblock-write:clocktable-alt: formatter %s" formatter)
+
+	      (funcall formatter
+		             origin
+		             tables
+                 ;; (org-dblock-table:clocktable-alt params)
+		             (org-combine-plists params
+                                     ;; (org-dblock-table:clocktable-alt params)
+                                     `(:multifile ,multifile)))))))
+
 ;; (let ((scope '("a")))
 ;;   (pcase scope
 ;;     ((or `nil `file `subtree `tree) 'ABC)
@@ -864,7 +987,12 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 
 
 (defun org-clocktable-alt-report-insert (&optional propterties)
-  (org-clock-remove-overlays)
+  ;; NOTE: fun def of org-clock-report
+  ;; (org-create-dblock
+  ;;  (org-combine-plists
+  ;;   (list :scope (if (org-before-first-heading-p) 'file 'subtree))
+  ;;   org-clock-clocktable-default-properties
+  ;;   '(:name "clocktable")))
   (org-create-dblock
    (org-combine-plists
     ;; (list :scope (if (org-before-first-heading-p) 'file 'subtree))
@@ -898,12 +1026,8 @@ clocktable, when not specified in the previous variable, is
   (let ((buff (get-buffer-create "*org-clock-alt-report-buffer*")))
     (with-current-buffer buff
       (org-mode)
-      (org-clock-alt-report-in-place))
+      (org-clock-alt-report-in-place properties))
     (switch-to-buffer buff)))
-
-
-(defun org-clock-alt-report-tree (point)
-  (org-clock-alt-report-buffer :scope 'tree))
 
 
 ;;;###autoload
@@ -932,14 +1056,33 @@ in the buffer and update it."
     (start (goto-char start)))
   (org-update-dblock))
 
-;; (defun org-clock-alt-report-in-place-x ()
-;;   (org-dblock-write:clocktable-alt
-;;    (org-combine-plists
-;;     ;; (list :scope (if (org-before-first-heading-p) 'file 'subtree))
-;;     (list :scope (directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t))
-;;     org-clock-clocktable-alt-default-properties
-;;     ;; propterties
-;;     '(:name "clocktable-alt"))))
+(defun org-clock-alt-report-in-place-x (propterties)
+  (org-dblock-write:clocktable-alt
+   (org-combine-plists
+    org-clock-clocktable-alt-default-properties
+    (list :scope (if (org-before-first-heading-p) 'file 'subtree))
+    propterties
+    '(:name "clocktable-alt"))))
+
+(defun org-clock-alt-report-tree (marker)
+  (interactive)
+  (let ((point (with-current-buffer (get-buffer-create "*org-clock-alt-report-buffer*")
+                 (point-marker))))
+    (message "org-clock-alt-report-tree: before point %s" point)
+    (with-current-buffer (marker-buffer marker)
+      (goto-char marker)
+      (message "org-clock-alt-report-tree: marker %s" marker)
+      (org-clock-alt-report-in-place-x (list :point point)))
+    (switch-to-buffer (marker-buffer point))))
+;; ;;;###autoload
+;; (defun org-clock-alt-report-buffer (&optional properties)
+;;   (interactive
+;;    (list nil))
+;;   (let ((buff (get-buffer-create "*org-clock-alt-report-buffer*")))
+;;     (with-current-buffer buff
+;;       (org-mode)
+;;       (org-clock-alt-report-in-place-x properties))
+;;     (switch-to-buffer buff)))
 
 (defvar org-clock-alt-report-buffer-idle-timer nil)
 
