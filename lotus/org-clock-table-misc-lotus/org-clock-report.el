@@ -562,6 +562,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
                                       (eval matcher)))))
       (goto-char (point-min))
       (setq st t)
+
       (while (or (and (bobp) (prog1 st (setq st nil))
                       (get-text-property (point) :org-clock-minutes)
                       (setq p (point-min)))
@@ -569,15 +570,15 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
                           (point) :org-clock-minutes)))
         (goto-char p)
         (when (setq time (get-text-property p :org-clock-minutes))
-          (setq
-           org-clock-notes (get-text-property p :org-clock-notes)
-           org-heading-content-only (org-heading-content-only-x))
+          (setq org-clock-notes (get-text-property p :org-clock-notes)
+                org-heading-content-only (org-heading-content-only-x))
           (save-excursion
             (beginning-of-line 1)
             (when (and (looking-at (org-re "\\(\\*+\\)[ \t]+\\(.*?\\)\\([ \t]+:[[:alnum:]_@#%:]+:\\)?[ \t]*$"))
                        (setq level (org-reduced-level
                                     (- (match-end 1) (match-beginning 1))))
                        (<= level maxlevel))
+              ;; TODO: here check for subtree-file: and call (org-clock-get-table-data-alt) and collect tbl from here
               (setq hdl (if (not link)
                             (match-string 2)
                             (org-make-link-string
@@ -605,6 +606,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
                                          (cons p (org-entry-get (point) p inherit-property-p))))
                                      properties))))
               (when (> time 0) (push (list level hdl tsp time props org-heading-content-only org-clock-notes) tbl))))))
+
       (setq tbl (nreverse tbl))
       (list file org-clock-file-total-minutes tbl))))
 ;; (defun org-dblock-table:clocktable-alt (params)
