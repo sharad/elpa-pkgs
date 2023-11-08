@@ -581,17 +581,17 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
               ;; TODO: here check for subtree-file: and call (org-clock-get-table-data-alt) and collect tbl from here
               (setq hdl (if (not link)
                             (match-string 2)
-                            (org-make-link-string
-                             (format "file:%s::%s"
-                                     (buffer-file-name)
-                                     (save-match-data
-                                       (match-string 2)))
-                             (org-make-org-heading-search-string
-                              (replace-regexp-in-string
-                               org-bracket-link-regexp
-                               (lambda (m) (or (match-string 3 m)
-                                               (match-string 1 m)))
-                               (match-string 2)))))
+                          (org-make-link-string
+                           (format "file:%s::%s"
+                                   (buffer-file-name)
+                                   (save-match-data
+                                     (match-string 2)))
+                           (org-make-org-heading-search-string
+                            (replace-regexp-in-string
+                             org-bracket-link-regexp
+                             (lambda (m) (or (match-string 3 m)
+                                             (match-string 1 m)))
+                             (match-string 2)))))
                     tsp (when timestamp
                           (setq props (org-entry-properties (point)))
                           (or (cl-rest (assoc "SCHEDULED" props))
@@ -609,144 +609,6 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 
       (setq tbl (nreverse tbl))
       (list file org-clock-file-total-minutes tbl))))
-;; (defun org-dblock-table:clocktable-alt (params)
-;;   "Write the standard clocktable."
-;;   (setq params (org-combine-plists org-clocktable-defaults params))
-;;   (catch 'exit
-;;     (let* ((scope (plist-get params :scope))
-;;            (block (plist-get params :block))
-;;            (ts (plist-get params :tstart))
-;;            (te (plist-get params :tend))
-;;            (link (plist-get params :link))
-;;            (maxlevel (or (plist-get params :maxlevel) 3))
-;;            (ws (plist-get params :wstart))
-;;            (ms (plist-get params :mstart))
-;;            (step (plist-get params :step))
-;;            (timestamp (plist-get params :timestamp))
-;;            (formatter (or (plist-get params :formatter)
-;;                           org-clock-clocktable-alt-formatter
-;;                           'org-clocktable-alt-write-default))
-;;            cc range-text ipos pos one-file-with-archives
-;;            scope-is-list tbls level)
-;;       ;; Check if we need to do steps
-;;       (when block
-;;         ;; Get the range text for the header
-;;         (setq cc (org-clock-special-range block nil t ws ms)
-;;               ts (cl-first cc) te (nth 1 cc) range-text (nth 2 cc)))
-;;       (when step
-;;         ;; Write many tables, in steps
-;;         (unless (or block (and ts te))
-;;           (error "Clocktable `:step' can only be used with `:block' or `:tstart,:end'"))
-;;         (org-clocktable-steps params)
-;;         (throw 'exit nil))
-
-;;       (setq ipos (point)) ; remember the insertion position
-
-;;       ;; Get the right scope
-;;       (setq pos (point))
-;;       (cond
-;;         ((and scope (listp scope) (symbolp (cl-first scope)))
-;;          (setq scope (eval scope)))
-;;         ((eq scope 'agenda)
-;;          (setq scope (org-agenda-files t)))
-;;         ((eq scope 'agenda-with-archives)
-;;          (setq scope (org-agenda-files t))
-;;          (setq scope (org-add-archive-files scope)))
-;;         ((eq scope 'file-with-archives)
-;;          (setq scope (and buffer-file-name
-;;                           (org-add-archive-files (list buffer-file-name)))
-;;                one-file-with-archives t)))
-;;       (setq scope-is-list (and scope (listp scope)))
-;;       (if scope-is-list
-;;           ;; we collect from several files
-;;           (let* ((files scope)
-;;                  file)
-;;             (org-agenda-prepare-buffers files)
-;;             (while (setq file (pop files))
-;;               (with-current-buffer (find-buffer-visiting file)
-;;                 (save-excursion
-;;                   (save-restriction
-;;                     (push (org-clock-get-table-data-alt file params) tbls))))))
-;;           ;; Just from the current file
-;;           (save-restriction
-;;             ;; get the right range into the restriction
-;;             (org-agenda-prepare-buffers (list (or (buffer-file-name)
-;;                                                   (current-buffer))))
-;;             (cond
-;;               ((not scope))  ; use the restriction as it is now
-;;               ((eq scope 'file) (widen))
-;;               ((eq scope 'subtree) (org-narrow-to-subtree))
-;;               ((eq scope 'tree)
-;;                (while (org-up-heading-safe))
-;;                (org-narrow-to-subtree))
-;;               ((and (symbolp scope) (string-match "^tree\\([0-9]+\\)$"
-;;                                                   (symbol-name scope)))
-;;                (setq level (string-to-number (match-string 1 (symbol-name scope))))
-;;                (catch 'exit
-;;                  (while (org-up-heading-safe)
-;;                    (looking-at org-outline-regexp)
-;;                    (if (<= (org-reduced-level (funcall outline-level)) level)
-;;                        (throw 'exit nil))))
-;;                (org-narrow-to-subtree)))
-;;             ;; do the table, with no file name.
-;;             (push (org-clock-get-table-data-alt nil params) tbls)))
-
-;;       ;; OK, at this point we tbls as a list of tables, one per file
-;;       (setq tbls (nreverse tbls))
-
-;;       (setq params (plist-put params :multifile scope-is-list))
-;;       (setq params (plist-put params :one-file-with-archives
-;;                               one-file-with-archives))
-;;       tbls)))
-
-;; required here in org.el
-
-;; (defun org-update-dblock ()
-;;   "Update the dynamic block at point.
-;; This means to empty the block, parse for parameters and then call
-;; the correct writing function."
-;;   (interactive)
-;;   (save-excursion
-;;     (let* ((win (selected-window))
-;; 	   (pos (point))
-;; 	   (line (org-current-line))
-;; 	   (params (org-prepare-dblock))
-;; 	   (name (plist-get params :name))
-;; 	   (indent (plist-get params :indentation-column))
-;; 	   (cmd (intern (concat "org-dblock-write:" name))))
-;;       (message "Updating dynamic block `%s' at line %d..." name line)
-;;       (funcall cmd params)
-;;       (message "Updating dynamic block `%s' at line %d...done" name line)
-;;       (goto-char pos)
-;;       (when (and indent (> indent 0))
-;; 	(setq indent (make-string indent ?\ ))
-;; 	(save-excursion
-;; 	  (select-window win)
-;; 	  (org-beginning-of-dblock)
-;; 	  (forward-line 1)
-;; 	  (while (not (looking-at org-dblock-end-re))
-;; 	    (insert indent)
-;; 	    (beginning-of-line 2))
-;; 	  (when (looking-at org-dblock-end-re)
-;; 	    (and (looking-at "[ \t]+")
-;; 		 (replace-match ""))
-;; 	    (insert indent)))))))
-
-;; (defun org-dblock-write:clocktable-alt (params)
-;;   "Write the standard clocktable."
-;;   ;; (debug)
-;;   ;; (error "Hello")
-;;   (setq params (org-combine-plists ;; org-clocktable-defaults
-;;                                    org-clock-clocktable-alt-default-properties ;; org-clocktable-defaults
-;;                                    params))
-;;   (catch 'exit
-;;     (let* ((formatter (or (plist-get params :formatter)
-;;                           org-clock-clocktable-alt-formatter
-;;                           'org-clocktable-alt-write-default)))
-;;       (funcall formatter (point)
-;;                (org-dblock-table:clocktable-alt params)
-;;                params))))
-
 
 ;;;###autoload
 ;; ORIGINAL intact
@@ -912,40 +774,39 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
       (message "org-dblock-write:clocktable-alt: current point %s" (point-marker))
 
       (let ((origin (or (plist-get params :point)
-                        (point)))
-	          (tables
-	           (if (consp files)
-		             (mapcar (lambda (file)
-			                     (with-current-buffer (find-buffer-visiting file)
-			                       (save-excursion
-			                         (save-restriction
-				                         (org-clock-get-table-data-alt file params)))))
-			                   files)
-	             ;; Get the right restriction for the scope.
-	             (save-restriction
-		             (cond
-		              ((not scope))	     ;use the restriction as it is now
-		              ((eq scope 'file) (widen))
-		              ((eq scope 'subtree)
-                   (message "org-dblock-write:clocktable-alt: subtree")
-                   (org-narrow-to-subtree))
-		              ((eq scope 'tree)
-                   (message "org-dblock-write:clocktable-alt: tree")
-		               (while (org-up-heading-safe))
-		               (org-narrow-to-subtree))
-		              ((and (symbolp scope)
-			                  (string-match "\\`tree\\([0-9]+\\)\\'"
-				                              (symbol-name scope)))
-		               (let ((level (string-to-number
-				                         (match-string 1 (symbol-name scope)))))
-		                 (catch 'exit
-		                   (while (org-up-heading-safe)
-			                   (looking-at org-outline-regexp)
-			                   (when (<= (org-reduced-level (funcall outline-level))
-				                           level)
-			                     (throw 'exit nil))))
-		                 (org-narrow-to-subtree))))
-		             (list (org-clock-get-table-data-alt nil params)))))
+                        (point-marker)))
+	          (tables (if (consp files)
+		                    (mapcar (lambda (file)
+			                            (with-current-buffer (find-buffer-visiting file)
+			                              (save-excursion
+			                                (save-restriction
+				                                (org-clock-get-table-data-alt file params)))))
+			                          files)
+	                    ;; Get the right restriction for the scope.
+	                    (save-restriction
+		                    (cond
+		                     ((not scope))	     ;use the restriction as it is now
+		                     ((eq scope 'file) (widen))
+		                     ((eq scope 'subtree)
+                          (message "org-dblock-write:clocktable-alt: subtree")
+                          (org-narrow-to-subtree))
+		                     ((eq scope 'tree)
+                          (message "org-dblock-write:clocktable-alt: tree")
+		                      (while (org-up-heading-safe))
+		                      (org-narrow-to-subtree))
+		                     ((and (symbolp scope)
+			                         (string-match "\\`tree\\([0-9]+\\)\\'"
+				                                     (symbol-name scope)))
+		                      (let ((level (string-to-number
+				                                (match-string 1 (symbol-name scope)))))
+		                        (catch 'exit
+		                          (while (org-up-heading-safe)
+			                          (looking-at org-outline-regexp)
+			                          (when (<= (org-reduced-level (funcall outline-level))
+				                                  level)
+			                            (throw 'exit nil))))
+		                        (org-narrow-to-subtree))))
+		                    (list (org-clock-get-table-data-alt nil params)))))
 	          (multifile
 	           ;; Even though `file-with-archives' can consist of
 	           ;; multiple files, we consider this is one extended file
