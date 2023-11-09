@@ -279,9 +279,9 @@
 
 
 ;;;###autoload
-(activity-register
- "buff-trans"
- #'activity-buff-trans-event-activate #'activity-buff-trans-event-deactivate)
+(activity-register "buff-trans"
+                   #'activity-buff-trans-event-activate
+                   #'activity-buff-trans-event-deactivate)
 
 
 
