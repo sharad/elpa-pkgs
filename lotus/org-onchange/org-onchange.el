@@ -507,8 +507,8 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                            :run-before nil)
                   (message "Lunched noter ret t")
                 (message "Lunched noter ret nil"))
-            (message "buffer-undo-tree-change: only %d changes not more than %d" chgcount minimal-changes))))
-    (message "Current buffer %s is not same as %s"
+            (message "HELLO: buffer-undo-tree-change: only %d changes not more than %d" chgcount minimal-changes))))
+    (message "HELLO Current buffer %s is not same as %s"
              (current-buffer)
              buff)))
 

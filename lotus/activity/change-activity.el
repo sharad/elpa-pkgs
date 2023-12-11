@@ -99,7 +99,7 @@
          (if (funcall action win-timeout)
              (setq lotus-last-buffer-undo-tree-count chgcount))
          (when nil
-           (@:message "buffer-undo-tree-change: only %d changes not more than %d" chgcount minimal-changes)))))
+           (@:message "TEST1: buffer-undo-tree-change: only %d changes not more than %d" chgcount minimal-changes)))))
 
  (defun lotus-action-on-buffer-undo-list-change (action &optional minimal-char-changes win-timeout)
    "Set point to the position of the last change.
