@@ -665,7 +665,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 (defun org-clock-lotus-log-note-on-change-uninsinuate ()
   (interactive)
   ;; message-send-mail-hook
-  org-onchange-unregister-in-session
+  (org-onchange-unregister-in-session)
   (org-clock-lotus-log-note-on-change-stop-timer))
 ;; Org log note on change timer:1 ends here
 

@@ -159,9 +159,8 @@
 (defun org-clock-lotus-log-note-on-change (&optional win-timeout)
   ;; (when (or t (eq buffer (current-buffer)))
   (let ((win-timeout (or win-timeout 7)))
-    (if (and
-         (consp buffer-undo-list)
-         (cl-first buffer-undo-list))
+    (if (and (consp buffer-undo-list)
+             (cl-first buffer-undo-list))
         (lotus-action-on-buffer-undo-list-change #'org-clock-lotus-log-note-current-clock-with-timed-new-win  lotus-minimum-char-changes win-timeout)
         (lotus-action-on-buffer-undo-tree-change #'org-clock-lotus-log-note-current-clock-with-timed-new-win lotus-minimum-changes win-timeout))))
 
