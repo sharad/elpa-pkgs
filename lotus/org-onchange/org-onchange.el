@@ -637,7 +637,7 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                                                        win-timeout)
   (interactive)
   (let ((idle-timeout (or idle-timeout 10))
-        (win-timeout (or win-timeout 7)))
+        (win-timeout  (or win-timeout   7)))
     (if org-clock-lotus-log-note-on-change-timer
         (progn
           (cancel-timer org-clock-lotus-log-note-on-change-timer)
