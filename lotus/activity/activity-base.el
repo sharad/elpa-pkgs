@@ -58,9 +58,11 @@ it to :doc property of new object."
   `(let ((drived-obj (@extend ,object
                               :name ,name)))
      (with-@@ drived-obj
-              ,@(if (stringp (cl-first body))
-                    `((setf @:doc ,(cl-first body))))
-              ,@(if (stringp (cl-first body)) (cl-rest body) body))
+       ;; Documentation
+       ,@(if (stringp (cl-first body))
+             `((setf @:doc ,(cl-first body))))
+       ;; BODY
+       ,@(if (stringp (cl-first body)) (cl-rest body) body))
 
      drived-obj))
 (put '@drive-object 'lisp-indent-function 2)
@@ -74,9 +76,10 @@ this method, and rest of BODY will be part of generated object
 from this method, "
   `(progn
      (def@ ,object ,gen-method (name ,@params)
+       ;; Documentation
        ,@(if (stringp (cl-first body))
              (list (cl-first body)) ())
-
+       ;; BODY
        (@drive-object ,object name
          ,@(if (stringp (cl-first body)) (cl-rest body) body)))))
 (put 'defobjgen@ 'lisp-indent-function 3)
