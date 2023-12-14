@@ -84,71 +84,135 @@
 
 (defvar @activity nil "Activity")
 
+(defobjgen@ @activity-base :gen-activity ()
+  "Activity class"
+  (def@ @@ :init ()
+    (@^:init)
+    (@:message "@activity-class :init")
+    (setf @:occuredon (current-time)))
 
-(setf @activity
-      (@drive-object @activity-base "activities"
-        "Activity class"
+  (setf @:active      nil
+        @:insinuate   nil
+        @:uninsinuate nil)
 
-        (def@ @@ :init ()
-          (@^:init)
-          (@:message "@activity-class :init")
-          (setf @:occuredon (current-time)))
+  (def@ @@ :reset ()
+    (@:deactivate-all)
+    (setf
+     @:active      nil
+     @:insinuate   nil
+     @:uninsinuate nil))
 
-        (setf @:active      nil
-              @:insinuate   nil
-              @:uninsinuate nil)
+  (def@ @@ :activate (key)
+    (let ((c (assoc key @:insinuate)))
+      (if (member key @:active)
+          (@:debug :warning "key %s already active" key)
+        (when c
+          (progn
+            (push key @:active)
+            (funcall (cl-rest c)))))))
 
-        (def@ @@ :reset ()
-          (@:deactivate-all)
-          (setf
-           @:active      nil
-           @:insinuate   nil
-           @:uninsinuate nil))
-
-        (def@ @@ :activate (key)
-          (let ((c (assoc key @:insinuate)))
-            (if (member key @:active)
-                (@:debug :warning "key %s already active" key)
-              (when c
-                (progn
-                  (push key @:active)
-                  (funcall (cl-rest c)))))))
-
-        (def@ @@ :deactivate (key)
-          (let ((c (assoc key @:uninsinuate)))
-            (if (member key @:active)
-                (when c
-                  (@:debug :warning "b key %s not active %s" key @:active)
-                  (setf
-                   @:active
-                   (remove key @:active))
-                  (@:debug :warning "a key %s not active %s" key @:active)
-                  (funcall (cl-rest c)))
-              (@:debug :warning "key %s not active" key))))
+  (def@ @@ :deactivate (key)
+    (let ((c (assoc key @:uninsinuate)))
+      (if (member key @:active)
+          (when c
+            (@:debug :warning "b key %s not active %s" key @:active)
+            (setf
+             @:active
+             (remove key @:active))
+            (@:debug :warning "a key %s not active %s" key @:active)
+            (funcall (cl-rest c)))
+        (@:debug :warning "key %s not active" key))))
 
 
-        (def@ @@ :activate-all ()
-          (dolist (act @:insinuate)
-            (@:activate (cl-first act))))
+  (def@ @@ :activate-all ()
+    (dolist (act @:insinuate)
+      (@:activate (cl-first act))))
 
-        (def@ @@ :deactivate-all ()
-          (dolist (act @:uninsinuate)
-            (@:deactivate (cl-first act))))
+  (def@ @@ :deactivate-all ()
+    (dolist (act @:uninsinuate)
+      (@:deactivate (cl-first act))))
 
-        (def@ @@ :add (key active deactive)
-          (if (assoc key @:insinuate)
-              (setf (cl-rest (assoc key @:insinuate)) active)
-            (push (cons key active) @:insinuate))
-          (if (assoc key @:uninsinuate)
-              (setf (cl-rest (assoc key @:uninsinuate)) deactive)
-            (push (cons key deactive) @:uninsinuate)))
+  (def@ @@ :add (key active deactive)
+    (if (assoc key @:insinuate)
+        (setf (cl-rest (assoc key @:insinuate)) active)
+      (push (cons key active) @:insinuate))
+    (if (assoc key @:uninsinuate)
+        (setf (cl-rest (assoc key @:uninsinuate)) deactive)
+      (push (cons key deactive) @:uninsinuate)))
 
-        (def@ @@ :inspect ()
-          (@:message
-           "active: [%s], insinuate: [%s], uninsinuate: [%s]"
-           @:active
-           @:insinuate
-           @:uninsinuate))))
+  (def@ @@ :inspect ()
+    (@:message
+     "active: [%s], insinuate: [%s], uninsinuate: [%s]"
+     @:active
+     @:insinuate
+     @:uninsinuate)))
+
+(setf @activity (@! @activity-base :gen-activity "activities"))
+
+;; (setf @activity
+;;       (@drive-object @activity-base "activities"
+;;         "Activity class"
+;;
+;;         (def@ @@ :init ()
+;;           (@^:init)
+;;           (@:message "@activity-class :init")
+;;           (setf @:occuredon (current-time)))
+;;
+;;         (setf @:active      nil
+;;               @:insinuate   nil
+;;               @:uninsinuate nil)
+;;
+;;         (def@ @@ :reset ()
+;;           (@:deactivate-all)
+;;           (setf
+;;            @:active      nil
+;;            @:insinuate   nil
+;;            @:uninsinuate nil))
+;;
+;;         (def@ @@ :activate (key)
+;;           (let ((c (assoc key @:insinuate)))
+;;             (if (member key @:active)
+;;                 (@:debug :warning "key %s already active" key)
+;;               (when c
+;;                 (progn
+;;                   (push key @:active)
+;;                   (funcall (cl-rest c)))))))
+;;
+;;         (def@ @@ :deactivate (key)
+;;           (let ((c (assoc key @:uninsinuate)))
+;;             (if (member key @:active)
+;;                 (when c
+;;                   (@:debug :warning "b key %s not active %s" key @:active)
+;;                   (setf
+;;                    @:active
+;;                    (remove key @:active))
+;;                   (@:debug :warning "a key %s not active %s" key @:active)
+;;                   (funcall (cl-rest c)))
+;;               (@:debug :warning "key %s not active" key))))
+;;
+;;
+;;         (def@ @@ :activate-all ()
+;;           (dolist (act @:insinuate)
+;;             (@:activate (cl-first act))))
+;;
+;;         (def@ @@ :deactivate-all ()
+;;           (dolist (act @:uninsinuate)
+;;             (@:deactivate (cl-first act))))
+;;
+;;         (def@ @@ :add (key active deactive)
+;;           (if (assoc key @:insinuate)
+;;               (setf (cl-rest (assoc key @:insinuate)) active)
+;;             (push (cons key active) @:insinuate))
+;;           (if (assoc key @:uninsinuate)
+;;               (setf (cl-rest (assoc key @:uninsinuate)) deactive)
+;;             (push (cons key deactive) @:uninsinuate)))
+;;
+;;         (def@ @@ :inspect ()
+;;           (@:message
+;;            "active: [%s], insinuate: [%s], uninsinuate: [%s]"
+;;            @:active
+;;            @:insinuate
+;;            @:uninsinuate))))
 
 (defun activity-inspect ()
   (interactive)
