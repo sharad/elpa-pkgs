@@ -43,18 +43,18 @@
 (require '@)
 
 
-(defmacro @extend-object (object &rest body)
-  `(with-@@ object
-     ,@(if (stringp (cl-first body))
-           `((setf @:doc ,(cl-first body))))
-     ,@(if (stringp (cl-first body)) (cl-rest body) body)))
-(put '@extend-object 'lisp-indent-function 1)
+;; (defmacro @extend-object (object &rest body)
+;;   `(with-@@ object
+;;      ,@(if (stringp (cl-first body))
+;;            `((setf @:doc ,(cl-first body))))
+;;      ,@(if (stringp (cl-first body))
+;;            (cl-rest body) body)))
+;; (put '@extend-object 'lisp-indent-function 1)
 
 (defmacro @drive-object (object name &rest body)
   `(let ((drived-obj
           (@extend ,object
                    :name ,name)))
-
      (with-@@ drived-obj
               ,@(if (stringp (cl-first body))
                     `((setf @:doc ,(cl-first body))))
@@ -92,9 +92,10 @@
                           '(("\\(@drive-object\\)\\>"
                              (1 'font-lock-builtin-face))))
 
-  (font-lock-add-keywords 'emacs-lisp-mode
-                          '(("\\(@extend-object\\)\\>"
-                             (1 'font-lock-builtin-face)))))
+  ;; (font-lock-add-keywords 'emacs-lisp-mode
+  ;;                         '(("\\(@extend-object\\)\\>"
+  ;;                            (1 'font-lock-builtin-face))))
+  )
 
 
 (setf @activity-base

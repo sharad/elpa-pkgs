@@ -45,8 +45,8 @@
 (require 'switch-buffer-functions)
 (require 'org-uninteractive-log-note)
 
-(defobjgen@ @transition-class :gen-buffer-trans (default)
-
+
+(defobjgen@ @transition-class :gen-buffer-trans (default)
   (def@ @@ :initialize ()
     (setf @:mode-transition nil)
     (setf @:transition default))
@@ -72,20 +72,20 @@
   (def@ @@ :ptrace (&optional msg)
     (let ((msg (or msg "ptrace"))
           (trace (with-temp-buffer
-                     (backtrace)
+                   (backtrace)
                    (buffer-string))))
       (@:message "%s: %s" msg trace)))
 
   (def@ @@ :notify-buf-chg (fmt &rest args)
     (let ((msg
-            (concat
-             (current-time-string)
-             ": "
-             (apply #'format fmt args))))
+           (concat
+            (current-time-string)
+            ": "
+            (apply #'format fmt args))))
       (@:message msg)))
 
   (def@ @@ :get-timer ()
-     (@:message "Timer %s" @:timer))
+    (@:message "Timer %s" @:timer))
 
   (def@ @@ :get-idle-times ()
     (@:message "Idle Times %s" @:idle-times))
@@ -95,34 +95,34 @@
           (time-passed (- (float-time (current-time))
                           (float-time @:time-start))))
       (when @:debug-switch-buf
-         (@:notify-buf-chg
-          "%s: prev currbuf-detect-buffer-chg-use %s, currbuf-run-detect-buffer-chg currbuf %s, (current-buffer) %s, (window-buffer) %s, idle-times %s, time-passed %d, Idle timer %s"
-          msg
-          @:currbuf-detect-buffer-chg-use
-          @:currbuf-run-detect-buffer-chg
-          (current-buffer)
-          (window-buffer)
-          @:idle-times
-          time-passed
-          (if @:timer t)))))
+        (@:notify-buf-chg
+         "%s: prev currbuf-detect-buffer-chg-use %s, currbuf-run-detect-buffer-chg currbuf %s, (current-buffer) %s, (window-buffer) %s, idle-times %s, time-passed %d, Idle timer %s"
+         msg
+         @:currbuf-detect-buffer-chg-use
+         @:currbuf-run-detect-buffer-chg
+         (current-buffer)
+         (window-buffer)
+         @:idle-times
+         time-passed
+         (if @:timer t)))))
 
   (def@ @@ :buffer-chg-action (prevbuf currbuf time-spent)
     (@:buffer-chg-print-info "inaction")
     (@! @:transition :dispatch prevbuf currbuf time-spent)
     (@:buffer-chg-print-info "done inaction"))
-    ;; (@:notify-buf-chg
-    ;;  "Detected buffer change buffer %s prevbuf %s currbuf %s time spend %d"
-    ;;  (current-buffer)
-    ;;  prevbuf
-    ;;  currbuf
-    ;;  time-spent)
+  ;; (@:notify-buf-chg
+  ;;  "Detected buffer change buffer %s prevbuf %s currbuf %s time spend %d"
+  ;;  (current-buffer)
+  ;;  prevbuf
+  ;;  currbuf
+  ;;  time-spent)
 
 
   (def@ @@ :add-idle-timer-hook ()
     (let* ((idle-time-internal (current-idle-time))
            (idle-time (if idle-time-internal
                           (float-time idle-time-internal)
-                          0)))
+                        0)))
       (when (> idle-time @:idle-thresh-hold)
         (push idle-time @:idle-times))))
 
@@ -153,15 +153,15 @@
             (@:cancel-detect-buffer-chg-use)
             (setf @:currbuf-detect-buffer-chg-use curr)
             (@:buffer-chg-print-info "detect-buffer-chg-use total stop timer"))
-          (progn
-            (@:buffer-chg-print-info "detect-buffer-chg-use: else ")
-            (when @:timer
-              (cancel-timer @:timer)
-              (setf @:timer
-                    (run-with-timer @:timer-gap
-                                    nil
-                                    @:detect-buffer-chg-use @@ prev curr))) ;todo
-            (@:buffer-chg-print-info "detect-buffer-chg-use reschd timer")))))
+        (progn
+          (@:buffer-chg-print-info "detect-buffer-chg-use: else ")
+          (when @:timer
+            (cancel-timer @:timer)
+            (setf @:timer
+                  (run-with-timer @:timer-gap
+                                  nil
+                                  @:detect-buffer-chg-use @@ prev curr))) ;todo
+          (@:buffer-chg-print-info "detect-buffer-chg-use reschd timer")))))
 
   (def@ @@ :is-run-detect-buffer-chg-use ()
     (and (not (or (string-match "^*helm" (buffer-name))
@@ -185,9 +185,9 @@
                                         nil
                                         @:detect-buffer-chg-use @@ @:currbuf-run-detect-buffer-chg curr))
           (setf @:currbuf-run-detect-buffer-chg curr))
-        (when (eq @:currbuf-detect-buffer-chg-use (current-buffer))
-          (when @:debug-switch-buf (@:message "cancel timer"))
-          (@:cancel-detect-buffer-chg-use))))
+      (when (eq @:currbuf-detect-buffer-chg-use (current-buffer))
+        (when @:debug-switch-buf (@:message "cancel timer"))
+        (@:cancel-detect-buffer-chg-use))))
 
   ;; (def@ @@ :enable-detect-buffer-chg-use ()
   ;;   (@:cancel-detect-buffer-chg-use)
@@ -294,7 +294,6 @@
     (setq-default post-command-hook '())
 
     (setq-default switch-buffer-functions nil)))
-
 
 
 ;;; buff-trans.el ends here
