@@ -38,13 +38,16 @@
 ;;; Code:
 
 (provide 'buff-trans)
-
 
-(require 'activity-base)
-(require 'activity)
+
 (require 'switch-buffer-functions)
 (require 'org-uninteractive-log-note)
+
 
+(eval-when-compile
+  (require 'activity-macro))
+(require 'activity-base)
+(require 'activity)
 
 (defobjgen@ @transition-class :gen-buffer-trans (default)
   (def@ @@ :initialize ()
@@ -294,5 +297,4 @@
 
     (setq-default switch-buffer-functions nil)))
 
-
 ;;; buff-trans.el ends here

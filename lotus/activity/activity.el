@@ -41,8 +41,11 @@
 
 
 (require 'cl-seq)
-
 (require '@)
+
+
+(eval-when-compile
+  (require 'activity-macro))
 (require 'activity-base)
 
 
