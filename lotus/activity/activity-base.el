@@ -231,8 +231,7 @@
      @:start-time    0
      @:stop-time     0
      @:active-time   0
-     @:inactive-time 0)
-    ))
+     @:inactive-time 0)))
 
 
 (drive-extended@ @postpone-event-class (@activity-base) "activity detector class"

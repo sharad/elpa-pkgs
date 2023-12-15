@@ -54,18 +54,21 @@
     (setf @:mode-transition nil)
     (setf @:transition default))
 
-  (def@ @@ :register (mode transition)
-    (push @:mode-transition (cons mode transition)))
+  (def@ @@ :register (mode
+                      transition)
+    (push @:mode-transition (cons mode
+                                  transition)))
 
-  (def@ @@ :dispatch (prev curr time-spent)
+  (def@ @@ :dispatch (prev
+                      curr
+                      time-spent)
     (@:initialize)
-    (if (and (bufferp curr) (buffer-live-p curr))
-        (let* ((mjmode
-                (with-current-buffer curr
-                  major-mode))
-               (transition (or
-                            (cl-rest (assq mjmode @:mode-transition))
-                            @:transition)))
+    (if (and (bufferp curr)
+             (buffer-live-p curr))
+        (let* ((mjmode (with-current-buffer curr
+                         major-mode))
+               (transition (or (cl-rest (assq mjmode @:mode-transition))
+                               @:transition)))
           (@! transition :dispatch prev curr time-spent)))))
 
 
