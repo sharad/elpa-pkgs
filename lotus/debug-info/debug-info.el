@@ -27,7 +27,7 @@
 (provide 'debug-info)
 
 
-(require 'notify)
+;;(require 'notify)
 (require 'backtrace-debug)
 
 ;; https://www.emacswiki.org/emacs/EmacsMemoryDebugging

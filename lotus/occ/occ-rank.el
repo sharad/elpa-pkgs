@@ -350,18 +350,18 @@
                                   #'occ-obj-reset-rank-max-decendent-with)
     (occ-obj-reset-rank rt)))
 
-(defmethod occ-obj-tsk-do-ancestor-with ((tsk occ-obj-tsk)
-                                         ctx
-                                         fun)
+(cl-defmethod occ-obj-tsk-do-ancestor-with ((tsk occ-obj-tsk)
+                                            ctx
+                                            fun)
   (funcall fun tsk ctx)
   (if (occ-tsk-parent tsk)
       (occ-obj-tsk-do-ancestor-with (occ-tsk-parent tsk)
                                     ctx
                                     fun)))
 
-(defmethod occ-obj-tsk-do-descendant-with ((tsk occ-obj-tsk)
-                                           ctx
-                                           fun)
+(cl-defmethod occ-obj-tsk-do-descendant-with ((tsk occ-obj-tsk)
+                                              ctx
+                                              fun)
   (dolist (c (occ-tree-tsk-subtree tsk))
     (occ-obj-tsk-do-descendant-with c ctx fun))
   (funcall fun tsk ctx))
