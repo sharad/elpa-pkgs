@@ -34,8 +34,10 @@
 
 ;;; Code:
 
-
+(eval-when-compile
+  (require 'activity-macro))
 (require 'activity-base)
+
 
 ;; (defclass change-activity (buffer-activity)
 ;;   ((buffer :initarg :buffer

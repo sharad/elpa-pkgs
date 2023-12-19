@@ -96,12 +96,12 @@ first parameter is string then making it documentation string for
 this method, and rest of BODY will be part of generated object
 from this method, "
   `(progn
-     (def@ ,object ,gen-method (name ,@params)
+     (def@ ,baseobj ,gen-method (name ,@params)
        ;; Documentation
        ,@(if (stringp (cl-first body))
              (list (cl-first body)) ())
        ;; BODY
-       (@drive-object name (list ,baseobj)
+       (@drive-object name (,baseobj)
          ,@(if (stringp (cl-first body)) (cl-rest body) body)))))
 (put 'defobjgen@ 'lisp-indent-function 3)
 

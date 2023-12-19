@@ -43,7 +43,11 @@
 (require 'gnus)
 (require 'org-capture-note)
 (require 'message)
+
 
+
+(eval-when-compile
+  (require 'activity-macro))
 (require 'activity)
 
 

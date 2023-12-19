@@ -37,6 +37,10 @@
 
 
 (require 'org-capture+)
+
+
+(eval-when-compile
+  (require 'activity-macro))
 (require 'activity-base)
 
 ;; TODO: see it https://orgmode.org/manual/Template-expansion.html#Template-expansion
@@ -98,12 +102,13 @@
       (@! @dest-class :gen-org-capture-dest "org-capture-dest"))
 
 (setf @org-capture-immediate-dest
-      (@drive-object @org-capture-dest "Non-Interactive capture"
-                     (setf @:capture-plist (append (list :immediate-finish t :no-save t)
-                                                   @:capture-plist))))
+      (@drive-object "Non-Interactive capture" (@org-capture-dest)
+                     "Non-Interactive capture"
+                     (setf @:capture-plist (append (list :immediate-finish t :no-save t
+                                                                        @:capture-plist)))))
 
 (setf @org-capture-edit-dest
-  (@drive-object @org-capture-dest "Interactive capture"
+      (@drive-object "Interactive capture" (@org-capture-dest) "Interactive capture"
                  "Interactive capture"
                  (setf @:capture-plist (append (list :immediate-finish t :no-save t)
                                                @:capture-plist))))

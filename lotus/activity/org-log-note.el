@@ -40,6 +40,9 @@
 (provide 'org-activity-log-note)
 
 
+
+(eval-when-compile
+  (require 'activity-macro))
 (require 'activity-base)
 
 
