@@ -471,11 +471,10 @@ so returns nil if pid is nil."
               (> time-since-last-save (float-time idle-time)))
           (if (or force
                   (> time-since-last-save save-all-sessions-auto-save-time-interval))
-              (if (or
-                   force
-                   (and idle-time
-                        ;; http://www.gnu.org/software/emacs/manual/html_node/emacs/Auto-Save-Control.html#Auto-Save-Control
-                        (> (float-time idle-time) save-all-sessions-auto-save-idle-time-interval-dynamic)))
+              (if (or force
+                      (and idle-time
+                           ;; http://www.gnu.org/software/emacs/manual/html_node/emacs/Auto-Save-Control.html#Auto-Save-Control
+                           (> (float-time idle-time) save-all-sessions-auto-save-idle-time-interval-dynamic)))
                   (progn
                     (run-hooks 'session-unified-save-all-sessions-before-hook)
                     (session-unfiy-notify "Started to save frame desktop and session.\ncurrent time %s, idle time %d idle-time-interval left %d"
