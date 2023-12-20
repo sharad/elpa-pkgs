@@ -174,7 +174,8 @@
                                         (occ-obj-format obj)))))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
-        (setf (buffer-string) "")
+        ;; (setf (buffer-string) "")
+        (erase-buffer)
         ;; (cl-prettyprint obj)
         (insert (occ-obj-describe-string obj)))
       (read-only-mode 1))

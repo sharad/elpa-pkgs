@@ -693,7 +693,8 @@ pointing to it."
                                         (occ-obj-format obj)))))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
-        (setf (buffer-string) "")
+        ;; (setf (buffer-string) "")
+        (erase-buffer)
         ;; (cl-prettyprint obj)
         (insert (format "Object: %s\n\n"
                         (occ-obj-Format obj)))
