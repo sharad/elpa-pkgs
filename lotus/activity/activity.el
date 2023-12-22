@@ -87,12 +87,12 @@
 
 (defvar @activity nil "Activity")
 
-(defobjgen@ @activity-base :gen-activity ()
+(drive-extended@ @activity (@activity-base) "activity"
   "Activity class"
   (def@ @@ :init ()
     (@^:init)
     (@:message "@activity-class :init")
-    (setf @:occuredon (current-time)))
+    (setf @:_occuredon (current-time)))
 
   (setf @:active      nil
         @:insinuate   nil
@@ -150,7 +150,8 @@
      @:insinuate
      @:uninsinuate)))
 
-(setf @activity (@! @activity-base :gen-activity "activities"))
+;; (setf @activity (@! @activity-base :gen-activity "activities"))
+
 
 (defun activity-inspect ()
   (interactive)
@@ -228,6 +229,7 @@
 (defun activity-turn-off ()
   "Turn off Activity."
   (activity-unbind-hooks))
+
 
 ;;;###autoload
 (define-minor-mode activity-mode
@@ -244,5 +246,5 @@
 ;;;###autoload
 (define-globalized-minor-mode global-activity-mode activity-mode
   (lambda () (activity-mode 1)))
-
+
 ;;; activity.el ends here

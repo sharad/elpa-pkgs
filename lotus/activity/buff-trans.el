@@ -49,6 +49,7 @@
 (require 'activity-base)
 (require 'activity)
 
+
 (defobjgen@ @transition-class :gen-buffer-trans (default)
   (def@ @@ :initialize ()
     (setf @:mode-transition nil)
@@ -70,8 +71,8 @@
                (transition (or (cl-rest (assq mjmode @:mode-transition))
                                @:transition)))
           (@! transition :dispatch prev curr time-spent)))))
-
 
+
 (defobjgen@ @transition-span-dectector-class :gen-buffer-trans-span-detector (transition)
   "Deted"
   (def@ @@ :ptrace (&optional msg)
@@ -228,7 +229,6 @@
     t)
 
   (@:initialize))
-
 
 
 ;; (defvar @defautl-buffer-transition-with-log-note-in-org-current-clock nil)
@@ -244,7 +244,6 @@
   (def@ @@ :dispatch (prev curr time-spent)
     (ignore time-spent)
     (@! @org-clock-uninteractive-log-note :send "Changed to buffer %s from %s" curr prev)))
-
 
 
 (defvar @buffer-transition nil)

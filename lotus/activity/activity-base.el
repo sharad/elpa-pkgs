@@ -183,7 +183,7 @@
   (def@ @@ :init ()
     (@^:init)
     (@:message "@activity-class :init")
-    (setf @:occuredon (current-time))))
+    (setf @:_occuredon (current-time))))
 (drive-extended@ @event-class (@activity-class) "event class"
   "Event class"
   (def@ @@ :note ()
@@ -204,6 +204,7 @@
   "Event detector class"
   (def@ @@ :note ()
     ))
+
 
 (drive-extended@ @transition-dectector-class (@event-dectector-class) "transition detector class"
   "Transition detector class"
@@ -221,6 +222,7 @@
      @:active-time   0
      @:inactive-time 0)
     ))
+
 
 (drive-extended@ @transition-span-dectector-class (@transition-dectector-class) "duration detector class" ;TODO START
   "Duration detector class"
@@ -253,7 +255,6 @@
   (def@ @@ :note ()
     ))
 
-;;; act.el ends here
 
 ;; based on note type correct destination should be chosen.
 ;; objects
@@ -289,5 +290,5 @@
     (string-match "\\<\\(@\\^?:[^ ()]+\\)\\>" "@:aa")
 
     (string-match "\\(@\\^?:[^ ()]+\\)\\>" "@:aa")))
-
+
 ;;; activity-base.el ends here
