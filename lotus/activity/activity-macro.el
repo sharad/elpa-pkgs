@@ -105,4 +105,9 @@ from this method, "
          ,@(if (stringp (cl-first body)) (cl-rest body) body)))))
 (put 'defobjgen@ 'lisp-indent-function 3)
 
+
+(defmacro @mapcar (f l)
+  `(mapcar #'(lambda (e) (with-@@ e (,f)))
+           ,l))
+
 ;;; activity-macro.el ends here

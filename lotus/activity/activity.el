@@ -87,61 +87,49 @@
 
 (defvar @activity nil "Activity")
 
+(drive-extended@ @activity-interface (@activity-base) "activity"
+  (def@ @@ :key ()
+    (@:error "Implement :key interface"))
+  (def@ @@ :activate ()
+    (@:error "Implement :activate interface"))
+  (def@ @@ :deactivate ()
+    (@:error "Implement :deactivate interface")))
+
 (drive-extended@ @activity (@activity-base) "activity"
   "Activity class"
   (def@ @@ :init ()
     (@^:init)
     (@:message "@activity-class :init")
-    (setf @:_occuredon (current-time)))
-
-  (setf @:active      nil
-        @:insinuate   nil
-        @:uninsinuate nil)
+    (setf @:active      nil
+          @:insinuate   nil
+          @:uninsinuate nil))
 
   (def@ @@ :reset ()
     (@:deactivate-all)
-    (setf
-     @:active      nil
-     @:insinuate   nil
-     @:uninsinuate nil))
+    (setf @:activies       nil
+          @:started-acts   nil
+          @:stopped-acts   nil))
 
-  (def@ @@ :activate (key)
-    (let ((c (assoc key @:insinuate)))
-      (if (member key @:active)
-          (@:debug :warning "key %s already active" key)
-        (when c
-          (progn
-            (push key @:active)
-            (funcall (cl-rest c)))))))
+  (def@ @@ :activate (act)
+    (@! act :activate)
+    (push act @:started-acts))
 
-  (def@ @@ :deactivate (key)
-    (let ((c (assoc key @:uninsinuate)))
-      (if (member key @:active)
-          (when c
-            (@:debug :warning "b key %s not active %s" key @:active)
-            (setf
-             @:active
-             (remove key @:active))
-            (@:debug :warning "a key %s not active %s" key @:active)
-            (funcall (cl-rest c)))
-        (@:debug :warning "key %s not active" key))))
-
+  (def@ @@ :deactivate (act)
+    (@! act :deactivate)
+    (push act @:stopped-acts))
 
   (def@ @@ :activate-all ()
-    (dolist (act @:insinuate)
-      (@:activate (cl-first act))))
+    (dolist (act @:activies)
+      (@:activate act)))
 
   (def@ @@ :deactivate-all ()
-    (dolist (act @:uninsinuate)
-      (@:deactivate (cl-first act))))
+    (dolist (act @:activies)
+      (@:deactivate act)))
 
-  (def@ @@ :add (key active deactive)
-    (if (assoc key @:insinuate)
-        (setf (cl-rest (assoc key @:insinuate)) active)
-      (push (cons key active) @:insinuate))
-    (if (assoc key @:uninsinuate)
-        (setf (cl-rest (assoc key @:uninsinuate)) deactive)
-      (push (cons key deactive) @:uninsinuate)))
+  (def@ @@ :add (activity)
+    (@mapcar @:key @:activites)
+    (push activity
+          @:activites))
 
   (def@ @@ :inspect ()
     (@:message
@@ -166,8 +154,8 @@
 (defun activity-activate (key)
   (interactive
    (list (completing-read "activity: "
-                          (cl-set-difference (mapcar #'car (@ @activity :insinuate))
-                                        (@ @activity :active)))))
+                          (cl-set-difference (@ @activity :started-acts)
+                                             (@ @activity :stopped-acts)))))
   ;; (activity-add-subdirs-load-path)
   (@! @activity :activate key))
 

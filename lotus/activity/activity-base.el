@@ -63,6 +63,9 @@
   (def@ @@ :message (&rest args)
     (apply #'message args))
 
+  (def@ @@ :error (&rest args)
+    (apply #'error args))
+
   (def@ @@ :debug (level &rest args)
     (when @:activity-debug
       (when (cl-first args)
@@ -184,6 +187,7 @@
     (@^:init)
     (@:message "@activity-class :init")
     (setf @:_occuredon (current-time))))
+
 (drive-extended@ @event-class (@activity-class) "event class"
   "Event class"
   (def@ @@ :note ()
@@ -220,8 +224,7 @@
      @:start-time    0
      @:stop-time     0
      @:active-time   0
-     @:inactive-time 0)
-    ))
+     @:inactive-time 0)))
 
 
 (drive-extended@ @transition-span-dectector-class (@transition-dectector-class) "duration detector class" ;TODO START
