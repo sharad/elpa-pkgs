@@ -190,14 +190,14 @@
   "Toggle Activity (Activity mode)."
   :lighter    " Act"
   :init-value nil
-  :global     nil
+  :global     t
   :group      'activity
   (if activity-mode
       (activity-turn-on)
     (activity-turn-off)))
 
-;;;###autoload
-(define-globalized-minor-mode global-activity-mode activity-mode
-  (lambda () (activity-mode 1)))
+;; ;;;###autoload
+;; (define-globalized-minor-mode global-activity-mode activity-mode
+;;   (lambda () (activity-mode 1)))
 
 ;;; activity.el ends here
