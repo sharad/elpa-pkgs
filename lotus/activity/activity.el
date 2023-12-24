@@ -85,8 +85,6 @@
 
 
 
-(defvar @activity nil "Activity")
-
 (drive-extended@ @activity-interface (@activity-base) "activity"
   (def@ @@ :key ()
     (@:error "Implement :key interface"))
@@ -100,45 +98,55 @@
   (def@ @@ :init ()
     (@^:init)
     (@:message "@activity-class :init")
-    (setf @:active      nil
-          @:insinuate   nil
-          @:uninsinuate nil))
+    (setf @:started-acts   nil
+          @:activities     nil))
 
   (def@ @@ :reset ()
     (@:deactivate-all)
-    (setf @:activies       nil
-          @:started-acts   nil
-          @:stopped-acts   nil))
+    (setf @:started-acts   nil
+          @:activities   nil))
 
   (def@ @@ :activate (act)
-    (@! act :activate)
-    (push act @:started-acts))
+    (when (@! act :activate)
+      (remove act
+              @:activities)
+      (push act
+            @:started-acts)))
 
   (def@ @@ :deactivate (act)
-    (@! act :deactivate)
-    (push act @:stopped-acts))
+    (when (@! act :deactivate)
+      (remove act
+              @:started-acts)
+      (push act
+            @:activities)))
 
   (def@ @@ :activate-all ()
-    (dolist (act @:activies)
+    (dolist (act @:activities)
       (@:activate act)))
 
   (def@ @@ :deactivate-all ()
-    (dolist (act @:activies)
+    (dolist (act @:activities)
       (@:deactivate act)))
 
   (def@ @@ :add (activity)
-    (@mapcar @:key @:activites)
-    (push activity
-          @:activites))
+    (let ((key (@! activity :key)))
+      (if (member key
+                  (@mapcar @:key @:activities))
+          (@:error "activity with %s already present." key)
+        (push activity
+              @:activities))))
+
+  (def@ @@ :find (key)
+    (cl-find-if #'(lambda (e) (qual (@! e :key) key))
+                @:activities))
 
   (def@ @@ :inspect ()
     (@:message
      "active: [%s], insinuate: [%s], uninsinuate: [%s]"
-     @:active
-     @:insinuate
-     @:uninsinuate)))
+     @:activites
+     @:started-acts))
 
-;; (setf @activity (@! @activity-base :gen-activity "activities"))
+  (@:init))
 
 
 (defun activity-inspect ()
@@ -154,17 +162,21 @@
 (defun activity-activate (key)
   (interactive
    (list (completing-read "activity: "
-                          (cl-set-difference (@ @activity :started-acts)
-                                             (@ @activity :stopped-acts)))))
+                          (@mapcar @:key (@ @activity :activities)))))
   ;; (activity-add-subdirs-load-path)
-  (@! @activity :activate key))
+  (let ((act (@! @activity :find key)))
+    (when act
+      (@! @activity :activate))))
 
 ;;;###autoload
 (defun activity-deactivate (key)
   (interactive
    (list (completing-read "activity: "
-                          (@ @activity :active))))
-  (@! @activity :deactivate key))
+                          (@mapcar @:key
+                                   (@ @activity :started-acts)))))
+  (let ((act (@! @activity :find key)))
+    (when act
+      (@! @activity :deactivate))))
 
 ;;;###autoload
 (defun activity-activate-all ()
@@ -178,9 +190,9 @@
   (@! @activity :deactivate-all))
 
 ;;;###autoload
-(defun activity-register (key active deactive)
+(defun activity-register (activity)
   (interactive)
-  (@! @activity :add key active deactive))
+  (@! @activity :add activity))
 
 
 (when nil

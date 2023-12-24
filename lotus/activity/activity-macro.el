@@ -107,7 +107,7 @@ from this method, "
 
 
 (defmacro @mapcar (f l)
-  `(mapcar #'(lambda (e) (with-@@ e (,f)))
+  `(mapcar #'(lambda (e) (with-@@ e (funcall ,f @@)))
            ,l))
 
 ;;; activity-macro.el ends here

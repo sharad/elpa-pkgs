@@ -160,26 +160,22 @@
                   ;; gnus-article-prepare-hook neeed to be finished before any interactive command
                   #'(lambda ()
                       (@! @mail-read-event-detector-instance :make-event-gnus))))
+
 
-;;;###autoload
-(defun activity-mail-event-activate ()
-  (setf @mail-read-event-detector-instance
-        (@! @event-dectector-class :gen-mail-read-event-detector "gnus read mail event"))
-
-  (setf @mail-send-event-detector-instance
-        (@! @event-dectector-class :gen-mail-send-event-detector "gnus send mail event"))
-
-  (add-hook 'gnus-article-prepare-hook
-            #'mail-event-run-action))
-
-;;;###autoloda
-(defun activity-mail-event-deactivate ()
-  (remove-hook 'gnus-article-prepare-hook
-               #'mail-event-run-action))
-
-;;;###autoload
-(activity-register "mail-event"
-                   #'activity-mail-event-activate
-                   #'activity-mail-event-deactivate)
+(drive-extended@ @mail-event-activity (@activity-interface) "mail-event-activity"
+  (def@ @@ :key ()
+    "mail-event-activity"
+    "mail-event-activity")
+  (def@ @@ :activate ()
+    (setf @mail-read-event-detector-instance
+          (@! @event-dectector-class :gen-mail-read-event-detector "gnus read mail event"))
+    (setf @mail-send-event-detector-instance
+          (@! @event-dectector-class :gen-mail-send-event-detector "gnus send mail event"))
+    (add-hook 'gnus-article-prepare-hook
+              #'mail-event-run-action))
+  (def@ @@ :deactivate ()
+    (remove-hook 'gnus-article-prepare-hook
+                 #'mail-event-run-action)))
+(activity-register @mail-event-activity)
 
 ;;; mail-event.el ends here
