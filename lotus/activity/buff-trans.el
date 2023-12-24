@@ -74,7 +74,7 @@
 
 
 (defobjgen@ @transition-span-dectector-class :gen-buffer-trans-span-detector (transition)
-  "Deted"
+  "Detector"
   (def@ @@ :ptrace (&optional msg)
     (let ((msg (or msg "ptrace"))
           (trace (with-temp-buffer
@@ -281,22 +281,6 @@
 
 
 
-;; ;;;###autoload
-;; (defun activity-buff-trans-event-activate ()
-;;   (buffer-transition-span-detector-enable-detect-buffer-chg-use))
-
-;; ;;;###autoload
-;; (defun activity-buff-trans-event-deactivate ()
-;;   (buffer-transition-span-detector-disable-detect-buffer-chg-use))
-
-
-;; ;;;###autoload
-;; (activity-register "buff-trans"
-;;                    #'activity-buff-trans-event-activate
-;;                    #'activity-buff-trans-event-deactivate)
-
-
-
 (drive-extended@ @buff-trans-activity (@activity-interface) "buff-trans-activity"
   (def@ @@ :key ()
     "buff-trans-activity"
@@ -304,12 +288,18 @@
   (def@ @@ :activate ()
     (@! @buffer-transition-span-detector :cancel-detect-buffer-chg-use)
     (@! @buffer-transition-span-detector :initialize)
-    (add-hook 'post-command-hook #'buffer-transition-span-detector-add-idle-timer-hook)
-    (add-hook 'switch-buffer-functions #'buffer-transition-span-detector-run-detect-buffer-chg))
+    (add-hook 'post-command-hook
+              #'buffer-transition-span-detector-add-idle-timer-hook)
+    (add-hook 'switch-buffer-functions
+              #'buffer-transition-span-detector-run-detect-buffer-chg))
   (def@ @@ :deactivate ()
     (@! @buffer-transition-span-detector :cancel-detect-buffer-chg-use)
-    (remove-hook 'post-command-hook #'buffer-transition-span-detector-add-idle-timer-hook)
-    (remove-hook 'switch-buffer-functions #'#'buffer-transition-span-detector-run-detect-buffer-chg)))
+    (remove-hook 'post-command-hook
+                 #'buffer-transition-span-detector-add-idle-timer-hook)
+    (remove-hook 'switch-buffer-functions
+                 #'#'buffer-transition-span-detector-run-detect-buffer-chg)))
+
+;;;###autoload
 (activity-register @buff-trans-activity)
 
 (when nil

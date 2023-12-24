@@ -176,6 +176,8 @@
   (def@ @@ :deactivate ()
     (remove-hook 'gnus-article-prepare-hook
                  #'mail-event-run-action)))
+
+;;;###autoload
 (activity-register @mail-event-activity)
 
 ;;; mail-event.el ends here

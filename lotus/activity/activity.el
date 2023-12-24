@@ -53,36 +53,6 @@
   "Customizations for Activity"
   :group 'convenience
   :prefix "activity-")
-
-;; ;;;###autoload
-;; (defvar activity-subdirs
-;;   (mapcar
-;;    #'(lambda (dir)
-;;        (expand-file-name dir (file-name-directory load-file-name)))
-;;    '("node-dest" "activities")))
-
-;; ;;;###autoload
-;; (dolist (dir (mapcar
-;;               #'(lambda (dir)
-;;                   (expand-file-name dir (file-name-directory load-file-name)))
-;;               '("node-dest" "activities")))
-;;   (@:message "adding %s to load path" dir)
-;;   (add-to-list 'load-path dir))
-
-;; ;;;###autoload
-;; (eval-when-compile
-;;   '(dolist (dir (mapcar
-;;                  #'(lambda (dir)
-;;                      (expand-file-name dir (file-name-directory load-file-name)))
-;;                  '("node-dest" "activities")))
-;;      (@:message "adding %s to load path" dir)
-;;      (add-to-list 'load-path dir)))
-
-;; ;;;###autoload
-;; (defun activity-add-subdirs-load-path ()
-;;   (dolist (dir activity-subdirs)
-;;     (add-to-list 'load-path dir)))
-
 
 
 (drive-extended@ @activity-interface (@activity-base) "activity"
@@ -137,14 +107,13 @@
               @:activities))))
 
   (def@ @@ :find (key)
-    (cl-find-if #'(lambda (e) (qual (@! e :key) key))
+    (cl-find-if #'(lambda (e) (equal (@! e :key) key))
                 @:activities))
 
   (def@ @@ :inspect ()
-    (@:message
-     "active: [%s], insinuate: [%s], uninsinuate: [%s]"
-     @:activites
-     @:started-acts))
+    (@:message "activties: [%s], started-acts: [%s]"
+               (@mapcar @:key @:activities)
+               (@mapcar @:key @:started-acts)))
 
   (@:init))
 
@@ -162,7 +131,8 @@
 (defun activity-activate (key)
   (interactive
    (list (completing-read "activity: "
-                          (@mapcar @:key (@ @activity :activities)))))
+                          (@mapcar @:key
+                                   (@ @activity :activities)))))
   ;; (activity-add-subdirs-load-path)
   (let ((act (@! @activity :find key)))
     (when act
@@ -193,12 +163,6 @@
 (defun activity-register (activity)
   (interactive)
   (@! @activity :add activity))
-
-
-(when nil
-  (activity-inspect)
-  )
-
 
 
 ;; (require 'buff-trans)
@@ -207,41 +171,25 @@
 
 
 
-(defun activity-bind-hooks ()
-  "Watch for activity in buffers."
-  ;; (add-hook 'after-save-hook 'activity-save nil t)
-  ;; (add-hook 'auto-save-hook 'activity-save nil t)
-  ;; (add-hook 'first-change-hook 'activity-ping nil t)
-  )
-
-(defun activity-unbind-hooks ()
-  "Stop watching for activity in buffers."
-  ;; (remove-hook 'after-save-hook 'activity-save t)
-  ;; (remove-hook 'auto-save-hook 'activity-save t)
-  ;; (remove-hook 'first-change-hook 'activity-ping t)
-  )
-
-(defun activity-turn-on (defer)
+(defun activity-turn-on ()
   "Turn on Activity."
-  (ignore defer)
-  (activity-bind-hooks))
+  (activity-activate-all))
 
 (defun activity-turn-off ()
   "Turn off Activity."
-  (activity-unbind-hooks))
+  (activity-deactivate-all))
 
 
 ;;;###autoload
 (define-minor-mode activity-mode
   "Toggle Activity (Activity mode)."
-  :lighter    " act"
+  :lighter    " Act"
   :init-value nil
   :global     nil
   :group      'activity
-  (cond
-    (noninteractive (setq activity-mode nil))
-    (activity-mode (activity-turn-on t))
-    (t (activity-turn-off))))
+  (if activity-mode
+      (activity-turn-on)
+    (activity-turn-off)))
 
 ;;;###autoload
 (define-globalized-minor-mode global-activity-mode activity-mode
