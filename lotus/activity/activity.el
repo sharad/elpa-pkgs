@@ -77,31 +77,36 @@
           @:activities   nil))
 
   (def@ @@ :activate (act)
-    (when (@! act :activate)
-      (remove act
-              @:activities)
-      (push act
-            @:started-acts)))
+    (if (memq act @:started-acts)
+        (@:error "Activity %s: already active" (@! act :key))
+      (when (@! act :activate)
+        (remove act
+                @:activities)
+        (push act
+              @:started-acts))))
 
   (def@ @@ :deactivate (act)
-    (when (@! act :deactivate)
-      (remove act
-              @:started-acts)
-      (push act
-            @:activities)))
+    (if (memq act @:started-acts)
+        (when (@! act :deactivate)
+          (remove act
+                  @:started-acts)
+          (push act
+                @:activities))
+      (@:error "Activity %s: not active" (@! act :key))))
 
   (def@ @@ :activate-all ()
     (dolist (act @:activities)
       (@:activate act)))
 
   (def@ @@ :deactivate-all ()
-    (dolist (act @:activities)
+    (dolist (act @:started-acts)
       (@:deactivate act)))
 
   (def@ @@ :add (activity)
     (let ((key (@! activity :key)))
       (if (member key
-                  (@mapcar @:key @:activities))
+                  (append (@mapcar @:key @:activities)
+                          (@mapcar @:key @:started-acts)))
           (@:error "activity with %s already present." key)
         (push activity
               @:activities))))

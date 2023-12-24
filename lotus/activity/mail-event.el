@@ -68,8 +68,7 @@
               (plist-get plist k))
           keys))
 
-(defobjgen@ @event-dectector-class :gen-mail-read-event-detector ()
-
+(drive-extended@ @mail-read-event-detector (@event-dectector-class) "mail-read-event-detector"
   (def@ @@ :make-message ()
     (let* ((msgid   (message-fetch-field "Message-ID" t))
            (subject (message-fetch-field "Subject" t))
@@ -80,7 +79,6 @@
       (list :subject subject
             :from from
             :to to)))
-
   (def@ @@ :make-event ()
     "Make mail read event."
     (let* ((note (@! @:note :new)))
@@ -92,7 +90,6 @@
                       (string-join '("* Reading mail subject: %s" "from: %s" "to: %s") "\n")
                       (lotus-plist-get-members (@:make-message)
                                                '(:subject :from :to))))))
-
   (def@ @@ :make-event-gnus ()
     (when (and gnus-article-buffer
                (get-buffer gnus-article-buffer))
@@ -100,7 +97,6 @@
         (let ((subject (message-fetch-field "Subject" t)))
           (@:message "checking: %s" subject)
           (@:make-event)))))
-
   (def@ @@ :dispatch ()
     "setting note class"
     (setf @:note @org-capture-edit-entry-dest-note))
@@ -109,12 +105,9 @@
   ;; (add-hook
   ;;  'gnus-article-prepare-hook
   ;;  (lambda () (@! @@ :make-event-gnus)))
-
-
   (@:dispatch))
 
-
-(defobjgen@ @event-dectector-class :gen-mail-send-event-detector ()
+(drive-extended@ @mail-send-event-detector (@event-dectector-class) "mail-send-event-detector"
   (def@ @@ :make-message ()
     (let* ((msgid   (message-fetch-field "Message-ID" t))
            (subject (message-fetch-field "Subject" t))
@@ -125,7 +118,6 @@
       (list :subject subject
             :from    from
             :to      to)))
-
   (def@ @@ :make-event ()
     "Make mail send event."
     (let ((note (@! @:note :new)))
@@ -137,7 +129,6 @@
                      '("* Sent mail subject: %s" "to: %s") "\n")
                     (lotus-plist-get-members (@:make-message)
                                              '(:subject :to))))))
-
   (def@ @@ :make-event-gnus ()
     (when (and gnus-message-buffer
                (get-buffer gnus-message-buffer))
@@ -146,7 +137,6 @@
                (message-fetch-field "Subject" t)))
           (@:message "sending mail: %s" subject)
           (@:make-event)))))
-
   (def@ @@ :dispatch ()
     "setting note class"
     (setf @:note @org-capture-edit-entry-dest-note))

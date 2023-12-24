@@ -270,14 +270,18 @@
   (defun buffer-transition-span-detector-enable-detect-buffer-chg-use ()
     (@! @buffer-transition-span-detector :cancel-detect-buffer-chg-use)
     (@! @buffer-transition-span-detector :initialize)
-    (add-hook 'post-command-hook #'buffer-transition-span-detector-add-idle-timer-hook)
-    (add-hook 'switch-buffer-functions #'buffer-transition-span-detector-run-detect-buffer-chg))
+    (add-hook 'post-command-hook
+              #'buffer-transition-span-detector-add-idle-timer-hook)
+    (add-hook 'switch-buffer-functions
+              #'buffer-transition-span-detector-run-detect-buffer-chg))
 
 
   (defun buffer-transition-span-detector-disable-detect-buffer-chg-use ()
     (@! @buffer-transition-span-detector :cancel-detect-buffer-chg-use)
-    (remove-hook 'post-command-hook #'buffer-transition-span-detector-add-idle-timer-hook)
-    (remove-hook 'switch-buffer-functions #'#'buffer-transition-span-detector-run-detect-buffer-chg)))
+    (remove-hook 'post-command-hook
+                 #'buffer-transition-span-detector-add-idle-timer-hook)
+    (remove-hook 'switch-buffer-functions
+                 #'#'buffer-transition-span-detector-run-detect-buffer-chg)))
 
 
 

@@ -111,9 +111,8 @@
   (@! @note-class :gen-org-uninteractive-log-note
       "org-clock-note"
       #'(lambda ()
-          (or
-           org-clock-hd-marker
-           org-clock-marker)))
+          (or org-clock-hd-marker
+              org-clock-marker)))
   "Org clock activity node")
 
 (when nil
