@@ -231,14 +231,6 @@
   (@:initialize))
 
 
-;; (defvar @defautl-buffer-transition-with-log-note-in-org-current-clock nil)
-;; (setf @defautl-buffer-transition-with-log-note-in-org-current-clock
-;;       (@drive-object "default buffer transition" (@transition-class)
-;;                      "default buffer transition"
-;;                      (def@ @@ :dispatch (prev curr time-spent)
-;;                        (ignore time-spent)
-;;                        (@! @org-clock-uninteractive-log-note :send "Changed to buffer %s from %s" curr prev))))
-
 (drive-extended@ @defautl-buffer-transition-with-log-note-in-org-current-clock (@transition-class) "default buffer transition"
   "default buffer transition"
   (def@ @@ :dispatch (prev curr time-spent)

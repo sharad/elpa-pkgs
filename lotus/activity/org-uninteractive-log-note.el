@@ -37,12 +37,11 @@
 
 ;;; Code:
 
-;; (require 'activity-base)
-
 (provide 'org-uninteractive-log-note)
-
 
 
+;; (require 'activity)
+
 (defobjgen@ @dest-class :gen-org-uninteractive-log-dest (marker)
   (def@ @@ :dispatch (marker)
     (@:init)
@@ -157,5 +156,5 @@
             org-clock-hd-marker
             org-clock-marker)))
    :receive "Test"))
-
+
 ;;; org-activity-note.el ends here

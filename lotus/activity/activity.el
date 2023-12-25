@@ -175,29 +175,5 @@
 ;; (require 'org-clock-trans)
 
 
-
-(defun activity-turn-on ()
-  "Turn on Activity."
-  (activity-activate-all))
-
-(defun activity-turn-off ()
-  "Turn off Activity."
-  (activity-deactivate-all))
-
-
-;;;###autoload
-(define-minor-mode activity-mode
-  "Toggle Activity (Activity mode)."
-  :lighter    " Act"
-  :init-value nil
-  :global     t
-  :group      'activity
-  (if activity-mode
-      (activity-turn-on)
-    (activity-turn-off)))
-
-;; ;;;###autoload
-;; (define-globalized-minor-mode global-activity-mode activity-mode
-;;   (lambda () (activity-mode 1)))
 
 ;;; activity.el ends here
