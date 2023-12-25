@@ -296,8 +296,13 @@
                  #'#'buffer-transition-span-detector-run-detect-buffer-chg)))
 
 ;;;###autoload
-(ignore-error
-    (activity-register @buff-trans-activity))
+(defun activity-register-buff-trans ()
+  (interactive)
+  (activity-register @buff-trans-activity))
+
+;;;###autoload
+(add-hook 'activity-register-hook
+          #'activity-register-buff-trans)
 
 (when nil
   ;; https://stackoverflow.com/questions/32878675/using-elisp-local-variables-instead-of-global-variables-to-add-a-function-into-a

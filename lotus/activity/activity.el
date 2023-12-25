@@ -111,6 +111,14 @@
         (push activity
               @:activities))))
 
+  (def@ @@ :register (activity)
+    (let ((key (@! activity :key)))
+      (unless (member key
+                      (append (@mapcar @:key @:activities)
+                              (@mapcar @:key @:started-acts)))
+        (push activity
+              @:activities))))
+
   (def@ @@ :find (key)
     (cl-find-if #'(lambda (e) (equal (@! e :key) key))
                 @:activities))
@@ -165,9 +173,14 @@
   (@! @activity :deactivate-all))
 
 ;;;###autoload
-(defun activity-register (activity)
+(defun activity-add (activity)
   (interactive)
   (@! @activity :add activity))
+
+;;;###autoload
+(defun activity-register (activity)
+  (interactive)
+  (@! @activity :register activity))
 
 
 ;; (require 'buff-trans)

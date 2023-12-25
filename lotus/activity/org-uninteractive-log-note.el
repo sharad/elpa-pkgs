@@ -40,7 +40,10 @@
 (provide 'org-uninteractive-log-note)
 
 
-;; (require 'activity)
+(eval-when-compile
+  (require 'activity-macro))
+(require 'activity-base)
+(require 'activity)
 
 (defobjgen@ @dest-class :gen-org-uninteractive-log-dest (marker)
   (def@ @@ :dispatch (marker)

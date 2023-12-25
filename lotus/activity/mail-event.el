@@ -173,7 +173,12 @@
 ;; (defun global-activity-mode-enable-in-buffers ())
 
 ;;;###autoload
-(ignore-error
-    (activity-register @mail-event-activity))
+(defun activity-register-mail-event ()
+  (interactive)
+  (activity-register @mail-event-activity))
+
+;;;###autoload
+(add-hook 'activity-register-hook
+          #'activity-register-mail-event)
 
 ;;; mail-event.el ends here
