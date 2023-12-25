@@ -296,7 +296,8 @@
                  #'#'buffer-transition-span-detector-run-detect-buffer-chg)))
 
 ;;;###autoload
-(activity-register @buff-trans-activity)
+(ignore-error
+    (activity-register @buff-trans-activity))
 
 (when nil
   ;; https://stackoverflow.com/questions/32878675/using-elisp-local-variables-instead-of-global-variables-to-add-a-function-into-a
