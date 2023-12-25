@@ -293,7 +293,7 @@
     (remove-hook 'post-command-hook
                  #'buffer-transition-span-detector-add-idle-timer-hook)
     (remove-hook 'switch-buffer-functions
-                 #'#'buffer-transition-span-detector-run-detect-buffer-chg)))
+                 #'buffer-transition-span-detector-run-detect-buffer-chg)))
 
 ;;;###autoload
 (defun activity-register-buff-trans ()
