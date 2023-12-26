@@ -50,30 +50,26 @@
 (require 'activity)
 
 
-(defobjgen@ @transition-class :gen-buffer-trans (transition)
-  (def@ @@ :initialize ()
-    (setf @:mode-transition nil)
-    (setf @:transition transition))
+(drive-extended@ @defautl-note-in-org-current-clock (@note-class)
+  "org log note"
+  (def@ @@ :dispatch (prev curr time-spent)
+    (ignore time-spent)
+    (@! @org-clock-uninteractive-log-note :send "Changed to buffer %s from %s spent time %s"
+        curr prev time-spent)))
 
-  (def@ @@ :register (mode
-                      transition)
-    (push @:mode-transition (cons mode
-                                  transition)))
+(drive-extended@ @buffer-transition (@transition-class)
+  (def@ @@ :initialize ()
+    (setf @:transition @defautl-note-in-org-current-clock))
 
   (def@ @@ :dispatch (prev
                       curr
                       time-spent)
-    (@:initialize)
     (if (and (bufferp curr)
              (buffer-live-p curr))
-        (let* ((mjmode (with-current-buffer curr
-                         major-mode))
-               (transition (or (cl-rest (assq mjmode @:mode-transition))
-                               @:transition)))
-          (@! transition :dispatch prev curr time-spent)))))
+        (@! @:transition :dispatch prev curr time-spent))))
 
 
-(defobjgen@ @transition-span-dectector-class :gen-buffer-trans-span-detector (transition)
+(drive-extended@ @buffer-transition-span-detector (@transition-span-dectector-class)
   "Detector"
   (def@ @@ :ptrace (&optional msg)
     (let ((msg (or msg "ptrace"))
@@ -83,11 +79,9 @@
       (@:message "%s: %s" msg trace)))
 
   (def@ @@ :notify-buf-chg (fmt &rest args)
-    (let ((msg
-           (concat
-            (current-time-string)
-            ": "
-            (apply #'format fmt args))))
+    (let ((msg (concat (current-time-string)
+                       ": "
+                       (apply #'format fmt args))))
       (@:message msg)))
 
   (def@ @@ :get-timer ()
@@ -101,27 +95,20 @@
           (time-passed (- (float-time (current-time))
                           (float-time @:time-start))))
       (when @:debug-switch-buf
-        (@:notify-buf-chg
-         "%s: prev currbuf-detect-buffer-chg-use %s, currbuf-run-detect-buffer-chg currbuf %s, (current-buffer) %s, (window-buffer) %s, idle-times %s, time-passed %d, Idle timer %s"
-         msg
-         @:currbuf-detect-buffer-chg-use
-         @:currbuf-run-detect-buffer-chg
-         (current-buffer)
-         (window-buffer)
-         @:idle-times
-         time-passed
-         (if @:timer t)))))
+        (@:notify-buf-chg "%s: prev currbuf-detect-buffer-chg-use %s, currbuf-run-detect-buffer-chg currbuf %s, (current-buffer) %s, (window-buffer) %s, idle-times %s, time-passed %d, Idle timer %s"
+                          msg
+                          @:currbuf-detect-buffer-chg-use
+                          @:currbuf-run-detect-buffer-chg
+                          (current-buffer)
+                          (window-buffer)
+                          @:idle-times
+                          time-passed
+                          (if @:timer t)))))
 
   (def@ @@ :buffer-chg-action (prevbuf currbuf time-spent)
     (@:buffer-chg-print-info "inaction")
     (@! @:transition :dispatch prevbuf currbuf time-spent)
     (@:buffer-chg-print-info "done inaction"))
-  ;; (@:notify-buf-chg
-  ;;  "Detected buffer change buffer %s prevbuf %s currbuf %s time spend %d"
-  ;;  (current-buffer)
-  ;;  prevbuf
-  ;;  currbuf
-  ;;  time-spent)
 
 
   (def@ @@ :add-idle-timer-hook ()
@@ -195,22 +182,10 @@
         (when @:debug-switch-buf (@:message "cancel timer"))
         (@:cancel-detect-buffer-chg-use))))
 
-  ;; (def@ @@ :enable-detect-buffer-chg-use ()
-  ;;   (@:cancel-detect-buffer-chg-use)
-  ;;   (add-hook 'post-command-hook #'(lambda () (@:add-idle-timer-hook)))
-  ;;   (add-hook 'switch-buffer-functions #'(lambda (prev curr) (@:run-detect-buffer-chg prev curr))))
-
-
-  ;; (def@ @@ :disable-detect-buffer-chg-use ()
-  ;;   (@:cancel-detect-buffer-chg-use)
-  ;;   (remove-hook 'post-command-hook #'(lambda () (@:add-idle-timer-hook)))
-  ;;   (remove-hook 'switch-buffer-functions #'(lambda (prev curr) (@:run-detect-buffer-chg prev curr))))
-
-
   (def@ @@ :initialize ()
     ;; (let ((trans-event (or trans-event))))
-    (setf @:transition transition)
-    (setf @:debug-switch-buf nil)
+    (setf @:transition @buffer-transition)
+    (setf @:debug-switch-buf t)
     (setf @:time-threshold-gap 45)      ;; for production
     ;; (setf @:time-threshold-gap 10) ;; -- for debug
     (setf @:timer-gap @:time-threshold-gap)
@@ -226,55 +201,14 @@
 
   (def@ @@ :uninitialize ()
     (@:disable-detect-buffer-chg-use)
-    t)
-
-  (@:initialize))
+    t))
 
 
-(drive-extended@ @defautl-buffer-transition-with-log-note-in-org-current-clock (@transition-class) "default buffer transition"
-  "default buffer transition"
-  (def@ @@ :dispatch (prev curr time-spent)
-    (ignore time-spent)
-    (@! @org-clock-uninteractive-log-note :send "Changed to buffer %s from %s" curr prev)))
-
+(defun buffer-transition-span-detector-add-idle-timer-hook ()
+  (@! @buffer-transition-span-detector :add-idle-timer-hook))
 
-(defvar @buffer-transition nil)
-(defvar @buffer-transition-span-detector nil)
-(progn
-  (setf @buffer-transition
-        (@! @transition-class
-            :gen-buffer-trans
-            "buffer transition"
-            @defautl-buffer-transition-with-log-note-in-org-current-clock))
-
-  (setf @buffer-transition-span-detector
-        (@! @transition-span-dectector-class
-            :gen-buffer-trans-span-detector
-            "buffer transition span detector"
-            @buffer-transition))
-
-  (defun buffer-transition-span-detector-add-idle-timer-hook ()
-    (@! @buffer-transition-span-detector :add-idle-timer-hook))
-
-  (defun buffer-transition-span-detector-run-detect-buffer-chg (prev curr)
-    (@! @buffer-transition-span-detector :run-detect-buffer-chg prev curr))
-
-  (defun buffer-transition-span-detector-enable-detect-buffer-chg-use ()
-    (@! @buffer-transition-span-detector :cancel-detect-buffer-chg-use)
-    (@! @buffer-transition-span-detector :initialize)
-    (add-hook 'post-command-hook
-              #'buffer-transition-span-detector-add-idle-timer-hook)
-    (add-hook 'switch-buffer-functions
-              #'buffer-transition-span-detector-run-detect-buffer-chg))
-
-
-  (defun buffer-transition-span-detector-disable-detect-buffer-chg-use ()
-    (@! @buffer-transition-span-detector :cancel-detect-buffer-chg-use)
-    (remove-hook 'post-command-hook
-                 #'buffer-transition-span-detector-add-idle-timer-hook)
-    (remove-hook 'switch-buffer-functions
-                 #'#'buffer-transition-span-detector-run-detect-buffer-chg)))
-
+(defun buffer-transition-span-detector-run-detect-buffer-chg (prev curr)
+  (@! @buffer-transition-span-detector :run-detect-buffer-chg prev curr))
 
 
 (drive-extended@ @buff-trans-activity (@activity-interface) "buff-trans-activity"

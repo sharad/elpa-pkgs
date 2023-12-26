@@ -66,12 +66,11 @@
 ;;            (cl-rest body) body)))
 ;; (put '@extend-object 'lisp-indent-function 1)
 
-(defmacro @drive-object (name baseobjs &rest body)
+(defmacro @drive-object (baseobjs &rest body)
   "Drive or extend a new object from OBJECT, with BODY will belong
 to new object, if first element of BODY is string then assigning
 it to :doc property of new object."
-  `(let ((drived-obj (@extend ,@baseobjs
-                              :name ,name)))
+  `(let ((drived-obj (@extend ,@baseobjs)))
      (with-@@ drived-obj
        ;; Documentation
        ,@(if (stringp (cl-first body))
@@ -80,13 +79,17 @@ it to :doc property of new object."
        ,@(if (stringp (cl-first body)) (cl-rest body) body))
 
      drived-obj))
-(put '@drive-object 'lisp-indent-function 2)
+(put '@drive-object 'lisp-indent-function 1)
 
-(defmacro drive-extended@ (obj baseobjs name &rest body)
+(defmacro drive-extended@ (obj baseobjs &rest body)
   "Directly assign using @drive-object"
-  `(setf ,obj (@drive-object ,name ,baseobjs
-                ,@body)))
-(put 'drive-extended@ 'lisp-indent-function 3)
+  `(progn
+     (setf ,obj (@drive-object ,baseobjs
+                               ,@body))
+     (when (functionp (@ ,obj :initialize))
+       (@! ,obj :initialize))
+     ,obj))
+(put 'drive-extended@ 'lisp-indent-function 2)
 
 (defmacro defobjgen@ (baseobj gen-method params &rest body)
   "Add a method GEN-METHOD to OBJECT, to generate new extended

@@ -47,7 +47,7 @@
   (require 'activity-macro))
 
 
-(drive-extended@ @activity-base (@) "activity-base"
+(drive-extended@ @activity-base (@)
   "Activity Base"
 
   (setf @:activation-list nil)
@@ -89,7 +89,7 @@
   (@:dispatch))
 
 
-(drive-extended@ @dest-class (@activity-base) "dest-base-class"
+(drive-extended@ @dest-class (@activity-base)
   "Destination Base Class"
 
   (defobjgen@ @@ :gen-builder ()
@@ -122,7 +122,7 @@
   (@:dispatch))
 
 
-(drive-extended@ @note-class (@activity-base) "note-base-class"
+(drive-extended@ @note-class (@activity-base)
   "Note Base Class"
 
   (setf @:dests '())
@@ -181,41 +181,41 @@
 
 
 ;; activity
-(drive-extended@ @activity-class (@activity-base) "activity class"
+(drive-extended@ @activity-class (@activity-base)
   "Activity class"
   (def@ @@ :init ()
     (@^:init)
     (@:message "@activity-class :init")
     (setf @:_occuredon (current-time))))
 
-(drive-extended@ @event-class (@activity-class) "event class"
+(drive-extended@ @event-class (@activity-class)
   "Event class"
   (def@ @@ :note ()
     ))
 
-(drive-extended@ @transition-class (@event-class) "transition class"
+(drive-extended@ @transition-class (@event-class)
   "Transition class"
   (def@ @@ :note ()
     ))
 
 ;; detectors
-(drive-extended@ @activity-dectector-class (@activity-base) "activity detector class"
+(drive-extended@ @activity-dectector-class (@activity-base)
   "Activity detector class"
   (def@ @@ :note ()
     ))
 
-(drive-extended@ @event-dectector-class (@activity-dectector-class) "event detector class"
+(drive-extended@ @event-dectector-class (@activity-dectector-class)
   "Event detector class"
   (def@ @@ :note ()
     ))
 
 
-(drive-extended@ @transition-dectector-class (@event-dectector-class) "transition detector class"
+(drive-extended@ @transition-dectector-class (@event-dectector-class)
   "Transition detector class"
   (def@ @@ :note ()
     ))
 
-(drive-extended@ @event-span-dectector-class (@event-dectector-class) "duration detector class" ;TODO START
+(drive-extended@ @event-span-dectector-class (@event-dectector-class) ;TODO START
   "Duration detector class"
   (def@ @@ :note ()
     )
@@ -227,7 +227,7 @@
      @:inactive-time 0)))
 
 
-(drive-extended@ @transition-span-dectector-class (@transition-dectector-class) "duration detector class" ;TODO START
+(drive-extended@ @transition-span-dectector-class (@transition-dectector-class) ;TODO START
   "Duration detector class"
   (def@ @@ :note ()
     )
@@ -239,17 +239,17 @@
      @:inactive-time 0)))
 
 
-(drive-extended@ @postpone-event-class (@activity-base) "activity detector class"
+(drive-extended@ @postpone-event-class (@activity-base)
   "Activity detector class"
   (def@ @@ :note ()
     ))
 
-(drive-extended@ @save-event-class (@activity-base) "activity detector class"
+(drive-extended@ @save-event-class (@activity-base)
   "Activity detector class"
   (def@ @@ :note ()
     ))
 
-(drive-extended@ @idleness-dectector-class (@activity-base) "activity detector class"
+(drive-extended@ @idleness-dectector-class (@activity-base)
   ;; set pre-command-hook
   ;; and measure time
   ;; collect in list
