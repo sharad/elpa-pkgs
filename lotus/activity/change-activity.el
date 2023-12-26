@@ -43,17 +43,6 @@
 (require 'org-insert-utils)
 
 
-;; (defclass change-activity (buffer-activity)
-;;   ((buffer :initarg :buffer
-;;            :initform (current-buffer)
-;;            :type buffer
-;;            :documentation "Current buffer.")
-;;    (marker :initarg :marker
-;;            :initform (point-marker)
-;;            :type marker
-;;            :documentation "Current point marker."))
-;;   "A buffer activity.")
-
 (defun lotus-buffer-changes-count ()
   (let ((changes 0))
     (when buffer-undo-tree
@@ -64,8 +53,23 @@
        (undo-tree-root buffer-undo-tree)))
     changes))
 
-(defvar lotus-minimum-char-changes 70)
-(defvar lotus-minimum-changes 70)
+
+(defvar lotus-minimum-char-changes 70 "minimum char changes")
+(defvar lotus-minimum-changes      70 "minimum changes")
+
+
+(defun lotus-buffer-changes-count ()
+  (let ((changes 0))
+    (when buffer-undo-tree
+      (undo-tree-mapc #'(lambda (node)
+                          (ignore node)
+                          (setq changes (+ changes 1)));; (length (undo-tree-node-next node))
+                      (undo-tree-root buffer-undo-tree)))
+    changes))
+
+;; (undo-tree-mapc #'(lambda (n) (message "%s\n" n))
+;;                 (undo-tree-root buffer-undo-tree))
+
 
 (defvar lotus-last-buffer-undo-tree-count 0) ;internal add in session and desktop
 (when (featurep 'desktop)
@@ -74,98 +78,193 @@
   (add-to-list 'session-locals-include 'lotus-last-buffer-undo-tree-count))
 (make-variable-buffer-local 'lotus-last-buffer-undo-tree-count)
 
+(defun lotus-action-on-buffer-undo-tree-change (action
+                                                buff
+                                                &optional
+                                                minimal-changes
+                                                win-timeout)
+  (if (eq buff (current-buffer))
+      (with-current-buffer buff
+        (let* ((minimal-changes (or minimal-changes
+                                    lotus-minimum-char-changes))
+               (win-timeout (or win-timeout 7))
+               (totalchgcount (lotus-buffer-changes-count))
+               (chgcount (- totalchgcount
+                            lotus-last-buffer-undo-tree-count)))
+          (if (>= chgcount
+                  minimal-changes)
+              (if (funcall action win-timeout
+                           :buff
+                           buff
+                           :chgcount
+                           chgcount
+                           :success
+                           #'(lambda ()
+                               (with-current-buffer buff
+                                 (setq lotus-last-buffer-undo-tree-count totalchgcount)))
+                           :fail
+                           #'(lambda ()
+                               (with-current-buffer buff
+                                 (setq lotus-last-buffer-undo-tree-count totalchgcount)))
+                           :run-before nil)
+                  (message "Lunched noter ret t")
+                (message "Lunched noter ret nil"))
+            (message "HELLO: buffer-undo-tree-change: only %d changes not more than %d" chgcount minimal-changes))))
+    (message "HELLO Current buffer %s is not same as %s"
+             (current-buffer)
+             buff)))
+
+
 (defvar lotus-last-buffer-undo-list-pos nil) ;internal add in session and desktop
-
 (make-variable-buffer-local 'lotus-last-buffer-undo-list-pos)
-
-(when (featurep 'desktop)
-  (add-to-list 'desktop-locals-to-save 'lotus-last-buffer-undo-list-pos))
-(when (featurep 'session)
-  (add-to-list 'session-locals-include 'lotus-last-buffer-undo-list-pos))
-
- ;;;###autoload
-
-(defun org-clock-lotus-log-note-current-clock-with-timed-new-win (win-timeout &optional fail-quietly)
-  (interactive)
-  (let ((win-timeout  (or win-timeout  7)))
-    (when (org-clocking-p)
-      (move-marker org-log-note-return-to (point))
-      (org-clock-lotus-with-current-clock
-          (org-add-log-setup-with-timed-new-win win-timeout
-                                                'note nil nil nil
-                                                (concat "# Task: " (org-get-heading t) "\n\n"))))))
-
-
-(progn
-
- (defun lotus-action-on-buffer-undo-tree-change (action &optional minimal-changes win-timeout)
-   (let ((win-timeout (or win-timeout 7))
-         (chgcount (- (lotus-buffer-changes-count) lotus-last-buffer-undo-tree-count)))
-     (if (>= chgcount minimal-changes)
-         (if (funcall action win-timeout)
-             (setq lotus-last-buffer-undo-tree-count chgcount))
-         (when nil
-           (@:message "TEST1: buffer-undo-tree-change: only %d changes not more than %d" chgcount minimal-changes)))))
-
- (defun lotus-action-on-buffer-undo-list-change (action &optional minimal-char-changes win-timeout)
-   "Set point to the position of the last change.
- Consecutive calls set point to the position of the previous change.
- With a prefix arg (optional arg MARK-POINT non-nil), set mark so \
- \\[exchange-point-and-mark]
- will return point to the current position."
-   ;; (interactive "P")
-   ;; (unless (buffer-modified-p)
-   ;;   (error "Buffer not modified"))
-   (let ((win-timeout (or win-timeout 7)))
-     (when (eq buffer-undo-list t)
-       (error "No undo information in this buffer"))
-     ;; (when mark-point (push-mark))
-     (unless minimal-char-changes
-       (setq minimal-char-changes 10))
-     (let ((char-changes 0)
-           (undo-list (if lotus-last-buffer-undo-list-pos
-                          (cl-rest (memq lotus-last-buffer-undo-list-pos buffer-undo-list))
-                          buffer-undo-list))
-           undo)
-       (while (and undo-list
-                   (cl-first undo-list)
-                   (< char-changes minimal-char-changes))
-         (setq undo (cl-first undo-list))
-         (cond
-           ((and (consp undo) (integerp (cl-first undo)) (integerp (cl-rest undo)))
-            ;; (BEG . END)
-            (setq char-changes (+ char-changes (abs (- (cl-first undo) (cl-rest undo))))))
-           ((and (consp undo) (stringp (cl-first undo))) ; (TEXT . POSITION)
-            (setq char-changes (+ char-changes (length (cl-first undo)))))
-           ((and (consp undo) (eq (cl-first undo) t))) ; (t HIGH . LOW)
-           ((and (consp undo) (null (cl-first undo)))
-            ;; (nil PROPERTY VALUE BEG . END)
-            ;; (setq position (cl-rest (last undo)))
-            )
-           ((and (consp undo) (markerp (cl-first undo)))) ; (MARKER . DISTANCE)
-           ((integerp undo))		; POSITION
-           ((null undo))		; nil
-           (t (error "Invalid undo entry: %s" undo)))
-         (setq undo-list (cl-rest undo-list)))
-
-       (cond
-         ((>= char-changes minimal-char-changes)
-          (if (funcall action win-timeout)
-              (setq lotus-last-buffer-undo-list-pos undo)))
-         (t ))))))
-
-(defun org-clock-lotus-log-note-current-clock-with-timed-new-win (win-timeout &optional fail-quietly)
-  (interactive)
-  (let ((chgact nil))
-    (setq chgact
-          (change-activity "test"))))
-
-(defun org-clock-lotus-log-note-on-change (&optional win-timeout)
-  ;; (when (or t (eq buffer (current-buffer)))
+;;;###autoload
+(defun lotus-action-on-buffer-undo-list-change (action
+                                                buff
+                                                &optional
+                                                minimal-char-changes
+                                                win-timeout)
+  "Set point to the position of the last change.
+  Consecutive calls set point to the position of the previous change.
+  With a prefix arg (optional arg MARK-POINT non-nil), set mark so \
+  \\[exchange-point-and-mark]
+  will return point to the current position."
+  ;; (interactive "P")
+  ;; (unless (buffer-modified-p)
+  ;;   (error "Buffer not modified"))
   (let ((win-timeout (or win-timeout 7)))
-    (if (and (consp buffer-undo-list)
-             (cl-first buffer-undo-list))
-        (lotus-action-on-buffer-undo-list-change #'org-clock-lotus-log-note-current-clock-with-timed-new-win  lotus-minimum-char-changes win-timeout)
-        (lotus-action-on-buffer-undo-tree-change #'org-clock-lotus-log-note-current-clock-with-timed-new-win lotus-minimum-changes win-timeout))))
+    (when (eq buffer-undo-list t)
+      (error "No undo information in this buffer"))
+    ;; (when mark-point (push-mark))
+    (unless minimal-char-changes
+      (setq minimal-char-changes 10))
+    (let ((char-changes 0)
+          (undo-list (if lotus-last-buffer-undo-list-pos
+                         (cl-rest (memq lotus-last-buffer-undo-list-pos
+                                        buffer-undo-list))
+                         buffer-undo-list))
+          undo)
+      (while (and undo-list
+                  (cl-first undo-list)
+                  (< char-changes
+                     minimal-char-changes))
+        (setq undo (cl-first undo-list))
+        (cond
+          ((and (consp undo) (integerp (cl-first undo)) (integerp (cl-rest undo)))
+           ;; (BEG . END)
+           (setq char-changes (+ char-changes (abs (- (cl-first undo) (cl-rest undo))))))
+          ((and (consp undo) (stringp (cl-first undo))) ; (TEXT . POSITION)
+           (setq char-changes (+ char-changes (length (cl-first undo)))))
+          ((and (consp undo) (eq (cl-first undo) t))) ; (t HIGH . LOW)
+          ((and (consp undo) (null (cl-first undo))))
+           ;; (nil PROPERTY VALUE BEG . END)
+           ;; (setq position (rest (last undo)))
+
+          ((and (consp undo) (markerp (cl-first undo)))) ; (MARKER . DISTANCE)
+          ((integerp undo))               ; POSITION
+          ((null undo))               ; nil
+          (t (error "Invalid undo entry: %s" undo)))
+        (setq undo-list (cl-rest undo-list)))
+
+      (cond
+        ((>= char-changes minimal-char-changes)
+         (if (funcall action win-timeout
+                      :buff
+                      buff
+                      :chgcount
+                      char-changes
+                      :success
+                      #'(lambda ()
+                          (with-current-buffer buff
+                            (setq lotus-last-buffer-undo-list-pos undo)))
+                      :fail
+                      #'(lambda ()
+                          (with-current-buffer buff
+                            (setq lotus-last-buffer-undo-list-pos undo)))
+                      :run-before nil)
+             (setq lotus-last-buffer-undo-list-pos undo)))
+        (t)))))
+
+
+(defun org-onchange-register-in-session ()
+  (when (featurep 'desktop)
+    (add-hook 'desktop-locals-to-save 'lotus-last-buffer-undo-tree-count))
+  (when (featurep 'session)
+    (add-hook 'session-locals-include 'lotus-last-buffer-undo-tree-count))
+
+  (when (featurep 'desktop)
+    (add-hook 'desktop-locals-to-save 'lotus-last-buffer-undo-list-pos))
+  (when (featurep 'session)
+    (add-hook 'session-locals-include 'lotus-last-buffer-undo-list-pos)))
+
+(defun org-onchange-unregister-in-session ()
+  (when (featurep 'desktop)
+    (remove-hook 'desktop-locals-to-save 'lotus-last-buffer-undo-tree-count))
+  (when (featurep 'session)
+    (remove-hook 'session-locals-include 'lotus-last-buffer-undo-tree-count))
+
+  (when (featurep 'desktop)
+    (remove-hook 'desktop-locals-to-save 'lotus-last-buffer-undo-list-pos))
+  (when (featurep 'session)
+    (remove-hook 'session-locals-include 'lotus-last-buffer-undo-list-pos)))
+
+
+(defun org-clock-lotus-log-note-on-change (&optional
+                                           win-timeout)
+  ;; (when (or t (eq buffer (current-buffer)))
+  (let ((buff (current-buffer))
+        (win-timeout (or win-timeout 7))
+        (on-buffer-undo-chg-action (if (and (consp buffer-undo-list)
+                                  (cl-first buffer-undo-list))
+                             #'lotus-action-on-buffer-undo-list-change
+                           #'lotus-action-on-buffer-undo-tree-change)))
+    (funcall on-buffer-undo-chg-action
+             #'org-clock-lotus-log-note-current-clock-with-timed-new-win
+             buff
+             lotus-minimum-char-changes
+             win-timeout)))
+
+(defvar org-clock-lotus-log-note-on-change-timer nil
+  "Time for on change log note.")
+
+
+;; (unintern 'org-clock-lotus-log-note-on-change-timer)
+
+;;;###autoload
+(defun org-clock-lotus-log-note-on-change-start-timer (&optional
+                                                       idle-timeout
+                                                       win-timeout)
+  (interactive)
+  (let ((idle-timeout (or idle-timeout 10))
+        (win-timeout  (or win-timeout   7)))
+    (if org-clock-lotus-log-note-on-change-timer
+        (progn
+          (cancel-timer org-clock-lotus-log-note-on-change-timer)
+          (setq org-clock-lotus-log-note-on-change-timer nil)))
+    (setq org-clock-lotus-log-note-on-change-timer (run-with-idle-timer idle-timeout
+                                                                        idle-timeout
+                                                                        #'org-clock-lotus-log-note-on-change (+ idle-timeout win-timeout)))))
+
+;;;###autoload
+(defun org-clock-lotus-log-note-on-change-stop-timer ()
+  (interactive)
+  (if org-clock-lotus-log-note-on-change-timer
+      (progn
+        (cancel-timer org-clock-lotus-log-note-on-change-timer)
+        (setq org-clock-lotus-log-note-on-change-timer nil))))
+
+;;;###autoload
+(defun org-clock-lotus-log-note-on-change-insinuate ()
+  (interactive)
+  ;; message-send-mail-hook
+  (org-onchange-register-in-session)
+  (org-clock-lotus-log-note-on-change-start-timer 10 7))
+
+;;;###autoload
+(defun org-clock-lotus-log-note-on-change-uninsinuate ()
+  (interactive)
+  ;; message-send-mail-hook
+  (org-onchange-unregister-in-session)
+  (org-clock-lotus-log-note-on-change-stop-timer))
+;; Org log note on change timer:1 ends here
 
 ;;; change-activity.el ends here
