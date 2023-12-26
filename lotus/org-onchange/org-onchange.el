@@ -21,7 +21,11 @@
 ;;; Commentary:
 
 ;;; Code:
+;; Provide this file
 
+;; [[file:org-onchange.org::*Provide this file][Provide this file:1]]
+(provide 'org-onchange)
+
 ;; Libraries required
 
 
@@ -316,10 +320,6 @@
 
 ;; [[file:org-onchange.org::*Org log note change from different sources][Org log note change from different sources:1]]
 ;; Org log note change from different sources:1 ends here
-
-;; Provide this file
-
-;; [[file:org-onchange.org::*Provide this file][Provide this file:1]]
-(provide 'org-onchange)
+
 ;;; org-onchange.el ends here
 ;; Provide this file:1 ends here
