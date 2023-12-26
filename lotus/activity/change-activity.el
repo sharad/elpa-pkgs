@@ -34,6 +34,9 @@
 
 ;;; Code:
 
+(provide 'change-activity)
+
+
 (eval-when-compile
   (require 'activity-macro))
 (require 'activity-base)
@@ -150,8 +153,6 @@
               (setq lotus-last-buffer-undo-list-pos undo)))
          (t ))))))
 
-
-
 (defun org-clock-lotus-log-note-current-clock-with-timed-new-win (win-timeout &optional fail-quietly)
   (interactive)
   (let ((chgact nil))
@@ -165,6 +166,5 @@
              (cl-first buffer-undo-list))
         (lotus-action-on-buffer-undo-list-change #'org-clock-lotus-log-note-current-clock-with-timed-new-win  lotus-minimum-char-changes win-timeout)
         (lotus-action-on-buffer-undo-tree-change #'org-clock-lotus-log-note-current-clock-with-timed-new-win lotus-minimum-changes win-timeout))))
-
-(provide 'change-activity)
+
 ;;; change-activity.el ends here

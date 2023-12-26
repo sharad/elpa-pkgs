@@ -68,7 +68,7 @@
               (plist-get plist k))
           keys))
 
-(drive-extended@ @mail-read-event-detector (@event-dectector-class) "mail-read-event-detector"
+(drive-extended@ @mail-read-event-detector (@event-dectector-class)
   (def@ @@ :make-message ()
     (let* ((msgid   (message-fetch-field "Message-ID" t))
            (subject (message-fetch-field "Subject" t))
@@ -100,6 +100,10 @@
   (def@ @@ :dispatch ()
     "setting note class"
     (setf @:note @org-capture-edit-entry-dest-note))
+
+  (def@ @@ :initialize ()
+    "setting note class"
+    (setf @:note @org-capture-edit-entry-dest-note))
   ;; gnus-Article-prepare-hook
   ;; gnus-Select-article-hook
   ;; (add-hook
@@ -107,7 +111,7 @@
   ;;  (lambda () (@! @@ :make-event-gnus)))
   (@:dispatch))
 
-(drive-extended@ @mail-send-event-detector (@event-dectector-class) "mail-send-event-detector"
+(drive-extended@ @mail-send-event-detector (@event-dectector-class)
   (def@ @@ :make-message ()
     (let* ((msgid   (message-fetch-field "Message-ID" t))
            (subject (message-fetch-field "Subject" t))
@@ -141,6 +145,10 @@
     "setting note class"
     (setf @:note @org-capture-edit-entry-dest-note))
 
+  (def@ @@ :initialize ()
+    "setting note class"
+    (setf @:note @org-capture-edit-entry-dest-note))
+
   (@:dispatch))
 
 (defvar @mail-read-event-detector-instance nil)
@@ -152,7 +160,7 @@
                       (@! @mail-read-event-detector :make-event-gnus))))
 
 
-(drive-extended@ @mail-event-activity (@activity-interface) "mail-event-activity"
+(drive-extended@ @mail-event-activity (@activity-interface)
   (def@ @@ :key ()
     "mail-event-activity"
     "mail-event-activity")
@@ -165,7 +173,10 @@
               #'mail-event-run-action))
   (def@ @@ :deactivate ()
     (remove-hook 'gnus-article-prepare-hook
-                 #'mail-event-run-action)))
+                 #'mail-event-run-action))
+
+  (def@ @@ :initialize ()
+    ))
 
 ;; (defun mail-event-activity ()
 ;;   @mail-event-activity)

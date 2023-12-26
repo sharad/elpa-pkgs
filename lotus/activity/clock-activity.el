@@ -35,10 +35,10 @@
 ;;; Code:
 
 (provide 'clock-activity)
-
+
 
 (require 'activity-base)
-
+
 ;; (defclass clocking-activity (@buffer-activity)
 ;;   (())
 ;;   "A buffer activity.")
@@ -60,5 +60,5 @@
 ;;            :marker nil))
 
 
-
+
 ;;; clock-activity.el ends here

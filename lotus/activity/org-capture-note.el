@@ -45,7 +45,7 @@
 
 ;; TODO: see it https://orgmode.org/manual/Template-expansion.html#Template-expansion
 
-(defobjgen@ @dest-class :gen-org-capture-dest ()
+(drive-extended@ @org-capture-dest (@dest-class)
   "Capture Dest class"
 
   (setf @:type nil
@@ -98,33 +98,25 @@
                  (error "Wrong capture capture-plist: %s" capture-plist))
              @:capture-plist))))
 
-(setf @org-capture-dest
-      (@! @dest-class :gen-org-capture-dest "org-capture-dest"))
+(drive-extended@ @org-capture-immediate-dest (@org-capture-dest)
+  (setf @:capture-plist (append (list :immediate-finish t :no-save t
+                                      @:capture-plist)))
+  (setf @:doc "Non-Interactive capture"))
+                     
 
-(setf @org-capture-immediate-dest
-      (@drive-object "Non-Interactive capture" (@org-capture-dest)
-                     "Non-Interactive capture"
-                     (setf @:capture-plist (append (list :immediate-finish t :no-save t
-                                                                        @:capture-plist)))))
+(drive-extended@ @org-capture-edit-dest (@org-capture-dest)
+  (setf @:capture-plist (append (list :immediate-finish t :no-save t)
+                                @:capture-plist))
+  (setf @:doc "Interactive capture"))
 
-(setf @org-capture-edit-dest
-      (@drive-object "Interactive capture" (@org-capture-dest) "Interactive capture"
-                 "Interactive capture"
-                 (setf @:capture-plist (append (list :immediate-finish t :no-save t)
-                                               @:capture-plist))))
-
-(defobjgen@ @org-capture-edit-dest :gen-capture-edit-dest-with-type (value)
-  (setf (@ @@ :type) value)
+(drive-extended@ @org-capture-edit-entry-dest (@org-capture-edit-dest)
+  (setf (@ @@ :type) 'entry)
   (def@ @@ :receive (target template &rest capture-plist)
     ;; (apply (@  :receive))
     (@:message "Calling Sup receive")
     (apply @^:receive @@ @:type target template capture-plist)
     (@:message "Called Sup receive")
     (@:message "%s %s" target template)))
-
-
-(setf @org-capture-edit-entry-dest
-      (@! @org-capture-edit-dest :gen-capture-edit-dest-with-type "org-capture-edit-entry-dest" 'entry))
 
 ;; (@! @org-capture-edit-entry-dest :receive '(clock) "* Hello")
 

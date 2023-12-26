@@ -184,8 +184,11 @@
 
   (def@ @@ :initialize ()
     ;; (let ((trans-event (or trans-event))))
+    ;; transition to be used
     (setf @:transition @buffer-transition)
-    (setf @:debug-switch-buf t)
+    ;; debug
+    (setf @:debug-switch-buf nil)
+    ;; threshold
     (setf @:time-threshold-gap 45)      ;; for production
     ;; (setf @:time-threshold-gap 10) ;; -- for debug
     (setf @:timer-gap @:time-threshold-gap)
@@ -193,9 +196,12 @@
     (setf @:time-start (current-time))
     (setf @:timer nil)
     (setf @:idle-times nil)
+    ;; ?
     (setf @:currbuf-detect-buffer-chg-use (current-buffer))
+    ;; ?
     (setf @:currbuf-run-detect-buffer-chg (current-buffer))
     ;; (@:enable-detect-buffer-chg-use)
+    ;; prefix
     (@:buffer-chg-print-info "run-detect-buffer-chg1")
     t)
 
