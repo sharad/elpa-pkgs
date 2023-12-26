@@ -87,6 +87,5 @@
 
 ;; call where clock transition happening
 ;; (@! @transition-dectector-class m1 m2)
-
-
+
 ;;; org-clock-trans.el ends here
