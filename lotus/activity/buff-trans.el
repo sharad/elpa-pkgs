@@ -50,10 +50,10 @@
 (require 'activity)
 
 
-(defobjgen@ @transition-class :gen-buffer-trans (default)
+(defobjgen@ @transition-class :gen-buffer-trans (transition)
   (def@ @@ :initialize ()
     (setf @:mode-transition nil)
-    (setf @:transition default))
+    (setf @:transition transition))
 
   (def@ @@ :register (mode
                       transition)
