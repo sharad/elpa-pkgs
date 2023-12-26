@@ -48,7 +48,7 @@
 
 
 (setf @org-clock-trans-class
-      (@drive-object "org-clock-trans" (@transition-class)
+      (@drive-object (@transition-class)
                      "org-clock-trans"))
 
 (defobjgen@ @org-clock-trans-class :gen-org-clock-trans (marker1 marker2)

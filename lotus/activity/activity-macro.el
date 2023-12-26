@@ -86,9 +86,9 @@ it to :doc property of new object."
   `(progn
      (setf ,obj (@drive-object ,baseobjs
                                ,@body))
-     (when (functionp (@ ,obj :initialize))
-       (@! ,obj :initialize))
-     ,obj))
+     (when (and (memq :initialize (@! ,obj :keys))
+                (functionp (@ ,obj :initialize)))
+       (@! ,obj :initialize))))
 (put 'drive-extended@ 'lisp-indent-function 2)
 
 (defmacro defobjgen@ (baseobj gen-method params &rest body)
@@ -104,7 +104,7 @@ from this method, "
        ,@(if (stringp (cl-first body))
              (list (cl-first body)) ())
        ;; BODY
-       (@drive-object name (,baseobj)
+       (@drive-object (,baseobj)
          ,@(if (stringp (cl-first body)) (cl-rest body) body)))))
 (put 'defobjgen@ 'lisp-indent-function 3)
 
