@@ -211,9 +211,9 @@
   (let ((buff (current-buffer))
         (win-timeout (or win-timeout 7))
         (on-buffer-undo-chg-action (if (and (consp buffer-undo-list)
-                                  (cl-first buffer-undo-list))
-                             #'lotus-action-on-buffer-undo-list-change
-                           #'lotus-action-on-buffer-undo-tree-change)))
+                                            (cl-first buffer-undo-list))
+                                       #'lotus-action-on-buffer-undo-list-change
+                                     #'lotus-action-on-buffer-undo-tree-change)))
     (funcall on-buffer-undo-chg-action
              #'org-clock-lotus-log-note-current-clock-with-timed-new-win
              buff
