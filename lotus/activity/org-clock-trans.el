@@ -47,9 +47,7 @@
 (require 'activity-base)
 
 
-(setf @org-clock-trans-class
-      (@drive-object (@transition-class)
-                     "org-clock-trans"))
+(drive-extended@ @org-clock-trans-class (@transition-class))
 
 (defobjgen@ @org-clock-trans-class :gen-org-clock-trans (marker1 marker2)
   "Org clock transition class"

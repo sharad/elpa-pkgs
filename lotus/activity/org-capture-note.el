@@ -102,7 +102,6 @@
   (setf @:capture-plist (append (list :immediate-finish t :no-save t
                                       @:capture-plist)))
   (setf @:doc "Non-Interactive capture"))
-                     
 
 (drive-extended@ @org-capture-edit-dest (@org-capture-dest)
   (setf @:capture-plist (append (list :immediate-finish t :no-save t)

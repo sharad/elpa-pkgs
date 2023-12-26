@@ -66,11 +66,12 @@
 
 
 (defvar lotus-last-buffer-undo-tree-count 0) ;internal add in session and desktop
+(make-variable-buffer-local 'lotus-last-buffer-undo-tree-count)
 (when (featurep 'desktop)
   (add-to-list 'desktop-locals-to-save 'lotus-last-buffer-undo-tree-count))
 (when (featurep 'session)
   (add-to-list 'session-locals-include 'lotus-last-buffer-undo-tree-count))
-(make-variable-buffer-local 'lotus-last-buffer-undo-tree-count)
+
 
 (defun lotus-action-on-buffer-undo-tree-change (action
                                                 buff
@@ -111,6 +112,7 @@
 
 (defvar lotus-last-buffer-undo-list-pos nil) ;internal add in session and desktop
 (make-variable-buffer-local 'lotus-last-buffer-undo-list-pos)
+
 ;;;###autoload
 (defun lotus-action-on-buffer-undo-list-change (action
                                                 buff
@@ -202,8 +204,9 @@
     (remove-hook 'session-locals-include 'lotus-last-buffer-undo-list-pos)))
 
 
-(defun org-clock-lotus-log-note-on-change (&optional
-                                           win-timeout)
+
+(defun detect-undo-changes-periodic-fn (&optional
+                                        win-timeout)
   ;; (when (or t (eq buffer (current-buffer)))
   (let ((buff (current-buffer))
         (win-timeout (or win-timeout 7))
@@ -217,48 +220,46 @@
              lotus-minimum-char-changes
              win-timeout)))
 
-(defvar org-clock-lotus-log-note-on-change-timer nil
+(defvar detect-undo-changes-periodic-fn-timer nil
   "Time for on change log note.")
 
-
-;; (unintern 'org-clock-lotus-log-note-on-change-timer)
-
 ;;;###autoload
-(defun org-clock-lotus-log-note-on-change-start-timer (&optional
-                                                       idle-timeout
-                                                       win-timeout)
+(defun detect-undo-changes-periodic-fn-start-timer (&optional
+                                                    idle-timeout
+                                                    win-timeout)
   (interactive)
   (let ((idle-timeout (or idle-timeout 10))
         (win-timeout  (or win-timeout   7)))
-    (if org-clock-lotus-log-note-on-change-timer
+    (if detect-undo-changes-periodic-fn-timer
         (progn
-          (cancel-timer org-clock-lotus-log-note-on-change-timer)
-          (setq org-clock-lotus-log-note-on-change-timer nil)))
-    (setq org-clock-lotus-log-note-on-change-timer (run-with-idle-timer idle-timeout
+          (cancel-timer detect-undo-changes-periodic-fn-timer)
+          (setq detect-undo-changes-periodic-fn-timer nil)))
+    (setq detect-undo-changes-periodic-fn-timer (run-with-idle-timer idle-timeout
                                                                         idle-timeout
-                                                                        #'org-clock-lotus-log-note-on-change (+ idle-timeout win-timeout)))))
+                                                                        #'detect-undo-changes-periodic-fn (+ idle-timeout win-timeout)))))
 
 ;;;###autoload
-(defun org-clock-lotus-log-note-on-change-stop-timer ()
+(defun detect-undo-changes-periodic-fn-stop-timer ()
   (interactive)
-  (if org-clock-lotus-log-note-on-change-timer
+  (if detect-undo-changes-periodic-fn-timer
       (progn
-        (cancel-timer org-clock-lotus-log-note-on-change-timer)
-        (setq org-clock-lotus-log-note-on-change-timer nil))))
+        (cancel-timer detect-undo-changes-periodic-fn-timer)
+        (setq detect-undo-changes-periodic-fn-timer nil))))
+
 
 ;;;###autoload
-(defun org-clock-lotus-log-note-on-change-insinuate ()
+(defun detect-undo-changes-periodic-fn-insinuate ()
   (interactive)
   ;; message-send-mail-hook
   (org-onchange-register-in-session)
-  (org-clock-lotus-log-note-on-change-start-timer 10 7))
+  (detect-undo-changes-periodic-fn-start-timer 10 7))
 
 ;;;###autoload
-(defun org-clock-lotus-log-note-on-change-uninsinuate ()
+(defun detect-undo-changes-periodic-fn-uninsinuate ()
   (interactive)
   ;; message-send-mail-hook
   (org-onchange-unregister-in-session)
-  (org-clock-lotus-log-note-on-change-stop-timer))
+  (detect-undo-changes-periodic-fn-stop-timer))
 ;; Org log note on change timer:1 ends here
 
 ;;; change-activity.el ends here
