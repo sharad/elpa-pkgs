@@ -43,16 +43,10 @@
 (require 'org-insert-utils)
 
 
-(defun lotus-buffer-changes-count ()
-  (let ((changes 0))
-    (when buffer-undo-tree
-      (undo-tree-mapc
-       (lambda (node)
-         (setq changes (+ changes 1;; (length (undo-tree-node-next node))
-                          )))
-       (undo-tree-root buffer-undo-tree)))
-    changes))
-
+(drive-extended@ @change-tansition (@transition-class))
+(drive-extended@ @change-dectector (@transition-dectector-class))
+(drive-extended@ @change-span-detector (@transition-span-dectector-class))
+
 
 (defvar lotus-minimum-char-changes 70 "minimum char changes")
 (defvar lotus-minimum-changes      70 "minimum changes")
