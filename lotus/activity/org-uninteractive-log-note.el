@@ -44,38 +44,38 @@
   (require 'activity-macro))
 (require 'activity-base)
 (require 'activity)
+(require 'org-insert-utils)
 
+
 (defobjgen@ @dest-class :gen-org-uninteractive-log-dest (marker)
   (def@ @@ :dispatch (marker)
     (@:init)
     (setf @:marker marker))
 
   (def@ @@ :valid-markerp ()
-    (cond
-     ((markerp @:marker) @:marker)
-     ((functionp @:marker)
-      (let ((m (funcall @:marker))
-            (if (markerp m) m))))
-     ((symbolp @:marker)
-      (let ((m (symbol-value @:marker))
-            (if (markerp m) m))))
-     (t )))
+    (cond ((markerp @:marker) @:marker)
+          ((functionp @:marker)
+           (let ((m (funcall @:marker))
+                 (if (markerp m) m))))
+          ((symbolp @:marker)
+           (let ((m (symbol-value @:marker))
+                 (if (markerp m) m))))
+          (t )))
 
   (def@ @@ :get-marker ()
-    (cond
-     ((markerp @:marker) @:marker)
-     ((functionp @:marker)
-      (let ((m (funcall @:marker)))
-        (if (markerp m)
-            m
-          (error "f no marker %s" @:marker))))
-     ((symbolp @:marker)
-      (let ((m (symbol-value @:marker)))
-        (if (markerp m)
-            m
-          (error "s no marker %s" @:marker))))
-     (t
-      (error "can not find marker %s" @:marker))))
+    (cond ((markerp @:marker) @:marker)
+          ((functionp @:marker)
+           (let ((m (funcall @:marker)))
+             (if (markerp m)
+                 m
+               (error "f no marker %s" @:marker))))
+          ((symbolp @:marker)
+           (let ((m (symbol-value @:marker)))
+             (if (markerp m)
+                 m
+               (error "s no marker %s" @:marker))))
+          (t
+           (error "can not find marker %s" @:marker))))
 
   (def@ @@ :receive (fmt &rest args)
     (if (marker-buffer (@:get-marker))
@@ -83,7 +83,6 @@
       (@:debug :warning "marker %s is not valid." (@:get-marker))))
 
   (@:dispatch marker))
-
 
 
 (defobjgen@ @note-class :gen-org-uninteractive-log-note (marker)

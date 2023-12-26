@@ -40,6 +40,7 @@
 (eval-when-compile
   (require 'activity-macro))
 (require 'activity-base)
+(require 'org-insert-utils)
 
 
 ;; (defclass change-activity (buffer-activity)
