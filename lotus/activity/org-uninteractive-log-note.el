@@ -87,9 +87,8 @@
 
 (defobjgen@ @note-class :gen-org-uninteractive-log-note (marker)
   "Generator for org note message"
-  (push
-   (@! @dest-class :gen-org-uninteractive-log-dest "msg" marker)
-   @:dests))
+  (push (@! @dest-class :gen-org-uninteractive-log-dest "msg" marker)
+        @:dests))
 
 
 (defobjgen@ @note-class :gen-dual-org-uninteractive-log-note (marker1 marker2)

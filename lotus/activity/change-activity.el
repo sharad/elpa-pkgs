@@ -46,6 +46,16 @@
 (drive-extended@ @change-tansition (@transition-class))
 (drive-extended@ @change-dectector (@transition-dectector-class))
 (drive-extended@ @change-span-detector (@transition-span-dectector-class))
+
+(defvar lotus-last-buffer-undo-tree-count 0) ;internal add in session and desktop
+(make-variable-buffer-local 'lotus-last-buffer-undo-tree-count)
+(when (featurep 'desktop)
+  (add-to-list 'desktop-locals-to-save 'lotus-last-buffer-undo-tree-count))
+(when (featurep 'session)
+  (add-to-list 'session-locals-include 'lotus-last-buffer-undo-tree-count))
+(drive-extended@ @undo-list-change-span-detector (@change-span-detector)
+  (setf @:note org-clock-lotus-log-note-current-clock-with-timed-new-win)
+  (def @@ :detect ()))
 
 
 (defvar lotus-minimum-char-changes 70 "minimum char changes")
