@@ -49,15 +49,29 @@
 (drive-extended@ @change-tansition (@transition-class))
 (drive-extended@ @change-dectector (@transition-dectector-class))
 (drive-extended@ @change-span-detector (@transition-span-dectector-class)
+  (setf @:note @org-interactive-note-dest)
   (setf @:minimum-char-changes 70) ; "minimum char changes"
   (setf @:minimum-changes      70) ; "minimum changes"
-  )
+  (def@ @@ :note-send (win-timeout
+                       &key
+                       fail-quietly
+                       buff
+                       chgcount
+                       success
+                       fail
+                       run-before)
+    (@! @note :send win-timeout
+        :fail-quietly fail-quietly
+        :buff buff
+        :chgcount chgcount
+        :success success
+        :fail fail
+        :run-before run-before)))
 
 
 
 (drive-extended@ @undo-tree-change-span-detector (@change-span-detector)
   (def@ @@ :initialize ()
-    (setf @:note @org-interactive-note-dest)
     (defvar activity-buff-local-change-last-buffer-undo-tree-count 0) ;internal add in session and desktop
     (make-variable-buffer-local 'activity-buff-local-change-last-buffer-undo-tree-count)
     (when (featurep 'desktop)
@@ -88,20 +102,20 @@
                             activity-buff-local-change-last-buffer-undo-tree-count)))
           (if (>= chgcount
                   minimal-changes)
-              (if (@! @note :send win-timeout
-                           :buff
-                           buff
-                           :chgcount
-                           chgcount
-                           :success
-                           #'(lambda ()
-                               (with-current-buffer buff
-                                 (setq activity-buff-local-change-last-buffer-undo-tree-count totalchgcount)))
-                           :fail
-                           #'(lambda ()
-                               (with-current-buffer buff
-                                 (setq activity-buff-local-change-last-buffer-undo-tree-count totalchgcount)))
-                           :run-before nil)
+              (if (@:note-send win-timeout
+                               :buff
+                               buff
+                               :chgcount
+                               chgcount
+                               :success
+                               #'(lambda ()
+                                   (with-current-buffer buff
+                                     (setq activity-buff-local-change-last-buffer-undo-tree-count totalchgcount)))
+                               :fail
+                               #'(lambda ()
+                                   (with-current-buffer buff
+                                     (setq activity-buff-local-change-last-buffer-undo-tree-count totalchgcount)))
+                               :run-before nil)
                   (message "Lunched noter ret t")
                 (message "Lunched noter ret nil"))
             (message "HELLO: buffer-undo-tree-change: only %d changes not more than %d" chgcount minimal-changes))))
@@ -111,7 +125,6 @@
 
 (drive-extended@ @undo-list-change-span-detector (@change-span-detector)
   (def@ @@ :initialize ()
-    (setf @:note @org-interactive-note-dest)
     (defvar activity-buff-local-change-last-buffer-undo-list-pos 0) ;internal add in session and desktop
     (make-variable-buffer-local 'activity-buff-local-change-last-buffer-undo-list-pos)
     (when (featurep 'desktop)
@@ -167,22 +180,50 @@
 
       (cond
         ((>= char-changes minimal-char-changes)
-         (if (@! @note :send win-timeout
-                      :buff
-                      buff
-                      :chgcount
-                      char-changes
-                      :success
-                      #'(lambda ()
-                          (with-current-buffer buff
-                            (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))
-                      :fail
-                      #'(lambda ()
-                          (with-current-buffer buff
-                            (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))
-                      :run-before nil)
+         (if (@:note-send win-timeout
+                          :buff
+                          buff
+                          :chgcount
+                          char-changes
+                          :success
+                          #'(lambda ()
+                              (with-current-buffer buff
+                                (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))
+                          :fail
+                          #'(lambda ()
+                              (with-current-buffer buff
+                                (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))
+                          :run-before nil)
              (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))
         (t))))))
+
+
+(drive-extended@ @buff-trans-activity (@activity-interface) "buff-trans-activity"
+  (def@ @@ :key ()
+    "buff-trans-activity"
+    "buff-trans-activity")
+  (def@ @@ :activate ()
+    (@! @buffer-transition-span-detector :cancel-detect-buffer-chg-use)
+    (@! @buffer-transition-span-detector :initialize)
+    (add-hook 'post-command-hook
+              #'buffer-transition-span-detector-add-idle-timer-hook)
+    (add-hook 'switch-buffer-functions
+              #'buffer-transition-span-detector-run-detect-buffer-chg))
+  (def@ @@ :deactivate ()
+    (@! @buffer-transition-span-detector :cancel-detect-buffer-chg-use)
+    (remove-hook 'post-command-hook
+                 #'buffer-transition-span-detector-add-idle-timer-hook)
+    (remove-hook 'switch-buffer-functions
+                 #'buffer-transition-span-detector-run-detect-buffer-chg)))
+
+;;;###autoload
+(defun activity-register-buff-trans ()
+  (interactive)
+  (activity-register @buff-trans-activity))
+
+;;;###autoload
+(add-hook 'activity-register-hook
+          #'activity-register-buff-trans)
 
 
 (defun detect-undo-changes-periodic-fn (&optional
