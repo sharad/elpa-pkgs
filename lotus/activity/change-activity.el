@@ -52,6 +52,11 @@
   (setf @:note @org-interactive-note-dest)
   (setf @:minimum-char-changes 70) ; "minimum char changes"
   (setf @:minimum-changes      70) ; "minimum changes"
+  (setf @:win-timeout          7)
+  (def@ @@ :register-in-session ()
+    (@:error "Implement it."))
+  (def@ @@ :unregister-in-session ()
+    (@:error "Implement it."))
   (def@ @@ :note-send (win-timeout
                        &key
                        fail-quietly
@@ -73,11 +78,20 @@
 (drive-extended@ @undo-tree-change-span-detector (@change-span-detector)
   (def@ @@ :initialize ()
     (defvar activity-buff-local-change-last-buffer-undo-tree-count 0) ;internal add in session and desktop
-    (make-variable-buffer-local 'activity-buff-local-change-last-buffer-undo-tree-count)
+    (make-variable-buffer-local 'activity-buff-local-change-last-buffer-undo-tree-count))
+
+  (def@ @@ :register-in-session ()
     (when (featurep 'desktop)
-      (add-to-list 'desktop-locals-to-save 'activity-buff-local-change-last-buffer-undo-tree-count))
+      (add-hook 'desktop-locals-to-save 'activity-buff-local-change-last-buffer-undo-tree-count))
     (when (featurep 'session)
-      (add-to-list 'session-locals-include 'activity-buff-local-change-last-buffer-undo-tree-count)))
+      (add-hook 'session-locals-include 'activity-buff-local-change-last-buffer-undo-tree-count)))
+
+  (def@ @@ :unregister-in-session ()
+    (when (featurep 'desktop)
+      (remove-hook 'desktop-locals-to-save 'activity-buff-local-change-last-buffer-undo-tree-count))
+    (when (featurep 'session)
+      (remove-hook 'session-locals-include 'activity-buff-local-change-last-buffer-undo-tree-count)))
+
 
   (def@ @@ :buffer-changes-count ()
     (let ((changes 0))
@@ -88,21 +102,18 @@
                         (undo-tree-root buffer-undo-tree)))
       changes))
 
-  (def@ @@ :detect (buff
-                    &optional
-                    minimal-changes
-                    win-timeout)
+  (def@ @@ :detect (buff)
   (if (eq buff (current-buffer))
       (with-current-buffer buff
-        (let* ((minimal-changes (or minimal-changes
+        (let* ((minimal-changes (or @:minimal-changes
                                     @:minimum-char-changes))
-               (win-timeout (or win-timeout 7))
+               (win-timeout (or @:win-timeout 7))
                (totalchgcount (@:buffer-changes-count))
                (chgcount (- totalchgcount
                             activity-buff-local-change-last-buffer-undo-tree-count)))
           (if (>= chgcount
                   minimal-changes)
-              (if (@:note-send win-timeout
+              (if (@:note-send @:win-timeout
                                :buff
                                buff
                                :chgcount
@@ -126,16 +137,21 @@
 (drive-extended@ @undo-list-change-span-detector (@change-span-detector)
   (def@ @@ :initialize ()
     (defvar activity-buff-local-change-last-buffer-undo-list-pos 0) ;internal add in session and desktop
-    (make-variable-buffer-local 'activity-buff-local-change-last-buffer-undo-list-pos)
+    (make-variable-buffer-local 'activity-buff-local-change-last-buffer-undo-list-pos))
+
+  (def@ @@ :register-in-session ()
     (when (featurep 'desktop)
       (add-to-list 'desktop-locals-to-save 'activity-buff-local-change-last-buffer-undo-list-pos))
     (when (featurep 'session)
       (add-to-list 'session-locals-include 'activity-buff-local-change-last-buffer-undo-list-pos)))
 
-  (def@ @@ :detect (buff
-                    &optional
-                    minimal-char-changes
-                    win-timeout)
+  (def@ @@ :unregister-in-session ()
+    (when (featurep 'desktop)
+      (remove-hook 'desktop-locals-to-save 'activity-buff-local-change-last-buffer-undo-list-pos))
+    (when (featurep 'session)
+      (remove-hook 'session-locals-include 'activity-buff-local-change-last-buffer-undo-list-pos)))
+
+  (def@ @@ :detect (buff)
   "Set point to the position of the last change.
   Consecutive calls set point to the position of the previous change.
   With a prefix arg (optional arg MARK-POINT non-nil), set mark so \
@@ -144,12 +160,12 @@
   ;; (interactive "P")
   ;; (unless (buffer-modified-p)
   ;;   (error "Buffer not modified"))
-  (let ((win-timeout (or win-timeout 7)))
+  (let ((win-timeout (or @:win-timeout 7)))
     (when (eq buffer-undo-list t)
       (error "No undo information in this buffer"))
     ;; (when mark-point (push-mark))
-    (unless minimal-char-changes
-      (setq minimal-char-changes 10))
+    ;; (unless @:minimal-char-changes
+    ;;   (setq minimal-char-changes 10))
     (let ((char-changes 0)
           (undo-list (if activity-buff-local-change-last-buffer-undo-list-pos
                          (cl-rest (memq activity-buff-local-change-last-buffer-undo-list-pos
@@ -179,8 +195,8 @@
         (setq undo-list (cl-rest undo-list)))
 
       (cond
-        ((>= char-changes minimal-char-changes)
-         (if (@:note-send win-timeout
+        ((>= char-changes @:minimal-char-changes)
+         (if (@:note-send @:win-timeout
                           :buff
                           buff
                           :chgcount
@@ -215,72 +231,61 @@
                  #'buffer-transition-span-detector-add-idle-timer-hook)
     (remove-hook 'switch-buffer-functions
                  #'buffer-transition-span-detector-run-detect-buffer-chg)))
+
+
+(drive-extended@ @change-activity (@activity-interface)
+
+  (def@ @@ :initialize ()
+    (setf @:detect-periodic-fn-timer nil) ;"Time for on change log note."
+    (setf @:idle-timeout 10)
+    (setf @:win-timeout (@ @change-span-detector :win-timeout)))
+
+  (def@ @@ :key ()
+    "chnage-activity"
+    "change-activity")
+
+  (def@ @@ :detect-periodic-fn ()
+    ;; (when (or t (eq buffer (current-buffer)))
+    (let ((buff (current-buffer))
+          (detector (if (and (consp buffer-undo-list)
+                             (cl-first buffer-undo-list))
+                        @undo-list-change-span-detector
+                      @undo-tree-change-span-detector)))
+      (@! detector :detect buff)))
+
+  (def@ @@ :detect-periodic-fn-start-timer ()
+    (if @:detect-periodic-fn-timer
+        (progn
+          (cancel-timer @:detect-periodic-fn-timer)
+          (setf @:detect-periodic-fn-timer nil)))
+    (setf @:detect-periodic-fn-timer (run-with-idle-timer @:idle-timeout
+                                                                       @:idle-timeout
+                                                                       @:detect-periodic-fn @@ (+ @:idle-timeout @:win-timeout))))
+
+(def@ @@ :detect-periodic-fn-stop-timer ()
+  (interactive)
+  (if @:detect-periodic-fn-timer
+      (progn
+        (cancel-timer @:detect-periodic-fn-timer)
+        (setf @:detect-periodic-fn-timer nil))))
+
+(def@ @@ :activate ()
+  (@! @undo-list-change-span-detector :register-in-session)
+  (@! @undo-tree-change-span-detector :register-in-session)
+  (@:detect-periodic-fn-start-timer))
+
+(def@ @@ :deactivate ()
+  (@:detect-periodic-fn-stop-timer)
+  (@! @undo-list-change-span-detector :unregister-in-session)
+  (@! @undo-tree-change-span-detector :unregister-in-session)))
 
 ;;;###autoload
-(defun activity-register-buff-trans ()
+(defun activity-register-change-activity ()
   (interactive)
-  (activity-register @buff-trans-activity))
+  (activity-register @change-activity))
 
 ;;;###autoload
 (add-hook 'activity-register-hook
-          #'activity-register-buff-trans)
-
-
-(defun detect-undo-changes-periodic-fn (&optional
-                                        win-timeout)
-  ;; (when (or t (eq buffer (current-buffer)))
-  (let ((buff (current-buffer))
-        (win-timeout (or win-timeout 7))
-        (on-buffer-undo-chg-action (if (and (consp buffer-undo-list)
-                                            (cl-first buffer-undo-list))
-                                       #'lotus-action-on-buffer-undo-list-change
-                                     #'lotus-action-on-buffer-undo-tree-change)))
-    (funcall on-buffer-undo-chg-action
-             #'org-clock-lotus-log-note-current-clock-with-timed-new-win
-             buff
-             @:minimum-char-changes
-             win-timeout)))
-
-(defvar detect-undo-changes-periodic-fn-timer nil
-  "Time for on change log note.")
-
-;;;###autoload
-(defun detect-undo-changes-periodic-fn-start-timer (&optional
-                                                    idle-timeout
-                                                    win-timeout)
-  (interactive)
-  (let ((idle-timeout (or idle-timeout 10))
-        (win-timeout  (or win-timeout   7)))
-    (if detect-undo-changes-periodic-fn-timer
-        (progn
-          (cancel-timer detect-undo-changes-periodic-fn-timer)
-          (setq detect-undo-changes-periodic-fn-timer nil)))
-    (setq detect-undo-changes-periodic-fn-timer (run-with-idle-timer idle-timeout
-                                                                        idle-timeout
-                                                                        #'detect-undo-changes-periodic-fn (+ idle-timeout win-timeout)))))
-
-;;;###autoload
-(defun detect-undo-changes-periodic-fn-stop-timer ()
-  (interactive)
-  (if detect-undo-changes-periodic-fn-timer
-      (progn
-        (cancel-timer detect-undo-changes-periodic-fn-timer)
-        (setq detect-undo-changes-periodic-fn-timer nil))))
-
-
-;;;###autoload
-(defun detect-undo-changes-periodic-fn-insinuate ()
-  (interactive)
-  ;; message-send-mail-hook
-  (org-onchange-register-in-session)
-  (detect-undo-changes-periodic-fn-start-timer 10 7))
-
-;;;###autoload
-(defun detect-undo-changes-periodic-fn-uninsinuate ()
-  (interactive)
-  ;; message-send-mail-hook
-  (org-onchange-unregister-in-session)
-  (detect-undo-changes-periodic-fn-stop-timer))
-;; Org log note on change timer:1 ends here
+          #'activity-register-change-activity)
 
 ;;; change-activity.el ends here
