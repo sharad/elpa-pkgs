@@ -67,6 +67,7 @@
   (mapcar #'(lambda (k)
               (plist-get plist k))
           keys))
+
 
 (drive-extended@ @mail-read-event-detector (@event-dectector-class)
   (def@ @@ :make-message ()
@@ -83,13 +84,10 @@
     "Make mail read event."
     (let* ((note (@! @:note :new)))
       (@:message "processing %s" (@:make-message))
-      (funcall (@ note :send)
-               note
-               '(clock)
-               (apply #'format
-                      (string-join '("* Reading mail subject: %s" "from: %s" "to: %s") "\n")
-                      (lotus-plist-get-members (@:make-message)
-                                               '(:subject :from :to))))))
+      (@! note :send
+          '(clock)
+          (apply #'format (string-join '("* Reading mail subject: %s" "from: %s" "to: %s") "\n")
+                 (lotus-plist-get-members (@:make-message) '(:subject :from :to))))))
   (def@ @@ :make-event-gnus ()
     (when (and gnus-article-buffer
                (get-buffer gnus-article-buffer))
@@ -110,6 +108,7 @@
   ;;  'gnus-article-prepare-hook
   ;;  (lambda () (@! @@ :make-event-gnus)))
   (@:dispatch))
+
 
 (drive-extended@ @mail-send-event-detector (@event-dectector-class)
   (def@ @@ :make-message ()
@@ -125,14 +124,10 @@
   (def@ @@ :make-event ()
     "Make mail send event."
     (let ((note (@! @:note :new)))
-      (apply (@ note :send)
-             note
-             '(clock)
-             (apply #'format
-                    (string-join
-                     '("* Sent mail subject: %s" "to: %s") "\n")
-                    (lotus-plist-get-members (@:make-message)
-                                             '(:subject :to))))))
+      (@! note :send
+          '(clock)
+          (apply #'format (string-join '("* Sent mail subject: %s" "to: %s") "\n")
+                 (lotus-plist-get-members (@:make-message) '(:subject :to))))))
   (def@ @@ :make-event-gnus ()
     (when (and gnus-message-buffer
                (get-buffer gnus-message-buffer))
@@ -150,6 +145,7 @@
     (setf @:note @org-capture-edit-entry-dest-note))
 
   (@:dispatch))
+
 
 (defvar @mail-read-event-detector-instance nil)
 
@@ -165,10 +161,6 @@
     "mail-event-activity"
     "mail-event-activity")
   (def@ @@ :activate ()
-    ;; (setf @mail-read-event-detector-instance
-    ;;       (@! @event-dectector-class :gen-mail-read-event-detector "gnus read mail event"))
-    ;; (setf @mail-send-event-detector-instance
-    ;;       (@! @event-dectector-class :gen-mail-send-event-detector "gnus send mail event"))
     (add-hook 'gnus-article-prepare-hook
               #'mail-event-run-action))
   (def@ @@ :deactivate ()

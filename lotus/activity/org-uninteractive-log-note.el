@@ -1,4 +1,4 @@
-;;; org-activity-note.el --- Emacs Activity logger, analyzer and reporter  -*- lexical-binding: t; -*-
+;;; org-uninteractive-log-note.el --- Emacs Activity logger, analyzer and reporter  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  sharad
 
@@ -158,4 +158,4 @@
             org-clock-marker)))
    :receive "Test"))
 
-;;; org-activity-note.el ends here
+;;; org-uninteractive-log-note.el ends here
