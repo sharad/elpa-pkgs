@@ -241,7 +241,7 @@
 
   (def@ @@ :detect-periodic-fn ()
     ;; (when (or t (eq buffer (current-buffer)))
-    (let ((buff (current-buffer))
+    (let ((buff     (current-buffer))
           (detector (if (and (consp buffer-undo-list)
                              (cl-first buffer-undo-list))
                         @undo-list-change-span-detector
