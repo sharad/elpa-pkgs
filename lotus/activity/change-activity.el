@@ -66,7 +66,7 @@
                        success
                        fail
                        run-before)
-    (@! @note :send win-timeout
+    (@! @:note :send win-timeout
         :fail-quietly fail-quietly
         :buff buff
         :chgcount chgcount
@@ -106,7 +106,7 @@
   (def@ @@ :detect (buff)
   (if (eq buff (current-buffer))
       (with-current-buffer buff
-        (let* ((minimal-changes (or @:minimal-changes
+        (let* ((minimal-changes (or @:minimum-changes
                                     @:minimum-char-changes))
                (win-timeout (or @:win-timeout 7))
                (totalchgcount (@:buffer-changes-count))
@@ -245,7 +245,7 @@
     "chnage-activity"
     "change-activity")
 
-  (def@ @@ :detect-periodic-fn (timeout)
+  (def@ @@ :detect-periodic-fn ()
     ;; (when (or t (eq buffer (current-buffer)))
     (let ((buff (current-buffer))
           (detector (if (and (consp buffer-undo-list)
