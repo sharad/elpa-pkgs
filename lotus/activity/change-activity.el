@@ -104,36 +104,36 @@
       changes))
 
   (def@ @@ :detect (buff)
-  (if (eq buff (current-buffer))
-      (with-current-buffer buff
-        (let* ((minimal-changes (or @:minimum-changes
-                                    @:minimum-char-changes))
-               (win-timeout (or @:win-timeout 7))
-               (totalchgcount (@:buffer-changes-count))
-               (chgcount (- totalchgcount
-                            activity-buff-local-change-last-buffer-undo-tree-count)))
-          (if (>= chgcount
-                  minimal-changes)
-              (if (@:note-send (+ @:idle-timeout @:win-timeout)
-                               :buff
-                               buff
-                               :chgcount
-                               chgcount
-                               :success
-                               #'(lambda ()
-                                   (with-current-buffer buff
-                                     (setq activity-buff-local-change-last-buffer-undo-tree-count totalchgcount)))
-                               :fail
-                               #'(lambda ()
-                                   (with-current-buffer buff
-                                     (setq activity-buff-local-change-last-buffer-undo-tree-count totalchgcount)))
-                               :run-before nil)
-                  (message "Lunched noter ret t")
-                (message "Lunched noter ret nil"))
-            (message "HELLO: buffer-undo-tree-change: only %d changes not more than %d" chgcount minimal-changes))))
-    (message "HELLO Current buffer %s is not same as %s"
-             (current-buffer)
-             buff))))
+   (if (eq buff (current-buffer))
+       (with-current-buffer buff
+         (let* ((minimal-changes (or @:minimum-changes
+                                     @:minimum-char-changes))
+                (win-timeout (or @:win-timeout 7))
+                (totalchgcount (@:buffer-changes-count))
+                (chgcount (- totalchgcount
+                             activity-buff-local-change-last-buffer-undo-tree-count)))
+           (if (>= chgcount
+                   minimal-changes)
+               (if (@:note-send (+ @:idle-timeout @:win-timeout)
+                                :buff
+                                buff
+                                :chgcount
+                                chgcount
+                                :success
+                                #'(lambda ()
+                                    (with-current-buffer buff
+                                      (setq activity-buff-local-change-last-buffer-undo-tree-count totalchgcount)))
+                                :fail
+                                #'(lambda ()
+                                    (with-current-buffer buff
+                                      (setq activity-buff-local-change-last-buffer-undo-tree-count totalchgcount)))
+                                :run-before nil)
+                   (message "Lunched noter ret t")
+                 (message "Lunched noter ret nil"))
+             (message "HELLO: buffer-undo-tree-change: only %d changes not more than %d" chgcount minimal-changes))))
+     (message "HELLO Current buffer %s is not same as %s"
+              (current-buffer)
+              buff))))
 
 (drive-extended@ @undo-list-change-span-detector (@change-span-detector)
   (def@ @@ :initialize ()
@@ -153,7 +153,7 @@
       (remove-hook 'session-locals-include 'activity-buff-local-change-last-buffer-undo-list-pos)))
 
   (def@ @@ :detect (buff)
-  "Set point to the position of the last change.
+   "Set point to the position of the last change.
   Consecutive calls set point to the position of the previous change.
   With a prefix arg (optional arg MARK-POINT non-nil), set mark so \
   \\[exchange-point-and-mark]
@@ -161,58 +161,52 @@
   ;; (interactive "P")
   ;; (unless (buffer-modified-p)
   ;;   (error "Buffer not modified"))
-  (let ((win-timeout (or @:win-timeout 7)))
-    (when (eq buffer-undo-list t)
-      (error "No undo information in this buffer"))
-    ;; (when mark-point (push-mark))
-    ;; (unless @:minimal-char-changes
-    ;;   (setq minimal-char-changes 10))
-    (let ((char-changes 0)
-          (undo-list (if activity-buff-local-change-last-buffer-undo-list-pos
-                         (cl-rest (memq activity-buff-local-change-last-buffer-undo-list-pos
-                                        buffer-undo-list))
-                         buffer-undo-list))
-          undo)
-      (while (and undo-list
-                  (cl-first undo-list)
-                  (< char-changes
-                     minimal-char-changes))
-        (setq undo (cl-first undo-list))
-        (cond
-          ((and (consp undo) (integerp (cl-first undo)) (integerp (cl-rest undo)))
-           ;; (BEG . END)
-           (setq char-changes (+ char-changes (abs (- (cl-first undo) (cl-rest undo))))))
-          ((and (consp undo) (stringp (cl-first undo))) ; (TEXT . POSITION)
-           (setq char-changes (+ char-changes (length (cl-first undo)))))
-          ((and (consp undo) (eq (cl-first undo) t))) ; (t HIGH . LOW)
-          ((and (consp undo) (null (cl-first undo))))
-           ;; (nil PROPERTY VALUE BEG . END)
-           ;; (setq position (rest (last undo)))
+   (let ((win-timeout (or @:win-timeout 7)))
+     (when (eq buffer-undo-list t)
+       (error "No undo information in this buffer"))
+     ;; (when mark-point (push-mark))
+     ;; (unless @:minimal-char-changes
+     ;;   (setq minimal-char-changes 10))
+     (let ((char-changes 0)
+           (undo-list (if activity-buff-local-change-last-buffer-undo-list-pos
+                          (cl-rest (memq activity-buff-local-change-last-buffer-undo-list-pos
+                                         buffer-undo-list))
+                          buffer-undo-list))
+           undo)
+       (while (and undo-list
+                   (cl-first undo-list)
+                   (< char-changes
+                      minimal-char-changes))
+         (setq undo (cl-first undo-list))
+         (cond ((and (consp undo) (integerp (cl-first undo)) (integerp (cl-rest undo)))
+                ;; (BEG . END)
+                (setq char-changes (+ char-changes (abs (- (cl-first undo) (cl-rest undo))))))
+               ((and (consp undo) (stringp (cl-first undo))) ; (TEXT . POSITION)
+                (setq char-changes (+ char-changes (length (cl-first undo)))))
+               ((and (consp undo) (eq (cl-first undo) t))) ; (t HIGH . LOW)
+               ((and (consp undo) (null (cl-first undo))))
+            ;; (nil PROPERTY VALUE BEG . END)
+            ;; (setq position (rest (last undo)))
 
-          ((and (consp undo) (markerp (cl-first undo)))) ; (MARKER . DISTANCE)
-          ((integerp undo))               ; POSITION
-          ((null undo))               ; nil
-          (t (error "Invalid undo entry: %s" undo)))
-        (setq undo-list (cl-rest undo-list)))
-
-      (cond
-        ((>= char-changes @:minimal-char-changes)
-         (if (@:note-send (+ @:idle-timeout @:win-timeout)
-                          :buff
-                          buff
-                          :chgcount
-                          char-changes
-                          :success
-                          #'(lambda ()
-                              (with-current-buffer buff
-                                (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))
-                          :fail
-                          #'(lambda ()
-                              (with-current-buffer buff
-                                (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))
+           ((and (consp undo) (markerp (cl-first undo)))) ; (MARKER . DISTANCE)
+           ((integerp undo))               ; POSITION
+           ((null undo))               ; nil
+           (t (error "Invalid undo entry: %s" undo)))
+         (setq undo-list (cl-rest undo-list)))
+       (when (>= char-changes
+                 @:minimal-char-changes)
+         (if (@:note-send (+ @:idle-timeout
+                             @:win-timeout)
+                          :buff     buff
+                          :chgcount char-changes
+                          :success  #'(lambda ()
+                                        (with-current-buffer buff
+                                          (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))
+                          :fail     #'(lambda ()
+                                        (with-current-buffer buff
+                                          (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))
                           :run-before nil)
-             (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))
-        (t))))))
+             (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))))))
 
 
 (drive-extended@ @buff-trans-activity (@activity-interface) "buff-trans-activity"
@@ -263,22 +257,22 @@
                                                           @:idle-timeout
                                                           @:detect-periodic-fn @@)))
 
-(def@ @@ :detect-periodic-fn-stop-timer ()
-  (interactive)
-  (if @:detect-periodic-fn-timer
-      (progn
-        (cancel-timer @:detect-periodic-fn-timer)
-        (setf @:detect-periodic-fn-timer nil))))
+ (def@ @@ :detect-periodic-fn-stop-timer ()
+   (interactive)
+   (if @:detect-periodic-fn-timer
+       (progn
+         (cancel-timer @:detect-periodic-fn-timer)
+         (setf @:detect-periodic-fn-timer nil))))
 
-(def@ @@ :activate ()
-  (@! @undo-list-change-span-detector :register-in-session)
-  (@! @undo-tree-change-span-detector :register-in-session)
-  (@:detect-periodic-fn-start-timer))
+ (def@ @@ :activate ()
+   (@! @undo-list-change-span-detector :register-in-session)
+   (@! @undo-tree-change-span-detector :register-in-session)
+   (@:detect-periodic-fn-start-timer))
 
-(def@ @@ :deactivate ()
-  (@:detect-periodic-fn-stop-timer)
-  (@! @undo-list-change-span-detector :unregister-in-session)
-  (@! @undo-tree-change-span-detector :unregister-in-session)))
+ (def@ @@ :deactivate ()
+   (@:detect-periodic-fn-stop-timer)
+   (@! @undo-list-change-span-detector :unregister-in-session)
+   (@! @undo-tree-change-span-detector :unregister-in-session)))
 
 ;;;###autoload
 (defun activity-register-change-activity ()
