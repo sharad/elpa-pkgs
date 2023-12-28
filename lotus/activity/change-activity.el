@@ -37,68 +37,58 @@
 (provide 'change-activity)
 
 
+(require 'org-insert-utils)
+
+
 (eval-when-compile
   (require 'activity-macro))
 (require 'activity-base)
-(require 'org-insert-utils)
+(require 'org-interactive-note)
 
 
 (drive-extended@ @change-tansition (@transition-class))
 (drive-extended@ @change-dectector (@transition-dectector-class))
-(drive-extended@ @change-span-detector (@transition-span-dectector-class))
+(drive-extended@ @change-span-detector (@transition-span-dectector-class)
+  (setf @:minimum-char-changes 70) ; "minimum char changes"
+  (setf @:minimum-changes      70) ; "minimum changes"
+  )
 
-(defvar lotus-last-buffer-undo-tree-count 0) ;internal add in session and desktop
-(make-variable-buffer-local 'lotus-last-buffer-undo-tree-count)
-(when (featurep 'desktop)
-  (add-to-list 'desktop-locals-to-save 'lotus-last-buffer-undo-tree-count))
-(when (featurep 'session)
-  (add-to-list 'session-locals-include 'lotus-last-buffer-undo-tree-count))
-(drive-extended@ @undo-list-change-span-detector (@change-span-detector)
-  (setf @:note org-clock-lotus-log-note-current-clock-with-timed-new-win)
-  (def @@ :detect ()))
-
 
-(defvar lotus-minimum-char-changes 70 "minimum char changes")
-(defvar lotus-minimum-changes      70 "minimum changes")
-
 
-(defun lotus-buffer-changes-count ()
-  (let ((changes 0))
-    (when buffer-undo-tree
-      (undo-tree-mapc #'(lambda (node)
-                          (ignore node)
-                          (setq changes (+ changes 1)));; (length (undo-tree-node-next node))
-                      (undo-tree-root buffer-undo-tree)))
-    changes))
+(drive-extended@ @undo-tree-change-span-detector (@change-span-detector)
+  (def@ @@ :initialize ()
+    (setf @:note @org-interactive-note-dest)
+    (defvar activity-buff-local-change-last-buffer-undo-tree-count 0) ;internal add in session and desktop
+    (make-variable-buffer-local 'activity-buff-local-change-last-buffer-undo-tree-count)
+    (when (featurep 'desktop)
+      (add-to-list 'desktop-locals-to-save 'activity-buff-local-change-last-buffer-undo-tree-count))
+    (when (featurep 'session)
+      (add-to-list 'session-locals-include 'activity-buff-local-change-last-buffer-undo-tree-count)))
 
-;; (undo-tree-mapc #'(lambda (n) (message "%s\n" n))
-;;                 (undo-tree-root buffer-undo-tree))
-
+  (def@ @@ :buffer-changes-count ()
+    (let ((changes 0))
+      (when buffer-undo-tree
+        (undo-tree-mapc #'(lambda (node)
+                            (ignore node)
+                            (setq changes (+ changes 1)));; (length (undo-tree-node-next node))
+                        (undo-tree-root buffer-undo-tree)))
+      changes))
 
-(defvar lotus-last-buffer-undo-tree-count 0) ;internal add in session and desktop
-(make-variable-buffer-local 'lotus-last-buffer-undo-tree-count)
-(when (featurep 'desktop)
-  (add-to-list 'desktop-locals-to-save 'lotus-last-buffer-undo-tree-count))
-(when (featurep 'session)
-  (add-to-list 'session-locals-include 'lotus-last-buffer-undo-tree-count))
-
-
-(defun lotus-action-on-buffer-undo-tree-change (action
-                                                buff
-                                                &optional
-                                                minimal-changes
-                                                win-timeout)
+  (def@ @@ :detect (buff
+                    &optional
+                    minimal-changes
+                    win-timeout)
   (if (eq buff (current-buffer))
       (with-current-buffer buff
         (let* ((minimal-changes (or minimal-changes
-                                    lotus-minimum-char-changes))
+                                    @:minimum-char-changes))
                (win-timeout (or win-timeout 7))
-               (totalchgcount (lotus-buffer-changes-count))
+               (totalchgcount (@:buffer-changes-count))
                (chgcount (- totalchgcount
-                            lotus-last-buffer-undo-tree-count)))
+                            activity-buff-local-change-last-buffer-undo-tree-count)))
           (if (>= chgcount
                   minimal-changes)
-              (if (funcall action win-timeout
+              (if (@! @note :send win-timeout
                            :buff
                            buff
                            :chgcount
@@ -106,29 +96,33 @@
                            :success
                            #'(lambda ()
                                (with-current-buffer buff
-                                 (setq lotus-last-buffer-undo-tree-count totalchgcount)))
+                                 (setq activity-buff-local-change-last-buffer-undo-tree-count totalchgcount)))
                            :fail
                            #'(lambda ()
                                (with-current-buffer buff
-                                 (setq lotus-last-buffer-undo-tree-count totalchgcount)))
+                                 (setq activity-buff-local-change-last-buffer-undo-tree-count totalchgcount)))
                            :run-before nil)
                   (message "Lunched noter ret t")
                 (message "Lunched noter ret nil"))
             (message "HELLO: buffer-undo-tree-change: only %d changes not more than %d" chgcount minimal-changes))))
     (message "HELLO Current buffer %s is not same as %s"
              (current-buffer)
-             buff)))
-
+             buff))))
 
-(defvar lotus-last-buffer-undo-list-pos nil) ;internal add in session and desktop
-(make-variable-buffer-local 'lotus-last-buffer-undo-list-pos)
+(drive-extended@ @undo-list-change-span-detector (@change-span-detector)
+  (def@ @@ :initialize ()
+    (setf @:note @org-interactive-note-dest)
+    (defvar activity-buff-local-change-last-buffer-undo-list-pos 0) ;internal add in session and desktop
+    (make-variable-buffer-local 'activity-buff-local-change-last-buffer-undo-list-pos)
+    (when (featurep 'desktop)
+      (add-to-list 'desktop-locals-to-save 'activity-buff-local-change-last-buffer-undo-list-pos))
+    (when (featurep 'session)
+      (add-to-list 'session-locals-include 'activity-buff-local-change-last-buffer-undo-list-pos)))
 
-;;;###autoload
-(defun lotus-action-on-buffer-undo-list-change (action
-                                                buff
-                                                &optional
-                                                minimal-char-changes
-                                                win-timeout)
+  (def@ @@ :detect (buff
+                    &optional
+                    minimal-char-changes
+                    win-timeout)
   "Set point to the position of the last change.
   Consecutive calls set point to the position of the previous change.
   With a prefix arg (optional arg MARK-POINT non-nil), set mark so \
@@ -144,8 +138,8 @@
     (unless minimal-char-changes
       (setq minimal-char-changes 10))
     (let ((char-changes 0)
-          (undo-list (if lotus-last-buffer-undo-list-pos
-                         (cl-rest (memq lotus-last-buffer-undo-list-pos
+          (undo-list (if activity-buff-local-change-last-buffer-undo-list-pos
+                         (cl-rest (memq activity-buff-local-change-last-buffer-undo-list-pos
                                         buffer-undo-list))
                          buffer-undo-list))
           undo)
@@ -173,7 +167,7 @@
 
       (cond
         ((>= char-changes minimal-char-changes)
-         (if (funcall action win-timeout
+         (if (@! @note :send win-timeout
                       :buff
                       buff
                       :chgcount
@@ -181,38 +175,14 @@
                       :success
                       #'(lambda ()
                           (with-current-buffer buff
-                            (setq lotus-last-buffer-undo-list-pos undo)))
+                            (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))
                       :fail
                       #'(lambda ()
                           (with-current-buffer buff
-                            (setq lotus-last-buffer-undo-list-pos undo)))
+                            (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))
                       :run-before nil)
-             (setq lotus-last-buffer-undo-list-pos undo)))
-        (t)))))
-
-
-(defun org-onchange-register-in-session ()
-  (when (featurep 'desktop)
-    (add-hook 'desktop-locals-to-save 'lotus-last-buffer-undo-tree-count))
-  (when (featurep 'session)
-    (add-hook 'session-locals-include 'lotus-last-buffer-undo-tree-count))
-
-  (when (featurep 'desktop)
-    (add-hook 'desktop-locals-to-save 'lotus-last-buffer-undo-list-pos))
-  (when (featurep 'session)
-    (add-hook 'session-locals-include 'lotus-last-buffer-undo-list-pos)))
-
-(defun org-onchange-unregister-in-session ()
-  (when (featurep 'desktop)
-    (remove-hook 'desktop-locals-to-save 'lotus-last-buffer-undo-tree-count))
-  (when (featurep 'session)
-    (remove-hook 'session-locals-include 'lotus-last-buffer-undo-tree-count))
-
-  (when (featurep 'desktop)
-    (remove-hook 'desktop-locals-to-save 'lotus-last-buffer-undo-list-pos))
-  (when (featurep 'session)
-    (remove-hook 'session-locals-include 'lotus-last-buffer-undo-list-pos)))
-
+             (setq activity-buff-local-change-last-buffer-undo-list-pos undo)))
+        (t))))))
 
 
 (defun detect-undo-changes-periodic-fn (&optional
@@ -227,7 +197,7 @@
     (funcall on-buffer-undo-chg-action
              #'org-clock-lotus-log-note-current-clock-with-timed-new-win
              buff
-             lotus-minimum-char-changes
+             @:minimum-char-changes
              win-timeout)))
 
 (defvar detect-undo-changes-periodic-fn-timer nil
