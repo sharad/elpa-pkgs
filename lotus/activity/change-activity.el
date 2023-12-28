@@ -52,6 +52,7 @@
   (setf @:note @org-interactive-note-dest)
   (setf @:minimum-char-changes 70) ; "minimum char changes"
   (setf @:minimum-changes      70) ; "minimum changes"
+  (setf @:idle-timeout         10)
   (setf @:win-timeout          7)
   (def@ @@ :register-in-session ()
     (@:error "Implement it."))
@@ -113,7 +114,7 @@
                             activity-buff-local-change-last-buffer-undo-tree-count)))
           (if (>= chgcount
                   minimal-changes)
-              (if (@:note-send @:win-timeout
+              (if (@:note-send (+ @:idle-timeout @:win-timeout)
                                :buff
                                buff
                                :chgcount
@@ -196,7 +197,7 @@
 
       (cond
         ((>= char-changes @:minimal-char-changes)
-         (if (@:note-send @:win-timeout
+         (if (@:note-send (+ @:idle-timeout @:win-timeout)
                           :buff
                           buff
                           :chgcount
@@ -244,7 +245,7 @@
     "chnage-activity"
     "change-activity")
 
-  (def@ @@ :detect-periodic-fn ()
+  (def@ @@ :detect-periodic-fn (timeout)
     ;; (when (or t (eq buffer (current-buffer)))
     (let ((buff (current-buffer))
           (detector (if (and (consp buffer-undo-list)
@@ -259,8 +260,8 @@
           (cancel-timer @:detect-periodic-fn-timer)
           (setf @:detect-periodic-fn-timer nil)))
     (setf @:detect-periodic-fn-timer (run-with-idle-timer @:idle-timeout
-                                                                       @:idle-timeout
-                                                                       @:detect-periodic-fn @@ (+ @:idle-timeout @:win-timeout))))
+                                                          @:idle-timeout
+                                                          @:detect-periodic-fn @@)))
 
 (def@ @@ :detect-periodic-fn-stop-timer ()
   (interactive)
