@@ -1,4 +1,4 @@
-;;; org-activity-note.el --- Emacs Activity logger, analyzer and reporter  -*- lexical-binding: t; -*-
+;;; org-interactive-note.el --- Emacs Activity logger, analyzer and reporter  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  sharad
 
