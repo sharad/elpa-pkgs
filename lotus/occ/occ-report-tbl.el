@@ -20,38 +20,12 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
 (provide 'occ-report-tbl)
 
-
-;;; occ-clocktable.el --- occ-clocktable               -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  sharad
-
-;; Author: sharad <sh4r4d _at_ _G-mail_>
-;; Keywords: convenience
-
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-;;; Commentary:
-
-;;
-
-;;; Code:
 
 (require 'org-table)
 (require 'org-clock)
@@ -65,7 +39,7 @@
 (require 'lotus-misc-utils)
 (eval-when-compile
   (require 'lotus-misc-utils))
-
+
 
 (defcustom org-clock-clocktable-alt-formatter 'occ-clocktable-write-default
   "Function to turn clocking data into a table.
@@ -255,7 +229,7 @@ from the dynamic block definition."
                                         ; empty fields for higher levels
              hlc (org-minutes-to-clocksum-string (nth 3 entry)) hlc ; time
              "|\n")))))                                               ; close line
-             
+
     ;; When exporting subtrees or regions the region might be
     ;; activated, so let's disable ̀delete-active-region'
     (let ((delete-active-region nil)) (backward-delete-char 1))
@@ -282,7 +256,7 @@ from the dynamic block definition."
              (if (and narrow (not narrow-cut-p)) 3 2) ; row of the total time
              tcol            ; column of the total time
              tcol (1- pcol)))  ; range of columns where times can be found
-             
+
            (setq recalc t))
           ((stringp formula)
            (insert "\n#+TBLFM: " formula)
@@ -503,7 +477,7 @@ from the dynamic block definition."
                                         ; empty fields for higher levels
              hlc (org-minutes-to-clocksum-string (nth 3 entry)) hlc ; time
              "|\n")))))                                               ; close line
-             
+
     ;; When exporting subtrees or regions the region might be
     ;; activated, so let's disable ̀delete-active-region'
     (let ((delete-active-region nil)) (backward-delete-char 1))
@@ -530,7 +504,7 @@ from the dynamic block definition."
              (if (and narrow (not narrow-cut-p)) 3 2) ; row of the total time
              tcol            ; column of the total time
              tcol (1- pcol)))  ; range of columns where times can be found
-             
+
            (setq recalc t))
           ((stringp formula)
            (insert "\n#+TBLFM: " formula)
@@ -722,7 +696,7 @@ from the dynamic block definition."
        (if properties (concat (mapconcat 'identity properties "|") "|") "") ;properties columns, maybe
        (concat (nth 4 lwords) "|"
                (nth 5 lwords) "|\n")))                 ; headline and time columns
-      
+
 
     (when nil
       ;; Insert the total time in the table
@@ -738,7 +712,7 @@ from the dynamic block definition."
        (format org-clock-total-time-cell-format
                (org-minutes-to-clocksum-string (or total-time 0))) ; the time
        "|\n"))                          ; close line
-      
+
 
     ;; Now iterate over the tables and insert the data
     ;; but only if any time has been collected
@@ -785,7 +759,7 @@ from the dynamic block definition."
                                 (org-shorten-string (match-string 3 headline)
                                                     narrow)))))
                   ;; (setq headline (org-shorten-string headline narrow))
-                  
+
             (insert-before-markers
              ;; "|"                      ; start the table line
              ;; (if multifile "|" "")    ; free space for file name column?
@@ -843,7 +817,7 @@ from the dynamic block definition."
              (if (and narrow (not narrow-cut-p)) 3 2) ; row of the total time
              tcol            ; column of the total time
              tcol (1- pcol)))  ; range of columns where times can be found
-             
+
            (setq recalc t))
           ((stringp formula)
            (insert "\n#+TBLFM: " formula)
