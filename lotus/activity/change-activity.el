@@ -52,6 +52,7 @@
   (setf @:note @org-interactive-note-dest)
   (setf @:minimum-char-changes 70) ; "minimum char changes"
   (setf @:minimum-changes      70) ; "minimum changes"
+  (setf @:minimal-char-changes @:minimum-changes)
   (setf @:idle-timeout         10)
   (setf @:win-timeout          7)
   (def@ @@ :register-in-session ()
@@ -83,15 +84,19 @@
 
   (def@ @@ :register-in-session ()
     (when (featurep 'desktop)
-      (add-hook 'desktop-locals-to-save 'activity-buff-local-change-last-buffer-undo-tree-count))
+      (add-hook 'desktop-locals-to-save
+                'activity-buff-local-change-last-buffer-undo-tree-count))
     (when (featurep 'session)
-      (add-hook 'session-locals-include 'activity-buff-local-change-last-buffer-undo-tree-count)))
+      (add-hook 'session-locals-include
+                'activity-buff-local-change-last-buffer-undo-tree-count)))
 
   (def@ @@ :unregister-in-session ()
     (when (featurep 'desktop)
-      (remove-hook 'desktop-locals-to-save 'activity-buff-local-change-last-buffer-undo-tree-count))
+      (remove-hook 'desktop-locals-to-save
+                   'activity-buff-local-change-last-buffer-undo-tree-count))
     (when (featurep 'session)
-      (remove-hook 'session-locals-include 'activity-buff-local-change-last-buffer-undo-tree-count)))
+      (remove-hook 'session-locals-include
+                   'activity-buff-local-change-last-buffer-undo-tree-count)))
 
 
   (def@ @@ :buffer-changes-count ()
@@ -142,15 +147,19 @@
 
   (def@ @@ :register-in-session ()
     (when (featurep 'desktop)
-      (add-to-list 'desktop-locals-to-save 'activity-buff-local-change-last-buffer-undo-list-pos))
+      (add-to-list 'desktop-locals-to-save
+                   'activity-buff-local-change-last-buffer-undo-list-pos))
     (when (featurep 'session)
-      (add-to-list 'session-locals-include 'activity-buff-local-change-last-buffer-undo-list-pos)))
+      (add-to-list 'session-locals-include
+                   'activity-buff-local-change-last-buffer-undo-list-pos)))
 
   (def@ @@ :unregister-in-session ()
     (when (featurep 'desktop)
-      (remove-hook 'desktop-locals-to-save 'activity-buff-local-change-last-buffer-undo-list-pos))
+      (remove-hook 'desktop-locals-to-save
+                   'activity-buff-local-change-last-buffer-undo-list-pos))
     (when (featurep 'session)
-      (remove-hook 'session-locals-include 'activity-buff-local-change-last-buffer-undo-list-pos)))
+      (remove-hook 'session-locals-include
+                   'activity-buff-local-change-last-buffer-undo-list-pos)))
 
   (def@ @@ :detect (buff)
    "Set point to the position of the last change.
@@ -176,7 +185,7 @@
        (while (and undo-list
                    (cl-first undo-list)
                    (< char-changes
-                      minimal-char-changes))
+                      @:minimal-char-changes))
          (setq undo (cl-first undo-list))
          (cond ((and (consp undo) (integerp (cl-first undo)) (integerp (cl-rest undo)))
                 ;; (BEG . END)

@@ -182,11 +182,4 @@
   (interactive)
   (@! @activity :register activity))
 
-
-;; (require 'buff-trans)
-;; (require 'mail-event)
-;; (require 'org-clock-trans)
-
-
-
 ;;; activity.el ends here
