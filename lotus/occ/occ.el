@@ -131,6 +131,7 @@
 
 
 (defun occ-reset-collection-spec (&optional key)
+  "Reset spec for collection associated with KEY."
   (interactive (list (occ-collector-read-key "key for spec: ")))
   (occ-debug "resetting deafult-tsk-collection")
   (let ((key (or key
@@ -138,12 +139,20 @@
     (occ-reset-collection-object key)))
 
 (defun occ-reset-collection-roots (key)
+  "Reset roots for collection associated with KEY."
   (interactive (list (occ-collector-read-key "key for spec: ")))
   (setf (occ-collection-roots (occ-collector-get key)) nil))
 
 (defun occ-reset-collection-tsks (key)
+  "Reset tasks for collection associated with KEY."
   (interactive (list (occ-collector-read-key "key for spec: ")))
   (occ-do-reset-tsks (occ-collector-get key)))
+
+
+(defun occ-collect-tsks (key)
+  "Populate tasks for collection associated with KEY."
+  (interactive (list (occ-collector-read-key "key for spec: ")))
+  (occ-obj-collect-tsks (occ-collector-get key)))
 
 
 ;;;###autoload
