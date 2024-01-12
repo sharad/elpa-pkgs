@@ -254,24 +254,22 @@
                             :clock-sum    (occ-obj-from-org 'clock-sum 'get clock-sum)
                             :cat          (occ-obj-from-org 'cat 'get (occ-get-tsk-category heading tsk-plist))
                             :plist        (occ-tsk-plist-from-org tsk-plist))))
-          (let ((inherited-props
-                 ;; is it correct ? - guess it is ok and correct.
-                 (occ-obj-properties-to-inherit-ctsk)))
-            (dolist (prop inherited-props)
-              (when (occ-obj-list-p nil prop)
-                ;; Unconditionally Set property as - (tsk-plist    (nth 1 (org-element-at-point)))
-                ;; which is using in occ-obj-get-property and occ-obj-set-property
-                ;; put list also as atom
-                ;; (occ-obj-set-property tsk prop (org-entry-get nil (occ-obj-org-property-name prop)))
-                (let ((value (occ-do-operation (occ-obj-marker tsk)
-                                               'get
-                                               prop
-                                               nil)))
-                  (when value
-                    (occ-obj-set-property tsk
-                                          prop
-                                          value))))))
-          (progn "set :plist here")
+          (dolist (prop (occ-obj-properties-for-ranking-ctsk))
+            (when (occ-obj-list-p nil prop)
+              ;; set :plist here
+              ;;
+              ;; Unconditionally Set property as - (tsk-plist    (nth 1 (org-element-at-point)))
+              ;; which is using in occ-obj-get-property and occ-obj-set-property
+              ;; put list also as atom
+              ;; (occ-obj-set-property tsk prop (org-entry-get nil (occ-obj-org-property-name prop)))
+              (let ((value (occ-do-operation (occ-obj-marker tsk)
+                                             'get
+                                             prop
+                                             nil)))
+                (when value
+                  (occ-obj-set-property tsk
+                                        prop
+                                        value)))))
           ;; (occ-obj-reread-props tsk)      ;reset list properties
           tsk)))))
 

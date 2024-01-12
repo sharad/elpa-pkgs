@@ -281,6 +281,23 @@ method provided."))))
   (occ-obj-properties-to-inherit 'occ-obj-ctx-tsk))
 
 
+(cl-defmethod occ-obj-properties-for-ranking ((class symbol))
+  "return PROPERTIES list that can be inherited."
+  (occ-cl-method-param-values 'occ-obj-impl-get
+                              (list '\` `(occ-user-agent (eql ,'(\, val)) ,class))
+                              'val))
+
+(cl-defmethod occ-obj-properties-for-ranking ((obj occ-obj-tsk))
+  "return PROPERTIES list that can be inherited."
+  (occ-cl-collect-on-classes #'occ-obj-properties-for-ranking
+                             obj))
+
+
+(defun occ-obj-properties-for-ranking-ctsk () ;;TODO: check about them
+  "return PROPERTIES list that can be inherited."
+  (occ-obj-properties-for-ranking 'occ-obj-ctx-tsk))
+
+
 (cl-defmethod occ-obj-properties-to-calculate-rank ((class1 symbol)
                                                     (class2 symbol))
   "return PROPERTIES list that can be used in calculating rank."
