@@ -381,41 +381,50 @@ forcing property block creation on org entry."
     (unless (org-get-property-block)
       ;; create property drawer
       ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
-      (occ-debug "occ-do-impl-operation[ :around ]: property block not exist so creating it.")
-      (let ((range (org-get-property-block (point)
-                                            (occ-obj-op-write-p operation))))
+      (occ-debug "occ-do-impl-operation[ :around ]: property block not exist. will %s create"
+                 (if (occ-obj-op-write-p operation)
+                     "do"
+                   "not")))
+    (let ((range (org-get-property-block (point)
+                                           (if (occ-obj-op-write-p operation)
+                                               'force))));; create property drawer if write operation
         (if range
-            (let ((start (when (consp range) (1- (cl-first range)))))
-              (when (numberp start)
-                (goto-char start)))
+            (let ((start (when (consp range)
+                           (1- (car range)))))
+              (if (numberp start)
+                  (progn
+                    (goto-char start)
+                    (occ-debug "occ-do-impl-operation[ :around ]: going to %s prop: %s value: %s using next method."
+                               operatin
+                               prop
+                               (occ-obj-nonocc-format value))
+                    (let ((retval (condition-case e ;; if (cl-next-method-p)
+                                      (cl-call-next-method obj
+                                                           operation
+                                                           prop
+                                                           (occ-obj-to-org prop
+                                                                           operation
+                                                                           value))
+                                    ((cl-no-next-method) (occ-error (format "No \n%s\n\nmethod provided."
+                                                                            (pp-to-string '(cl-defmethod occ-do-impl-operation ((pom marker)
+                                                                                                                                (operation (eql %s))
+                                                                                                                                (prop (eql %s)) value)
+                                                                                             ...)))
+                                                                    operation prop)))))
+                      (occ-debug "occ-do-impl-operation: (occ-do-impl-operation obj) returned %s" retval)
+                      retval))
+                (occ-error "Error in range")))
           (when (occ-obj-op-write-p operation)
-            (occ-error "occ-do-impl-operation[ :around ]: not able to create property block to add property %s: %s"
-                       prop
-                       (occ-obj-nonocc-format value))))))
-    (if (org-get-property-block)
-        (progn
-          (occ-debug "occ-do-impl-operation[ :around ]: adding prop: %s value: %s using (org-set-property)."
+            (funcall (if (occ-obj-op-write-p operation)
+                         #'occ-error
+                       #'occ-debug)
+                     "occ-do-impl-operation[ :around ]: not able to %s property block to %s property %s: %s"
+                     (if (occ-obj-op-write-p operation)
+                         "create"
+                       "get")
+                     operatin
                      prop
-                     (occ-obj-nonocc-format value))
-          (let ((retval (condition-case e ;; if (cl-next-method-p)
-                            (cl-call-next-method obj
-                                                 operation
-                                                 prop
-                                                 (occ-obj-to-org prop
-                                                                 operation
-                                                                 value))
-                          ((cl-no-next-method) (occ-error (format "No \n%s\n\nmethod provided."
-                                                                  (pp-to-string '(cl-defmethod occ-do-impl-operation ((pom marker)
-                                                                                                                      (operation (eql %s))
-                                                                                                                      (prop (eql %s)) value)
-                                                                                   ...)))
-                                                          operation prop)))))
-            (occ-debug "occ-do-impl-operation: (occ-do-impl-operation obj) returned %s" retval)
-            retval))
-      (when (occ-obj-op-write-p operation)
-        (occ-error "occ-do-impl-operation[ :around ]: can not get property block to add property %s: %s"
-                   prop
-                   (occ-obj-nonocc-format value))))))
+                     (occ-obj-nonocc-format value)))))))
 
 
 ;;

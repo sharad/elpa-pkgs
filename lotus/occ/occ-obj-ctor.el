@@ -263,7 +263,10 @@
                 ;; which is using in occ-obj-get-property and occ-obj-set-property
                 ;; put list also as atom
                 ;; (occ-obj-set-property tsk prop (org-entry-get nil (occ-obj-org-property-name prop)))
-                (let ((value (occ-do-operation (point-marker) 'get prop nil)))
+                (let ((value (occ-do-operation (occ-obj-marker tsk)
+                                               'get
+                                               prop
+                                               nil)))
                   (when value
                     (occ-obj-set-property tsk
                                           prop
