@@ -382,18 +382,16 @@ forcing property block creation on org entry."
       ;; create property drawer
       ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
       (occ-debug "occ-do-impl-operation[ :around ]: property block not exist so creating it.")
-      (let* ((range (org-get-property-block (point)
-                                            (occ-obj-op-write-p operation)))
-             (start (when (consp range) (1- (cl-first range)))))
-        (if (and range
-                 start)
-            (when (numberp start)
-              (goto-char start))
+      (let ((range (org-get-property-block (point)
+                                            (occ-obj-op-write-p operation))))
+        (if range
+            (let ((start (when (consp range) (1- (cl-first range)))))
+              (when (numberp start)
+                (goto-char start)))
           (when (occ-obj-op-write-p operation)
             (occ-error "occ-do-impl-operation[ :around ]: not able to create property block to add property %s: %s"
                        prop
                        (occ-obj-nonocc-format value))))))
-
     (if (org-get-property-block)
         (progn
           (occ-debug "occ-do-impl-operation[ :around ]: adding prop: %s value: %s using (org-set-property)."
