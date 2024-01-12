@@ -290,7 +290,9 @@
   (occ-do-priority-initialize)
   ;; newly added
   ;; (org-clock-load) ;; is getting struck
-  (run-with-idle-timer 3 nil #'org-clock-load))
+  (run-with-idle-timer 3
+                       nil
+                       #'org-clock-load))
 
 ;;;###autoload
 (defun occ-uninitialize ()
@@ -315,7 +317,8 @@
   (interactive)
   (occ-message "Occ mode is %s and switch-buffer-functions is %s"
                (if occ-mode "on" "off")
-               (if (memq 'switch-buffer-functions-run (default-value 'post-command-hook))
+               (if (memq 'switch-buffer-functions-run
+                         (default-value 'post-command-hook))
                    "working"
                  "not working")))
 
@@ -334,7 +337,6 @@
                occ-dev-dir
              (cl-pushnew occ-dev-dir load-path))
          (file-name-directory (or (locate-library library)
-                                  "~/.fa/src/elisp/elpa/elpa-pkgs/lotus/occ/occ.el"
                                   ""))))))
 
 (defun occ-get-version (here full message)
