@@ -196,6 +196,8 @@
   "return PROPERTIES list that can be edited.")
 (cl-defgeneric occ-obj-properties-to-inherit (obj)
   "return PROPERTIES list that can be inherited.")
+(cl-defgeneric occ-obj-properties-for-ranking (obj)
+  "return PROPERTIES list that can be inherited.")
 (cl-defgeneric occ-obj-properties-to-calculate-rank (obj1 obj2)
   "return PROPERTIES list that can be used in calculating rank.")
 (cl-defgeneric occ-obj-properties-to-checkout (obj)
@@ -220,6 +222,17 @@ method provided."))))
       (occ-internal-remove-template-symbol (cl-call-next-method))
     ((cl-no-next-method) (occ-error "No
 (cl-defmethod occ-obj-properties-to-inherit (obj)
+   ...)
+
+method provided."))))
+
+(cl-defmethod occ-obj-properties-for-ranking :around (obj)
+  "return PROPERTIES list that can be inherited."
+  (ignore obj)
+  (condition-case e ;; if (cl-next-method-p)
+      (occ-internal-remove-template-symbol (cl-call-next-method))
+    ((cl-no-next-method) (occ-error "No
+(cl-defmethod occ-obj-properties-for-ranking (obj)
    ...)
 
 method provided."))))
@@ -274,6 +287,10 @@ method provided."))))
   "return PROPERTIES list that can be inherited."
   (occ-cl-collect-on-classes #'occ-obj-properties-to-inherit
                              obj))
+
+(cl-defmethod occ-obj-properties-to-inherit ((obj null))
+  "return PROPERTIES list that can be inherited."
+  (occ-obj-properties-to-inherit 'occ-obj-ctx-tsk))
 
 
 (defun occ-obj-properties-to-inherit-ctsk () ;;TODO: check about them
@@ -291,6 +308,10 @@ method provided."))))
   "return PROPERTIES list that can be inherited."
   (occ-cl-collect-on-classes #'occ-obj-properties-for-ranking
                              obj))
+
+(cl-defmethod occ-obj-properties-for-ranking ((obj null))
+  "return PROPERTIES list that can be inherited."
+  (occ-obj-properties-for-ranking 'occ-obj-ctx-tsk))
 
 
 (defun occ-obj-properties-for-ranking-ctsk () ;;TODO: check about them

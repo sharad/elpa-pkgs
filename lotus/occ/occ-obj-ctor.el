@@ -254,7 +254,7 @@
                             :clock-sum    (occ-obj-from-org 'clock-sum 'get clock-sum)
                             :cat          (occ-obj-from-org 'cat 'get (occ-get-tsk-category heading tsk-plist))
                             :plist        (occ-tsk-plist-from-org tsk-plist))))
-          (dolist (prop (occ-obj-properties-for-ranking-ctsk))
+          (dolist (prop (occ-obj-properties-for-ranking nil))
             (when (occ-obj-list-p nil prop)
               ;; set :plist here
               ;;
