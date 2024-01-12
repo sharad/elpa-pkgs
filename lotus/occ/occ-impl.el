@@ -404,11 +404,12 @@ forcing property block creation on org entry."
                                                  (occ-obj-to-org prop
                                                                  operation
                                                                  value))
-                          ((cl-no-next-method) (occ-error "No
-(cl-defmethod occ-do-impl-operation ((pom marker) (operation (eql %s)) (prop (eql %s)) value)
-  ...)
-
-method provided." operation prop)))))
+                          ((cl-no-next-method) (occ-error (format "No \n%s\n\nmethod provided."
+                                                                  (pp-to-string '(cl-defmethod occ-do-impl-operation ((pom marker)
+                                                                                                                      (operation (eql %s))
+                                                                                                                      (prop (eql %s)) value)
+                                                                                   ...)))
+                                                          operation prop)))))
             (occ-debug "occ-do-impl-operation: (occ-do-impl-operation obj) returned %s" retval)
             retval))
       (when (occ-obj-op-write-p operation)
