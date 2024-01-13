@@ -431,7 +431,6 @@ For write-p OPERATION it ensure to add property drawer if not already present."
                      prop
                      (occ-obj-nonocc-format value)))))))
 
-
 ;;
 ;;
 ;;
