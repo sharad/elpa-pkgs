@@ -375,7 +375,7 @@ method provided." prop))))
 accept org compatible VALUE, NOTE only for writable OPERATION
 forcing property block creation on org entry.
 
-For write-p OPERATION it ensure to add property-block"
+For write-p OPERATION it ensure to add property drawer if not already present."
 
   ;; (occ-message "I should be called first in case of MARKER")
   (occ-debug "I should be called first in case of MARKER")
