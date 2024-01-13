@@ -373,27 +373,32 @@ method provided." prop))))
                                              value)
   "Around method do necessary setup before actual operation.
 accept org compatible VALUE, NOTE only for writable OPERATION
-forcing property block creation on org entry."
+forcing property block creation on org entry.
+
+For write-p OPERATION it ensure to add property-block"
 
   ;; (occ-message "I should be called first in case of MARKER")
   (occ-debug "I should be called first in case of MARKER")
   (lotus-with-marker obj
-    (unless (org-get-property-block)
-      ;; create property drawer
-      ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
-      (occ-debug "occ-do-impl-operation[ :around ]: property block not exist. will %s create"
-                 (if (occ-obj-op-write-p operation)
-                     "do"
-                   "not")))
+    ;; (unless (org-get-property-block)
+    ;;   ;; create property drawer
+    ;;   ;; TODO: NOTE: only create property block if 100% sure value is going to be set.
+    ;;   (occ-debug "occ-do-impl-operation[ :around ]: property block not exist. will %s create"
+    ;;              (if (occ-obj-op-write-p operation)
+    ;;                  "do"
+    ;;                "not")))
     (let ((range (org-get-property-block (point)
-                                           (if (occ-obj-op-write-p operation)
-                                               'force))));; create property drawer if write operation
+                                         (when (occ-obj-op-write-p operation)
+                                           ;; create property drawer if write operation
+                                           'force))))
         (if range
             (let ((start (when (consp range)
                            (1- (car range)))))
               (if (numberp start)
                   (progn
-                    (goto-char start)
+                    ;; Not sure if required?
+                    ;; (when (occ-obj-op-write-p operation)
+                    ;;   (goto-char start))
                     (occ-debug "occ-do-impl-operation[ :around ]: going to %s prop: %s value: %s using next method."
                                operatin
                                prop
