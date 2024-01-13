@@ -1075,5 +1075,9 @@ pointing to it."
 (cl-defmethod occ-name ((obj buffer))
   "return name"
   (buffer-name obj))
+
+(cl-defmethod occ-name ((obj marker))
+  "return name"
+  (format "%s" obj))
 
 ;;; occ-obj-accessor.el ends here
