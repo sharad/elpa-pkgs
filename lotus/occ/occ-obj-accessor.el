@@ -501,7 +501,7 @@
                                     (ctx null))
   (occ-obj-ranktbl tsk))
 
-(cl-defmethod (setf occ-obj-ranktbl-with) ((rt occ-ranktbl)
+(cl-defmethod (setf occ-obj-ranktbl-with) ((rt  occ-ranktbl)
                                            (tsk occ-obj-tsk)
                                            (ctx occ-obj-ctx))
   (if (cdr (assoc tsk
@@ -511,7 +511,7 @@
                 (occ-ctx-tsk-ranktbl-list ctx))))
 
 
-(cl-defmethod (setf occ-obj-ranktbl-with) ((rt occ-ranktbl)
+(cl-defmethod (setf occ-obj-ranktbl-with) ((rt  occ-ranktbl)
                                            (tsk occ-obj-tsk)
                                            (ctx null))
   (setf (occ-obj-ranktbl tsk) rt))
@@ -529,12 +529,12 @@
   (occ-obj-ranktbl-with (occ-obj-tsk obj)
                         (occ-obj-ctx obj)))
 
-(cl-defmethod (setf occ-obj-ranktbl) ((rt occ-ranktbl)
+(cl-defmethod (setf occ-obj-ranktbl) ((rt  occ-ranktbl)
                                       (obj occ-obj-tsk))
   (let ((tsk (occ-obj-tsk obj)))
     (setf (occ-tsk-ranktbl tsk) rt)))
 
-(cl-defmethod (setf occ-obj-ranktbl) ((rt occ-ranktbl)
+(cl-defmethod (setf occ-obj-ranktbl) ((rt  occ-ranktbl)
                                       (obj occ-obj-ctx-tsk))
   (setf (occ-obj-ranktbl-with (occ-obj-tsk obj)
                               (occ-obj-ctx obj)) rt))
@@ -549,7 +549,9 @@
 
 
 ;; occ-tsk - accessors
-(cl-defmethod occ-obj-format-string ((obj occ-tsk) &optional no-propterties)
+(cl-defmethod occ-obj-format-string ((obj occ-tsk)
+                                     &optional
+                                     no-propterties)
   ;; (occ-debug "occ-tsk-format-string(occ-tsk=%s)" obj)
   (let ((format-string (occ-tsk-format-string obj)))
     (unless format-string
@@ -1063,14 +1065,23 @@ pointing to it."
   "return name"
   (occ-obj-name obj))
 
+;; (cl-defmethod occ-name ((obj list))
+;;   "return name"
+;;   (cond ((assoc 'name obj) (cdr (assoc 'name obj)))
+;;         ((assoc :name obj) (cdr (assoc :name obj)))
+;;         ((assoc "name" obj) (cdr (assoc "name" obj)))
+;;         ((plist-get 'name obj) (plist-get 'name obj))
+;;         ((plist-get :name obj) (plist-get :name obj))
+;;         ((plist-get "name" obj) (plist-get "name" obj))))
+
 (cl-defmethod occ-name ((obj list))
   "return name"
-  (cond ((assoc 'name obj) (cdr (assoc 'name obj)))
-        ((assoc :name obj) (cdr (assoc :name obj)))
-        ((assoc "name" obj) (cdr (assoc "name" obj)))
-        ((plist-get 'name obj) (plist-get 'name obj))
-        ((plist-get :name obj) (plist-get :name obj))
-        ((plist-get "name" obj) (plist-get "name" obj))))
+  (or (cdr (assoc 'name obj))
+      (cdr (assoc :name obj))
+      (cdr (assoc "name" obj))
+      (plist-get 'name obj)
+      (plist-get :name obj)
+      (plist-get "name" obj)))
 
 (cl-defmethod occ-name ((obj buffer))
   "return name"
