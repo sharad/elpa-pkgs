@@ -34,6 +34,7 @@
 ;; [[file:occ-property-methods.org::*Required libraries][Required libraries:1]]
 (require 'org)
 (require 'magit-git)
+(require 'magit-process)
 
 
 (require 'occ-impl-utils)
@@ -229,6 +230,7 @@
   "Return occ compatible value of property PROPERTY from OCC-CTX OBJ."
   (ignore prop)
   (require 'magit-git)
+  (require 'magit-process)
   (let ((buff (occ-ctx-buffer ctx)))
     ;; (occ-message "occ-obj-impl-get: git-branch: buff = %s" buff)
     (when buff
@@ -245,6 +247,7 @@
         else element for property PROPERTY from user for OCC-TSK OBJ,
         must return ORG compatible value."
   (require 'magit-git)
+  (require 'magit-process)
   (let ((buff (occ-obj-buffer obj)))
     ;; (occ-message "occ-obj-impl-get: git-branch: buff = %s" buff)
     (when buff
@@ -258,6 +261,7 @@
                                     (prop (eql git-branch))
                                     (vdirector number))
   (require 'magit-git)
+  (require 'magit-process)
   (let* ((tsk        (occ-obj-tsk obj))
          (git-branch (occ-obj-pvalue tsk
                                      prop
