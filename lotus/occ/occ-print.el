@@ -91,6 +91,10 @@ pointing to it."
            org-heading))))))
 
 (cl-defmethod occ-obj-fontify-like-in-org-mode ((obj occ-tsk) &optional no-propterties)
+  ;; (occ-message "occ-obj-fontify-like-in-org-mode: heading = %s, level = %s, subtree-level = %s"
+  ;;              (occ-obj-get-property obj 'heading-prop)
+  ;;              (occ-obj-get-property obj 'level)
+  ;;              (occ-obj-get-property obj 'subtree-level))
   (let* ((level               (or (occ-obj-get-property obj 'level) 0))
          (subtree-level       (or (occ-obj-get-property obj 'subtree-level) 1))
          (filename            (occ-obj-format-file obj))

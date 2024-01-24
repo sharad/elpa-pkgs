@@ -53,8 +53,8 @@
   `(let ((key (sym2key ,prop)))
      (occ-assert (cl-evenp (length ,plist)))
      (if key
-         (plist-put ,plist ;TODO ??? (occ-cl-obj-plist-value obj)
-                    key ,value)
+         (setf ,plist (plist-put ,plist ;TODO ??? (occ-cl-obj-plist-value obj)
+                                 key ,value))
        (occ-error "occ-plist-set: Can not make keyword for `'%s'" ,prop))))
 
 (defun occ-list-get-evens (lst)
@@ -153,13 +153,16 @@
   ;;            (prin1-to-string (occ-obj-nonocc-format value)))
   (if (memq prop
             (occ-cl-class-slots (occ-cl-inst-classname obj)))
-      (setf (cl-struct-slot-value (occ-cl-inst-classname obj) prop obj)
-            value)
-    (let* ((org-prop (occ-obj-org-property-symb prop))
+      (progn
+        ;; (occ-message "IF")
+        (setf (cl-struct-slot-value (occ-cl-inst-classname obj) prop obj)
+            value))
+    (let* ((org-prop   (occ-obj-org-property-symb prop))
            (plist-prop (if (occ-plist-get (occ-cl-obj-plist-value obj)
                                          org-prop)
                           org-prop
                         (upcase-sym org-prop))))
+      ;; (occ-message "ELSE")
       (occ-debug "(occ-obj-set-property occ-obj): plist got %s using %s"
                  prop plist-prop)
       (occ-plist-set

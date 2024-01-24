@@ -121,6 +121,7 @@ if node return nil for PREDICATE"
   "Build recursive org tsks from org FILE (or current buffer) using
 TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
   (progn ;; save-excursion
+    ;; (occ-message "occ-tree-tsk-build: level = %s" subtree-level)
     (progn  ;; save-restriction
       (let ((depth     (occ-obj-collection-depth collection))
             (curr-buff (if file
@@ -153,13 +154,12 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
               (let ((entry         (funcall tsk-builder-at-point file))
                     (subtree-level (if subtree-level subtree-level 1)))
                 (when entry
-                  (when (numberp subtree-level)
-                    (occ-obj-set-property entry 'subtree-level
-                                          subtree-level))
+                  (occ-obj-set-property entry 'subtree-level
+                                        subtree-level)
                   (occ-assert (numberp subtree-level))
                   (let* ((subtree (unless (and depth
-                                                (not (zerop depth))
-                                                (> subtree-level depth))
+                                               (not (zerop depth))
+                                               (> subtree-level depth))
                                      (let ((buffer-local-list (occ-org-map-subheading #'(lambda ()
                                                                                           (occ-tree-tsk-build nil
                                                                                                               collection
