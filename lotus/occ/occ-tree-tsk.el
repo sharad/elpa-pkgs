@@ -156,6 +156,8 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
                 (when entry
                   (occ-obj-set-property entry 'subtree-level
                                         subtree-level)
+                  (occ-obj-set-property entry 'file-level
+                                        subtree-level)
                   (occ-assert (numberp subtree-level))
                   (let* ((subtree (unless (and depth
                                                (not (zerop depth))
