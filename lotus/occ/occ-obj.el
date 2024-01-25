@@ -175,6 +175,8 @@
   file
   point
   clock-sum
+  level
+  subtree-level
   file-level
   cat
   format-file

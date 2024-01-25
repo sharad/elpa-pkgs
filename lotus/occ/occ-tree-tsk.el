@@ -182,8 +182,7 @@ TSK-BUILDER-AT-POINT function e.g. occ-collect-tsk"
                                                                                                      (or (occ-obj-get-property entry
                                                                                                                                'level)
                                                                                                          0)
-                                                                                                     (or subtree-level
-                                                                                                         0))))))))))
+                                                                                                     subtree-level)))))))))
                                        (remove nil (append buffer-local-list
                                                          subtree-file-list))))))
                     (when subtree
