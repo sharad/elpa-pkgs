@@ -1374,6 +1374,39 @@ in the buffer and update it."
     ;; propterties
     '(:name "clocktable-alt"))))
 
+(defun occ-clock-report-tree (marker)
+  (interactive)
+  (let ((point (with-current-buffer (get-buffer-create "*occ-clock-report-buffer*")
+                 (point-marker))))
+    (message "occ-clock-report-tree: before point %s" point)
+    (with-current-buffer (marker-buffer marker)
+      (goto-char marker)
+      (message "occ-clock-report-tree: marker %s" marker)
+      (occ-clock-report-in-place-x (list :point point)))
+    (switch-to-buffer (marker-buffer point))))
+
+;; ;;;###autoload
+;; (defun occ-clock-report-buffer (&optional properties)
+;;   (interactive
+;;    (list nil))
+;;   (let ((buff (get-buffer-create "*occ-clock-report-buffer*")))
+;;     (with-current-buffer buff
+;;       (org-mode)
+;;       (occ-clock-report-in-place-x properties))
+;;     (switch-to-buffer buff)))
+
+
+;; ;;;###autoload
+;; (defun occ-clock-report-buffer (&optional properties)
+;;   (interactive
+;;    (list nil))
+;;   (let ((buff (get-buffer-create "*occ-clock-report-buffer*")))
+;;     (with-current-buffer buff
+;;       (org-mode)
+;;       (occ-clock-report-in-place))
+;;     (switch-to-buffer buff)))
+
+
 (defvar occ-clock-report-buffer-idle-timer nil)
 
 (defun occ-clock-report-buffer-when-idle (secs)
