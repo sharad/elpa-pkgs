@@ -60,34 +60,48 @@ from the dynamic block definition."
   ;; much easier because there can be a fixed format with a
   ;; well-defined number of columns...
   (let* ((hlchars '((1 . "*") (2 . "/")))
-         (lwords (assoc (or (plist-get params :lang)
+         (lwords  (assoc (or (plist-get params :lang)
                             (org-bound-and-true-p org-export-default-language)
                             "en")
                         org-clock-clocktable-language-setup))
          (multifile (plist-get params :multifile))
-         (block (plist-get params :block))
-         (sort (plist-get params :sort))
-         (ts (plist-get params :tstart))
-         (te (plist-get params :tend))
-         (header (plist-get  params :header))
-         (narrow (plist-get params :narrow))
-         (ws (or (plist-get params :wstart) 1))
-         (ms (or (plist-get params :mstart) 1))
-         (link (plist-get params :link))
-         (maxlevel (or (plist-get params :maxlevel) 3))
-         (emph (plist-get params :emphasize))
-         (level-p (plist-get params :level))
+         (block     (plist-get params :block))
+         (sort      (plist-get params :sort))
+         (ts        (plist-get params :tstart))
+         (te        (plist-get params :tend))
+         (header    (plist-get params :header))
+         (narrow    (plist-get params :narrow))
+         (ws        (or (plist-get params :wstart)
+                        1))
+         (ms        (or (plist-get params :mstart)
+                        1))
+         (link      (plist-get params :link))
+         (maxlevel  (or (plist-get params :maxlevel)
+                        3))
+         (emph      (plist-get params :emphasize))
+         (level-p   (plist-get params :level))
          (org-time-clocksum-use-effort-durations
           (plist-get params :effort-durations))
          (timestamp (plist-get params :timestamp))
          (properties (plist-get params :properties))
-         (ntcol (max 1 (or (plist-get params :tcolumns) 100)))
+         (ntcol     (max 1 (or (plist-get params :tcolumns) 100)))
          (rm-file-column (plist-get params :one-file-with-archives))
-         (indent (plist-get params :indent))
+         (indent    (plist-get params :indent))
          (case-fold-search t)
-         range-text total-time tbl level hlc formula pcol
-         file-time entries entry headline
-         recalc content narrow-cut-p tcol)
+         range-text
+         total-time
+         tbl
+         level
+         hlc
+         formula
+         pcol
+         file-time
+         entries entry
+         headline
+         recalc
+         content
+         narrow-cut-p
+         tcol)
 
     ;; Implement abbreviations
     (when (plist-get params :compact)
@@ -180,8 +194,10 @@ from the dynamic block definition."
       (while (setq tbl (pop tables))
         ;; now tbl is the table resulting from one file.
         (setq file-time (nth 1 tbl))
-        (when (or (and file-time (> file-time 0))
-                  (not (plist-get params :fileskip0)))
+        (when (or (and file-time
+                       (> file-time 0))
+                  (not (plist-get params
+                                  :fileskip0)))
           (insert-before-markers "|-\n")  ; a hline because a new file starts
           ;; First the file time, if we have multiple files
           (when multifile
@@ -1425,5 +1441,6 @@ in the buffer and update it."
 
 
 ;; (org-clock-alt-report-tree (occ-obj-marker (occ-get-debug-obj)))
+;; (occ-clock-report-tree (occ-obj-marker (occ-get-debug-obj)))
 
 ;;; occ-report-tbl.el ends here
