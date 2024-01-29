@@ -1381,15 +1381,16 @@ in the buffer and update it."
   (when occ-clock-report-buffer-idle-timer
     (cancel-timer occ-clock-report-buffer-idle-timer)
     (setq occ-clock-report-buffer-idle-timer nil))
-  (let ((secs
-         (if (and
-              secs
-              (> secs 7))
-             secs
-           30)))
+  (let ((secs (if (and secs
+                       (> secs 7))
+                  secs
+                30)))
     (setq occ-clock-report-buffer-idle-timer
-          (run-with-idle-timer
-           secs secs
-           #'occ-clock-report-buffer))))
+          (run-with-idle-timer secs
+                               secs
+                               #'occ-clock-report-buffer))))
+
+
+;; (org-clock-alt-report-tree (occ-obj-marker (occ-get-debug-obj)))
 
 ;;; occ-report-tbl.el ends here
