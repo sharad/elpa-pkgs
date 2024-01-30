@@ -1339,39 +1339,17 @@ clocktable, when not specified in the previous variable, is
 `subtree' when the function is called from within a subtree, and
 `file' elsewhere."
   (org-clock-remove-overlays)
+  ;; (when arg
+  ;;   (org-find-dblock "clocktable-alt")
+  ;;   (org-show-entry))
   (pcase (org-in-clocktable-p)
     (`nil
      (occ-clocktable-report-insert properties))
     (start (goto-char start)))
   (org-update-dblock))
 
-;; (defun occ-clock-report-in-place ()
-;;   (org-dblock-write:clocktable-alt
-;;    (org-combine-plists
-;;     ;; (list :scope (if (org-before-first-heading-p) 'file 'subtree))
-;;     (list :scope (directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t))
-;;     org-clock-clocktable-alt-default-properties
-;;     ;; propterties
-;;     '(:name "clocktable-alt"))))
-
-(defun occ-clock-report-in-place (propterties)
-  (org-dblock-write:clocktable-alt (org-combine-plists org-clock-clocktable-alt-default-properties
-                                                       (list :scope (if (org-before-first-heading-p) 'file 'subtree))
-                                                       propterties
-                                                       '(:name "clocktable-alt"))))
-
-
 ;;;###autoload
-(defun occ-clock-report-buffer (&optional properties)
-  (interactive (list nil))
-  (let ((buff (get-buffer-create "*occ-clock-report-buffer*")))
-    (with-current-buffer buff
-      (org-mode)
-      (occ-clock-report-block-in-place))
-    (switch-to-buffer buff)))
-
-;;;###autoload
-(defun occ-clock-report (&optional arg)
+(defun occ-clock-report-block (&optional arg)
   "Update or create a table containing a report about clocked time.
 
 If point is inside an existing clocktable block, update it.
@@ -1395,11 +1373,30 @@ in the buffer and update it."
      (occ-clocktable-report-insert))
     (start (goto-char start)))
   (org-update-dblock))
+
+
+;;;###autoload
+(defun occ-clock-report-block-buffer (&optional properties)
+  (interactive (list nil))
+  (let ((buff (get-buffer-create "*occ-clock-report-buffer*")))
+    (with-current-buffer buff
+      (org-mode)
+      (occ-clock-report-block-in-place))
+    (switch-to-buffer buff)))
+
+(defun occ-clock-report-in-place (propterties)
+  (org-dblock-write:clocktable-alt (org-combine-plists org-clock-clocktable-alt-default-properties
+                                                       (list :scope (if (org-before-first-heading-p) 'file 'subtree))
+                                                       propterties
+                                                       '(:name "clocktable-alt"))))
 
 
 (defun occ-clock-report-tree (marker)
   (interactive)
   (let ((point (with-current-buffer (get-buffer-create "*occ-clock-report-buffer*")
+                 (let ((inhibit-read-only t))
+                   ;; (setf (buffer-string) "")
+                   (erase-buffer))
                  (point-marker))))
     (message "occ-clock-report-tree: before point %s" point)
     (with-current-buffer (marker-buffer marker)
@@ -1407,27 +1404,6 @@ in the buffer and update it."
       (message "occ-clock-report-tree: marker %s" marker)
       (occ-clock-report-in-place (list :point point)))
     (switch-to-buffer (marker-buffer point))))
-
-;; ;;;###autoload
-;; (defun occ-clock-report-buffer (&optional properties)
-;;   (interactive
-;;    (list nil))
-;;   (let ((buff (get-buffer-create "*occ-clock-report-buffer*")))
-;;     (with-current-buffer buff
-;;       (org-mode)
-;;       (occ-clock-report-block-in-place-x properties))
-;;     (switch-to-buffer buff)))
-
-
-;; ;;;###autoload
-;; (defun occ-clock-report-buffer (&optional properties)
-;;   (interactive
-;;    (list nil))
-;;   (let ((buff (get-buffer-create "*occ-clock-report-buffer*")))
-;;     (with-current-buffer buff
-;;       (org-mode)
-;;       (occ-clock-report-block-in-place))
-;;     (switch-to-buffer buff)))
 
 
 (defvar occ-clock-report-buffer-idle-timer nil)
@@ -1444,7 +1420,7 @@ in the buffer and update it."
     (setq occ-clock-report-buffer-idle-timer
           (run-with-idle-timer secs
                                secs
-                               #'occ-clock-report-buffer))))
+                               #'occ-clock-report-block-buffer))))
 
 
 ;; (org-clock-alt-report-tree (occ-obj-marker (occ-get-debug-obj)))

@@ -865,6 +865,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
     org-clock-clocktable-alt-default-properties
     propterties
     '(:name "clocktable-alt"))))
+
 
 (defun org-clock-alt-report-block-in-place (&optional properties)
   "Update or create a table containing a report about clocked time.
@@ -878,6 +879,9 @@ clocktable, when not specified in the previous variable, is
 `subtree' when the function is called from within a subtree, and
 `file' elsewhere."
   (org-clock-remove-overlays)
+  ;; (when arg
+  ;;   (org-find-dblock "clocktable-alt")
+  ;;   (org-show-entry))
   (pcase (org-in-clocktable-p)
     (`nil
      (org-clocktable-alt-report-insert properties))
@@ -885,24 +889,7 @@ clocktable, when not specified in the previous variable, is
   (org-update-dblock))
 
 ;;;###autoload
-(defun org-clock-alt-report-buffer (&optional properties)
-  (interactive
-   (list nil))
-  (let ((buff (get-buffer-create "*org-clock-alt-report-buffer*")))
-    (with-current-buffer buff
-      (org-mode)
-      (org-clock-alt-report-block-in-place properties))
-    (switch-to-buffer buff)))
-
-(defun org-clock-alt-report-in-place (propterties)
-  (org-dblock-write:clocktable-alt (org-combine-plists org-clock-clocktable-alt-default-properties
-                                                       (list :scope (if (org-before-first-heading-p) 'file 'subtree))
-                                                       propterties
-                                                       '(:name "clocktable-alt"))))
-
-
-;;;###autoload
-(defun org-clock-alt-report (&optional arg)
+(defun org-clock-alt-report-block (&optional arg)
   "Update or create a table containing a report about clocked time.
 
 If point is inside an existing clocktable block, update it.
@@ -926,11 +913,30 @@ in the buffer and update it."
      (org-clocktable-alt-report-insert))
     (start (goto-char start)))
   (org-update-dblock))
+
+;;;###autoload
+(defun org-clock-alt-report-block-buffer (&optional properties)
+  (interactive
+   (list nil))
+  (let ((buff (get-buffer-create "*org-clock-alt-report-block-buffer*")))
+    (with-current-buffer buff
+      (org-mode)
+      (org-clock-alt-report-block-in-place properties))
+    (switch-to-buffer buff)))
+
+(defun org-clock-alt-report-in-place (propterties)
+  (org-dblock-write:clocktable-alt (org-combine-plists org-clock-clocktable-alt-default-properties
+                                                       (list :scope (if (org-before-first-heading-p) 'file 'subtree))
+                                                       propterties
+                                                       '(:name "clocktable-alt"))))
 
 
 (defun org-clock-alt-report-tree (marker)
   (interactive)
-  (let ((point (with-current-buffer (get-buffer-create "*org-clock-alt-report-buffer*")
+  (let ((point (with-current-buffer (get-buffer-create "*org-clock-alt-report-block-buffer*")
+                 (let ((inhibit-read-only t))
+                   ;; (setf (buffer-string) "")
+                   (erase-buffer))
                  (point-marker))))
     (message "org-clock-alt-report-tree: before point %s" point)
     (with-current-buffer (marker-buffer marker)
@@ -938,31 +944,22 @@ in the buffer and update it."
       (message "org-clock-alt-report-tree: marker %s" marker)
       (org-clock-alt-report-in-place (list :point point)))
     (switch-to-buffer (marker-buffer point))))
-
-;; ;;;###autoload
-;; (defun org-clock-alt-report-buffer (&optional properties)
-;;   (interactive
-;;    (list nil))
-;;   (let ((buff (get-buffer-create "*org-clock-alt-report-buffer*")))
-;;     (with-current-buffer buff
-;;       (org-mode)
-;;       (org-clock-alt-report-in-place properties))
-;;     (switch-to-buffer buff)))
 
-(defvar org-clock-alt-report-buffer-idle-timer nil)
 
-(defun org-clock-alt-report-buffer-when-idle (secs)
+(defvar org-clock-alt-report-block-buffer-idle-timer nil)
+
+(defun org-clock-alt-report-block-buffer-when-idle (secs)
   (interactive "nNumber: ")
-  (when org-clock-alt-report-buffer-idle-timer
-    (cancel-timer org-clock-alt-report-buffer-idle-timer)
-    (setq org-clock-alt-report-buffer-idle-timer nil))
+  (when org-clock-alt-report-block-buffer-idle-timer
+    (cancel-timer org-clock-alt-report-block-buffer-idle-timer)
+    (setq org-clock-alt-report-block-buffer-idle-timer nil))
   (let ((secs (if (and secs
                        (> secs 7))
                   secs
                 30)))
-    (setq org-clock-alt-report-buffer-idle-timer
+    (setq org-clock-alt-report-block-buffer-idle-timer
           (run-with-idle-timer secs
                                secs
-                               #'org-clock-alt-report-buffer))))
+                               #'org-clock-alt-report-block-buffer))))
 
 ;;; org-clock-report.el ends here

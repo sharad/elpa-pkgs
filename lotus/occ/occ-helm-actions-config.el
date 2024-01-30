@@ -68,6 +68,7 @@
       (occ-obj-build-callable-normal :paste                  "Paste"                    #'occ-do-paste)
       (occ-obj-build-callable-normal :archive                "Archive"                  #'occ-do-archive)
       (occ-obj-build-callable-normal :delete                 "Delete"                   #'occ-do-delete)
+      (occ-obj-build-callable-normal :report                 "Report"                   #'occ-do-report)
       (occ-obj-build-callable-normal :goto                   "Goto"                     #'occ-do-goto)
       (occ-obj-build-callable-normal :set-to                 "Set To"                   #'occ-do-set-to)
       (occ-obj-build-callable-normal :property-window-edit   "Properties Window Edit"   #'occ-do-properties-window-editor) ;TODO: implement it.
@@ -107,6 +108,7 @@
                              :paste
                              :archive
                              :delete
+                             :report
                              :goto
                              :rank
                              :tsk

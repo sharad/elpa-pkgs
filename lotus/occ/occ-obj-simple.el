@@ -54,6 +54,7 @@
 (require 'occ-helm-actions-config)
 (require 'occ-clock)
 (require 'occ-util-method)
+(require 'occ-report-tbl)
 
 
 (defvar occ-idle-timeout 7)
@@ -444,6 +445,13 @@
   (occ-do-cut obj))
 
 
+(cl-defgeneric occ-do-report (obj)
+  "Generate report")
+
+(cl-defmethod occ-do-report ((obj occ-obj-tsk))
+  "Generate report"
+  (occ-clock-report-tree (occ-obj-marker obj)))
+
 ;; (defun occ-confirm (fn new)
 ;;   (occ-y-or-n-timeout)
 ;;   (occ-error "Implement it."))

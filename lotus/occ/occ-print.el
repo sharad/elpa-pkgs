@@ -303,6 +303,14 @@ pointing to it."
     (format "%s: %s"
             (symbol-name label)
             (occ-obj-format (occ-name value-obj)))))
+
+(cl-defmethod occ-obj-format ((obj buffer)
+                              &optional
+                              case
+                              rank
+                              no-curr-clock
+                              no-propterties)
+  (format "%s" obj))
 
 
 (cl-defmethod occ-obj-nonocc-format (obj)
