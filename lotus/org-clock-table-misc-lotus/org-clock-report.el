@@ -895,11 +895,10 @@ clocktable, when not specified in the previous variable, is
     (switch-to-buffer buff)))
 
 (defun org-clock-alt-report-in-place (propterties)
-  (org-dblock-write:clocktable-alt
-   (org-combine-plists org-clock-clocktable-alt-default-properties
-                       (list :scope (if (org-before-first-heading-p) 'file 'subtree))
-                       propterties
-                       '(:name "clocktable-alt"))))
+  (org-dblock-write:clocktable-alt (org-combine-plists org-clock-clocktable-alt-default-properties
+                                                       (list :scope (if (org-before-first-heading-p) 'file 'subtree))
+                                                       propterties
+                                                       '(:name "clocktable-alt"))))
 
 
 ;;;###autoload
