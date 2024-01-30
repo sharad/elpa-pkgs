@@ -1345,10 +1345,28 @@ clocktable, when not specified in the previous variable, is
     (start (goto-char start)))
   (org-update-dblock))
 
+;; (defun occ-clock-report-insert-for ()
+;;   (org-dblock-write:clocktable-alt
+;;    (org-combine-plists
+;;     ;; (list :scope (if (org-before-first-heading-p) 'file 'subtree))
+;;     (list :scope (directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t))
+;;     org-clock-clocktable-alt-default-properties
+;;     ;; propterties
+;;     '(:name "clocktable-alt"))))
+
+(defun occ-clock-report-insert-for (propterties)
+  (org-dblock-write:clocktable-alt
+   (org-combine-plists org-clock-clocktable-alt-default-properties
+                       (list :scope (if (org-before-first-heading-p)
+                                        'file
+                                      'subtree))
+                       propterties
+                       '(:name "clocktable-alt"))))
+
+
 ;;;###autoload
 (defun occ-clock-report-buffer (&optional properties)
-  (interactive
-   (list nil))
+  (interactive (list nil))
   (let ((buff (get-buffer-create "*occ-clock-report-buffer*")))
     (with-current-buffer buff
       (org-mode)
@@ -1380,15 +1398,7 @@ in the buffer and update it."
      (occ-clocktable-report-insert))
     (start (goto-char start)))
   (org-update-dblock))
-
-(defun occ-clock-report-in-place-x ()
-  (org-dblock-write:clocktable-alt
-   (org-combine-plists
-    ;; (list :scope (if (org-before-first-heading-p) 'file 'subtree))
-    (list :scope (directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t))
-    org-clock-clocktable-alt-default-properties
-    ;; propterties
-    '(:name "clocktable-alt"))))
+
 
 (defun occ-clock-report-tree (marker)
   (interactive)
@@ -1398,7 +1408,7 @@ in the buffer and update it."
     (with-current-buffer (marker-buffer marker)
       (goto-char marker)
       (message "occ-clock-report-tree: marker %s" marker)
-      (occ-clock-report-in-place-x (list :point point)))
+      (occ-clock-report-insert-for (list :point point)))
     (switch-to-buffer (marker-buffer point))))
 
 ;; ;;;###autoload

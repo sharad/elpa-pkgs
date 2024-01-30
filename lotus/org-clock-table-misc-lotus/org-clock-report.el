@@ -891,6 +891,13 @@ clocktable, when not specified in the previous variable, is
       (org-mode)
       (org-clock-alt-report-in-place properties))
     (switch-to-buffer buff)))
+
+(defun org-clock-alt-report-insert-for (propterties)
+  (org-dblock-write:clocktable-alt
+   (org-combine-plists org-clock-clocktable-alt-default-properties
+                       (list :scope (if (org-before-first-heading-p) 'file 'subtree))
+                       propterties
+                       '(:name "clocktable-alt"))))
 
 
 ;;;###autoload
@@ -919,14 +926,6 @@ in the buffer and update it."
     (start (goto-char start)))
   (org-update-dblock))
 
-(defun org-clock-alt-report-in-place-x (propterties)
-  (org-dblock-write:clocktable-alt
-   (org-combine-plists
-    org-clock-clocktable-alt-default-properties
-    (list :scope (if (org-before-first-heading-p) 'file 'subtree))
-    propterties
-    '(:name "clocktable-alt"))))
-
 (defun org-clock-alt-report-tree (marker)
   (interactive)
   (let ((point (with-current-buffer (get-buffer-create "*org-clock-alt-report-buffer*")
@@ -935,7 +934,7 @@ in the buffer and update it."
     (with-current-buffer (marker-buffer marker)
       (goto-char marker)
       (message "org-clock-alt-report-tree: marker %s" marker)
-      (org-clock-alt-report-in-place-x (list :point point)))
+      (org-clock-alt-report-insert-for (list :point point)))
     (switch-to-buffer (marker-buffer point))))
 ;; ;;;###autoload
 ;; (defun org-clock-alt-report-buffer (&optional properties)
@@ -944,7 +943,7 @@ in the buffer and update it."
 ;;   (let ((buff (get-buffer-create "*org-clock-alt-report-buffer*")))
 ;;     (with-current-buffer buff
 ;;       (org-mode)
-;;       (org-clock-alt-report-in-place-x properties))
+;;       (org-clock-alt-report-insert-for properties))
 ;;     (switch-to-buffer buff)))
 
 (defvar org-clock-alt-report-buffer-idle-timer nil)
