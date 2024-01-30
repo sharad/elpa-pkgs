@@ -64,7 +64,9 @@ For more information, see `org-clocktable-write-default'."
     (custom-set-max
      max
      (+ (length "• File: ")
-        (length (file-relative-name (or (car tbl) (buffer-file-name)) default-directory))))
+        (length (if (car tbl)
+                    (file-relative-name (or (car tbl) (buffer-file-name)) default-directory)
+                  default-directory))))
     (dolist (hl (nth 2 tbl))
       (let ((level (cl-first hl))
             (headline (nth 1 hl))
@@ -858,13 +860,13 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
   ;;   '(:name "clocktable")))
   (org-create-dblock
    (org-combine-plists
-    ;; (list :scope (if (org-before-first-heading-p) 'file 'subtree))
-    (list :scope (directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t))
+    (list :scope (if (org-before-first-heading-p) 'file 'subtree))
+    ;; (list :scope (directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t))
     org-clock-clocktable-alt-default-properties
     propterties
     '(:name "clocktable-alt"))))
 
-(defun org-clock-alt-report-in-place (&optional properties)
+(defun org-clock-alt-report-block-in-place (&optional properties)
   "Update or create a table containing a report about clocked time.
 
 If point is inside an existing clocktable block, update it.
@@ -889,10 +891,10 @@ clocktable, when not specified in the previous variable, is
   (let ((buff (get-buffer-create "*org-clock-alt-report-buffer*")))
     (with-current-buffer buff
       (org-mode)
-      (org-clock-alt-report-in-place properties))
+      (org-clock-alt-report-block-in-place properties))
     (switch-to-buffer buff)))
 
-(defun org-clock-alt-report-insert-for (propterties)
+(defun org-clock-alt-report-in-place (propterties)
   (org-dblock-write:clocktable-alt
    (org-combine-plists org-clock-clocktable-alt-default-properties
                        (list :scope (if (org-before-first-heading-p) 'file 'subtree))
@@ -925,6 +927,7 @@ in the buffer and update it."
      (org-clocktable-alt-report-insert))
     (start (goto-char start)))
   (org-update-dblock))
+
 
 (defun org-clock-alt-report-tree (marker)
   (interactive)
@@ -934,8 +937,9 @@ in the buffer and update it."
     (with-current-buffer (marker-buffer marker)
       (goto-char marker)
       (message "org-clock-alt-report-tree: marker %s" marker)
-      (org-clock-alt-report-insert-for (list :point point)))
+      (org-clock-alt-report-in-place (list :point point)))
     (switch-to-buffer (marker-buffer point))))
+
 ;; ;;;###autoload
 ;; (defun org-clock-alt-report-buffer (&optional properties)
 ;;   (interactive
@@ -943,7 +947,7 @@ in the buffer and update it."
 ;;   (let ((buff (get-buffer-create "*org-clock-alt-report-buffer*")))
 ;;     (with-current-buffer buff
 ;;       (org-mode)
-;;       (org-clock-alt-report-insert-for properties))
+;;       (org-clock-alt-report-in-place properties))
 ;;     (switch-to-buffer buff)))
 
 (defvar org-clock-alt-report-buffer-idle-timer nil)

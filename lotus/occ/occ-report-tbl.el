@@ -573,7 +573,9 @@ from the dynamic block definition."
     (custom-set-max
      max
      (+ (length "• File: ")
-        (length (file-relative-name (cl-first tbl) default-directory))))
+        (length (if (cl-first tbl)
+                    (file-relative-name (cl-first tbl) default-directory)
+                  default-directory))))
     (dolist (hl (nth 2 tbl))
       (let ((level (cl-first hl))
             (headline (nth 1 hl))
@@ -1319,15 +1321,13 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 
 (defun occ-clocktable-report-insert (&optional propterties)
   (org-clock-remove-overlays)
-  (org-create-dblock
-   (org-combine-plists
-    ;; (list :scope (if (org-before-first-heading-p) 'file 'subtree))
-    (list :scope (directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t))
-    org-clock-clocktable-alt-default-properties
-    propterties
-    '(:name "clocktable-alt"))))
+  (org-create-dblock (org-combine-plists (list :scope (if (org-before-first-heading-p) 'file 'subtree))
+                                         ;; (list :scope (directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t))
+                                         org-clock-clocktable-alt-default-properties
+                                         propterties
+                                         '(:name "clocktable-alt"))))
 
-(defun occ-clock-report-in-place (&optional properties)
+(defun occ-clock-report-block-in-place (&optional properties)
   "Update or create a table containing a report about clocked time.
 
 If point is inside an existing clocktable block, update it.
@@ -1345,7 +1345,7 @@ clocktable, when not specified in the previous variable, is
     (start (goto-char start)))
   (org-update-dblock))
 
-;; (defun occ-clock-report-insert-for ()
+;; (defun occ-clock-report-in-place ()
 ;;   (org-dblock-write:clocktable-alt
 ;;    (org-combine-plists
 ;;     ;; (list :scope (if (org-before-first-heading-p) 'file 'subtree))
@@ -1354,14 +1354,11 @@ clocktable, when not specified in the previous variable, is
 ;;     ;; propterties
 ;;     '(:name "clocktable-alt"))))
 
-(defun occ-clock-report-insert-for (propterties)
-  (org-dblock-write:clocktable-alt
-   (org-combine-plists org-clock-clocktable-alt-default-properties
-                       (list :scope (if (org-before-first-heading-p)
-                                        'file
-                                      'subtree))
-                       propterties
-                       '(:name "clocktable-alt"))))
+(defun occ-clock-report-in-place (propterties)
+  (org-dblock-write:clocktable-alt (org-combine-plists org-clock-clocktable-alt-default-properties
+                                                       (list :scope (if (org-before-first-heading-p) 'file 'subtree))
+                                                       propterties
+                                                       '(:name "clocktable-alt"))))
 
 
 ;;;###autoload
@@ -1370,7 +1367,7 @@ clocktable, when not specified in the previous variable, is
   (let ((buff (get-buffer-create "*occ-clock-report-buffer*")))
     (with-current-buffer buff
       (org-mode)
-      (occ-clock-report-in-place))
+      (occ-clock-report-block-in-place))
     (switch-to-buffer buff)))
 
 ;;;###autoload
@@ -1408,7 +1405,7 @@ in the buffer and update it."
     (with-current-buffer (marker-buffer marker)
       (goto-char marker)
       (message "occ-clock-report-tree: marker %s" marker)
-      (occ-clock-report-insert-for (list :point point)))
+      (occ-clock-report-in-place (list :point point)))
     (switch-to-buffer (marker-buffer point))))
 
 ;; ;;;###autoload
@@ -1418,7 +1415,7 @@ in the buffer and update it."
 ;;   (let ((buff (get-buffer-create "*occ-clock-report-buffer*")))
 ;;     (with-current-buffer buff
 ;;       (org-mode)
-;;       (occ-clock-report-in-place-x properties))
+;;       (occ-clock-report-block-in-place-x properties))
 ;;     (switch-to-buffer buff)))
 
 
@@ -1429,7 +1426,7 @@ in the buffer and update it."
 ;;   (let ((buff (get-buffer-create "*occ-clock-report-buffer*")))
 ;;     (with-current-buffer buff
 ;;       (org-mode)
-;;       (occ-clock-report-in-place))
+;;       (occ-clock-report-block-in-place))
 ;;     (switch-to-buffer buff)))
 
 
