@@ -450,7 +450,9 @@
 
 (cl-defmethod occ-do-report ((obj occ-obj-tsk))
   "Generate report"
-  (occ-clock-report-tree (occ-obj-marker obj)))
+  (occ-clock-plain-report-tree (occ-obj-marker obj)))
+  ;; (occ-clock-report-tree (occ-obj-marker obj))
+
 
 ;; (defun occ-confirm (fn new)
 ;;   (occ-y-or-n-timeout)

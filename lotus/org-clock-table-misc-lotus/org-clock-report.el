@@ -41,7 +41,7 @@
   (require 'lotus-misc-utils))
 
 
-(defcustom org-clock-clocktable-alt-formatter 'org-plain-alt-with-content-note-write
+(defcustom org-clock-clocktable-plain-report-formatter 'org-plain-report-with-content-note-write
   "Function to turn clocking data into a table.
 For more information, see `org-clocktable-write-default'."
   :group 'org-clocktable
@@ -84,10 +84,10 @@ For more information, see `org-clocktable-write-default'."
            (+ 1 level (org-report-content-max-length note))))))
     max))
 
-(defun org-plain-alt-with-content-note-write (ipos tables params)
+(defun org-plain-report-with-content-note-write (ipos tables params)
   "Write out a clock table at position IPOS in the current buffer.
 TABLES is a list of tables with clocking data as produced by
-`org-clock-get-table-data-alt'.  PARAMS is the parameter property list obtained
+`org-clock-get-table-data-plain-report'.  PARAMS is the parameter property list obtained
 from the dynamic block definition."
   ;; This function looks quite complicated, mainly because there are a
   ;; lot of options which can add or remove columns.  I have massively
@@ -169,7 +169,7 @@ from the dynamic block definition."
     (setq max-report-line-len (apply #'max (mapcar 'org-report-get-max-line-length tables)))
 
     (with-current-buffer (marker-buffer ipos)
-      (message "org-plain-alt-with-content-note-write: ipos %s" ipos)
+      (message "org-plain-report-with-content-note-write: ipos %s" ipos)
       ;; Now we need to output this tsuff
       (goto-char ipos)
 
@@ -365,6 +365,7 @@ from the dynamic block definition."
           (forward-char 1)
           (org-table-delete-column)))
       total-time)))
+(defalias 'org-clocktable-plain-report-write-default #'org-plain-report-with-content-note-write)
 
 (defun org-get-clock-note ()
   ;; TODO: improve to take all not just one.
@@ -504,7 +505,7 @@ PROPNAME lets you set a custom text property instead of :org-clock-minutes."
                 (backward-char)
                 (buffer-substring start (point)))))))))
 
-(defun org-clock-get-table-data-alt (file params)
+(defun org-clock-get-table-data-plain-report (file params)
   "Get the clocktable data for file FILE, with parameters PARAMS.
 FILE is only for identification - this function assumes that
 the correct buffer is current, and that the wanted restriction is
@@ -580,7 +581,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
                        (setq level (org-reduced-level
                                     (- (match-end 1) (match-beginning 1))))
                        (<= level maxlevel))
-              ;; TODO: here check for subtree-file: and call (org-clock-get-table-data-alt) and collect tbl from here
+              ;; TODO: here check for subtree-file: and call (org-clock-get-table-data-plain-report) and collect tbl from here
               (setq hdl (if (not link)
                             (match-string 2)
                           (org-make-link-string
@@ -614,10 +615,10 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 
 ;;;###autoload
 ;; ORIGINAL intact
-(defun ORIGINAL-org-dblock-write:clocktable-alt (params)
+(defun ORIGINAL-org-dblock-write:clocktable-plain-report (params)
   "Write the standard clocktable."
-  (setq params (org-combine-plists org-clock-clocktable-alt-default-properties ;; org-clocktable-defaults
-                                   ;; (org-dblock-table:clocktable-alt params)
+  (setq params (org-combine-plists org-clock-clocktable-plain-report-default-properties ;; org-clocktable-defaults
+                                   ;; (org-dblock-table:clocktable-plain-report params)
                                    params))
   (catch 'exit
     (let* ((scope (plist-get params :scope))
@@ -650,8 +651,8 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 	         (step (plist-get params :step))
 	         (hide-files (plist-get params :hidefiles))
 	         (formatter (or (plist-get params :formatter)
-                          org-clock-clocktable-alt-formatter
-                          'org-clocktable-alt-write-default))
+                          org-clock-clocktable-plain-report-formatter
+                          'org-clocktable-plain-report-write-default))
 	         cc)
       ;; Check if we need to do steps
       (when block
@@ -675,7 +676,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 			                     (with-current-buffer (find-buffer-visiting file)
 			                       (save-excursion
 			                         (save-restriction
-				                         (org-clock-get-table-data-alt file params)))))
+				                         (org-clock-get-table-data-plain-report file params)))))
 			                   files)
 	             ;; Get the right restriction for the scope.
 	             (save-restriction
@@ -698,7 +699,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 				                           level)
 			                     (throw 'exit nil))))
 		                 (org-narrow-to-subtree))))
-		             (list (org-clock-get-table-data-alt nil params)))))
+		             (list (org-clock-get-table-data-plain-report nil params)))))
 	          (multifile
 	           ;; Even though `file-with-archives' can consist of
 	           ;; multiple files, we consider this is one extended file
@@ -710,19 +711,19 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 	      (funcall formatter
 		             origin
 		             tables
-                 ;; (org-dblock-table:clocktable-alt params)
+                 ;; (org-dblock-table:clocktable-plain-report params)
 		             (org-combine-plists params
-                                     ;; (org-dblock-table:clocktable-alt params)
+                                     ;; (org-dblock-table:clocktable-plain-report params)
                                      `(:multifile ,multifile)))))))
 
 
 
-(defun org-dblock-write:clocktable-alt (params)
+(defun org-dblock-write:clocktable-plain-report (params)
   "Write the standard clocktable."
-  (setq params (org-combine-plists org-clock-clocktable-alt-default-properties ;; org-clocktable-defaults
-                                   ;; (org-dblock-table:clocktable-alt params)
+  (setq params (org-combine-plists org-clock-clocktable-plain-report-default-properties ;; org-clocktable-defaults
+                                   ;; (org-dblock-table:clocktable-plain-report params)
                                    params))
-  (message "org-dblock-write:clocktable-alt: params %s" params)
+  (message "org-dblock-write:clocktable-plain-report: params %s" params)
   (catch 'exit
     (let* ((scope (plist-get params :scope))
 	         (base-buffer (org-base-buffer (current-buffer)))
@@ -754,8 +755,8 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 	         (step (plist-get params :step))
 	         (hide-files (plist-get params :hidefiles))
 	         (formatter (or (plist-get params :formatter)
-                          org-clock-clocktable-alt-formatter
-                          'org-clocktable-alt-write-default))
+                          org-clock-clocktable-plain-report-formatter
+                          'org-clocktable-plain-report-write-default))
 	         cc)
       ;; Check if we need to do steps
       (when block
@@ -771,9 +772,9 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 	      (throw 'exit nil))
 
       ;; (org-agenda-prepare-buffers (if (consp files) files (list files)))
-      (message "org-dblock-write:clocktable-alt: point %s" (plist-get params :point))
-      (message "org-dblock-write:clocktable-alt: formatter %s" formatter)
-      (message "org-dblock-write:clocktable-alt: current point %s" (point-marker))
+      (message "org-dblock-write:clocktable-plain-report: point %s" (plist-get params :point))
+      (message "org-dblock-write:clocktable-plain-report: formatter %s" formatter)
+      (message "org-dblock-write:clocktable-plain-report: current point %s" (point-marker))
 
       (let ((origin (or (plist-get params :point)
                         (point-marker)))
@@ -782,7 +783,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 			                            (with-current-buffer (find-buffer-visiting file)
 			                              (save-excursion
 			                                (save-restriction
-				                                (org-clock-get-table-data-alt file params)))))
+				                                (org-clock-get-table-data-plain-report file params)))))
 			                          files)
 	                    ;; Get the right restriction for the scope.
 	                    (save-restriction
@@ -790,10 +791,10 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 		                     ((not scope))	     ;use the restriction as it is now
 		                     ((eq scope 'file) (widen))
 		                     ((eq scope 'subtree)
-                          (message "org-dblock-write:clocktable-alt: subtree")
+                          (message "org-dblock-write:clocktable-plain-report: subtree")
                           (org-narrow-to-subtree))
 		                     ((eq scope 'tree)
-                          (message "org-dblock-write:clocktable-alt: tree")
+                          (message "org-dblock-write:clocktable-plain-report: tree")
 		                      (while (org-up-heading-safe))
 		                      (org-narrow-to-subtree))
 		                     ((and (symbolp scope)
@@ -808,7 +809,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 				                                  level)
 			                            (throw 'exit nil))))
 		                        (org-narrow-to-subtree))))
-		                    (list (org-clock-get-table-data-alt nil params)))))
+		                    (list (org-clock-get-table-data-plain-report nil params)))))
 	          (multifile
 	           ;; Even though `file-with-archives' can consist of
 	           ;; multiple files, we consider this is one extended file
@@ -818,15 +819,15 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 		              (not (eq scope 'file-with-archives)))))
 
 
-        (message "org-dblock-write:clocktable-alt: origin %s, point %s" origin (plist-get params :point))
-        (message "org-dblock-write:clocktable-alt: formatter %s" formatter)
+        (message "org-dblock-write:clocktable-plain-report: origin %s, point %s" origin (plist-get params :point))
+        (message "org-dblock-write:clocktable-plain-report: formatter %s" formatter)
 
 	      (funcall formatter
 		             origin
 		             tables
-                 ;; (org-dblock-table:clocktable-alt params)
+                 ;; (org-dblock-table:clocktable-plain-report params)
 		             (org-combine-plists params
-                                     ;; (org-dblock-table:clocktable-alt params)
+                                     ;; (org-dblock-table:clocktable-plain-report params)
                                      `(:multifile ,multifile)))))))
 
 ;; (let ((scope '("a")))
@@ -837,7 +838,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 ;;      (list 'x scope))
 ;;     ((pred consp) scope)))
 
-(setq org-clock-clocktable-alt-default-properties
+(setq org-clock-clocktable-plain-report-default-properties
       (list :scope '(directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t)
             ;; :block 'lastweek
             :block 'week
@@ -848,10 +849,10 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
             :indent t
             :level t
             :tcolumns 1
-            :formatter 'org-plain-alt-with-content-note-write))
+            :formatter 'org-plain-report-with-content-note-write))
 
 
-(defun org-clocktable-alt-report-insert (&optional propterties)
+(defun org-clocktable-plain-report-insert (&optional propterties)
   ;; NOTE: fun def of org-clock-report
   ;; (org-create-dblock
   ;;  (org-combine-plists
@@ -862,12 +863,12 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
    (org-combine-plists
     (list :scope (if (org-before-first-heading-p) 'file 'subtree))
     ;; (list :scope (directory-files-recursively (expand-file-name "" (org-publish-get-attribute "tasks" "org" :base-directory)) "\\.org$" 7 nil t))
-    org-clock-clocktable-alt-default-properties
+    org-clock-clocktable-plain-report-default-properties
     propterties
-    '(:name "clocktable-alt"))))
+    '(:name "clocktable-plain-report"))))
 
 
-(defun org-clock-alt-report-block-in-place (&optional properties)
+(defun org-clock-plain-report-block-in-place (&optional properties)
   "Update or create a table containing a report about clocked time.
 
 If point is inside an existing clocktable block, update it.
@@ -880,16 +881,16 @@ clocktable, when not specified in the previous variable, is
 `file' elsewhere."
   (org-clock-remove-overlays)
   ;; (when arg
-  ;;   (org-find-dblock "clocktable-alt")
+  ;;   (org-find-dblock "clocktable-plain-report")
   ;;   (org-show-entry))
   (pcase (org-in-clocktable-p)
     (`nil
-     (org-clocktable-alt-report-insert properties))
+     (org-clocktable-plain-report-insert properties))
     (start (goto-char start)))
   (org-update-dblock))
 
 ;;;###autoload
-(defun org-clock-alt-report-block (&optional arg)
+(defun org-clock-plain-report-block (&optional arg)
   "Update or create a table containing a report about clocked time.
 
 If point is inside an existing clocktable block, update it.
@@ -906,60 +907,60 @@ in the buffer and update it."
   (interactive "P")
   (org-clock-remove-overlays)
   (when arg
-    (org-find-dblock "clocktable-alt")
+    (org-find-dblock "clocktable-plain-report")
     (org-show-entry))
   (pcase (org-in-clocktable-p)
     (`nil
-     (org-clocktable-alt-report-insert))
+     (org-clocktable-plain-report-insert))
     (start (goto-char start)))
   (org-update-dblock))
 
 ;;;###autoload
-(defun org-clock-alt-report-block-buffer (&optional properties)
+(defun org-clock-plain-report-block-buffer (&optional properties)
   (interactive
    (list nil))
-  (let ((buff (get-buffer-create "*org-clock-alt-report-block-buffer*")))
+  (let ((buff (get-buffer-create "*org-clock-plain-report-block-buffer*")))
     (with-current-buffer buff
       (org-mode)
-      (org-clock-alt-report-block-in-place properties))
+      (org-clock-plain-report-block-in-place properties))
     (switch-to-buffer buff)))
 
-(defun org-clock-alt-report-in-place (propterties)
-  (org-dblock-write:clocktable-alt (org-combine-plists org-clock-clocktable-alt-default-properties
+(defun org-clock-plain-report-in-place (propterties)
+  (org-dblock-write:clocktable-plain-report (org-combine-plists org-clock-clocktable-plain-report-default-properties
                                                        (list :scope (if (org-before-first-heading-p) 'file 'subtree))
                                                        propterties
-                                                       '(:name "clocktable-alt"))))
+                                                       '(:name "clocktable-plain-report"))))
 
 
-(defun org-clock-alt-report-tree (marker)
+(defun org-clock-plain-report-tree (marker)
   (interactive)
-  (let ((point (with-current-buffer (get-buffer-create "*org-clock-alt-report-block-buffer*")
+  (let ((point (with-current-buffer (get-buffer-create "*org-clock-plain-report-block-buffer*")
                  (let ((inhibit-read-only t))
                    ;; (setf (buffer-string) "")
                    (erase-buffer))
                  (point-marker))))
-    (message "org-clock-alt-report-tree: before point %s" point)
+    (message "org-clock-plain-report-tree: before point %s" point)
     (with-current-buffer (marker-buffer marker)
       (goto-char marker)
-      (message "org-clock-alt-report-tree: marker %s" marker)
-      (org-clock-alt-report-in-place (list :point point)))
+      (message "org-clock-plain-report-tree: marker %s" marker)
+      (org-clock-plain-report-in-place (list :point point)))
     (switch-to-buffer (marker-buffer point))))
 
 
-(defvar org-clock-alt-report-block-buffer-idle-timer nil)
+(defvar org-clock-plain-report-block-buffer-idle-timer nil)
 
-(defun org-clock-alt-report-block-buffer-when-idle (secs)
+(defun org-clock-plain-report-block-buffer-when-idle (secs)
   (interactive "nNumber: ")
-  (when org-clock-alt-report-block-buffer-idle-timer
-    (cancel-timer org-clock-alt-report-block-buffer-idle-timer)
-    (setq org-clock-alt-report-block-buffer-idle-timer nil))
+  (when org-clock-plain-report-block-buffer-idle-timer
+    (cancel-timer org-clock-plain-report-block-buffer-idle-timer)
+    (setq org-clock-plain-report-block-buffer-idle-timer nil))
   (let ((secs (if (and secs
                        (> secs 7))
                   secs
                 30)))
-    (setq org-clock-alt-report-block-buffer-idle-timer
+    (setq org-clock-plain-report-block-buffer-idle-timer
           (run-with-idle-timer secs
                                secs
-                               #'org-clock-alt-report-block-buffer))))
+                               #'org-clock-plain-report-block-buffer))))
 
 ;;; org-clock-report.el ends here
