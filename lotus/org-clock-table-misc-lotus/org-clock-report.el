@@ -672,11 +672,11 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
       (let ((origin (point))
 	          (tables
 	           (if (consp files)
-		             (mapcar (lambda (file)
-			                     (with-current-buffer (find-buffer-visiting file)
-			                       (save-excursion
-			                         (save-restriction
-				                         (org-clock-get-table-data-plain-report file params)))))
+		             (mapcar #'(lambda (file)
+			                       (with-current-buffer (find-buffer-visiting file)
+			                         (save-excursion
+			                           (save-restriction
+				                           (org-clock-get-table-data-plain-report file params)))))
 			                   files)
 	             ;; Get the right restriction for the scope.
 	             (save-restriction
