@@ -36,15 +36,14 @@
 
 (defun occ-clock-plain-report-tree (marker)
   (org-clock-plain-report-tree marker
-                               :block
-                               (occ-util-select-from-sym-list "Block: " '(today ;check org-clock-special-range
-                                                                          thisweek
-                                                                          thismonth
-                                                                          thisyear
-                                                                          lastweek
-                                                                          lastmonth
-                                                                          lastyear
-                                                                          untilnow
-                                                                          interactive))))
+                               :block (occ-util-select-from-sym-list "Block: " '(today ;check org-clock-special-range
+                                                                                 thisweek
+                                                                                 thismonth
+                                                                                 thisyear
+                                                                                 lastweek
+                                                                                 lastmonth
+                                                                                 lastyear
+                                                                                 untilnow
+                                                                                 interactive))))
 
 ;;; occ-clock-report.el ends here
