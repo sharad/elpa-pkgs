@@ -925,15 +925,17 @@ clocktable, when not specified in the previous variable, is
       (apply #'org-clock-plain-report-block-in-place properties))
     (switch-to-buffer buff)))
 
-(defun org-clock-plain-report-in-place (propterties)
+(defun org-clock-plain-report-in-place (properties)
+  (message "org-clock-plain-report-in-place: properties = %s" properties)
   (org-dblock-write:clocktable-plain-report (org-combine-plists org-clock-clocktable-plain-report-default-properties
                                                        (list :scope (if (org-before-first-heading-p) 'file 'subtree))
-                                                       propterties
+                                                       properties
                                                        '(:name "clocktable-plain-report"))))
 
 
 (defun org-clock-plain-report-tree (marker &rest properties)
   (interactive)
+  (message "org-clock-plain-report-tree: properties = %s" properties)
   (let ((point (with-current-buffer (get-buffer-create "*org-clock-plain-report-block-buffer*")
                  (let ((inhibit-read-only t))
                    ;; (setf (buffer-string) "")

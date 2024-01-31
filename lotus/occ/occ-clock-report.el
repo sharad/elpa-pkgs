@@ -32,7 +32,9 @@
 
 
 (defun occ-clock-plain-report-tree (marker)
-  (org-clock-plain-report-tree marker))
+  (org-clock-plain-report-tree marker
+                               :block
+                               'lastyear))
 
 ;; (org-clock-alt-report-tree (occ-obj-marker (occ-get-debug-obj)))
 ;; (occ-clock-report-tree (occ-obj-marker (occ-get-debug-obj)))
