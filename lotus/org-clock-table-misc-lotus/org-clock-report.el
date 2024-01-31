@@ -718,7 +718,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 
 
 
-(defun org-dblock-write:clocktable-plain-report (params)
+(defun org-dblock-write:clocktable-plain-report (params) ;org-dblock-write:clocktable(org-clock.el)
   "Write the standard clocktable."
   (setq params (org-combine-plists org-clock-clocktable-plain-report-default-properties ;; org-clocktable-defaults
                                    ;; (org-dblock-table:clocktable-plain-report params)
@@ -866,31 +866,9 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
     org-clock-clocktable-plain-report-default-properties
     propterties
     '(:name "clocktable-plain-report"))))
-
-
-(defun org-clock-plain-report-block-in-place (&optional properties)
-  "Update or create a table containing a report about clocked time.
-
-If point is inside an existing clocktable block, update it.
-Otherwise, insert a new one.
-
-The new table inherits its properties from the variable
-`org-clock-clocktable-default-properties'.  The scope of the
-clocktable, when not specified in the previous variable, is
-`subtree' when the function is called from within a subtree, and
-`file' elsewhere."
-  (org-clock-remove-overlays)
-  ;; (when arg
-  ;;   (org-find-dblock "clocktable-plain-report")
-  ;;   (org-show-entry))
-  (pcase (org-in-clocktable-p)
-    (`nil
-     (org-clocktable-plain-report-insert properties))
-    (start (goto-char start)))
-  (org-update-dblock))
 
 ;;;###autoload
-(defun org-clock-plain-report-block (&optional arg)
+(defun org-clock-plain-report (&optional arg) ;org-clock-report(org-clock.el)
   "Update or create a table containing a report about clocked time.
 
 If point is inside an existing clocktable block, update it.
@@ -915,14 +893,36 @@ in the buffer and update it."
     (start (goto-char start)))
   (org-update-dblock))
 
+(defun org-clock-plain-report-block-in-place (&optional properties)
+  "Update or create a table containing a report about clocked time.
+
+If point is inside an existing clocktable block, update it.
+Otherwise, insert a new one.
+
+The new table inherits its properties from the variable
+`org-clock-clocktable-default-properties'.  The scope of the
+clocktable, when not specified in the previous variable, is
+`subtree' when the function is called from within a subtree, and
+`file' elsewhere."
+  (org-clock-remove-overlays)
+  ;; (when arg
+  ;;   (org-find-dblock "clocktable-plain-report")
+  ;;   (org-show-entry))
+  (pcase (org-in-clocktable-p)
+    (`nil
+     (org-clocktable-plain-report-insert properties))
+    (start (goto-char start)))
+  (org-update-dblock))
+
+
 ;;;###autoload
-(defun org-clock-plain-report-block-buffer (&optional properties)
+(defun org-clock-plain-report-block-buffer (&rest properties)
   (interactive
    (list nil))
   (let ((buff (get-buffer-create "*org-clock-plain-report-block-buffer*")))
     (with-current-buffer buff
       (org-mode)
-      (org-clock-plain-report-block-in-place properties))
+      (apply #'org-clock-plain-report-block-in-place properties))
     (switch-to-buffer buff)))
 
 (defun org-clock-plain-report-in-place (propterties)
@@ -932,7 +932,7 @@ in the buffer and update it."
                                                        '(:name "clocktable-plain-report"))))
 
 
-(defun org-clock-plain-report-tree (marker)
+(defun org-clock-plain-report-tree (marker &rest properties)
   (interactive)
   (let ((point (with-current-buffer (get-buffer-create "*org-clock-plain-report-block-buffer*")
                  (let ((inhibit-read-only t))
@@ -943,7 +943,8 @@ in the buffer and update it."
     (with-current-buffer (marker-buffer marker)
       (goto-char marker)
       (message "org-clock-plain-report-tree: marker %s" marker)
-      (org-clock-plain-report-in-place (list :point point)))
+      (org-clock-plain-report-in-place (org-combine-plists (list :point point)
+                                                           properties)))
     (switch-to-buffer (marker-buffer point))))
 
 
