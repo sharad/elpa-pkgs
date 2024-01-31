@@ -928,9 +928,9 @@ clocktable, when not specified in the previous variable, is
 (defun org-clock-plain-report-in-place (properties)
   (message "org-clock-plain-report-in-place: properties = %s" properties)
   (org-dblock-write:clocktable-plain-report (org-combine-plists org-clock-clocktable-plain-report-default-properties
-                                                       (list :scope (if (org-before-first-heading-p) 'file 'subtree))
-                                                       properties
-                                                       '(:name "clocktable-plain-report"))))
+                                                                (list :scope (if (org-before-first-heading-p) 'file 'subtree))
+                                                                properties
+                                                                '(:name "clocktable-plain-report"))))
 
 
 (defun org-clock-plain-report-tree (marker &rest properties)

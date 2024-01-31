@@ -30,13 +30,21 @@
 (require 'org-clock-report)
 
 
+(require 'occ-util-common)
+
+
 
 (defun occ-clock-plain-report-tree (marker)
   (org-clock-plain-report-tree marker
                                :block
-                               'lastyear))
-
-;; (org-clock-alt-report-tree (occ-obj-marker (occ-get-debug-obj)))
-;; (occ-clock-report-tree (occ-obj-marker (occ-get-debug-obj)))
+                               (occ-util-select-from-sym-list "Block: " '(today ;check org-clock-special-range
+                                                                          thisweek
+                                                                          thismonth
+                                                                          thisyear
+                                                                          lastweek
+                                                                          lastmonth
+                                                                          lastyear
+                                                                          untilnow
+                                                                          interactive))))
 
 ;;; occ-clock-report.el ends here
