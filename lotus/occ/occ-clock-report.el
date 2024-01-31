@@ -1,4 +1,4 @@
-;;; occ-clock-report.el --- OCC Report table           -*- lexical-binding: t; -*-
+;;; occ-clock-report.el --- OCC Clock Report           -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023  Music Player Daemon (MPD) user
 
