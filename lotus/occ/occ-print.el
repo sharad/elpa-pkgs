@@ -311,6 +311,14 @@ pointing to it."
                               no-curr-clock
                               no-propterties)
   (format "%s" obj))
+
+(cl-defmethod occ-obj-format (obj
+                              &optional
+                              case
+                              rank
+                              no-curr-clock
+                              no-propterties)
+  (format "%s" obj))
 
 
 (cl-defmethod occ-obj-nonocc-format (obj)
