@@ -95,12 +95,9 @@ from the dynamic block definition."
   ;; someone wants to write their own special formatter, this maybe
   ;; much easier because there can be a fixed format with a
   ;; well-defined number of columns...
-  (let* ((headline-single-char-str
-          (or (plist-get params :headline-char) "•"))
-         (insert-content
-          (or (plist-get params :insert-content) t))
-         (insert-notes
-          (or (plist-get params :insert-notes) t))
+  (let* ((headline-single-char-str (or (plist-get params :headline-char) "•"))
+         (insert-content           (or (plist-get params :insert-content) t))
+         (insert-notes             (or (plist-get params :insert-notes) t))
          (hlchars '((1 . "*") (2 . "/")))
          (lwords (assoc (or (plist-get params :lang)
                             (org-bound-and-true-p org-export-default-language)
@@ -283,10 +280,9 @@ from the dynamic block definition."
                ;;       properties "|") "|") "")  ;properties columns, maybe
                ;; (if indent (org-clocktable-indent-string level) "") ; indentation
                (make-string level
-                            (if (and
-                                 headline-single-char-str
-                                 (stringp headline-single-char-str)
-                                 (> (length headline-single-char-str) 0))
+                            (if (and headline-single-char-str
+                                     (stringp headline-single-char-str)
+                                     (> (length headline-single-char-str) 0))
                                 (aref headline-single-char-str 0)
                               ?*))
                " "
@@ -612,112 +608,9 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 
       (setq tbl (nreverse tbl))
       (list file org-clock-file-total-minutes tbl))))
-
-;;;###autoload
-;; ORIGINAL intact
-(defun ORIGINAL-org-dblock-write:clocktable-plain-report (params)
-  "Write the standard clocktable."
-  (setq params (org-combine-plists org-clock-clocktable-plain-report-default-properties ;; org-clocktable-defaults
-                                   ;; (org-dblock-table:clocktable-plain-report params)
-                                   params))
-  (catch 'exit
-    (let* ((scope (plist-get params :scope))
-           (base-buffer (org-base-buffer (current-buffer)))
-           (files (pcase scope
-                    (`agenda
-                     (org-agenda-files t))
-                    (`agenda-with-archives
-                     (org-add-archive-files (org-agenda-files t)))
-                    (`file-with-archives
-                     (let ((base-file (buffer-file-name base-buffer)))
-                       (and base-file
-                            (org-add-archive-files (list base-file)))))
-                    ((or `nil `file `subtree `tree
-                         (and (pred symbolp)
-                              (guard (string-match "\\`tree\\([0-9]+\\)\\'"
-                                                   (symbol-name scope)))))
-                     base-buffer)
-                    ((pred functionp) (funcall scope))
-                    ((and (pred consp)
-                         (guard (symbolp (car scope))))
-                     (eval scope))
-                    ((pred consp) scope)
-                    (_ (user-error "Unknown scope: %S" scope))))
-           (block (plist-get params :block))
-           (ts (plist-get params :tstart))
-           (te (plist-get params :tend))
-           (ws (plist-get params :wstart))
-           (ms (plist-get params :mstart))
-           (step (plist-get params :step))
-           (hide-files (plist-get params :hidefiles))
-           (formatter (or (plist-get params :formatter)
-                          org-clock-clocktable-plain-report-formatter
-                          'org-clocktable-plain-report-write-default))
-           cc)
-      ;; Check if we need to do steps
-      (when block
-        ;; Get the range text for the header
-        (setq cc (org-clock-special-range block nil t ws ms)
-              ts (car cc)
-              te (nth 1 cc)))
-      (when step
-        ;; Write many tables, in steps
-        (unless (or block (and ts te))
-          (user-error "Clocktable `:step' can only be used with `:block' or `:tstart', `:tend'"))
-        (org-clocktable-steps params)
-        (throw 'exit nil))
-
-      ;; (org-agenda-prepare-buffers (if (consp files) files (list files)))
-
-      (let ((origin (point))
-            (tables
-             (if (consp files)
-                 (mapcar #'(lambda (file)
-                             (with-current-buffer (find-buffer-visiting file)
-                               (save-excursion
-                                 (save-restriction
-                                   (org-clock-get-table-data-plain-report file params)))))
-                         files)
-               ;; Get the right restriction for the scope.
-               (save-restriction
-                 (cond
-                  ((not scope))      ;use the restriction as it is now
-                  ((eq scope 'file) (widen))
-                  ((eq scope 'subtree) (org-narrow-to-subtree))
-                  ((eq scope 'tree)
-                   (while (org-up-heading-safe))
-                   (org-narrow-to-subtree))
-                  ((and (symbolp scope)
-                        (string-match "\\`tree\\([0-9]+\\)\\'"
-                                      (symbol-name scope)))
-                   (let ((level (string-to-number
-                                 (match-string 1 (symbol-name scope)))))
-                     (catch 'exit
-                       (while (org-up-heading-safe)
-                         (looking-at org-outline-regexp)
-                         (when (<= (org-reduced-level (funcall outline-level))
-                                   level)
-                           (throw 'exit nil))))
-                     (org-narrow-to-subtree))))
-                 (list (org-clock-get-table-data-plain-report nil params)))))
-            (multifile
-             ;; Even though `file-with-archives' can consist of
-             ;; multiple files, we consider this is one extended file
-             ;; instead.
-             (and (not hide-files)
-                  (consp files)
-                  (not (eq scope 'file-with-archives)))))
-
-        (funcall formatter
-                 origin
-                 tables
-                 ;; (org-dblock-table:clocktable-plain-report params)
-                 (org-combine-plists params
-                                     ;; (org-dblock-table:clocktable-plain-report params)
-                                     `(:multifile ,multifile)))))))
 
 
-
+;;;###autoload
 (defun org-dblock-write:clocktable-plain-report (params) ;org-dblock-write:clocktable(org-clock.el)
   "Write the standard clocktable."
   (setq params (org-combine-plists org-clock-clocktable-plain-report-default-properties ;; org-clocktable-defaults
@@ -779,11 +672,11 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
       (let ((origin (or (plist-get params :point)
                         (point-marker)))
             (tables (if (consp files)
-                        (mapcar (lambda (file)
-                                  (with-current-buffer (find-buffer-visiting file)
-                                    (save-excursion
-                                      (save-restriction
-                                        (org-clock-get-table-data-plain-report file params)))))
+                        (mapcar #'(lambda (file)
+                                    (with-current-buffer (find-buffer-visiting file)
+                                      (save-excursion
+                                        (save-restriction
+                                          (org-clock-get-table-data-plain-report file params)))))
                                 files)
                       ;; Get the right restriction for the scope.
                       (save-restriction
