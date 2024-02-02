@@ -54,7 +54,7 @@
 (require 'occ-helm-actions-config)
 (require 'occ-clock)
 (require 'occ-util-method)
-(require 'occ-report-tbl)
+(require 'occ-clock-report)
 
 
 (defvar occ-idle-timeout 7)
