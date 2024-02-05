@@ -140,7 +140,8 @@
   ;;              (occ-obj-format child)
   ;;              (occ-obj-format obj))
   (occ-obj-set-property child 'subtree-level
-                        (1+ (occ-obj-get-property obj 'subtree-level)))
+                        (1+ (occ-obj-get-property obj
+                                                  'subtree-level)))
   (occ-insert-node-after-element child (if (occ-tree-tsk-subtree obj)
                                            (car (last (occ-tree-tsk-subtree obj)))
                                          obj) ;BUG: how to identify correction collection
