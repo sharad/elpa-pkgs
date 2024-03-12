@@ -97,7 +97,7 @@
                         helm-ff-auto-update-flag)
                   (helm-set-local-variable 'bookmark-make-record-function
                                            #'helm-ff-make-bookmark-record)
-                (require 'helm-external)))
+                 (require 'helm-external)))
    (candidates :initform 'helm-find-files-get-candidates)
    (update :initform #'(lambda ()))
    (match-on-real :initform nil)
@@ -364,9 +364,8 @@ select candidate from it."
 
 (defun occ-helm-build-dummy-sources ()
   (list (occ-obj-helm-build-dummy-source "Create fast child task may use template" #'occ-do-fast-create-child)
-        (occ-obj-helm-build-dummy-source "Create Anonymous task"                   #'occ-do-create-anonymous-child)
+        (occ-obj-helm-build-dummy-source "Create Anonymous task"                   #'occ-do-create-anonymous-child)))
         ;; (occ-obj-helm-build-dummy-source "Create Anonymous (fast as unnamed)"      #'occ-do-fast-create-anonymous-child)
-        ))
 
 (defun occ-helm-build-extra-actions-tsk-source ()
   (unless (member (buffer-name (current-buffer))
@@ -566,14 +565,20 @@ select candidate from it."
                                                        (if in-occ-helm
                                                            (helm-refresh)
                                                          (occ-debug "Running occ-list-select-internal helm is gone"))))))
-              (unwind-protect
+              (unwind-protect ; (error "No buffer named *helm: occ select*") ; (error "Selecting deleted buffer")
                   (when (occ-obj-obj (cl-first helm-sources))
                     (occ-mac-condition-case-control err
                         (helm :sources (mapcar #'occ-obj-obj helm-sources)
                               :buffer  (occ-obj-helm-select-buffer)
                               :resume  'noresume)
                       ((quit error)
-                       (occ-message "Enable Disable occ with occ-mode %s." err))))
+                       (when (string= (format "No buffer named %s" (occ-obj-helm-select-buffer))
+                                      (cadr err))
+                         (occ-message "aborting OCC-OBJ-HELM-ACT-ON-MULTIPLE")
+                         ;; (abort-recursive-edit)
+                         (keyboard-quit))
+                       (occ-message "Enable Disable occ with occ-mode %S." err)
+                       nil)))
                 (progn
                   (setq in-occ-helm nil)
                   (cancel-timer timer))))))))))
