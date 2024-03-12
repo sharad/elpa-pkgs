@@ -43,7 +43,7 @@
 ;; helm-buffers
 ;; helm-buffer
 
-(defvar occ-helm-select-buffer-name "*helm: occ select*")
+(defvar occ-helm-select-buffer-name " *helm: occ select*")
 (defun occ-obj-helm-select-buffer ()
   occ-helm-select-buffer-name)
 
