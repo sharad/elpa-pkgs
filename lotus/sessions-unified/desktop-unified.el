@@ -458,7 +458,7 @@ so returns nil if pid is nil."
 (defvar session-debug-on-error nil "session-debug-on-error")
 
 ;;;###autoload
-(defun save-all-sessions-auto-save (&optional force)
+(defun save-all-sessions-auto-save-old (&optional force)
   "Save elscreen frame, desktop, and session time to time
  restore in case of sudden emacs crash."
   (interactive "P")
@@ -518,6 +518,57 @@ so returns nil if pid is nil."
 
         (setq save-all-sessions-auto-save-time (current-time)
               save-all-sessions-auto-save-idle-time-interval-dynamic save-all-sessions-auto-save-idle-time-interval)))))
+
+
+(defun save-all-sessions-auto-save (&optional force)
+  "Save elscreen frame, desktop, and session time to time
+ restore in case of sudden emacs crash."
+  (interactive "P")
+  (message "Entering save-all-sessions-auto-save")
+  (let ((idle-time (or (current-idle-time) '(0 0 0)))
+        (time-format "%a %H:%M:%S"))
+    ;; (time-since-save-all-sessions-auto-save-time (float-time (time-since save-all-sessions-auto-save-time)))
+
+    (let ((time-since-last-save (float-time (time-since save-all-sessions-auto-save-time))))
+      (if (or force
+              (> time-since-last-save (float-time idle-time)))
+          (if (or force
+                  (> time-since-last-save save-all-sessions-auto-save-time-interval))
+              (if (or force
+                      (and idle-time
+                           ;; http://www.gnu.org/software/emacs/manual/html_node/emacs/Auto-Save-Control.html#Auto-Save-Control
+                           (> (float-time idle-time) save-all-sessions-auto-save-idle-time-interval-dynamic)))
+                  (progn
+                    (run-hooks 'session-unified-save-all-sessions-before-hook)
+                    (session-unfiy-notify "Started to save frame desktop and session.\ncurrent time %s, idle time %d idle-time-interval left %d"
+                             (format-time-string time-format save-all-sessions-auto-save-time)
+                             (float-time idle-time)
+                             save-all-sessions-auto-save-idle-time-interval-dynamic)
+                    ;; (message "current time %s, idle time %d idle-time-interval left %d"
+                    ;;          (format-time-string time-format save-all-sessions-auto-save-time)
+                    ;;          (float-time idle-time)
+                    ;;          save-all-sessions-auto-save-idle-time-interval-dynamic)
+                    (setq save-all-sessions-auto-save-time (current-time)
+                          save-all-sessions-auto-save-idle-time-interval-dynamic save-all-sessions-auto-save-idle-time-interval)
+                    (prog1
+                        (progn
+                          (message "Entering save-all-frames-session")
+                          (save-all-frames-session)
+                          (message "Entering session-vc-save-session")
+                          (session-vc-save-session)
+                          (when *session-unified-desktop-enabled*
+                            (message "Entering my-desktop-save")
+                            (my-desktop-save))
+                          (session-unfiy-notify "Saved frame desktop and session.")
+                          (message nil))
+                      (message "running session-unified-save-all-sessions-after-hook")
+                      (run-hooks 'session-unified-save-all-sessions-after-hook)))
+                (setq save-all-sessions-auto-save-idle-time-interval-dynamic
+                      (1- save-all-sessions-auto-save-idle-time-interval-dynamic))))
+
+        (setq save-all-sessions-auto-save-time (current-time)
+              save-all-sessions-auto-save-idle-time-interval-dynamic save-all-sessions-auto-save-idle-time-interval))))
+  (message "Exiting save-all-sessions-auto-save"))
 
 (defun save-all-sessions-auto-save-immediately () (save-all-sessions-auto-save t))
 
