@@ -252,6 +252,22 @@
                         wildcards)))
 
 
+;; from https://www.emacswiki.org/emacs/AngryFruitSalad
+(defun occ-wash-out-colour (colour &optional degree)
+  "Return a colour string specifying a washed-out version of COLOUR."
+  (let ((basec (color-values
+                (face-attribute 'default :foreground)))
+        (col (color-values colour))
+        (list nil))
+    (unless degree (setq degree 2))
+    (while col
+      (push (/ (/ (+ (pop col)
+                     (* degree (pop basec)))
+                  (1+ degree))
+               256)
+            list))
+    (apply 'format "#%02x%02x%02x" (nreverse list))))
+
 (defun occ-obj-add-face-properties (text &rest properties)
   ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Changing-Properties.html
   ;; Create a copy of the text string

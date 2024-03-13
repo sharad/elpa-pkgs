@@ -289,6 +289,7 @@ pointing to it."
                   ;; (occ-message "heading: |%s|" heading)
                   (concat prefix
                           (occ-obj-add-face-properties heading
+                                                       ;; :background 
                                                        :strike-through t))))))))
 
 (cl-defmethod occ-obj-format ((obj occ-return)
