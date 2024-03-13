@@ -49,6 +49,31 @@
 (require 'occ-util-common)
 
 
+;; (progn
+;;   (with-helm-buffer
+;;     (let* ((posn (elt event 1)) 
+;;            (cursor (line-number-at-pos (point)))
+;;            (pointer (line-number-at-pos (posn-point posn))))
+;;       (helm--next-or-previous-line (if (> pointer cursor)
+;;                                        'next
+;;                                      'previous)
+;;                                    (abs (- pointer cursor)))))
+;;   (when t
+;;     (helm-maybe-exit-minibuffer)))
+
+(defun occ-helm-maybe-exit-minibuffer ()
+  ;; https://www.reddit.com/r/emacs/comments/376won/select_helm_candidate_by_using_mouse_click/
+  ;; helm-execute-persistent-action
+  (interactive)
+  (with-helm-alive-p
+    (let* ((source     (helm-get-current-source))
+           (obj        (and source (helm-get-selection nil nil source)))
+           (selectable (and obj    (occ-obj-tsk-selectable obj))))
+      ;; (occ-message "Selection(%s): %s" (occ-obj-tsk-selectable obj) (occ-obj-format obj))
+      (if selectable
+          (helm-maybe-exit-minibuffer)
+        (occ-message "ReadOnly %s" (occ-obj-format obj))))))
+    
 (defvar occ-helm-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map helm-map)
@@ -61,6 +86,7 @@
     ;;     ([C-c DEL] . helm-ff-run-toggle-auto-update)
     ;;     nil 'helm-ff-delete-char-backward--exit-fn))
     (when t ;; helm-ff-lynx-style-map
+      (define-key map (kbd "RET")         'occ-helm-maybe-exit-minibuffer)
       (define-key map (kbd "<left>")      'helm-find-files-up-one-level)
       (define-key map (kbd "<right>")     'helm-execute-persistent-action))
     (delq nil map))
