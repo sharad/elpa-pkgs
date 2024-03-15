@@ -61,6 +61,32 @@
 ;;   (when t
 ;;     (helm-maybe-exit-minibuffer)))
 
+(defun occ-helm-next-line (&optional ARG)
+  (interactive "p")
+  (with-helm-alive-p
+    (helm--next-or-previous-line 'next arg)))
+(defun occ-helm-next-page ()
+  "Move selection forward with a pageful."
+  (interactive)
+  (with-helm-alive-p
+    (let (helm-scroll-amount)
+      (helm-move-selection-common :where 'page :direction 'next))))
+(defun occ-helm-next-visible-mark (&optional prev)
+  (interactive)
+  (with-helm-alive-p
+    (with-helm-window
+      (ignore-errors
+        (goto-char (helm-next-point-in-list
+                    (point)
+                    (sort (mapcar 'overlay-start helm-visible-mark-overlays) '<)
+                    prev)))
+      (helm-mark-current-line))))
+
+(defun occ-helm-previous-line (&optional ARG))
+(defun occ-helm-previous-page ())
+(defun occ-helm-previous-visible-mark (&optional prev))
+
+
 (defun occ-helm-maybe-exit-minibuffer ()
   ;; https://www.reddit.com/r/emacs/comments/376won/select_helm_candidate_by_using_mouse_click/
   ;; helm-execute-persistent-action
@@ -73,7 +99,7 @@
       (if selectable
           (helm-maybe-exit-minibuffer)
         (occ-message "ReadOnly %s" (occ-obj-format obj))))))
-    
+
 (defvar occ-helm-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map helm-map)

@@ -285,12 +285,20 @@ pointing to it."
                        (end   (1+ (string-match " " (substring tsk-str start))))
                        (prefix  (substring tsk-str 0 (+ start end)))
                        (heading (substring tsk-str (+ start end))))
+                       ;; (strike-heading (occ-obj-add-face-properties heading
+                       ;;                                              ?w
+                       ;;                                              :strike-through t))
                   ;; (occ-message "prefix: |%s|" prefix)
                   ;; (occ-message "heading: |%s|" heading)
-                  (concat prefix
-                          (occ-obj-add-face-properties heading
-                                                       ;; :background 
-                                                       :strike-through t))))))))
+                  (occ-obj-add-face-properties (concat prefix heading)
+                                               nil ;;?w
+                                               ;;:strike-through t
+                                               :weight "bold"
+                                               ;; :background "sienna1"
+                                               ;; :background "DarkGrey"
+                                               ;; :background "Steelblue4"
+                                               ;; :background "Gray10"
+                                               :background "Gray50")))))))
 
 (cl-defmethod occ-obj-format ((obj occ-return)
                               &optional

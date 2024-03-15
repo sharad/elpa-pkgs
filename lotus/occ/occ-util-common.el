@@ -268,20 +268,23 @@
             list))
     (apply 'format "#%02x%02x%02x" (nreverse list))))
 
-(defun occ-obj-add-face-properties (text &rest properties)
+(defun occ-obj-add-face-properties (text class &rest properties)
   ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Changing-Properties.html
   ;; Create a copy of the text string
   (let ((modified-str (copy-sequence text)))
     ;; Iterate through the text string and modify the background color at each position
     (dotimes (pos (length text))
       (let ((face-at-pos (get-text-property pos 'face text)))
-        (when (= ?w
-                 (char-syntax (aref text pos)))
+        (when (or (null class)
+                  (= class
+                     (char-syntax (aref text pos))))
           (add-text-properties pos (1+ pos)
                                (list 'face (cons face-at-pos
                                                  properties))
                                modified-str))))
     modified-str))
+
+
 
 
 ;;;###autoload
