@@ -28,15 +28,13 @@ As org-mode and org-clock task entries could be defined, can manually be clocked
 
 For addressing problem
 
-- Need a system to remind when already
-  + no task clocked in
-  + wrong task clock in according to context, including unnamed task
-
-- Some formalization of context for task and project
+- Need a system to remind when
+  + no task entry clocked in
+  + wrong task entry clock in according to context, including unnamed task
+- Some formalization of context for task with project
 - and a system to define context dynamically and further modify it.
-- With minimal user intervention, with minimal attention of user, else it will
-  distract the flow of user on current project or work.
-
+- System should operate with minimal intervention, attention of user, else it
+  will distract the work flow of user on current project or work.
 
 ** Design
 
