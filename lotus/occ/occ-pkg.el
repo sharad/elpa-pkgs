@@ -8,6 +8,6 @@
     (org-clock-hooks "1")
     (org-clock-wrapper "1")
     (org-capture+ "1")
-    (org-onchange "1")
+    (activity "1")
     (org-clock-table-misc-lotus "1")
     (switch-buffer-functions "1")))

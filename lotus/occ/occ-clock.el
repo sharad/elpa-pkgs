@@ -27,7 +27,7 @@
 (provide 'occ-clock)
 
 
-(require 'org-onchange) ;; for org-insert-log-note
+(require 'org-insert-utils) ;; for org-insert-log-note
 (eval-when-compile
   (require 'org-misc-utils-lotus))
 
@@ -239,55 +239,55 @@ for adding properties to heading."
   (unless builder (error "Builder can not be nil"))
   ;; (occ-debug "occ-do-clock-in(occ-ctx=%s)" obj)
   (if (occ-obj-clockable-p obj)
-    (let ((filters   (or filters (occ-match-filters)))
-          (builder   (or builder #'occ-obj-build-ctxual-tsk-with))
-          (ap-normal '(t actions general checkout))
-          (ap-transf '(t actions general edit checkout))
-          (timeout   (or timeout occ-idle-timeout)))
-      (occ-debug "occ-do-clock-in((obj occ-ctx)): begin")
-      (let ((returned-ctxual-tsk (occ-obj-select obj ;TODO: if only one match then where it is selecting that.
-                                                 (occ-collections-all)
-                                                 :filters             filters
-                                                 :builder             builder
-                                                 :return-transform    t ;Here I know return value is going to be used, so passing t
-                                                 :ap-normal           ap-normal ;as return value is going to be used.
-                                                 :ap-transf           ap-transf
-                                                 :auto-select-if-only auto-select-if-only
-                                                 :timeout             timeout)))
-        ;; (occ-debug "occ-do-clock-in((obj occ-ctx)): selected  returned-ctxual-tsk=%s ret-label=%s value=%s"
-        ;;                   (occ-name returned-ctxual-tsk)
-        ;;                   (occ-obj-return-in-labels-p returned-ctxual-tsk occ-return-select-label)
-        ;;                   (occ-obj-format (occ-obj-obj returned-ctxual-tsk)))
-        (if (occ-obj-return-in-labels-p returned-ctxual-tsk ;TODO: should return t if action were done than select[=identity] ;; occ-return-label
-                                        occ-return-select-label)
-            (let ((ctxual-tsk (occ-obj-obj returned-ctxual-tsk)))
-              (prog1
-                  (when return-transform ;Here caller know if return value is going to be used.
-                       (occ-obj-make-return occ-return-true-label nil))
-                (if (occ-ctxual-tsk-p ctxual-tsk)
-                    (occ-do-clock-in ctxual-tsk
-                                     :filters   filters
-                                     :builder   builder
-                                     :ap-normal ap-normal
-                                     :ap-transf ap-transf
-                                     :timeout   timeout)
-                  (occ-debug "%s is not ctxual-tsk" (occ-obj-format ctxual-tsk 'capitalize)))))
-          (progn
-            ;; here create unnamed tsk, no need
-            (setq *occ-update-current-ctx-msg* "null clock")
-            ;; (occ-delayed-select-obj-prop-edit-when-idle obj obj occ-idle-timeout)
-            (occ-debug "No clock found please set a match for this ctx %s, add it using M-x occ-prop-edit-safe."
-                       obj)
-            (occ-debug "occ-do-clock-in(ctx):  with this-command=%s" this-command)
-            ;; (occ-debug "occ-do-clock-in: Edit properties of a tsk %s to make associable to current context."
-            ;;              (occ-obj-Format obj))
-            (occ-obj-safe-ignore-quit-properties-window-editor obj
-                                                               :filters          (occ-list-filters)
-                                                               :builder          #'occ-obj-build-ctsk-with
-                                                               :return-transform return-transform ;Here caller know if return value is going to be used.
-                                                               :ap-normal        ap-normal
-                                                               :ap-transf        ap-transf
-                                                               :timeout          timeout)))))
+      (let ((filters   (or filters (occ-match-filters)))
+            (builder   (or builder #'occ-obj-build-ctxual-tsk-with))
+            (ap-normal '(t actions general checkout))
+            (ap-transf '(t actions general edit checkout))
+            (timeout   (or timeout occ-idle-timeout)))
+        (occ-debug "occ-do-clock-in((obj occ-ctx)): begin")
+        (let ((returned-ctxual-tsk (occ-obj-select obj ;TODO: if only one match then where it is selecting that.
+                                                   (occ-collections-all)
+                                                   :filters             filters
+                                                   :builder             builder
+                                                   :return-transform    t ;Here I know return value is going to be used, so passing t
+                                                   :ap-normal           ap-normal ;as return value is going to be used.
+                                                   :ap-transf           ap-transf
+                                                   :auto-select-if-only auto-select-if-only
+                                                   :timeout             timeout)))
+          ;; (occ-debug "occ-do-clock-in((obj occ-ctx)): selected  returned-ctxual-tsk=%s ret-label=%s value=%s"
+          ;;                   (occ-name returned-ctxual-tsk)
+          ;;                   (occ-obj-return-in-labels-p returned-ctxual-tsk occ-return-select-label)
+          ;;                   (occ-obj-format (occ-obj-obj returned-ctxual-tsk)))
+          (if (occ-obj-return-in-labels-p returned-ctxual-tsk ;TODO: should return t if action were done than select[=identity] ;; occ-return-label
+                                          occ-return-select-label)
+              (let ((ctxual-tsk (occ-obj-obj returned-ctxual-tsk)))
+                (prog1
+                    (when return-transform ;Here caller know if return value is going to be used.
+                      (occ-obj-make-return occ-return-true-label nil))
+                  (if (occ-ctxual-tsk-p ctxual-tsk)
+                      (occ-do-clock-in ctxual-tsk
+                                       :filters   filters
+                                       :builder   builder
+                                       :ap-normal ap-normal
+                                       :ap-transf ap-transf
+                                       :timeout   timeout)
+                    (occ-debug "%s is not ctxual-tsk" (occ-obj-format ctxual-tsk 'capitalize)))))
+            (progn
+              ;; here create unnamed tsk, no need
+              (setq *occ-update-current-ctx-msg* "null clock")
+              ;; (occ-delayed-select-obj-prop-edit-when-idle obj obj occ-idle-timeout)
+              (occ-debug "No clock found please set a match for this ctx %s, add it using M-x occ-prop-edit-safe."
+                         obj)
+              (occ-debug "occ-do-clock-in(ctx):  with this-command=%s" this-command)
+              ;; (occ-debug "occ-do-clock-in: Edit properties of a tsk %s to make associable to current context."
+              ;;              (occ-obj-Format obj))
+              (occ-obj-safe-ignore-quit-properties-window-editor obj
+                                                                 :filters          (occ-list-filters)
+                                                                 :builder          #'occ-obj-build-ctsk-with
+                                                                 :return-transform return-transform ;Here caller know if return value is going to be used.
+                                                                 :ap-normal        ap-normal
+                                                                 :ap-transf        ap-transf
+                                                                 :timeout          timeout)))))
     (occ-debug "ctx %s is not clockable." (occ-name obj))))
 
 
@@ -354,8 +354,8 @@ for adding properties to heading."
                                              :ap-transf ap-transf
                                              :timeout   timeout)
         (occ-debug "%s is not associable with %s not clocking-in."
-                     (occ-obj-Format tsk)
-                     (occ-obj-Format ctx))))))
+                   (occ-obj-Format tsk)
+                   (occ-obj-Format ctx))))))
 
 
 
@@ -406,7 +406,7 @@ for adding properties to heading."
                                              :ap-transf ap-transf
                                              :timeout   timeout)
         (occ-debug "%s is not associable with %s not clocking-in."
-                     (occ-obj-Format tsk)
-                     (occ-obj-Format ctx))))))
+                   (occ-obj-Format tsk)
+                   (occ-obj-Format ctx))))))
 
 ;;; occ-clock.el ends here
