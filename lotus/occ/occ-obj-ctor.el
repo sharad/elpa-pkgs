@@ -204,7 +204,7 @@
 
 (defun occ-obj-org-entry-tsk-p (org-element)
   "Check if or entry qualify to be a Task"
-  (let ((heading (plist-get org-element :raw-value)))
+  (let ((heading (org-element-property :raw-value org-element)))
     (not (if heading
              (string-match "\\[NONTSK\\]" heading)))))
 
@@ -236,43 +236,44 @@
           ;; part of :PROPERTIES: block.
 
           ;; NOTE also these two are mixed in one list only
-          (tsk-plist    (nth 1 (org-element-at-point))))
-      (occ-assert (cl-evenp (length tsk-plist)))
-      (when (occ-obj-org-entry-tsk-p tsk-plist)
-        (let ((tsk (funcall builder       ; build = make-occ-tree-tsk, make-occ-list-tsk
-                            ;; (occ-obj-iXntf-from-org) from Org world to Occ world.
-                            :name         (occ-obj-from-org 'name 'get heading)
-                            :dummy        (if file :file nil)
-                            :collection   collection
-                            :parent       nil
-                            :action       nil
-                            :heading      (occ-obj-from-org 'heading 'get heading)
-                            :heading-prop (occ-obj-from-org 'heading-prop 'get heading-prop)
-                            :marker       (occ-obj-from-org 'marker 'get marker)
-                            :file         (occ-obj-from-org 'file 'get file-name)
-                            :point        (occ-obj-from-org 'point 'get point)
-                            :clock-sum    (occ-obj-from-org 'clock-sum 'get clock-sum)
-                            :level        (occ-obj-from-org 'level 'get (plist-get tsk-plist :level))
-                            :cat          (occ-obj-from-org 'cat 'get (occ-get-tsk-category heading tsk-plist))
-                            :plist        (occ-tsk-plist-from-org tsk-plist))))
-          (dolist (prop (occ-obj-properties-for-ranking nil))
-            (when (occ-obj-list-p nil prop)
-              ;; set :plist here
-              ;;
-              ;; Unconditionally Set property as - (tsk-plist    (nth 1 (org-element-at-point)))
-              ;; which is using in occ-obj-get-property and occ-obj-set-property
-              ;; put list also as atom
-              ;; (occ-obj-set-property tsk prop (org-entry-get nil (occ-obj-org-property-name prop)))
-              (let ((value (occ-do-operation (occ-obj-marker tsk)
-                                             'get
-                                             prop
-                                             nil)))
-                (when value
-                  (occ-obj-set-property tsk
-                                        prop
-                                        value)))))
-          ;; (occ-obj-reread-props tsk)      ;reset list properties
-          tsk)))))
+          (tsk-element  (org-element-at-point)))
+      (let ((tsk-plist tsk-element))
+        (occ-assert (cl-evenp (length tsk-plist)))
+        (when (occ-obj-org-entry-tsk-p tsk-element)
+          (let ((tsk (funcall builder       ; build = make-occ-tree-tsk, make-occ-list-tsk
+                              ;; (occ-obj-iXntf-from-org) from Org world to Occ world.
+                              :name         (occ-obj-from-org 'name 'get heading)
+                              :dummy        (if file :file nil)
+                              :collection   collection
+                              :parent       nil
+                              :action       nil
+                              :heading      (occ-obj-from-org 'heading 'get heading)
+                              :heading-prop (occ-obj-from-org 'heading-prop 'get heading-prop)
+                              :marker       (occ-obj-from-org 'marker 'get marker)
+                              :file         (occ-obj-from-org 'file 'get file-name)
+                              :point        (occ-obj-from-org 'point 'get point)
+                              :clock-sum    (occ-obj-from-org 'clock-sum 'get clock-sum)
+                              :level        (occ-obj-from-org 'level 'get (plist-get tsk-plist :level))
+                              :cat          (occ-obj-from-org 'cat 'get (occ-get-tsk-category heading tsk-plist))
+                              :plist        (occ-tsk-plist-from-org tsk-plist))))
+            (dolist (prop (occ-obj-properties-for-ranking nil))
+              (when (occ-obj-list-p nil prop)
+                ;; set :plist here
+                ;;
+                ;; Unconditionally Set property as - (tsk-plist    (nth 1 (org-element-at-point)))
+                ;; which is using in occ-obj-get-property and occ-obj-set-property
+                ;; put list also as atom
+                ;; (occ-obj-set-property tsk prop (org-entry-get nil (occ-obj-org-property-name prop)))
+                (let ((value (occ-do-operation (occ-obj-marker tsk)
+                                               'get
+                                               prop
+                                               nil)))
+                  (when value
+                    (occ-obj-set-property tsk
+                                          prop
+                                          value)))))
+            ;; (occ-obj-reread-props tsk)      ;reset list properties
+            tsk))))))
 
 (cl-defmethod occ-obj-make-tsk-at-point ((collection occ-obj-collection)
                                          file)
@@ -503,7 +504,6 @@
                        :tsk  tsk
                        :ctx  ctx))
                        ;; :rank rank
-                       
 
 (cl-defmethod occ-obj-build-ctxual-tsk-with ((tsk occ-tsk) ;ctor
                                              (ctx occ-ctx))
@@ -531,7 +531,6 @@
                          :tsk  tsk
                          :ctx  ctx)))
                          ;; :rank rank
-                         
 
 (cl-defmethod occ-obj-make-ctxual-tsk ((obj occ-ctxual-tsk)
                                        &optional

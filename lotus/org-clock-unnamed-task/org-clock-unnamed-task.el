@@ -85,8 +85,10 @@
 
 ;;;###autoload
 (defun lotus-org-get-incr-tasknum (&optional buffer)
-  (with-current-buffer (or buffer (current-buffer))
-    (let* ((tasknumstr (or (org-global-get-property "TASKNUM") "0"))
+  (with-current-buffer (or buffer
+                           (current-buffer))
+    (let* ((tasknumstr (or (org-global-get-property "TASKNUM")
+                           "0"))
            (tasknum (string-to-number tasknumstr)))
       (org-global-put-property "TASKNUM" (number-to-string (1+ tasknum)))
       tasknum)))
@@ -98,24 +100,25 @@
   (interactive
    (let ((file *lotus-org-unnamed-task-file*)
          (task *lotus-org-unnamed-parent-task-name*))
-     (list file task)))
+     (list file
+           task)))
 
-  (let* ((file (or file *lotus-org-unnamed-task-file*))
-         (task (or task *lotus-org-unnamed-parent-task-name*))
+  (let* ((file (or file
+                   *lotus-org-unnamed-task-file*))
+         (task (or task
+                   *lotus-org-unnamed-parent-task-name*))
          (subtask (format *lotus-org-unnamed-task-name-fmt*
-                          (1+
-                           (with-current-buffer (find-file-noselect file)
-                             (org-with-heading-pos pos task
-                               (if pos
-                                   (org-number-of-subheadings)
-                                 0)))))))
+                          (1+ (with-current-buffer (find-file-noselect file)
+                                (org-with-heading-pos pos task
+                                  (if pos
+                                      (org-number-of-subheadings)
+                                    0)))))))
     ;; (assert file)
     (if (org-find-file-heading-marker file task t)
-        (let ((marker (org-insert-subheadline-to-file-headline
-                       subtask
-                       file
-                       task
-                       t)))
+        (let ((marker (org-insert-subheadline-to-file-headline subtask
+                                                               file
+                                                               task
+                                                               t)))
           (unless (markerp marker)
             (error "No marker %s returned" marker))
           (with-current-buffer (marker-buffer marker)
@@ -184,12 +187,10 @@
 
 ;;;###autoload
 (defun org-clock-marker-unnamed-p (marker)
-  (and
-   marker
-   (lotus-org-unnamed-task-buffer)
-   (equal
-    (marker-buffer marker)
-    (lotus-org-unnamed-task-buffer))))
+  (and marker
+       (lotus-org-unnamed-task-buffer)
+       (equal (marker-buffer marker)
+              (lotus-org-unnamed-task-buffer))))
       ;; (marker-buffer *lotus-org-unnamed-task-clock-marker*)
 
 ;;;###autoload
@@ -205,9 +206,9 @@
     (let ((element (org-element-at-point)))
       (if (and element
                (eq (cl-first element) 'headline))
-          (let (;; (begin (plist-get (nth 1 element) :begin))
-                ;; (level (plist-get (nth 1 element) :level))
-                (title (plist-get (nth 1 element) :title)))
+          (let ((title (org-element-property :title element)))
+            ;; (begin (plist-get (nth 1 element) :begin))
+            ;; (level (plist-get (nth 1 element) :level))
             (string-match-p "Unnamed task [0-9]+" title)))))))
 
 ;; (lotus-org-create-unnamed-task "~/Unnamed.org" "Unnamed tasks")
