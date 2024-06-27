@@ -253,7 +253,7 @@
                               :file         (occ-obj-from-org 'file 'get file-name)
                               :point        (occ-obj-from-org 'point 'get point)
                               :clock-sum    (occ-obj-from-org 'clock-sum 'get clock-sum)
-                              :level        (occ-obj-from-org 'level 'get (plist-get tsk-plist :level))
+                              :level        (occ-obj-from-org 'level 'get (org-element-property :level tsk-element))
                               :cat          (occ-obj-from-org 'cat 'get (occ-get-tsk-category heading tsk-plist))
                               :plist        (occ-tsk-plist-from-org tsk-plist))))
             (dolist (prop (occ-obj-properties-for-ranking nil))
