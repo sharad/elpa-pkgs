@@ -115,11 +115,11 @@ or nil if the version cannot be parsed."
                               ;; Older archive-contents files have only 4
                               ;; elements here.
                               (package--ac-desc-extras (cl-rest package))))))
-               ;; (existing-packages (assq name package-archive-contents))
-               ;; (pinned-to-archive (assoc name package-pinned-packages))
+          ;; (existing-packages (assq name package-archive-contents))
+          ;; (pinned-to-archive (assoc name package-pinned-packages))
 
           pkg-desc)
-        (error "not able to find package for %s" pkg-name))))
+      (error "not able to find package for %s" pkg-name))))
 
 (defun package-desc-package-from-dir (dir &optional archive)
   (let* ((dir-of-current-file (directory-file-name dir))
@@ -138,8 +138,8 @@ or nil if the version cannot be parsed."
   (let* ((dir-of-current-file  (directory-file-name dir))
          (pkg-name-version     (file-name-nondirectory dir-of-current-file))
          (pkg-name             (replace-regexp-in-string "-[0-9\.]\*\$"
-                                                        ""
-                                                        pkg-name-version))
+                                                         ""
+                                                         pkg-name-version))
          (version              (package-version-join (package-dev-build--valid-version)
                                                      (format-time-string "%Y%m%d.%H%M")))
          (currdir-pkg-def-file (expand-file-name (format "%s-pkg.el" pkg-name)
@@ -259,7 +259,8 @@ or nil if the version cannot be parsed."
                'utf-8-emacs
              'emacs-mule))
           (erase-buffer)
-          (vhl/ext/delete/off)
+          (when (fboundp 'vhl/ext/delete/off)
+            (vhl/ext/delete/off))
           (let ((content (let ((print-length nil)
                                (print-level nil))
                            (pp-to-string pkg-def))))
@@ -337,7 +338,7 @@ or nil if the version cannot be parsed."
       ;; (package-delete pkg-desc)
       (when pkg-desc
         (ignore-errors
-         (package-delete pkg-desc))))
+          (package-delete pkg-desc))))
 
     (let ((old-installed-pkgs (directory-files
                                package-user-dir
@@ -417,9 +418,9 @@ or nil if the version cannot be parsed."
                            (file-directory-p
                             (expand-file-name (symbol-name d) base)))
                        dependencies-without-version)))
-           ;; (dependencies-external
-           ;;  (delete-dups
-           ;;   dependencies-external))
+      ;; (dependencies-external
+      ;;  (delete-dups
+      ;;   dependencies-external))
 
 
       ;; Than find all dependencies and install them
