@@ -43,22 +43,22 @@
                                                 &optional
                                                 dir default-filename mustmatch initial predicate)
   (if lotus-read-filename-default-initial-input
-        (with-timeout
-            (seconds (progn
-                       (when (active-minibuffer-window)
-                         (abort-recursive-edit))
-                       initial))
-          (read-file-name prompt
-                          dir
-                          default-filename
-                          mustmatch
-                          initial predicate))
-      (read-file-name prompt
-                      dir
-                      default-filename
-                      mustmatch
-                      initial
-                      predicate)))
+      (with-timeout
+          (seconds (progn
+                     (when (active-minibuffer-window)
+                       (abort-recursive-edit))
+                     initial))
+        (read-file-name prompt
+                        dir
+                        default-filename
+                        mustmatch
+                        initial predicate))
+    (read-file-name prompt
+                    dir
+                    default-filename
+                    mustmatch
+                    initial
+                    predicate)))
 
 (defun read-file-name-timeout (seconds prompt &optional dir default-filename mustmatch initial predicate)
   (with-timeout
@@ -287,7 +287,7 @@ so returns nil if pid is nil."
 
 ;; (when (or (not *emacs-in-init*) (not reloading-libraries))
 (when (or *emacs-in-init* reloading-libraries)
-  ;setting to nil so it will be asked from user.
+                                        ;setting to nil so it will be asked from user.
   (setq *desktop-save-filename* nil))
 
 ;; might be the reason for Terminal 0 is locked.
@@ -297,27 +297,27 @@ so returns nil if pid is nil."
   (let ((default-local-file (concat default-file "-local")))
     (if (file-directory-p desktop-dir)
         (let ((default-file-path (expand-file-name default-local-file desktop-dir)))
-            (progn
-             ;; first try to amke default "-local" file to be available
-             (unless (file-exists-p default-file-path)
-               (ignore-errors
-                 (message "desktop file %s do not exists, trying to check it out file %s."
-                          default-file-path default-file-path)
-                 (vc-checkout-file default-local-file)))
-             ;; after that provide option to user if he want to chose other file also.
-             (let ((file (read-file-name-timeout 20
-                                                 prompt     ;prompt
-                                                 desktop-dir ;dir
-                                                 default-local-file ;default file name
-                                                 'confirm           ;mustmatch
-                                                 default-local-file ;initial
-                                                 #'(lambda (f)        ;predicate  BUG failing this cause bugs
-                                                     (message "f: %s" f)
-                                                     (string-match (concat "^"
-                                                                           (file-truename (expand-file-name default-file desktop-dir))
-                                                                           "-")
-                                                                   (file-truename f))))))
-               (expand-file-name file desktop-dir))))
+          (progn
+            ;; first try to amke default "-local" file to be available
+            (unless (file-exists-p default-file-path)
+              (ignore-errors
+                (message "desktop file %s do not exists, trying to check it out file %s."
+                         default-file-path default-file-path)
+                (vc-checkout-file default-local-file)))
+            ;; after that provide option to user if he want to chose other file also.
+            (let ((file (read-file-name-timeout 20
+                                                prompt     ;prompt
+                                                desktop-dir ;dir
+                                                default-local-file ;default file name
+                                                'confirm           ;mustmatch
+                                                default-local-file ;initial
+                                                #'(lambda (f)        ;predicate  BUG failing this cause bugs
+                                                    (message "f: %s" f)
+                                                    (string-match (concat "^"
+                                                                          (file-truename (expand-file-name default-file desktop-dir))
+                                                                          "-")
+                                                                  (file-truename f))))))
+              (expand-file-name file desktop-dir))))
       (error "desktop directory %s don't exists." desktop-dir))))
 
 ;; (find-desktop-file "select desktop: " "~/tmp/" desktop-base-file-name)
@@ -478,9 +478,9 @@ so returns nil if pid is nil."
                   (progn
                     (run-hooks 'session-unified-save-all-sessions-before-hook)
                     (session-unfiy-notify "Started to save frame desktop and session.\ncurrent time %s, idle time %d idle-time-interval left %d"
-                             (format-time-string time-format save-all-sessions-auto-save-time)
-                             (float-time idle-time)
-                             save-all-sessions-auto-save-idle-time-interval-dynamic)
+                                          (format-time-string time-format save-all-sessions-auto-save-time)
+                                          (float-time idle-time)
+                                          save-all-sessions-auto-save-idle-time-interval-dynamic)
                     ;; (message "current time %s, idle time %d idle-time-interval left %d"
                     ;;          (format-time-string time-format save-all-sessions-auto-save-time)
                     ;;          (float-time idle-time)
@@ -490,14 +490,16 @@ so returns nil if pid is nil."
                     (prog1
                         (if session-debug-on-error
                             (progn
-                              (save-all-frames-session)
+                              (when sessions-unified-elscreen
+                                (save-all-frames-session))
                               (session-vc-save-session)
                               (when *session-unified-desktop-enabled* (my-desktop-save))
                               (session-unfiy-notify "Saved frame desktop and session.")
                               (message nil))
                           (condition-case e
                               (progn
-                                (save-all-frames-session)
+                                (when sessions-unified-elscreen
+                                  (save-all-frames-session))
                                 (session-vc-save-session)
                                 (when *session-unified-desktop-enabled* (my-desktop-save))
                                 (session-unfiy-notify "Saved frame desktop and session.")
@@ -611,8 +613,8 @@ en all buffer were creaed idly."
               (if (not (string-match *constructed-name-desktop-save-filename* *desktop-save-filename*))
                   (progn
                     (session-unfiy-notify "*desktop-save-filename* is not equal to %s but %s"
-                             *constructed-name-desktop-save-filename*
-                             *desktop-save-filename*)
+                                          *constructed-name-desktop-save-filename*
+                                          *desktop-save-filename*)
                     (if (y-or-n-p
                          (format "lotus-desktop-session-restore" "*desktop-save-filename* is not equal to %s but %s\nshould continue with it ? "
                                  *constructed-name-desktop-save-filename*
@@ -631,24 +633,25 @@ en all buffer were creaed idly."
                         (when (memq 'P4 vc-handled-backends)            ;remove P4
                           (setq vc-handled-backends (remove 'P4 vc-handled-backends))
                           (add-to-disable-desktop-restore-interrupting-feature-hook
-                                    #'(lambda ()
-                                        (when nil
-                                          (add-to-list 'vc-handled-backends 'P4)))))
+                           #'(lambda ()
+                               (when nil
+                                 (add-to-list 'vc-handled-backends 'P4)))))
                         (if show-error
                             (if (desktop-vc-read *desktop-save-filename*)
-                                  (progn
-                                    (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
-                                    (lotus-enable-session-saving)
+                                (progn
+                                  (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
+                                  (lotus-enable-session-saving)
+                                  (when sessions-unified-elscreen
                                     (session-unfiy-notify "Do you want to set session of frame? [show-error=%s]" show-error)
                                     (when (y-or-n-p-with-timeout (format "[show-error=%s] Do you want to set session of frame? " show-error)
                                                                  10 t)
                                       (let ((*frame-session-restore* t))
-                                        (frame-session-restore (selected-frame)))))
-                                (progn
-                                  (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
-                                  (run-at-time "1 sec" nil #'(lambda () (insert "lotus-desktop-session-restore")))
-                                  (execute-extended-command nil)
-                                  nil))
+                                        (frame-session-restore (selected-frame))))))
+                              (progn
+                                (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
+                                (run-at-time "1 sec" nil #'(lambda () (insert "lotus-desktop-session-restore")))
+                                (execute-extended-command nil)
+                                nil))
                           (condition-case e
                               (if (let ((desktop-restore-in-progress t))
                                     (ignore desktop-restore-in-progress)
@@ -669,14 +672,15 @@ en all buffer were creaed idly."
                         t)
                     (when (y-or-n-p
                            (session-unfiy-notify "No desktop found. or you can check out old %s from VCS.\nShould I enable session saving in auto save and run hook, at kill-emacs ?"
-                                    *desktop-save-filename*))
+                                                 *desktop-save-filename*))
                       ;; as (defadvice desktop-idle-create-buffers) will not get chance to run it.
                       (session-unfiy-notify "As no desktop file or (lotus-desktop-saved-session) is nil so running hook")
                       (lotus-enable-session-saving-immediately)))
-                  (let ((enable-recursive-minibuffers t))
-                    (when t ; (y-or-n-p-with-timeout "Do you wato set session of frame? " 7 t) ;t
-                      (let ((*frame-session-restore* t))
-                        (frame-session-restore (selected-frame) 'only))))
+                  (when sessions-unified-elscreen
+                    (let ((enable-recursive-minibuffers t))
+                      (when t ; (y-or-n-p-with-timeout "Do you wato set session of frame? " 7 t) ;t
+                        (let ((*frame-session-restore* t))
+                          (frame-session-restore (selected-frame) 'only)))))
                   (session-unfiy-notify "leaving lotus-desktop-session-restore"))))
 
           (session-unfiy-notify "desktop-get-desktop-save-filename failed")))
@@ -754,10 +758,10 @@ is function is a no-op when Emacs is running in batch mode.
             ;; If it wasn't already, mark it as in-use, to bother other
             ;; desktop instances.
             (if t ;; unless owner
-              (condition-case nil
-                  (desktop-claim-lock)
-                (file-error (session-unfiy-notify "Couldn't record use of desktop file")
-                            (sit-for 1))))
+                (condition-case nil
+                    (desktop-claim-lock)
+                  (file-error (session-unfiy-notify "Couldn't record use of desktop file")
+                              (sit-for 1))))
 
             ;; `desktop-create-buffer' puts buffers at end of the buffer list.
             ;; We want buffers existing prior to evaluating the desktop (and

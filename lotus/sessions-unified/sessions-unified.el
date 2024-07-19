@@ -47,6 +47,11 @@
 (require 'emacs-panel)
 
 
+(defvar sessions-unified-desktop t)
+(defvar sessions-unified-elscreen nil)
+(defvar sessions-unified-centaur-tab nil)
+(defvar sessions-unified-tab-bar nil)
+
 (declare-function save-all-sessions-auto-save "desktop-unified" (&optional force))
 (declare-function save-all-sessions-auto-save-immediately "desktop-unified" (&optional force))
 (declare-function frame-session-restore-unhook-func "fmsession" ())
@@ -140,11 +145,11 @@ get re-enabled here.")
     (cancel-timer *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
   (setq *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer* nil)
   (if lotus-enable-desktop-restore-interrupting-feature-hook
-   (progn
-     (run-each-hooks 'lotus-enable-desktop-restore-interrupting-feature-hook)
-     (setq lotus-enable-desktop-restore-interrupting-feature-hook-old lotus-enable-desktop-restore-interrupting-feature-hook)
-     (setq lotus-enable-desktop-restore-interrupting-feature-hook nil))
-   (session-unfiy-notify "already triggered")))
+      (progn
+        (run-each-hooks 'lotus-enable-desktop-restore-interrupting-feature-hook)
+        (setq lotus-enable-desktop-restore-interrupting-feature-hook-old lotus-enable-desktop-restore-interrupting-feature-hook)
+        (setq lotus-enable-desktop-restore-interrupting-feature-hook nil))
+    (session-unfiy-notify "already triggered")))
 ;;;###autoload
 (defun sessions-unified-desktop-enable-restore-interrupting-feature-delay-run (&optional secs)
   (interactive "nsecs: ")
@@ -175,17 +180,17 @@ get re-enabled here.")
 (defun add-to-disable-desktop-restore-interrupting-feature-hook (fn &optional append local)
   (interactive)
   (when t
-   (add-to-hook 'lotus-disable-desktop-restore-interrupting-feature-hook
-                fn
-                append
-                local)))
+    (add-to-hook 'lotus-disable-desktop-restore-interrupting-feature-hook
+                 fn
+                 append
+                 local)))
 ;;;###autoload
 (defun remove-from-disable-desktop-restore-interrupting-feature-hook (fn &optional local)
   (interactive)
   (when t
-   (remove-hook 'lotus-disable-desktop-restore-interrupting-feature-hook
-                fn
-                local)))
+    (remove-hook 'lotus-disable-desktop-restore-interrupting-feature-hook
+                 fn
+                 local)))
 ;;;###autoload
 (defun sessions-unified-desktop-disable-restore-interrupting-feature-run ()
   "run hook"
@@ -202,7 +207,8 @@ get re-enabled here.")
   (interactive)
   (remove-hook 'auto-save-hook #'save-all-sessions-auto-save)
   (remove-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
-  (frame-session-restore-unhook-func)
+  (when sessions-unified-elscreen
+    (frame-session-restore-unhook-func))
   (sessions-unified-desktop-disable-restore-interrupting-feature-run)
   (session-unfiy-notify "Removed save-all-sessions-auto-save from auto-save-hook and kill-emacs-hook"))
 
@@ -239,7 +245,8 @@ get re-enabled here.")
   (session-unfiy-notify "enter")
   (add-hook 'auto-save-hook #'save-all-sessions-auto-save)
   (add-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
-  (ignore-errors (frame-session-restore-hook-func))
+  (when sessions-unified-elscreen
+    (ignore-errors (frame-session-restore-hook-func)))
   (progn
     (session-unfiy-notify "running sessions-unified-desktop-enable-restore-interrupting-feature-run after %d seconds idleness"
                           *sessions-unified-desktop-enable-restore-interrupting-feature-delay-time*)
@@ -249,28 +256,32 @@ get re-enabled here.")
   (session-unfiy-notify "exit"))
 
 
-(defun lotus-show-hook-member (fn hook)
-  (format "%s %s is present in %s"
-          (if (or (member fn (symbol-value hook))
-                  (member (symbol-function fn) (symbol-value hook)))
-              "Yes"
-            "No")
-          fn
-          hook))
+(defun lotus-show-hook-member (fn hook &optional message)
+  (funcall (if message
+               #'message
+             #'format)
+           "%s %s is present in %s"
+           (if (or (member fn (symbol-value hook))
+                   (member (symbol-function fn) (symbol-value hook)))
+               "Yes"
+             "No")
+           fn
+           hook))
 
 ;;;###autoload
 (defun lotus-check-session-saving ()
   (interactive)
   (if (called-interactively-p 'interactive)
-      (message "%s, %s, %s, %s"
-               (lotus-show-hook-member 'save-all-sessions-auto-save 'auto-save-hook)
-               (lotus-show-hook-member 'save-all-sessions-auto-save-immediately 'kill-emacs-hook)
-               (lotus-show-hook-member 'frame-session-restore-force 'after-make-frame-functions)
-               (lotus-show-hook-member 'frame-session-save 'delete-frame-functions))
-    (and
-     (member #'save-all-sessions-auto-save auto-save-hook)
-     (member #'save-all-sessions-auto-save-immediately kill-emacs-hook)
-     (member #'frame-session-restore-force after-make-frame-functions)
-     (member #'frame-session-save delete-frame-functions))))
+      (pgron
+       (lotus-show-hook-member 'save-all-sessions-auto-save 'auto-save-hook)
+       (lotus-show-hook-member 'save-all-sessions-auto-save-immediately 'kill-emacs-hook)
+       (when sessions-unified-elscreen
+         (lotus-show-hook-member 'frame-session-restore-force 'after-make-frame-functions)
+         (lotus-show-hook-member 'frame-session-save 'delete-frame-functions)))
+    (and (member #'save-all-sessions-auto-save auto-save-hook)
+         (member #'save-all-sessions-auto-save-immediately kill-emacs-hook)
+         (when sessions-unified-elscreen
+           (member #'frame-session-restore-force after-make-frame-functions)
+           (member #'frame-session-save delete-frame-functions)))))
 
 ;;; session-config.el ends here
