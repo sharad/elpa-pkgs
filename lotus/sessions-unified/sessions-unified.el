@@ -272,12 +272,12 @@ get re-enabled here.")
 (defun lotus-check-session-saving ()
   (interactive)
   (if (called-interactively-p 'interactive)
-      (pgron
-       (lotus-show-hook-member 'save-all-sessions-auto-save 'auto-save-hook)
-       (lotus-show-hook-member 'save-all-sessions-auto-save-immediately 'kill-emacs-hook)
-       (when sessions-unified-elscreen
-         (lotus-show-hook-member 'frame-session-restore-force 'after-make-frame-functions)
-         (lotus-show-hook-member 'frame-session-save 'delete-frame-functions)))
+      (progn
+        (lotus-show-hook-member 'save-all-sessions-auto-save 'auto-save-hook)
+        (lotus-show-hook-member 'save-all-sessions-auto-save-immediately 'kill-emacs-hook)
+        (when sessions-unified-elscreen
+          (lotus-show-hook-member 'frame-session-restore-force 'after-make-frame-functions)
+          (lotus-show-hook-member 'frame-session-save 'delete-frame-functions)))
     (and (member #'save-all-sessions-auto-save auto-save-hook)
          (member #'save-all-sessions-auto-save-immediately kill-emacs-hook)
          (when sessions-unified-elscreen
