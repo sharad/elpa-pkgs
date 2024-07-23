@@ -65,24 +65,23 @@
 ;;;###autoload
 (defun elscreen-keymap-setup ()
   (progn ;; "Keybinding: Elscreen"
-    (when (featurep 'elscreen)
-      ;;{{ elscreen
+    (when (featurep 'centaur-tabs) ;; "Keybinding: Centaur-Tabs"
+      (turn-off-evil-mode)
       ;; https://github.com/syl20bnr/spacemacs/issues/7372
-      (when (featurep 'evil-states)
-        (require 'evil-states)
-        (define-key evil-emacs-state-map (kbd "C-z") nil))
+      (define-key evil-emacs-state-map (kbd "C-z") nil)
       (global-unset-key [C-z])
-      ;; (global-set-key [C-z c] 'elscreen-create)
-      (funcall #'(lambda (symbol value)
-                   (when (boundp 'elscreen-map)
-                     (elscreen-set-prefix-key value))
-                   (custom-set-default symbol value))
-               'elscreen-prefix-key "\C-z")
-      (global-set-key [s-right] 'elscreen-next)
-      (global-set-key [s-left]  'elscreen-previous)
-      (global-set-key [H-right] 'elscreen-move-right)
-      (global-set-key [H-left]  'elscreen-move-left)
-      (global-set-key [M-H-right]    'elscreen-swap))))
+      ;; (global-set-key [C-z c] 'centaur-tabs-create)
+      (funcall
+       #'(lambda (symbol value)
+           (when (boundp 'centaur-tabs-map)
+             (centaur-tabs-set-prefix-key value))
+           (custom-set-default symbol value))
+       'centaur-tabs-prefix-key "\C-z")
+      (global-set-key [s-right] 'centaur-tabs-forward)
+      (global-set-key [s-left]  'centaur-tabs-backward)
+      (global-set-key [H-right] 'centaur-tabs-forward-group)
+      (global-set-key [H-left]  'centaur-tabs-backward-group)
+      (global-set-key [M-H-right] 'centaur-tabs-swap))))
       ;; (global-set-key-if-unbind [H-down]  'elscreen-previous)
       ;;}}
 
@@ -100,7 +99,7 @@
 (progn                                  ;debug testing code
   (defvar *test-idle-prints-timer* nil)
 
-;;;###autoload
+  ;;;###autoload
   (defun test-idle-prints (print)
     (if print
         (progn
@@ -121,12 +120,12 @@
       (when *test-idle-prints-timer*
         (cancel-timer *test-idle-prints-timer*))))
 
-;;;###autoload
+  ;;;###autoload
   (defun toggle-test-idle-prints ()
     (interactive)
     (test-idle-prints (null *test-idle-prints-timer*)))
 
-;;;###autoload
+  ;;;###autoload
   (defun lotus-necessary-test ()
     (interactive)
     (test-idle-prints nil)))
