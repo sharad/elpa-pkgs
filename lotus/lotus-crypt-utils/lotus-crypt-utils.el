@@ -49,7 +49,7 @@ Return the modified ALIST."
   (let ((pair (assoc key alist)))
     (if pair
         (delq pair alist)
-        alist)))
+      alist)))
 
 (defun remove-alist (symbol key)
   "Delete an element whose car equals KEY from the alist bound to SYMBOL."
@@ -63,11 +63,11 @@ Return the modified ALIST."
   (let ((regex (concat "\\." prefix "\\(~\\|\\.~[0-9]+~\\)?\\'")))
     (add-to-list 'auto-mode-alist
                  (list regex nil 'epa-file))
-    (setq
-     epa-file-name-regexp (regexp-or "\\.gpg\\(~\\|\\.~[0-9]+~\\)?\\'" regex))
+    (setq epa-file-name-regexp (regexp-or "\\.gpg\\(~\\|\\.~[0-9]+~\\)?\\'"
+                                          regex))
     (epa-file-name-regexp-update)))
 
-          ;; (epa-file-enable)
+;; (epa-file-enable)
 
 (setq epa-file-cache-passphrase-for-symmetric-encryption t)
 
@@ -114,9 +114,9 @@ Return the modified ALIST."
                            (let ((filename (cl-first filename-pass)))
                              (string-equal (file-truename filename)
                                            (file-truename file-name))))
-                       epa-file-passphrase-alist)
-            ;; (assq-delete-all-test file-name epa-file-passphrase-alist #'string-equal)
-            )
+                       epa-file-passphrase-alist))
+      ;; (assq-delete-all-test file-name epa-file-passphrase-alist #'string-equal)
+
       (kill-buffer buffer))))
 
 (defalias 'epa-forget-passphrase 'forget-passphrase)
@@ -143,9 +143,9 @@ Return the modified ALIST."
                                  (let ((filename (cl-first filename-pass)))
                                    (string-equal (file-truename filename)
                                                  (file-truename file-name))))
-                             epa-file-passphrase-alist)
-                  ;; (assq-delete-all-test file-name epa-file-passphrase-alist #'string-equal)
-                  )
+                             epa-file-passphrase-alist))
+            ;; (assq-delete-all-test file-name epa-file-passphrase-alist #'string-equal)
+
             (if buffer-of-file
                 (kill-buffer buffer-of-file)))))
 
@@ -164,16 +164,16 @@ Return the modified ALIST."
                                  (let ((filename (cl-first filename-pass)))
                                    (string-equal (file-truename filename)
                                                  (file-truename buff-file))))
-                             epa-file-passphrase-alist)
-                  ;; (assq-delete-all-test buff-file epa-file-passphrase-alist #'string-equal)
-                  )))))
+                             epa-file-passphrase-alist))))))
+    ;; (assq-delete-all-test buff-file epa-file-passphrase-alist #'string-equal)
+
 
     (dolist (v epa-file-passphrase-cleanup-exceptitions-alist)
       (if (<= (cl-rest v) 0)
           (remove-alist 'epa-file-passphrase-cleanup-exceptitions-alist (cl-first v))
-        (decf (cl-rest v))))
-    ;; (setq epa-file-passphrase-cleanup-exceptitions-alist exceptitions-alist)
-    ))
+        (decf (cl-rest v))))))
+;; (setq epa-file-passphrase-cleanup-exceptitions-alist exceptitions-alist)
+
 
 
 ;;;###autoload
@@ -240,8 +240,16 @@ Return the modified ALIST."
 
 
 ;;;###autoload
-(defun epa-find-file-secure ()
-  (interactive)
+(defun epa-find-file-secure (arg)
+  (interactive "P")
+  (when arg
+    (shell-command "echo RELOADAGENT | command gpg-connect-agent"))
+  ;; (let ((process (start-process "gpg-connect-agent" "*gpg-connect-agent*" "gpg-connect-agent")))
+  ;;   (progn
+  ;;     (process-send-string process "RELOADAGENT\n")
+  ;;     (process-send-eof process)
+  ;;     (delete-process process)))
+
   (let ((directory "~/.pi/"))
     (find-file
      (read-file-name "file: "
@@ -250,19 +258,24 @@ Return the modified ALIST."
 
 ;;;###autoload
 (defalias 'find-file-secure #'epa-file-find-secure)
-
+;;;###autoload
 (defun epa-pop-last-passphrase ()
   (interactive)
-  (when (y-or-n-p
-         (format "remove %s: " (cl-first (cl-first epa-file-passphrase-alist))))
-    (pop epa-file-passphrase-alist)))
-
+  (if  epa-file-passphrase-alist
+      (when (y-or-n-p
+             (format "remove %s: " (cl-first (cl-first epa-file-passphrase-alist))))
+        (pop epa-file-passphrase-alist))
+    (message "Empty")))
+;;;###autoload
 (defun epa-delete-passphrase ()
   (interactive)
-  (let ((epa-file
-         (completing-read "epa file: " (mapcar #'car epa-file-passphrase-alist))))
-    (setq epa-file-passphrase-alist
-          (delq (assoc epa-file epa-file-passphrase-alist) epa-file-passphrase-alist))))
+  (if epa-file-passphrase-alist
+      (let ((epa-file (completing-read "epa file: "
+                                       (mapcar #'car
+                                               epa-file-passphrase-alist))))
+        (setq epa-file-passphrase-alist
+              (delq (assoc epa-file epa-file-passphrase-alist) epa-file-passphrase-alist)))
+    (message "Empty")))
 
 
 ;; http://www.emacswiki.org/emacs/PasswordGenerator
