@@ -85,10 +85,11 @@
 
       (global-set-key [H-right] 'tab-bar-switch-to-next-tab)
       (global-set-key [H-left]  'tab-bar-switch-to-prev-tab)
+      (global-set-key [H-up]    'tab-bar-switch-to-recent-tab)
+      (global-set-key [H-down]  'tab-bar-switch-to-last-tab)
       (global-set-key [S-H-right] 'tab-bar-move-tab)
       (global-set-key [S-H-left] 'tab-bar-move-tab-backward)
-      (global-set-key [S-H-up] 'tab-bar-new-tab)
-      (global-set-key [S-H-down] 'tab-bar-switch-to-last-tab))))
+      (global-set-key [S-H-down] 'tab-bar-new-tab))))
       ;; (global-set-key-if-unbind [H-down]  'elscreen-previous)
       ;;}}
 
