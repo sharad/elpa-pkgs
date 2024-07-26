@@ -27,5 +27,8 @@
 (provide 'tab-bar-unified)
 
 
+
+;; (let ((frame nil )) (frame-parameter frame 'tabs))
+
 
 ;;; tab-bar-unified.el ends here
