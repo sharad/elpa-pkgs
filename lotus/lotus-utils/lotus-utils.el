@@ -79,9 +79,16 @@
        'centaur-tabs-prefix-key "\C-z")
       (global-set-key [s-right] 'centaur-tabs-forward)
       (global-set-key [s-left]  'centaur-tabs-backward)
-      (global-set-key [H-right] 'centaur-tabs-forward-group)
-      (global-set-key [H-left]  'centaur-tabs-backward-group)
-      (global-set-key [M-H-right] 'centaur-tabs-swap))))
+      (global-set-key [M-s-right] 'centaur-tabs-forward-group)
+      (global-set-key [M-s-left]  'centaur-tabs-backward-group)
+      (global-set-key [M-s-up] 'centaur-tabs-swap)
+
+      (global-set-key [H-right] 'tab-bar-switch-to-next-tab)
+      (global-set-key [H-left]  'tab-bar-switch-to-prev-tab)
+      (global-set-key [S-H-right] 'tab-bar-move-tab)
+      (global-set-key [S-H-left] 'tab-bar-move-tab-backward)
+      (global-set-key [S-H-up] 'tab-bar-new-tab)
+      (global-set-key [S-H-down] 'tab-bar-switch-to-last-tab))))
       ;; (global-set-key-if-unbind [H-down]  'elscreen-previous)
       ;;}}
 
