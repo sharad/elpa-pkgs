@@ -64,35 +64,42 @@
 
 ;;;###autoload
 (defun elscreen-keymap-setup ()
-  (progn ;; "Keybinding: Elscreen"
-    (when (featurep 'centaur-tabs) ;; "Keybinding: Centaur-Tabs"
-      (turn-off-evil-mode)
-      ;; https://github.com/syl20bnr/spacemacs/issues/7372
-      (define-key evil-emacs-state-map (kbd "C-z") nil)
-      (global-unset-key [C-z])
-      ;; (global-set-key [C-z c] 'centaur-tabs-create)
+  (progn ;; "Keybinding: Centaur-Tabs"
+    (turn-off-evil-mode)
+    ;; https://github.com/syl20bnr/spacemacs/issues/7372
+    (define-key evil-emacs-state-map (kbd "C-z") nil)
+    (global-unset-key [C-z])
+    ;; (global-set-key [C-z c] 'centaur-tabs-create)
+    (when (featurep 'centaur-tabs)
       (funcall
        #'(lambda (symbol value)
-           (when (boundp 'centaur-tabs-map)
+           (when (fboundp 'centaur-tabs-set-prefix-key)
              (centaur-tabs-set-prefix-key value))
            (custom-set-default symbol value))
-       'centaur-tabs-prefix-key "\C-z")
-      (global-set-key [s-right] 'centaur-tabs-forward)
-      (global-set-key [s-left]  'centaur-tabs-backward)
-      (global-set-key [M-s-right] 'centaur-tabs-forward-group)
-      (global-set-key [M-s-left]  'centaur-tabs-backward-group)
-      (global-set-key [M-s-up] 'centaur-tabs-swap)
+       'centaur-tabs-prefix-key "\s-z")
+      (global-set-key-if-unbind [C-H-right] 'centaur-tabs-forward)
+      (global-set-key-if-unbind [C-H-left]  'centaur-tabs-backward)
+      (global-set-key-if-unbind [M-H-right] 'centaur-tabs-forward-group)
+      (global-set-key-if-unbind [M-H-left]  'centaur-tabs-backward-group)
+      (global-set-key-if-unbind [M-H-up] 'centaur-tabs-swap))
 
-      (global-set-key [H-right] 'tab-bar-switch-to-next-tab)
-      (global-set-key [H-left]  'tab-bar-switch-to-prev-tab)
-      (global-set-key [H-up]    'tab-bar-switch-to-recent-tab)
-      (global-set-key [H-down]  'tab-bar-switch-to-last-tab)
-      (global-set-key [S-H-right] 'tab-bar-move-tab)
-      (global-set-key [S-H-left] 'tab-bar-move-tab-backward)
-      (global-set-key [S-H-down] 'tab-bar-new-tab))))
-      ;; (global-set-key-if-unbind [H-down]  'elscreen-previous)
-      ;;}}
+    ;; C-a                            elscreen-toggle
+    ;; C-c                            elscreen-create
+    ;; C-f                            elscreen-find-file
+    ;; C-k                            elscreen-kill
+    ;; RET                            elscreen-display-last-message
+    ;; C-n                            elscreen-next
+    ;; C-p                            elscreen-previous
 
+
+    (global-set-key-if-unbind [s-right] 'tab-bar-switch-to-next-tab)
+    (global-set-key-if-unbind [s-left]  'tab-bar-switch-to-prev-tab)
+    (global-set-key-if-unbind [s-up]    'tab-bar-switch-to-recent-tab)
+    (global-set-key-if-unbind [s-down]  'tab-bar-switch-to-last-tab)
+    (global-set-key-if-unbind [H-right] 'tab-bar-move-tab)
+    (global-set-key-if-unbind [H-left]  'tab-bar-move-tab-backward)
+    (global-set-key-if-unbind [H-down]  'tab-bar-new-tab)
+    (global-set-key-if-unbind [H-up]    'tab-bar-close-tab)))
 
 ;;;###autoload
 (defun resolveip (host)
