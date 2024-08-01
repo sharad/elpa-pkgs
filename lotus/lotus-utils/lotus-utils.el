@@ -86,28 +86,28 @@
 
 
     (progn
-      (defvar lotus-tabs-bar-prefix-map)
-      ;; C-a                            elscreen-toggle
-      ;; tab-bar-switch-to-prev-tab
-      ;; C-c                            elscreen-create
-      ;; tab-bar-new-tab
-      ;; C-f                            elscreen-find-file
-      ;; C-k                            elscreen-kill
-      ;; tab-bar-close-tab
-      ;; RET                            elscreen-display-last-message
-      ;; C-n                            elscreen-next
-      ;; tab-bar-switch-to-next-tab
-      ;; C-p                            elscreen-previous
-      ;; tab-bar-switch-to-prev-tab
-      (let ((map (make-sparse-keymap)))
-        (define-key map (kbd "C-a") 'tab-bar-switch-to-prev-tab)
-        (define-key map (kbd "C-c") 'tab-bar-new-tab)
-        ;; (define-key map (kbd "C-f") 'elscreen-find-file)
-        (define-key map (kbd "C-k") 'tab-bar-close-tab)
-        (define-key map (kbd "RET") 'elscreen-display-last-message)
-        (define-key map (kbd "C-n") 'tab-bar-switch-to-next-tab)
-        (define-key map (kbd "C-p") 'tab-bar-switch-to-prev-tab)
-        map)
+      (defvar lotus-tabs-bar-prefix-map
+        ;; C-a                            elscreen-toggle
+        ;; tab-bar-switch-to-prev-tab
+        ;; C-c                            elscreen-create
+        ;; tab-bar-new-tab
+        ;; C-f                            elscreen-find-file
+        ;; C-k                            elscreen-kill
+        ;; tab-bar-close-tab
+        ;; RET                            elscreen-display-last-message
+        ;; C-n                            elscreen-next
+        ;; tab-bar-switch-to-next-tab
+        ;; C-p                            elscreen-previous
+        ;; tab-bar-switch-to-prev-tab
+        (let ((map (make-sparse-keymap)))
+          (define-key map (kbd "C-a") 'tab-bar-switch-to-prev-tab)
+          (define-key map (kbd "C-c") 'tab-bar-new-tab)
+          ;; (define-key map (kbd "C-f") 'elscreen-find-file)
+          (define-key map (kbd "C-k") 'tab-bar-close-tab)
+          (define-key map (kbd "RET") 'elscreen-display-last-message)
+          (define-key map (kbd "C-n") 'tab-bar-switch-to-next-tab)
+          (define-key map (kbd "C-p") 'tab-bar-switch-to-prev-tab)
+          map))
       (defvar tab-bar-prefix-key (kbd "C-z"))
       ;; (define-key tab-bar-map tab-bar-prefix-key lotus-tabs-bar-prefix-map)
       (global-set-key tab-bar-prefix-key lotus-tabs-bar-prefix-map)
