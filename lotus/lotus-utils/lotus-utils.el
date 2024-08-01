@@ -64,13 +64,14 @@
 
 ;;;###autoload
 (defun elscreen-keymap-setup ()
-  (progn ;; "Keybinding: Centaur-Tabs"
+  (progn
     (turn-off-evil-mode)
     ;; https://github.com/syl20bnr/spacemacs/issues/7372
     (define-key evil-emacs-state-map (kbd "C-z") nil)
     (global-unset-key [C-z])
-    ;; (global-set-key [C-z c] 'centaur-tabs-create)
-    (when (featurep 'centaur-tabs)
+
+    (progn ;; "Keybinding: Centaur-Tabs"
+      ;; (global-set-key [C-z c] 'centaur-tabs-create)
       (funcall
        #'(lambda (symbol value)
            (when (fboundp 'centaur-tabs-set-prefix-key)
@@ -83,23 +84,45 @@
       (global-set-key-if-unbind [M-H-left]  'centaur-tabs-backward-group)
       (global-set-key-if-unbind [M-H-up] 'centaur-tabs-swap))
 
-    ;; C-a                            elscreen-toggle
-    ;; C-c                            elscreen-create
-    ;; C-f                            elscreen-find-file
-    ;; C-k                            elscreen-kill
-    ;; RET                            elscreen-display-last-message
-    ;; C-n                            elscreen-next
-    ;; C-p                            elscreen-previous
 
+    (progn
+      (defvar lotus-tabs-bar-prefix-map)
+      ;; C-a                            elscreen-toggle
+      ;; tab-bar-switch-to-prev-tab
+      ;; C-c                            elscreen-create
+      ;; tab-bar-new-tab
+      ;; C-f                            elscreen-find-file
+      ;; C-k                            elscreen-kill
+      ;; tab-bar-close-tab
+      ;; RET                            elscreen-display-last-message
+      ;; C-n                            elscreen-next
+      ;; tab-bar-switch-to-next-tab
+      ;; C-p                            elscreen-previous
+      ;; tab-bar-switch-to-prev-tab
+      (let ((map (make-sparse-keymap)))
+        (define-key map (kbd "C-a") 'tab-bar-switch-to-prev-tab)
+        (define-key map (kbd "C-c") 'tab-bar-new-tab)
+        ;; (define-key map (kbd "C-f") 'elscreen-find-file)
+        (define-key map (kbd "C-k") 'tab-bar-close-tab)
+        (define-key map (kbd "RET") 'elscreen-display-last-message)
+        (define-key map (kbd "C-n") 'tab-bar-switch-to-next-tab)
+        (define-key map (kbd "C-p") 'tab-bar-switch-to-prev-tab)
+        map)
+      (defvar tab-bar-prefix-key (kbd "C-z"))
+      ;; (define-key tab-bar-map tab-bar-prefix-key lotus-tabs-bar-prefix-map)
+      (global-set-key tab-bar-prefix-key lotus-tabs-bar-prefix-map)
 
-    (global-set-key-if-unbind [s-right] 'tab-bar-switch-to-next-tab)
-    (global-set-key-if-unbind [s-left]  'tab-bar-switch-to-prev-tab)
-    (global-set-key-if-unbind [s-up]    'tab-bar-switch-to-recent-tab)
-    (global-set-key-if-unbind [s-down]  'tab-bar-switch-to-last-tab)
-    (global-set-key-if-unbind [H-right] 'tab-bar-move-tab)
-    (global-set-key-if-unbind [H-left]  'tab-bar-move-tab-backward)
-    (global-set-key-if-unbind [H-down]  'tab-bar-new-tab)
-    (global-set-key-if-unbind [H-up]    'tab-bar-close-tab)))
+      ;; (spacemacs/set-leader-keys
+      ;;   "C-r" lotus-xref-command-map)
+
+      (global-set-key-if-unbind [s-right] 'tab-bar-switch-to-next-tab)
+      (global-set-key-if-unbind [s-left]  'tab-bar-switch-to-prev-tab)
+      (global-set-key-if-unbind [s-up]    'tab-bar-switch-to-recent-tab)
+      (global-set-key-if-unbind [s-down]  'tab-bar-switch-to-last-tab)
+      (global-set-key-if-unbind [H-right] 'tab-bar-move-tab)
+      (global-set-key-if-unbind [H-left]  'tab-bar-move-tab-backward)
+      (global-set-key-if-unbind [H-down]  'tab-bar-new-tab)
+      (global-set-key-if-unbind [H-up]    'tab-bar-close-tab))))
 
 ;;;###autoload
 (defun resolveip (host)
