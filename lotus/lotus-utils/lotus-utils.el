@@ -65,48 +65,40 @@
 ;;;###autoload
 (defun elscreen-keymap-setup ()
   (progn
-    (turn-off-evil-mode)
-    ;; https://github.com/syl20bnr/spacemacs/issues/7372
-    (define-key evil-emacs-state-map (kbd "C-z") nil)
-    (global-unset-key [C-z])
+    (progn
+      (turn-off-evil-mode)
+      ;; https://github.com/syl20bnr/spacemacs/issues/7372
+      (define-key evil-emacs-state-map (kbd "C-z") nil)
+      (global-unset-key [C-z]))
 
-    (progn ;; "Keybinding: Centaur-Tabs"
+    (when (featurep 'centaur-tabs)
+      ;; "Keybinding: Centaur-Tabs"
       ;; (global-set-key [C-z c] 'centaur-tabs-create)
-      (funcall
-       #'(lambda (symbol value)
-           (when (fboundp 'centaur-tabs-set-prefix-key)
-             (centaur-tabs-set-prefix-key value))
-           (custom-set-default symbol value))
-       'centaur-tabs-prefix-key "\s-z")
+      (funcall #'(lambda (symbol value)
+                   (when (fboundp 'centaur-tabs-set-prefix-key)
+                     (centaur-tabs-set-prefix-key value))
+                   (custom-set-default symbol value))
+               'centaur-tabs-prefix-key "\s-z")
       (global-set-key-if-unbind [C-H-right] 'centaur-tabs-forward)
       (global-set-key-if-unbind [C-H-left]  'centaur-tabs-backward)
       (global-set-key-if-unbind [M-H-right] 'centaur-tabs-forward-group)
       (global-set-key-if-unbind [M-H-left]  'centaur-tabs-backward-group)
       (global-set-key-if-unbind [M-H-up] 'centaur-tabs-swap))
 
-
-    (progn
+    (when (featurep 'tab-bar)
       (defvar lotus-tabs-bar-prefix-map
-        ;; C-a                            elscreen-toggle
-        ;; tab-bar-switch-to-prev-tab
-        ;; C-c                            elscreen-create
-        ;; tab-bar-new-tab
-        ;; C-f                            elscreen-find-file
-        ;; C-k                            elscreen-kill
-        ;; tab-bar-close-tab
-        ;; RET                            elscreen-display-last-message
-        ;; C-n                            elscreen-next
-        ;; tab-bar-switch-to-next-tab
-        ;; C-p                            elscreen-previous
-        ;; tab-bar-switch-to-prev-tab
         (let ((map (make-sparse-keymap)))
           (define-key map (kbd "C-a") 'tab-bar-switch-to-prev-tab)
           (define-key map (kbd "C-c") 'tab-bar-new-tab)
+          (define-key map (kbd "c") 'tab-bar-new-tab)
           ;; (define-key map (kbd "C-f") 'elscreen-find-file)
           (define-key map (kbd "C-k") 'tab-bar-close-tab)
+          (define-key map (kbd "k") 'tab-bar-close-tab)
           (define-key map (kbd "RET") 'elscreen-display-last-message)
           (define-key map (kbd "C-n") 'tab-bar-switch-to-next-tab)
           (define-key map (kbd "C-p") 'tab-bar-switch-to-prev-tab)
+          (define-key map (kbd "n") 'tab-bar-switch-to-next-tab)
+          (define-key map (kbd "p") 'tab-bar-switch-to-prev-tab)
           map))
       (defvar tab-bar-prefix-key (kbd "C-z"))
       ;; (define-key tab-bar-map tab-bar-prefix-key lotus-tabs-bar-prefix-map)
