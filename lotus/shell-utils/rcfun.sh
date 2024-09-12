@@ -48,7 +48,7 @@ function emacs-chdir-defaultdir-follow() {
     fi
 }
 
-
+alias emacs-funcall=emacs-call-function
 alias ecf=emacs-current-filename
 alias ecff=emacs-current-filename-follow
 alias ecd=emacs-current-defaultdir
