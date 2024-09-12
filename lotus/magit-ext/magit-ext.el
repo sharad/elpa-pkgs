@@ -33,8 +33,6 @@
   (interactive
    (list (read-from-minibuffer "Commit msg: " "correction")))
   (let ((default-directory (magit-toplevel)))
-    ;; (magit-commit-create (list "-m"))
-    ;; (magit-call-git "add" ".")
     (magit-call-git "commit" "-m" msg)
     (magit-refresh)))
 
@@ -45,10 +43,6 @@
   "Magit commit amend without editing."
   (interactive)
   (magit-commit-amend '("--no-edit")))
-
-
-
-
 
 
 ;;;###autoload
