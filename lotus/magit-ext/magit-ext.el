@@ -28,12 +28,13 @@
 
 
 ;;;###autoload
-(defun magit-commit-with-single-line (msg)
+(defun magit-commit-with-single-line (msg &rest args)
   "Magit commit amend without editing."
   (interactive
    (list (read-from-minibuffer "Commit msg: " "correction")))
-  (let ((default-directory (magit-toplevel)))
-    (magit-call-git "commit" "-m" msg)
+  (let ((msg (or msg "correction"))
+        (default-directory (magit-toplevel)))
+    (apply magit-call-git "commit" "-m" msg args)
     (magit-refresh)))
 
 ;; magit-run-git-with-editor
