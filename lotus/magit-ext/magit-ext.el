@@ -32,7 +32,13 @@
   "Magit commit amend without editing."
   (interactive
    (list (read-from-minibuffer "Commit msg: " "correction")))
-  (magit-commit-create (list "-m")))
+  (let ((default-directory (magit-toplevel)))
+    ;; (magit-commit-create (list "-m"))
+    ;; (magit-call-git "add" ".")
+    (magit-call-git "commit" "-m" msg)
+    (magit-refresh)))
+
+;; magit-run-git-with-editor
 
 ;;;###autoload
 (defun magit-commit-amend-noedit ()
