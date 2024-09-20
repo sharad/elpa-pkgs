@@ -72,7 +72,5 @@
     (if file-path
         (expand-file-name "rcfun.sh" (file-name-directory file-path))
       "")))
-
-
 
 ;;; shell-utils.el ends here
