@@ -24,17 +24,18 @@
 
 ;; Include below code in rc file
 ;;
-;; function source-emacs-shell-rcfun() {
-;;     local filename=${(Q)~$(emacsclient -f ~/.emacs.d/server/$EMACS_SERVER_NAME \
-;;                                        -w 2                                    \
-;;                                        -e '(shell-rcfun-location)' |           \
-;;                                        sed -e '1!b' -e '/emacsclient: connected to remote socket at/d')}
-;;     if [ "${filename}" ]
-;;     then
-;;         source ${filename}
-;;     fi
+;; function emacs-client-call-function() {
+;;   echo Please define emacs-client-call-function to call function and return result. >&2
+;;   return -1
 ;; }
-;; source-emacs-shell-rcfun
+;; function emacs-source-shell-rcfun() {
+;;   local filename="$(emacs-client-call-function shell-rcfun-location)"
+;;   if [ "${filename}" ]
+;;   then
+;;     source ${filename}
+;;   fi
+;; }
+;; emacs-source-shell-rcfun
 
 
 ;;; Code:
@@ -56,13 +57,13 @@
       (file-truename buffer-file-name))))
 
 ;;;###autoload
-(defun shell-current-buffer-directory ()
+(defun shell-current-buffer-default-directory ()
   (interactive)
   (with-current-buffer (window-buffer (selected-window))
     default-directory))
 
 ;;;###autoload
-(defun shell-current-buffer-directory-truename ()
+(defun shell-current-buffer-default-directory-truename ()
   (interactive)
   (with-current-buffer (window-buffer (selected-window))
     (file-name-directory (file-truename (buffer-file-name)))))

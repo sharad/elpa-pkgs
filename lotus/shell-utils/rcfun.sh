@@ -4,11 +4,15 @@
 ##{{ emacs
 # from: https://jpace.wordpress.com/2016/12/01/current-file-and-directory-in-emacs-and-z-shell/
 
-function source-emacs-shell-rcfun() {
-    local filename=${(Q)~$(emacsclient -f ~/.emacs.d/server/$EMACS_SERVER_NAME \
-                                       -w 2                                    \
-                                       -e '(shell-rcfun-location)' |           \
-                               sed -e '1!b' -e '/emacsclient: connected to remote socket at/d')}
+
+# function emacs-client-call-function() {
+#     echo Please define emacs-client-call-function to call function and return result. >&2
+#     return -1
+# }
+
+function emacs-source-shell-rcfun() {
+
+    local filename="$(emacs-client-call-function shell-rcfun-location)"
     if [ "${filename}" ]
     then
         source ${filename}
@@ -17,31 +21,28 @@ function source-emacs-shell-rcfun() {
 
 function emacs-call-function() {
     local funname=$1
-    echo ${(Q)~$(emacsclient -f ~/.emacs.d/server/$EMACS_SERVER_NAME \
-                             -w 2                                    \
-                             -e "(${funname})" |                     \
-                     sed -e '1!b' -e '/emacsclient: connected to remote socket at/d')}
+    emacs-client-call-function "$1"
 }
 
-function emacs-current-filename() {
+function emacs-current-buffer-filename() {
     local _location="$(emacs-call-function shell-current-buffer-filename)"
     echo "${_location}"
 }
-function emacs-current-filename-follow() {
+function emacs-current-buffer-filename-truename() {
     local _location="$(emacs-call-function shell-current-buffer-filename-truename)"
     echo "${_location}"
 }
-function emacs-current-defaultdir() {
-    local _location="$(emacs-call-function shell-current-buffer-directory)"
+function emacs-current-buffer-default-directory() {
+    local _location="$(emacs-call-function shell-current-buffer-default-directory)"
     echo "${_location}"
 }
-function emacs-current-defaultdir-follow() {
-    local _location="$(emacs-call-function shell-current-buffer-directory-truename)"
+function emacs-current-buffer-default-directory-truename() {
+    local _location="$(emacs-call-function shell-current-buffer-default-directory-truename)"
     echo "${_location}"
 }
 #
 function emacs-chdir-defaultdir() {
-    local _location="$(emacs-current-defaultdir)"
+    local _location="$(emacs-current-buffer-default-directory)"
     if [ "$_location" ]
     then
         cd "${_location}"
@@ -49,8 +50,8 @@ function emacs-chdir-defaultdir() {
         echo no dir
     fi
 }
-function emacs-chdir-defaultdir-follow() {
-    local _location="$(emacs-current-defaultdir-follow)"
+function emacs-chdir-defaultdir-truename() {
+    local _location="$(emacs-current-buffer-default-directory-truename)"
     if [ "$_location" ]
     then
         cd "${_location}"
@@ -60,13 +61,13 @@ function emacs-chdir-defaultdir-follow() {
 }
 
 alias emacs-funcall=emacs-call-function
-alias ecf=emacs-current-filename
-alias ecff=emacs-current-filename-follow
-alias ecd=emacs-current-defaultdir
-alias ecdf=emacs-current-defaultdir-follow
+alias ecf=emacs-current-buffer-filename
+alias ecff=emacs-current-buffer-filename-truename
+alias ecd=emacs-current-buffer-default-directory
+alias ecdf=emacs-current-buffer-default-directory-truename
 #
 alias cde=emacs-chdir-defaultdir
-alias cdef=emacs-chdir-defaultdir-follow
+alias cdef=emacs-chdir-defaultdir-truename
 ##}}
 
 
