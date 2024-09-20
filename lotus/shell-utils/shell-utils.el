@@ -20,7 +20,22 @@
 
 ;;; Commentary:
 
-;; 
+;;
+
+;; Include below code in rc file
+;;
+;; function source-emacs-shell-rcfun() {
+;;     local filename=${(Q)~$(emacsclient -f ~/.emacs.d/server/$EMACS_SERVER_NAME \
+;;                                        -w 2                                    \
+;;                                        -e '(shell-rcfun-location)' |           \
+;;                                        sed -e '1!b' -e '/emacsclient: connected to remote socket at/d')}
+;;     if [ "${filename}" ]
+;;     then
+;;         source ${filename}
+;;     fi
+;; }
+;; source-emacs-shell-rcfun
+
 
 ;;; Code:
 
@@ -49,5 +64,15 @@
   (interactive)
   (with-current-buffer (window-buffer (selected-window))
     (file-name-directory (file-truename (buffer-file-name)))))
+
+;;;###autoload
+(defun shell-rcfun-location()
+  (let ((file-path (find-lisp-object-file-name 'shell-rcfun-location
+                                               'defun)))
+    (if file-path
+        (expand-file-name "rcfun.sh" (file-name-directory file-path))
+      "")))
+
+
 
 ;;; shell-utils.el ends here

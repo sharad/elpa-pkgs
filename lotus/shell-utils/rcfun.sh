@@ -4,6 +4,17 @@
 ##{{ emacs
 # from: https://jpace.wordpress.com/2016/12/01/current-file-and-directory-in-emacs-and-z-shell/
 
+function source-emacs-shell-rcfun() {
+    local filename=${(Q)~$(emacsclient -f ~/.emacs.d/server/$EMACS_SERVER_NAME \
+                                       -w 2                                    \
+                                       -e '(shell-rcfun-location)' |           \
+                               sed -e '1!b' -e '/emacsclient: connected to remote socket at/d')}
+    if [ "${filename}" ]
+    then
+        source ${filename}
+    fi
+}
+
 function emacs-call-function() {
     local funname=$1
     echo ${(Q)~$(emacsclient -f ~/.emacs.d/server/$EMACS_SERVER_NAME \
