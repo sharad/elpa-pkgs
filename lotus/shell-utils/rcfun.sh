@@ -18,6 +18,7 @@ function emacs-source-shell-rcfun() {
         source ${filename}
     fi
 }
+alias emacs-shell-setup=emacs-source-shell-rcfun
 
 function emacs-call-function() {
     local funname=$1

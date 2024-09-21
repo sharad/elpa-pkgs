@@ -35,7 +35,8 @@
 ;;     source ${filename}
 ;;   fi
 ;; }
-;; emacs-source-shell-rcfun
+;; alias emacs-shell-setup=emacs-source-shell-rcfun
+;; emacs-shell-setup
 
 
 ;;; Code:
