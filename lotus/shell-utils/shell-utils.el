@@ -46,6 +46,7 @@
 
 (require 'help-fns)
 
+
 ;;;###autoload
 (defun shell-current-buffer-filename ()
   (with-current-buffer (window-buffer (selected-window))
