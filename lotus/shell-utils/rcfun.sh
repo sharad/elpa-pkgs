@@ -4,18 +4,17 @@
 ##{{ emacs
 # from: https://jpace.wordpress.com/2016/12/01/current-file-and-directory-in-emacs-and-z-shell/
 
-
-# function emacs-client-call-function() {
-#     echo Please define emacs-client-call-function to call function and return result. >&2
-#     return -1
-# }
-
 function emacs-source-shell-rcfun() {
 
-    local filename="$(emacs-client-call-function shell-rcfun-location)"
-    if [ "${filename}" ]
+    if typeset -f emacs-client-call-function > /dev/null 2>&1
     then
-        source ${filename}
+        local filename="$(emacs-client-call-function shell-rcfun-location)"
+        if [ "${filename}" ]
+        then
+            source ${filename}
+        fi
+    else
+        echo Define emacs-client-call-function function to invoke elisp function. >&2
     fi
 }
 alias emacs-shell-setup=emacs-source-shell-rcfun

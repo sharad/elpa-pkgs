@@ -24,19 +24,25 @@
 
 ;; Include below code in rc file
 ;;
-;; function emacs-client-call-function() {
-;;   echo Please define emacs-client-call-function to call function and return result. >&2
-;;   return -1
-;; }
+;; ##{{ emacs
+;; # from: https://jpace.wordpress.com/2016/12/01/current-file-and-directory-in-emacs-and-z-shell/
+;;
 ;; function emacs-source-shell-rcfun() {
-;;   local filename="$(emacs-client-call-function shell-rcfun-location)"
-;;   if [ "${filename}" ]
-;;   then
-;;     source ${filename}
-;;   fi
+;;     if typeset -f emacs-client-call-function > /dev/null 2>&1
+;;     then
+;;         local filename="$(emacs-client-call-function shell-rcfun-location)"
+;;         if [ "${filename}" ]
+;;         then
+;;             source ${filename}
+;;         fi
+;;     else
+;;         echo Define emacs-client-call-function function to invoke elisp function. >&2
+;;     fi
 ;; }
 ;; alias emacs-shell-setup=emacs-source-shell-rcfun
 ;; emacs-shell-setup
+;; ##}}
+
 
 
 ;;; Code:
@@ -71,7 +77,8 @@
     (file-name-directory (file-truename (buffer-file-name)))))
 
 ;;;###autoload
-(defun shell-rcfun-location()
+(defun shell-rcfun-location ()
+  (interactive)
   (let ((file-path (find-lisp-object-file-name 'shell-rcfun-location
                                                'defun)))
     (if file-path
