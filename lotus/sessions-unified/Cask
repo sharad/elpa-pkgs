@@ -1,0 +1,29 @@
+
+(source gnu)
+(source melpa)
+(source marmalade)
+(source org)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "sessions-unified" "20191027.2325" "Session unified.")
+
+
+(files
+ "desktop-unified.el"
+ "fmsession.el"
+ "misc-unified.el"
+ "session-unified.el"
+ "sessions-unified-pkg.el"
+ "sessions-unified-test.el"
+ "sessions-unified.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock")
+ (depends-on "rcs-backup")
+ (depends-on "elscreen")
+ (depends-on "session")
+ (depends-on "emacs-panel"))

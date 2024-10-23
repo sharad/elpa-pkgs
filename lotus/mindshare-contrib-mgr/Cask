@@ -1,0 +1,20 @@
+
+(source gnu)
+(source melpa)
+(source marmalade)
+(source org)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "mindshare-contrib-mgr" "20191027.2325" "mindshare-contrib-mgr")
+
+
+(files
+ "mindshare-contrib-mgr-pkg.el"
+ "mindshare-contrib-mgr.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))

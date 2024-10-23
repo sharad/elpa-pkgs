@@ -1,0 +1,18 @@
+
+(source gnu)
+(source melpa)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "gnus-pers" "20191027.10" "gnus-pers")
+
+
+(files
+ "gnus-pers-pkg.el"
+ "gnus-pers.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))

@@ -1,0 +1,44 @@
+ibus-el (0.3.0-2) unstable; urgency=low
+
+  * Fix "README.Debian does not make sense" (Closes: #648596)
+
+ -- Asias He <asias.hejun@gmail.com>  Sun, 05 Feb 2012 10:57:29 +0000
+
+ibus-el (0.3.0-1) unstable; urgency=low
+
+  * New release 
+
+ -- Asias He <asias.hejun@gmail.com>  Sun, 05 Feb 2012 07:39:00 +0000
+
+ibus-el (0.2.1-1) unstable; urgency=low
+
+  * New release 
+  * Fix "new upstream version available" (Closes: #622641)
+  * Set Vcs to git.debian.org
+  * Set DMUA to yes
+
+ -- Asias He <asias.hejun@gmail.com>  Thu, 14 Apr 2011 08:32:11 +0800
+
+ibus-el (0.2.0-1) unstable; urgency=low
+
+  * initial release (closes: #594186)
+
+ -- LI Daobing <lidaobing@debian.org>  Tue, 24 Aug 2010 21:17:20 +0800
+
+ibus-el (0.1.1) lucid; urgency=low
+
+  * New release
+
+ -- IRIE Shinsuke <irieshinsuke@yahoo.co.jp>  Sat, 12 Jun 2010 02:00:29 +0900
+
+ibus-el (0.1.0) lucid; urgency=low
+
+  * Initial release
+
+ -- IRIE Shinsuke <irieshinsuke@yahoo.co.jp>  Sun, 30 May 2010 01:50:10 +0900
+
+ibus-el (0.0.2.60) lucid; urgency=low
+
+  * Test package
+
+ -- IRIE Shinsuke <irieshinsuke@yahoo.co.jp>  Thu, 27 May 2010 21:24:27 +0900

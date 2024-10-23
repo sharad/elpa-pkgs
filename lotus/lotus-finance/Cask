@@ -1,0 +1,21 @@
+
+(source gnu)
+(source melpa)
+(source marmalade)
+(source org)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "lotus-finance" "20191027.2325" "lotus-finance")
+
+
+(files
+ "lotus-finance-pkg.el"
+ "lotus-finance.el"
+ "lotus-ledger.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))

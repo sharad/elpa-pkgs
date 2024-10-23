@@ -1,0 +1,24 @@
+
+(source gnu)
+(source melpa)
+(source marmalade)
+(source org)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "task-manager" "20191027.2325" "task manager.")
+
+
+(files
+ "task-manager-pkg.el"
+ "task-manager.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock")
+ (depends-on "publishing")
+ (depends-on "org")
+ (depends-on "rinari")
+ (depends-on "project-buffer-file"))

@@ -1,0 +1,18 @@
+
+(source gnu)
+(source melpa)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "gnus-namazu" "20191027.12" "gnus-namazu")
+
+
+(files
+ "gnus-namazu-pkg.el"
+ "gnus-namazu.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))

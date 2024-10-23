@@ -1,0 +1,22 @@
+
+(source gnu)
+(source melpa)
+(source marmalade)
+(source org)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "startup-hooks" "20191027.2325" "startup-hooks")
+
+
+(files
+ "startup-hooks-autoloads.el"
+ "startup-hooks-pkg.el"
+ "startup-hooks.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock")
+ (depends-on "lotus-basic-utils"))

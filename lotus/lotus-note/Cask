@@ -1,0 +1,20 @@
+
+(source gnu)
+(source melpa)
+(source marmalade)
+(source org)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "lotus-note" "20191027.2325" "lotus-note")
+
+
+(files
+ "lotus-note-pkg.el"
+ "lotus-note.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))

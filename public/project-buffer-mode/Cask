@@ -1,0 +1,24 @@
+
+(source gnu)
+(source melpa)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "project-buffer-mode" "20191025.2041" "project-buffer-mode")
+
+
+(files
+ "fsproject.el"
+ "iproject.el"
+ "project-buffer-ext.el"
+ "project-buffer-mode+.el"
+ "project-buffer-mode-pkg.el"
+ "project-buffer-mode.el"
+ "project-buffer-occur.el"
+ "sln-mode.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))

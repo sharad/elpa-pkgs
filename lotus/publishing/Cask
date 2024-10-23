@@ -1,0 +1,23 @@
+
+(source gnu)
+(source melpa)
+(source marmalade)
+(source org)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "publishing" "20191027.2325" "publishing for org and muse.")
+
+
+(files
+ "misc-publishing.el"
+ "muse-publishing.el"
+ "org-publishing.el"
+ "publishing-pkg.el"
+ "publishing.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))

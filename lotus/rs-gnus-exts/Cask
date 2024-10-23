@@ -1,0 +1,22 @@
+
+(source gnu)
+(source melpa)
+(source marmalade)
+(source org)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "rs-gnus-exts" "20191027.2325" "rs-gnus-exts")
+
+
+(files
+ "gnus-summary-stripe.el"
+ "rs-gnus-exts-pkg.el"
+ "rs-gnus-summary.el"
+ "stripe-buffer.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))

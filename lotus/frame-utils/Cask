@@ -1,0 +1,23 @@
+
+(source gnu)
+(source melpa)
+(source marmalade)
+(source org)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "frame-utils" "20191027.2325" "frame-utils")
+
+
+(files
+ "frame-utils-pkg.el"
+ "frame-utils.el")
+
+(development
+ (depends-on "elscreen")
+ (depends-on "buffer-utils")
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock")
+ (depends-on "elscreen"))

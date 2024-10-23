@@ -1,0 +1,21 @@
+
+(source gnu)
+(source melpa)
+(source marmalade)
+(source org)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "emacs-db-mode" "20191027.2325" "emacs-db-mode")
+
+
+(files
+ "db.el"
+ "emacs-db-mode-pkg.el"
+ "emacs-db-mode.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))

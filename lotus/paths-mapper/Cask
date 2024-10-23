@@ -1,0 +1,25 @@
+
+(source gnu)
+(source melpa)
+(source marmalade)
+(source org)
+(source local "~/.xemacs/elpa/upload")
+
+
+(package "paths-mapper" "20191027.2325" "paths-mapper")
+
+
+(files
+ "compile-paths-mapper.el"
+ "paths-mapper-pkg.el"
+ "paths-mapper.el")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock")
+ (depends-on "s")
+ (depends-on "compile")
+ (depends-on "session")
+ (depends-on "desktop"))
