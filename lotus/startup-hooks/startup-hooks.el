@@ -92,9 +92,14 @@
 
 ;;;###autoload
 (defun any-frame-opened-p ()
-  (>=
-   (length (frame-list))
-   *minimum-disable-login-session-frames*))
+  (>= (length (frame-list))
+      *minimum-disable-login-session-frames*))
+
+;;;###autoload
+(defun last-frame-opened-p ()
+  (interactive)
+  (<= (length (frame-list))
+      *minimum-disable-login-session-frames*))
 
 (defvar enable-p4-login nil "test")
 ;;}}
@@ -140,7 +145,7 @@ problem while emacs startup in daemon mode, non-interactively."
   (with-report-error "check"
       (lotus-general-disable-startup-setting-begin)
       (run-each-hooks 'lotus-disable-startup-interrupting-feature-hook)
-    (message "lotus-disable-startup-interrupting-feature() completed Seen.")
+      (message "lotus-disable-startup-interrupting-feature() completed Seen.")
     (lotus-general-disable-startup-setting-finish)))
 
 ;; run now
@@ -180,9 +185,9 @@ problem while emacs startup in daemon mode, non-interactively."
          (featurep 'light-symbol)
          (featurep 'hilit-chg))
     (add-element-to-lists '(lambda ()
-                            (light-symbol-mode 1)
-                            (highlight-changes-visible-mode t)
-                            (highlight-changes-mode t))
+                             (light-symbol-mode 1)
+                             (highlight-changes-visible-mode t)
+                             (highlight-changes-mode t))
                           pgm-langs)))
 (add-hook 'lotus-enable-startup-interrupting-feature-hook 'lotus-general-enable-startup-setting-begin t)
 ;;;###autoload
@@ -326,9 +331,9 @@ startup in daemon mode."
 ;;;###autoload
 (defun lotus-disable-login-session-interrupting-feature-in-frame-once (f)
   (if (any-frame-opened-p) ;last
-                                        ;frame
-                                        ;then
-                                        ;add.
+      ;frame
+      ;then
+      ;add.
       (with-report-error "check"
           (lotus-disable-login-session-interrupting-feature)
           (add-hook 'after-make-frame-functions 'lotus-enable-login-session-interrupting-feature-in-frame-once t)
@@ -344,7 +349,7 @@ startup in daemon mode."
 (defun lotus-general-enable-login-session-setting-begin ()
   (interactive)
   (setq
-                                        ;for planner
+   ;for planner
    debug-on-error lotus-enable-login-session-begin-debug-on-error))
 (add-hook 'lotus-enable-startup-interrupting-feature-hook 'lotus-general-enable-login-session-setting-begin t)
 
@@ -476,12 +481,12 @@ startup in daemon mode."
 (when nil
   after-make-frame-functions
 
- '(w3m-add-w3m-initial-frames persp-init-new-frame elscreen-make-frame-confs muse-make-faces eyebrowse-init evil-init-esc x-dnd-init-frame (closure (t) (frame) (run-with-idle-timer 3 nil #'set-default-face-height-by-resolution) (set-default-face-height-by-resolution)) (lambda (f) (run-at-time "1 sec" nil 'emacs-uptime)) (lambda (nframe) (run-at-time-or-now 100 '(lambda nil (if (any-frame-opened-p) (org-clock-in-if-not))))) call-org-clock-in-if-not-at-time-delay-frame-fn)
+  '(w3m-add-w3m-initial-frames persp-init-new-frame elscreen-make-frame-confs muse-make-faces eyebrowse-init evil-init-esc x-dnd-init-frame (closure (t) (frame) (run-with-idle-timer 3 nil #'set-default-face-height-by-resolution) (set-default-face-height-by-resolution)) (lambda (f) (run-at-time "1 sec" nil 'emacs-uptime)) (lambda (nframe) (run-at-time-or-now 100 '(lambda nil (if (any-frame-opened-p) (org-clock-in-if-not))))) call-org-clock-in-if-not-at-time-delay-frame-fn)
 
- (setq after-make-frame-functions
-       '( persp-init-new-frame elscreen-make-frame-confs muse-make-faces eyebrowse-init evil-init-esc x-dnd-init-frame call-org-clock-in-if-not-at-time-delay-frame-fn))
+  (setq after-make-frame-functions
+        '( persp-init-new-frame elscreen-make-frame-confs muse-make-faces eyebrowse-init evil-init-esc x-dnd-init-frame call-org-clock-in-if-not-at-time-delay-frame-fn))
 
- (setq after-make-frame-functions nil))
+  (setq after-make-frame-functions nil))
 
 (defalias 'make-local-hook 'ignore)
 

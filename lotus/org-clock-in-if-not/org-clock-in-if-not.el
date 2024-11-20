@@ -28,6 +28,7 @@
 
 
 (require 'basic-utils)
+(require 'startup-hooks)
 (eval-when-compile
   (require 'lotus-misc-utils))
 (require 'lotus-misc-utils)
@@ -119,7 +120,7 @@ especially for frame-launcher function.")
               (if org-clock-history
                   (let (buffer-read-only)
                     (org-clock-in '(4)))
-                                  ;; with-current-buffer should be some real file
+                ;; with-current-buffer should be some real file
                 (org-clock-in-refile nil))
             ((quit error) (message "Enable/Disable with org-clock-in-if-not-enable/org-clock-in-if-not-disable")))
           (org-ci-if-not-debug :debug "org-clock-in-if-not: finished"))))))
@@ -161,6 +162,7 @@ especially for frame-launcher function.")
 
 (defun org-clock-out-if-active ()
   (if (and (org-clock-is-active)
+           (last-frame-opened-p)
            (y-or-n-p-with-timeout (format "Do you want to clock out current task %s: " org-clock-heading)
                                   7
                                   nil))
