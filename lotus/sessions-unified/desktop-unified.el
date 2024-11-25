@@ -287,7 +287,7 @@ so returns nil if pid is nil."
 
 ;; (when (or (not *emacs-in-init*) (not reloading-libraries))
 (when (or *emacs-in-init* reloading-libraries)
-                                        ;setting to nil so it will be asked from user.
+  ;setting to nil so it will be asked from user.
   (setq *desktop-save-filename* nil))
 
 ;; might be the reason for Terminal 0 is locked.
@@ -458,6 +458,8 @@ so returns nil if pid is nil."
 (defvar session-debug-on-error nil "session-debug-on-error")
 
 ;;;###autoload
+
+;;;###autoload
 (defun save-all-sessions-auto-save (&optional force)
   "Save elscreen frame, desktop, and session time to time
  restore in case of sudden emacs crash."
@@ -476,7 +478,9 @@ so returns nil if pid is nil."
                            ;; http://www.gnu.org/software/emacs/manual/html_node/emacs/Auto-Save-Control.html#Auto-Save-Control
                            (> (float-time idle-time) save-all-sessions-auto-save-idle-time-interval-dynamic)))
                   (progn
+                    (message  "Running session-unified-save-all-sessions-before-hook")
                     (run-hooks 'session-unified-save-all-sessions-before-hook)
+                    (message  "Done session-unified-save-all-sessions-before-hook")
                     (session-unfiy-notify "Started to save frame desktop and session.\ncurrent time %s, idle time %d idle-time-interval left %d"
                                           (format-time-string time-format save-all-sessions-auto-save-time)
                                           (float-time idle-time)
@@ -491,8 +495,12 @@ so returns nil if pid is nil."
                         (if session-debug-on-error
                             (progn
                               (when sessions-unified-elscreen
-                                (save-all-frames-session))
+                                (message  "Running save-all-frames-session")
+                                (save-all-frames-session)
+                                (message  "Done save-all-frames-session"))
+                              (message  "Running session-vc-save-session")
                               (session-vc-save-session)
+                              (message  "Done session-vc-save-session")
                               (when *session-unified-desktop-enabled* (my-desktop-save))
                               (session-unfiy-notify "Saved frame desktop and session.")
                               (message nil))
