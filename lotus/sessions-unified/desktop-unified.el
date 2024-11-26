@@ -287,7 +287,7 @@ so returns nil if pid is nil."
 
 ;; (when (or (not *emacs-in-init*) (not reloading-libraries))
 (when (or *emacs-in-init* reloading-libraries)
-  ;setting to nil so it will be asked from user.
+                                        ;setting to nil so it will be asked from user.
   (setq *desktop-save-filename* nil))
 
 ;; might be the reason for Terminal 0 is locked.
@@ -457,25 +457,6 @@ so returns nil if pid is nil."
 (defvar save-all-sessions-auto-save-time (current-time) "save all sessions auto save time")
 (defvar session-debug-on-error nil "session-debug-on-error")
 
-(defun get-current-func-name-debug ()
-  "Get the symbol of the function this function is called from."
-  ;; 5 is the magic number that makes us look
-  ;; above this function
-  (message "start get-current-func-name-debug")
-  (let* ((index 4)
-         (frame (backtrace-frame index)))
-    ;; from what I can tell, top level function call frames
-    ;; start with t and the second value is the symbol of the function
-    (message "b4 while")
-    (while (not (equal t (cl-first frame)))
-      (message "while loop index %d" index)
-      (setq frame (backtrace-frame (cl-incf index))))
-    (message "completed while frame")
-    (let ((fun (second frame)))
-      (if (symbolp fun)
-          (symbol-name fun)
-        (format "%s" fun)))))
-
 ;;;###autoload
 (defun save-all-sessions-auto-save (&optional force)
   "Save elscreen frame, desktop, and session time to time
@@ -504,7 +485,7 @@ so returns nil if pid is nil."
                     ;;          (float-time idle-time)
                     ;;          save-all-sessions-auto-save-idle-time-interval-dynamic)
                     (message  "XYZ test1")
-                    (message "curr fn: %s" (get-current-func-name-debug))
+                    (message "curr fn: %s" (get-current-func-name))
                     (message  "XYZ test2")
                     (session-unfiy-notify "Started to save frame desktop and session.\ncurrent time %s, idle time %d idle-time-interval left %d"
                                           (format-time-string time-format save-all-sessions-auto-save-time)
