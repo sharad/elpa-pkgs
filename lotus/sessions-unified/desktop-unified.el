@@ -287,7 +287,7 @@ so returns nil if pid is nil."
 
 ;; (when (or (not *emacs-in-init*) (not reloading-libraries))
 (when (or *emacs-in-init* reloading-libraries)
-                                        ;setting to nil so it will be asked from user.
+  ;setting to nil so it will be asked from user.
   (setq *desktop-save-filename* nil))
 
 ;; might be the reason for Terminal 0 is locked.
@@ -479,19 +479,19 @@ so returns nil if pid is nil."
                     (message  "Running session-unified-save-all-sessions-before-hook")
                     (run-hooks 'session-unified-save-all-sessions-before-hook)
                     (message  "Done session-unified-save-all-sessions-before-hook")
-                    (message  "XYZ")
+                    ;; (message  "XYZ")
                     ;; (message "Started to save frame desktop and session.\ncurrent time %s, idle time %d idle-time-interval left %d"
                     ;;          (format-time-string time-format save-all-sessions-auto-save-time)
                     ;;          (float-time idle-time)
                     ;;          save-all-sessions-auto-save-idle-time-interval-dynamic)
-                    (message  "XYZ test1")
-                    (message "curr fn: %s" (get-current-func-name))
-                    (message  "XYZ test2")
+                    ;; (message  "XYZ test1")
+                    ;; (message "curr fn: %s" (get-current-func-name))
+                    ;; (message  "XYZ test2")
                     (session-unfiy-notify "Started to save frame desktop and session.\ncurrent time %s, idle time %d idle-time-interval left %d"
                                           (format-time-string time-format save-all-sessions-auto-save-time)
                                           (float-time idle-time)
                                           save-all-sessions-auto-save-idle-time-interval-dynamic)
-                    (message  "XYZ test3")
+                    ;; (message  "XYZ test3")
                     (setq save-all-sessions-auto-save-time (current-time)
                           save-all-sessions-auto-save-idle-time-interval-dynamic save-all-sessions-auto-save-idle-time-interval)
                     (prog1

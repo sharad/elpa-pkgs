@@ -88,18 +88,18 @@ get re-enabled here.")
   "Get the symbol of the function this function is called from."
   ;; 5 is the magic number that makes us look
   ;; above this function
-  (message "start get-current-func-name-debug")
+  ;; (message "start get-current-func-name-debug")
   (let* ((limit 50)
          (index 4)
          (frame (backtrace-frame index)))
     ;; from what I can tell, top level function call frames
     ;; start with t and the second value is the symbol of the function
-    (message "b4 while")
+    ;; (message "b4 while")
     (while (and (not (equal t (car frame)))
                 (< index limit))
-      (message "while loop index %d" index)
+      ;; (message "while loop index %d" index)
       (setq frame (backtrace-frame (cl-incf index))))
-    (message "completed while frame")
+    ;; (message "completed while frame")
     (if (equal t (car frame))
         (let ((fun (second frame)))
           (if (symbolp fun)
