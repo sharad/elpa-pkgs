@@ -28,9 +28,9 @@
 (provide 'lotus-misc-utils)
 
 
-(eval-when-compile
-  (require 'elscreen))
-(require 'elscreen)
+;; (eval-when-compile
+;;   (require 'elscreen))
+;; (require 'elscreen)
 
 (require 'lotus-utils-debug)
 (require 'timer)

@@ -31,7 +31,7 @@
 
 
 (require 'helm-core)
-(require 'elscreen)
+;; (require 'elscreen)
 (require 'vc)
 (require 'lotus-misc-utils)
 
