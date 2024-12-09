@@ -39,7 +39,7 @@
 (require 'lotus-misc-utils)
 (require 'timer-utils-lotus)
 
-(require 'elscreen)
+;; (require 'elscreen)
 (require 'helm-lib)
 (require 'outline)
 (require 'info+)                        ;outline-invisible-p
@@ -86,7 +86,7 @@
   "For general purpose org file modification (insertion[s]
 deletion[s] modification[s] etc.)"
   `(org-with-inhibit-modification-hooks
-     (progn
+    (progn
       ,@body)))
 (put 'lotus-org-with-safe-modification 'lisp-indent-function 0)
 
@@ -103,7 +103,7 @@ deletion[s] modification[s] etc.)"
 (defmacro org-clock-lotus-with-current-clock (&rest body)
   `(when (marker-buffer org-clock-marker)
      (org-with-clock (cons org-clock-marker org-clock-start-time)
-       ,@body)))
+                     ,@body)))
 (put 'org-clock-lotus-with-current-clock 'lisp-indent-function 0)
 
 (defmacro org-with-heading (heading &rest body)
@@ -115,7 +115,7 @@ deletion[s] modification[s] etc.)"
            (progn
              (goto-char pos)
              ,@body)
-           (error "position %s greater than point max %d" pos (point-max))))))
+         (error "position %s greater than point max %d" pos (point-max))))))
 (put 'org-with-heading 'lisp-indent-function 1)
 
 (defmacro org-with-heading-pos (pos heading &rest body)
@@ -139,7 +139,7 @@ deletion[s] modification[s] etc.)"
      (if buff
          (with-current-buffer buff
            (org-with-heading ,heading ,@body))
-         (error "can not open file %s" ,file))))
+       (error "can not open file %s" ,file))))
 (put 'org-with-file-heading 'lisp-indent-function 2)
 
 
@@ -152,7 +152,7 @@ deletion[s] modification[s] etc.)"
              (org-narrow-to-subtree)
              (progn
                ,@body))))
-       (error "marker is nil")))
+     (error "marker is nil")))
 (put 'org-with-narrow-to-marker 'lisp-indent-function 1)
 
 (defmacro org-with-narrow-to-heading-subtree (heading create &rest body)
@@ -175,14 +175,14 @@ deletion[s] modification[s] etc.)"
            (clone-name (concat (or ,clone "<clone>") "-" (buffer-name))))
        (let ((pos (point)))
          (unwind-protect
-              (progn
-                (clone-indirect-buffer clone-name nil t)
-                ;; (set-buffer clone-name)
-                (with-current-buffer (get-buffer clone-name)
-                  (widen)
-                  (outline-show-all)
-                  ;; (org-mode)
-                  ,@body))
+             (progn
+               (clone-indirect-buffer clone-name nil t)
+               ;; (set-buffer clone-name)
+               (with-current-buffer (get-buffer clone-name)
+                 (widen)
+                 (outline-show-all)
+                 ;; (org-mode)
+                 ,@body))
            (when buff
              (setq pos (point))
              (set-buffer buff)
@@ -198,17 +198,17 @@ deletion[s] modification[s] etc.)"
            (buff (marker-buffer ,marker)))
        (let ((pos (point)))
          (unwind-protect
-              (progn
-                (clone-indirect-buffer clone-name nil t)
-                ;; (set-buffer clone-name)
-                (with-current-buffer (get-buffer clone-name)
-                  (goto-char (point-min))
-                  (widen)
-                  (outline-show-all)
-                  (goto-char (or (marker-position marker)
-                                 0))
-                  ;; (org-mode)
-                  ,@body))
+             (progn
+               (clone-indirect-buffer clone-name nil t)
+               ;; (set-buffer clone-name)
+               (with-current-buffer (get-buffer clone-name)
+                 (goto-char (point-min))
+                 (widen)
+                 (outline-show-all)
+                 (goto-char (or (marker-position marker)
+                                0))
+                 ;; (org-mode)
+                 ,@body))
            (setq pos (point))
            (when buff
              (setq pos (point))
@@ -352,39 +352,39 @@ With prefix arg C-u, copy region instad of killing it."
 ;; (defmacro org-miniwin-file-loc-with-refile (win file pos refile-targets prompt &rest body)
 (defmacro org-with-file-loc-refile-new-win (file pos refile-targets newwin prompt &rest body)
   `(org-file-loc-with-refile
-       ,file ,pos ,refile-targets ,prompt
-       (lotus-with-file-pos-new-win
-           ,file ,pos ,newwin
-           ,@body)))
+    ,file ,pos ,refile-targets ,prompt
+    (lotus-with-file-pos-new-win
+        ,file ,pos ,newwin
+        ,@body)))
 (put 'org-miniwin-file-loc-with-refile 'lisp-indent-function 5)
 
 ;; TODO: org-fit-window-to-buffer
 ;; (defmacro org-timed-miniwin-file-loc-with-refile (win file pos timeout refile-targets prompt &rest body)
 (defmacro org-with-file-loc-timed-refile-new-win (file pos timeout refile-targets newwin prompt &rest body)
   `(org-with-file-loc-timed-refile
-       ,file ,pos ,timeout
-       (show-all
-        (read-only-mode)
-        (org-previous-visible-heading 1)
-        (let ((info (org-context-clock-collect-task))) ;BUG???
-          info) ,refile-targets) ,prompt
-       (lotus-with-file-pos-new-win
-           ,file ,pos ,newwin
-           ,@body)))
+    ,file ,pos ,timeout
+    (show-all
+     (read-only-mode)
+     (org-previous-visible-heading 1)
+     (let ((info (org-context-clock-collect-task))) ;BUG???
+       info) ,refile-targets) ,prompt
+    (lotus-with-file-pos-new-win
+        ,file ,pos ,newwin
+        ,@body)))
 (put 'org-with-file-loc-timed-refile-new-win 'lisp-indent-function 6)
 
 ;; TODO: org-fit-window-to-buffer
 ;; (defmacro org-timed-miniwin-file-loc-with-refile (win file pos timeout refile-targets prompt &rest body)
 (defmacro org-with-file-loc-timed-refile-timed-new-win (file pos
-                                                        timeout-refile refile-targets
-                                                        timeout-newwin timer-newwin
-                                                        cleanupfn-newwin cleanupfn-local
-                                                        newwin prompt
-                                                        &rest body)
+                                                             timeout-refile refile-targets
+                                                             timeout-newwin timer-newwin
+                                                             cleanupfn-newwin cleanupfn-local
+                                                             newwin prompt
+                                                             &rest body)
   `(org-with-file-loc-timed-refile
-     ,file ,pos ,timeout-refile ,refile-targets ,prompt
-     (lotus-with-file-pos-timed-new-win
-      ,file ,pos ,timeout-newwin ,timer-newwin ,cleanupfn-newwin ,cleanupfn-local ,newwin ,@body)))
+    ,file ,pos ,timeout-refile ,refile-targets ,prompt
+    (lotus-with-file-pos-timed-new-win
+        ,file ,pos ,timeout-newwin ,timer-newwin ,cleanupfn-newwin ,cleanupfn-local ,newwin ,@body)))
 (put 'org-with-file-loc-timed-refile-timed-new-win 'lisp-indent-function 10)
 
 ;; e.g.
@@ -438,17 +438,17 @@ With prefix arg C-u, copy region instad of killing it."
                 (skip-chars-backward "\n\t ")
                 (point))))
   (org-with-refile file pos nil
-    (let ((text (buffer-substring-no-properties beg end)))
-      (unless copy (kill-region beg end))
-      (deactivate-mark)
-      (with-current-buffer (find-file-noselect file)
-        (save-excursion
-          (goto-char pos)
-          (if (eql org-refile-region-position 'bottom)
-              (org-end-of-subtree)
-              ;; (org-end-of-meta-data-and-drawers)
-              (org-end-of-subtree))
-          (lotus-org-insert (format org-refile-region-format text)))))))
+                   (let ((text (buffer-substring-no-properties beg end)))
+                     (unless copy (kill-region beg end))
+                     (deactivate-mark)
+                     (with-current-buffer (find-file-noselect file)
+                       (save-excursion
+                         (goto-char pos)
+                         (if (eql org-refile-region-position 'bottom)
+                             (org-end-of-subtree)
+                           ;; (org-end-of-meta-data-and-drawers)
+                           (org-end-of-subtree))
+                         (lotus-org-insert (format org-refile-region-format text)))))))
 
 (defvar org-refile-string-format "%s\n")
 
@@ -462,20 +462,20 @@ If no region is active, refile the current paragraph.
 With prefix arg C-u, copy region instad of killing it."
   (ignore arg)
   (org-with-refile file pos nil
-    ;; (unless arg (kill-region beg end))
-    ;; (deactivate-mark)
-    (with-current-buffer (find-file-noselect file)
-      (let ((buffer-read-only nil))
-        (save-excursion
-          (goto-char pos)
-          (if (eql org-refile-string-position 'bottom)
-              (org-end-of-subtree)
-              ;; (org-end-of-meta-data-and-drawers)
-              ;; (org-end-of-meta-data)
-              (org-end-of-subtree))
-          (org-insert-subheading nil)
-          (lotus-org-insert (format org-refile-string-format
-                                    text)))))))
+                   ;; (unless arg (kill-region beg end))
+                   ;; (deactivate-mark)
+                   (with-current-buffer (find-file-noselect file)
+                     (let ((buffer-read-only nil))
+                       (save-excursion
+                         (goto-char pos)
+                         (if (eql org-refile-string-position 'bottom)
+                             (org-end-of-subtree)
+                           ;; (org-end-of-meta-data-and-drawers)
+                           ;; (org-end-of-meta-data)
+                           (org-end-of-subtree))
+                         (org-insert-subheading nil)
+                         (lotus-org-insert (format org-refile-string-format
+                                                   text)))))))
 
 (defun org-find-heading-marker (heading &optional create)
   (let ((heading-marker (org-find-exact-headline-in-buffer heading)))
@@ -491,10 +491,10 @@ With prefix arg C-u, copy region instad of killing it."
 
 (defun org-find-file-heading-marker (file heading &optional create)
   (org-with-cloned-buffer (find-file-noselect file) "-<tree>"
-    (unless (eq major-mode 'org-mode)
-      (org-mode))
-    ;; (with-current-buffer (find-file-noselect file)
-    (org-find-heading-marker heading create)))
+                          (unless (eq major-mode 'org-mode)
+                            (org-mode))
+                          ;; (with-current-buffer (find-file-noselect file)
+                          (org-find-heading-marker heading create)))
 
 (defun org-heading-has-child-p ()
   (save-excursion
@@ -524,70 +524,70 @@ With prefix arg C-u, copy region instad of killing it."
         (let ((begin (plist-get (nth 1 element) :begin))
               (level (plist-get (nth 1 element) :level))
               (title (plist-get (nth 1 element) :title)))
-         (goto-char (+ begin level (length title)))))))
+          (goto-char (+ begin level (length title)))))))
 
 (defun org-insert-subheading-at-point (subheading)
   "return point"
   (org-with-inhibit-modification-hooks
-        ;; Debugger entered--Lisp error: (error "Invalid search bound (wrong side of point)")
-        ;; re-search-forward(":[a-z0-9\\+_-]+?:" 128068 t)
-        ;; emoji-cheat-sheet-plus--display-region(128714 128068)
-        ;; emoji-cheat-sheet-plus--changed-hook(128068 128068 4)
-        ;; org-move-subtree-down()
-        ;; org-insert-heading-after-current()
-        ;; org-insert-subheading-at-point("Unnamed task 557")
-        ;; org-insert-subheadline-to-headline("Unnamed task 557" "Unnamed tasks" t)
-        ;; org-insert-subheadline-to-file-headline("Unnamed task 557" "/home/s/hell/Documents/CreatedContent/contents/virtual/org/default/tasks/Unnamed.org" "Unnamed tasks" t)
-        ;; lotus-org-create-unnamed-task()
-        ;; occ-maybe-create-unnamed-tsk()
-    (let ((buffer-read-only nil)
-          (subheading (cond ((stringp subheading) subheading)
-                            ((functionp subheading) (funcall subheading))
-                            (t (error "no subheading")))))
-      (progn
-        (if (org-heading-has-child-p)
-            (progn
-              (org-goto-last-child)
-              (org-back-to-heading t)
-              ;; (beginning-of-line)
-              ;; (end-of-line 1)
-              (org-insert-heading-after-current))
-          (progn
-            (beginning-of-line)
-            (end-of-line 1)
-            (org-end-of-subtree)
-            (org-insert-subheading nil)))
-        (lotus-org-insert (format org-refile-string-format subheading))
-        (org-back-to-heading t)
-        (point)))))
+   ;; Debugger entered--Lisp error: (error "Invalid search bound (wrong side of point)")
+   ;; re-search-forward(":[a-z0-9\\+_-]+?:" 128068 t)
+   ;; emoji-cheat-sheet-plus--display-region(128714 128068)
+   ;; emoji-cheat-sheet-plus--changed-hook(128068 128068 4)
+   ;; org-move-subtree-down()
+   ;; org-insert-heading-after-current()
+   ;; org-insert-subheading-at-point("Unnamed task 557")
+   ;; org-insert-subheadline-to-headline("Unnamed task 557" "Unnamed tasks" t)
+   ;; org-insert-subheadline-to-file-headline("Unnamed task 557" "/home/s/hell/Documents/CreatedContent/contents/virtual/org/default/tasks/Unnamed.org" "Unnamed tasks" t)
+   ;; lotus-org-create-unnamed-task()
+   ;; occ-maybe-create-unnamed-tsk()
+   (let ((buffer-read-only nil)
+         (subheading (cond ((stringp subheading) subheading)
+                           ((functionp subheading) (funcall subheading))
+                           (t (error "no subheading")))))
+     (progn
+       (if (org-heading-has-child-p)
+           (progn
+             (org-goto-last-child)
+             (org-back-to-heading t)
+             ;; (beginning-of-line)
+             ;; (end-of-line 1)
+             (org-insert-heading-after-current))
+         (progn
+           (beginning-of-line)
+           (end-of-line 1)
+           (org-end-of-subtree)
+           (org-insert-subheading nil)))
+       (lotus-org-insert (format org-refile-string-format subheading))
+       (org-back-to-heading t)
+       (point)))))
 
 (defun org-insert-grandsubheading-at-point (subheading)
   (org-with-inhibit-modification-hooks
-        ;; Debugger entered--Lisp error: (error "Invalid search bound (wrong side of point)")
-        ;; re-search-forward(":[a-z0-9\\+_-]+?:" 128068 t)
-        ;; emoji-cheat-sheet-plus--display-region(128714 128068)
-        ;; emoji-cheat-sheet-plus--changed-hook(128068 128068 4)
-        ;; org-move-subtree-down()
-        ;; org-insert-heading-after-current()
-        ;; org-insert-subheading-at-point("Unnamed task 557")
-        ;; org-insert-subheadline-to-headline("Unnamed task 557" "Unnamed tasks" t)
-        ;; org-insert-subheadline-to-file-headline("Unnamed task 557" "/home/s/hell/Documents/CreatedContent/contents/virtual/org/default/tasks/Unnamed.org" "Unnamed tasks" t)
-        ;; lotus-org-create-unnamed-task()
-        ;; occ-maybe-create-unnamed-tsk()
-    (let ((buffer-read-only nil)
-          (subheading (cond ((stringp subheading) subheading)
-                            ((functionp subheading) (funcall subheading))
-                            (t (error "no subheading")))))
-      (progn
-        (if (eql org-refile-string-position 'bottom)
-            (org-end-of-subtree)
-          ;; (org-end-of-meta-data-and-drawers)
-          ;; (org-end-of-meta-data)
-          (org-end-of-subtree))
-        (org-insert-subheading nil)
-        (lotus-org-insert (format org-refile-string-format subheading))
-        (org-lotus-modification-post-action)
-        (point)))))
+   ;; Debugger entered--Lisp error: (error "Invalid search bound (wrong side of point)")
+   ;; re-search-forward(":[a-z0-9\\+_-]+?:" 128068 t)
+   ;; emoji-cheat-sheet-plus--display-region(128714 128068)
+   ;; emoji-cheat-sheet-plus--changed-hook(128068 128068 4)
+   ;; org-move-subtree-down()
+   ;; org-insert-heading-after-current()
+   ;; org-insert-subheading-at-point("Unnamed task 557")
+   ;; org-insert-subheadline-to-headline("Unnamed task 557" "Unnamed tasks" t)
+   ;; org-insert-subheadline-to-file-headline("Unnamed task 557" "/home/s/hell/Documents/CreatedContent/contents/virtual/org/default/tasks/Unnamed.org" "Unnamed tasks" t)
+   ;; lotus-org-create-unnamed-task()
+   ;; occ-maybe-create-unnamed-tsk()
+   (let ((buffer-read-only nil)
+         (subheading (cond ((stringp subheading) subheading)
+                           ((functionp subheading) (funcall subheading))
+                           (t (error "no subheading")))))
+     (progn
+       (if (eql org-refile-string-position 'bottom)
+           (org-end-of-subtree)
+         ;; (org-end-of-meta-data-and-drawers)
+         ;; (org-end-of-meta-data)
+         (org-end-of-subtree))
+       (org-insert-subheading nil)
+       (lotus-org-insert (format org-refile-string-format subheading))
+       (org-lotus-modification-post-action)
+       (point)))))
 
 
 
@@ -613,9 +613,9 @@ With prefix arg C-u, copy region instad of killing it."
 
 (defun org-insert-grandsubheading-to-headline (text heading &optional create)
   (let ((pos (org-with-cloned-buffer (current-buffer) "<tree>"
-               (org-with-narrow-to-heading-subtree
-                   heading create
-                 (org-insert-grandsubheading-at-point text)))))
+                                     (org-with-narrow-to-heading-subtree
+                                      heading create
+                                      (org-insert-grandsubheading-at-point text)))))
     (copy-marker pos)))
 
 (defun org-insert-grandsubheading-to-file-headline (text file heading &optional create)
@@ -623,15 +623,15 @@ With prefix arg C-u, copy region instad of killing it."
     (if buff
         (let ((pos (with-current-buffer buff
                      (org-with-cloned-buffer (current-buffer) "<tree>"
-                       (org-insert-grandsubheading-to-headline text heading create)))))
+                                             (org-insert-grandsubheading-to-headline text heading create)))))
           (copy-marker pos))
-        (error "can not open file %s" file))))
+      (error "can not open file %s" file))))
 
 (defun org-insert-sibling-headline-to-headline (text heading &optional create)
   (let ((pos (org-with-cloned-buffer (current-buffer) "<tree>"
-               (org-with-narrow-to-heading-subtree
-                   heading create
-                 (org-insert-sibling-headline-at-point text)))))
+                                     (org-with-narrow-to-heading-subtree
+                                      heading create
+                                      (org-insert-sibling-headline-at-point text)))))
     (copy-marker pos)))
 
 (defun org-insert-sibling-headline-to-file-headline (text file heading &optional create)
@@ -639,16 +639,16 @@ With prefix arg C-u, copy region instad of killing it."
     (if buff
         (with-current-buffer buff
           (let ((pos (org-with-cloned-buffer (current-buffer) "<tree>"
-                       (org-insert-sibling-headline-to-headline text heading create))))
+                                             (org-insert-sibling-headline-to-headline text heading create))))
             (copy-marker pos)))
-        (error "can not open file %s" file))))
+      (error "can not open file %s" file))))
 
 (defun org-insert-subheadline-to-headline (text heading &optional create)
   "return marker"
   (let ((pos (org-with-cloned-buffer (current-buffer) "<tree>"
-               (org-with-narrow-to-heading-subtree
-                   heading create
-                 (org-insert-subheading-at-point text)))))
+                                     (org-with-narrow-to-heading-subtree
+                                      heading create
+                                      (org-insert-subheading-at-point text)))))
     (copy-marker pos)))
 
 (defun org-insert-subheadline-to-file-headline (text file heading &optional create)
@@ -657,7 +657,7 @@ With prefix arg C-u, copy region instad of killing it."
     (if buff
         (with-current-buffer buff
           (org-insert-subheadline-to-headline text heading create))
-        (error "can not open file %s" file))))
+      (error "can not open file %s" file))))
 
 (defun org-find-exact-subheading-in-heading (heading subheading)
   (org-with-narrow-to-heading-subtree
@@ -674,8 +674,8 @@ With prefix arg C-u, copy region instad of killing it."
          (value    (read-from-minibuffer "value: ")))
      (list property value)))
   (org-with-refile file pos nil
-    (let ((buffer-read-only nil))
-      (org-entry-put nil property value))))
+                   (let ((buffer-read-only nil))
+                     (org-entry-put nil property value))))
 
 (defun org-refile-entry-put-multivalued-property (property &rest values)
   (interactive
@@ -683,13 +683,13 @@ With prefix arg C-u, copy region instad of killing it."
          (value    (read-from-minibuffer "value: ")))
      (list property value)))
   (org-with-refile file pos nil
-    (let ((buffer-read-only nil))
-      (org-entry-put-multivalued-property nil property values))))
+                   (let ((buffer-read-only nil))
+                     (org-entry-put-multivalued-property nil property values))))
     ;; )
 
 (defun org-refile-target-files (refile-targets &optional default-buffer)
   (let* ( ;; (case-fold-search nil)
-          ;; otherwise org confuses "TODO" as a kw and "Todo" as a word
+         ;; otherwise org confuses "TODO" as a kw and "Todo" as a word
          (org-refile-targets refile-targets)
          (entries (or org-refile-targets '((nil . (:level . 1)))))
          files
@@ -786,9 +786,9 @@ With prefix arg C-u, copy region instad of killing it."
                                                     (select-frame-set-input-enable-raise)))))
                                           buf-name)))
     (unwind-protect
-         (progn
-           (select-frame-set-input-disable-raise)
-           (safe-org-refile-get-location prompt))
+        (progn
+          (select-frame-set-input-disable-raise)
+          (safe-org-refile-get-location prompt))
       (select-frame-set-input-enable-raise)
       (cancel-timer timer))))
 
@@ -802,7 +802,7 @@ With prefix arg C-u, copy region instad of killing it."
          (buf-name        (format "*helm-mode-%s*" str-command)))
     (ignore buf-name)
     (lotus-with-first-idle-timed-transient-buffer-window timeout buf-name
-      (safe-org-refile-get-location prompt))))
+                                                         (safe-org-refile-get-location prompt))))
 
 (defun safe-timed-org-refile-get-marker (timeout &optional prompt)
   ;; TODO: org-fit-window-to-buffer
@@ -1104,8 +1104,3 @@ With prefix arg C-u, copy region instad of killing it."
 
 
 ;;; org-misc-utils-lotus.el ends here
-
-
-
-
-

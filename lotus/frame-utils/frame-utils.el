@@ -29,7 +29,7 @@
 ;; org-donot-try-to-clock-in
 ;; *frame-session-restore*
 
-(require 'elscreen)
+;; (require 'elscreen)
 
 (eval-when-compile
   (defvar frame-utils-notify nil)
@@ -53,8 +53,9 @@
   (unless frame (setq frame  (selected-frame)))
   (if (framep frame)
       (cl-rest (assq 'name (frame-parameters frame)))
-      (error "Function `get-frame-name': Argument not a frame: `%s'" frame)))
+    (error "Function `get-frame-name': Argument not a frame: `%s'" frame)))
 
+;;;###autoload
 (defun elscreen--del-alist (key alist)
   "Delete an element whose car equals KEY from ALIST.
 Return the modified ALIST."
@@ -212,7 +213,7 @@ If you unset the urgency, you still have to visit the frame to make the urgency 
                             "WM_HINTS" frame "WM_HINTS"
                             source nil t) nil))
          (flags (cl-first wm-hints)))
-                                        ; (message flags)
+    ; (message flags)
     (setcar wm-hints
             (if arg
                 (logior flags #x00000100)

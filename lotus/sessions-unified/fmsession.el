@@ -29,12 +29,12 @@
 (provide 'fmsession)
 
 
-(eval-when-compile
-  (require 'elscreen))
+;; (eval-when-compile
+;;   (require 'elscreen))
 (require 'emacs-panel)
 (require 'desktop)
 (require 'session)
-(require 'elscreen)
+;; (require 'elscreen)
 (require 'utils-custom)
 
 
@@ -171,7 +171,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
                      (setq nickname-type-map
                            (if (eq type 'nickname)
                                (delete (cl-first nickname-type-map) nickname-type-map)
-                               (cl-rest nickname-type-map)))))
+                             (cl-rest nickname-type-map)))))
                  ;; (setq screen-name
                  ;;       (mapconcat 'identity (reverse nickname-list) ":"))
                  (setq screen-name (reverse nickname-list))))
@@ -239,57 +239,57 @@ return a new alist whose car is the new pair and cdr is ALIST."
 
 
 (defun lotus-elscreen-get-screen-to-name-alist ()
-    ;; (when (elscreen-screen-modified-p 'elscreen-get-screen-to-name-alist)
-    (elscreen-notify-screen-modification-suppress
-     (elscreen-set-window-configuration (elscreen-get-current-screen)
-                                        (elscreen-current-window-configuration))
-     (let* ((lexical-binding nil)
-            (screen-list (sort (elscreen-get-screen-list) '<))
-            screen-name
-            screen-to-name-alist
-            nickname-type-map)
-       (elscreen-save-screen-excursion
-        (mapcar
-         #'(lambda (screen)
-             ;; If nickname exists, use it.
-             (setq screen-name (elscreen-get-screen-nickname screen))
-             ;; Nickname does not exist, so examine major-mode and buffer-name.
-             (when (null screen-name)
-               (elscreen-goto-internal screen)
+  ;; (when (elscreen-screen-modified-p 'elscreen-get-screen-to-name-alist)
+  (elscreen-notify-screen-modification-suppress
+   (elscreen-set-window-configuration (elscreen-get-current-screen)
+                                      (elscreen-current-window-configuration))
+   (let* ((lexical-binding nil)
+          (screen-list (sort (elscreen-get-screen-list) '<))
+          screen-name
+          screen-to-name-alist
+          nickname-type-map)
+     (elscreen-save-screen-excursion
+      (mapcar
+       #'(lambda (screen)
+           ;; If nickname exists, use it.
+           (setq screen-name (elscreen-get-screen-nickname screen))
+           ;; Nickname does not exist, so examine major-mode and buffer-name.
+           (when (null screen-name)
+             (elscreen-goto-internal screen)
 
-               (setq nickname-type-map
-                     (mapcar
-                      (lambda (window)
-                        (with-current-buffer (window-buffer window)
-                          (or (elscreen-get-alist-to-nickname
-                               elscreen-mode-to-nickname-alist-internal
-                               'string-match (symbol-name major-mode))
-                              (elscreen-get-alist-to-nickname
-                               elscreen-buffer-to-nickname-alist-internal
-                               'string-match (buffer-name))
-                              (cons 'buffer-name (cons (buffer-name) (buffer-file-name))))))
-                      (window-list)))
+             (setq nickname-type-map
+                   (mapcar
+                    (lambda (window)
+                      (with-current-buffer (window-buffer window)
+                        (or (elscreen-get-alist-to-nickname
+                             elscreen-mode-to-nickname-alist-internal
+                             'string-match (symbol-name major-mode))
+                            (elscreen-get-alist-to-nickname
+                             elscreen-buffer-to-nickname-alist-internal
+                             'string-match (buffer-name))
+                            (cons 'buffer-name (cons (buffer-name) (buffer-file-name))))))
+                    (window-list)))
 
-               (let (nickname-list)
-                 (while (> (length nickname-type-map) 0)
-                   (let ((type (cl-first (cl-first nickname-type-map)))
-                         (buff-file (cl-rest (cl-first nickname-type-map))))
-                     (when buff-file
-                       (setq nickname-list (cons buff-file nickname-list)))
-                     (setq nickname-type-map
-                           (if (eq type 'nickname)
-                               (delete (cl-first nickname-type-map) nickname-type-map)
-                               (cl-rest nickname-type-map)))))
-                 ;; (setq screen-name
-                 ;;       (mapconcat 'identity (reverse nickname-list) ":"))
-                 (setq screen-name (reverse nickname-list))))
+             (let (nickname-list)
+               (while (> (length nickname-type-map) 0)
+                 (let ((type (cl-first (cl-first nickname-type-map)))
+                       (buff-file (cl-rest (cl-first nickname-type-map))))
+                   (when buff-file
+                     (setq nickname-list (cons buff-file nickname-list)))
+                   (setq nickname-type-map
+                         (if (eq type 'nickname)
+                             (delete (cl-first nickname-type-map) nickname-type-map)
+                           (cl-rest nickname-type-map)))))
+               ;; (setq screen-name
+               ;;       (mapconcat 'identity (reverse nickname-list) ":"))
+               (setq screen-name (reverse nickname-list))))
 
-             ;; (sessions-unified-set-alist 'screen-to-name-alist screen screen-name)
-             (push (cons screen screen-name) screen-to-name-alist))
-         screen-list))
+           ;; (sessions-unified-set-alist 'screen-to-name-alist screen screen-name)
+           (push (cons screen screen-name) screen-to-name-alist))
+       screen-list))
 
-       ;; (elscreen-set-screen-to-name-alist-cache screen-to-name-alist)
-       (reverse screen-to-name-alist))))
+     ;; (elscreen-set-screen-to-name-alist-cache screen-to-name-alist)
+     (reverse screen-to-name-alist))))
 
 (defun lotus-elscreen-get-desktop-buffer-args-list ()
   ;; (when (elscreen-screen-modified-p 'elscreen-get-screen-to-name-alist)
@@ -359,14 +359,14 @@ return a new alist whose car is the new pair and cdr is ALIST."
                      `((,(length session-list) "*scratch*"))))
                    (session-current-screen-buffers
                     (nth 1 (assoc (cl-rest (assoc 'current-screen session-list))
-                            screens)))
+                                  screens)))
                    (session-current-buffer-file
                     (cl-rest (assoc 'current-buffer-file session-list))))
               ;; (when t
               (when session-unified-debug
-               (session-unfiy-notify "Bstart: session-current-screen-buffers %s" session-current-screen-buffers)
-               (session-unfiy-notify "Astart: screen-to-name-alist %s" session-list)
-               (session-unfiy-notify "Cstart: desktop-buffers %s" desktop-buffers))
+                (session-unfiy-notify "Bstart: session-current-screen-buffers %s" session-current-screen-buffers)
+                (session-unfiy-notify "Astart: screen-to-name-alist %s" session-list)
+                (session-unfiy-notify "Cstart: desktop-buffers %s" desktop-buffers))
 
               ;; ready file for buffer in session-list, using desktop-restore methods
               (if desktop-buffers
@@ -417,34 +417,34 @@ return a new alist whose car is the new pair and cdr is ALIST."
                   (while buff-files
                     (if (and elscreen-frame-confs
                              (elscreen-get-frame-confs nframe))
-                      (progn
+                        (progn
 
-                        (unless (eq screen 0)
-                          (elscreen-create))
+                          (unless (eq screen 0)
+                            (elscreen-create))
 
-                        (let* ((buff-file  (cl-first buff-files))
-                               (file-path  (if (consp buff-file)
-                                              (cl-rest buff-file)))
-                               (buff (ignore-errors
-                                       (get-buffer
-                                        (or (if file-path
-                                                (find-buffer-visiting file-path))
-                                            (if (consp buff-file)
-                                                (cl-first buff-file)
-                                              buff-file)))))
-                               (minibuff-name " *Minibuf"))
-                         (session-unfiy-notify "  while buff: %s file-path: %s" buff file-path)
-                         (when (and buff
-                                    (bufferp buff)
-                                    (not
-                                     (string-equal (substring (buffer-name buff) 0 (min (length (buffer-name buff)) (length minibuff-name)))
-                                                   minibuff-name))) ;check once for if buff is here or not.
-                           ;; newly added here to avoid " *Minibuffer*"
-                           (if not-first-buff
-                               (switch-to-buffer-other-window buff)
-                             (switch-to-buffer buff)
-                             (setq not-first-buff t)))
-                         (session-unfiy-notify "test4")))
+                          (let* ((buff-file  (cl-first buff-files))
+                                 (file-path  (if (consp buff-file)
+                                                 (cl-rest buff-file)))
+                                 (buff (ignore-errors
+                                         (get-buffer
+                                          (or (if file-path
+                                                  (find-buffer-visiting file-path))
+                                              (if (consp buff-file)
+                                                  (cl-first buff-file)
+                                                buff-file)))))
+                                 (minibuff-name " *Minibuf"))
+                            (session-unfiy-notify "  while buff: %s file-path: %s" buff file-path)
+                            (when (and buff
+                                       (bufferp buff)
+                                       (not
+                                        (string-equal (substring (buffer-name buff) 0 (min (length (buffer-name buff)) (length minibuff-name)))
+                                                      minibuff-name))) ;check once for if buff is here or not.
+                              ;; newly added here to avoid " *Minibuffer*"
+                              (if not-first-buff
+                                  (switch-to-buffer-other-window buff)
+                                (switch-to-buffer buff)
+                                (setq not-first-buff t)))
+                            (session-unfiy-notify "test4")))
                       (error "3 Screen is not active for frame %s" nframe))
 
                     (setq buff-files (cl-rest buff-files))
@@ -483,7 +483,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
 
         ;; (let* ((desktop-buffers
         (when session-unified-debug
-         (session-unfiy-notify "elscreen-notify-screen-modification"))
+          (session-unfiy-notify "elscreen-notify-screen-modification"))
         (elscreen-notify-screen-modification 'force-immediately)
         (session-unfiy-notify "elscreen-session-session-list-set: DONE."))
 
@@ -593,7 +593,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
              (cl-rest (assoc elscreen-session
                              *frames-elscreen-session*))))
         (when session-unified-debug
-         (session-unfiy-notify "Nstart: session-session %s" elscreen-session))
+          (session-unfiy-notify "Nstart: session-session %s" elscreen-session))
         (if elscreen-session-list
             (elscreen-session-session-list-set elscreen-session-list
                                                (or nframe
@@ -709,50 +709,50 @@ return a new alist whose car is the new pair and cdr is ALIST."
 
 (defun frame-session-set-this-location (nframe &optional try-guessing)
   "Possible value of TRY_GUESS is T or 'ONLY"
-    ;; ask, guess-ask, guess-notask
-    ;; nil ask
-    ;; guess
-    ;; not-ask
-    (interactive
-     (list (selected-frame)))
+  ;; ask, guess-ask, guess-notask
+  ;; nil ask
+  ;; guess
+  ;; not-ask
+  (interactive
+   (list (selected-frame)))
 
-    (if nframe
-        (funcall session-unified-utils-select-frame-fn nframe)
-      (error "nframe is nil"))
+  (if nframe
+      (funcall session-unified-utils-select-frame-fn nframe)
+    (error "nframe is nil"))
 
-    (session-unfiy-notify "in frame-session-set-this-location")
+  (session-unfiy-notify "in frame-session-set-this-location")
 
-    (let* ((xwin-enabled (protable-display-graphic-p))
-           (wm-hints
-            (if xwin-enabled
-                (ignore-errors (emacs-panel-wm-hints))))
-           (desktop-name (if wm-hints
-                             (nth (nth 1 (assoc 'current-desktop wm-hints))
-                                  (cl-rest  (assoc 'desktop-names wm-hints)))))
-           (location (if (and try-guessing
-                              desktop-name
-                              (member desktop-name
-                                      (mapcar #'car *frames-elscreen-session*)))
-                         (progn
-                           (session-unfiy-notify "NO need to call interactive (fmsession-read-location desktop-name[%s])"
-                                    desktop-name)
-                           desktop-name)
+  (let* ((xwin-enabled (protable-display-graphic-p))
+         (wm-hints
+          (if xwin-enabled
+              (ignore-errors (emacs-panel-wm-hints))))
+         (desktop-name (if wm-hints
+                           (nth (nth 1 (assoc 'current-desktop wm-hints))
+                                (cl-rest  (assoc 'desktop-names wm-hints)))))
+         (location (if (and try-guessing
+                            desktop-name
+                            (member desktop-name
+                                    (mapcar #'car *frames-elscreen-session*)))
                        (progn
-                         (if (eq try-guessing 'only)
-                             (session-unfiy-notify "could not guess will return nil as try-guessing = %s set."
-                                      try-guessing)
-                           (session-unfiy-notify "NEED to call interactive (fmsession-read-location desktop-name[%s])"
-                                    desktop-name))
-                         ;; BUG: causing first emacsclient frame to be jammed which require pkill -USR2 emacs
-                         (unless (eq try-guessing 'only)
-                           (fmsession-read-location desktop-name))))))
-      (if xwin-enabled
-          (unless wm-hints
-            (session-unfiy-notify "Some error in wm-hints")))
-      (session-unfiy-notify "%s" location)
-      (when location
-        (set-frame-parameter nframe 'frame-spec-id location))
-      location))
+                         (session-unfiy-notify "NO need to call interactive (fmsession-read-location desktop-name[%s])"
+                                               desktop-name)
+                         desktop-name)
+                     (progn
+                       (if (eq try-guessing 'only)
+                           (session-unfiy-notify "could not guess will return nil as try-guessing = %s set."
+                                                 try-guessing)
+                         (session-unfiy-notify "NEED to call interactive (fmsession-read-location desktop-name[%s])"
+                                               desktop-name))
+                       ;; BUG: causing first emacsclient frame to be jammed which require pkill -USR2 emacs
+                       (unless (eq try-guessing 'only)
+                         (fmsession-read-location desktop-name))))))
+    (if xwin-enabled
+        (unless wm-hints
+          (session-unfiy-notify "Some error in wm-hints")))
+    (session-unfiy-notify "%s" location)
+    (when location
+      (set-frame-parameter nframe 'frame-spec-id location))
+    location))
 
 (defvar *frame-session-restore-screen-display-function* #'display-about-screen
   "function to display screen with frame-session-restore, e.g.
@@ -833,9 +833,9 @@ display-about-screen, spacemacs-buffer/goto-buffer")
     (add-hook 'after-make-frame-functions
               #'frame-session-restore-uninteractive)
     (add-hook 'after-make-frame-functions ; frame-session-restore-force need user input so putting at end of hook
-             #'frame-session-restore-force t)
-   (add-hook 'delete-frame-functions
-             #'frame-session-save)))
+              #'frame-session-restore-force t)
+    (add-hook 'delete-frame-functions
+              #'frame-session-save)))
 ;;;###autoload
 (defun frame-session-restore-unhook-func ()
   "Add to hook"
@@ -865,10 +865,10 @@ display-about-screen, spacemacs-buffer/goto-buffer")
            (frame-parameter (selected-frame) 'frame-spec-id)))
 
 (when session-unified-debug
- (frame-parameter (selected-frame) 'frame-spec-id)
- after-make-frame-functions
- delete-frame-functions
- *lotus-after-init-hook*)
+  (frame-parameter (selected-frame) 'frame-spec-id)
+  after-make-frame-functions
+  delete-frame-functions
+  *lotus-after-init-hook*)
 
   ;;}}
 

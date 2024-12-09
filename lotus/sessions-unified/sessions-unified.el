@@ -42,7 +42,7 @@
 
 (require 'desktop)
 (require 'session)
-(require 'elscreen)
+;; (require 'elscreen)
 (require 'basic-utils)
 (require 'emacs-panel)
 
