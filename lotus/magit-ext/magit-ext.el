@@ -81,5 +81,94 @@
      (user-error "No branch is checked out")))
   (when (magit-commit-amend-noedit)
     (magit-push-current-force target args)))
+
+
+;; https://emacs.stackexchange.com/questions/26579/how-to-extend-magits-context-sensitive-push-menu
+;; https://github.com/magit/forge
+;; see forge.el
+;; (magit-define-popup-action 'magit-push-popup
+;;   ?!
+;;   "Make remotely"
+;;   'aec/ssh-make-and-fetch)
+;;
+;; (transient-append-suffix 'magit-push
+;;   "m"
+;;   '"!"
+;;   "Make remotely"
+;;   'aec/ssh-make-and-fetch)
+
+(transient-append-suffix 'magit-commit
+  "c" '("C" "AAA" magit-commit-amend-noedit-push-current-force))
+
+(transient-append-suffix 'magit-push
+  "e" '("C" "AAA" magit-commit-amend-noedit-push-current-force))
+
+
+(transient-append-suffix 'magit-fetch "m" '("n" forge-pull))
+(transient-append-suffix 'magit-fetch "n" '("N" forge-pull-notifications))
+
+
+(transient-define-prefix magit-ext-action ()
+  "Different git actions."
+  :info-manual "(magit)Initiating a Commit"
+  :man-page "git-commit"
+  ["Arguments"
+   ("-a" "Stage all modified and deleted files"   ("-a" "--all"))
+   ("-e" "Allow empty commit"                     "--allow-empty")
+   ("-v" "Show diff of changes to be committed"   ("-v" "--verbose"))
+   ("-n" "Disable hooks"                          ("-n" "--no-verify"))
+   ("-R" "Claim authorship and reset author date" "--reset-author")
+   (magit:--author :description "Override the author")
+   (7 "-D" "Override the author date" "--date=" transient-read-date)
+   ("-s" "Add Signed-off-by line"                 ("-s" "--signoff"))
+   (5 magit:--gpg-sign)
+   (magit-commit:--reuse-message)]
+  [["Create"
+    ("c" "Commit"         magit-commit-create)]
+   ["Edit HEAD"
+    ("e" "Extend"         magit-commit-extend)
+    ("w" "Reword"         magit-commit-reword)
+    ("a" "Amend"          magit-commit-amend)
+    (6 "n" "Reshelve"     magit-commit-reshelve)]
+   ["Edit"
+    ("f" "Fixup"          magit-commit-fixup)
+    ("s" "Squash"         magit-commit-squash)
+    ("A" "Augment"        magit-commit-augment)
+    (6 "x" "Absorb changes" magit-commit-autofixup)
+    (6 "X" "Absorb modules" magit-commit-absorb-modules)]
+   [""
+    ("F" "Instant fixup"  magit-commit-instant-fixup)
+    ("S" "Instant squash" magit-commit-instant-squash)]]
+  (interactive)
+  (if-let ((buffer (magit-commit-message-buffer)))
+      (switch-to-buffer buffer)
+    (transient-setup 'magit-ext-action)))
+
+(transient-define-prefix magit-ext-action1 ()
+  "Fetch from another repository."
+  :man-page "git-fetch"
+  ["Arguments"
+   ("-p" "Prune deleted branches" ("-p" "--prune"))
+   ("-t" "Fetch all tags" ("-t" "--tags"))
+   ("-u" "Fetch full history" "--unshallow" :level 7)
+   ("-F" "Force" ("-f" "--force"))]
+  ["Fetch from"
+   ("p" magit-fetch-from-pushremote)
+   ("u" magit-fetch-from-upstream)
+   ("e" "elsewhere"        magit-fetch-other)
+   ("a" "all remotes"      magit-fetch-all)]
+  ["Fetch"
+   ("o" "another branch"   magit-fetch-branch)
+   ("r" "explicit refspec" magit-fetch-refspec)
+   ("m" "submodules"       magit-fetch-modules)]
+  ["Configure"
+   ("C" "variables..." magit-branch-configure)])
+
+
+
+;; (transient-append-suffix 'magit-commit "n" '("N" forge-pull-notifications))
+
+
+
 
 ;;; magit-ext.el ends here
