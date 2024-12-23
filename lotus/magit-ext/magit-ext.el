@@ -165,6 +165,74 @@
    ("C" "variables..." magit-branch-configure)])
 
 
+;; magit-status-mode-map
+
+(defvar forge-add-default-sections t
+  "Whether to add Forge's sections to `magit-status-sections-hook'.
+
+If you want to disable this, then you must set this to nil before
+`forge' is loaded.")
+
+(when forge-add-default-sections
+  (magit-add-section-hook 'magit-status-sections-hook #'forge-insert-pullreqs nil t)
+  (magit-add-section-hook 'magit-status-sections-hook #'forge-insert-issues   nil t))
+
+;;;###autoload
+(defvar forge-add-default-bindings t
+  "Whether to add Forge's bindings to various Magit keymaps.
+
+If you want to disable this, then you must set this to nil before
+`magit' is loaded.  If you do it before `forge' but after `magit'
+is loaded, then `magit-mode-map' ends up being modified anyway.")
+
+;;;###autoload
+(with-eval-after-load 'magit-mode
+  (when forge-add-default-bindings
+    (keymap-set magit-mode-map "'" #'forge-dispatch)
+    (keymap-set magit-mode-map "N" #'forge-dispatch)
+    (keymap-set magit-mode-map "<remap> <magit-browse-thing>"
+                #'forge-browse)
+    (keymap-set magit-mode-map "<remap> <magit-copy-thing>"
+                #'forge-copy-url-at-point-as-kill)))
+
+;;;###autoload
+(with-eval-after-load 'git-commit
+  (when forge-add-default-bindings
+    (keymap-set git-commit-mode-map "C-c C-v" #'forge-visit-topic)))
+
+(when forge-add-default-bindings
+  (keymap-set magit-commit-section-map "C-c C-v" #'forge-visit-topic)
+  (keymap-set magit-branch-section-map "C-c C-v" #'forge-visit-topic)
+
+  (transient-insert-suffix 'magit-dispatch "o"
+    '("N" "Forge" forge-dispatch))
+
+  (transient-append-suffix 'magit-fetch "m" '("n" forge-pull))
+  (transient-append-suffix 'magit-fetch "n" '("N" forge-pull-notifications))
+
+  (transient-append-suffix 'magit-pull  "m" '("n" forge-pull))
+  (transient-append-suffix 'magit-pull  "n" '("N" forge-pull-notifications))
+
+  (transient-append-suffix 'magit-branch "w"
+    '("f" "pull-request" forge-checkout-pullreq))
+  (transient-append-suffix 'magit-branch "W"
+    '("F" "from pull-request" forge-branch-pullreq))
+
+  (transient-suffix-put 'magit-remote 'magit-update-default-branch :key "b u")
+  (transient-append-suffix 'magit-remote "b u"
+    '("b r" "Rename default branch" forge-rename-default-branch))
+
+  (transient-append-suffix 'magit-worktree "c"
+    '("n" "pull-request worktree" forge-checkout-worktree))
+
+  (transient-append-suffix 'magit-status-jump "w"
+    '("Np" "Pull requests" forge-jump-to-pullreqs))
+  (transient-append-suffix 'magit-status-jump "Np"
+    '("Ni" "Issues" forge-jump-to-issues))
+
+  (transient-append-suffix 'magit-merge "a"
+    '(7 "M" "Merge using API" forge-merge)))
+
 
 ;; (transient-append-suffix 'magit-commit "n" '("N" forge-pull-notifications))
 
