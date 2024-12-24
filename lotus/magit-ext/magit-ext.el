@@ -121,6 +121,7 @@
               (read-only-mode 1)
               (display-buffer output-buffer))
           (message "Gita status failed with exit code: %d" exit-code))))))
+
 
 (transient-define-prefix gita-transient ()
   "Transient menu for Gita commands."
@@ -135,6 +136,7 @@
    ["Miscellaneous"
     ("d" "Diff" gita-diff)
     ("x" "Reset" gita-reset)]])
+
 
 
 
