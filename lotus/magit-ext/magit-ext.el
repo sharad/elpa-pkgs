@@ -34,8 +34,8 @@
    (list (read-from-minibuffer "Commit msg: " "correction")))
   (let ((msg (or msg "correction"))
         (default-directory (magit-toplevel)))
-    (apply #'magit-call-git "commit" "-m" msg args)
-    (magit-refresh)))
+    (progn
+      (apply #'magit-call-git "commit" "-m" msg args))))
 
 ;; magit-run-git-with-editor
 
@@ -70,7 +70,9 @@
   (--if-let (magit-commit-with-single-line)
       (progn
         (message "IT %s" it)
-        (magit-push-current target args))))
+        (magit-push-current target args)
+
+        (magit-refresh))))
 
 ;;;###autoload
 (defun magit-commit-amend-noedit-push-current-force (target args)
