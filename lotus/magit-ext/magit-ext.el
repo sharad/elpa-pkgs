@@ -125,17 +125,20 @@
 
 (transient-define-prefix gita-transient ()
   "Transient menu for Gita commands."
-  [["Basic Commands"
-    ("s" "Status" gita-status)
-    ("p" "Push" gita-push)
-    ("f" "Fetch" gita-fetch)]
-   ["Advanced Commands"
-    ("r" "Rebase" gita-rebase)
-    ("c" "Commit" gita-commit)
-    ("l" "Log" gita-log)]
-   ["Miscellaneous"
-    ("d" "Diff" gita-diff)
-    ("x" "Reset" gita-reset)]])
+  [["Arguments"
+    ("-v" "Verbose" "--verbose")
+    ("--no-edit" "No Edit" "--no-edit")]]
+  ["Basic Commands"
+   ("s" "Status" gita-status)
+   ("p" "Push" gita-push)
+   ("f" "Fetch" gita-fetch)]
+  ["Advanced Commands"
+   ("r" "Rebase" gita-rebase)
+   ("c" "Commit" gita-commit)
+   ("l" "Log" gita-log)]
+  ["Miscellaneous"
+   ("d" "Diff" gita-diff)
+   ("x" "Reset" gita-reset)]])
 
 
 
