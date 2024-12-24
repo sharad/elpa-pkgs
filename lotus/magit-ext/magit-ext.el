@@ -61,15 +61,16 @@
 
 
 ;;;###autoload
-(defun magit-commit-with-single-line-and-push (target args)
+(defun magit-commit-with-single-line-and-push (msg target args)
   "Magit commit amend without editing followed by force push."
   (interactive
    (--if-let (magit-get-current-branch)
-       (list (magit-read-remote-branch (format "Push %s to" it)
+       (list (read-from-minibuffer "Commit msg: " "correction")
+             (magit-read-remote-branch (format "Push %s to" it)
                                        nil nil it 'confirm)
              (magit-push-arguments))
      (user-error "No branch is checked out")))
-  (--when-let (call-interactively #'magit-commit-with-single-line)
+  (--when-let (magit-commit-with-single-line msg)
     (message "IT %s" it)
     (magit-push-current target args)
     (magit-refresh)))
