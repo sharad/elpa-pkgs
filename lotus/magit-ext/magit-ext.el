@@ -67,8 +67,10 @@
                                        nil nil it 'confirm)
              (magit-push-arguments))
      (user-error "No branch is checked out")))
-  (when (magit-commit-with-single-line)
-    (magit-push-current target args)))
+  (--if-let (magit-commit-with-single-line)
+      (progn
+        (message "IT %s" it)
+        (magit-push-current target args))))
 
 ;;;###autoload
 (defun magit-commit-amend-noedit-push-current-force (target args)
