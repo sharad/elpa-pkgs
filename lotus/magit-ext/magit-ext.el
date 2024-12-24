@@ -139,7 +139,9 @@
   "Transient menu for Gita commands."
   [["Arguments"
     ("-v" "Verbose" "--verbose")
-    ("--no-edit" "No Edit" "--no-edit")]]
+    ("--no-edit" "No Edit" "--no-edit")
+    (my-gita-verbose)
+    (my-gita-no-edit)]]
   ["Basic Commands"
    ("s" "Status" gita-status)
    ("p" "Push" gita-push)
