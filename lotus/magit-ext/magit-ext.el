@@ -106,6 +106,67 @@
 
 (transient-append-suffix 'magit-commit
   "c" '("F" "Fast commit push" magit-commit-with-single-line-and-push))
+
+
+(defun gita-status ()
+  "Call the 'gita status' command and display its output in a new buffer."
+  (interactive)
+  (let ((output-buffer (get-buffer-create "*Gita Status*")))
+    (with-current-buffer output-buffer
+      (read-only-mode -1)
+      (erase-buffer)
+      (let ((exit-code (call-process "gita" nil output-buffer nil "status")))
+        (if (zerop exit-code)
+            (progn
+              (read-only-mode 1)
+              (display-buffer output-buffer))
+          (message "Gita status failed with exit code: %d" exit-code))))))
+
+(transient-define-infix my-gita-verbose ()
+  :description "Verbose"
+  :class 'transient-option
+  :key "-v"
+  :argument "--verbose")
+
+(transient-define-infix my-gita-no-edit ()
+  :description "No Edit"
+  :class 'transient-option
+  :key "--no-edit"
+  :argument "--no-edit")
+
+(transient-define-infix my-gita-branch ()
+  :description "Branch"
+  :class 'transient-option
+  :key "-b"
+  :argument (lambda () (format "--branch=%s" (read-string "Branch: "))))
+
+
+
+
+(transient-define-prefix gita-transient ()
+  "Transient menu for Gita commands."
+  [["Arguments"
+    ("-v" "Verbose" "--verbose")
+    ("--no-edit" "No Edit" "--no-edit")
+    (my-gita-verbose)
+    (my-gita-no-edit)
+    (my-gita-branch)]]
+  ["Basic Commands"
+   ("s" "Status" gita-status)
+   ("p" "Push" gita-push)
+   ("f" "Fetch" gita-fetch)]
+  ["Advanced Commands"
+   ("r" "Rebase" gita-rebase)
+   ("c" "Commit" gita-commit)
+   ("l" "Log" gita-log)]
+  ["Miscellaneous"
+   ("d" "Diff" gita-diff)
+   ("x" "Reset" gita-reset)])
+
+
+
+
+
 
 ;; (transient-append-suffix 'magit-push
 ;;   "e" '("C" "AAA" magit-commit-amend-noedit-push-current-force))
