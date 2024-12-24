@@ -126,6 +126,9 @@
     ("x" "Reset" gita-reset)]])
 
 
+
+
+
 ;; (transient-append-suffix 'magit-push
 ;;   "e" '("C" "AAA" magit-commit-amend-noedit-push-current-force))
 
