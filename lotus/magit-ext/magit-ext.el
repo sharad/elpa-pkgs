@@ -106,6 +106,25 @@
 
 (transient-append-suffix 'magit-commit
   "c" '("F" "Fast commit push" magit-commit-with-single-line-and-push))
+
+
+
+
+
+(transient-define-prefix gita-transient ()
+  "Transient menu for Gita commands."
+  [["Basic Commands"
+    ("s" "Status" gita-status)
+    ("p" "Push" gita-push)
+    ("f" "Fetch" gita-fetch)]
+   ["Advanced Commands"
+    ("r" "Rebase" gita-rebase)
+    ("c" "Commit" gita-commit)
+    ("l" "Log" gita-log)]
+   ["Miscellaneous"
+    ("d" "Diff" gita-diff)
+    ("x" "Reset" gita-reset)]])
+
 
 ;; (transient-append-suffix 'magit-push
 ;;   "e" '("C" "AAA" magit-commit-amend-noedit-push-current-force))
