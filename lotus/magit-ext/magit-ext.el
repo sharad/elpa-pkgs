@@ -108,9 +108,6 @@
   "c" '("F" "Fast commit push" magit-commit-with-single-line-and-push))
 
 
-
-
-
 (transient-define-prefix gita-transient ()
   "Transient menu for Gita commands."
   [["Basic Commands"
