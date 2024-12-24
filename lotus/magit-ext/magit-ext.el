@@ -108,6 +108,20 @@
   "c" '("F" "Fast commit push" magit-commit-with-single-line-and-push))
 
 
+(defun gita-status ()
+  "Call the 'gita status' command and display its output in a new buffer."
+  (interactive)
+  (let ((output-buffer (get-buffer-create "*Gita Status*")))
+    (with-current-buffer output-buffer
+      (read-only-mode -1)
+      (erase-buffer)
+      (let ((exit-code (call-process "gita" nil output-buffer nil "status")))
+        (if (zerop exit-code)
+            (progn
+              (read-only-mode 1)
+              (display-buffer output-buffer))
+          (message "Gita status failed with exit code: %d" exit-code))))))
+
 (transient-define-prefix gita-transient ()
   "Transient menu for Gita commands."
   [["Basic Commands"
