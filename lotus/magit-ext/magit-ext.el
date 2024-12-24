@@ -69,7 +69,7 @@
                                        nil nil it 'confirm)
              (magit-push-arguments))
      (user-error "No branch is checked out")))
-  (--when-let (magit-commit-with-single-line nil)
+  (--when-let (call-interactively #'magit-commit-with-single-line)
     (message "IT %s" it)
     (magit-push-current target args)
     (magit-refresh)))
