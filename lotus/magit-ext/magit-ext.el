@@ -133,6 +133,14 @@
   :class 'transient-option
   :key "--no-edit"
   :argument "--no-edit")
+
+(transient-define-infix my-gita-branch ()
+  :description "Branch"
+  :class 'transient-option
+  :key "-b"
+  :argument (lambda () (format "--branch=%s" (read-string "Branch: "))))
+
+
 
 
 (transient-define-prefix gita-transient ()
@@ -141,7 +149,8 @@
     ("-v" "Verbose" "--verbose")
     ("--no-edit" "No Edit" "--no-edit")
     (my-gita-verbose)
-    (my-gita-no-edit)]]
+    (my-gita-no-edit)
+    (my-gita-branch)]]
   ["Basic Commands"
    ("s" "Status" gita-status)
    ("p" "Push" gita-push)
