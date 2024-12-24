@@ -121,6 +121,18 @@
               (read-only-mode 1)
               (display-buffer output-buffer))
           (message "Gita status failed with exit code: %d" exit-code))))))
+
+(transient-define-infix my-gita-verbose ()
+  :description "Verbose"
+  :class 'transient-option
+  :key "-v"
+  :argument "--verbose")
+
+(transient-define-infix my-gita-no-edit ()
+  :description "No Edit"
+  :class 'transient-option
+  :key "--no-edit"
+  :argument "--no-edit")
 
 
 (transient-define-prefix gita-transient ()
@@ -138,7 +150,7 @@
    ("l" "Log" gita-log)]
   ["Miscellaneous"
    ("d" "Diff" gita-diff)
-   ("x" "Reset" gita-reset)]])
+   ("x" "Reset" gita-reset)])
 
 
 
