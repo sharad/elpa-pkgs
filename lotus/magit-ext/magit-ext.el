@@ -28,13 +28,13 @@
 
 
 ;;;###autoload
-(defun magit-commit-with-single-line (msg &rest args)
+(defun magit-commit-with-single-line (&rest msg args)
   "Magit commit amend without editing."
   (interactive
    (list (read-from-minibuffer "Commit msg: " "correction")))
   (let ((msg (or msg "correction"))
         (default-directory (magit-toplevel)))
-    (apply magit-call-git "commit" "-m" msg args)
+    (apply #'magit-call-git "commit" "-m" msg args)
     (magit-refresh)))
 
 ;; magit-run-git-with-editor
@@ -98,7 +98,7 @@
 ;;   'aec/ssh-make-and-fetch)
 
 (transient-append-suffix 'magit-commit
-  "c" '("C" "AAA" magit-commit-amend-noedit-push-current-force))
+  "c" '("C" "Fast commit push" magit-commit-with-single-line-and-push))
 
 (transient-append-suffix 'magit-push
   "e" '("C" "AAA" magit-commit-amend-noedit-push-current-force))
