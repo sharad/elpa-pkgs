@@ -28,14 +28,16 @@
 
 
 ;;;###autoload
-(defun magit-commit-with-single-line (&rest msg args)
+(defun magit-commit-with-single-line (msg &rest args)
   "Magit commit amend without editing."
   (interactive
    (list (read-from-minibuffer "Commit msg: " "correction")))
   (let ((msg (or msg "correction"))
         (default-directory (magit-toplevel)))
     (progn
-      (apply #'magit-call-git "commit" "-m" msg args))))
+      (apply #'magit-call-git "commit" "-m"
+             msg
+             args))))
 
 ;; magit-run-git-with-editor
 
@@ -67,12 +69,10 @@
                                        nil nil it 'confirm)
              (magit-push-arguments))
      (user-error "No branch is checked out")))
-  (--if-let (magit-commit-with-single-line)
-      (progn
-        (message "IT %s" it)
-        (magit-push-current target args)
-
-        (magit-refresh))))
+  (--when-let (magit-commit-with-single-line nil)
+    (message "IT %s" it)
+    (magit-push-current target args)
+    (magit-refresh)))
 
 ;;;###autoload
 (defun magit-commit-amend-noedit-push-current-force (target args)
