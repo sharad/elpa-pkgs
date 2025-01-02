@@ -196,4 +196,61 @@
       (develock-mode -1))
   (highlight-changes-visible-mode -1))
 
+
+(defun run-process (name buffer success-fn program &rest program-args)
+  "run a program in a subprocess with persistant buffer. Return the
+process object for it.
+NAME is name for process.  It is modified if necessary to make it unique.
+BUFFER is the buffer (or buffer name) to associate with the process.
+
+Process output (both standard output and standard error streams)
+goes at end of BUFFER, unless you specify a filter function to
+handle the output.  BUFFER may also be nil, meaning that this
+process is not associated with any buffer.
+
+SUCCESS-FN if non NIL then run it when program is successful.
+
+PROGRAM is the program file name.  It is searched for in `exec-path'
+\(which see).  If nil, just associate a pty with the buffer.  Remaining
+arguments PROGRAM-ARGS are strings to give program as arguments.
+
+If you want to separate standard output from standard error, use
+`make-process' or invoke the command through a shell and redirect
+one of them using the shell syntax.
+
+The process runs in `default-directory' if that is local (as
+determined by `unhandled-file-name-directory'), or \"~\"
+otherwise.  If you want to run a process in a remote directory
+use `start-file-process'."
+  (unless (fboundp 'make-process)
+    (error "Emacs was compiled without subprocess support"))
+  (let* ((buffer (get-buffer buffer))
+         (start-marker (when buffer
+                         (with-current-buffer buffer
+                           (buffer-end 1)))))
+    (make-process :name name
+                  :buffer buffer
+                  :command (if program
+                               (list :command (cons program program-args)))
+                  :sentinel #'(lambda (process event)
+                                "Sentinel to handle process exit status."
+                                (when (string-match-p "finished\\|exited" event)
+                                  (let ((exit-code (process-exit-status process)))
+                                    (if (zerop exit-code)
+                                        (when success-fn
+                                          (funcall success-fn))
+                                      (let* ((end-marker (if buffer
+                                                             (with-current-buffer buffer
+                                                               (buffer-end 1))))
+                                             (text (with-current-buffer buffer
+                                                     (if (and start-marker
+                                                              end-marker)
+                                                         (buffer-substring start-marker
+                                                                           end-marker)
+                                                       (when end-marker (buffer-string))))))
+                                        (error "Process %s failed with exit code %d\n%s"
+                                               (process-name process)
+                                               exit-code
+                                               text)))))))))
+
 ;;; lotus-utils.el ends here
