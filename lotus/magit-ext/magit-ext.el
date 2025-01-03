@@ -220,9 +220,11 @@ If the command fails, return nil."
                               #'(lambda (process event)
                                   (when (string-match "finished\\|exited" event)
                                     (let ((exit-code (process-exit-status process)))
+                                      (magit-refresh)
                                       (with-current-buffer (process-buffer process)
                                         (read-only-mode 1))
-                                      (unless (zerop exit-code)
+                                      (if (zerop exit-code)
+                                          (message "Process finished with exit code: %d" exit-code)
                                         (message "%s %s failed with exit code: %d"
                                                  (capitalize cmd)
                                                  (car args)
@@ -245,10 +247,12 @@ If the command fails, return nil."
         (set-process-sentinel process
                               #'(lambda (process event)
                                   (when (string-match "finished\\|exited" event)
+                                    (magit-refresh)
                                     (let ((exit-code (process-exit-status process)))
                                       (with-current-buffer (process-buffer process)
                                         (read-only-mode 1))
-                                      (unless (zerop exit-code)
+                                      (if (zerop exit-code)
+                                          (message "Process finished with exit code: %d" exit-code)
                                         (message "%s %s failed with exit code: %d"
                                                  (capitalize cmd)
                                                  (car args)
@@ -368,7 +372,7 @@ If the command fails, return nil."
       ;;             #'forge-browse)
       ;; (keymap-set magit-mode-map "<remap> <magit-copy-thing>"
       ;;             #'forge-copy-url-at-point-as-kill)
-      (keymap-set magit-mode-map "C-c C-f" #'magit-extended-action))))
+      (keymap-set magit-mode-map "C-c f" #'magit-extended-action))))
 
 ;;;###autoload
 (defun magit-ext-uninsinuate ()
@@ -381,7 +385,7 @@ If the command fails, return nil."
       ;;             #'forge-browse)
       ;; (keymap-set magit-mode-map "<remap> <magit-copy-thing>"
       ;;             #'forge-copy-url-at-point-as-kill)
-      (keymap-set magit-mode-map "C-c C-f" nil))))
+      (keymap-set magit-mode-map "C-c f" nil))))
 
 ;;; magit-ext.el ends here
 
