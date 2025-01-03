@@ -253,8 +253,9 @@ If the command fails, return nil."
         (set-process-sentinel process
                               #'(lambda (process event)
                                   (when (string-match "finished\\|exited" event)
-                                    (with-current-buffer magit-buffer
-                                      (magit-refresh))
+                                    (when magit-buffer
+                                      (with-current-buffer magit-buffer
+                                        (magit-refresh)))
                                     (let ((exit-code (process-exit-status process)))
                                       (with-current-buffer (process-buffer process)
                                         (read-only-mode 1))
