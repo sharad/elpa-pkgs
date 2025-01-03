@@ -134,34 +134,110 @@
   :key "--no-edit"
   :argument "--no-edit")
 
+(transient-define-argument magit:--gpg-sign ()
+  :description "Sign using gpg"
+  :class 'transient-option
+  :shortarg "-S"
+  :argument "--gpg-sign="
+  :allow-empty t
+  :reader #'magit-read-gpg-signing-key)
+
+(defun magit-transient-read-person (prompt initial-input history)
+  (magit-completing-read
+   prompt
+   (mapcar (lambda (line)
+             (save-excursion
+               (and (string-match "\\`[\s\t]+[0-9]+\t" line)
+                    (list (substring line (match-end 0))))))
+           (magit-git-lines "shortlog" "-n" "-s" "-e" "HEAD"))
+   nil nil initial-input history))
+
+
+(defun magit-commit-create (&optional args)
+  "Create a new commit on `HEAD'.
+With a prefix argument, amend to the commit at `HEAD' instead.
+\n(git commit [--amend] ARGS)"
+  (interactive (if current-prefix-arg
+                   (list (cons "--amend" (magit-commit-arguments)))
+                 (list (magit-commit-arguments))))
+  (cond ((member "--all" args)
+         (setq this-command 'magit-commit--all))
+        ((member "--allow-empty" args)
+         (setq this-command 'magit-commit--allow-empty)))
+  (when (setq args (magit-commit-assert args))
+    (let ((default-directory (magit-toplevel)))
+      (magit-run-git-with-editor "commit" args))))
+
+(defun magit-commit-arguments nil
+  (transient-args 'magit-commit))
+
+(transient-define-argument magit-commit:--reuse-message ()
+  :description "Reuse commit message"
+  :class 'transient-option
+  :shortarg "-C"
+  :argument "--reuse-message="
+  :reader #'magit-read-reuse-message
+  :history-key 'magit-revision-history)
+
+(transient-define-argument magit:--author ()
+  :description "Limit to author"
+  :class 'transient-option
+  :key "-A"
+  :argument "--author="
+  :reader #'magit-transient-read-person)
+
 (transient-define-infix my-gita-branch ()
   :description "Branch"
   :class 'transient-option
   :key "-b"
-  :argument (lambda () (format "--branch=%s" (read-string "Branch: "))))
+  :argument "--branch"
+  :reader #'(lambda (prompt initial-input history) (format "--branch=%s" (read-string "Branch: "))))
 
+(defun gita-demo (&optional args)
+  "Call the 'gita status' command and display its output in a new buffer."
+  (interactive (if current-prefix-arg
+                   (list (cons "--amend" (gita-transient-arguments)))
+                 (list (gita-transient-arguments))))
+  (message "Git Demo args %s" args))
+
+(defalias 'gita-status   #'gita-demo)
+(defalias 'gita-push   #'gita-demo)
+(defalias 'gita-rebase #'gita-demo)
+(defalias 'gita-commit #'gita-demo)
+(defalias 'gita-diff #'gita-demo)
+(defalias 'gita-reset #'gita-demo)
+(defalias 'gita-fetch #'gita-demo)
+(defalias 'gita-log #'gita-demo)
 
 
+
+(defun gita-transient-arguments nil
+  (transient-args 'gita-transient))
 
 (transient-define-prefix gita-transient ()
   "Transient menu for Gita commands."
   [["Arguments"
     ("-v" "Verbose" "--verbose")
     ("--no-edit" "No Edit" "--no-edit")
+    (my-gita-branch)
     (my-gita-verbose)
-    (my-gita-no-edit)
-    (my-gita-branch)]]
-  ["Basic Commands"
-   ("s" "Status" gita-status)
-   ("p" "Push" gita-push)
-   ("f" "Fetch" gita-fetch)]
-  ["Advanced Commands"
-   ("r" "Rebase" gita-rebase)
-   ("c" "Commit" gita-commit)
-   ("l" "Log" gita-log)]
-  ["Miscellaneous"
-   ("d" "Diff" gita-diff)
-   ("x" "Reset" gita-reset)])
+    (my-gita-no-edit)]]
+
+  [["Git Fast Commands"
+    ("s" "Status" gita-status)
+    ("p" "Push"   gita-push)
+    ("f" "Fetch" gita-fetch)]
+   ["Gita Basic Commands"
+    ("s" "Status" gita-status)
+    ("p" "Push"   gita-push)
+    ("f" "Fetch" gita-fetch)]
+   ["Gita Advanced Commands"
+    ("r" "Rebase" gita-rebase)
+    ("c" "Commit" gita-commit)
+    ("l" "Log" gita-log)]
+   ["Gita Miscellaneous"
+    ("d" "Diff" gita-diff)
+    ("x" "Reset" gita-reset)]])
 
 
 
