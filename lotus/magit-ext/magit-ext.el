@@ -180,6 +180,25 @@ If the command fails, return nil."
   :argument "--branch"
   :reader #'(lambda (prompt initial-input history) (format "--branch=%s" (read-string "Branch: "))))
 
+
+
+;; call-process
+;; make-process
+;; start-process
+
+;; (defun call-async-process (program &optional infile destination display &rest args)
+;;   (make-process :name "gita-push"
+;;                 :buffer destination
+;;                 :command
+;;                 :stderr destination
+;;                 :sentinel (lambda (process event)
+;;                             (when (string= event "finished\n")
+;;                               (with-current-buffer (process-buffer process)
+;;                                 (read-only-mode 1)
+;;                                 (display-buffer (process-buffer process))))
+;;                             (when (string-prefix-p "exited" event)
+;;                               (message "Gita push process exited with: %s" event)))))
+
 (defun gita-cmd-display (cmd &rest args)
   "Call the 'gita stat' command and display its output in a new buffer."
   (interactive)
@@ -191,8 +210,9 @@ If the command fails, return nil."
       (erase-buffer)
       ;; (display-buffer output-buffer)
       (pop-to-buffer output-buffer)
-      (let ((exit-code (apply #'call-process cmd
-                                nil output-buffer nil
+      (let ((exit-code (apply #'start-process cmd
+                                output-buffer
+                                cmd
                                 (remove nil args))))
         (read-only-mode 1)
         (unless (zerop exit-code)
@@ -204,16 +224,20 @@ If the command fails, return nil."
 (defun gita-cmd-execute (cmd &rest args)
   "Call the 'gita status' command and display its output in a new buffer."
   (interactive)
-  (let ((output-buffer (get-buffer-create "*Gita Group Pull Rebase*")))
+  (let ((output-buffer (get-buffer-create (format "*%s %s*"
+                                                  (capitalize cmd)
+                                                  (capitalize (car args))))))
     (with-current-buffer output-buffer
       (read-only-mode -1)
       (erase-buffer)
-      (let ((exit-code (apply #'call-process cmd
-                                nil output-buffer nil
+      (display-buffer output-buffer)
+      (let ((exit-code (apply #'start-process cmd
+                                output-buffer
+                                cmd
                                 (remove nil args))))
         (read-only-mode 1)
         (unless (zerop exit-code)
-          (display-buffer output-buffer)
+          ;; (display-buffer output-buffer)
           (message "%s %s failed with exit code: %d"
                    (capitalize cmd)
                    (car args)
