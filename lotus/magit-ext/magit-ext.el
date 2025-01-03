@@ -27,16 +27,20 @@
 (provide 'magit-ext)
 
 
+(require 'transient)
+
 ;;;###autoload
 (defun magit-commit-with-single-line (msg &rest args)
   "Magit commit amend without editing."
   (interactive
    (list (read-from-minibuffer "Commit msg: " "correction")))
-  (let ((msg (or msg "correction"))
-        (default-directory (magit-toplevel)))
-    (apply #'magit-call-git "commit" "-m"
-             msg
-             args)))
+  (if (gita-repository-p)
+      (let ((msg (or msg "correction"))
+            (default-directory (magit-toplevel)))
+        (apply #'magit-call-git "commit" "-m"
+               msg
+               args))
+    (message "Not a git repository.")))
 
 ;;;###autoload
 (defun magit-commit-amend-noedit ()
@@ -211,8 +215,7 @@ If the command fails, return nil."
       (erase-buffer)
       ;; (display-buffer output-buffer)
       (pop-to-buffer output-buffer)
-      (let ((magit-buffer (when (eq major-mode 'magit-status-mode)
-                            (current-buffer)))
+      (let ((transient-buffer (transient-scope))
             (process (apply #'start-process cmd
                               output-buffer
                               cmd
@@ -222,9 +225,10 @@ If the command fails, return nil."
                                   (when (string-match "finished\\|exited" event)
                                     (let ((exit-code (process-exit-status process)))
                                       (message "Refreshing Magit Buffer %s" magit-buffer)
-                                      (when magit-buffer
-                                        (with-current-buffer magit-buffer
-                                          (magit-refresh-buffer)))
+                                      (when transient-buffer
+                                        (with-current-buffer transient-buffer
+                                          (when (eq major-mode 'magit-status-mode)
+                                            (magit-refresh-buffer))))
                                       (with-current-buffer (process-buffer process)
                                         (read-only-mode 1))
                                       (if (zerop exit-code)
@@ -244,8 +248,7 @@ If the command fails, return nil."
       (read-only-mode -1)
       (erase-buffer)
       (display-buffer output-buffer)
-      (let ((magit-buffer (when (eq major-mode 'magit-status-mode)
-                            (current-buffer)))
+      (let ((transient-buffer (transient-scope))
             (process (apply #'start-process cmd
                               output-buffer
                               cmd
@@ -254,9 +257,10 @@ If the command fails, return nil."
                               #'(lambda (process event)
                                   (when (string-match "finished\\|exited" event)
                                     (message "Refreshing Magit Buffer %s" magit-buffer)
-                                    (when magit-buffer
-                                      (with-current-buffer magit-buffer
-                                        (magit-refresh-buffer)))
+                                    (when transient-buffer
+                                      (with-current-buffer transient-buffer
+                                        (when (eq major-mode 'magit-status-mode)
+                                          (magit-refresh-buffer))))
                                     (let ((exit-code (process-exit-status process)))
                                       (with-current-buffer (process-buffer process)
                                         (read-only-mode 1))
@@ -354,8 +358,12 @@ If the command fails, return nil."
 (defun magit-extended-action-arguments nil
   (transient-args 'magit-extended-action))
 
-(transient-define-prefix magit-extended-action ()
+(defvar magit-extended-action-origin-buffer nil
+  "Buffer from which the gita-transient command was launched.")
+
+(transient-define-prefix magit-extended-action-menu ()
   "Transient menu for Gita commands."
+  :scope (lambda () (current-buffer)) ;; Define scope
   [["Arguments"
     ("-v" "Verbose" "--verbose")
     ("--no-edit" "No Edit" "--no-edit")
@@ -382,6 +390,12 @@ If the command fails, return nil."
    ["Gita Miscellaneous"
     ("d" "Diff" gita-diff)
     ("x" "Reset" gita-reset)]])
+
+(defun magit-extended-action ()
+  "Launch the Gita transient menu."
+  (interactive)
+  (let ((magit-extended-action-origin-buffer (current-buffer)))
+    (transient-setup 'magit-extended-action-menu)))
 
 ;;;###autoload
 (defun magit-ext-insinuate ()
