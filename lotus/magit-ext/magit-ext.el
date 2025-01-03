@@ -199,6 +199,8 @@ If the command fails, return nil."
 ;;                             (when (string-prefix-p "exited" event)
 ;;                               (message "Gita push process exited with: %s" event)))))
 
+
+
 (defun gita-cmd-display (cmd &rest args)
   "Call the 'gita stat' command and display its output in a new buffer."
   (interactive)
@@ -210,16 +212,21 @@ If the command fails, return nil."
       (erase-buffer)
       ;; (display-buffer output-buffer)
       (pop-to-buffer output-buffer)
-      (let ((exit-code (apply #'start-process cmd
-                                output-buffer
-                                cmd
-                                (remove nil args))))
-        (read-only-mode 1)
-        (unless (zerop exit-code)
-          (message "%s %s failed with exit code: %d"
-                   (capitalize cmd)
-                   (car args)
-                   exit-code))))))
+      (let ((process (apply #'start-process cmd
+                              output-buffer
+                              cmd
+                              (remove nil args))))
+        (set-process-sentinel process
+                              #'(lambda (process event)
+                                  (when (string-match "finished\\|exited" event)
+                                    (let ((exit-code (process-exit-status process)))
+                                      (with-current-buffer (process-buffer process)
+                                        (read-only-mode 1))
+                                      (unless (zerop exit-code)
+                                        (message "%s %s failed with exit code: %d"
+                                                 (capitalize cmd)
+                                                 (car args)
+                                                 exit-code))))))))))
 
 (defun gita-cmd-execute (cmd &rest args)
   "Call the 'gita status' command and display its output in a new buffer."
@@ -231,17 +238,21 @@ If the command fails, return nil."
       (read-only-mode -1)
       (erase-buffer)
       (display-buffer output-buffer)
-      (let ((exit-code (apply #'start-process cmd
-                                output-buffer
-                                cmd
-                                (remove nil args))))
-        (read-only-mode 1)
-        (unless (zerop exit-code)
-          ;; (display-buffer output-buffer)
-          (message "%s %s failed with exit code: %d"
-                   (capitalize cmd)
-                   (car args)
-                   exit-code))))))
+      (let ((process (apply #'start-process cmd
+                              output-buffer
+                              cmd
+                              (remove nil args))))
+        (set-process-sentinel process
+                              #'(lambda (process event)
+                                  (when (string-match "finished\\|exited" event)
+                                    (let ((exit-code (process-exit-status process)))
+                                      (with-current-buffer (process-buffer process)
+                                        (read-only-mode 1))
+                                      (unless (zerop exit-code)
+                                        (message "%s %s failed with exit code: %d"
+                                                 (capitalize cmd)
+                                                 (car args)
+                                                 exit-code))))))))))
 
 (defun gita-stat ()
   "Call the 'gita stat' command and display its output in a new buffer."
