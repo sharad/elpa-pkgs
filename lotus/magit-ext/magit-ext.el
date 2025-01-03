@@ -222,6 +222,7 @@ If the command fails, return nil."
                               #'(lambda (process event)
                                   (when (string-match "finished\\|exited" event)
                                     (let ((exit-code (process-exit-status process)))
+                                      (message "Refreshing Magit Buffer %s" magit-buffer)
                                       (when magit-buffer
                                         (with-current-buffer magit-buffer
                                           (magit-refresh-buffer)))
@@ -253,6 +254,7 @@ If the command fails, return nil."
         (set-process-sentinel process
                               #'(lambda (process event)
                                   (when (string-match "finished\\|exited" event)
+                                    (message "Refreshing Magit Buffer %s" magit-buffer)
                                     (when magit-buffer
                                       (with-current-buffer magit-buffer
                                         (magit-refresh-buffer)))
