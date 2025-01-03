@@ -271,15 +271,25 @@ If the command fails, return nil."
   (interactive)
   (gita-cmd-display "gita" "stat" (gita-read-group t)))
 
-(defun gita-status ()
+(defun gita-st ()
   "Call the 'gita status' command and display its output in a new buffer."
   (interactive)
   (gita-cmd-display "gita" "st" (gita-read-group)))
+
+(defun gita-ssmfor-st ()
+  "Call the 'gita status' command and display its output in a new buffer."
+  (interactive)
+  (gita-cmd-display "gita" "ssmfor-st" (gita-read-group)))
 
 (defun gita-ssmfor-pull-rebase ()
   "Call the 'gita status' command and display its output in a new buffer."
   (interactive)
   (gita-cmd-execute "gita" "ssmfor-pull-rebase" (gita-read-group)))
+
+(defun gita-ssmfor-correct ()
+  "Call the 'gita status' command and display its output in a new buffer."
+  (interactive)
+  (gita-cmd-execute "gita" "ssmfor-correct" (gita-read-group)))
 
 (defun gita-ssmfor-correct-push ()
   "Call the 'gita status' command and display its output in a new buffer."
@@ -359,12 +369,15 @@ If the command fails, return nil."
     ("cA" "Fast Amend"  magit-commit-amend-noedit-push-current-force)
     ("V" "Verify"      magit-ext-verify)]
    ["Gita Status"
-    ("s" "Stat" gita-stat)
-    ("S" "Status" gita-status)]
+    ("ss" "Status" gita-ssmfor-st)
+    ("sS" "Status Top" gita-status)
+    ("st" "Stat" gita-stat)]
 
    ["Gita Advanced Commands"
     ("F" "ssmfor-pull-rebase"  gita-ssmfor-pull-rebase)
-    ("P" "ssmfor-correct-push" gita-ssmfor-correct-push)]
+    ("C" "ssmfor-correct" gita-ssmfor-correct)
+    ("P" "ssmfor-correct-push" gita-ssmfor-correct-push)
+    ]
    ["Gita Miscellaneous"
     ("d" "Diff" gita-diff)
     ("x" "Reset" gita-reset)]])
@@ -380,7 +393,7 @@ If the command fails, return nil."
       ;;             #'forge-browse)
       ;; (keymap-set magit-mode-map "<remap> <magit-copy-thing>"
       ;;             #'forge-copy-url-at-point-as-kill)
-      (keymap-set magit-mode-map "C-c f" #'magit-extended-action))))
+      (keymap-set magit-mode-map "C-c C-x f" #'magit-extended-action))))
 
 ;;;###autoload
 (defun magit-ext-uninsinuate ()
