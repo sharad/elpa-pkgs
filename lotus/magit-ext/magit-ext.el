@@ -73,7 +73,7 @@
      (user-error "No branch is checked out")))
   (--when-let (magit-commit-with-single-line msg)
     (magit-push-current target args)
-    (magit-refresh)))
+    (magit-refresh-buffer)))
 
 ;;;###autoload
 (defun magit-commit-with-single-line-and-push-fast (msg &optional args)
@@ -83,7 +83,7 @@
         (target (magit-get-upstream-branch)))
     (--when-let (magit-commit-with-single-line msg)
       (magit-push-current target args)
-      (magit-refresh))))
+      (magit-refresh-buffer))))
 
 ;;;###autoload
 (defun magit-commit-correction-fast (&optional args)
@@ -93,7 +93,7 @@
         (target (magit-get-upstream-branch)))
     (--when-let (magit-commit-with-single-line msg)
       (magit-push-current target args)
-      (magit-refresh))))
+      (magit-refresh-buffer))))
 
 ;;;###autoload
 (defun magit-commit-amend-noedit-push-current-force (target args)
@@ -224,7 +224,7 @@ If the command fails, return nil."
                                     (let ((exit-code (process-exit-status process)))
                                       (when magit-buffer
                                         (with-current-buffer magit-buffer
-                                          (magit-refresh)))
+                                          (magit-refresh-buffer)))
                                       (with-current-buffer (process-buffer process)
                                         (read-only-mode 1))
                                       (if (zerop exit-code)
@@ -255,7 +255,7 @@ If the command fails, return nil."
                                   (when (string-match "finished\\|exited" event)
                                     (when magit-buffer
                                       (with-current-buffer magit-buffer
-                                        (magit-refresh)))
+                                        (magit-refresh-buffer)))
                                     (let ((exit-code (process-exit-status process)))
                                       (with-current-buffer (process-buffer process)
                                         (read-only-mode 1))
