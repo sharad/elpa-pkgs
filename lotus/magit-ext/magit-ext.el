@@ -35,8 +35,8 @@
   (let ((msg (or msg "correction"))
         (default-directory (magit-toplevel)))
     (apply #'magit-call-git "commit" "-m"
-           msg
-           args)))
+             msg
+             args)))
 
 ;;;###autoload
 (defun magit-commit-amend-noedit ()
@@ -64,7 +64,7 @@
   "Magit commit amend without editing followed by force push."
   (interactive
    (--if-let (magit-get-current-branch)
-       (list (read-from-minibuffer "Commit msg: " "correction")
+       (list (read-from-minibuffer "Commit msg: " msg)
              (magit-read-remote-branch (format "Push %s to" it)
                                        nil ;; (magit-get "branch" it "remote")
                                        (magit-get-upstream-branch)
@@ -74,6 +74,26 @@
   (--when-let (magit-commit-with-single-line msg)
     (magit-push-current target args)
     (magit-refresh)))
+
+;;;###autoload
+(defun magit-commit-with-single-line-and-push-fast (msg &optional args)
+  "Magit commit amend without editing followed by force push."
+  (interactive)
+  (let ((msg msg)
+        (target (magit-get-upstream-branch)))
+    (--when-let (magit-commit-with-single-line msg)
+      (magit-push-current target args)
+      (magit-refresh))))
+
+;;;###autoload
+(defun magit-commit-correction-fast (&optional args)
+  "Magit commit amend without editing followed by force push."
+  (interactive)
+  (let ((msg "correction")
+        (target (magit-get-upstream-branch)))
+    (--when-let (magit-commit-with-single-line msg)
+      (magit-push-current target args)
+      (magit-refresh))))
 
 ;;;###autoload
 (defun magit-commit-amend-noedit-push-current-force (target args)
@@ -104,23 +124,41 @@
 ;;   "Make remotely"
 ;;   'aec/ssh-make-and-fetch)
 
-(transient-append-suffix 'magit-commit
-  "c" '("F" "Fast commit push" magit-commit-with-single-line-and-push))
+;; (transient-append-suffix 'magit-commit
+;;   "c" '("F" "Fast commit push" magit-commit-with-single-line-and-push))
 
 
-(defun gita-status ()
-  "Call the 'gita status' command and display its output in a new buffer."
-  (interactive)
-  (let ((output-buffer (get-buffer-create "*Gita Status*")))
-    (with-current-buffer output-buffer
-      (read-only-mode -1)
-      (erase-buffer)
-      (let ((exit-code (call-process "gita" nil output-buffer nil "status")))
-        (if (zerop exit-code)
-            (progn
-              (read-only-mode 1)
-              (display-buffer output-buffer))
-          (message "Gita status failed with exit code: %d" exit-code))))))
+(defun get-words-from-command-output-safe (command)
+  "Run an external shell COMMAND and return a list of words from its output.
+If the command fails, return nil."
+  (let ((output (with-output-to-string
+                  (with-current-buffer standard-output
+                    (call-process-shell-command command nil t)))))
+    (if (string-empty-p output)
+        nil
+      (remove-if-not #'(lambda (s) (> (length s) 0))
+                       (split-string output "[[:space:]\n]+")))))
+
+(defun gita-read-group (&optional allow-empty)
+  (magit-completing-read "Group"                                              ;prompt
+                         (get-words-from-command-output-safe "gita group ls") ;collection
+                         nil                                                  ;PREDICATE
+                         nil                                                  ;REQUIRE-MATCH
+                         nil                                                  ;INITIAL-INPUT
+                         nil                                                  ;HIST
+                         (when allow-empty "")                                ;DEF
+                         nil))                                                ;FALLBACK
+
+
+
+
+(transient-define-infix gita-group ()
+  :description "Branch"
+  :class 'transient-option
+  :key "-b"
+  :argument "--branch"
+  :reader #'(lambda (prompt initial-input history)
+              (read-string "Branch: ")))
 
 (transient-define-infix my-gita-verbose ()
   :description "Verbose"
@@ -134,57 +172,6 @@
   :key "--no-edit"
   :argument "--no-edit")
 
-(transient-define-argument magit:--gpg-sign ()
-  :description "Sign using gpg"
-  :class 'transient-option
-  :shortarg "-S"
-  :argument "--gpg-sign="
-  :allow-empty t
-  :reader #'magit-read-gpg-signing-key)
-
-(defun magit-transient-read-person (prompt initial-input history)
-  (magit-completing-read
-   prompt
-   (mapcar (lambda (line)
-             (save-excursion
-               (and (string-match "\\`[\s\t]+[0-9]+\t" line)
-                    (list (substring line (match-end 0))))))
-           (magit-git-lines "shortlog" "-n" "-s" "-e" "HEAD"))
-   nil nil initial-input history))
-
-
-(defun magit-commit-create (&optional args)
-  "Create a new commit on `HEAD'.
-With a prefix argument, amend to the commit at `HEAD' instead.
-\n(git commit [--amend] ARGS)"
-  (interactive (if current-prefix-arg
-                   (list (cons "--amend" (magit-commit-arguments)))
-                 (list (magit-commit-arguments))))
-  (cond ((member "--all" args)
-         (setq this-command 'magit-commit--all))
-        ((member "--allow-empty" args)
-         (setq this-command 'magit-commit--allow-empty)))
-  (when (setq args (magit-commit-assert args))
-    (let ((default-directory (magit-toplevel)))
-      (magit-run-git-with-editor "commit" args))))
-
-(defun magit-commit-arguments nil
-  (transient-args 'magit-commit))
-
-(transient-define-argument magit-commit:--reuse-message ()
-  :description "Reuse commit message"
-  :class 'transient-option
-  :shortarg "-C"
-  :argument "--reuse-message="
-  :reader #'magit-read-reuse-message
-  :history-key 'magit-revision-history)
-
-(transient-define-argument magit:--author ()
-  :description "Limit to author"
-  :class 'transient-option
-  :key "-A"
-  :argument "--author="
-  :reader #'magit-transient-read-person)
 
 (transient-define-infix my-gita-branch ()
   :description "Branch"
@@ -193,6 +180,102 @@ With a prefix argument, amend to the commit at `HEAD' instead.
   :argument "--branch"
   :reader #'(lambda (prompt initial-input history) (format "--branch=%s" (read-string "Branch: "))))
 
+(defun gita-cmd-display (cmd &rest args)
+  "Call the 'gita stat' command and display its output in a new buffer."
+  (interactive)
+  (let ((output-buffer (get-buffer-create (format "*%s %s*"
+                                                  (capitalize cmd)
+                                                  (capitalize (car args))))))
+    (with-current-buffer output-buffer
+      (read-only-mode -1)
+      (erase-buffer)
+      ;; (display-buffer output-buffer)
+      (pop-to-buffer output-buffer)
+      (let ((exit-code (apply #'call-process cmd
+                                nil output-buffer nil
+                                (remove nil args))))
+        (read-only-mode 1)
+        (unless (zerop exit-code)
+          (message "%s %s failed with exit code: %d"
+                   (capitalize cmd)
+                   (car args)
+                   exit-code))))))
+
+(defun gita-cmd-execute (cmd &rest args)
+  "Call the 'gita status' command and display its output in a new buffer."
+  (interactive)
+  (let ((output-buffer (get-buffer-create "*Gita Group Pull Rebase*")))
+    (with-current-buffer output-buffer
+      (read-only-mode -1)
+      (erase-buffer)
+      (let ((exit-code (apply #'call-process cmd
+                                nil output-buffer nil
+                                (remove nil args))))
+        (read-only-mode 1)
+        (unless (zerop exit-code)
+          (display-buffer output-buffer)
+          (message "%s %s failed with exit code: %d"
+                   (capitalize cmd)
+                   (car args)
+                   exit-code))))))
+
+(defun gita-stat ()
+  "Call the 'gita stat' command and display its output in a new buffer."
+  (interactive)
+  (gita-cmd-display "gita" "stat" (gita-read-group t)))
+
+(defun gita-status ()
+  "Call the 'gita status' command and display its output in a new buffer."
+  (interactive)
+  (gita-cmd-display "gita" "st" (gita-read-group)))
+
+(defun gita-ssmfor-pull-rebase ()
+  "Call the 'gita status' command and display its output in a new buffer."
+  (interactive)
+  (gita-cmd-execute "gita" "ssmfor-pull-rebase" (gita-read-group)))
+
+(defun gita-ssmfor-correct-push ()
+  "Call the 'gita status' command and display its output in a new buffer."
+  (interactive)
+  (gita-cmd-execute "gita" "ssmfor-correct-push" (gita-read-group)))
+
+
+(defun magit-ext-verify ()
+  "Run an external PROGRAM, interactively provide input, and handle process timeout."
+  (interactive)
+  (let ((process (make-process
+                  :name "git verify"
+                  :buffer "*Git Verify*"
+                  :command (list "git" "verify")
+                  :sentinel (lambda (proc event)
+                              (message "Process %s finished with event: %s"
+                                       (process-name proc) event))
+                  :filter (lambda (proc output)
+                            (with-current-buffer (process-buffer proc)
+                              (goto-char (point-max))
+                              (insert output))))))
+    (with-current-buffer (process-buffer process)
+      (erase-buffer)) ;; Clear the buffer for new output
+    ;; Tail-recursive loop for process input
+    (cl-labels ((process-input-loop ()
+                  (if (process-live-p process)
+                      (progn
+                        ;; Check for user input
+                        (let ((input (read-key-sequence-vector "Press any key to input OTP (or wait): "
+                                                               nil
+                                                               t)))
+                          (if (and input (not (equal input "")))
+                              (let ((input-str (read-string "OTP: ")))
+                                (process-send-string process
+                                                     (concat input-str "\n"))
+                                (message "Sent input: %s" input-str))
+                            (message "Waiting for program completion...")))
+                        ;; Continue the loop
+                        (process-input-loop))
+                    (message "Program completed or timed out."))))
+      ;; Start the loop
+      (process-input-loop))))
+
 (defun gita-demo (&optional args)
   "Call the 'gita status' command and display its output in a new buffer."
   (interactive (if current-prefix-arg
@@ -200,7 +283,6 @@ With a prefix argument, amend to the commit at `HEAD' instead.
                  (list (gita-transient-arguments))))
   (message "Git Demo args %s" args))
 
-(defalias 'gita-status   #'gita-demo)
 (defalias 'gita-push   #'gita-demo)
 (defalias 'gita-rebase #'gita-demo)
 (defalias 'gita-commit #'gita-demo)
@@ -211,10 +293,10 @@ With a prefix argument, amend to the commit at `HEAD' instead.
 
 
 
-(defun gita-transient-arguments nil
-  (transient-args 'gita-transient))
+(defun magit-extended-action-arguments nil
+  (transient-args 'magit-extended-action))
 
-(transient-define-prefix gita-transient ()
+(transient-define-prefix magit-extended-action ()
   "Transient menu for Gita commands."
   [["Arguments"
     ("-v" "Verbose" "--verbose")
@@ -224,20 +306,101 @@ With a prefix argument, amend to the commit at `HEAD' instead.
     (my-gita-no-edit)]]
 
   [["Git Fast Commands"
-    ("s" "Status" gita-status)
-    ("p" "Push"   gita-push)
-    ("f" "Fetch" gita-fetch)]
-   ["Gita Basic Commands"
-    ("s" "Status" gita-status)
-    ("p" "Push"   gita-push)
-    ("f" "Fetch" gita-fetch)]
+    ("cf" "Fast Commit" magit-commit-with-single-line-and-push)
+    ("cF" "Fast Commit " magit-commit-with-single-line-and-push-fast)
+    ("cX" "Fast Commit Correction" magit-commit-correction-fast)
+    ("cA" "Fast Amend"  magit-commit-amend-noedit-push-current-force)
+    ("V" "Verify"      magit-ext-verify)]
+   ["Gita Status"
+    ("s" "Stat" gita-stat)
+    ("S" "Status" gita-status)]
+
    ["Gita Advanced Commands"
-    ("r" "Rebase" gita-rebase)
-    ("c" "Commit" gita-commit)
-    ("l" "Log" gita-log)]
+    ("F" "ssmfor-pull-rebase"  gita-ssmfor-pull-rebase)
+    ("P" "ssmfor-correct-push" gita-ssmfor-correct-push)]
    ["Gita Miscellaneous"
     ("d" "Diff" gita-diff)
     ("x" "Reset" gita-reset)]])
+
+;;;###autoload
+(defun magit-ext-insinuate ()
+  (interactive)
+  (with-eval-after-load 'magit-mode
+    (when t ;; forge-add-default-bindings
+      (keymap-set magit-mode-map "C-c C-f" #'magit-extended-action)
+      ;; (keymap-set magit-mode-map "N" #'forge-dispatch)
+      ;; (keymap-set magit-mode-map "<remap> <magit-browse-thing>"
+      ;;             #'forge-browse)
+      ;; (keymap-set magit-mode-map "<remap> <magit-copy-thing>"
+      ;;             #'forge-copy-url-at-point-as-kill)
+      (keymap-set magit-mode-map "C-c C-f" #'magit-extended-action))))
+
+;;;###autoload
+(defun magit-ext-uninsinuate ()
+  (interactive)
+  (with-eval-after-load 'magit-mode
+    (when t ;; forge-add-default-bindings
+      (keymap-set magit-mode-map "C-c C-f" nil)
+      ;; (keymap-set magit-mode-map "N" #'forge-dispatch)
+      ;; (keymap-set magit-mode-map "<remap> <magit-browse-thing>"
+      ;;             #'forge-browse)
+      ;; (keymap-set magit-mode-map "<remap> <magit-copy-thing>"
+      ;;             #'forge-copy-url-at-point-as-kill)
+      (keymap-set magit-mode-map "C-c C-f" nil))))
+
+;;; magit-ext.el ends here
+
+;; (transient-define-argument magit:--gpg-sign ()
+;;   :description "Sign using gpg"
+;;   :class 'transient-option
+;;   :shortarg "-S"
+;;   :argument "--gpg-sign="
+;;   :allow-empty t
+;;   :reader #'magit-read-gpg-signing-key)
+
+;; (defun magit-transient-read-person (prompt initial-input history)
+;;   (magit-completing-read
+;;    prompt
+;;    (mapcar (lambda (line)
+;;              (save-excursion
+;;                (and (string-match "\\`[\s\t]+[0-9]+\t" line)
+;;                     (list (substring line (match-end 0))))))
+;;            (magit-git-lines "shortlog" "-n" "-s" "-e" "HEAD"))
+;;    nil nil initial-input history))
+
+
+;; (defun magit-commit-create (&optional args)
+;;   "Create a new commit on `HEAD'.
+;; With a prefix argument, amend to the commit at `HEAD' instead.
+;; \n(git commit [--amend] ARGS)"
+;;   (interactive (if current-prefix-arg
+;;                    (list (cons "--amend" (magit-commit-arguments)))
+;;                  (list (magit-commit-arguments))))
+;;   (cond ((member "--all" args)
+;;          (setq this-command 'magit-commit--all))
+;;         ((member "--allow-empty" args)
+;;          (setq this-command 'magit-commit--allow-empty)))
+;;   (when (setq args (magit-commit-assert args))
+;;     (let ((default-directory (magit-toplevel)))
+;;       (magit-run-git-with-editor "commit" args))))
+
+;; (defun magit-commit-arguments nil
+;;   (transient-args 'magit-commit))
+
+;; (transient-define-argument magit-commit:--reuse-message ()
+;;   :description "Reuse commit message"
+;;   :class 'transient-option
+;;   :shortarg "-C"
+;;   :argument "--reuse-message="
+;;   :reader #'magit-read-reuse-message
+;;   :history-key 'magit-revision-history)
+
+;; (transient-define-argument magit:--author ()
+;;   :description "Limit to author"
+;;   :class 'transient-option
+;;   :key "-A"
+;;   :argument "--author="
+;;   :reader #'magit-transient-read-person)
 
 
 
@@ -378,8 +541,3 @@ With a prefix argument, amend to the commit at `HEAD' instead.
 
 
 ;; ;; (transient-append-suffix 'magit-commit "n" '("N" forge-pull-notifications))
-
-
-
-
-;;; magit-ext.el ends here
