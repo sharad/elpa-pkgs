@@ -363,7 +363,7 @@ If the command fails, return nil."
 
 (transient-define-prefix magit-extended-action-menu ()
   "Transient menu for Gita commands."
-  :scope (lambda () (current-buffer)) ;; Define scope
+  :scope (current-buffer) ;; Define scope
   [["Arguments"
     ("-v" "Verbose" "--verbose")
     ("--no-edit" "No Edit" "--no-edit")
