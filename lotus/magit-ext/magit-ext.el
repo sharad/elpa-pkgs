@@ -212,7 +212,9 @@ If the command fails, return nil."
       (erase-buffer)
       ;; (display-buffer output-buffer)
       (pop-to-buffer output-buffer)
-      (let ((process (apply #'start-process cmd
+      (let ((magit-buffer (when (eq major-mode 'magit-status-mode)
+                            (current-buffer)))
+            (process (apply #'start-process cmd
                               output-buffer
                               cmd
                               (remove nil args))))
@@ -220,7 +222,9 @@ If the command fails, return nil."
                               #'(lambda (process event)
                                   (when (string-match "finished\\|exited" event)
                                     (let ((exit-code (process-exit-status process)))
-                                      (magit-refresh)
+                                      (when magit-buffer
+                                        (with-current-buffer magit-buffer
+                                          (magit-refresh)))
                                       (with-current-buffer (process-buffer process)
                                         (read-only-mode 1))
                                       (if (zerop exit-code)
@@ -240,14 +244,17 @@ If the command fails, return nil."
       (read-only-mode -1)
       (erase-buffer)
       (display-buffer output-buffer)
-      (let ((process (apply #'start-process cmd
+      (let ((magit-buffer (when (eq major-mode 'magit-status-mode)
+                            (current-buffer)))
+            (process (apply #'start-process cmd
                               output-buffer
                               cmd
                               (remove nil args))))
         (set-process-sentinel process
                               #'(lambda (process event)
                                   (when (string-match "finished\\|exited" event)
-                                    (magit-refresh)
+                                    (with-current-buffer magit-buffer
+                                      (magit-refresh))
                                     (let ((exit-code (process-exit-status process)))
                                       (with-current-buffer (process-buffer process)
                                         (read-only-mode 1))
