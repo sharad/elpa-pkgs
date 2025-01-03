@@ -200,7 +200,6 @@ If the command fails, return nil."
 ;;                               (message "Gita push process exited with: %s" event)))))
 
 
-
 (defun gita-cmd-display (cmd &rest args)
   "Call the 'gita stat' command and display its output in a new buffer."
   (interactive)
