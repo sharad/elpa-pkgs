@@ -141,7 +141,7 @@ If the command fails, return nil."
     (if (string-empty-p output)
         nil
       (remove-if-not #'(lambda (s) (> (length s) 0))
-                       (split-string output "[[:space:]\n]+")))))
+                     (split-string output "[[:space:]\n]+")))))
 
 (defun gita-read-group (&optional allow-empty)
   (magit-completing-read "Group"                                              ;prompt
@@ -217,9 +217,9 @@ If the command fails, return nil."
       (pop-to-buffer output-buffer)
       (let ((transient-buffer (transient-scope))
             (process (apply #'start-process cmd
-                              output-buffer
-                              cmd
-                              (remove nil args))))
+                            output-buffer
+                            cmd
+                            (remove nil args))))
         (set-process-sentinel process
                               #'(lambda (process event)
                                   (when (string-match "finished\\|exited" event)
@@ -250,9 +250,9 @@ If the command fails, return nil."
       (display-buffer output-buffer)
       (let ((transient-buffer (transient-scope))
             (process (apply #'start-process cmd
-                              output-buffer
-                              cmd
-                              (remove nil args))))
+                            output-buffer
+                            cmd
+                            (remove nil args))))
         (set-process-sentinel process
                               #'(lambda (process event)
                                   (when (string-match "finished\\|exited" event)
@@ -343,7 +343,8 @@ If the command fails, return nil."
   (interactive (if current-prefix-arg
                    (list (cons "--amend" (gita-transient-arguments)))
                  (list (gita-transient-arguments))))
-  (message "Git Demo args %s" args))
+  (message "Git Demo args %s and Scope %s" args
+           (transient-scope)))
 
 (defalias 'gita-push   #'gita-demo)
 (defalias 'gita-rebase #'gita-demo)
@@ -358,12 +359,9 @@ If the command fails, return nil."
 (defun magit-extended-action-arguments nil
   (transient-args 'magit-extended-action))
 
-(defvar magit-extended-action-origin-buffer nil
-  "Buffer from which the gita-transient command was launched.")
-
 (transient-define-prefix magit-extended-action-menu ()
   "Transient menu for Gita commands."
-  :scope (current-buffer) ;; Define scope
+  :scope (magit-get-mode-buffer 'magit-status-mode) ;; Define scope
   [["Arguments"
     ("-v" "Verbose" "--verbose")
     ("--no-edit" "No Edit" "--no-edit")
@@ -395,7 +393,8 @@ If the command fails, return nil."
   "Launch the Gita transient menu."
   (interactive)
   (let ((magit-extended-action-origin-buffer (current-buffer)))
-    (transient-setup 'magit-extended-action-menu)))
+    (transient-setup 'magit-extended-action-menu)
+    (message "Hi %s" magit-extended-action-origin-buffer)))
 
 ;;;###autoload
 (defun magit-ext-insinuate ()
