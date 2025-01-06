@@ -34,7 +34,7 @@
   "Magit commit amend without editing."
   (interactive
    (list (read-from-minibuffer "Commit msg: " "correction")))
-  (if (gita-repository-p)
+  (if t ;; (git-repository-p)
       (let ((msg (or msg "correction"))
             (default-directory (magit-toplevel)))
         (apply #'magit-call-git "commit" "-m"
