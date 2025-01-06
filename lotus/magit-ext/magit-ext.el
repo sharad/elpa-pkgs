@@ -30,6 +30,16 @@
 (require 'transient)
 
 
+;; Configuring --no-edit for Amend by Default
+
+;; If you often want to amend with --no-edit, you can add this behavior to Magit’s amend command by customizing it:
+
+;; Add the following to your Emacs configuration file:
+
+(transient-append-suffix 'magit-commit "a"
+  '("e" "Amend w/ --no-edit" magit-commit-amend "--no-edit"))
+
+
 (defvar magit-single-line-fast-commit-msg "correction")
 
 ;;;###autoload
@@ -38,6 +48,8 @@
   (interactive
    (list (read-from-minibuffer "Commit msg: "
                                magit-single-line-fast-commit-msg)))
+  (or (magit-toplevel)
+      (magit--not-inside-repository-error))
   (let ((msg (or msg magit-single-line-fast-commit-msg))
         (default-directory (magit-toplevel)))
     (when current-prefix-arg
@@ -140,8 +152,6 @@
   (magit-stage-and-commit-with-single-line-and-push-fast magit-single-line-fast-commit-msg))
 
 
-
-
 ;;;###autoload
 (defun magit-commit-amend-noedit ()
   "Magit commit amend without editing."
@@ -217,9 +227,6 @@ If the command fails, return nil."
                          nil                                                  ;HIST
                          (when allow-empty "")                                ;DEF
                          nil))                                                ;FALLBACK
-
-
-
 
 (transient-define-infix gita-group ()
   :description "Branch"
