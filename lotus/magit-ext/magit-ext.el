@@ -29,18 +29,118 @@
 
 (require 'transient)
 
+
+(defvar magit-single-line-fast-commit-msg "correction")
+
 ;;;###autoload
 (defun magit-commit-with-single-line (msg &rest args)
   "Magit commit amend without editing."
   (interactive
-   (list (read-from-minibuffer "Commit msg: " "correction")))
-  (if t ;; (git-repository-p)
-      (let ((msg (or msg "correction"))
-            (default-directory (magit-toplevel)))
-        (apply #'magit-call-git "commit" "-m"
-               msg
-               args))
-    (message "Not a git repository.")))
+   (list (read-from-minibuffer "Commit msg: "
+                               magit-single-line-fast-commit-msg)))
+  (let ((msg (or msg magit-single-line-fast-commit-msg))
+        (default-directory (magit-toplevel)))
+    (when current-prefix-arg
+      (magit-stage-modified t))
+    (apply #'magit-call-git "commit" "-m"
+           msg
+           args)))
+
+;;;###autoload
+(defun magit-commit-with-single-line-fast (&rest args)
+  "Magit commit amend without editing."
+  (interactive)
+  (let ((msg magit-single-line-fast-commit-msg)
+        (default-directory (magit-toplevel)))
+    (magit-commit-with-single-line msg)))
+
+
+;;;###autoload
+(defun magit-stage-and-commit-with-single-line (msg &rest args)
+  "Magit commit amend without editing."
+  (interactive
+   (list (read-from-minibuffer "Commit msg: "
+                               magit-single-line-fast-commit-msg)))
+  (let ((msg (or msg magit-single-line-fast-commit-msg))
+        (default-directory (magit-toplevel)))
+    (magit-stage-modified t)
+    (magit-commit-with-single-line msg)))
+;;;###autoload
+(defun magit-stage-and-commit-with-single-line-fast (&rest args)
+  "Magit commit amend without editing."
+  (interactive)
+  (let ((msg magit-single-line-fast-commit-msg)
+        (default-directory (magit-toplevel)))
+    (magit-stage-modified t)
+    (magit-commit-with-single-line msg)))
+
+
+;;;###autoload
+(defun magit-commit-with-single-line-and-push (msg target args)
+  "Magit commit amend without editing followed by force push."
+  (interactive
+   (--if-let (magit-get-current-branch)
+       (list (read-from-minibuffer "Commit msg: "
+                                   magit-single-line-fast-commit-msg)
+             (magit-read-remote-branch (format "Push %s to" it)
+                                       nil ;; (magit-get "branch" it "remote")
+                                       (magit-get-upstream-branch)
+                                       it 'confirm)
+             (magit-push-arguments))
+     (user-error "No branch is checked out")))
+  (--when-let (magit-commit-with-single-line msg)
+    (magit-push-current target args)))
+
+;;;###autoload
+(defun magit-commit-with-single-line-and-push-fast (msg &optional args)
+  "Magit commit amend without editing followed by force push."
+  (interactive (read-from-minibuffer "Commit msg: " msg))
+  (let ((msg msg)
+        (target (magit-get-upstream-branch)))
+    (magit-commit-with-single-line-and-push msg
+                                            target)))
+
+;;;###autoload
+(defun magit-stage-and-commit-correction-fast (&optional args)
+  "Magit commit amend without editing followed by force push."
+  (interactive)
+  (magit-commit-with-single-line-and-push-fast magit-single-line-fast-commit-msg))
+
+
+;;;###autoload
+(defun magit-stage-and-commit-with-single-line-and-push (msg target args)
+  "Magit commit amend without editing followed by force push."
+  (interactive
+   (--if-let (magit-get-current-branch)
+       (list (read-from-minibuffer "Commit msg: " msg)
+             (magit-read-remote-branch (format "Push %s to" it)
+                                       nil ;; (magit-get "branch" it "remote")
+                                       (magit-get-upstream-branch)
+                                       it 'confirm)
+             (magit-push-arguments))
+     (user-error "No branch is checked out")))
+  (--when-let (magit-stage-and-commit-with-single-line msg)
+    (magit-push-current target args)))
+
+;;;###autoload
+(defun magit-stage-and-commit-with-single-line-and-push-fast (msg &optional args)
+  "Magit commit amend without editing followed by force push."
+  (interactive (read-from-minibuffer "Commit msg: " msg))
+  (let ((msg msg)
+        (target (magit-get-upstream-branch)))
+    (magit-stage-modified t)
+    (magit-stage-and-commit-with-single-line-and-push msg
+                                                      target)))
+
+;;;###autoload
+(defun magit-stage-and-commit-correction-fast (&optional args)
+  "Magit commit amend without editing followed by force push."
+  (interactive)
+  (magit-stage-modified t)
+  (magit-stage-and-commit-with-single-line-and-push-fast magit-single-line-fast-commit-msg))
+
+
+
 
 ;;;###autoload
 (defun magit-commit-amend-noedit ()
@@ -63,41 +163,6 @@
   (magit-push-current target (cons "-f" args)))
 
 
-;;;###autoload
-(defun magit-commit-with-single-line-and-push (msg target args)
-  "Magit commit amend without editing followed by force push."
-  (interactive
-   (--if-let (magit-get-current-branch)
-       (list (read-from-minibuffer "Commit msg: " msg)
-             (magit-read-remote-branch (format "Push %s to" it)
-                                       nil ;; (magit-get "branch" it "remote")
-                                       (magit-get-upstream-branch)
-                                       it 'confirm)
-             (magit-push-arguments))
-     (user-error "No branch is checked out")))
-  (--when-let (magit-commit-with-single-line msg)
-    (magit-push-current target args)
-    (magit-refresh-buffer)))
-
-;;;###autoload
-(defun magit-commit-with-single-line-and-push-fast (msg &optional args)
-  "Magit commit amend without editing followed by force push."
-  (interactive)
-  (let ((msg msg)
-        (target (magit-get-upstream-branch)))
-    (--when-let (magit-commit-with-single-line msg)
-      (magit-push-current target args)
-      (magit-refresh-buffer))))
-
-;;;###autoload
-(defun magit-commit-correction-fast (&optional args)
-  "Magit commit amend without editing followed by force push."
-  (interactive)
-  (let ((msg "correction")
-        (target (magit-get-upstream-branch)))
-    (--when-let (magit-commit-with-single-line msg)
-      (magit-push-current target args)
-      (magit-refresh-buffer))))
 
 ;;;###autoload
 (defun magit-commit-amend-noedit-push-current-force (target args)
