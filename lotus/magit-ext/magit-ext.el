@@ -113,7 +113,7 @@
                                             target)))
 
 ;;;###autoload
-(defun magit-stage-and-commit-correction-fast (&optional args)
+(defun magit-commit-correction-fast (&optional args)
   "Magit commit amend without editing followed by force push."
   (interactive)
   (magit-commit-with-single-line-and-push-fast magit-single-line-fast-commit-msg))
@@ -348,7 +348,7 @@ If the command fails, return nil."
   (interactive)
   (gita-cmd-display "gita" "stat" (gita-read-group t)))
 
-(defun gita-st ()
+(defun gita-status ()
   "Call the 'gita status' command and display its output in a new buffer."
   (interactive)
   (gita-cmd-display "gita" "st" (gita-read-group)))
