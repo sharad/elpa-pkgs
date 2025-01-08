@@ -88,7 +88,7 @@
 
 
 ;;;###autoload
-(defun magit-commit-with-single-line-and-push (msg target args)
+(defun magit-commit-with-single-line-and-push (msg target &rest args)
   "Magit commit amend without editing followed by force push."
   (interactive
    (--if-let (magit-get-current-branch)
@@ -104,17 +104,18 @@
     (magit-push-current target args)))
 
 ;;;###autoload
-(defun magit-commit-with-single-line-and-push-fast (msg &optional args)
-  "Magit commit amend without editing followed by force push."
-  (interactive (read-from-minibuffer "Commit msg: " msg))
+(defun magit-commit-with-single-line-and-push-fast (msg &rest args)
+  "Magit commit single line msg and push."
+  (interactive (list (read-from-minibuffer "Commit msg: "
+                                           magit-single-line-fast-commit-msg)))
   (let ((msg msg)
         (target (magit-get-upstream-branch)))
     (magit-commit-with-single-line-and-push msg
                                             target)))
 
 ;;;###autoload
-(defun magit-commit-correction-fast (&optional args)
-  "Magit commit amend without editing followed by force push."
+(defun magit-commit-correction-fast (&rest args)
+  "Magit commit corection fast."
   (interactive)
   (magit-commit-with-single-line-and-push-fast magit-single-line-fast-commit-msg))
 
@@ -135,7 +136,7 @@
     (magit-push-current target args)))
 
 ;;;###autoload
-(defun magit-stage-and-commit-with-single-line-and-push-fast (msg &optional args)
+(defun magit-stage-and-commit-with-single-line-and-push-fast (msg &rest args)
   "Magit commit amend without editing followed by force push."
   (interactive (read-from-minibuffer "Commit msg: " msg))
   (let ((msg msg)
@@ -145,7 +146,7 @@
                                                       target)))
 
 ;;;###autoload
-(defun magit-stage-and-commit-correction-fast (&optional args)
+(defun magit-stage-and-commit-correction-fast (&rest args)
   "Magit commit amend without editing followed by force push."
   (interactive)
   (magit-stage-modified t)
@@ -153,14 +154,14 @@
 
 
 ;;;###autoload
-(defun magit-commit-amend-noedit ()
+(defun magit-commit-amend-noedit (&rest args)
   "Magit commit amend without editing."
   (interactive)
   (magit-commit-amend '("--no-edit")))
 
 
 ;;;###autoload
-(defun magit-push-current-force (target args)
+(defun magit-push-current-force (target &rest args)
   "Magit force push."
   (interactive
    (--if-let (magit-get-current-branch)
@@ -175,7 +176,7 @@
 
 
 ;;;###autoload
-(defun magit-commit-amend-noedit-push-current-force (target args)
+(defun magit-commit-amend-noedit-push-current-force (target &rest args)
   "Magit commit amend without editing followed by force push."
   (interactive
    (--if-let (magit-get-current-branch)
@@ -410,7 +411,7 @@ If the command fails, return nil."
       ;; Start the loop
       (process-input-loop))))
 
-(defun gita-demo (&optional args)
+(defun gita-demo (&rest args)
   "Call the 'gita status' command and display its output in a new buffer."
   (interactive (if current-prefix-arg
                    (list (cons "--amend" (gita-transient-arguments)))
@@ -455,8 +456,7 @@ If the command fails, return nil."
    ["Gita Advanced Commands"
     ("F" "ssmfor-pull-rebase"  gita-ssmfor-pull-rebase)
     ("C" "ssmfor-correct" gita-ssmfor-correct)
-    ("P" "ssmfor-correct-push" gita-ssmfor-correct-push)
-    ]
+    ("P" "ssmfor-correct-push" gita-ssmfor-correct-push)]
    ["Gita Miscellaneous"
     ("d" "Diff" gita-diff)
     ("x" "Reset" gita-reset)]])
@@ -515,7 +515,7 @@ If the command fails, return nil."
 ;;    nil nil initial-input history))
 
 
-;; (defun magit-commit-create (&optional args)
+;; (defun magit-commit-create (&rest args)
 ;;   "Create a new commit on `HEAD'.
 ;; With a prefix argument, amend to the commit at `HEAD' instead.
 ;; \n(git commit [--amend] ARGS)"
