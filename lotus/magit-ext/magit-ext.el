@@ -36,8 +36,8 @@
 
 ;; Add the following to your Emacs configuration file:
 
-(transient-append-suffix 'magit-commit "a"
-  '("e" "Amend w/ --no-edit" magit-commit-amend "--no-edit"))
+;; (transient-append-suffix 'magit-commit "a"
+;;   '("e" "Amend w/ --no-edit" magit-commit-amend "--no-edit"))
 
 
 (defvar magit-single-line-fast-commit-msg "correction")
