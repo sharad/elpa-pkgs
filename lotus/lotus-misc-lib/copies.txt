@@ -1,0 +1,62 @@
+
+
+
+
+This is the function 
+
+func (r *RadReadCaptureInterface) Close() {
+	if r.logfilehandle != nil {
+		log.Println("Closing the Log file", r.logfilehandle.Name())
+		r.logfilehandle.Close()
+	}
+	return
+}
+
+
+
+In VScode it copy RadReadCaptureInterface as
+
+<div style="color: #cccccc;background-color: #1f1f1f;font-family: 'Droid Sans Mono', 'monospace', monospace;font-weight: normal;font-size: 14px;line-height: 19px;white-space: pre;"><br><div><span style="color: #569cd6;">func</span><span style="color: #cccccc;"> (</span><span style="color: #9cdcfe;">r </span><span style="color: #d4d4d4;">*</span><span style="color: #4ec9b0;">RadReadCaptureInterface</span><span style="color: #cccccc;">) </span><span style="color: #dcdcaa;">Close</span><span style="color: #cccccc;">() {</span></div><div><span style="color: #cccccc;">    </span><span style="color: #c586c0;">if</span><span style="color: #cccccc;"> </span><span style="color: #9cdcfe;">r</span><span style="color: #cccccc;">.</span><span style="color: #9cdcfe;">logfilehandle</span><span style="color: #cccccc;"> </span><span style="color: #d4d4d4;">!=</span><span style="color: #cccccc;"> </span><span style="color: #569cd6;">nil</span><span style="color: #cccccc;"> {</span></div><div><span style="color: #cccccc;">        </span><span style="color: #9cdcfe;">log</span><span style="color: #cccccc;">.</span><span style="color: #dcdcaa;">Println</span><span style="color: #cccccc;">(</span><span style="color: #ce9178;">"Closing the Log file"</span><span style="color: #cccccc;">, </span><span style="color: #9cdcfe;">r</span><span style="color: #cccccc;">.</span><span style="color: #9cdcfe;">logfilehandle</span><span style="color: #cccccc;">.</span><span style="color: #dcdcaa;">Name</span><span style="color: #cccccc;">())</span></div><div><span style="color: #cccccc;">        </span><span style="color: #9cdcfe;">r</span><span style="color: #cccccc;">.</span><span style="color: #9cdcfe;">logfilehandle</span><span style="color: #cccccc;">.</span><span style="color: #dcdcaa;">Close</span><span style="color: #cccccc;">()</span></div><div><span style="color: #cccccc;">    }</span></div><div><span style="color: #cccccc;">    </span><span style="color: #c586c0;">return</span></div><div><span style="color: #cccccc;">}</span></div><br></div>
+
+
+
+from htmlize, it copy RadReadCaptureInterface as
+
+
+<span style="color: #8197bf; background-color: #474e90;">func</span><span style="background-color: #474e90;"> </span><span style="color: #8c8c8c; background-color: #474e90;">(</span><span style="color: #cf6a4c; background-color: #474e90;">r</span><span style="background-color: #474e90;"> </span><span style="color: #8197bf; background-color: #474e90;">*</span><span style="color: #ffb964; background-color: #474e90;">RadReadCaptureInterface</span><span style="color: #8c8c8c; background-color: #474e90;">)</span><span style="background-color: #474e90;"> </span><span style="color: #fad07a; background-color: #474e90; font-style: italic;">Close</span><span style="color: #8c8c8c; background-color: #474e90;">()</span><span style="background-color: #474e90;"> </span><span style="color: #8c8c8c; background-color: #474e90;">{</span><span style="background-color: #474e90;">
+  </span><span style="color: #8197bf; background-color: #474e90;">if</span><span style="background-color: #474e90;"> </span><span style="color: #cf6a4c; background-color: #474e90;">r</span><span style="background-color: #474e90;">.</span><span style="color: #447799; background-color: #474e90; font-style: italic;">logfilehandle</span><span style="background-color: #474e90;"> </span><span style="color: #8197bf; background-color: #474e90;">!=</span><span style="background-color: #474e90;"> </span><span style="color: #8fbfdc; background-color: #474e90;">nil</span><span style="background-color: #474e90;"> </span><span style="color: #93a8c6; background-color: #474e90;">{</span><span style="background-color: #474e90;">
+    </span><span style="color: #cf6a4c; background-color: #474e90;">log</span><span style="background-color: #474e90;">.</span><span style="color: #fad07a; background-color: #474e90; font-style: italic;">Println</span><span style="color: #b0b1a3; background-color: #474e90;">(</span><span style="color: #99ad6a; background-color: #474e90;">"Closing the Log file"</span><span style="background-color: #474e90;">, </span><span style="color: #cf6a4c; background-color: #474e90;">r</span><span style="background-color: #474e90;">.</span><span style="color: #447799; background-color: #474e90; font-style: italic;">logfilehandle</span><span style="background-color: #474e90;">.</span><span style="color: #fad07a; background-color: #474e90; font-style: italic;">Name</span><span style="color: #97b098; background-color: #474e90;">()</span><span style="color: #b0b1a3; background-color: #474e90;">)</span><span style="background-color: #474e90;">
+    </span><span style="color: #cf6a4c; background-color: #474e90;">r</span><span style="background-color: #474e90;">.</span><span style="color: #447799; background-color: #474e90; font-style: italic;">logfilehandle</span><span style="background-color: #474e90;">.</span><span style="color: #fad07a; background-color: #474e90; font-style: italic;">Close</span><span style="color: #b0b1a3; background-color: #474e90;">()</span><span style="background-color: #474e90;">
+  </span><span style="color: #93a8c6; background-color: #474e90;">}</span><span style="background-color: #474e90;">
+  </span><span style="color: #8197bf; background-color: #474e90;">return</span><span style="background-color: #474e90;">
+</span><span style="color: #8c8c8c; background-color: #474e90;">}</span><span style="background-color: #474e90;">
+</span>
+
+
+
+Here difference is that VScode Bound each line (separated by \n)
+using <div> tag
+line <div> line text ,/div>
+which is not done by htmlize
+
+
+
+
+Regarding emacs htmlize.el
+it generates classes that correspond to Emacs faces and uses <span
+class=FACE>...</span> to color parts of text.
+
+I wanted to make htmlize to produce out like VScode
+
+
+
+
+(message "chars -1: %s, 0; %s, +1; %s"
+                         (char-after (1- next-change))
+                         (char-after next-change)
+                         (char-after (1+ next-change)))
+
+
+(when (eolp) "</div><div>")
+
+
