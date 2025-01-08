@@ -443,9 +443,9 @@ If the command fails, return nil."
     (my-gita-no-edit)]]
 
   [["Git Fast Commands"
-    ("cf" "Fast Commit" magit-commit-with-single-line-and-push)
-    ("cF" "Fast Commit " magit-commit-with-single-line-and-push-fast)
-    ("cX" "Fast Commit Correction" magit-commit-correction-fast)
+    ("cc" "Fast Commit" magit-commit-with-single-line-and-push)
+    ("cC" "Fast Commit " magit-commit-with-single-line-and-push-fast)
+    ("cf" "Fast Commit Correction" magit-commit-correction-fast)
     ("cA" "Fast Amend"  magit-commit-amend-noedit-push-current-force)
     ("V" "Verify"      magit-ext-verify)]
    ["Gita Status"
