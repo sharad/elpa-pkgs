@@ -464,9 +464,8 @@ If the command fails, return nil."
 (defun magit-extended-action ()
   "Launch the Gita transient menu."
   (interactive)
-  (let ((magit-extended-action-origin-buffer (current-buffer)))
-    (transient-setup 'magit-extended-action-menu)
-    (message "Hi %s" magit-extended-action-origin-buffer)))
+  (let ((buffer (current-buffer)))
+    (transient-setup 'magit-extended-action-menu)))
 
 ;;;###autoload
 (defun magit-ext-insinuate ()
