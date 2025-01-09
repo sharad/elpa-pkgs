@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -52,8 +52,8 @@
       (zmacs-deactivate-region)
     (deactivate-mark))
   (let ((htmlbuf (save-restriction
-		               (narrow-to-region beg end)
-		               (htmlize-buffer-1))))
+                   (narrow-to-region beg end)
+                   (htmlize-buffer-1))))
     (with-current-buffer htmlbuf
       (call-process-region nil nil "xclip" nil nil nil
                            "-i" "-selection" "clipboard" "-t" "text/html"))))
@@ -193,10 +193,11 @@
                       (dolist (l (split-string text "\\(\n\\)"))
                         (message "l =|%s||" l)
                         (progn ;; unless (string= l "")
-                          (if (string= l "")
-                              (princ " " htmlbuf)
-                              (princ l htmlbuf))
-                          ;; (princ "\n" htmlbuf)
+                          ;; (if (string= l "")
+                          ;;     (princ " " htmlbuf)
+                          ;;   (princ l htmlbuf))
+                          (princ l htmlbuf)
+                          (princ "\n" htmlbuf)
                           (funcall close-markup)
                           (princ "</div style=\"white-space: pre;\">" htmlbuf)
                           (princ "<div>" htmlbuf)
@@ -255,5 +256,3 @@
 
 
 ;;; misc-lib.el ends here
-
-
