@@ -152,61 +152,6 @@ return a new alist whose car is the new pair and cdr is ALIST."
                      (mapcar
                       (lambda (window)
                         (with-current-buffer (window-buffer window)
-                          (or (elscreen-get-alist-to-nickname elscreen-mode-to-nickname-alist-internal
-                                                              'string-match
-                                                              (symbol-name major-mode))
-                              (elscreen-get-alist-to-nickname elscreen-buffer-to-nickname-alist-internal
-                                                              'string-match
-                                                              (buffer-name))
-                              (cons 'buffer-name (cons (buffer-name)
-                                                       (buffer-file-name))))))
-                      (window-list)))
-
-               (let (nickname-list)
-                 (while (> (length nickname-type-map) 0)
-                   (let ((type (cl-first (cl-first nickname-type-map)))
-                         (buff-file (cl-rest (cl-first nickname-type-map))))
-                     (when buff-file
-                       (setq nickname-list (cons buff-file nickname-list)))
-                     (setq nickname-type-map
-                           (if (eq type 'nickname)
-                               (delete (cl-first nickname-type-map) nickname-type-map)
-                             (cl-rest nickname-type-map)))))
-                 ;; (setq screen-name
-                 ;;       (mapconcat 'identity (reverse nickname-list) ":"))
-                 (setq screen-name (reverse nickname-list))))
-
-             ;; (sessions-unified-set-alist 'screen-to-name-alist screen screen-name)
-             (push (cons screen screen-name) screen-to-name-alist))
-         screen-list))
-
-       ;; (elscreen-set-screen-to-name-alist-cache screen-to-name-alist)
-       (reverse screen-to-name-alist))))
-
-
-  (defun lotus-elscreen-get-screen-to-name-alist ()
-    ;; (when (elscreen-screen-modified-p 'elscreen-get-screen-to-name-alist)
-    (elscreen-notify-screen-modification-suppress
-     (elscreen-set-window-configuration (elscreen-get-current-screen)
-                                        (elscreen-current-window-configuration))
-     (let* ((lexical-binding nil)
-            (screen-list (sort (elscreen-get-screen-list) '<))
-            screen-name
-            screen-to-name-alist
-            nickname-type-map)
-       (elscreen-save-screen-excursion
-        (mapcar
-         #'(lambda (screen)
-             ;; If nickname exists, use it.
-             (setq screen-name (elscreen-get-screen-nickname screen))
-             ;; Nickname does not exist, so examine major-mode and buffer-name.
-             (when (null screen-name)
-               (elscreen-goto-internal screen)
-
-               (setq nickname-type-map
-                     (mapcar
-                      (lambda (window)
-                        (with-current-buffer (window-buffer window)
                           (or (elscreen-get-alist-to-nickname
                                elscreen-mode-to-nickname-alist-internal
                                'string-match (symbol-name major-mode))
@@ -290,7 +235,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
 
      ;; (elscreen-set-screen-to-name-alist-cache screen-to-name-alist)
      (reverse screen-to-name-alist))))
-
+;;
 (defun lotus-elscreen-get-desktop-buffer-args-list ()
   ;; (when (elscreen-screen-modified-p 'elscreen-get-screen-to-name-alist)
   (elscreen-notify-screen-modification-suppress
@@ -315,6 +260,7 @@ return a new alist whose car is the new pair and cdr is ALIST."
                  (mapcar #'desktop-make-create-buffer-list
                          desktop-buffers)))))))
 
+
 ;; with-eval-after-load "elscreen"
 
 ;; (defvar elscreen-session-restore-create-scratch-buffer nil "elscreen-session-restore-create-scratch-buffer")
@@ -607,7 +553,8 @@ return a new alist whose car is the new pair and cdr is ALIST."
                            (cl-remove-if-not #'(lambda (dir)
                                                  (not
                                                   (member dir (fmsession-get-locations))))
-                                             (mapcar 'car *frames-elscreen-session*))
+                                             (mapcar 'car
+                                                     *frames-elscreen-session*))
                            nil
                            nil
                            initial-input)
@@ -702,8 +649,8 @@ return a new alist whose car is the new pair and cdr is ALIST."
 ;; (progn
 
 
-  ;; "per frame session"
-  ;; (require 'emacs-panel)
+;; "per frame session"
+;; (require 'emacs-panel)
 
 (defvar *desktop-vc-read-inprogress* nil "desktop-vc-read-inpgrogress")
 
@@ -870,7 +817,7 @@ display-about-screen, spacemacs-buffer/goto-buffer")
   delete-frame-functions
   *lotus-after-init-hook*)
 
-  ;;}}
+;;}}
 
 
 ;;; fmsession.el ends here
