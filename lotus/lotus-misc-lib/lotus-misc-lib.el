@@ -249,8 +249,89 @@
         (princ "<div>" htmlbuf)
         (funcall text-markup fstruct-list htmlbuf)))
   (princ text htmlbuf))
+
 
 
+
+(concat "~/.bin/" (file-symlink-p "~/.bin/selsecret"))
+
+(demo-file-truename "~/.bin/selsecret")
+
+(defun demo-file-truename (filename &optional counter prev-dirs)
+  "Return the truename of FILENAME.
+If FILENAME is not absolute, first expands it against `default-directory'.
+The truename of a file name is found by chasing symbolic links
+both at the level of the file and at the level of the directories
+containing it, until no links are left at any level.
+
+\(fn FILENAME)"  ;; Don't document the optional arguments.
+  ;; COUNTER and PREV-DIRS are used only in recursive calls.
+  ;; COUNTER can be a cons cell whose car is the count of how many
+  ;; more links to chase before getting an error.
+  ;; PREV-DIRS can be a cons cell whose car is an alist
+  ;; of truenames we've just recently computed.
+  (cond ((or (string= filename "") (string= filename "~"))
+         (setq filename (expand-file-name filename))
+         (if (string= filename "")
+             (setq filename "/")))
+        ((and (string= (substring filename 0 1) "~")
+              (string-match "~[^/]*/?" filename))
+         (let ((first-part
+                (substring filename 0 (match-end 0)))
+               (rest (substring filename (match-end 0))))
+           (setq filename (concat (expand-file-name first-part) rest)))))
+
+  (or counter (setq counter (list 100)))
+  (let (done)
+    (or prev-dirs (setq prev-dirs (list nil)))
+    ;; If this file directly leads to a link, process that iteratively
+    ;; so that we don't use lots of stack.
+    (while (not done)
+      (setcar counter (1- (car counter)))
+      (if (< (car counter) 0)
+          (error "Apparent cycle of symbolic links for %s" filename))
+
+      (let ((dir (or (file-name-directory filename) default-directory))
+            target dirfile)
+        (message "m1: %s" dir)
+        ;; Get the truename of the directory.
+        (setq dirfile (directory-file-name dir))
+        ;; If these are equal, we have the (or a) root directory.
+
+        (or (string= dir dirfile)
+            (and (file-name-case-insensitive-p dir)
+                 (string-equal-ignore-case dir dirfile))
+            ;; If this is the same dir we last got the truename for,
+            ;; save time--don't recalculate.
+            (if (assoc dir (car prev-dirs))
+                (setq dir (cdr (assoc dir (car prev-dirs))))
+              (let ((old dir)
+                    (new (file-name-as-directory (demo-file-truename dirfile counter prev-dirs))))
+                (setcar prev-dirs (cons (cons old new) (car prev-dirs)))
+                (setq dir new))))
+
+        (if (equal ".." (file-name-nondirectory filename))
+            (setq filename
+                  (directory-file-name (file-name-directory (directory-file-name dir)))
+                  done t)
+          (if (equal "." (file-name-nondirectory filename))
+              (setq filename (directory-file-name dir)
+                    done t)
+            ;; Put it back on the file name.
+            (setq filename (concat dir (file-name-nondirectory filename)))
+            ;; Is the file name the name of a link?
+            (setq target (file-symlink-p filename))
+            (if target
+                ;; Yes => chase that link, then start all over
+                ;; since the link may point to a directory name that uses links.
+                ;; We can't safely use expand-file-name here
+                ;; since target might look like foo/../bar where foo
+                ;; is itself a link.  Instead, we handle . and .. above.
+                (setq filename (files--splice-dirname-file dir target)
+                      done nil)
+              ;; No, we are done!
+              (setq done t))))))
+    filename))
 
 
 
