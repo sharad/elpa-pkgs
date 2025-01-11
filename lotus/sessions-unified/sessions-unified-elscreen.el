@@ -1,4 +1,4 @@
-;;; sessions-elscreen-unified.el --- sessions for elscreen  -*- lexical-binding: t; -*-
+;;; sessions-unified-elscreen.el --- sessions for elscreen  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  Music Player Daemon (MPD) user
 
@@ -24,10 +24,10 @@
 
 ;;; Code:
 
-(provide 'sessions-elscreen-unified)
+(provide 'sessions-unified-elscreen)
 
 
-(require 'sessions-frame)
+(require 'sessions-unified-frame)
 
 (defun lotus-elscreen-get-screen-to-name-alist ()
   ;; (when (elscreen-screen-modified-p 'elscreen-get-screen-to-name-alist)
@@ -312,4 +312,4 @@
           (session-unfiy-notify "Error: elscreen-session-list %s" elscreen-session-list)))
     (session-unfiy-notify "Error: elscreen-session is %s" elscreen-session)))
 
-;;; sessions-elscreen-unified.el ends here
+;;; sessions-unified-elscreen.el ends here

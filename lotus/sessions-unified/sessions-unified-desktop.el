@@ -33,8 +33,8 @@
 
 
 (require 'sessions-unified)
-(require 'session-unified)
-(require 'fmsession)
+(require 'sessions-unified-session)
+(require 'sessions-unified-frame)
 
 
 (defvar lotus-read-filename-default-initial-input nil)

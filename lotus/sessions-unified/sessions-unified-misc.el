@@ -1,4 +1,4 @@
-;;; misc-unified.el --- Misc unified                 -*- lexical-binding: t; -*-
+;;; sessions-unified-misc.el --- Misc unified                 -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Sharad
 
@@ -24,12 +24,12 @@
 
 ;;; Code:
 
-(provide 'misc-unified)
+(provide 'sessions-unified-misc)
 
 
 
 (require 'sessions-unified)
-(require 'session-unified)
+(require 'sessions-unified-session)
 
 
 ;; (require 'savehist-20+)
@@ -186,10 +186,10 @@
                  (undo-buffer-to-eval (find-file-noselect (save-undo-filename (buffer-file-name)))))
             (eval (read undo-buffer-to-eval)))))))
 
-    ;; (add-hook 'write-file-hooks 'save-undo-list)
+  ;; (add-hook 'write-file-hooks 'save-undo-list)
 
-    ;; (remove-hook 'write-file-functions 'save-undo-list)
-    ;; (remove-hook 'find-file-hook 'load-undo-list)
+  ;; (remove-hook 'write-file-functions 'save-undo-list)
+  ;; (remove-hook 'find-file-hook 'load-undo-list)
 
 
 
@@ -199,4 +199,4 @@
 
 
 
-;;; misc-unified.el ends here
+;;; sessions-unified-misc.el ends here

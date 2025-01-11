@@ -1,4 +1,4 @@
-;;; tab-bar-unified.el --- tab bar unified           -*- lexical-binding: t; -*-
+;;; session--unified-tab-bar.el --- tab bar unified           -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  s
 
@@ -24,11 +24,11 @@
 
 ;;; Code:
 
-(provide 'tab-bar-unified)
+(provide 'sessions-unified-tab-bar)
 
 
 
 ;; (let ((frame nil )) (frame-parameter frame 'tabs))
 
 
-;;; tab-bar-unified.el ends here
+;;; sessions-unified-tab-bar.el ends here

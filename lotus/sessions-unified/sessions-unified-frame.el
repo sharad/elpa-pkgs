@@ -1,4 +1,4 @@
-;;; sessions-frame.el --- Maintain session per frame for named frame  -*- lexical-binding: t; -*-
+;;; sessions-unified-frame.el --- Maintain session per frame for named frame  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  Music Player Daemon (MPD) user
 
@@ -26,7 +26,7 @@
 
 
 
-(provide 'sessions-frame)
+(provide 'sessions-unified-frame)
 
 
 ;; (eval-when-compile
@@ -453,4 +453,4 @@ display-about-screen, spacemacs-buffer/goto-buffer")
   delete-frame-functions
   *lotus-after-init-hook*)
 
-;;; sessions-frame.el ends here
+;;; sessions-unified-frame.el ends here

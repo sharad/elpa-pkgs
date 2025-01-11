@@ -1,4 +1,4 @@
-;;; centaur-tab-unified.el --- unified centaur tab   -*- lexical-binding: t; -*-
+;;; sessions-unified-centaur-tab.el --- unified centaur tab   -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  s
 
@@ -24,8 +24,8 @@
 
 ;;; Code:
 
-(provide 'centaur-tab-unified)
+(provide 'sessions-unified-centaur-tab)
 
 
 
-;;; centaur-tab-unified.el ends here
+;;; sessions-unified-centaur-tab.el ends here
