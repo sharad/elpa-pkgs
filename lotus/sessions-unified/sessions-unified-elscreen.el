@@ -63,14 +63,14 @@
 
              (let (nickname-list)
                (while (> (length nickname-type-map) 0)
-                 (let ((type (cl-first (cl-first nickname-type-map)))
-                       (buff-file (cl-rest (cl-first nickname-type-map))))
+                 (let ((type (car (car nickname-type-map)))
+                       (buff-file (cdr (car nickname-type-map))))
                    (when buff-file
                      (setq nickname-list (cons buff-file nickname-list)))
                    (setq nickname-type-map
                          (if (eq type 'nickname)
-                             (delete (cl-first nickname-type-map) nickname-type-map)
-                           (cl-rest nickname-type-map)))))
+                             (delete (car nickname-type-map) nickname-type-map)
+                           (cdr nickname-type-map)))))
                ;; (setq screen-name
                ;;       (mapconcat 'identity (reverse nickname-list) ":"))
                (setq screen-name (reverse nickname-list))))
@@ -123,193 +123,240 @@
 ;; (require 'utils-config)
 
 (defvar *elscreen-session-restore-data* nil "elscreen session restore data like current screen buffer among multiple screens.")
+
+
+(defun server-create-frame-around-adrun ()
+  "remove-scratch-buffer"
+  (if *elscreen-session-restore-data*
+      (let* ((buffer-file (get-buffer (cdr (assoc 'cb *elscreen-session-restore-data*))))
+             (file-path  (if (consp buffer-file)
+                             (cdr buffer-file)))
+             (buff (or (if file-path
+                           (find-buffer-visiting file-path))
+                       (if (consp buffer-file)
+                           (car buffer-file)
+                         buffer-file))))
+        (when buff
+          (elscreen-kill)
+          (elscreen-find-and-goto-by-buffer buff nil nil)
+          (setq *elscreen-session-restore-data* nil)
+          (elscreen-notify-screen-modification 'force-immediately))))
+  t)
+
+(defadvice server-create-window-system-frame
+    (around remove-scratch-buffer activate)
+  "remove-scratch-buffer"
+  (let ((*sessions-unified-frame-session-restore-lock* t))
+    (prog1
+        ad-do-it
+      (server-create-frame-around-adrun))))
+
+(defadvice server-create-tty-frame
+    (around remove-scratch-buffer activate)
+  "remove-scratch-buffer"
+  (let ((*sessions-unified-frame-session-restore-lock* t))
+    (prog1
+        ad-do-it
+      (server-create-frame-around-adrun))))
+
 
 (defun elscreen-session-session-list-get (&optional nframe)
   (with-selected-frame (or nframe (selected-frame))
-    (let (session-list)
-      (push (cons 'screens (lotus-elscreen-get-screen-to-name-alist)) session-list)
-      (push (cons 'current-buffer-file (cons (buffer-name (current-buffer)) (buffer-file-name))) session-list)
-      (push (cons 'current-screen (elscreen-get-current-screen)) session-list)
-      (push (cons 'desktop-buffers (lotus-elscreen-get-desktop-buffer-args-list)) session-list))))
+    (let (fsession-data)
+      (push (cons 'screens (lotus-elscreen-get-screen-to-name-alist)) fsession-data)
+      (push (cons 'current-buffer-file (cons (buffer-name (current-buffer)) (buffer-file-name))) fsession-data)
+      (push (cons 'current-screen (elscreen-get-current-screen)) fsession-data)
+      (push (cons 'desktop-buffers (lotus-elscreen-get-desktop-buffer-args-list)) fsession-data))))
 
-(defun elscreen-session-session-list-set (session-list &optional nframe)
-  ;; TODO BUG minibuffer should not get windows, which is happening now
-  (let ((nframe (or nframe (selected-frame))))
-    (unless (elscreen-get-frame-confs nframe)
-      (elscreen-make-frame-confs nframe)))
+(defun elscreen-session-session-list-set (fsession-data &optional nframe)
+  (if (and (fboundp 'elscreen-get-conf-list)
+           (elscreen-get-conf-list 'screen-history))
+      (progn
+        ;; TODO BUG minibuffer should not get windows, which is happening now
+        (let ((nframe (or nframe (selected-frame))))
+          (unless (elscreen-get-frame-confs nframe)
+            (elscreen-make-frame-confs nframe)))
 
-  (if session-list                    ;may causing error
-      (with-selected-frame (or nframe (selected-frame))
-
-        (if (and elscreen-frame-confs
-                 (elscreen-get-frame-confs nframe))
-            (let* ((desktop-buffers
-                    (cl-rest (assoc 'desktop-buffers session-list)))
-                   (screens
-                    (or
-                     (cl-rest (assoc 'screens session-list))
-                     `((,(length session-list) "*scratch*"))))
-                   (session-current-screen-buffers
-                    (nth 1 (assoc (cl-rest (assoc 'current-screen session-list))
-                                  screens)))
-                   (session-current-buffer-file
-                    (cl-rest (assoc 'current-buffer-file session-list))))
-              ;; (when t
-              (when session-unified-debug
-                (session-unfiy-notify "Bstart: session-current-screen-buffers %s" session-current-screen-buffers)
-                (session-unfiy-notify "Astart: screen-to-name-alist %s" session-list)
-                (session-unfiy-notify "Cstart: desktop-buffers %s" desktop-buffers))
-
-              ;; ready file for buffer in session-list, using desktop-restore methods
-              (if desktop-buffers
-                  ;; recreate desktop buffer if not present.
-                  (let ((bufs (mapcar
-                               #'(lambda (bl) (nth 2 bl))
-                               desktop-buffers)))
-                    (session-unfiy-notify "Please wait I am busy to restore %d\nbuffers %s"
-                                          (length desktop-buffers) bufs)
-                    (let ((desktop-buffer-ok-count 0)
-                          (desktop-buffer-fail-count 0)
-                          desktop-first-buffer)
-                      (ignore desktop-buffer-ok-count)
-                      (ignore desktop-buffer-fail-count)
-                      (ignore desktop-first-buffer)
-                      (dolist (desktop-buffer-args desktop-buffers)
-                        (let ((bufname (nth 2 desktop-buffer-args))
-                              (file-path (nth 1 desktop-buffer-args)))
-                          (session-unfiy-notify "restoring %s" bufname)
-                          (if (find-buffer-visiting file-path)
-                              (session-unfiy-notify "buffer %s already here" bufname)
-                            (if (stringp bufname)
-                                (if (get-buffer bufname)
-                                    (session-unfiy-notify "buffer %s already here" bufname)
-                                  (let ()
-                                    (session-unfiy-notify "Hello 1")
-                                    (session-unfiy-notify "Desktop lazily opening %s" bufname)
-                                    (unless (ignore-errors
-                                              (save-window-excursion
-                                                (apply 'desktop-create-buffer desktop-buffer-args)))
-                                      (session-unfiy-notify "Desktop lazily opening Failed."))
-                                    (session-unfiy-notify "Hello 2")
-                                    (session-unfiy-notify "restored %s" bufname)))
-                              (session-unfiy-notify "bufname: %s is not string" bufname))))))
-                    (session-unfiy-notify "Restored %d\nbuffers %s"
-                                          (length desktop-buffers) bufs))
-                (session-unfiy-notify "No desktop-buffers"))
-
-              ;; setup elscreens with buffers
-              (while screens
-                (session-unfiy-notify "while screen: %s" screens)
-                ;; (setq screen (cl-first (cl-first screens)))
-                ;; (setq buff-files (cl-rest  (cl-first screens)))
-                (let* ((screen         (cl-first (cl-first screens)))
-                       (buff-files     (cl-rest  (cl-first screens)))
-                       (not-first-buff nil))
-
-                  (while buff-files
-                    (if (and elscreen-frame-confs
-                             (elscreen-get-frame-confs nframe))
-                        (progn
-
-                          (unless (eq screen 0)
-                            (elscreen-create))
-
-                          (let* ((buff-file  (cl-first buff-files))
-                                 (file-path  (if (consp buff-file)
-                                                 (cl-rest buff-file)))
-                                 (buff (ignore-errors
-                                         (get-buffer
-                                          (or (if file-path
-                                                  (find-buffer-visiting file-path))
-                                              (if (consp buff-file)
-                                                  (cl-first buff-file)
-                                                buff-file)))))
-                                 (minibuff-name " *Minibuf"))
-                            (session-unfiy-notify "  while buff: %s file-path: %s" buff file-path)
-                            (when (and buff
-                                       (bufferp buff)
-                                       (not
-                                        (string-equal (substring (buffer-name buff) 0 (min (length (buffer-name buff)) (length minibuff-name)))
-                                                      minibuff-name))) ;check once for if buff is here or not.
-                              ;; newly added here to avoid " *Minibuffer*"
-                              (if not-first-buff
-                                  (switch-to-buffer-other-window buff)
-                                (switch-to-buffer buff)
-                                (setq not-first-buff t)))
-                            (session-unfiy-notify "test4")))
-                      (error "3 Screen is not active for frame %s" nframe))
-
-                    (setq buff-files (cl-rest buff-files))
-
-                    (session-unfiy-notify "progn buff-files: %s" buff-files)
-                    (when session-unified-debug (session-unfiy-notify "else"))))
-
-                (setq screens (cl-rest screens))
-                (session-unfiy-notify "while screen: %s" screens)
-                (session-unfiy-notify "test5")) ;; (while screens
-
-              ;; (when elscreen-session-restore-create-scratch-buffer
-              ;;   (elscreen-find-and-goto-by-buffer (get-buffer-create "*scratch*") t t))
+        (if fsession-data                    ;may causing error
+            (with-selected-frame (or nframe (selected-frame))
 
               (if (and elscreen-frame-confs
                        (elscreen-get-frame-confs nframe))
-                  (progn
-                    (when nil (elscreen-create))                 ;trap
-                    ;; set current screen, window, and buffer.
-                    (let* ((file-path  (if (consp session-current-buffer-file)
-                                           (cl-rest session-current-buffer-file)))
-                           (buff
-                            (ignore-errors
-                              (get-buffer
-                               (or (if file-path
-                                       (find-buffer-visiting file-path))
-                                   (if (consp session-current-buffer-file)
-                                       (cl-first session-current-buffer-file)
-                                     session-current-buffer-file))))))
-                      (when (and buff
-                                 (bufferp buff))
-                        (elscreen-find-and-goto-by-buffer buff nil nil)
-                        (setq *elscreen-session-restore-data* session-current-buffer-file))))
-                (error "2 Screen is not active for frame %s" nframe)))
-          (error "1 Screen is not active for frame %s" nframe))
+                  (let* ((desktop-buffers
+                          (cdr (assoc 'desktop-buffers fsession-data))
+                          (screens
+                           (or
+                            (cdr (assoc 'screens fsession-data))
+                            `((,(length fsession-data) "*scratch*"))))
+                          (session-current-screen-buffers
+                           (nth 1 (assoc (cdr (assoc 'current-screen fsession-data))
+                                         screens)))
+                          (session-current-buffer-file
+                           (cdr (assoc 'current-buffer-file fsession-data)))))
+                    ;; (when t
+                    (when session-unified-debug
+                      (session-unfiy-notify "Bstart: session-current-screen-buffers %s" session-current-screen-buffers)
+                      (session-unfiy-notify "Astart: screen-to-name-alist %s" fsession-data)
+                      (session-unfiy-notify "Cstart: desktop-buffers %s" desktop-buffers))
 
-        ;; (let* ((desktop-buffers
-        (when session-unified-debug
-          (session-unfiy-notify "elscreen-notify-screen-modification"))
-        (elscreen-notify-screen-modification 'force-immediately)
-        (session-unfiy-notify "elscreen-session-session-list-set: DONE."))
+                    ;; ready file for buffer in fsession-data, using desktop-restore methods
+                    (if desktop-buffers
+                        ;; recreate desktop buffer if not present.
+                        (let ((bufs (mapcar #'(lambda (bl) (nth 2 bl))
+                                            desktop-buffers)))
+                          (session-unfiy-notify "Please wait I am busy to restore %d\nbuffers %s"
+                                                (length desktop-buffers) bufs)
+                          (let ((desktop-buffer-ok-count 0)
+                                (desktop-buffer-fail-count 0)
+                                desktop-first-buffer)
+                            (ignore desktop-buffer-ok-count)
+                            (ignore desktop-buffer-fail-count)
+                            (ignore desktop-first-buffer)
+                            (dolist (desktop-buffer-args desktop-buffers)
+                              (let ((bufname (nth 2 desktop-buffer-args))
+                                    (file-path (nth 1 desktop-buffer-args)))
+                                (session-unfiy-notify "restoring %s" bufname)
+                                (if (find-buffer-visiting file-path)
+                                    (session-unfiy-notify "buffer %s already here" bufname)
+                                  (if (stringp bufname)
+                                      (if (get-buffer bufname)
+                                          (session-unfiy-notify "buffer %s already here" bufname)
+                                        (let ()
+                                          (session-unfiy-notify "Hello 1")
+                                          (session-unfiy-notify "Desktop lazily opening %s" bufname)
+                                          (unless (ignore-errors
+                                                    (save-window-excursion
+                                                      (apply 'desktop-create-buffer desktop-buffer-args)))
+                                            (session-unfiy-notify "Desktop lazily opening Failed."))
+                                          (session-unfiy-notify "Hello 2")
+                                          (session-unfiy-notify "restored %s" bufname)))
+                                    (session-unfiy-notify "bufname: %s is not string" bufname))))))
+                          (session-unfiy-notify "Restored %d\nbuffers %s"
+                                                (length desktop-buffers) bufs))
+                      (session-unfiy-notify "No desktop-buffers"))
 
-    (session-unfiy-notify "elscreen-session-session-list-set: Error: Session do not exists.")))
+                    ;; setup elscreens with buffers
+                    (while screens
+                      (session-unfiy-notify "while screen: %s" screens)
+                      ;; (setq screen (car (car screens)))
+                      ;; (setq buff-files (cdr  (car screens)))
+                      (let* ((screen         (car (car screens)))
+                             (buff-files     (cdr  (car screens)))
+                             (not-first-buff nil))
+
+                        (while buff-files
+                          (if (and elscreen-frame-confs
+                                   (elscreen-get-frame-confs nframe))
+                              (progn
+
+                                (unless (eq screen 0)
+                                  (elscreen-create))
+
+                                (let* ((buff-file  (car buff-files))
+                                       (file-path  (if (consp buff-file)
+                                                       (cdr buff-file)))
+                                       (buff (ignore-errors
+                                               (get-buffer
+                                                (or (if file-path
+                                                        (find-buffer-visiting file-path))
+                                                    (if (consp buff-file)
+                                                        (car buff-file)
+                                                      buff-file)))))
+                                       (minibuff-name " *Minibuf"))
+                                  (session-unfiy-notify "  while buff: %s file-path: %s" buff file-path)
+                                  (when (and buff
+                                             (bufferp buff)
+                                             (not
+                                              (string-equal (substring (buffer-name buff) 0 (min (length (buffer-name buff)) (length minibuff-name)))
+                                                            minibuff-name))) ;check once for if buff is here or not.
+                                    ;; newly added here to avoid " *Minibuffer*"
+                                    (if not-first-buff
+                                        (switch-to-buffer-other-window buff)
+                                      (switch-to-buffer buff)
+                                      (setq not-first-buff t)))
+                                  (session-unfiy-notify "test4")))
+                            (error "3 Screen is not active for frame %s" nframe))
+
+                          (setq buff-files (cdr buff-files))
+
+                          (session-unfiy-notify "progn buff-files: %s" buff-files)
+                          (when session-unified-debug (session-unfiy-notify "else"))))
+
+                      (setq screens (cdr screens))
+                      (session-unfiy-notify "while screen: %s" screens)
+                      (session-unfiy-notify "test5")) ;; (while screens
+
+                    ;; (when elscreen-session-restore-create-scratch-buffer
+                    ;;   (elscreen-find-and-goto-by-buffer (get-buffer-create "*scratch*") t t))
+
+                    (if (and elscreen-frame-confs
+                             (elscreen-get-frame-confs nframe))
+                        (progn
+                          (when nil (elscreen-create))                 ;trap
+                          ;; set current screen, window, and buffer.
+                          (let* ((file-path  (if (consp session-current-buffer-file)
+                                                 (cdr session-current-buffer-file)))
+                                 (buff
+                                  (ignore-errors
+                                    (get-buffer
+                                     (or (if file-path
+                                             (find-buffer-visiting file-path))
+                                         (if (consp session-current-buffer-file)
+                                             (car session-current-buffer-file)
+                                           session-current-buffer-file))))))
+                            (when (and buff
+                                       (bufferp buff))
+                              (elscreen-find-and-goto-by-buffer buff nil nil)
+                              (setq *elscreen-session-restore-data* session-current-buffer-file))))
+                      (error "2 Screen is not active for frame %s" nframe)))
+                (error "1 Screen is not active for frame %s" nframe)
+
+                ;; (let* ((desktop-buffers
+                (when session-unified-debug
+                  (session-unfiy-notify "elscreen-notify-screen-modification"))
+                (elscreen-notify-screen-modification 'force-immediately)
+                (session-unfiy-notify "elscreen-session-session-list-set: DONE.")))
+
+          (session-unfiy-notify "elscreen-session-session-list-set: Error: Session do not exists.")))
+    (prog1
+        nil
+      (session-unfiy-notify "Error: not restoring screen session as screen-history config not found."))))
+
+
 
 
-(defun elscreen-session-store (elscreen-session &optional nframe)
-  (interactive
-   (list (fmsession-read-location)))
-  (let ((session-list (elscreen-session-session-list-get (or nframe
-                                                             (selected-frame)))))
-    (if (assoc elscreen-session *sessions-unified-frames-session*)
-        (setcdr (assoc elscreen-session
-                       *sessions-unified-frames-session*)
-                session-list)
-      (push (cons elscreen-session
-                  session-list)
-            *sessions-unified-frames-session*))))
+(eval-after-load "elscreen"
+  (fsession-register-fns 'elscreen
+                         #'elscreen-session-session-list-get
+                         #'elscreen-session-session-list-set))
+;; (defun elscreen-session-store (elscreen-session &optional nframe)
+;;   (interactive
+;;    (list (fmsession-read-location)))
+;;   (let ((session-list (elscreen-session-session-list-get (or nframe
+;;                                                              (selected-frame)))))
+;;     (if (assoc elscreen-session *sessions-unified-frames-session*)
+;;         (setcdr (assoc elscreen-session
+;;                        *sessions-unified-frames-session*)
+;;                 session-list)
+;;       (push (cons elscreen-session
+;;                   session-list)
+;;             *sessions-unified-frames-session*))))
 
-(defun elscreen-session-restore (elscreen-session &optional nframe)
-  (interactive
-   (list (fmsession-read-location)))
-  (session-unfiy-notify "start")
-  (if elscreen-session
-      (let ((elscreen-session-list
-             (cl-rest (assoc elscreen-session
-                             *sessions-unified-frames-session*))))
-        (when session-unified-debug
-          (session-unfiy-notify "Nstart: session-session %s" elscreen-session))
-        (if elscreen-session-list
-            (elscreen-session-session-list-set elscreen-session-list
-                                               (or nframe
-                                                   (selected-frame)))
-          (session-unfiy-notify "Error: elscreen-session-list %s" elscreen-session-list)))
-    (session-unfiy-notify "Error: elscreen-session is %s" elscreen-session)))
+;; (defun elscreen-session-restore (elscreen-session &optional nframe)
+;;   (interactive
+;;    (list (fmsession-read-location)))
+;;   (session-unfiy-notify "start")
+;;   (if elscreen-session
+;;       (let ((elscreen-session-list
+;;              (cdr (assoc elscreen-session
+;;                          *sessions-unified-frames-session*))))
+;;         (when session-unified-debug
+;;           (session-unfiy-notify "Nstart: session-session %s" elscreen-session))
+;;         (if elscreen-session-list
+;;             (elscreen-session-session-list-set elscreen-session-list
+;;                                                (or nframe
+;;                                                    (selected-frame)))
+;;           (session-unfiy-notify "Error: elscreen-session-list %s" elscreen-session-list)))
+;;     (session-unfiy-notify "Error: elscreen-session is %s" elscreen-session)))
 
 ;;; sessions-unified-elscreen.el ends here

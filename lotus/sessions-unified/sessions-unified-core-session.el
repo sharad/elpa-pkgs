@@ -231,9 +231,6 @@ get re-enabled here.")
 
 ;;;###autoload
 (defun lotus-enable-session-saving ()
-  ;; (if (or
-  ;;      (eq desktop-restore-eager t)
-  ;;      (null (lotus-desktop-saved-session)))
   (let ((session-unified-desktop-buffs-len (length desktop-buffer-args-list)))
     (if (or (eq desktop-restore-eager t)
             ;; (null (lotus-desktop-saved-session))
@@ -293,6 +290,87 @@ get re-enabled here.")
            (member #'frame-session-save delete-frame-functions)))))
 
 
+;;;###autoload
+(defvar *sessions-unified-core-session-registerd-fns-alist* nil
+  "Alist of (app-name appgetfn appsetfn) app fn accept FRAME")
+;;;###autoload
+(defun sessions-unified-session-register-fns (app-name storefn enablefn disablefn)
+  (setcdr (assoc app-name *sessions-unified-core-session-registerd-fns-alist*)
+          (list app-name storefn enablefn disablefn)))
+;;;###autoload
+(defun sessions-unified-session-unregister-fn (app-name getfn setfn)
+  (setcdr (assoc app-name *sessions-unified-core-session-registerd-fns-alist*)
+          nil))
+;;;###autoload
+(defun sessions-unified-session-store (session-name &optional frame)
+  "Store the elscreen tab configuration."
+  (interactive (list (fmsession-read-location)))
+  ;; (elscreen-session-store session-name frame)
+  (unless (assoc session-name *sessions-unified-frames-session*)
+    (push (list session-name)
+          *sessions-unified-frames-session*))
+  (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
+    (let ((app-name     (car app-appfn))
+          (app-get-func (cadr app-appfn)))
+      (let ((frame-data (funcall app-get-func (or nframe
+                                                  (selected-frame)))))
+        (let ((app-fsession-alist (assoc session-name
+                                         *sessions-unified-frames-session*)))
+          (if (assoc app-name app-fsession-alist)
+              (setcdr (assoc app-name
+                             app-fsession-alist)
+                      frame-data)
+            (push (cons app-name frame-data)
+                  app-fsession-alist)))))))
+;;;###autoload
+(defun sessions-unified-session-enable (session-name &optional frame)
+  "Restore the elscreen tab configuration."
+  (interactive
+   (list (fmsession-read-location)))
+  (if session-name
+      (when (assoc session-name *sessions-unified-frames-session*)
+        (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
+          (let ((app-name     (car app-appfn))
+                (app-set-func (caddr app-appfn)))
+            (session-unfiy-notify "start")
+            (let ((app-fsession-alist (assoc session-name
+                                             *sessions-unified-frames-session*)))
+              (let ((frame-data (cdr (assoc app-name
+                                            app-fsession-alist))))
+                (when session-unified-debug
+                  (session-unfiy-notify "Nstart: session-session %s" app-name))
+                (if frame-data
+                    (funcall app-set-func frame-data
+                             (or nframe
+                                 (selected-frame)))
+                  (session-unfiy-notify "Error: frame-data %s" frame-data)))))))
+
+    (session-unfiy-notify "Error: session-name is %s" session-name)))
+
+(defun sessions-unified-session-disable (session-name &optional frame)
+  "Restore the elscreen tab configuration."
+  (interactive
+   (list (fmsession-read-location)))
+  (if session-name
+      (when (assoc session-name *sessions-unified-frames-session*)
+        (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
+          (let ((app-name     (car app-appfn))
+                (app-set-func (caddr app-appfn)))
+            (session-unfiy-notify "start")
+            (let ((app-fsession-alist (assoc session-name
+                                             *sessions-unified-frames-session*)))
+              (let ((frame-data (cdr (assoc app-name
+                                            app-fsession-alist))))
+                (when session-unified-debug
+                  (session-unfiy-notify "Nstart: session-session %s" app-name))
+                (if frame-data
+                    (funcall app-set-func frame-data
+                             (or nframe
+                                 (selected-frame)))
+                  (session-unfiy-notify "Error: frame-data %s" frame-data)))))))
+
+    (session-unfiy-notify "Error: session-name is %s" session-name)))
+
 
 (defcustom save-all-sessions-auto-save-idle-time-interval 7
   "save all sessions auto save idle time interval"
