@@ -294,11 +294,13 @@ get re-enabled here.")
 (defvar *sessions-unified-core-session-registerd-fns-alist* nil
   "Alist of (app-name appgetfn appsetfn) app fn accept FRAME")
 ;;;###autoload
-(defun sessions-unified-session-register-fns (app-name storefn enablefn disablefn)
+(defun sessions-unified-session-register-fns (app-name storefn enablefn restorefn disablefn)
   (setcdr (assoc app-name *sessions-unified-core-session-registerd-fns-alist*)
-          (list app-name storefn enablefn disablefn)))
+          (list app-name
+                storefn enablefn
+                restorefn disablefn)))
 ;;;###autoload
-(defun sessions-unified-session-unregister-fn (app-name getfn setfn)
+(defun sessions-unified-session-unregister-fn (app-name)
   (setcdr (assoc app-name *sessions-unified-core-session-registerd-fns-alist*)
           nil))
 ;;;###autoload
@@ -459,5 +461,109 @@ get re-enabled here.")
 
 (defun save-all-sessions-auto-save-immediately ()
   (save-all-sessions-auto-save t))
+
+
+;;;###autoload
+(defun lotus-desktop-session-restore ()
+  "Restore a saved emacs session."
+  (interactive)
+  (if *session-unified-desktop-enabled*
+      (progn
+        ;; ask user about desktop to restore, and use it for session.
+        ;; will set *desktop-save-filename*
+        (if (desktop-get-desktop-save-filename)
+            (let ((desktop-restore-frames nil)
+                  (enable-local-eval t)                ;query
+                  (enable-recursive-minibuffers t)
+                  (flymake-run-in-place nil)
+                  (show-error (called-interactively-p 'interactive))
+                  (*constructed-name-desktop-save-filename*
+                   (if (functionp lotus-construct-desktop-filename-regex-function)
+                       (funcall lotus-construct-desktop-filename-regex-function)
+                     (lotus-construct-desktop-filename-regex-function-default))))
+              (ignore flymake-run-in-place)
+              (setq debug-on-error t)
+              (session-unfiy-notify "entering lotus-desktop-session-restore")
+
+
+              (if (not (string-match *constructed-name-desktop-save-filename* *desktop-save-filename*))
+                  (progn
+                    (session-unfiy-notify "*desktop-save-filename* is not equal to %s but %s"
+                                          *constructed-name-desktop-save-filename*
+                                          *desktop-save-filename*)
+                    (if (y-or-n-p
+                         (format "lotus-desktop-session-restore" "*desktop-save-filename* is not equal to %s but %s\nshould continue with it ? "
+                                 *constructed-name-desktop-save-filename*
+                                 *desktop-save-filename*))
+                        (message "continuing..")
+                      (error "desktop file %s is not correct" *desktop-save-filename*)))
+
+                (progn
+                  (unless (lotus-desktop-saved-session)
+                    (session-unfiy-notify "%s not found so trying to checkout it." *desktop-save-filename*)
+                    (vc-checkout-file *desktop-save-filename*))
+
+                  (if (lotus-desktop-saved-session)
+                      (progn
+                        (session-unfiy-notify "if")
+                        (when (memq 'P4 vc-handled-backends)            ;remove P4
+                          (setq vc-handled-backends (remove 'P4 vc-handled-backends))
+                          (add-to-disable-desktop-restore-interrupting-feature-hook
+                           #'(lambda ()
+                               (when nil
+                                 (add-to-list 'vc-handled-backends 'P4)))))
+                        (if show-error
+                            (if (desktop-vc-read *desktop-save-filename*)
+                                (progn
+                                  (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
+                                  (lotus-enable-session-saving)
+                                  (when sessions-unified-elscreen
+                                    (session-unfiy-notify "Do you want to set session of frame? [show-error=%s]" show-error)
+                                    (when (y-or-n-p-with-timeout (format "[show-error=%s] Do you want to set session of frame? " show-error)
+                                                                 10 t)
+                                      (let ((*sessions-unified-frame-session-restore-lock* t))
+                                        (frame-session-restore (selected-frame))))))
+                              (progn
+                                (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
+                                (run-at-time "1 sec" nil #'(lambda () (insert "lotus-desktop-session-restore")))
+                                (execute-extended-command nil)
+                                nil))
+                          (condition-case e
+                              (if (let ((desktop-restore-in-progress t))
+                                    (ignore desktop-restore-in-progress)
+                                    (desktop-vc-read *desktop-save-filename*))
+                                  (progn
+                                    (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
+                                    (lotus-enable-session-saving))
+                                (progn
+                                  (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
+                                  nil))
+                            ('error
+                             (session-unfiy-notify "Error in desktop-read: %s\n not adding save-all-sessions-auto-save to auto-save-hook" e)
+                             (session-unfiy-notify "Error in desktop-read: %s try it again by running M-x lotus-desktop-session-restore" e)
+                             (run-at-time "1 sec" nil #'(lambda () (insert "lotus-desktop-session-restore")))
+                             (condition-case e
+                                 (execute-extended-command nil)
+                               ('error (message "M-x lotus-desktop-session-restore %s" e))))))
+                        t)
+                    (when (y-or-n-p
+                           (session-unfiy-notify "No desktop found. or you can check out old %s from VCS.\nShould I enable session saving in auto save and run hook, at kill-emacs ?"
+                                                 *desktop-save-filename*))
+                      ;; as (defadvice desktop-idle-create-buffers) will not get chance to run it.
+                      (session-unfiy-notify "As no desktop file or (lotus-desktop-saved-session) is nil so running hook")
+                      (lotus-enable-session-saving-immediately)))
+                  (when sessions-unified-elscreen
+                    (let ((enable-recursive-minibuffers t))
+                      (when t ; (y-or-n-p-with-timeout "Do you wato set session of frame? " 7 t) ;t
+                        (let ((*sessions-unified-frame-session-restore-lock* t))
+                          (frame-session-restore (selected-frame) 'only)))))
+                  (session-unfiy-notify "leaving lotus-desktop-session-restore"))))
+
+          (session-unfiy-notify "desktop-get-desktop-save-filename failed")))
+    (progn
+      (lotus-enable-session-saving-immediately)
+      (session-unfiy-notify "*session-unified-desktop-enabled* %s"
+                            *session-unified-desktop-enabled*)
+      t)))
 
 ;;; session-config.el ends here

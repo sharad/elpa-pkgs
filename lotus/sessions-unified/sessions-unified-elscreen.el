@@ -326,9 +326,9 @@
 
 
 (eval-after-load "elscreen"
-  (fsession-register-fns 'elscreen
-                         #'elscreen-session-session-list-get
-                         #'elscreen-session-session-list-set))
+  (sessions-unified-fsession-register-fns 'elscreen
+                                          #'elscreen-session-session-list-get
+                                          #'elscreen-session-session-list-set))
 ;; (defun elscreen-session-store (elscreen-session &optional nframe)
 ;;   (interactive
 ;;    (list (fmsession-read-location)))
