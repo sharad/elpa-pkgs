@@ -1,4 +1,4 @@
-;;; desktop-unified.el --- Desktop unified           -*- lexical-binding: t; -*-
+;;; sessions-unified-desktop.el --- Desktop unified           -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Sharad
 
@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(provide 'desktop-unified)
+(provide 'sessions-unified-desktop)
 
 
 (require 'server)
@@ -810,4 +810,4 @@ is function is a no-op when Emacs is running in batch mode.
              (,modefn 1)
            ('error (session-unfiy-notify "%s: %s" ,modefn e))))))
 
-;;; desktop-unified.el ends here
+;;; sessions-unified-desktop.el ends here
