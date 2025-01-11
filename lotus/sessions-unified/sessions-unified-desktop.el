@@ -656,7 +656,7 @@ en all buffer were creaed idly."
                                     (session-unfiy-notify "Do you want to set session of frame? [show-error=%s]" show-error)
                                     (when (y-or-n-p-with-timeout (format "[show-error=%s] Do you want to set session of frame? " show-error)
                                                                  10 t)
-                                      (let ((*frame-session-restore* t))
+                                      (let ((*sessions-unified-frame-session-restore-lock* t))
                                         (frame-session-restore (selected-frame))))))
                               (progn
                                 (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
@@ -690,7 +690,7 @@ en all buffer were creaed idly."
                   (when sessions-unified-elscreen
                     (let ((enable-recursive-minibuffers t))
                       (when t ; (y-or-n-p-with-timeout "Do you wato set session of frame? " 7 t) ;t
-                        (let ((*frame-session-restore* t))
+                        (let ((*sessions-unified-frame-session-restore-lock* t))
                           (frame-session-restore (selected-frame) 'only)))))
                   (session-unfiy-notify "leaving lotus-desktop-session-restore"))))
 

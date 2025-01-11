@@ -1,4 +1,4 @@
-;;; session-unified.el --- Session unified           -*- lexical-binding: t; -*-
+;;; sessions-session-unified.el --- Session unified           -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Sharad
 
@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(provide 'session-unified)
+(provide 'sessions-session-unified)
 
 
 (require 'org)
@@ -45,8 +45,8 @@
   (let ((dir (if path
                  (expand-file-name path session-unified-dir)
                session-unified-dir)))
-   (unless (file-directory-p dir)
-     (make-directory dir t))))
+    (unless (file-directory-p dir)
+      (make-directory dir t))))
 
 (make-session-unified-dir)
 (setq session-save-file (expand-file-name "session/session.el" session-unified-dir))
@@ -134,4 +134,4 @@
                    (functionp 'session-save-sessoin))
                   (session-save-sessoin))))
 
-;;; session-unified.el ends here
+;;; sessions-session-unified.el ends here
