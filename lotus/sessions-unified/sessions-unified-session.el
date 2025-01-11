@@ -89,9 +89,19 @@
                            ;; done in save-all-sessions-auto-save
                            'session-save-session)))
 ;; (add-hook 'kill-emacs-hook 'session-vc-save-session)
-
+
 
 (setq session-initialize t)
+
+
+(sessions-unified-session-register-fns 'session
+                                       #'session-vc-save-session
+                                       #'(lambda ()
+                                           (setq session-initialize t))
+                                       #'session-vc-restore-session
+                                       #'(lambda ()
+                                           (setq session-initialize nil)))
+
 
 ;;{{ http://www.emacswiki.org/emacs/EmacsSession
 

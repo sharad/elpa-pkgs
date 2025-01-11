@@ -52,8 +52,8 @@
 (defvar sessions-unified-centaur-tab nil)
 (defvar sessions-unified-tab-bar nil)
 
-(declare-function save-all-sessions-auto-save "desktop-unified" (&optional force))
-(declare-function save-all-sessions-auto-save-immediately "desktop-unified" (&optional force))
+(declare-function sessions-unified-core-session-store "desktop-unified" (&optional force))
+(declare-function sessions-unified-core-session-store-immediately "desktop-unified" (&optional force))
 (declare-function frame-session-restore-unhook-func "fmsession" ())
 (declare-function frame-session-restore-force "fmsession" (nframe))
 (declare-function frame-session-save "fmsession" (nframe))
@@ -133,15 +133,15 @@ get re-enabled here.")
 (defun add-to-enable-desktop-restore-interrupting-feature-hook (fn &optional append local)
   (interactive)
   (add-to-hook 'lotus-enable-desktop-restore-interrupting-feature-hook
-               fn
-               append
-               local))
+                fn
+                append
+                local))
 ;;;###autoload
 (defun remove-from-enable-desktop-restore-interrupting-feature-hook (fn &optional local)
   (interactive)
   (remove-hook 'lotus-enable-desktop-restore-interrupting-feature-hook
-               fn
-               local))
+                fn
+                local))
 ;;;###autoload
 (defvar *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer* nil)
 (defun sessions-unified-desktop-enable-restore-interrupting-feature-run ()
@@ -189,16 +189,16 @@ get re-enabled here.")
   (interactive)
   (when t
     (add-to-hook 'lotus-disable-desktop-restore-interrupting-feature-hook
-                 fn
-                 append
-                 local)))
+                  fn
+                  append
+                  local)))
 ;;;###autoload
 (defun remove-from-disable-desktop-restore-interrupting-feature-hook (fn &optional local)
   (interactive)
   (when t
     (remove-hook 'lotus-disable-desktop-restore-interrupting-feature-hook
-                 fn
-                 local)))
+                  fn
+                  local)))
 ;;;###autoload
 (defun sessions-unified-desktop-disable-restore-interrupting-feature-run ()
   "run hook"
@@ -213,20 +213,17 @@ get re-enabled here.")
 ;;;###autoload
 (defun lotus-disable-session-saving-immediately ()
   (interactive)
-  (remove-hook 'auto-save-hook #'save-all-sessions-auto-save)
-  (remove-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
+  (remove-hook 'auto-save-hook #'sessions-unified-core-session-store)
+  (remove-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
   (when sessions-unified-elscreen
     (frame-session-restore-unhook-func))
   (sessions-unified-desktop-disable-restore-interrupting-feature-run)
-  (session-unfiy-notify "Removed save-all-sessions-auto-save from auto-save-hook and kill-emacs-hook"))
+  (session-unfiy-notify "Removed sessions-unified-core-session-store from auto-save-hook and kill-emacs-hook"))
 
 ;;;###autoload
 (defun lotus-disable-session-saving ()
   (lotus-disable-session-saving-immediately)
-  (progn
-    (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
-    (ad-update 'desktop-idle-create-buffers)
-    (ad-activate 'desktop-idle-create-buffers)))
+  (sessions-unified-session-disable))
 
 
 ;;;###autoload
@@ -235,28 +232,22 @@ get re-enabled here.")
     (if (or (eq desktop-restore-eager t)
             ;; (null (lotus-desktop-saved-session))
             (= session-unified-desktop-buffs-len 0))
-        (lotus-enable-session-saving-immediately)
-      (progn
-        (ad-enable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
-        (ad-update 'desktop-idle-create-buffers)
-        (ad-activate 'desktop-idle-create-buffers)))
-    (if (lotus-desktop-saved-session)
-        (message "desktop file exists.")
-      (message "desktop file do not exists."))))
+        (lotus-enable-session-saving-immediately))
+    (sessions-unified-session-enable)))
 
 ;;;###autoload
 (defun lotus-enable-session-saving-immediately ()
   (interactive)
   (session-unfiy-notify "enter")
-  (add-hook 'auto-save-hook #'save-all-sessions-auto-save)
-  (add-hook 'kill-emacs-hook #'save-all-sessions-auto-save-immediately)
+  (add-hook 'auto-save-hook #'sessions-unified-core-session-store)
+  (add-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
   (when sessions-unified-elscreen
     (ignore-errors (frame-session-restore-hook-func)))
   (progn
     (session-unfiy-notify "running sessions-unified-desktop-enable-restore-interrupting-feature-run after %d seconds idleness"
                           *sessions-unified-desktop-enable-restore-interrupting-feature-delay-time*)
     (sessions-unified-desktop-enable-restore-interrupting-feature-delay-run *sessions-unified-desktop-enable-restore-interrupting-feature-delay-time*))
-  (session-unfiy-notify "Added save-all-sessions-auto-save to auto-save-hook and kill-emacs-hook")
+  (session-unfiy-notify "Added sessions-unified-core-session-store to auto-save-hook and kill-emacs-hook")
   (sessions-unified-desktop-enable-restore-interrupting-feature-run-info)
   (session-unfiy-notify "exit"))
 
@@ -274,296 +265,164 @@ get re-enabled here.")
            hook))
 
 ;;;###autoload
-(defun lotus-check-session-saving ()
-  (interactive)
-  (if (called-interactively-p 'interactive)
-      (progn
-        (lotus-show-hook-member 'save-all-sessions-auto-save 'auto-save-hook)
-        (lotus-show-hook-member 'save-all-sessions-auto-save-immediately 'kill-emacs-hook)
-        (when sessions-unified-elscreen
-          (lotus-show-hook-member 'frame-session-restore-force 'after-make-frame-functions)
-          (lotus-show-hook-member 'frame-session-save 'delete-frame-functions)))
-    (and (member #'save-all-sessions-auto-save auto-save-hook)
-         (member #'save-all-sessions-auto-save-immediately kill-emacs-hook)
-         (when sessions-unified-elscreen
-           (member #'frame-session-restore-force after-make-frame-functions)
-           (member #'frame-session-save delete-frame-functions)))))
-
-
-;;;###autoload
 (defvar *sessions-unified-core-session-registerd-fns-alist* nil
   "Alist of (app-name appgetfn appsetfn) app fn accept FRAME")
 ;;;###autoload
 (defun sessions-unified-session-register-fns (app-name storefn enablefn restorefn disablefn)
   (setcdr (assoc app-name *sessions-unified-core-session-registerd-fns-alist*)
           (list app-name
-                storefn enablefn
-                restorefn disablefn)))
+                storefn
+                enablefn
+                restorefn
+                disablefn
+                checkfn)))
 ;;;###autoload
 (defun sessions-unified-session-unregister-fn (app-name)
   (setcdr (assoc app-name *sessions-unified-core-session-registerd-fns-alist*)
           nil))
 ;;;###autoload
-(defun sessions-unified-session-store (session-name &optional frame)
+(defun sessions-unified-session-store (&optional force)
   "Store the elscreen tab configuration."
-  (interactive (list (fmsession-read-location)))
+  (interactive)
   ;; (elscreen-session-store session-name frame)
-  (unless (assoc session-name *sessions-unified-frames-session*)
-    (push (list session-name)
-          *sessions-unified-frames-session*))
   (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
-    (let ((app-name     (car app-appfn))
-          (app-get-func (cadr app-appfn)))
-      (let ((frame-data (funcall app-get-func (or nframe
-                                                  (selected-frame)))))
-        (let ((app-fsession-alist (assoc session-name
-                                         *sessions-unified-frames-session*)))
-          (if (assoc app-name app-fsession-alist)
-              (setcdr (assoc app-name
-                             app-fsession-alist)
-                      frame-data)
-            (push (cons app-name frame-data)
-                  app-fsession-alist)))))))
+    (let ((app-name (car app-appfn))
+          (app-func (nth 1 app-appfn)))
+      (if app-func
+          (funcall app-func force)
+        (message "For app %s no app-fun present" app-name)))))
 ;;;###autoload
-(defun sessions-unified-session-enable (session-name &optional frame)
-  "Restore the elscreen tab configuration."
-  (interactive
-   (list (fmsession-read-location)))
-  (if session-name
-      (when (assoc session-name *sessions-unified-frames-session*)
-        (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
-          (let ((app-name     (car app-appfn))
-                (app-set-func (caddr app-appfn)))
-            (session-unfiy-notify "start")
-            (let ((app-fsession-alist (assoc session-name
-                                             *sessions-unified-frames-session*)))
-              (let ((frame-data (cdr (assoc app-name
-                                            app-fsession-alist))))
-                (when session-unified-debug
-                  (session-unfiy-notify "Nstart: session-session %s" app-name))
-                (if frame-data
-                    (funcall app-set-func frame-data
-                             (or nframe
-                                 (selected-frame)))
-                  (session-unfiy-notify "Error: frame-data %s" frame-data)))))))
+(defun sessions-unified-session-enable (&optional force)
+  "Store the elscreen tab configuration."
+  (interactive)
+  ;; (elscreen-session-store session-name frame)
+  (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
+    (let ((app-name (car app-appfn))
+          (app-func (nth 2 app-appfn)))
+      (if app-func
+          (funcall app-func)
+        (message "For app %s no app-fun present" app-name))))
+;;;###autoload
+  (defun sessions-unified-session-restore ()
+    "Store the elscreen tab configuration."
+    (interactive)
+    ;; (elscreen-session-store session-name frame)
+    (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
+      (let ((app-name (car app-appfn))
+            (app-func (nth 3 app-appfn)))
+        (if app-func
+            (funcall app-func)
+          (message "For app %s no app-fun present" app-name))))))
+;;;###autoload
+(defun sessions-unified-session-disable ()
+  "Store the elscreen tab configuration."
+  (interactive)
+  ;; (elscreen-session-store session-name frame)
+  (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
+    (let ((app-name (car app-appfn))
+          (app-func (nth 4 app-appfn)))
+      (if app-func
+          (funcall app-func)
+        (message "For app %s no app-fun present" app-name)))))
 
-    (session-unfiy-notify "Error: session-name is %s" session-name)))
+;;;###autoload
+(defun sessions-unified-session-check ()
+  (interactive)
+  (if (called-interactively-p 'interactive)
+      (progn
+        (lotus-show-hook-member 'sessions-unified-core-session-store 'auto-save-hook)
+        (lotus-show-hook-member 'sessions-unified-core-session-store-immediately 'kill-emacs-hook))
+    (and (member #'sessions-unified-core-session-store auto-save-hook)
+         (member #'sessions-unified-core-session-store-immediately kill-emacs-hook)))
+  (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
+    (let ((app-name (car app-appfn))
+          (app-func (nth 5 app-appfn)))
+      (if app-func
+          (funcall app-func)
+        (message "For app %s no app-fun present" app-name)))))
 
-(defun sessions-unified-session-disable (session-name &optional frame)
-  "Restore the elscreen tab configuration."
-  (interactive
-   (list (fmsession-read-location)))
-  (if session-name
-      (when (assoc session-name *sessions-unified-frames-session*)
-        (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
-          (let ((app-name     (car app-appfn))
-                (app-set-func (caddr app-appfn)))
-            (session-unfiy-notify "start")
-            (let ((app-fsession-alist (assoc session-name
-                                             *sessions-unified-frames-session*)))
-              (let ((frame-data (cdr (assoc app-name
-                                            app-fsession-alist))))
-                (when session-unified-debug
-                  (session-unfiy-notify "Nstart: session-session %s" app-name))
-                (if frame-data
-                    (funcall app-set-func frame-data
-                             (or nframe
-                                 (selected-frame)))
-                  (session-unfiy-notify "Error: frame-data %s" frame-data)))))))
-
-    (session-unfiy-notify "Error: session-name is %s" session-name)))
+(defalias 'lotus-check-session-saving #'sessions-unified-session-check)
 
 
-(defcustom save-all-sessions-auto-save-idle-time-interval 7
+(defcustom sessions-unified-core-session-store-idle-time-interval 7
   "save all sessions auto save idle time interval"
   :group 'session)
-(defvar save-all-sessions-auto-save-idle-time-interval-dynamic 7 "save all sessions auto save idle time interval dynamic.")
-(defcustom save-all-sessions-auto-save-time-interval (* 20 60)
+(defvar sessions-unified-core-session-store-idle-time-interval-dynamic 7 "save all sessions auto save idle time interval dynamic.")
+(defcustom sessions-unified-core-session-store-time-interval (* 20 60)
   "save all sessions auto save time interval"
   :group 'session)
-(defvar save-all-sessions-auto-save-time (current-time) "save all sessions auto save time")
+(defvar sessions-unified-core-session-store-time (current-time) "save all sessions auto save time")
 (defvar session-debug-on-error nil "session-debug-on-error")
 
 ;;;###autoload
-(defun save-all-sessions-auto-save (&optional force)
+(defun sessions-unified-core-session-store (&optional force)
   "Save elscreen frame, desktop, and session time to time
- restore in case of sudden emacs crash."
+  restore in case of sudden emacs crash."
   (interactive "P")
   (let ((idle-time (or (current-idle-time) '(0 0 0)))
         (time-format "%a %H:%M:%S"))
-    ;; (time-since-save-all-sessions-auto-save-time (float-time (time-since save-all-sessions-auto-save-time)))
+    ;; (time-since-sessions-unified-core-session-store-time (float-time (time-since sessions-unified-core-session-store-time)))
 
-    (let ((time-since-last-save (float-time (time-since save-all-sessions-auto-save-time))))
+    (let ((time-since-last-save (float-time (time-since sessions-unified-core-session-store-time))))
       (if (or force
               (> time-since-last-save (float-time idle-time)))
           (if (or force
-                  (> time-since-last-save save-all-sessions-auto-save-time-interval))
+                  (> time-since-last-save sessions-unified-core-session-store-time-interval))
               (if (or force
                       (and idle-time
                            ;; http://www.gnu.org/software/emacs/manual/html_node/emacs/Auto-Save-Control.html#Auto-Save-Control
-                           (> (float-time idle-time) save-all-sessions-auto-save-idle-time-interval-dynamic)))
+                           (> (float-time idle-time) sessions-unified-core-session-store-idle-time-interval-dynamic)))
                   (progn
                     (message  "Running session-unified-save-all-sessions-before-hook")
                     (run-hooks 'session-unified-save-all-sessions-before-hook)
                     (message  "Done session-unified-save-all-sessions-before-hook")
-                    ;; (message  "XYZ")
-                    ;; (message "Started to save frame desktop and session.\ncurrent time %s, idle time %d idle-time-interval left %d"
-                    ;;          (format-time-string time-format save-all-sessions-auto-save-time)
-                    ;;          (float-time idle-time)
-                    ;;          save-all-sessions-auto-save-idle-time-interval-dynamic)
-                    ;; (message  "XYZ test1")
-                    ;; (message "curr fn: %s" (get-current-func-name))
-                    ;; (message  "XYZ test2")
                     (session-unfiy-notify "Started to save frame desktop and session.\ncurrent time %s, idle time %d idle-time-interval left %d"
-                                          (format-time-string time-format save-all-sessions-auto-save-time)
+                                          (format-time-string time-format sessions-unified-core-session-store-time)
                                           (float-time idle-time)
-                                          save-all-sessions-auto-save-idle-time-interval-dynamic)
+                                          sessions-unified-core-session-store-idle-time-interval-dynamic)
                     ;; (message  "XYZ test3")
-                    (setq save-all-sessions-auto-save-time (current-time)
-                          save-all-sessions-auto-save-idle-time-interval-dynamic save-all-sessions-auto-save-idle-time-interval)
+                    (setq sessions-unified-core-session-store-time (current-time)
+                          sessions-unified-core-session-store-idle-time-interval-dynamic sessions-unified-core-session-store-idle-time-interval)
                     (prog1
                         (if session-debug-on-error
-                            (progn
-                              (when sessions-unified-elscreen
-                                (message  "Running save-all-frames-session")
-                                (save-all-frames-session)
-                                (message  "Done save-all-frames-session"))
-                              (message  "Running session-vc-save-session")
-                              (session-vc-save-session)
-                              (message  "Done session-vc-save-session")
-                              (when *session-unified-desktop-enabled* (my-desktop-save))
-                              (session-unfiy-notify "Saved frame desktop and session.")
-                              (message nil))
+                            (sessions-unified-session-store)
                           (condition-case e
-                              (progn
-                                (when sessions-unified-elscreen
-                                  (save-all-frames-session))
-                                (session-vc-save-session)
-                                (when *session-unified-desktop-enabled* (my-desktop-save))
-                                (session-unfiy-notify "Saved frame desktop and session.")
-                                (message nil))
+                              (sessions-unified-session-store)
                             ('error
-                             (progn
-                               ;; make after 2 errors.
-                               (session-unfiy-notify "Error: %s" e)
-                               (cl-incf *my-desktop-save-error-count*)
-                               (unless(< *my-desktop-save-error-count* *my-desktop-save-max-error-count*)
-                                 (setq *my-desktop-save-error-count* 0)
-                                 (session-unfiy-notify "Error %s" e)
+                              (progn
+                                ;; make after 2 errors.
+                                (session-unfiy-notify "Error: %s" e)
+                                (cl-incf *lotus-desktop-session-store-error-count*)
+                                (unless(< *lotus-desktop-session-store-error-count* *lotus-desktop-session-store-max-error-count*)
+                                  (setq *lotus-desktop-session-store-error-count* 0)
+                                  (session-unfiy-notify "Error %s" e)
 
-                                 (lotus-disable-session-saving))))))
+                                  (lotus-disable-session-saving))))))
                       (run-hooks 'session-unified-save-all-sessions-after-hook)))
-                (setq save-all-sessions-auto-save-idle-time-interval-dynamic
-                      (1- save-all-sessions-auto-save-idle-time-interval-dynamic))))
+                (setq sessions-unified-core-session-store-idle-time-interval-dynamic
+                      (1- sessions-unified-core-session-store-idle-time-interval-dynamic))))
 
-        (setq save-all-sessions-auto-save-time (current-time)
-              save-all-sessions-auto-save-idle-time-interval-dynamic save-all-sessions-auto-save-idle-time-interval)))))
+        (setq sessions-unified-core-session-store-time (current-time)
+              sessions-unified-core-session-store-idle-time-interval-dynamic sessions-unified-core-session-store-idle-time-interval)))))
 
-(defun save-all-sessions-auto-save-immediately ()
-  (save-all-sessions-auto-save t))
+(defalias 'save-all-sessions-auto-save #'sessions-unified-core-session-store)
+(defun sessions-unified-core-session-store-immediately ()
+  (sessions-unified-core-session-store t))
+(defalias 'save-all-sessions-auto-save-immediately #'sessions-unified-core-session-store-immediately)
 
 
 ;;;###autoload
-(defun lotus-desktop-session-restore ()
+(defun sessions-unified-core-session-restore ()
   "Restore a saved emacs session."
   (interactive)
-  (if *session-unified-desktop-enabled*
-      (progn
-        ;; ask user about desktop to restore, and use it for session.
-        ;; will set *desktop-save-filename*
-        (if (desktop-get-desktop-save-filename)
-            (let ((desktop-restore-frames nil)
-                  (enable-local-eval t)                ;query
-                  (enable-recursive-minibuffers t)
-                  (flymake-run-in-place nil)
-                  (show-error (called-interactively-p 'interactive))
-                  (*constructed-name-desktop-save-filename*
-                   (if (functionp lotus-construct-desktop-filename-regex-function)
-                       (funcall lotus-construct-desktop-filename-regex-function)
-                     (lotus-construct-desktop-filename-regex-function-default))))
-              (ignore flymake-run-in-place)
-              (setq debug-on-error t)
-              (session-unfiy-notify "entering lotus-desktop-session-restore")
+  (sessions-unified-session-store))
+
 
-
-              (if (not (string-match *constructed-name-desktop-save-filename* *desktop-save-filename*))
-                  (progn
-                    (session-unfiy-notify "*desktop-save-filename* is not equal to %s but %s"
-                                          *constructed-name-desktop-save-filename*
-                                          *desktop-save-filename*)
-                    (if (y-or-n-p
-                         (format "lotus-desktop-session-restore" "*desktop-save-filename* is not equal to %s but %s\nshould continue with it ? "
-                                 *constructed-name-desktop-save-filename*
-                                 *desktop-save-filename*))
-                        (message "continuing..")
-                      (error "desktop file %s is not correct" *desktop-save-filename*)))
-
-                (progn
-                  (unless (lotus-desktop-saved-session)
-                    (session-unfiy-notify "%s not found so trying to checkout it." *desktop-save-filename*)
-                    (vc-checkout-file *desktop-save-filename*))
-
-                  (if (lotus-desktop-saved-session)
-                      (progn
-                        (session-unfiy-notify "if")
-                        (when (memq 'P4 vc-handled-backends)            ;remove P4
-                          (setq vc-handled-backends (remove 'P4 vc-handled-backends))
-                          (add-to-disable-desktop-restore-interrupting-feature-hook
-                           #'(lambda ()
-                               (when nil
-                                 (add-to-list 'vc-handled-backends 'P4)))))
-                        (if show-error
-                            (if (desktop-vc-read *desktop-save-filename*)
-                                (progn
-                                  (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
-                                  (lotus-enable-session-saving)
-                                  (when sessions-unified-elscreen
-                                    (session-unfiy-notify "Do you want to set session of frame? [show-error=%s]" show-error)
-                                    (when (y-or-n-p-with-timeout (format "[show-error=%s] Do you want to set session of frame? " show-error)
-                                                                 10 t)
-                                      (let ((*sessions-unified-frame-session-restore-lock* t))
-                                        (frame-session-restore (selected-frame))))))
-                              (progn
-                                (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
-                                (run-at-time "1 sec" nil #'(lambda () (insert "lotus-desktop-session-restore")))
-                                (execute-extended-command nil)
-                                nil))
-                          (condition-case e
-                              (if (let ((desktop-restore-in-progress t))
-                                    (ignore desktop-restore-in-progress)
-                                    (desktop-vc-read *desktop-save-filename*))
-                                  (progn
-                                    (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
-                                    (lotus-enable-session-saving))
-                                (progn
-                                  (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
-                                  nil))
-                            ('error
-                             (session-unfiy-notify "Error in desktop-read: %s\n not adding save-all-sessions-auto-save to auto-save-hook" e)
-                             (session-unfiy-notify "Error in desktop-read: %s try it again by running M-x lotus-desktop-session-restore" e)
-                             (run-at-time "1 sec" nil #'(lambda () (insert "lotus-desktop-session-restore")))
-                             (condition-case e
-                                 (execute-extended-command nil)
-                               ('error (message "M-x lotus-desktop-session-restore %s" e))))))
-                        t)
-                    (when (y-or-n-p
-                           (session-unfiy-notify "No desktop found. or you can check out old %s from VCS.\nShould I enable session saving in auto save and run hook, at kill-emacs ?"
-                                                 *desktop-save-filename*))
-                      ;; as (defadvice desktop-idle-create-buffers) will not get chance to run it.
-                      (session-unfiy-notify "As no desktop file or (lotus-desktop-saved-session) is nil so running hook")
-                      (lotus-enable-session-saving-immediately)))
-                  (when sessions-unified-elscreen
-                    (let ((enable-recursive-minibuffers t))
-                      (when t ; (y-or-n-p-with-timeout "Do you wato set session of frame? " 7 t) ;t
-                        (let ((*sessions-unified-frame-session-restore-lock* t))
-                          (frame-session-restore (selected-frame) 'only)))))
-                  (session-unfiy-notify "leaving lotus-desktop-session-restore"))))
-
-          (session-unfiy-notify "desktop-get-desktop-save-filename failed")))
-    (progn
-      (lotus-enable-session-saving-immediately)
-      (session-unfiy-notify "*session-unified-desktop-enabled* %s"
-                            *session-unified-desktop-enabled*)
-      t)))
+(when nil
+  (add-hook ;; 'after-init-hook
+   'lotus-enable-startup-interrupting-feature-hook
+   #'(lambda ()
+       (run-at-time-or-now 7
+                           #'sessions-unified-core-session-restore))))
 
 ;;; session-config.el ends here

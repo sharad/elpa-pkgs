@@ -287,7 +287,7 @@ so returns nil if pid is nil."
 
 ;; (when (or (not *emacs-in-init*) (not reloading-libraries))
 (when (or *emacs-in-init* reloading-libraries)
-  ;setting to nil so it will be asked from user.
+                                        ;setting to nil so it will be asked from user.
   (setq *desktop-save-filename* nil))
 
 ;; might be the reason for Terminal 0 is locked.
@@ -424,7 +424,7 @@ so returns nil if pid is nil."
 (defvar *my-desktop-save-error-count* 0 "")
 
 ;;;###autoload
-(defun my-desktop-save ()
+(defun lotus-desktop-session-store ()
   (interactive)
   ;; Don't call desktop-save-in-desktop-dir, as it prints a message.
   (let ((owner (or (desktop-vc-owner)
@@ -446,6 +446,8 @@ so returns nil if pid is nil."
           ;; (remove-hook 'auto-save-hook #'save-all-sessions-auto-save)
           (error "You %d are not the desktop owner %d. removed save-all-sessions-auto-save from auto-save-hook and kill-emacs-hook by calling M-x lotus-disable-session-saving"
                  (emacs-pid) owner))))))
+
+(defalias 'my-desktop-save #'lotus-desktop-session-store)
 
 (defun lotus-desktop-saved-session ()
   "check file exists."
@@ -625,6 +627,22 @@ en all buffer were creaed idly."
 
 ;;}}
 
+
+
+(sessions-unified-session-register-fns 'desktop
+                                       #'lotus-desktop-session-store
+                                       #'(lambda ()
+                                           (ad-enable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
+                                           (ad-update 'desktop-idle-create-buffers)
+                                           (ad-activate 'desktop-idle-create-buffers)
+                                           (if (lotus-desktop-saved-session)
+                                               (message "desktop file exists.")
+                                             (message "desktop file do not exists.")))
+                                       #'lotus-desktop-session-restore
+                                       #'(lambda ()
+                                           (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
+                                           (ad-update 'desktop-idle-create-buffers)
+                                           (ad-activate 'desktop-idle-create-buffers)))
 ;; ----------------------------------------------------------------------------
 ;;;###autoload
 (defun desktop-read-alternate (&optional dirname)

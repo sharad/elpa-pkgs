@@ -438,6 +438,15 @@ display-about-screen, spacemacs-buffer/goto-buffer")
                #'frame-session-restore-force)
   (remove-hook 'delete-frame-functions
                #'frame-session-save))
+
+(defun frame-session-check-hook-func ()
+  (if (called-interactively-p 'interactive)
+      (progn
+        (lotus-show-hook-member 'frame-session-restore-force 'after-make-frame-functions)
+        (lotus-show-hook-member 'frame-session-save 'delete-frame-functions))
+    (progn
+      (member #'frame-session-restore-force after-make-frame-functions)
+      (member #'frame-session-save delete-frame-functions))))
 
 
 ;;;###autoload
@@ -457,8 +466,12 @@ display-about-screen, spacemacs-buffer/goto-buffer")
            (frame-parameter (selected-frame) 'frame-spec-id)))
 
 
-
-
+(sessions-unified-session-register-fns 'fsession
+                                       #'save-all-frames-session
+                                       #'#'frame-session-restore-hook-func
+                                       nil
+                                       #'frame-session-restore-unhook-func
+                                       #'frame-session-check-hook-func)
 
 
 
