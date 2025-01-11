@@ -447,6 +447,39 @@ display-about-screen, spacemacs-buffer/goto-buffer")
            (frame-parameter (selected-frame) 'frame-spec-id)))
 
 
+
+(defun elscreen-session-store (elscreen-session &optional nframe)
+  (interactive
+   (list (fmsession-read-location)))
+  (let ((session-list (elscreen-session-session-list-get (or nframe
+                                                             (selected-frame)))))
+    (if (assoc elscreen-session *sessions-unified-frames-session*)
+        (setcdr (assoc elscreen-session
+                       *sessions-unified-frames-session*)
+                session-list)
+      (push (cons elscreen-session
+                  session-list)
+            *sessions-unified-frames-session*))))
+
+(defun elscreen-session-restore (elscreen-session &optional nframe)
+  (interactive
+   (list (fmsession-read-location)))
+  (session-unfiy-notify "start")
+  (if elscreen-session
+      (let ((elscreen-session-list
+             (cl-rest (assoc elscreen-session
+                             *sessions-unified-frames-session*))))
+        (when session-unified-debug
+          (session-unfiy-notify "Nstart: session-session %s" elscreen-session))
+        (if elscreen-session-list
+            (elscreen-session-session-list-set elscreen-session-list
+                                               (or nframe
+                                                   (selected-frame)))
+          (session-unfiy-notify "Error: elscreen-session-list %s" elscreen-session-list)))
+    (session-unfiy-notify "Error: elscreen-session is %s" elscreen-session)))
+
+
+
 (when session-unified-debug
   (frame-parameter (selected-frame) 'frame-spec-id)
   after-make-frame-functions
