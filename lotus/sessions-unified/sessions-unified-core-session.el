@@ -288,11 +288,14 @@ get re-enabled here.")
 (defalias 'lotus-check-session-saving #'sessions-unified-core-session-check)
 
 
+;; (defun sessions-unified-sort (alist)
+;;   (sort alist
+;;         #'(lambda (x y)
+;;             (< (cdr x)
+;;                (cdr y)))))
+
 (defun sessions-unified-sort (alist)
-  (sort alist
-        #'(lambda (x y)
-            (< (cdr x)
-               (cdr y)))))
+  alist)
 
 (cl-defgeneric sessions-unified-session-store ((app null)))
 (cl-defgeneric sessions-unified-session-restore ((app null) next))
@@ -305,10 +308,14 @@ get re-enabled here.")
   (dolist (sym (mapcar #'car
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
     (sessions-unified-session-store sym)))
+;; (cl-defmethod sessions-unified-session-restore (app alist)
+;;   (let ((sym (car (or alist
+;;                       (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))))
+;;     (sessions-unified-session-restore sym (cdr alist))))
 (cl-defmethod sessions-unified-session-restore (app alist)
-  (let ((sym (car (or alist
-                      (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))))
-    (sessions-unified-session-restore sym (cdr alist))))
+  (dolist (sym (mapcar #'car
+                         (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*w)))
+    (sessions-unified-session-restore sym)))
 (cl-defmethod sessions-unified-session-enable (app)
   (dolist (sym (mapcar #'car
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
@@ -321,9 +328,6 @@ get re-enabled here.")
   (dolist (sym (mapcar #'car
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
     (sessions-unified-session-check sym)))
-
-
-
 
 
 (defcustom sessions-unified-core-session-store-idle-time-interval 7

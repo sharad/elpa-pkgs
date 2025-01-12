@@ -515,7 +515,7 @@ en all buffer were creaed idly."
 
 
 ;;;###autoload
-(defun lotus-desktop-session-restore (nextfn)
+(defun lotus-desktop-session-restore ()
   "Restore a saved emacs session."
   (interactive)
   (if *session-unified-desktop-enabled*
@@ -574,7 +574,8 @@ en all buffer were creaed idly."
                                   ;;                                10 t)
                                   ;;     (let ((*sessions-unified-frame-session-restore-lock* t))
                                   ;;       (frame-session-restore (selected-frame)))))
-                                  (funcall nextfn))
+                                  (when nil
+                                    (funcall nextfn)))
                               (progn
                                 (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
                                 (run-at-time "1 sec" nil #'(lambda () (insert "lotus-desktop-session-restore")))
@@ -609,7 +610,8 @@ en all buffer were creaed idly."
                   ;;     (when t ; (y-or-n-p-with-timeout "Do you wato set session of frame? " 7 t) ;t
                   ;;       (let ((*sessions-unified-frame-session-restore-lock* t))
                   ;;         (frame-session-restore (selected-frame) 'only)))))
-                  (funcall nextfn)
+                  (when nil
+                    (funcall nextfn))
                   (session-unfiy-notify "leaving lotus-desktop-session-restore"))))
 
           (session-unfiy-notify "desktop-get-desktop-save-filename failed")))
@@ -634,10 +636,11 @@ en all buffer were creaed idly."
 (cl-defmethod sessions-unified-session-store ((app (eql 'desktop)))
   (lotus-desktop-session-store))
 (cl-defmethod sessions-unified-session-restore ((app (eql 'desktop)) alist)
-  (lotus-desktop-session-restore #'(lambda ()
-                                     (when (car alist)
-                                       (sessions-unified-session-restore (car alist)
-                                                                         (cdr alist))))))
+  ;; (lotus-desktop-session-restore #'(lambda ()
+  ;;                                    (when (car alist)
+  ;;                                      (sessions-unified-session-restore (car alist)
+  ;;                                                                        (cdr alist)))))
+  (lotus-desktop-session-restore))
 (cl-defmethod sessions-unified-session-enable ((app (eql 'desktop)))
   (ad-enable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
   (ad-update 'desktop-idle-create-buffers)

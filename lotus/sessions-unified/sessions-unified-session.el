@@ -95,10 +95,11 @@
 (cl-defmethod sessions-unified-session-store ((app (eql 'session)))
   (session-vc-save-session))
 (cl-defmethod sessions-unified-session-restore ((app (eql 'session)) alist)
-  (session-vc-restore-session)
-  (when (car alist)
-    (sessions-unified-session-restore (car alist)
-                                      (cdr alist))))
+  (session-vc-restore-session))
+;; (when (car alist)
+;;   (sessions-unified-session-restore (car alist)
+;;                                     (cdr alist)))
+
 (cl-defmethod sessions-unified-session-enable ((app (eql 'session)))
   (add-hook 'after-init-hook
             #'(lambda ()
