@@ -32,9 +32,9 @@
 (require 'emacs-panel)
 
 
-(require 'sessions-unified)
-(require 'sessions-unified-session)
-(require 'sessions-unified-frame)
+(require 'sessions-unified-core-session)
+;; (require 'sessions-unified-session)
+;; (require 'sessions-unified-frame)
 
 
 (defvar lotus-read-filename-default-initial-input nil)
@@ -287,7 +287,7 @@ so returns nil if pid is nil."
 
 ;; (when (or (not *emacs-in-init*) (not reloading-libraries))
 (when (or *emacs-in-init* reloading-libraries)
-                                        ;setting to nil so it will be asked from user.
+  ;setting to nil so it will be asked from user.
   (setq *desktop-save-filename* nil))
 
 ;; might be the reason for Terminal 0 is locked.

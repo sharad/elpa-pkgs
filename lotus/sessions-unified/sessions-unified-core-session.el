@@ -1,4 +1,4 @@
-;;; sessions-unified.el --- session setting
+;;; sessions-unified-core-session.el --- session setting
 
 ;; Copyright (C) 2012  Sharad Pratap
 
@@ -31,7 +31,7 @@
 
 ;;; Code:
 
-(provide 'sessions-unified)
+(provide 'sessions-unified-core-session)
 
 
 (require 'rcs-backup)
@@ -313,19 +313,20 @@ get re-enabled here.")
 ;;                       (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))))
 ;;     (sessions-unified-session-restore sym (cdr alist))))
 (cl-defmethod sessions-unified-session-restore (app)
-  (dolist (sym (mapcar #'car
-                         (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*w)))
-    (sessions-unified-session-restore sym)))
+  (dolist (sym (mapcar #'identity
+                         (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
+    (when sym
+      (sessions-unified-session-restore sym))))
 (cl-defmethod sessions-unified-session-enable (app)
-  (dolist (sym (mapcar #'car
+  (dolist (sym (mapcar #'identity
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
     (sessions-unified-session-enable sym)))
 (cl-defmethod sessions-unified-session-disable (app)
-  (dolist (sym (mapcar #'car
+  (dolist (sym (mapcar #'identity
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
     (sessions-unified-session-disable sym)))
 (cl-defmethod sessions-unified-session-check (app)
-  (dolist (sym (mapcar #'car
+  (dolist (sym (mapcar #'identity
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
     (sessions-unified-session-check sym)))
 
@@ -403,4 +404,4 @@ get re-enabled here.")
        (run-at-time-or-now 7
                            #'sessions-unified-core-session-restore))))
 
-;;; session-config.el ends here
+;;; sessions-unified-core-session.el ends here
