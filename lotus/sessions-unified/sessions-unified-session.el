@@ -1,4 +1,4 @@
-;;; sessions-session-unified.el --- Session unified           -*- lexical-binding: t; -*-
+;;; sessions-unified-session.el --- Session unified           -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Sharad
 
@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(provide 'sessions-session-unified)
+(provide 'sessions-unified-session)
 
 
 (require 'org)
@@ -156,4 +156,4 @@
                    (functionp 'session-save-sessoin))
                   (session-save-sessoin))))
 
-;;; sessions-session-unified.el ends here
+;;; sessions-unified-session.el ends here
