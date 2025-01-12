@@ -266,63 +266,6 @@ get re-enabled here.")
 ;;;###autoload
 (defvar *sessions-unified-core-session-registerd-fns-alist* nil
   "Alist of (app-name appgetfn appsetfn) app fn accept FRAME")
-;;;###autoload
-(defun sessions-unified-core-session-register-fns (app-name storefn enablefn restorefn disablefn)
-  (setcdr (assoc app-name *sessions-unified-core-session-registerd-fns-alist*)
-          (list app-name
-                storefn
-                enablefn
-                restorefn
-                disablefn
-                checkfn)))
-;;;###autoload
-(defun sessions-unified-core-session-unregister-fn (app-name)
-  (setcdr (assoc app-name *sessions-unified-core-session-registerd-fns-alist*)
-          nil))
-;;;###autoload
-(defun sessions-unified-core-session-store (&optional force)
-  "Store the elscreen tab configuration."
-  (interactive)
-  ;; (elscreen-session-store session-name frame)
-  (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
-    (let ((app-name (car app-appfn))
-          (app-func (nth 1 app-appfn)))
-      (if app-func
-          (funcall app-func force)
-        (message "For app %s no app-fun present" app-name)))))
-;;;###autoload
-(defun sessions-unified-core-session-enable (&optional force)
-  "Store the elscreen tab configuration."
-  (interactive)
-  ;; (elscreen-session-store session-name frame)
-  (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
-    (let ((app-name (car app-appfn))
-          (app-func (nth 2 app-appfn)))
-      (if app-func
-          (funcall app-func)
-        (message "For app %s no app-fun present" app-name))))
-;;;###autoload
-  (defun sessions-unified-core-session-restore ()
-    "Store the elscreen tab configuration."
-    (interactive)
-    ;; (elscreen-session-store session-name frame)
-    (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
-      (let ((app-name (car app-appfn))
-            (app-func (nth 3 app-appfn)))
-        (if app-func
-            (funcall app-func)
-          (message "For app %s no app-fun present" app-name))))))
-;;;###autoload
-(defun sessions-unified-core-session-disable ()
-  "Store the elscreen tab configuration."
-  (interactive)
-  ;; (elscreen-session-store session-name frame)
-  (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
-    (let ((app-name (car app-appfn))
-          (app-func (nth 4 app-appfn)))
-      (if app-func
-          (funcall app-func)
-        (message "For app %s no app-fun present" app-name)))))
 
 ;;;###autoload
 (defun sessions-unified-core-session-check ()
@@ -331,8 +274,10 @@ get re-enabled here.")
       (progn
         (lotus-show-hook-member 'sessions-unified-core-session-store-on-idle-interval 'auto-save-hook)
         (lotus-show-hook-member 'sessions-unified-core-session-store-immediately 'kill-emacs-hook))
-    (and (member #'sessions-unified-core-session-store-on-idle-interval auto-save-hook)
-         (member #'sessions-unified-core-session-store-immediately kill-emacs-hook)))
+    (and (member #'sessions-unified-core-session-store-on-idle-interval
+                   auto-save-hook)
+         (member #'sessions-unified-core-session-store-immediately
+                   kill-emacs-hook)))
   (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
     (let ((app-name (car app-appfn))
           (app-func (nth 5 app-appfn)))
@@ -341,6 +286,44 @@ get re-enabled here.")
         (message "For app %s no app-fun present" app-name)))))
 
 (defalias 'lotus-check-session-saving #'sessions-unified-core-session-check)
+
+
+(defun sessions-unified-sort (alist)
+  (sort alist
+        #'(lambda (x y)
+            (< (cdr x)
+               (cdr y)))))
+
+(cl-defgeneric sessions-unified-session-store ((app null)))
+(cl-defgeneric sessions-unified-session-restore ((app null) next))
+(cl-defgeneric sessions-unified-session-enable ((app null)))
+(cl-defgeneric sessions-unified-session-disable ((app null)))
+(cl-defgeneric sessions-unified-session-check ((app null)))
+
+
+(cl-defmethod sessions-unified-session-store (app)
+  (dolist (sym (mapcar #'car
+                         (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
+    (sessions-unified-session-store sym)))
+(cl-defmethod sessions-unified-session-restore (app alist)
+  (let ((sym (car (or alist
+                      (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))))
+    (sessions-unified-session-restore sym (cdr alist))))
+(cl-defmethod sessions-unified-session-enable (app)
+  (dolist (sym (mapcar #'car
+                         (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
+    (sessions-unified-session-enable sym)))
+(cl-defmethod sessions-unified-session-disable (app)
+  (dolist (sym (mapcar #'car
+                         (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
+    (sessions-unified-session-disable sym)))
+(cl-defmethod sessions-unified-session-check (app)
+  (dolist (sym (mapcar #'car
+                         (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
+    (sessions-unified-session-check sym)))
+
+
+
 
 
 (defcustom sessions-unified-core-session-store-idle-time-interval 7

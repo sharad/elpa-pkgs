@@ -513,8 +513,9 @@ en all buffer were creaed idly."
 
 ;; (debug)
 
+
 ;;;###autoload
-(defun lotus-desktop-session-restore ()
+(defun lotus-desktop-session-restore (nextfn)
   "Restore a saved emacs session."
   (interactive)
   (if *session-unified-desktop-enabled*
@@ -558,7 +559,7 @@ en all buffer were creaed idly."
                         (session-unfiy-notify "if")
                         (when (memq 'P4 vc-handled-backends)            ;remove P4
                           (setq vc-handled-backends (remove 'P4 vc-handled-backends))
-                          (add-to-disable-desktop-restore-interrupting-feature-hook
+                          (sessions-unified-add-to-disable-session-restore-interrupting-feature-hook
                            #'(lambda ()
                                (when nil
                                  (add-to-list 'vc-handled-backends 'P4)))))
@@ -567,12 +568,13 @@ en all buffer were creaed idly."
                                 (progn
                                   (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
                                   (lotus-enable-session-saving)
-                                  (when sessions-unified-elscreen
-                                    (session-unfiy-notify "Do you want to set session of frame? [show-error=%s]" show-error)
-                                    (when (y-or-n-p-with-timeout (format "[show-error=%s] Do you want to set session of frame? " show-error)
-                                                                 10 t)
-                                      (let ((*sessions-unified-frame-session-restore-lock* t))
-                                        (frame-session-restore (selected-frame))))))
+                                  ;; (when sessions-unified-elscreen
+                                  ;;   (session-unfiy-notify "Do you want to set session of frame? [show-error=%s]" show-error)
+                                  ;;   (when (y-or-n-p-with-timeout (format "[show-error=%s] Do you want to set session of frame? " show-error)
+                                  ;;                                10 t)
+                                  ;;     (let ((*sessions-unified-frame-session-restore-lock* t))
+                                  ;;       (frame-session-restore (selected-frame)))))
+                                  (funcall nextfn))
                               (progn
                                 (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
                                 (run-at-time "1 sec" nil #'(lambda () (insert "lotus-desktop-session-restore")))
@@ -602,11 +604,12 @@ en all buffer were creaed idly."
                       ;; as (defadvice desktop-idle-create-buffers) will not get chance to run it.
                       (session-unfiy-notify "As no desktop file or (lotus-desktop-saved-session) is nil so running hook")
                       (lotus-enable-session-saving-immediately)))
-                  (when sessions-unified-elscreen
-                    (let ((enable-recursive-minibuffers t))
-                      (when t ; (y-or-n-p-with-timeout "Do you wato set session of frame? " 7 t) ;t
-                        (let ((*sessions-unified-frame-session-restore-lock* t))
-                          (frame-session-restore (selected-frame) 'only)))))
+                  ;; (when sessions-unified-elscreen
+                  ;;   (let ((enable-recursive-minibuffers t))
+                  ;;     (when t ; (y-or-n-p-with-timeout "Do you wato set session of frame? " 7 t) ;t
+                  ;;       (let ((*sessions-unified-frame-session-restore-lock* t))
+                  ;;         (frame-session-restore (selected-frame) 'only)))))
+                  (funcall nextfn)
                   (session-unfiy-notify "leaving lotus-desktop-session-restore"))))
 
           (session-unfiy-notify "desktop-get-desktop-save-filename failed")))
@@ -626,23 +629,30 @@ en all buffer were creaed idly."
 ;; Then type ‘M-x session-save’, or ‘M-x session-restore’ whenever you want to save or restore a desktop. Restored desktops are deleted from disk.
 
 ;;}}
+
 
+(cl-defmethod sessions-unified-session-store ((app (eql 'desktop)))
+  (lotus-desktop-session-store))
+(cl-defmethod sessions-unified-session-restore ((app (eql 'desktop)) alist)
+  (lotus-desktop-session-restore #'(lambda ()
+                                     (when (car alist)
+                                       (sessions-unified-session-restore (car alist)
+                                                                         (cdr alist))))))
+(cl-defmethod sessions-unified-session-enable ((app (eql 'desktop)))
+  (ad-enable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
+  (ad-update 'desktop-idle-create-buffers)
+  (ad-activate 'desktop-idle-create-buffers)
+  (if (lotus-desktop-saved-session)
+      (message "desktop file exists.")
+    (message "desktop file do not exists.")))
+(cl-defmethod sessions-unified-session-disable ((app (eql 'desktop)))
+  (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
+  (ad-update 'desktop-idle-create-buffers)
+  (ad-activate 'desktop-idle-create-buffers))
+(cl-defmethod sessions-unified-session-check ((app (eql 'desktop)))
+  nil)
+
 
-
-(sessions-unified-session-register-fns 'desktop
-                                       #'lotus-desktop-session-store
-                                       #'(lambda ()
-                                           (ad-enable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
-                                           (ad-update 'desktop-idle-create-buffers)
-                                           (ad-activate 'desktop-idle-create-buffers)
-                                           (if (lotus-desktop-saved-session)
-                                               (message "desktop file exists.")
-                                             (message "desktop file do not exists.")))
-                                       #'lotus-desktop-session-restore
-                                       #'(lambda ()
-                                           (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
-                                           (ad-update 'desktop-idle-create-buffers)
-                                           (ad-activate 'desktop-idle-create-buffers)))
 ;; ----------------------------------------------------------------------------
 ;;;###autoload
 (defun desktop-read-alternate (&optional dirname)

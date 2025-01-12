@@ -154,19 +154,16 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 
 (defun fmsession-delete-session (session)
   (interactive
-   (list
-    (fmsession-read-location)))
+   (list (fmsession-read-location)))
   ;; save somewhere as backup
-  (if (and
-       session
-       (y-or-n-p (format "Can I delete screen \"%s\" session: " session)))
+  (if (and session
+           (y-or-n-p (format "Can I delete screen \"%s\" session: " session)))
       (progn
-        (push
-         (cl-find session
-                  *sessions-unified-frames-session*
-                  :key 'car
-                  :test 'string-equal)
-         *sessions-unified-frames-session-old*)
+        (push (cl-find session
+                       *sessions-unified-frames-session*
+                       :key 'car
+                       :test 'string-equal)
+              *sessions-unified-frames-session-old*)
         (setq *sessions-unified-frames-session*
               (cl-remove session *sessions-unified-frames-session*
                          :key 'car
@@ -243,16 +240,12 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 
 
 ;;;###autoload
-(defvar *sessions-unified-core-fsession-registerd-fns-alist* nil
-  "Alist of (app-name appgetfn appsetfn) app fn accept FRAME")
-;;;###autoload
-(defun sessions-unified-core-fsession-register-fns (app-name getfn setfn)
-  (setcdr (assoc app-name *sessions-unified-core-fsession-registerd-fns-alist*)
-          (list app-name getfn setfn)))
-;;;###autoload
-(defun sessions-unified-core-fsession-unregister-fn (app-name getfn setfn)
-  (setcdr (assoc app-name *sessions-unified-core-fsession-registerd-fns-alist*)
-          nil))
+(defvar *sessions-unified-core-fsession-registerd-apps* nil
+  "list of app accept FRAME")
+
+(cl-defgeneric sessions-unified-get-frame-data (app frame))
+(cl-defgeneric sessions-unified-set-frame-data (app frame data))
+
 ;;;###autoload
 (defun sessions-unified-core-fsession-store (session-name &optional frame)
   "Store the elscreen tab configuration."
@@ -261,19 +254,17 @@ display-about-screen, spacemacs-buffer/goto-buffer")
   (unless (assoc session-name *sessions-unified-frames-session*)
     (push (list session-name)
           *sessions-unified-frames-session*))
-  (dolist (app-appfn *sessions-unified-core-fsession-registerd-fns-alist*)
-    (let ((app-name     (car app-appfn))
-          (app-get-func (cadr app-appfn)))
-      (let ((frame-data (funcall app-get-func (or nframe
-                                                  (selected-frame)))))
-        (let ((app-fsession-alist (assoc session-name
-                                         *sessions-unified-frames-session*)))
-          (if (assoc app-name app-fsession-alist)
-              (setcdr (assoc app-name
-                             app-fsession-alist)
-                      frame-data)
-            (push (cons app-name frame-data)
-                  app-fsession-alist)))))))
+  (dolist (app-name *sessions-unified-core-fsession-registerd-apps*)
+    (let ((frame-data (sessions-unified-get-frame-data app-name (or frame
+                                                                    (selected-frame)))))
+      (let ((app-fsession-alist (assoc session-name
+                                       *sessions-unified-frames-session*)))
+        (if (assoc app-name app-fsession-alist)
+            (setcdr (assoc app-name
+                           app-fsession-alist)
+                    frame-data)
+          (push (cons app-name frame-data)
+                app-fsession-alist))))))
 ;;;###autoload
 (defun sessions-unified-core-fsession-restore (session-name &optional frame)
   "Restore the elscreen tab configuration."
@@ -281,22 +272,18 @@ display-about-screen, spacemacs-buffer/goto-buffer")
    (list (fmsession-read-location)))
   (if session-name
       (when (assoc session-name *sessions-unified-frames-session*)
-        (dolist (app-appfn *sessions-unified-core-fsession-registerd-fns-alist*)
-          (let ((app-name     (car app-appfn))
-                (app-set-func (caddr app-appfn)))
-            (session-unfiy-notify "start")
-            (let ((app-fsession-alist (assoc session-name
-                                             *sessions-unified-frames-session*)))
-              (let ((frame-data (cdr (assoc app-name
-                                            app-fsession-alist))))
-                (when session-unified-debug
-                  (session-unfiy-notify "Nstart: session-session %s" app-name))
-                (if frame-data
-                    (funcall app-set-func frame-data
-                             (or nframe
-                                 (selected-frame)))
-                  (session-unfiy-notify "Error: frame-data %s" frame-data))))
-            )))
+        (dolist (app-name *sessions-unified-core-fsession-registerd-apps*)
+          (session-unfiy-notify "start")
+          (let ((app-fsession-alist (assoc session-name
+                                           *sessions-unified-frames-session*)))
+            (let ((frame-data (cdr (assoc app-name
+                                          app-fsession-alist))))
+              (when session-unified-debug
+                (session-unfiy-notify "Nstart: session-session %s" app-name))
+              (if frame-data
+                  (sessions-unified-set-frame-data app-name frame-data (or frame
+                                                                           (selected-frame)))
+                (session-unfiy-notify "Error: frame-data %s" frame-data))))))
     (session-unfiy-notify "Error: session-name is %s" session-name)))
 
 
@@ -466,12 +453,23 @@ display-about-screen, spacemacs-buffer/goto-buffer")
            (frame-parameter (selected-frame) 'frame-spec-id)))
 
 
-(sessions-unified-session-register-fns 'fsession
-                                       #'save-all-frames-session
-                                       #'#'frame-session-restore-hook-func
-                                       nil
-                                       #'frame-session-restore-unhook-func
-                                       #'frame-session-check-hook-func)
+(cl-defmethod sessions-unified-session-store ((app (eql 'fsession)))
+  (save-all-frames-session))
+(cl-defmethod sessions-unified-session-restore ((app (eql 'fsession)) alist)
+
+  (when (y-or-n-p-with-timeout (format "[show-error=%s] Do you want to set session of frame? " show-error)
+                               10 t)
+    (let ((*sessions-unified-frame-session-restore-lock* t))
+      (frame-session-restore (selected-frame))))
+  (when (car alist)
+    (sessions-unified-session-restore (car alist)
+                                      (cdr alist))))
+(cl-defmethod sessions-unified-session-enable ((app (eql 'fsession)))
+  (frame-session-restore-hook-func))
+(cl-defmethod sessions-unified-session-disable ((app (eql 'fsession)))
+  (frame-session-restore-unhook-func))
+(cl-defmethod sessions-unified-session-check ((app (eql 'fsession)))
+  (frame-session-check-hook-func))
 
 
 
