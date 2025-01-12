@@ -184,13 +184,13 @@ display-about-screen, spacemacs-buffer/goto-buffer")
               x)
           (copy-tree *sessions-unified-frames-session*)))
 
-(defun sessions-unified-fmsession-store-to-file (file)
+(defun sessions-unified-core-fsession-store-to-file (file)
   (interactive "Ffile: ")
   (with-temp-file file
     (insert
      (prin1-to-string *sessions-unified-frames-session*))))
 
-(defun sessions-unified-fmsession-restore-from-file (file)
+(defun sessions-unified-core-fsession-restore-from-file (file)
   (interactive "ffile: ")
   (setq *sessions-unified-frames-session*
         (append *sessions-unified-frames-session*
@@ -246,15 +246,15 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 (defvar *sessions-unified-core-fsession-registerd-fns-alist* nil
   "Alist of (app-name appgetfn appsetfn) app fn accept FRAME")
 ;;;###autoload
-(defun sessions-unified-fsession-register-fns (app-name getfn setfn)
+(defun sessions-unified-core-fsession-register-fns (app-name getfn setfn)
   (setcdr (assoc app-name *sessions-unified-core-fsession-registerd-fns-alist*)
           (list app-name getfn setfn)))
 ;;;###autoload
-(defun sessions-unified-fsession-unregister-fn (app-name getfn setfn)
+(defun sessions-unified-core-fsession-unregister-fn (app-name getfn setfn)
   (setcdr (assoc app-name *sessions-unified-core-fsession-registerd-fns-alist*)
           nil))
 ;;;###autoload
-(defun sessions-unified-fmsession-store (session-name &optional frame)
+(defun sessions-unified-core-fsession-store (session-name &optional frame)
   "Store the elscreen tab configuration."
   (interactive (list (fmsession-read-location)))
   ;; (elscreen-session-store session-name frame)
@@ -275,7 +275,7 @@ display-about-screen, spacemacs-buffer/goto-buffer")
             (push (cons app-name frame-data)
                   app-fsession-alist)))))))
 ;;;###autoload
-(defun sessions-unified-fmsession-restore (session-name &optional frame)
+(defun sessions-unified-core-fsession-restore (session-name &optional frame)
   "Restore the elscreen tab configuration."
   (interactive
    (list (fmsession-read-location)))
@@ -360,13 +360,13 @@ display-about-screen, spacemacs-buffer/goto-buffer")
               (funcall session-unified-utils-select-frame-fn frame)
             (error "frame is nil"))
           (if (fboundp 'elscreen-get-conf-list)
-              (sessions-unified-fmsession-restore
+              (sessions-unified-core-fsession-restore
                (frame-session-set-this-location frame try-guessing))
             (when nil
               (with-eval-after-load "elscreen"
                 ;; see if gets run again and again.
                 (progn
-                  (sessions-unified-fmsession-restore
+                  (sessions-unified-core-fsession-restore
                    (frame-session-set-this-location (or frame (selected-frame)) try-guessing))))))
           ;; frame)
 
@@ -401,15 +401,15 @@ display-about-screen, spacemacs-buffer/goto-buffer")
    (list (selected-frame)))
   (progn
     (funcall session-unified-utils-select-frame-fn frame)
-    (sessions-unified-fmsession-restore (fmsession-read-location) frame)))
+    (sessions-unified-core-fsession-restore (fmsession-read-location) frame)))
 
 (defun frame-session-save (frame)
   (session-unfiy-notify "in frame-session-save:")
   (let ((location (frame-parameter frame 'frame-spec-id)))
     (when location
       (session-unfiy-notify "saved the session for %s" location)
-      (sessions-unified-fmsession-store location
-                                        frame))))
+      (sessions-unified-core-fsession-store location
+                                            frame))))
 
 ;;;###autoload
 (defun save-all-frames-session ()

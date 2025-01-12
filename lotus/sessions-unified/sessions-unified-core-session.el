@@ -64,15 +64,15 @@
 (defvar *sessions-unified-desktop-enable-restore-interrupting-feature-delay-time* 10)
 
 
-(defvar lotus-disable-desktop-restore-interrupting-feature-hook nil
+(defvar sessions-unified-disable-session-restore-interrupting-feature-hook nil
   "feature that need to be disabled for proper restoring of
 desktop.")
-(defvar lotus-disable-desktop-restore-interrupting-feature-hook-old nil)
+(defvar sessions-unified-disable-session-restore-interrupting-feature-hook-old nil)
 
-(defvar lotus-enable-desktop-restore-interrupting-feature-hook nil
+(defvar sessions-unified-enable-session-restore-interrupting-feature-hook nil
   "feature that were disabled for proper restoring of desktop will
 get re-enabled here.")
-(defvar lotus-enable-desktop-restore-interrupting-feature-hook-old nil)
+(defvar sessions-unified-enable-session-restore-interrupting-feature-hook-old nil)
 
 (defvar session-unified-save-all-sessions-before-hook nil "Hook run before saving all session")
 (defvar session-unified-save-all-sessions-after-hook nil "Hook run after saving all session")
@@ -130,100 +130,99 @@ get re-enabled here.")
 
 
 ;;;###autoload
-(defun add-to-enable-desktop-restore-interrupting-feature-hook (fn &optional append local)
+(defun sessions-unified-add-to-enable-session-restore-interrupting-feature-hook (fn &optional append local)
   (interactive)
-  (add-to-hook 'lotus-enable-desktop-restore-interrupting-feature-hook
+  (add-to-hook 'sessions-unified-enable-session-restore-interrupting-feature-hook
                 fn
                 append
                 local))
 ;;;###autoload
-(defun remove-from-enable-desktop-restore-interrupting-feature-hook (fn &optional local)
+(defun sessions-unified-remove-from-enable-session-restore-interrupting-feature-hook (fn &optional local)
   (interactive)
-  (remove-hook 'lotus-enable-desktop-restore-interrupting-feature-hook
+  (remove-hook 'sessions-unified-enable-session-restore-interrupting-feature-hook
                 fn
                 local))
 ;;;###autoload
-(defvar *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer* nil)
-(defun sessions-unified-desktop-enable-restore-interrupting-feature-run ()
+(defvar *sessions-unified-run-enable-restore-interrupting-feature-run-timer* nil)
+(defun sessions-unified-run-enable-restore-interrupting-feature-run ()
   "run hook"
   (interactive)
   (session-unfiy-notify "Enabled session saving")
-  (session-unfiy-notify "running lotus-enable-desktop-restore-interrupting-feature-hook hook now.")
-  (when *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
-    (cancel-timer *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
-  (setq *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer* nil)
-  (if lotus-enable-desktop-restore-interrupting-feature-hook
+  (session-unfiy-notify "running sessions-unified-enable-session-restore-interrupting-feature-hook hook now.")
+  (when *sessions-unified-run-enable-restore-interrupting-feature-run-timer*
+    (cancel-timer *sessions-unified-run-enable-restore-interrupting-feature-run-timer*))
+  (setq *sessions-unified-run-enable-restore-interrupting-feature-run-timer* nil)
+  (if sessions-unified-enable-session-restore-interrupting-feature-hook
       (progn
-        (run-each-hooks 'lotus-enable-desktop-restore-interrupting-feature-hook)
-        (setq lotus-enable-desktop-restore-interrupting-feature-hook-old lotus-enable-desktop-restore-interrupting-feature-hook)
-        (setq lotus-enable-desktop-restore-interrupting-feature-hook nil))
+        (run-each-hooks 'sessions-unified-enable-session-restore-interrupting-feature-hook)
+        (setq sessions-unified-enable-session-restore-interrupting-feature-hook-old sessions-unified-enable-session-restore-interrupting-feature-hook)
+        (setq sessions-unified-enable-session-restore-interrupting-feature-hook nil))
     (session-unfiy-notify "already triggered")))
 ;;;###autoload
 (defun sessions-unified-desktop-enable-restore-interrupting-feature-delay-run (&optional secs)
   (interactive "nsecs: ")
-  (session-unfiy-notify "scheduled sessions-unified-desktop-enable-restore-interrupting-feature-run to run after sometime.")
+  (session-unfiy-notify "scheduled sessions-unified-run-enable-restore-interrupting-feature-run to run after sometime.")
   (let* (;; (idle-time (current-idle-time))
          (secs (or secs 10))
          ;; (secs-idle (+ (if idle-time (float-time idle-time) 0) secs))
          (secs-idle secs))
     (session-unfiy-notify "Setting timer time %d" secs-idle)
-    (setq *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
-          ;; (run-with-timer secs-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run)
-          (run-with-idle-timer secs-idle nil #'sessions-unified-desktop-enable-restore-interrupting-feature-run))))
-(defun sessions-unified-desktop-enable-restore-interrupting-feature-run-info ()
+    (setq *sessions-unified-run-enable-restore-interrupting-feature-run-timer*
+          ;; (run-with-timer secs-idle nil #'sessions-unified-run-enable-restore-interrupting-feature-run)
+          (run-with-idle-timer secs-idle nil #'sessions-unified-run-enable-restore-interrupting-feature-run))))
+(defun sessions-unified-run-enable-restore-interrupting-feature-run-info ()
   (interactive)
-  (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
-      (let* ((type    (timer--idle-delay *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
-             (timesec (if *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*
+  (if *sessions-unified-run-enable-restore-interrupting-feature-run-timer*
+      (let* ((type    (timer--idle-delay *sessions-unified-run-enable-restore-interrupting-feature-run-timer*))
+             (timesec (if *sessions-unified-run-enable-restore-interrupting-feature-run-timer*
                           (if type
-                              (float-time (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))
+                              (float-time (timer--time *sessions-unified-run-enable-restore-interrupting-feature-run-timer*))
                             (- (float-time (current-time))
-                               (float-time (timer--time *sessions-unified-desktop-enable-restore-interrupting-feature-run-timer*))))
+                               (float-time (timer--time *sessions-unified-run-enable-restore-interrupting-feature-run-timer*))))
                         0)))
         (session-unfiy-notify "hooks will run %sly after %d" (or type "definite") timesec))
     (session-unfiy-notify "No timer present")))
 
 
 ;;;###autoload
-(defun add-to-disable-desktop-restore-interrupting-feature-hook (fn &optional append local)
+(defun sessions-unified-add-to-disable-session-restore-interrupting-feature-hook (fn &optional append local)
   (interactive)
-  (when t
-    (add-to-hook 'lotus-disable-desktop-restore-interrupting-feature-hook
-                  fn
-                  append
-                  local)))
+  (add-to-hook 'sessions-unified-disable-session-restore-interrupting-feature-hook
+                fn
+                append
+                local))
+
 ;;;###autoload
-(defun remove-from-disable-desktop-restore-interrupting-feature-hook (fn &optional local)
+(defun sessions-unified-remove-from-disable-session-restore-interrupting-feature-hook (fn &optional local)
   (interactive)
-  (when t
-    (remove-hook 'lotus-disable-desktop-restore-interrupting-feature-hook
-                  fn
-                  local)))
+  (remove-hook 'sessions-unified-disable-session-restore-interrupting-feature-hook
+                fn
+                local))
 ;;;###autoload
-(defun sessions-unified-desktop-disable-restore-interrupting-feature-run ()
+(defun sessions-unified-run-disable-restore-interrupting-feature-run ()
   "run hook"
   (interactive)
-  (session-unfiy-notify "running lotus-disable-desktop-restore-interrupting-feature-hook hook now.")
+  (session-unfiy-notify "running sessions-unified-disable-session-restore-interrupting-feature-hook hook now.")
   ;; (lotus-disable-session-saving-immediately)
-  (run-each-hooks 'lotus-disable-desktop-restore-interrupting-feature-hook)
-  (setq lotus-disable-desktop-restore-interrupting-feature-hook-old lotus-disable-desktop-restore-interrupting-feature-hook)
-  (setq lotus-disable-desktop-restore-interrupting-feature-hook nil))
+  (run-each-hooks 'sessions-unified-disable-session-restore-interrupting-feature-hook)
+  (setq sessions-unified-disable-session-restore-interrupting-feature-hook-old sessions-unified-disable-session-restore-interrupting-feature-hook)
+  (setq sessions-unified-disable-session-restore-interrupting-feature-hook nil))
 
 
 ;;;###autoload
 (defun lotus-disable-session-saving-immediately ()
   (interactive)
-  (remove-hook 'auto-save-hook #'sessions-unified-core-session-store)
+  (remove-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)
   (remove-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
   (when sessions-unified-elscreen
     (frame-session-restore-unhook-func))
-  (sessions-unified-desktop-disable-restore-interrupting-feature-run)
+  (sessions-unified-run-disable-restore-interrupting-feature-run)
   (session-unfiy-notify "Removed sessions-unified-core-session-store from auto-save-hook and kill-emacs-hook"))
 
 ;;;###autoload
 (defun lotus-disable-session-saving ()
   (lotus-disable-session-saving-immediately)
-  (sessions-unified-session-disable))
+  (sessions-unified-core-session-disable))
 
 
 ;;;###autoload
@@ -233,22 +232,22 @@ get re-enabled here.")
             ;; (null (lotus-desktop-saved-session))
             (= session-unified-desktop-buffs-len 0))
         (lotus-enable-session-saving-immediately))
-    (sessions-unified-session-enable)))
+    (sessions-unified-core-session-enable)))
 
 ;;;###autoload
 (defun lotus-enable-session-saving-immediately ()
   (interactive)
   (session-unfiy-notify "enter")
-  (add-hook 'auto-save-hook #'sessions-unified-core-session-store)
+  (add-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)
   (add-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
   (when sessions-unified-elscreen
     (ignore-errors (frame-session-restore-hook-func)))
   (progn
-    (session-unfiy-notify "running sessions-unified-desktop-enable-restore-interrupting-feature-run after %d seconds idleness"
+    (session-unfiy-notify "running sessions-unified-run-enable-restore-interrupting-feature-run after %d seconds idleness"
                           *sessions-unified-desktop-enable-restore-interrupting-feature-delay-time*)
     (sessions-unified-desktop-enable-restore-interrupting-feature-delay-run *sessions-unified-desktop-enable-restore-interrupting-feature-delay-time*))
   (session-unfiy-notify "Added sessions-unified-core-session-store to auto-save-hook and kill-emacs-hook")
-  (sessions-unified-desktop-enable-restore-interrupting-feature-run-info)
+  (sessions-unified-run-enable-restore-interrupting-feature-run-info)
   (session-unfiy-notify "exit"))
 
 
@@ -268,7 +267,7 @@ get re-enabled here.")
 (defvar *sessions-unified-core-session-registerd-fns-alist* nil
   "Alist of (app-name appgetfn appsetfn) app fn accept FRAME")
 ;;;###autoload
-(defun sessions-unified-session-register-fns (app-name storefn enablefn restorefn disablefn)
+(defun sessions-unified-core-session-register-fns (app-name storefn enablefn restorefn disablefn)
   (setcdr (assoc app-name *sessions-unified-core-session-registerd-fns-alist*)
           (list app-name
                 storefn
@@ -277,11 +276,11 @@ get re-enabled here.")
                 disablefn
                 checkfn)))
 ;;;###autoload
-(defun sessions-unified-session-unregister-fn (app-name)
+(defun sessions-unified-core-session-unregister-fn (app-name)
   (setcdr (assoc app-name *sessions-unified-core-session-registerd-fns-alist*)
           nil))
 ;;;###autoload
-(defun sessions-unified-session-store (&optional force)
+(defun sessions-unified-core-session-store (&optional force)
   "Store the elscreen tab configuration."
   (interactive)
   ;; (elscreen-session-store session-name frame)
@@ -292,7 +291,7 @@ get re-enabled here.")
           (funcall app-func force)
         (message "For app %s no app-fun present" app-name)))))
 ;;;###autoload
-(defun sessions-unified-session-enable (&optional force)
+(defun sessions-unified-core-session-enable (&optional force)
   "Store the elscreen tab configuration."
   (interactive)
   ;; (elscreen-session-store session-name frame)
@@ -303,7 +302,7 @@ get re-enabled here.")
           (funcall app-func)
         (message "For app %s no app-fun present" app-name))))
 ;;;###autoload
-  (defun sessions-unified-session-restore ()
+  (defun sessions-unified-core-session-restore ()
     "Store the elscreen tab configuration."
     (interactive)
     ;; (elscreen-session-store session-name frame)
@@ -314,7 +313,7 @@ get re-enabled here.")
             (funcall app-func)
           (message "For app %s no app-fun present" app-name))))))
 ;;;###autoload
-(defun sessions-unified-session-disable ()
+(defun sessions-unified-core-session-disable ()
   "Store the elscreen tab configuration."
   (interactive)
   ;; (elscreen-session-store session-name frame)
@@ -326,13 +325,13 @@ get re-enabled here.")
         (message "For app %s no app-fun present" app-name)))))
 
 ;;;###autoload
-(defun sessions-unified-session-check ()
+(defun sessions-unified-core-session-check ()
   (interactive)
   (if (called-interactively-p 'interactive)
       (progn
-        (lotus-show-hook-member 'sessions-unified-core-session-store 'auto-save-hook)
+        (lotus-show-hook-member 'sessions-unified-core-session-store-on-idle-interval 'auto-save-hook)
         (lotus-show-hook-member 'sessions-unified-core-session-store-immediately 'kill-emacs-hook))
-    (and (member #'sessions-unified-core-session-store auto-save-hook)
+    (and (member #'sessions-unified-core-session-store-on-idle-interval auto-save-hook)
          (member #'sessions-unified-core-session-store-immediately kill-emacs-hook)))
   (dolist (app-appfn *sessions-unified-core-session-registerd-fns-alist*)
     (let ((app-name (car app-appfn))
@@ -341,7 +340,7 @@ get re-enabled here.")
           (funcall app-func)
         (message "For app %s no app-fun present" app-name)))))
 
-(defalias 'lotus-check-session-saving #'sessions-unified-session-check)
+(defalias 'lotus-check-session-saving #'sessions-unified-core-session-check)
 
 
 (defcustom sessions-unified-core-session-store-idle-time-interval 7
@@ -355,7 +354,7 @@ get re-enabled here.")
 (defvar session-debug-on-error nil "session-debug-on-error")
 
 ;;;###autoload
-(defun sessions-unified-core-session-store (&optional force)
+(defun sessions-unified-core-session-store-on-idle-interval (&optional force)
   "Save elscreen frame, desktop, and session time to time
   restore in case of sudden emacs crash."
   (interactive "P")
@@ -385,9 +384,9 @@ get re-enabled here.")
                           sessions-unified-core-session-store-idle-time-interval-dynamic sessions-unified-core-session-store-idle-time-interval)
                     (prog1
                         (if session-debug-on-error
-                            (sessions-unified-session-store)
+                            (sessions-unified-core-session-store)
                           (condition-case e
-                              (sessions-unified-session-store)
+                              (sessions-unified-core-session-store)
                             ('error
                               (progn
                                 ;; make after 2 errors.
@@ -405,17 +404,10 @@ get re-enabled here.")
         (setq sessions-unified-core-session-store-time (current-time)
               sessions-unified-core-session-store-idle-time-interval-dynamic sessions-unified-core-session-store-idle-time-interval)))))
 
-(defalias 'save-all-sessions-auto-save #'sessions-unified-core-session-store)
+(defalias 'save-all-sessions-auto-save #'sessions-unified-core-session-store-on-idle-interval)
 (defun sessions-unified-core-session-store-immediately ()
-  (sessions-unified-core-session-store t))
+  (sessions-unified-core-session-store-on-idle-interval t))
 (defalias 'save-all-sessions-auto-save-immediately #'sessions-unified-core-session-store-immediately)
-
-
-;;;###autoload
-(defun sessions-unified-core-session-restore ()
-  "Restore a saved emacs session."
-  (interactive)
-  (sessions-unified-session-store))
 
 
 (when nil
