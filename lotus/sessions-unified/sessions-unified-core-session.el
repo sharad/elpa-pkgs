@@ -209,46 +209,69 @@ get re-enabled here.")
   (setq sessions-unified-disable-session-restore-interrupting-feature-hook nil))
 
 
-;;;###autoload
-(defun lotus-disable-session-saving-immediately ()
-  (interactive)
-  (remove-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)
-  (remove-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
-  (when sessions-unified-elscreen
-    (frame-session-restore-unhook-func))
-  (sessions-unified-run-disable-restore-interrupting-feature-run)
-  (session-unfiy-notify "Removed sessions-unified-core-session-store from auto-save-hook and kill-emacs-hook"))
+;; ;;;###autoload
+;; (defun lotus-disable-session-saving-immediately ()
+;;   (interactive)
+;;   (remove-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)
+;;   (remove-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
+;;   (sessions-unified-run-disable-restore-interrupting-feature-run)
+;;   (session-unfiy-notify "Removed sessions-unified-core-session-store from auto-save-hook and kill-emacs-hook"))
 
 ;;;###autoload
-(defun lotus-disable-session-saving ()
-  (lotus-disable-session-saving-immediately)
-  (sessions-unified-core-session-disable nil))
+(defun sessions-unified-session-disable ()
+  ;; (lotus-disable-session-saving-immediately)
+  (sessions-unified--session-disable nil))
+
+(defalias lotus-disable-session-saving #'sessions-unified-session-disable)
+
+
+
+;; ;;;###autoload
+;; (defun lotus-enable-session-saving ()
+;;   (let ((session-unified-desktop-buffs-len (length desktop-buffer-args-list)))
+;;     (if (or (eq desktop-restore-eager t)
+;;             ;; (null (lotus-desktop-saved-session))
+;;             (= session-unified-desktop-buffs-len 0))
+;;         (lotus-enable-session-saving-immediately))
+;;     (sessions-unified--session-enable nil)))
+;; ;;;###autoload
+;; (defun lotus-enable-session-saving-immediately ()
+;;   (interactive)
+;;   (session-unfiy-notify "enter")
+;;   (add-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)
+;;   (add-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
+;;   (when sessions-unified-elscreen
+;;     (ignore-errors (frame-session-restore-hook-func)))
+;;   (progn
+;;     (session-unfiy-notify "running sessions-unified-run-enable-restore-interrupting-feature-run after %d seconds idleness"
+;;                           -                          *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*)
+;;     (sessions-unified-delay-run-enable-restore-interrupting-feature *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*))
+;;   (session-unfiy-notify "Added sessions-unified-core-session-store to auto-save-hook and kill-emacs-hook")
+;;   (sessions-unified-run-enable-restore-interrupting-feature-run-info)
+;;   (session-unfiy-notify "exit"))
+
+
+;; ;;;###autoload
+;; (defun lotus-disable-session-saving-immediately ()
+;;     (interactive)
+;;     (remove-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)
+;;     (remove-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
+;;     (when sessions-unified-elscreen
+;;       (frame-session-restore-unhook-func))
+;;     (sessions-unified-run-disable-restore-interrupting-feature-run)
+;;     (session-unfiy-notify "Removed sessions-unified-core-session-store from auto-save-hook and kill-emacs-hook"))
+;;  ;;;###autoload
+;; (defun lotus-disable-session-saving ()
+;;   (lotus-disable-session-saving-immediately)
+;;   (sessions-unified-core-session-disable nil))
+
 
 
 ;;;###autoload
-(defun lotus-enable-session-saving ()
-  (let ((session-unified-desktop-buffs-len (length desktop-buffer-args-list)))
-    (if (or (eq desktop-restore-eager t)
-            ;; (null (lotus-desktop-saved-session))
-            (= session-unified-desktop-buffs-len 0))
-        (lotus-enable-session-saving-immediately))
-    (sessions-unified--session-enable nil)))
+(defun sessions-unified-session-enable ()
+  (sessions-unified--session-enable nil))
 
-;;;###autoload
-(defun lotus-enable-session-saving-immediately ()
-  (interactive)
-  (session-unfiy-notify "enter")
-  (add-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)
-  (add-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
-  (when sessions-unified-elscreen
-    (ignore-errors (frame-session-restore-hook-func)))
-  (progn
-    (session-unfiy-notify "running sessions-unified-run-enable-restore-interrupting-feature-run after %d seconds idleness"
-                          *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*)
-    (sessions-unified-delay-run-enable-restore-interrupting-feature *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*))
-  (session-unfiy-notify "Added sessions-unified-core-session-store to auto-save-hook and kill-emacs-hook")
-  (sessions-unified-run-enable-restore-interrupting-feature-run-info)
-  (session-unfiy-notify "exit"))
+(defalias lotus-enable-session-saving #'sessions-unified-session-enable)
 
 
 (defun lotus-show-hook-member (fn hook &optional message)
@@ -308,20 +331,35 @@ get re-enabled here.")
   (dolist (sym (mapcar #'car
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
     (sessions-unified--session-store sym)))
-;; (cl-defmethod sessions-unified--session-restore (app alist)
-;;   (let ((sym (car (or alist
-;;                       (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))))
-;;     (sessions-unified--session-restore sym (cdr alist))))
 (cl-defmethod sessions-unified--session-restore (app)
   (dolist (sym (mapcar #'identity
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
     (when sym
       (sessions-unified--session-restore sym))))
 (cl-defmethod sessions-unified--session-enable (app)
-  (dolist (sym (mapcar #'identity
-                         (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
-    (sessions-unified--session-enable sym)))
+  (let ((session-unified-desktop-buffs-len (length desktop-buffer-args-list)))
+    (if (or (eq desktop-restore-eager t)
+            ;; (null (lotus-desktop-saved-session))
+            (= session-unified-desktop-buffs-len 0))
+        (add-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)
+      (add-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
+
+      (dolist (sym (mapcar #'identity
+                           (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
+        (sessions-unified--session-enable sym))
+
+      (progn
+        (session-unfiy-notify "running sessions-unified-run-enable-restore-interrupting-feature-run after %d seconds idleness"
+                              *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*)
+        (sessions-unified-delay-run-enable-restore-interrupting-feature *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*))
+      (session-unfiy-notify "Added sessions-unified-core-session-store to auto-save-hook and kill-emacs-hook")
+      (sessions-unified-run-enable-restore-interrupting-feature-run-info)
+      (session-unfiy-notify "exit"))))
 (cl-defmethod sessions-unified--session-disable (app)
+  (remove-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)
+  (remove-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
+  (sessions-unified-run-disable-restore-interrupting-feature-run)
+  (session-unfiy-notify "Removed sessions-unified-core-session-store from auto-save-hook and kill-emacs-hook")
   (dolist (sym (mapcar #'identity
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
     (sessions-unified--session-disable sym)))
@@ -372,6 +410,25 @@ get re-enabled here.")
 (defvar sessions-unified-core-session-store-time (current-time) "save all sessions auto save time")
 (defvar session-debug-on-error nil "session-debug-on-error")
 
+(defun sessions-unified-session-store ()
+  (interactive "P")
+  (prog1
+      (if session-debug-on-error
+          (sessions-unified--session-store nil)
+        (condition-case e
+            (sessions-unified--session-store nil)
+          ('error
+           (progn
+             ;; make after 2 errors.
+             (session-unfiy-notify "Error: %s" e)
+             (cl-incf *lotus-desktop-session-store-error-count*)
+             (unless(< *lotus-desktop-session-store-error-count* *lotus-desktop-session-store-max-error-count*)
+               (setq *lotus-desktop-session-store-error-count* 0)
+               (session-unfiy-notify "Error %s" e)
+
+               (lotus-disable-session-saving))))))
+    (run-hooks 'session-unified-save-all-sessions-after-hook)))
+
 ;;;###autoload
 (defun sessions-unified-core-session-store-on-idle-interval (&optional force)
   "Save elscreen frame, desktop, and session time to time
@@ -400,22 +457,7 @@ get re-enabled here.")
                     ;; (message  "XYZ test3")
                     (setq sessions-unified-core-session-store-time (current-time)
                           sessions-unified-core-session-store-idle-time-interval-dynamic sessions-unified-core-session-store-idle-time-interval)
-                    (prog1
-                        (if session-debug-on-error
-                            (sessions-unified--session-store nil)
-                          (condition-case e
-                              (sessions-unified--session-store nil)
-                            ('error
-                              (progn
-                                ;; make after 2 errors.
-                                (session-unfiy-notify "Error: %s" e)
-                                (cl-incf *lotus-desktop-session-store-error-count*)
-                                (unless(< *lotus-desktop-session-store-error-count* *lotus-desktop-session-store-max-error-count*)
-                                  (setq *lotus-desktop-session-store-error-count* 0)
-                                  (session-unfiy-notify "Error %s" e)
-
-                                  (lotus-disable-session-saving))))))
-                      (run-hooks 'session-unified-save-all-sessions-after-hook)))
+                    (sessions-unified-session-store))
                 (setq sessions-unified-core-session-store-idle-time-interval-dynamic
                       (1- sessions-unified-core-session-store-idle-time-interval-dynamic))))
 

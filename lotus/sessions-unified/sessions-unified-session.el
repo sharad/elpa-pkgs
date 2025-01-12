@@ -92,15 +92,15 @@
 (setq session-initialize t)
 
 
-(cl-defmethod sessions-unified--session-store ((app (eql 'session)))
+(cl-defmethod sessions-unified--session-store ((app (eql :session)))
   (session-vc-save-session))
-(cl-defmethod sessions-unified--session-restore ((app (eql 'session)))
+(cl-defmethod sessions-unified--session-restore ((app (eql :session)))
   (session-vc-restore-session))
 ;; (when (car alist)
 ;;   (sessions-unified-session-restore (car alist)
 ;;                                     (cdr alist)))
 
-(cl-defmethod sessions-unified--session-enable ((app (eql 'session)))
+(cl-defmethod sessions-unified--session-enable ((app (eql :session)))
   (add-hook 'after-init-hook
             #'(lambda ()
                 (setq session-initialize t)
@@ -109,9 +109,9 @@
                              ;; done in save-all-sessions-auto-save
                              'session-save-session)))
   (setq session-initialize t))
-(cl-defmethod sessions-unified--session-disable ((app (eql 'session)))
+(cl-defmethod sessions-unified--session-disable ((app (eql :session)))
   (setq session-initialize nil))
-(cl-defmethod sessions-unified--session-check ((app (eql 'session)))
+(cl-defmethod sessions-unified--session-check ((app (eql :session)))
   nil)
 
 

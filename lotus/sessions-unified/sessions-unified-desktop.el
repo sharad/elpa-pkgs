@@ -633,26 +633,26 @@ en all buffer were creaed idly."
 ;;}}
 
 
-(cl-defmethod sessions-unified--session-store ((app (eql 'desktop)))
+(cl-defmethod sessions-unified--session-store ((app (eql :desktop)))
   (lotus-desktop-session-store))
-(cl-defmethod sessions-unified--session-restore ((app (eql 'desktop)))
+(cl-defmethod sessions-unified--session-restore ((app (eql :desktop)))
   ;; (lotus-desktop-session-restore #'(lambda ()
   ;;                                    (when (car alist)
   ;;                                      (sessions-unified-session-restore (car alist)
   ;;                                                                        (cdr alist)))))
   (lotus-desktop-session-restore))
-(cl-defmethod sessions-unified--session-enable ((app (eql 'desktop)))
+(cl-defmethod sessions-unified--session-enable ((app (eql :desktop)))
   (ad-enable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
   (ad-update 'desktop-idle-create-buffers)
   (ad-activate 'desktop-idle-create-buffers)
   (if (lotus-desktop-saved-session)
       (message "desktop file exists.")
     (message "desktop file do not exists.")))
-(cl-defmethod sessions-unified--session-disable ((app (eql 'desktop)))
+(cl-defmethod sessions-unified--session-disable ((app (eql :desktop)))
   (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
   (ad-update 'desktop-idle-create-buffers)
   (ad-activate 'desktop-idle-create-buffers))
-(cl-defmethod sessions-unified--session-check ((app (eql 'desktop)))
+(cl-defmethod sessions-unified--session-check ((app (eql :desktop)))
   nil)
 
 

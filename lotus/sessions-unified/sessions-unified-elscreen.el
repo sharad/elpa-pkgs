@@ -161,7 +161,7 @@
 
 
 ;; (defun elscreen-session-session-list-get (&optional nframe)
-(cl-defmethod  sessions-unified--get-frame-data ((app 'elsession) frame)
+(cl-defmethod  sessions-unified--get-frame-data ((app (eql :elsession)) frame)
   (with-selected-frame (or nframe (selected-frame))
     (let (fsession-data)
       (push (cons 'screens (lotus-elscreen-get-screen-to-name-alist)) fsession-data)
@@ -170,7 +170,7 @@
       (push (cons 'desktop-buffers (lotus-elscreen-get-desktop-buffer-args-list)) fsession-data))))
 
 ;; (defun elscreen-session-session-list-set (fsession-data &optional nframe)
-(cl-defmethod  sessions-unified--set-frame-data ((app 'elsession) frame  data)
+(cl-defmethod  sessions-unified--set-frame-data ((app (eql :elsession)) frame  data)
   (let ((fsession-data data))
     (if (and (fboundp 'elscreen-get-conf-list)
              (elscreen-get-conf-list 'screen-history))

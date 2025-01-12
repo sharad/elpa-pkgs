@@ -455,19 +455,19 @@ display-about-screen, spacemacs-buffer/goto-buffer")
            (frame-parameter (selected-frame) 'frame-spec-id)))
 
 
-(cl-defmethod sessions-unified--session-store ((app (eql 'fsession)))
+(cl-defmethod sessions-unified--session-store ((app (eql :fsession)))
   (save-all-frames-session))
-(cl-defmethod sessions-unified--session-restore ((app (eql 'fsession)))
+(cl-defmethod sessions-unified--session-restore ((app (eql :fsession)))
 
   (when (y-or-n-p-with-timeout (format "Do you want to set session of frame? ")
                                10 t)
     (let ((*sessions-unified-frame-session-restore-lock* t))
       (frame-session-restore (selected-frame) 'only))))
-(cl-defmethod sessions-unified--session-enable ((app (eql 'fsession)))
+(cl-defmethod sessions-unified--session-enable ((app (eql :fsession)))
   (frame-session-restore-hook-func))
-(cl-defmethod sessions-unified--session-disable ((app (eql 'fsession)))
+(cl-defmethod sessions-unified--session-disable ((app (eql :fsession)))
   (frame-session-restore-unhook-func))
-(cl-defmethod sessions-unified--session-check ((app (eql 'fsession)))
+(cl-defmethod sessions-unified--session-check ((app (eql :fsession)))
   (frame-session-check-hook-func))
 
 
