@@ -635,7 +635,7 @@ en all buffer were creaed idly."
 
 (cl-defmethod sessions-unified-session-store ((app (eql 'desktop)))
   (lotus-desktop-session-store))
-(cl-defmethod sessions-unified-session-restore ((app (eql 'desktop)) alist)
+(cl-defmethod sessions-unified-session-restore ((app (eql 'desktop)))
   ;; (lotus-desktop-session-restore #'(lambda ()
   ;;                                    (when (car alist)
   ;;                                      (sessions-unified-session-restore (car alist)

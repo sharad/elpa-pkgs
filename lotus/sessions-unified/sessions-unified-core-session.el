@@ -297,11 +297,11 @@ get re-enabled here.")
 (defun sessions-unified-sort (alist)
   alist)
 
-(cl-defgeneric sessions-unified-session-store ((app null)))
-(cl-defgeneric sessions-unified-session-restore ((app null) next))
-(cl-defgeneric sessions-unified-session-enable ((app null)))
-(cl-defgeneric sessions-unified-session-disable ((app null)))
-(cl-defgeneric sessions-unified-session-check ((app null)))
+(cl-defgeneric sessions-unified-session-store (app))
+(cl-defgeneric sessions-unified-session-restore (app))
+(cl-defgeneric sessions-unified-session-enable (app))
+(cl-defgeneric sessions-unified-session-disable (app))
+(cl-defgeneric sessions-unified-session-check (app))
 
 
 (cl-defmethod sessions-unified-session-store (app)
@@ -312,7 +312,7 @@ get re-enabled here.")
 ;;   (let ((sym (car (or alist
 ;;                       (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))))
 ;;     (sessions-unified-session-restore sym (cdr alist))))
-(cl-defmethod sessions-unified-session-restore (app alist)
+(cl-defmethod sessions-unified-session-restore (app)
   (dolist (sym (mapcar #'car
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*w)))
     (sessions-unified-session-restore sym)))

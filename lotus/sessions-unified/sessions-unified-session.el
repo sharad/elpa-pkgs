@@ -94,7 +94,7 @@
 
 (cl-defmethod sessions-unified-session-store ((app (eql 'session)))
   (session-vc-save-session))
-(cl-defmethod sessions-unified-session-restore ((app (eql 'session)) alist)
+(cl-defmethod sessions-unified-session-restore ((app (eql 'session)))
   (session-vc-restore-session))
 ;; (when (car alist)
 ;;   (sessions-unified-session-restore (car alist)

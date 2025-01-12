@@ -1,4 +1,4 @@
-;;; sessions-unified-frame.el --- Maintain session per frame for named frame  -*- lexical-binding: t; -*-
+;;; sessions-unified-core-fsession.el --- Maintain session per frame for named frame  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  Music Player Daemon (MPD) user
 
@@ -26,7 +26,7 @@
 
 
 
-(provide 'sessions-unified-frame)
+(provide 'sessions-unified-core-fsession)
 
 
 ;; (eval-when-compile
@@ -455,7 +455,7 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 
 (cl-defmethod sessions-unified-session-store ((app (eql 'fsession)))
   (save-all-frames-session))
-(cl-defmethod sessions-unified-session-restore ((app (eql 'fsession)) alist)
+(cl-defmethod sessions-unified-session-restore ((app (eql 'fsession)))
 
   (when (y-or-n-p-with-timeout (format "[show-error=%s] Do you want to set session of frame? " show-error)
                                10 t)
@@ -480,4 +480,4 @@ display-about-screen, spacemacs-buffer/goto-buffer")
   delete-frame-functions
   *lotus-after-init-hook*)
 
-;;; sessions-unified-frame.el ends here
+;;; sessions-unified-core-fsession.el ends here
