@@ -61,7 +61,7 @@
 
 (defvar *session-unified-desktop-enabled* t "Enable desktop restoration.")
 (defvar *session-unified-session-enabled* t "Enable session restoration.")
-(defvar *sessions-unified-desktop-enable-restore-interrupting-feature-delay-time* 10)
+(defvar *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time* 10)
 
 
 (defvar sessions-unified-disable-session-restore-interrupting-feature-hook nil
@@ -159,7 +159,7 @@ get re-enabled here.")
         (setq sessions-unified-enable-session-restore-interrupting-feature-hook nil))
     (session-unfiy-notify "already triggered")))
 ;;;###autoload
-(defun sessions-unified-desktop-enable-restore-interrupting-feature-delay-run (&optional secs)
+(defun sessions-unified-delay-run-enable-restore-interrupting-feature (&optional secs)
   (interactive "nsecs: ")
   (session-unfiy-notify "scheduled sessions-unified-run-enable-restore-interrupting-feature-run to run after sometime.")
   (let* (;; (idle-time (current-idle-time))
@@ -244,8 +244,8 @@ get re-enabled here.")
     (ignore-errors (frame-session-restore-hook-func)))
   (progn
     (session-unfiy-notify "running sessions-unified-run-enable-restore-interrupting-feature-run after %d seconds idleness"
-                          *sessions-unified-desktop-enable-restore-interrupting-feature-delay-time*)
-    (sessions-unified-desktop-enable-restore-interrupting-feature-delay-run *sessions-unified-desktop-enable-restore-interrupting-feature-delay-time*))
+                          *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*)
+    (sessions-unified-delay-run-enable-restore-interrupting-feature *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*))
   (session-unfiy-notify "Added sessions-unified-core-session-store to auto-save-hook and kill-emacs-hook")
   (sessions-unified-run-enable-restore-interrupting-feature-run-info)
   (session-unfiy-notify "exit"))
@@ -361,7 +361,6 @@ get re-enabled here.")
   (let ((idle-time (or (current-idle-time) '(0 0 0)))
         (time-format "%a %H:%M:%S"))
     ;; (time-since-sessions-unified-core-session-store-time (float-time (time-since sessions-unified-core-session-store-time)))
-
     (let ((time-since-last-save (float-time (time-since sessions-unified-core-session-store-time))))
       (if (or force
               (> time-since-last-save (float-time idle-time)))
