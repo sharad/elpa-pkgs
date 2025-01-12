@@ -222,7 +222,7 @@ get re-enabled here.")
 ;;;###autoload
 (defun lotus-disable-session-saving ()
   (lotus-disable-session-saving-immediately)
-  (sessions-unified-core-session-disable))
+  (sessions-unified-core-session-disable nil))
 
 
 ;;;###autoload
@@ -232,7 +232,7 @@ get re-enabled here.")
             ;; (null (lotus-desktop-saved-session))
             (= session-unified-desktop-buffs-len 0))
         (lotus-enable-session-saving-immediately))
-    (sessions-unified-core-session-enable)))
+    (sessions-unified--session-enable nil)))
 
 ;;;###autoload
 (defun lotus-enable-session-saving-immediately ()
@@ -297,38 +297,69 @@ get re-enabled here.")
 (defun sessions-unified-sort (alist)
   alist)
 
-(cl-defgeneric sessions-unified-session-store (app))
-(cl-defgeneric sessions-unified-session-restore (app))
-(cl-defgeneric sessions-unified-session-enable (app))
-(cl-defgeneric sessions-unified-session-disable (app))
-(cl-defgeneric sessions-unified-session-check (app))
+(cl-defgeneric sessions-unified--session-store (app))
+(cl-defgeneric sessions-unified--session-restore (app))
+(cl-defgeneric sessions-unified--session-enable (app))
+(cl-defgeneric sessions-unified--session-disable (app))
+(cl-defgeneric sessions-unified--session-check (app))
 
 
-(cl-defmethod sessions-unified-session-store (app)
+(cl-defmethod sessions-unified--session-store (app)
   (dolist (sym (mapcar #'car
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
-    (sessions-unified-session-store sym)))
-;; (cl-defmethod sessions-unified-session-restore (app alist)
+    (sessions-unified--session-store sym)))
+;; (cl-defmethod sessions-unified--session-restore (app alist)
 ;;   (let ((sym (car (or alist
 ;;                       (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))))
-;;     (sessions-unified-session-restore sym (cdr alist))))
-(cl-defmethod sessions-unified-session-restore (app)
+;;     (sessions-unified--session-restore sym (cdr alist))))
+(cl-defmethod sessions-unified--session-restore (app)
   (dolist (sym (mapcar #'identity
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
     (when sym
-      (sessions-unified-session-restore sym))))
-(cl-defmethod sessions-unified-session-enable (app)
+      (sessions-unified--session-restore sym))))
+(cl-defmethod sessions-unified--session-enable (app)
   (dolist (sym (mapcar #'identity
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
-    (sessions-unified-session-enable sym)))
-(cl-defmethod sessions-unified-session-disable (app)
+    (sessions-unified--session-enable sym)))
+(cl-defmethod sessions-unified--session-disable (app)
   (dolist (sym (mapcar #'identity
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
-    (sessions-unified-session-disable sym)))
-(cl-defmethod sessions-unified-session-check (app)
+    (sessions-unified--session-disable sym)))
+(cl-defmethod sessions-unified--session-check (app)
   (dolist (sym (mapcar #'identity
                          (sessions-unified-sort *sessions-unified-core-session-registerd-fns-alist*)))
-    (sessions-unified-session-check sym)))
+    (sessions-unified--session-check sym)))
+
+
+
+(defun sessions-unified-session-restore ()
+  (let ((show-error (called-interactively-p 'interactive)))
+    (if show-error
+        (unless (sessions-unified--session-restore nil)
+          (progn
+            (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
+            (run-at-time "1 sec" nil #'(lambda () (insert "sessions-unified-session-restore")))
+            (execute-extended-command nil)
+            nil))
+    (condition-case e
+        (if (let ((desktop-restore-in-progress t))
+              (ignore desktop-restore-in-progress)
+              (sessions-unified--session-restore nil))
+            (progn
+              (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
+              ;; (lotus-enable-session-saving)
+              t
+              )
+          (progn
+            (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
+            nil))
+      ('error
+       (session-unfiy-notify "Error in desktop-read: %s\n not adding save-all-sessions-auto-save to auto-save-hook" e)
+       (session-unfiy-notify "Error in desktop-read: %s try it again by running M-x sessions-unified-session-restore" e)
+       (run-at-time "1 sec" nil #'(lambda () (insert "sessions-unified-session-restore")))
+       (condition-case e
+           (execute-extended-command nil)
+         ('error (message "M-x sessions-unified-session-restore %s" e))))))))
 
 
 (defcustom sessions-unified-core-session-store-idle-time-interval 7
@@ -371,9 +402,9 @@ get re-enabled here.")
                           sessions-unified-core-session-store-idle-time-interval-dynamic sessions-unified-core-session-store-idle-time-interval)
                     (prog1
                         (if session-debug-on-error
-                            (sessions-unified-core-session-store)
+                            (sessions-unified--session-store nil)
                           (condition-case e
-                              (sessions-unified-core-session-store)
+                              (sessions-unified--session-store nil)
                             ('error
                               (progn
                                 ;; make after 2 errors.

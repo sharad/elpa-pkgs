@@ -243,8 +243,10 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 (defvar *sessions-unified-core-fsession-registerd-apps* nil
   "list of app accept FRAME")
 
-(cl-defgeneric sessions-unified-get-frame-data (app frame))
-(cl-defgeneric sessions-unified-set-frame-data (app frame data))
+(cl-defgeneric sessions-unified--get-frame-data (app frame)
+  "sessions-unified--get-frame-data")
+(cl-defgeneric sessions-unified--set-frame-data (app frame data)
+  "sessions-unified--set-frame-data")
 
 ;;;###autoload
 (defun sessions-unified-core-fsession-store (session-name &optional frame)
@@ -255,8 +257,8 @@ display-about-screen, spacemacs-buffer/goto-buffer")
     (push (list session-name)
           *sessions-unified-frames-session*))
   (dolist (app-name *sessions-unified-core-fsession-registerd-apps*)
-    (let ((frame-data (sessions-unified-get-frame-data app-name (or frame
-                                                                    (selected-frame)))))
+    (let ((frame-data (sessions-unified--get-frame-data app-name (or frame
+                                                                     (selected-frame)))))
       (let ((app-fsession-alist (assoc session-name
                                        *sessions-unified-frames-session*)))
         (if (assoc app-name app-fsession-alist)
@@ -281,8 +283,8 @@ display-about-screen, spacemacs-buffer/goto-buffer")
               (when session-unified-debug
                 (session-unfiy-notify "Nstart: session-session %s" app-name))
               (if frame-data
-                  (sessions-unified-set-frame-data app-name frame-data (or frame
-                                                                           (selected-frame)))
+                  (sessions-unified--set-frame-data app-name frame-data (or frame
+                                                                            (selected-frame)))
                 (session-unfiy-notify "Error: frame-data %s" frame-data))))))
     (session-unfiy-notify "Error: session-name is %s" session-name)))
 
@@ -453,19 +455,19 @@ display-about-screen, spacemacs-buffer/goto-buffer")
            (frame-parameter (selected-frame) 'frame-spec-id)))
 
 
-(cl-defmethod sessions-unified-session-store ((app (eql 'fsession)))
+(cl-defmethod sessions-unified--session-store ((app (eql 'fsession)))
   (save-all-frames-session))
-(cl-defmethod sessions-unified-session-restore ((app (eql 'fsession)))
+(cl-defmethod sessions-unified--session-restore ((app (eql 'fsession)))
 
   (when (y-or-n-p-with-timeout (format "Do you want to set session of frame? ")
                                10 t)
     (let ((*sessions-unified-frame-session-restore-lock* t))
       (frame-session-restore (selected-frame) 'only))))
-(cl-defmethod sessions-unified-session-enable ((app (eql 'fsession)))
+(cl-defmethod sessions-unified--session-enable ((app (eql 'fsession)))
   (frame-session-restore-hook-func))
-(cl-defmethod sessions-unified-session-disable ((app (eql 'fsession)))
+(cl-defmethod sessions-unified--session-disable ((app (eql 'fsession)))
   (frame-session-restore-unhook-func))
-(cl-defmethod sessions-unified-session-check ((app (eql 'fsession)))
+(cl-defmethod sessions-unified--session-check ((app (eql 'fsession)))
   (frame-session-check-hook-func))
 
 
