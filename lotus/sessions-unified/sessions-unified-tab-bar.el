@@ -73,9 +73,9 @@ Return its existing value or a new value."
   (if fsession-data                    ;may causing error
       (with-selected-frame (or frame (selected-frame)))))
 
-(eval-after-load "tab-bar"
-  (sessions-unified-fsession-register-fns 'tab-bar
-                                          #'tab-bar-frame-data-get
-                                          #'tab-bar-frame-data-set))
+;; (eval-after-load "tab-bar"
+;;   (sessions-unified-fsession-register-fns 'tab-bar
+;;                                           #'tab-bar-frame-data-get
+;;                                           #'tab-bar-frame-data-set))
 
 ;;; sessions-unified-tab-bar.el ends here
