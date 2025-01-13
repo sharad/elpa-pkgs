@@ -47,10 +47,10 @@
 (require 'emacs-panel)
 
 
-(require 'sssions-unified-core-common)
-(require 'sssions-unified-desktop)
-(require 'sssions-unified-session)
-(require 'sssions-unified-fsession)
+(require 'sessions-unified-core-common)
+(require 'sessions-unified-desktop)
+(require 'sessions-unified-session)
+(require 'sessions-unified-core-fsession)
 
 
 (defvar sessions-unified-desktop t)
