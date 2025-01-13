@@ -28,8 +28,8 @@
 
 
 
-(require 'sessions-unified)
-(require 'sessions-unified-session)
+;; (require 'sessions-unified)
+(require 'sessions-unified-core-session)
 
 
 ;; (require 'savehist-20+)
@@ -198,5 +198,4 @@
   (setq undo-tree-auto-save-history t))
 
 
-
 ;;; sessions-unified-misc.el ends here

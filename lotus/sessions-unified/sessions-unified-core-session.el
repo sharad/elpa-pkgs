@@ -1,4 +1,4 @@
-;;; sessions-unified-core-session.el --- session setting
+;;; sessions-unified-core-session.el --- session setting  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2012  Sharad Pratap
 
@@ -261,7 +261,7 @@ get re-enabled here.")
   (interactive)
   (sessions-unified--session-enable nil))
 
-cbb(defalias 'lotus-enable-session-saving #'sessions-unified-session-enable)
+(defalias 'lotus-enable-session-saving #'sessions-unified-session-enable)
 
 ;;;###autoload
 (defun sessions-unified-session-disable ()
@@ -319,12 +319,10 @@ cbb(defalias 'lotus-enable-session-saving #'sessions-unified-session-enable)
 
 
 (cl-defmethod sessions-unified--session-store ((app null))
-  (dolist (sym (mapcar #'car
-                       (sessions-unified-sort *sessions-unified-core-session-registerd-store-list*)))
+  (dolist (sym *sessions-unified-core-session-registerd-store-list*)
     (sessions-unified--session-store sym)))
 (cl-defmethod sessions-unified--session-restore ((app null))
-  (dolist (sym (mapcar #'identity
-                       (sessions-unified-sort *sessions-unified-core-session-registerd-restore-list*)))
+  (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
     (when sym
       (sessions-unified--session-restore sym)))
   (sessions-unified--session-enable app))
@@ -392,8 +390,7 @@ cbb(defalias 'lotus-enable-session-saving #'sessions-unified-session-enable)
     (sessions-unified-run-disable-restore-interrupting-feature-run)))
 
 (cl-defmethod sessions-unified--session-check (app)
-  (dolist (sym (mapcar #'identity
-                       (sessions-unified-sort *sessions-unified-core-session-registerd-restore-list*)))
+  (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
     (sessions-unified--session-check sym)))
 
 
