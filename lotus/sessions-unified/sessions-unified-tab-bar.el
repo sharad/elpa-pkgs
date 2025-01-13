@@ -66,12 +66,8 @@ Return its existing value or a new value."
 
 
 (defun tab-bar-frame-data-get (&optional frame)
-  (with-selected-frame (or frame (selected-frame))
-    (let (fsession-data)
-      (push (cons 'screens (lotus-elscreen-get-screen-to-name-alist)) fsession-data)
-      (push (cons 'current-buffer-file (cons (buffer-name (current-buffer)) (buffer-file-name))) fsession-data)
-      (push (cons 'current-screen (elscreen-get-current-screen)) fsession-data)
-      (push (cons 'desktop-buffers (lotus-elscreen-get-desktop-buffer-args-list)) fsession-data))))
+  (with-selected-frame (or frame (selected-frame))))
+
 (defun tab-bar-frame-data-set (fsession-data &optional frame)
   (if fsession-data                    ;may causing error
       (with-selected-frame (or frame (selected-frame)))))
