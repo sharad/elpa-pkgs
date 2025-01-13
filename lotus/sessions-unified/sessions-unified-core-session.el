@@ -217,15 +217,6 @@ get re-enabled here.")
 ;;   (sessions-unified-run-disable-restore-interrupting-feature-run)
 ;;   (session-unfiy-notify "Removed sessions-unified-core-session-store from auto-save-hook and kill-emacs-hook"))
 
-;;;###autoload
-(defun sessions-unified-session-disable ()
-  ;; (lotus-disable-session-saving-immediately)
-  (sessions-unified--session-disable nil))
-
-(defalias lotus-disable-session-saving #'sessions-unified-session-disable)
-
-
-
 ;; ;;;###autoload
 ;; (defun lotus-enable-session-saving ()
 ;;   (let ((session-unified-desktop-buffs-len (length desktop-buffer-args-list)))
@@ -271,14 +262,14 @@ get re-enabled here.")
   (interactive)
   (sessions-unified--session-enable nil))
 
-(defalias lotus-enable-session-saving #'sessions-unified-session-enable)
+(defalias 'lotus-enable-session-saving #'sessions-unified-session-enable)
 
 ;;;###autoload
 (defun sessions-unified-session-disable ()
   (interactive)
   (sessions-unified--session-disable nil))
 
-(defalias lotus-disable-session-saving #'sessions-unified-session-disable)
+(defalias 'lotus-disable-session-saving #'sessions-unified-session-disable)
 
 
 (defun lotus-show-hook-member (fn hook &optional message)
