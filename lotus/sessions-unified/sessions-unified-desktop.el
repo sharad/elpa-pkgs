@@ -34,9 +34,6 @@
 
 (require 'sessions-unified-core-common)
 
-;; (require 'sessions-unified-session)
-;; (require 'sessions-unified-frame)
-
 
 (defvar lotus-read-filename-default-initial-input nil)
 (defun read-file-name-timeout-if-default-input (seconds
@@ -599,13 +596,6 @@ en all buffer were creaed idly."
                 ;; as (defadvice desktop-idle-create-buffers) will not get chance to run it.
                 (session-unfiy-notify "As no desktop file or (lotus-desktop-saved-session) is nil so running hook")
                 (sessions-unified--session-enable :desktop)))
-            ;; (when sessions-unified-elscreen
-            ;;   (let ((enable-recursive-minibuffers t))
-            ;;     (when t ; (y-or-n-p-with-timeout "Do you wato set session of frame? " 7 t) ;t
-            ;;       (let ((*sessions-unified-frame-session-restore-lock* t))
-            ;;         (frame-session-restore (selected-frame) 'only)))))
-            (when nil
-              (funcall nextfn))
             (session-unfiy-notify "leaving lotus-desktop-session-restore"))))
 
     (session-unfiy-notify "desktop-get-desktop-save-filename failed")))

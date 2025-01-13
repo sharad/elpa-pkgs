@@ -48,24 +48,24 @@
                             (elscreen-goto-internal screen)
 
                             (setq nickname-type-map
-                                  (mapcar
-                                   (lambda (window)
-                                     (with-current-buffer (window-buffer window)
-                                       (or (elscreen-get-alist-to-nickname
-                                            elscreen-mode-to-nickname-alist-internal
-                                            'string-match (symbol-name major-mode))
-                                           (elscreen-get-alist-to-nickname
-                                            elscreen-buffer-to-nickname-alist-internal
-                                            'string-match (buffer-name))
-                                           (cons 'buffer-name (cons (buffer-name) (buffer-file-name))))))
-                                   (window-list)))
+                                  (mapcar #'(lambda (window)
+                                              (with-current-buffer (window-buffer window)
+                                                (or (elscreen-get-alist-to-nickname
+                                                     elscreen-mode-to-nickname-alist-internal
+                                                     'string-match (symbol-name major-mode))
+                                                    (elscreen-get-alist-to-nickname
+                                                     elscreen-buffer-to-nickname-alist-internal
+                                                     'string-match (buffer-name))
+                                                    (cons 'buffer-name (cons (buffer-name) (buffer-file-name))))))
+                                          (window-list)))
 
                             (let (nickname-list)
                               (while (> (length nickname-type-map) 0)
-                                (let ((type (car (car nickname-type-map)))
+                                (let ((type      (car (car nickname-type-map)))
                                       (buff-file (cdr (car nickname-type-map))))
                                   (when buff-file
-                                    (setq nickname-list (cons buff-file nickname-list)))
+                                    (setq nickname-list (cons buff-file
+                                                              nickname-list)))
                                   (setq nickname-type-map
                                         (if (eq type 'nickname)
                                             (delete (car nickname-type-map) nickname-type-map)
@@ -73,13 +73,12 @@
                               ;; (setq screen-name
                               ;;       (mapconcat 'identity (reverse nickname-list) ":"))
                               (setq screen-name (reverse nickname-list))))
-
                           ;; (sessions-unified-set-alist 'screen-to-name-alist screen screen-name)
-                          (push (cons screen screen-name) screen-to-name-alist))))
+                          (push (cons screen screen-name)
+                                screen-to-name-alist))))
        (elscreen-save-screen-excursion
         (mapcar elscrn-fn
                 screen-list)))
-
      ;; (elscreen-set-screen-to-name-alist-cache screen-to-name-alist)
      (reverse screen-to-name-alist))))
 ;;
@@ -162,7 +161,7 @@
 
 
 ;; (defun elscreen-session-session-list-get (&optional nframe)
-(cl-defmethod  sessions-unified--get-frame-data ((app (eql :elsession)) frame)
+(cl-defmethod sessions-unified--get-frame-data ((app (eql :elsession)) frame)
   (with-selected-frame (or nframe (selected-frame))
     (let (fsession-data)
       (push (cons 'screens (lotus-elscreen-get-screen-to-name-alist)) fsession-data)
@@ -171,7 +170,7 @@
       (push (cons 'desktop-buffers (lotus-elscreen-get-desktop-buffer-args-list)) fsession-data))))
 
 ;; (defun elscreen-session-session-list-set (fsession-data &optional nframe)
-(cl-defmethod  sessions-unified--set-frame-data ((app (eql :elsession)) frame  data)
+(cl-defmethod sessions-unified--set-frame-data ((app (eql :elsession)) frame  data)
   (let ((fsession-data data))
     (if (and (fboundp 'elscreen-get-conf-list)
              (elscreen-get-conf-list 'screen-history))
