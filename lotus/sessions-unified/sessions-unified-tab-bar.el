@@ -41,9 +41,6 @@
              ,@body)
          (tab-bar-select-tab (1+ current-index))))))
 (put 'with-selected-tab 'lisp-indent-function 2)
-
-;; (with-selected-tab 3 nil
-;;   (current-buffer))
 
 
 (defun ssu-get-current-tab-index (frame)
