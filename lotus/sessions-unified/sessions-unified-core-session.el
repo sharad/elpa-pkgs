@@ -58,16 +58,20 @@
 (defvar sessions-unified-centaur-tab nil)
 (defvar sessions-unified-tab-bar nil)
 
-(declare-function sessions-unified-core-session-store "desktop-unified" (&optional force))
-(declare-function sessions-unified-core-session-store-immediately "desktop-unified" (&optional force))
-(declare-function frame-session-restore-unhook-func "fmsession" ())
-(declare-function frame-session-restore-force "fmsession" (nframe))
-(declare-function frame-session-save "fmsession" (nframe))
+;; (declare-function sessions-unified-session-store "desktop-unified" (&optional force))
+;; (declare-function sessions-unified-core-session-store-immediately "desktop-unified" (&optional force))
+;; (declare-function frame-session-restore-unhook-func "fmsession" ())
+;; (declare-function frame-session-restore-force "fmsession" (nframe))
+;; (declare-function frame-session-save "fmsession" (nframe))
 
 
 (defvar *session-unified-desktop-enabled* t "Enable desktop restoration.")
 (defvar *session-unified-session-enabled* t "Enable session restoration.")
 (defvar *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time* 10)
+
+
+(defvar *lotus-desktop-session-store-max-error-count* 6 "")
+(defvar *lotus-desktop-session-store-error-count* 0 "")
 
 
 (defvar sessions-unified-disable-session-restore-interrupting-feature-hook nil
@@ -280,10 +284,16 @@ get re-enabled here.")
   (dolist (sym *sessions-unified-core-session-registerd-store-list*)
     (sessions-unified--session-store sym)))
 (cl-defmethod sessions-unified--session-restore ((app null))
-  (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
-    (when sym
-      (sessions-unified--session-restore sym)))
-  (sessions-unified--session-enable app))
+  (condition-case e
+      (progn
+        (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
+          (when sym
+            (sessions-unified--session-restore sym)))
+        (sessions-unified--session-enable app)
+        t)
+    ('error
+     (message "Error: e")
+     nil)))
 
 (cl-defmethod sessions-unified--session-enable ((app null))
   (add-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)
@@ -327,8 +337,27 @@ get re-enabled here.")
     (sessions-unified--session-check sym)))
 
 
+(defun sessions-unified-session-store ()
+  (interactive "P")
+  (prog1
+      (if session-debug-on-error
+          (sessions-unified--session-store nil)
+        (condition-case e
+            (sessions-unified--session-store nil)
+          ('error
+           (progn
+             ;; make after 2 errors.
+             (session-unfiy-notify "Error: %s" e)
+             (cl-incf *lotus-desktop-session-store-error-count*)
+             (unless(< *lotus-desktop-session-store-error-count* *lotus-desktop-session-store-max-error-count*)
+               (setq *lotus-desktop-session-store-error-count* 0)
+               (session-unfiy-notify "Error %s" e)
+               ;; (lotus-disable-session-saving)
+               (sessions-unified--session-disable nil))))))
+    (run-hooks 'session-unified-save-all-sessions-after-hook)))
 
 (defun sessions-unified-session-restore ()
+  (interactive)
   (let ((show-error (called-interactively-p 'interactive)))
     (if show-error
         (unless (sessions-unified--session-restore nil)
@@ -343,9 +372,7 @@ get re-enabled here.")
                 (sessions-unified--session-restore nil))
               (progn
                 (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
-                ;; (lotus-enable-session-saving)
-                t
-                )
+                t)
             (progn
               (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
               nil))
@@ -367,25 +394,6 @@ get re-enabled here.")
   :group 'session)
 (defvar sessions-unified-core-session-store-time (current-time) "save all sessions auto save time")
 (defvar session-debug-on-error nil "session-debug-on-error")
-
-(defun sessions-unified-session-store ()
-  (interactive "P")
-  (prog1
-      (if session-debug-on-error
-          (sessions-unified--session-store nil)
-        (condition-case e
-            (sessions-unified--session-store nil)
-          ('error
-           (progn
-             ;; make after 2 errors.
-             (session-unfiy-notify "Error: %s" e)
-             (cl-incf *lotus-desktop-session-store-error-count*)
-             (unless(< *lotus-desktop-session-store-error-count* *lotus-desktop-session-store-max-error-count*)
-               (setq *lotus-desktop-session-store-error-count* 0)
-               (session-unfiy-notify "Error %s" e)
-               ;; (lotus-disable-session-saving)
-               (sessions-unified--session-disable nil))))))
-    (run-hooks 'session-unified-save-all-sessions-after-hook)))
 
 ;;;###autoload
 (defun sessions-unified-core-session-store-on-idle-interval (&optional force)

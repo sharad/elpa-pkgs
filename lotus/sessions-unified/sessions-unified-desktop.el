@@ -288,7 +288,7 @@ so returns nil if pid is nil."
 
 ;; (when (or (not *emacs-in-init*) (not reloading-libraries))
 (when (or *emacs-in-init* reloading-libraries)
-  ;setting to nil so it will be asked from user.
+                                        ;setting to nil so it will be asked from user.
   (setq *desktop-save-filename* nil))
 
 ;; might be the reason for Terminal 0 is locked.
@@ -421,9 +421,6 @@ so returns nil if pid is nil."
               (desktop-vc-remove)
               (setq desktop-dirname desktop-dirname-tmp)))
 
-(defvar *my-desktop-save-max-error-count* 6 "")
-(defvar *my-desktop-save-error-count* 0 "")
-
 ;;;###autoload
 (defun lotus-desktop-session-store ()
   (interactive)
@@ -501,7 +498,7 @@ en all buffer were creaed idly."
       (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
       (ad-update 'desktop-idle-create-buffers)
       (ad-activate 'desktop-idle-create-buffers))
-    (sessions-unified--session-enable 'desktop)))
+    (sessions-unified--session-enable :desktop)))
 
 ;; use session-restore to restore the desktop manually
 
@@ -601,7 +598,7 @@ en all buffer were creaed idly."
                                            *desktop-save-filename*))
                 ;; as (defadvice desktop-idle-create-buffers) will not get chance to run it.
                 (session-unfiy-notify "As no desktop file or (lotus-desktop-saved-session) is nil so running hook")
-                (sessions-unified--session-enable 'desktop)))
+                (sessions-unified--session-enable :desktop)))
             ;; (when sessions-unified-elscreen
             ;;   (let ((enable-recursive-minibuffers t))
             ;;     (when t ; (y-or-n-p-with-timeout "Do you wato set session of frame? " 7 t) ;t
