@@ -289,6 +289,18 @@ display-about-screen, spacemacs-buffer/goto-buffer")
     (session-unfiy-notify "Error: session-name is %s" session-name)))
 
 
+
+(defun sessions-unified-core-fsession-get-wm-desktop-name ()
+  let ((xwin-enabled    (protable-display-graphic-p))
+       (wm-hints        (if xwin-enabled (ignore-errors (emacs-panel-wm-hints))))
+       (wm-desktop-name (if wm-hints
+                            (nth (nth 1 (assoc 'current-desktop wm-hints))
+                                 (cdr  (assoc 'wm-desktop-names wm-hints))))))
+  (if xwin-enabled
+      (unless wm-hints
+        (session-unfiy-notify "Some error in wm-hints")))
+  wm-desktop-name)
+
 (defun frame-session-set-this-location (frame &optional try-guessing)
   "Possible value of TRY_GUESS is T or 'ONLY"
   ;; ask, guess-ask, guess-notask
@@ -304,34 +316,26 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 
   (session-unfiy-notify "in frame-session-set-this-location")
 
-  (let* ((xwin-enabled (protable-display-graphic-p))
-         (wm-hints
-          (if xwin-enabled
-              (ignore-errors (emacs-panel-wm-hints))))
-         (desktop-name (if wm-hints
-                           (nth (nth 1 (assoc 'current-desktop wm-hints))
-                                (cdr  (assoc 'desktop-names wm-hints)))))
-         (location (if (and try-guessing
-                            desktop-name
-                            (member desktop-name
-                                    (mapcar #'car
-                                            *sessions-unified-frames-session*)))
-                       (progn
-                         (session-unfiy-notify "NO need to call interactive (fmsession-read-location desktop-name[%s])"
-                                               desktop-name)
-                         desktop-name)
-                     (progn
-                       (if (eq try-guessing 'only)
-                           (session-unfiy-notify "could not guess will return nil as try-guessing = %s set."
-                                                 try-guessing)
-                         (session-unfiy-notify "NEED to call interactive (fmsession-read-location desktop-name[%s])"
-                                               desktop-name))
-                       ;; BUG: causing first emacsclient frame to be jammed which require pkill -USR2 emacs
-                       (unless (eq try-guessing 'only)
-                         (fmsession-read-location desktop-name))))))
-    (if xwin-enabled
-        (unless wm-hints
-          (session-unfiy-notify "Some error in wm-hints")))
+  (let* ((xwin-enabled    (protable-display-graphic-p))
+         (wm-desktop-name (sessions-unified-core-fsession-get-wm-desktop-name))
+         (location        (if (and try-guessing
+                                   wm-desktop-name
+                                   (member wm-desktop-name
+                                           (mapcar #'car
+                                                   *sessions-unified-frames-session*)))
+                              (progn
+                                (session-unfiy-notify "NO need to call interactive (fmsession-read-location wm-desktop-name[%s])"
+                                                      wm-desktop-name)
+                                wm-desktop-name)
+                            (progn
+                              (if (eq try-guessing 'only)
+                                  (session-unfiy-notify "could not guess will return nil as try-guessing = %s set."
+                                                        try-guessing)
+                                (session-unfiy-notify "NEED to call interactive (fmsession-read-location wm-desktop-name[%s])"
+                                                      wm-desktop-name))
+                              ;; BUG: causing first emacsclient frame to be jammed which require pkill -USR2 emacs
+                              (unless (eq try-guessing 'only)
+                                (fmsession-read-location wm-desktop-name))))))
     (session-unfiy-notify "%s" location)
     (when location
       (set-frame-parameter frame 'frame-spec-id location))
@@ -348,16 +352,19 @@ display-about-screen, spacemacs-buffer/goto-buffer")
           (if frame
               (funcall session-unified-utils-select-frame-fn frame)
             (error "frame is nil"))
-          (if (fboundp 'elscreen-get-conf-list)
-              (sessions-unified-core-fsession-restore
-               (frame-session-set-this-location frame try-guessing))
-            (when nil
-              (with-eval-after-load "elscreen"
-                ;; see if gets run again and again.
-                (progn
-                  (sessions-unified-core-fsession-restore
-                   (frame-session-set-this-location (or frame (selected-frame)) try-guessing))))))
-          ;; frame)
+
+          (sessions-unified-core-fsession-restore
+           (frame-session-set-this-location frame try-guessing))
+
+          ;; (if (fboundp 'elscreen-get-conf-list)
+          ;;     (sessions-unified-core-fsession-restore
+          ;;      (frame-session-set-this-location frame try-guessing))
+          ;;   (when nil
+          ;;     (with-eval-after-load "elscreen"
+          ;;       ;; see if gets run again and again.
+          ;;       (progn
+          ;;         (sessions-unified-core-fsession-restore
+          ;;          (frame-session-set-this-location (or frame (selected-frame)) try-guessing))))))
 
           (when (and *session-unified-frame-session-restore-display-function*
                      (functionp '*session-unified-frame-session-restore-display-function*))
