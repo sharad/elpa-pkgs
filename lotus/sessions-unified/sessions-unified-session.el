@@ -39,22 +39,6 @@
 (require 'sessions-unified-core-common)
 
 
-(defvar session-unified-dir "~/.emacs.d/.cache/session-unified/")
-
-(defvar session-unified-debug nil)
-
-
-(defun make-session-unified-dir (&optional path)
-  (let ((dir (if path
-                 (expand-file-name path session-unified-dir)
-               session-unified-dir)))
-    (unless (file-directory-p dir)
-      (make-directory dir t))))
-
-(make-session-unified-dir)
-(setq session-save-file (expand-file-name "session/session.el" session-unified-dir))
-
-
 (defun lotus-session-saved-session ()
   (if (file-exists-p session-save-file) session-save-file))
 
