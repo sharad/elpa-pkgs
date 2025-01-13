@@ -29,6 +29,7 @@
 
 (require 'sessions-unified-core-fsession)
 
+
 (defun lotus-elscreen-get-screen-to-name-alist ()
   ;; (when (elscreen-screen-modified-p 'elscreen-get-screen-to-name-alist)
   (elscreen-notify-screen-modification-suppress

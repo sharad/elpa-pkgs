@@ -36,6 +36,9 @@
 (require 'rcs-backup)
 
 
+(require 'sessions-unified-core-common)
+
+
 (defvar session-unified-dir "~/.emacs.d/.cache/session-unified/")
 
 (defvar session-unified-debug nil)

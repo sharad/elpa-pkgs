@@ -32,7 +32,8 @@
 (require 'emacs-panel)
 
 
-(require 'sessions-unified-core-session)
+(require 'sessions-unified-core-common)
+
 ;; (require 'sessions-unified-session)
 ;; (require 'sessions-unified-frame)
 

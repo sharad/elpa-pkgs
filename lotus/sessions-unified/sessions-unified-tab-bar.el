@@ -27,6 +27,9 @@
 (provide 'sessions-unified-tab-bar)
 
 
+(require 'sessions-unified-core-common)
+
+
 (defvar tab-bar-tabs-function #'tab-bar-tabs
   "Function to get a list of tabs to display in the tab bar.
 This function should have one optional argument FRAME,

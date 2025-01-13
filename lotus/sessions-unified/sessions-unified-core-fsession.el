@@ -43,6 +43,11 @@
 ;; (require 'sessions-unified)
 
 
+(require 'sessions-unified-core-common)
+(require 'sessions-unified-elscreen)
+(require 'sessions-unified-tab-bar)
+
+
 (defvar session-unified-debug nil)
 
 
@@ -242,11 +247,6 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 ;;;###autoload
 (defvar *sessions-unified-core-fsession-registerd-apps* nil
   "list of app accept FRAME")
-
-(cl-defgeneric sessions-unified--get-frame-data (app frame)
-  "sessions-unified--get-frame-data")
-(cl-defgeneric sessions-unified--set-frame-data (app frame data)
-  "sessions-unified--set-frame-data")
 
 ;;;###autoload
 (defun sessions-unified-core-fsession-store (session-name &optional frame)
