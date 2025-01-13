@@ -203,7 +203,6 @@ get re-enabled here.")
   "run hook"
   (interactive)
   (session-unfiy-notify "running sessions-unified-disable-session-restore-interrupting-feature-hook hook now.")
-  ;; (lotus-disable-session-saving-immediately)
   (run-each-hooks 'sessions-unified-disable-session-restore-interrupting-feature-hook)
   (setq sessions-unified-disable-session-restore-interrupting-feature-hook-old sessions-unified-disable-session-restore-interrupting-feature-hook)
   (setq sessions-unified-disable-session-restore-interrupting-feature-hook nil))
@@ -262,7 +261,7 @@ get re-enabled here.")
   (interactive)
   (sessions-unified--session-enable nil))
 
-(defalias 'lotus-enable-session-saving #'sessions-unified-session-enable)
+cbb(defalias 'lotus-enable-session-saving #'sessions-unified-session-enable)
 
 ;;;###autoload
 (defun sessions-unified-session-disable ()
@@ -454,8 +453,8 @@ get re-enabled here.")
              (unless(< *lotus-desktop-session-store-error-count* *lotus-desktop-session-store-max-error-count*)
                (setq *lotus-desktop-session-store-error-count* 0)
                (session-unfiy-notify "Error %s" e)
-
-               (lotus-disable-session-saving))))))
+               ;; (lotus-disable-session-saving)
+               (sessions-unified--session-disable nil))))))
     (run-hooks 'session-unified-save-all-sessions-after-hook)))
 
 ;;;###autoload
