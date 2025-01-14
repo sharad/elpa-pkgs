@@ -273,8 +273,7 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 ;;;###autoload
 (defun sessions-unified-core-fsession-restore (session-name &optional frame)
   "Restore the elscreen tab configuration."
-  (interactive
-   (list (fmsession-read-location)))
+  (interactive (list (fmsession-read-location)))
   (message "Input session-name %s" session-name)
   (if session-name
       (when (assoc session-name *sessions-unified-frames-session*)
@@ -298,15 +297,15 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 
 
 (defun sessions-unified-core-fsession-get-wm-desktop-name ()
-  let ((xwin-enabled    (protable-display-graphic-p))
-       (wm-hints        (if xwin-enabled (ignore-errors (emacs-panel-wm-hints))))
-       (wm-desktop-name (if wm-hints
-                            (nth (nth 1 (assoc 'current-desktop wm-hints))
-                                 (cdr  (assoc 'wm-desktop-names wm-hints))))))
-  (if xwin-enabled
-      (unless wm-hints
-        (session-unfiy-notify "Some error in wm-hints")))
-  wm-desktop-name)
+  (let* ((xwin-enabled    (protable-display-graphic-p))
+         (wm-hints        (if xwin-enabled (ignore-errors (emacs-panel-wm-hints))))
+         (wm-desktop-name (if wm-hints
+                              (nth (nth 1 (assoc 'current-desktop wm-hints))
+                                   (cdr  (assoc 'desktop-names wm-hints))))))
+    (if xwin-enabled
+        (unless wm-hints
+          (session-unfiy-notify "Some error in wm-hints")))
+    wm-desktop-name))
 
 (defun frame-session-set-this-location (frame &optional try-guessing)
   "Possible value of TRY_GUESS is T or 'ONLY"
@@ -362,8 +361,11 @@ display-about-screen, spacemacs-buffer/goto-buffer")
           (message "Hello")
           (message "calling sessions-unified-core-fsession-restore")
           (message "calling sessions-unified-core-fsession-restore1")
-          (sessions-unified-core-fsession-restore (frame-session-set-this-location frame try-guessing)
-                                                  frame)
+          (message "calling (frame-session-set-this-location frame try-guessing) %s %s" frame try-guessing)
+          (let ((loc (frame-session-set-this-location frame try-guessing)))
+            (message "loc: %s" loc)
+            (sessions-unified-core-fsession-restore loc
+                                                    frame))
           (message "called sessions-unified-core-fsession-restore")
 
           (when (and *session-unified-frame-session-restore-display-function*

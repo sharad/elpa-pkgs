@@ -34,7 +34,7 @@
   `(with-selected-frame (or ,frame (selected-frame))
      (let* ((tabs          (funcall tab-bar-tabs-function))
             (tabs-len      (length tabs))
-            (current-index (tab-bar--current-tab-idx tabs)))
+            (current-index (tab-bar--current-tab-index tabs)))
        (unwind-protect
            (progn
              (tab-bar-select-tab ,index)
@@ -46,7 +46,7 @@
 (defun ssu-get-current-tab-idx (frame)
   (1+ (with-selected-frame frame
         (let ((tabs (funcall tab-bar-tabs-function)))
-          (tab-bar--current-tab-idx tabs)))))
+          (tab-bar--current-tab-index tabs)))))
 
 (defun ssu-set-current-tab-idx (index frame)
   (with-selected-frame frame
@@ -79,7 +79,7 @@
 
 (defun ssu-get-tab-buffer-list (frame)
   (let* ((tabs    (funcall tab-bar-tabs-function frame))
-         (cidx    (tab-bar--current-tab-idx tabs))
+         (cidx    (tab-bar--current-tab-index tabs))
          (tab-len (length tabs)))
     (mapcar #'(lambda (i)
                 (ssu-get-buffer-list i frame))
@@ -89,7 +89,7 @@
   (let* ((fdata (copy-tree data))
          (tab-len (length fdata))
          (index 1))
-    (message  "ssu-set-tab-buffer-list data = %s" data)
+    ;; (message  "ssu-set-tab-buffer-list data = %s" data)
     (ssu-set-buffer-list (pop fdata)
                          index
                          frame)
