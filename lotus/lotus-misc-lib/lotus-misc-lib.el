@@ -691,8 +691,31 @@ containing it, until no links are left at any level.
                           #'dir-locals--all-files)
 
   (dir-locals-find-file "~/.bin/selsecret")
+  (dir-locals-find-file "~/.zshrc")
 
   (locate-dominating-file-dir "~/.zshrc" ".dir-locals.el")
+  (locate-dominating-file-dir "~/.zshrc" #'dir-locals--all-files)
   (locate-dominating-file-dir "~/.zshrc" #'dir-locals--all-files))
+
+(defun dir-locals-find-file-around (orgfn &rest args)
+  (let ((r (apply orgfn args)))
+    (message "Dir-org returned: %s args = %S" r args)
+    (if r
+        r
+      (let ((nr (apply #'locate-dominating-file-dir (append args (list #'dir-locals--all-files)))))
+        (message "New Dir-around returned: %s" nr)
+        nr))))
+
+(advice-add 'dir-locals-find-file :around #'dir-locals-find-file-around)
+(advice-remove 'dir-locals-find-file #'dir-locals-find-file-around)
+
+;; (defun his-tracing-function (orig-fun &rest args)
+;;   (message "display-buffer called with args %S" args)
+;;   (let ((res (apply orig-fun args)))
+;;     (message "display-buffer returned %S" res)
+;;     res))
+
+;; (advice-add 'display-buffer :around #'his-tracing-function)
+;; (advice-remove 'display-buffer #'his-tracing-function)
 
 ;;; misc-lib.el ends here
