@@ -632,7 +632,9 @@ containing it, until no links are left at any level.
 
       (let ((dir (or (file-name-directory filename) default-directory))
             target dirfile)
-        (when (file-exists-p (expand-file-name trg dir))
+        (when (if (functionp trg)
+                  (funcall trg dir)
+                (file-exists-p (expand-file-name trg dir)))
           (setq trgdirs (append trgdirs (list dir))))
 
         ;; Get the truename of the directory.
@@ -681,6 +683,15 @@ containing it, until no links are left at any level.
 (defun locate-dominating-file-dir (filename name)
   (cadr (locate-dominating-file-dirs filename name)))
 
-;; (locate-dominating-file-dir "~/.zshrc" ".git")
+(when nil
+  (locate-dominating-file-dir "~/.zshrc" ".git")
+
+  (locate-dominating-file (file-name-directory file)
+                          #'dir-locals--all-files)
+
+  (dir-locals-find-file "~/.bin/selsecret")
+
+  (locate-dominating-file-dir "~/.zshrc" ".dir-locals.el")
+  (locate-dominating-file-dir "~/.zshrc" #'dir-locals--all-files))
 
 ;;; misc-lib.el ends here
