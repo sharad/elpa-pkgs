@@ -279,7 +279,7 @@ display-about-screen, spacemacs-buffer/goto-buffer")
       (when (assoc session-name *sessions-unified-frames-session*)
         (message "Found session-name %s" session-name)
         (dolist (app-name *sessions-unified-core-fsession-registerd-apps*)
-          (session-unfiy-notify "start-- %s" app-name)
+          (session-unfiy-notify "start -- %s" app-name)
           (let ((app-fsession-alist (cdr (assoc session-name
                                                 *sessions-unified-frames-session*))))
             (let ((frame-data (cdr (assoc app-name
@@ -287,18 +287,22 @@ display-about-screen, spacemacs-buffer/goto-buffer")
               (when session-unified-debug
                 (session-unfiy-notify "Nstart: session-session %s" app-name))
               (if frame-data
-                  (sessions-unified--set-frame-data app-name
-                                                    (or frame
-                                                        (selected-frame))
-                                                    frame-data)
-                (session-unfiy-notify "Error: frame-data %s" frame-data))))))
+                  (condition-case e
+                      (sessions-unified--set-frame-data app-name
+                                                        (or frame
+                                                            (selected-frame))
+                                                        frame-data)
+                    ('error (message "sessions-unified-core-fsession-restore: Error: %s for app-name = %s"
+                                     e
+                                     app-name)))
+                (session-unfiy-notify "sessions-unified-core-fsession-restore: Error: frame-data %s" frame-data))))))
     (session-unfiy-notify "Error: session-name is %s" session-name)))
 
 
 
 (defun sessions-unified-core-fsession-get-wm-desktop-name ()
   (let* ((xwin-enabled    (protable-display-graphic-p))
-         (wm-hints        (if xwin-enabled (ignore-errors (emacs-panel-wm-hints))))
+         (wm-hints        (when xwin-enabled (ignore-errors (emacs-panel-wm-hints))))
          (wm-desktop-name (if wm-hints
                               (nth (nth 1 (assoc 'current-desktop wm-hints))
                                    (cdr  (assoc 'desktop-names wm-hints))))))
@@ -306,6 +310,14 @@ display-about-screen, spacemacs-buffer/goto-buffer")
         (unless wm-hints
           (session-unfiy-notify "Some error in wm-hints")))
     wm-desktop-name))
+
+(defun sessions-unified-core-fsession-get-wm-desktop-name ()
+  (when (protable-display-graphic-p)
+    (let ((wm-hints (ignore-errors (emacs-panel-wm-hints))))
+      (if wm-hints
+          (nth (nth 1 (assoc 'current-desktop wm-hints))
+               (cdr  (assoc 'desktop-names wm-hints)))
+        (session-unfiy-notify "Some error in wm-hints")))))
 
 (defun frame-session-set-this-location (frame &optional try-guessing)
   "Possible value of TRY_GUESS is T or 'ONLY"
@@ -315,15 +327,11 @@ display-about-screen, spacemacs-buffer/goto-buffer")
   ;; not-ask
   (interactive
    (list (selected-frame)))
-
   (if frame
       (funcall session-unified-utils-select-frame-fn frame)
     (error "frame is nil"))
-
   (session-unfiy-notify "in frame-session-set-this-location")
-
-  (let* ((xwin-enabled    (protable-display-graphic-p))
-         (wm-desktop-name (sessions-unified-core-fsession-get-wm-desktop-name))
+  (let* ((wm-desktop-name (sessions-unified-core-fsession-get-wm-desktop-name))
          (location        (if (and try-guessing
                                    wm-desktop-name
                                    (member wm-desktop-name
@@ -349,37 +357,36 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 
 
 (defun frame-session-restore (frame &optional try-guessing)
-  (when t
-    (session-unfiy-notify "in frame-session-restore")
-    (if (and *sessions-unified-frame-session-restore-lock*
-             (null *desktop-vc-read-inprogress*))
-        (progn
-          (session-unfiy-notify "pass in frame-session-restore")
-          (if frame
-              (funcall session-unified-utils-select-frame-fn frame)
-            (error "frame is nil"))
-          (message "Hello")
-          (message "calling sessions-unified-core-fsession-restore")
-          (message "calling sessions-unified-core-fsession-restore1")
-          (message "calling (frame-session-set-this-location frame try-guessing) %s %s" frame try-guessing)
-          (let ((loc (frame-session-set-this-location frame try-guessing)))
-            (message "loc: %s" loc)
-            (sessions-unified-core-fsession-restore loc
-                                                    frame))
-          (message "called sessions-unified-core-fsession-restore")
-
-          (when (and *session-unified-frame-session-restore-display-function*
-                     (functionp '*session-unified-frame-session-restore-display-function*))
-            (funcall *session-unified-frame-session-restore-display-function*))
-          frame)
+  (session-unfiy-notify "in frame-session-restore")
+  (if (and *sessions-unified-frame-session-restore-lock*
+           (null *desktop-vc-read-inprogress*))
       (progn
-        (session-unfiy-notify "not restoring screen session.")
-        (if *desktop-vc-read-inprogress*
-            (session-unfiy-notify "as desktop restore is in progress *desktop-vc-read-inprogress* %s"
-                                  *desktop-vc-read-inprogress*))
-        (if (null *sessions-unified-frame-session-restore-lock*)
-            (session-unfiy-notify "as another frame session restore in progress *sessions-unified-frame-session-restore-lock* %s"
-                                  *sessions-unified-frame-session-restore-lock*))))))
+        (session-unfiy-notify "pass in frame-session-restore")
+        (if frame
+            (funcall session-unified-utils-select-frame-fn frame)
+          (error "frame is nil"))
+        (message "Hello")
+        (message "calling sessions-unified-core-fsession-restore")
+        (message "calling sessions-unified-core-fsession-restore1")
+        (message "calling (frame-session-set-this-location frame try-guessing) %s %s" frame try-guessing)
+        (let ((loc (frame-session-set-this-location frame try-guessing)))
+          (message "loc: %s" loc)
+          (sessions-unified-core-fsession-restore loc
+                                                  frame))
+        (message "called sessions-unified-core-fsession-restore")
+
+        (when (and *session-unified-frame-session-restore-display-function*
+                   (functionp '*session-unified-frame-session-restore-display-function*))
+          (funcall *session-unified-frame-session-restore-display-function*))
+        frame)
+    (progn
+      (session-unfiy-notify "not restoring screen session.")
+      (if *desktop-vc-read-inprogress*
+          (session-unfiy-notify "as desktop restore is in progress *desktop-vc-read-inprogress* %s"
+                                *desktop-vc-read-inprogress*))
+      (if (null *sessions-unified-frame-session-restore-lock*)
+          (session-unfiy-notify "as another frame session restore in progress *sessions-unified-frame-session-restore-lock* %s"
+                                *sessions-unified-frame-session-restore-lock*)))))
 
 (defun frame-session-restore-force (frame)
   (let ((location (frame-parameter (selected-frame) 'frame-spec-id)))
@@ -443,8 +450,10 @@ display-about-screen, spacemacs-buffer/goto-buffer")
         (lotus-show-hook-member 'frame-session-restore-force 'after-make-frame-functions)
         (lotus-show-hook-member 'frame-session-save 'delete-frame-functions))
     (progn
-      (member #'frame-session-restore-force after-make-frame-functions)
-      (member #'frame-session-save delete-frame-functions))))
+      (member #'frame-session-restore-force
+              after-make-frame-functions)
+      (member #'frame-session-save
+              delete-frame-functions))))
 
 
 ;;;###autoload

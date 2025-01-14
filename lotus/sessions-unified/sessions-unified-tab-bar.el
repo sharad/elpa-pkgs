@@ -54,28 +54,44 @@
 
 (defun ssu-get-buffer-list (tab-index frame)
   (with-selected-tab tab-index frame
-    (mapcar #'(lambda (w)
-                (let ((b (window-buffer w)))
-                  (if (buffer-file-name b)
-                      (list :name (buffer-name b)
-                            :file (buffer-file-name b)
-                            :selected (eq w (selected-window))))))
-            (window-list))))
+    (remove nil
+            (mapcar #'(lambda (w)
+                        (let ((b (window-buffer w)))
+                          (list :name (buffer-name b)
+                                :file (buffer-file-name b)
+                                :selected (eq w (selected-window)))))
+                    (window-list)))))
 
 (defun ssu-set-buffer-list (data tab-index frame)
-  (if data
-      (with-selected-tab tab-index frame
-        (let ((selected-window nil)
-              (tdata (copy-tree data)))
-          (find-file (plist-get (pop tdata) :file))
-          (while tdata
-            (let ((d (pop tdata)))
-              (find-file-other-window (plist-get d :file))
-              (when (plist-get d :selected)
-                (setq selected-window (selected-window)))))
-          (when selected-window
-            (select-window selected-window))))
-    (error "No data")))
+  (message "ssu-set-buffer-list: index: %d" tab-index)
+  (unless data
+    (error "No data"))
+  (with-selected-tab tab-index frame
+    (let ((selected-window (selected-window))
+          (tdata (copy-tree data))
+          (at-first t))
+      (while tdata
+        (let ((wdata (pop tdata)))
+          (if wdata
+              (let* ((file   (plist-get wdata :file))
+                     (buffer (get-buffer (plist-get wdata :name))))
+                (if (cond (file   (funcall (if at-first
+                                               #'find-file
+                                             #'find-file-other-window)
+                                           file))
+                          (buffer (funcall (if at-first
+                                               #'switch-to-buffer
+                                             #'switch-to-buffer-other-window)
+                                           buffer t))
+                          (t      (message "Not doing anything for tab index = %d" tab-index)
+                                  nil))
+                    (progn
+                      (setq at-first nil)
+                      (when (plist-get wdata :selected))
+                      (setq selected-window (selected-window)))))
+            (error "ssu-set-buffer-list: Error: wdata is NIL"))))
+      (when selected-window
+        (select-window selected-window)))))
 
 (defun ssu-get-tab-buffer-list (frame)
   (let* ((tabs    (funcall tab-bar-tabs-function frame))
@@ -86,19 +102,25 @@
             (number-sequence 1 tab-len))))
 
 (defun ssu-set-tab-buffer-list (data frame)
-  (let* ((fdata (copy-tree data))
-         (tab-len (length fdata))
+  (let* ((fdata          (copy-tree data))
+         (not-create-tab (>= (length (funcall tab-bar-tabs-function frame))
+                             (length data)))
          (index 1))
-    ;; (message  "ssu-set-tab-buffer-list data = %s" data)
-    (ssu-set-buffer-list (pop fdata)
-                         index
-                         frame)
+    (message "ssu-set-tab-buffer-list: not-create-tab = %s, fdata len = %d"
+             not-create-tab
+             (length fdata))
     (while fdata
-      (incf index)
-      (tab-bar-new-tab)
+      (unless (or not-create-tab
+                  (= 1 index))
+        (message "ssu-set-tab-buffer-list: creating new tab")
+        (tab-bar-new-tab))
       (ssu-set-buffer-list (pop fdata)
                            index
-                           frame))))
+                           frame)
+      (message "ssu-set-tab-buffer-list while: len(fdata): %d, index: %d"
+               (length fdata)
+               index)
+      (incf index))))
 
 (defun ssu-get-desktop-buffers (frame)
 
@@ -125,7 +147,7 @@
           (if (stringp bufname)
               (if (get-buffer bufname)
                   (session-unfiy-notify "buffer %s already here" bufname)
-                (let ()
+                (progn
                   (session-unfiy-notify "Hello 1")
                   (session-unfiy-notify "Desktop lazily opening %s" bufname)
                   (unless (ignore-errors
