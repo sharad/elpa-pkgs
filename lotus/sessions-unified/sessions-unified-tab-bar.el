@@ -149,9 +149,6 @@
                 (ssu-get-desktop-buffers frame))
           fsession-data)))
 
-
-(setq test-atest (sessions-unified--get-frame-data :tab-bar (selected-frame)))
-
 (cl-defmethod sessions-unified--set-frame-data ((app (eql :tab-bar)) frame  data)
   (let ((fsession-data data))
     (if fsession-data                    ;may causing error
@@ -163,9 +160,10 @@
           (ssu-set-current-tab-idx (cdr (assoc 'current-tab-idx fsession-data))
                                    frame)))))
 
-(sessions-unified--set-frame-data :tab-bar
-                                  (selected-frame)
-                                  test-atest)
+;; (setq test-atest (sessions-unified--get-frame-data :tab-bar (selected-frame)))
+;; (sessions-unified--set-frame-data :tab-bar
+;;                                   (selected-frame)
+;;                                   test-atest)
 
 ;; (eval-after-load "tab-bar"
 ;;   (sessions-unified-fsession-register-fns 'tab-bar
