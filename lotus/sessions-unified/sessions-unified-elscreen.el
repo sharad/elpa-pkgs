@@ -185,17 +185,16 @@
 
                 (if (and elscreen-frame-confs
                          (elscreen-get-frame-confs nframe))
-                    (let* ((desktop-buffers
-                            (cdr (assoc 'desktop-buffers fsession-data))
-                            (screens
-                             (or
-                              (cdr (assoc 'screens fsession-data))
-                              `((,(length fsession-data) "*scratch*"))))
-                            (session-current-screen-buffers
-                             (nth 1 (assoc (cdr (assoc 'current-screen fsession-data))
-                                           screens)))
-                            (session-current-buffer-file
-                             (cdr (assoc 'current-buffer-file fsession-data)))))
+                    (let* ((desktop-buffers (cdr (assoc 'desktop-buffers
+                                                        fsession-data)))
+                           (screens (or (cdr (assoc 'screens
+                                                    fsession-data))
+                                        `((,(length fsession-data) "*scratch*"))))
+                           (session-current-screen-buffers (nth 1 (assoc (cdr (assoc 'current-screen
+                                                                                     fsession-data))
+                                                                         screens)))
+                           (session-current-buffer-file (cdr (assoc 'current-buffer-file
+                                                                    fsession-data))))
                       ;; (when t
                       (when session-unified-debug
                         (session-unfiy-notify "Bstart: session-current-screen-buffers %s" session-current-screen-buffers)
