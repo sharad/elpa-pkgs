@@ -34,7 +34,7 @@
   `(with-selected-frame (or ,frame (selected-frame))
      (let* ((tabs          (funcall tab-bar-tabs-function))
             (tabs-len      (length tabs))
-            (current-index (tab-bar--current-tab-index tabs)))
+            (current-index (tab-bar--current-tab-idx tabs)))
        (unwind-protect
            (progn
              (tab-bar-select-tab ,index)
@@ -43,12 +43,12 @@
 (put 'with-selected-tab 'lisp-indent-function 2)
 
 
-(defun ssu-get-current-tab-index (frame)
+(defun ssu-get-current-tab-idx (frame)
   (1+ (with-selected-frame frame
         (let ((tabs (funcall tab-bar-tabs-function)))
-          (tab-bar--current-tab-index tabs)))))
+          (tab-bar--current-tab-idx tabs)))))
 
-(defun ssu-set-current-tab-index (index frame)
+(defun ssu-set-current-tab-idx (index frame)
   (with-selected-frame frame
     (tab-bar-select-tab index)))
 
@@ -63,21 +63,23 @@
             (window-list))))
 
 (defun ssu-set-buffer-list (data tab-index frame)
-  (with-selected-tab tab-index frame
-    (let ((selected-window nil)
-          (tdata (copy-tree data)))
-      (find-file (plist-get (pop tdata) :file))
-      (while tdata
-        (let ((d (pop tdata)))
-          (find-file-other-window (plist-get d :file))
-          (when (plist-get d :selected)
-            (setq selected-window (selected-window)))))
-      (when selected-window
-        (select-window selected-window)))))
+  (if data
+      (with-selected-tab tab-index frame
+        (let ((selected-window nil)
+              (tdata (copy-tree data)))
+          (find-file (plist-get (pop tdata) :file))
+          (while tdata
+            (let ((d (pop tdata)))
+              (find-file-other-window (plist-get d :file))
+              (when (plist-get d :selected)
+                (setq selected-window (selected-window)))))
+          (when selected-window
+            (select-window selected-window))))
+    (error "No data")))
 
 (defun ssu-get-tab-buffer-list (frame)
   (let* ((tabs    (funcall tab-bar-tabs-function frame))
-         (cidx    (tab-bar--current-tab-index tabs))
+         (cidx    (tab-bar--current-tab-idx tabs))
          (tab-len (length tabs)))
     (mapcar #'(lambda (i)
                 (ssu-get-buffer-list i frame))
@@ -87,6 +89,7 @@
   (let* ((fdata (copy-tree data))
          (tab-len (length fdata))
          (index 1))
+    (message  "ssu-set-tab-buffer-list data = %s" data)
     (ssu-set-buffer-list (pop fdata)
                          index
                          frame)
@@ -136,8 +139,8 @@
 
 (cl-defmethod sessions-unified--get-frame-data ((app (eql :tab-bar)) frame)
   (let ((fsession-data nil))
-    (push (cons 'current-tab-index
-                (ssu-get-current-tab-index frame))
+    (push (cons 'current-tab-idx
+                (ssu-get-current-tab-idx frame))
           fsession-data)
     (push (cons 'tab-buff-list
                 (ssu-get-tab-buffer-list frame))
@@ -155,10 +158,10 @@
         (progn
           (ssu-set-desktop-buffers (cdr (assoc 'desktop-buffers fsession-data))
                                    frame)
-          (ssu-set-tab-buffer-list  (cdr (assoc 'tab-buff-list fsession-data))
-                                    frame)
-          (ssu-set-current-tab-index (cdr (assoc 'current-tab-index fsession-data))
-                                     frame)))))
+          (ssu-set-tab-buffer-list (cdr (assoc 'tab-buff-list fsession-data))
+                                   frame)
+          (ssu-set-current-tab-idx (cdr (assoc 'current-tab-idx fsession-data))
+                                   frame)))))
 
 (sessions-unified--set-frame-data :tab-bar
                                   (selected-frame)
