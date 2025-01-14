@@ -596,7 +596,7 @@ containing it, until no links are left at any level.
 ;; (demo-file-truename3 "~/.bin/selsecret" ".git")
 
 
-(defun locate-dominating-file-dirs (filename trg &optional counter prev-dirs trgdirs)
+(defun locate-dominating-file-dirs (filename name &optional counter prev-dirs trgdirs)
   "Return the truename of FILENAME.
 If FILENAME is not absolute, first expands it against `default-directory'.
 The truename of a file name is found by chasing symbolic links
@@ -631,10 +631,11 @@ containing it, until no links are left at any level.
           (error "Apparent cycle of symbolic links for %s" filename))
 
       (let ((dir (or (file-name-directory filename) default-directory))
-            target dirfile)
-        (when (if (functionp trg)
-                  (funcall trg dir)
-                (file-exists-p (expand-file-name trg dir)))
+            target
+            dirfile)
+        (when (if (functionp name)
+                  (funcall name dir)
+                (file-exists-p (expand-file-name name dir)))
           (setq trgdirs (append trgdirs (list dir))))
 
         ;; Get the truename of the directory.
@@ -650,7 +651,7 @@ containing it, until no links are left at any level.
                 (setq dir (cdr (assoc dir (car prev-dirs))))
               ;; (message "m%d: before trgdir = %s" (or (car counter) 0) trgdirs)
               (let* ((old dir)
-                     (file-trgdir (locate-dominating-file-dirs dirfile trg counter prev-dirs trgdirs))
+                     (file-trgdir (locate-dominating-file-dirs dirfile name counter prev-dirs trgdirs))
                      (new (file-name-as-directory (car file-trgdir))))
                 (setq trgdirs (cdr file-trgdir))
                 (setcar prev-dirs (cons (cons old new) (car prev-dirs)))
