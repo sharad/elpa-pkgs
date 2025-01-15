@@ -706,16 +706,10 @@ containing it, until no links are left at any level.
         (message "New Dir-around returned: %s" nr)
         nr))))
 
-(advice-add 'dir-locals-find-file :around #'dir-locals-find-file-around)
-(advice-remove 'dir-locals-find-file #'dir-locals-find-file-around)
-
-;; (defun his-tracing-function (orig-fun &rest args)
-;;   (message "display-buffer called with args %S" args)
-;;   (let ((res (apply orig-fun args)))
-;;     (message "display-buffer returned %S" res)
-;;     res))
-
-;; (advice-add 'display-buffer :around #'his-tracing-function)
-;; (advice-remove 'display-buffer #'his-tracing-function)
+(advice-remove 'dir-locals-find-file
+               #'dir-locals-find-file-around)
+(advice-add 'dir-locals-find-file
+            :around #'dir-locals-find-file-around)
+(advice--p #'dir-locals-find-file)
 
 ;;; misc-lib.el ends here
