@@ -365,16 +365,13 @@ display-about-screen, spacemacs-buffer/goto-buffer")
         (if frame
             (funcall session-unified-utils-select-frame-fn frame)
           (error "frame is nil"))
-        (message "Hello")
-        (message "calling sessions-unified-core-fsession-restore")
-        (message "calling sessions-unified-core-fsession-restore1")
         (message "calling (frame-session-set-this-location frame try-guessing) %s %s" frame try-guessing)
         (let ((loc (frame-session-set-this-location frame try-guessing)))
           (message "loc: %s" loc)
+          (message "calling sessions-unified-core-fsession-restore1")
           (sessions-unified-core-fsession-restore loc
-                                                  frame))
-        (message "called sessions-unified-core-fsession-restore")
-
+                                                  frame)
+          (message "called sessions-unified-core-fsession-restore"))
         (when (and *session-unified-frame-session-restore-display-function*
                    (functionp '*session-unified-frame-session-restore-display-function*))
           (funcall *session-unified-frame-session-restore-display-function*))
