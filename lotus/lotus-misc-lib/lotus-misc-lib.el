@@ -733,113 +733,195 @@ containing it, until no links are left at any level.
 
 ;; interactive root checking done in lsp--try-project-root-workspaces
 
-(defun lsp-find-session-folder (session file-name)
-  "Look in the current SESSION for folder containing FILE-NAME."
-  (let ((file-name-canonical (lsp-f-canonical file-name)))
-    (->> session
-         (lsp-session-folders)
-         (--filter (and (lsp--files-same-host it file-name-canonical)
-                        (or (lsp-f-same? it file-name-canonical)
-                            (and (f-dir? it)
-                                 (lsp-f-ancestor-of? it file-name-canonical)))))
-         (--max-by (> (length it)
-                      (length other))))))
+;; (defun lsp-f-same? (path-a path-b)
+;;   "Return t if PATH-A and PATH-B are references to the same file.
+;; Symlinks are not followed."
+;;   (when (and (f-exists? path-a)
+;;              (f-exists? path-b))
+;;     (equal
+;;      (lsp-f-canonical (directory-file-name (f-expand path-a)))
+;;      (lsp-f-canonical (directory-file-name (f-expand path-b))))))
+
+;; (defun lsp-f-ancestor-of? (path-a path-b)
+;;   "Return t if PATH-A is an ancestor of PATH-B.
+;; Symlinks are not followed."
+;;   (unless (lsp-f-same? path-a path-b)
+;;     (s-prefix? (concat (lsp-f-canonical path-a) (f-path-separator))
+;;                (lsp-f-canonical path-b))))
+
+;; (defun lsp-find-session-folder (session file-name)
+;;   "Look in the current SESSION for folder containing FILE-NAME."
+;;   (let ((file-name-canonical (lsp-f-canonical file-name)))
+;;     (->> session
+;;          (lsp-session-folders)
+;;          (--filter (and (lsp--files-same-host it file-name-canonical)
+;;                         (or (lsp-f-same? it file-name-canonical)
+;;                             (and (f-dir? it)
+;;                                  (lsp-f-ancestor-of? it file-name-canonical)))))
+;;          (--max-by (> (length it)
+;;                       (length other))))))
 
 
-(defun lsp (&optional arg)
-  "Entry point for the server startup.
-When ARG is t the lsp mode will start new language server even if
-there is language server which can handle current language. When
-ARG is nil current file will be opened in multi folder language
-server if there is such. When `lsp' is called with prefix
-argument ask the user to select which language server to start."
-  (interactive "P")
+(defun lsp-find-session-folder-around-advice-fn-with-file-truename (orgfn &rest args)
+  (or (apply orgfn args)
+      (let ((session   (car args))
+            (file-name (cadr args)))
+        (let ((file-name-canonical (lsp-f-canonical file-name)))
+          (->> session
+               (lsp-session-folders)
+               (--filter (and (lsp--files-same-host (file-truename it)
+                                                    (file-truename file-name-canonical))
+                              (or (lsp-f-same? (file-truename it)
+                                               (file-truename file-name-canonical))
+                                  (and (f-dir? (file-truename it))
+                                       (lsp-f-ancestor-of? (file-truename it)
+                                                           (file-truename file-name-canonical))))))
+               (--max-by (> (length (file-truename it))
+                            (length (file-truename other)))))))))
 
-  (lsp--require-packages)
 
-  (when (buffer-file-name)
-    (let (clients
-          (matching-clients (lsp--filter-clients
-                             (-andfn #'lsp--supports-buffer?
-                                     #'lsp--server-binary-present?))))
-      (cond
-       (matching-clients
-        (when (setq lsp--buffer-workspaces
-                    (or (and
-                         ;; Don't open as library file if file is part of a project.
-                         (not (lsp-find-session-folder (lsp-session) (buffer-file-name)))
-                         (lsp--try-open-in-library-workspace))
-                        (lsp--try-project-root-workspaces (equal arg '(4))
-                                                          (and arg (not (equal arg 1))))))
-          (lsp-mode 1)
-          (when lsp-auto-configure (lsp--auto-configure))
-          (setq lsp-buffer-uri (lsp--buffer-uri))
-          (lsp--info "Connected to %s."
-                     (apply 'concat (--map (format "[%s %s]"
-                                                   (lsp--workspace-print it)
-                                                   (lsp--workspace-root it))
-                                           lsp--buffer-workspaces)))))
-       ;; look for servers which are currently being downloaded.
-       ((setq clients (lsp--filter-clients (-andfn #'lsp--supports-buffer?
-                                                   #'lsp--client-download-in-progress?)))
-        (lsp--info "There are language server(%s) installation in progress.
-The server(s) will be started in the buffer when it has finished."
-                   (-map #'lsp--client-server-id clients))
-        (seq-do (lambda (client)
-                  (cl-pushnew (current-buffer) (lsp--client-buffers client)))
-                clients))
-       ;; look for servers to install
-       ((setq clients (lsp--filter-clients
-                       (-andfn #'lsp--supports-buffer?
-                               (-const lsp-enable-suggest-server-download)
-                               #'lsp--client-download-server-fn
-                               (-not #'lsp--client-download-in-progress?))))
-        (let ((client (lsp--completing-read
-                       (concat "Unable to find installed server supporting this file. "
-                               "The following servers could be installed automatically: ")
-                       clients
-                       (-compose #'symbol-name #'lsp--client-server-id)
-                       nil
-                       t)))
-          (cl-pushnew (current-buffer) (lsp--client-buffers client))
-          (lsp--install-server-internal client)))
-       ;; ignore other warnings
-       ((not lsp-warn-no-matched-clients)
-        nil)
-       ;; automatic installation disabled
-       ((setq clients (unless matching-clients
-                        (lsp--filter-clients (-andfn #'lsp--supports-buffer?
-                                                     #'lsp--client-download-server-fn
-                                                     (-not (-const lsp-enable-suggest-server-download))
-                                                     (-not #'lsp--server-binary-present?)))))
-        (lsp--warn "The following servers support current file but automatic download is disabled: %s
-\(If you have already installed the server check *lsp-log*)."
-                   (mapconcat (lambda (client)
-                                (symbol-name (lsp--client-server-id client)))
-                              clients
-                              " ")))
-       ;; no clients present
-       ((setq clients (unless matching-clients
-                        (lsp--filter-clients (-andfn #'lsp--supports-buffer?
-                                                     (-not #'lsp--server-binary-present?)))))
-        (lsp--warn "The following servers support current file but do not have automatic installation: %s
-You may find the installation instructions at https://emacs-lsp.github.io/lsp-mode/page/languages.
-\(If you have already installed the server check *lsp-log*)."
-                   (mapconcat (lambda (client)
-                                (symbol-name (lsp--client-server-id client)))
-                              clients
-                              " ")))
-       ;; no matches
-       ((-> #'lsp--supports-buffer? lsp--filter-clients not)
-        (lsp--error "There are no language servers supporting current mode `%s' registered with `lsp-mode'.
-This issue might be caused by:
-1. The language you are trying to use does not have built-in support in `lsp-mode'. You must install the required support manually. Examples of this are `lsp-java' or `lsp-metals'.
-2. The language server that you expect to run is not configured to run for major mode `%s'. You may check that by checking the `:major-modes' that are passed to `lsp-register-client'.
-3. The language server that you expect to run has an `:activation-fn` passed to `lsp-register-client` that prevents it supporting this buffer.
-4. `lsp-mode' doesn't have any integration for the language behind `%s'. Refer to https://emacs-lsp.github.io/lsp-mode/page/languages and https://langserver.org/ .
-5. You are over `tramp'. In this case follow https://emacs-lsp.github.io/lsp-mode/page/remote/.
-6. You have disabled the `lsp-mode' clients for that file. (Check `lsp-enabled-clients' and `lsp-disabled-clients').
-You can customize `lsp-warn-no-matched-clients' to disable this message."
-                    major-mode major-mode major-mode))))))
+(advice-add 'lsp-find-session-folder :around
+            #'lsp-find-session-folder-around-advice-fn-with-file-truename)
+(advice-remove 'lsp-find-session-folder
+               #'lsp-find-session-folder-around-advice-fn-with-file-truename)
+
+;; TEST (lsp-find-session-folder (lsp-session) (buffer-file-name) )
+
+;; (when nil
+;;   (setq lsp--buffer-workspaces
+;;         (or (and
+;;              ;; Don't open as library file if file is part of a project.
+;;              (not (lsp-find-session-folder (lsp-session) (buffer-file-name)))
+;;              (lsp--try-open-in-library-workspace))
+;;             (lsp--try-project-root-workspaces (equal arg '(4))
+;;                                               (and arg (not (equal arg 1))))))
+
+
+;;   (defun lsp--try-project-root-workspaces (ask-for-client ignore-multi-folder)
+;;     "Try create opening file as a project file.
+;; When IGNORE-MULTI-FOLDER is t the lsp mode will start new
+;; language server even if there is language server which can handle
+;; current language. When IGNORE-MULTI-FOLDER is nil current file
+;; will be opened in multi folder language server if there is
+;; such."
+;;     (-let ((session (lsp-session)))
+;;       (-if-let (clients (if ask-for-client
+;;                             (list (lsp--completing-read "Select server to start: "
+;;                                                         (ht-values lsp-clients)
+;;                                                         (-compose 'symbol-name 'lsp--client-server-id) nil t))
+;;                           (lsp--find-clients)))
+;;           (-if-let (project-root (-some-> session
+;;                                    (lsp--calculate-root (buffer-file-name))
+;;                                    (lsp-f-canonical)))
+;;               (progn
+;;                 ;; update project roots if needed and persist the lsp session
+;;                 (unless (-contains? (lsp-session-folders session) project-root)
+;;                   (cl-pushnew project-root (lsp-session-folders session))
+;;                   (lsp--persist-session session))
+;;                 (lsp--ensure-lsp-servers session clients project-root ignore-multi-folder))
+;;             (lsp--warn "%s not in project or it is blocklisted." (buffer-name))
+;;             nil)
+;;         (lsp--warn "No LSP server for %s(check *lsp-log*)." major-mode)
+;;         nil)))
+
+;;   (defun lsp (&optional arg)
+;;     "Entry point for the server startup.
+;; When ARG is t the lsp mode will start new language server even if
+;; there is language server which can handle current language. When
+;; ARG is nil current file will be opened in multi folder language
+;; server if there is such. When `lsp' is called with prefix
+;; argument ask the user to select which language server to start."
+;;     (interactive "P")
+
+;;     (lsp--require-packages)
+
+;;     (when (buffer-file-name)
+;;       (let (clients
+;;             (matching-clients (lsp--filter-clients
+;;                                (-andfn #'lsp--supports-buffer?
+;;                                        #'lsp--server-binary-present?))))
+;;         (cond
+;;          (matching-clients
+;;           (when (setq lsp--buffer-workspaces
+;;                       (or (and
+;;                            ;; Don't open as library file if file is part of a project.
+;;                            (not (lsp-find-session-folder (lsp-session) (buffer-file-name)))
+;;                            (lsp--try-open-in-library-workspace))
+;;                           (lsp--try-project-root-workspaces (equal arg '(4))
+;;                                                             (and arg (not (equal arg 1))))))
+;;             (lsp-mode 1)
+;;             (when lsp-auto-configure (lsp--auto-configure))
+;;             (setq lsp-buffer-uri (lsp--buffer-uri))
+;;             (lsp--info "Connected to %s."
+;;                        (apply 'concat (--map (format "[%s %s]"
+;;                                                      (lsp--workspace-print it)
+;;                                                      (lsp--workspace-root it))
+;;                                              lsp--buffer-workspaces)))))
+;;          ;; look for servers which are currently being downloaded.
+;;          ((setq clients (lsp--filter-clients (-andfn #'lsp--supports-buffer?
+;;                                                      #'lsp--client-download-in-progress?)))
+;;           (lsp--info "There are language server(%s) installation in progress.
+;; The server(s) will be started in the buffer when it has finished."
+;;                      (-map #'lsp--client-server-id clients))
+;;           (seq-do (lambda (client)
+;;                     (cl-pushnew (current-buffer) (lsp--client-buffers client)))
+;;                   clients))
+;;          ;; look for servers to install
+;;          ((setq clients (lsp--filter-clients
+;;                          (-andfn #'lsp--supports-buffer?
+;;                                  (-const lsp-enable-suggest-server-download)
+;;                                  #'lsp--client-download-server-fn
+;;                                  (-not #'lsp--client-download-in-progress?))))
+;;           (let ((client (lsp--completing-read
+;;                          (concat "Unable to find installed server supporting this file. "
+;;                                  "The following servers could be installed automatically: ")
+;;                          clients
+;;                          (-compose #'symbol-name #'lsp--client-server-id)
+;;                          nil
+;;                          t)))
+;;             (cl-pushnew (current-buffer) (lsp--client-buffers client))
+;;             (lsp--install-server-internal client)))
+;;          ;; ignore other warnings
+;;          ((not lsp-warn-no-matched-clients)
+;;           nil)
+;;          ;; automatic installation disabled
+;;          ((setq clients (unless matching-clients
+;;                           (lsp--filter-clients (-andfn #'lsp--supports-buffer?
+;;                                                        #'lsp--client-download-server-fn
+;;                                                        (-not (-const lsp-enable-suggest-server-download))
+;;                                                        (-not #'lsp--server-binary-present?)))))
+;;           (lsp--warn "The following servers support current file but automatic download is disabled: %s
+;; \(If you have already installed the server check *lsp-log*)."
+;;                      (mapconcat (lambda (client)
+;;                                   (symbol-name (lsp--client-server-id client)))
+;;                                 clients
+;;                                 " ")))
+;;          ;; no clients present
+;;          ((setq clients (unless matching-clients
+;;                           (lsp--filter-clients (-andfn #'lsp--supports-buffer?
+;;                                                        (-not #'lsp--server-binary-present?)))))
+;;           (lsp--warn "The following servers support current file but do not have automatic installation: %s
+;; You may find the installation instructions at https://emacs-lsp.github.io/lsp-mode/page/languages.
+;; \(If you have already installed the server check *lsp-log*)."
+;;                      (mapconcat (lambda (client)
+;;                                   (symbol-name (lsp--client-server-id client)))
+;;                                 clients
+;;                                 " ")))
+;;          ;; no matches
+;;          ((-> #'lsp--supports-buffer? lsp--filter-clients not)
+;;           (lsp--error "There are no language servers supporting current mode `%s' registered with `lsp-mode'.
+;; This issue might be caused by:
+;; 1. The language you are trying to use does not have built-in support in `lsp-mode'. You must install the required support manually. Examples of this are `lsp-java' or `lsp-metals'.
+;; 2. The language server that you expect to run is not configured to run for major mode `%s'. You may check that by checking the `:major-modes' that are passed to `lsp-register-client'.
+;; 3. The language server that you expect to run has an `:activation-fn` passed to `lsp-register-client` that prevents it supporting this buffer.
+;; 4. `lsp-mode' doesn't have any integration for the language behind `%s'. Refer to https://emacs-lsp.github.io/lsp-mode/page/languages and https://langserver.org/ .
+;; 5. You are over `tramp'. In this case follow https://emacs-lsp.github.io/lsp-mode/page/remote/.
+;; 6. You have disabled the `lsp-mode' clients for that file. (Check `lsp-enabled-clients' and `lsp-disabled-clients').
+;; You can customize `lsp-warn-no-matched-clients' to disable this message."
+;;                       major-mode major-mode major-mode)))))))
+
+
+
+
 
 ;;; misc-lib.el ends here
