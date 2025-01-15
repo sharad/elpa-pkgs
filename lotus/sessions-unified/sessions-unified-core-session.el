@@ -255,20 +255,7 @@ get re-enabled here.")
 ;;;###autoload
 (defun sessions-unified-core-session-check ()
   (interactive)
-  (if (called-interactively-p 'interactive)
-      (progn
-        (lotus-show-hook-member 'sessions-unified-core-session-store-on-idle-interval 'auto-save-hook)
-        (lotus-show-hook-member 'sessions-unified-core-session-store-immediately 'kill-emacs-hook))
-    (and (member #'sessions-unified-core-session-store-on-idle-interval
-                 auto-save-hook)
-         (member #'sessions-unified-core-session-store-immediately
-                 kill-emacs-hook)))
-  (dolist (app-appfn *sessions-unified-core-session-registerd-restore-list*)
-    (let ((app-name (car app-appfn))
-          (app-func (nth 5 app-appfn)))
-      (if app-func
-          (funcall app-func)
-        (message "For app %s no app-fun present" app-name)))))
+  (sessions-unified--session-check nil))
 
 (defalias 'lotus-check-session-saving #'sessions-unified-core-session-check)
 
@@ -323,6 +310,14 @@ get re-enabled here.")
     (sessions-unified-run-disable-restore-interrupting-feature-run)))
 
 (cl-defmethod sessions-unified--session-check (app)
+  (if (called-interactively-p 'interactive)
+      (progn
+        (lotus-show-hook-member 'sessions-unified-core-session-store-on-idle-interval 'auto-save-hook)
+        (lotus-show-hook-member 'sessions-unified-core-session-store-immediately 'kill-emacs-hook))
+    (and (member #'sessions-unified-core-session-store-on-idle-interval
+                 auto-save-hook)
+         (member #'sessions-unified-core-session-store-immediately
+                 kill-emacs-hook)))
   (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
     (sessions-unified--session-check sym)))
 
