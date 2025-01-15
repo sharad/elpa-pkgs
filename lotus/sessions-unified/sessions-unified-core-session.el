@@ -273,27 +273,17 @@ get re-enabled here.")
 (defalias 'lotus-check-session-saving #'sessions-unified-core-session-check)
 
 
-(cl-defgeneric sessions-unified--session-store (app))
-(cl-defgeneric sessions-unified--session-restore (app))
-(cl-defgeneric sessions-unified--session-enable (app))
-(cl-defgeneric sessions-unified--session-disable (app))
-(cl-defgeneric sessions-unified--session-check (app))
-
-
 (cl-defmethod sessions-unified--session-store ((app null))
   (dolist (sym *sessions-unified-core-session-registerd-store-list*)
     (sessions-unified--session-store sym)))
 (cl-defmethod sessions-unified--session-restore ((app null))
-  (condition-case e
-      (progn
-        (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
-          (when sym
-            (sessions-unified--session-restore sym)))
-        (sessions-unified--session-enable app)
-        t)
-    ('error
-     (message "Error: e")
-     nil)))
+  (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
+    (when sym
+      (condition-case e
+          (sessions-unified--session-restore sym)
+        ('error (message "Error: %s" e)))))
+  (sessions-unified--session-enable app)
+  t)
 
 (cl-defmethod sessions-unified--session-enable ((app null))
   (add-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)

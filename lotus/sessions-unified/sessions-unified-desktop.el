@@ -386,8 +386,8 @@ so returns nil if pid is nil."
          (desktop-base-file-name (file-name-nondirectory desktop-save-filename)))
     (prog1
         (setq *desktop-vc-read-inprogress* t)
-      (lotus-disable-session-saving-immediately)
-
+      ;; (lotus-disable-session-saving-immediately)
+      (sessions-unified-session-disable)
       ;; (unless (desktop-owner)
       ;;   (condition-case nil
       ;;       (desktop-claim-lock)

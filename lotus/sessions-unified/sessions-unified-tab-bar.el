@@ -103,15 +103,15 @@
 
 (defun ssu-set-tab-buffer-list (data frame)
   (let* ((fdata          (copy-tree data))
-         (not-create-tab (>= (length (funcall tab-bar-tabs-function frame))
-                             (length data)))
+         (tabs-len       (length (funcall tab-bar-tabs-function frame)))
+         ;; (not-create-tab (>= tabs-len (length data)))
          (index 1))
-    (message "ssu-set-tab-buffer-list: not-create-tab = %s, fdata len = %d"
-             not-create-tab
+    (message "ssu-set-tab-buffer-list: tabs-len = %d, fdata len = %d"
+             tabs-len ;;not-create-tab
              (length fdata))
     (while fdata
-      (unless (or not-create-tab
-                  (= 1 index))
+      (when (> index tabs-len)
+        ;; unless (or not-create-tab (= 1 index))
         (message "ssu-set-tab-buffer-list: creating new tab")
         (tab-bar-new-tab))
       (ssu-set-buffer-list (pop fdata)
@@ -180,7 +180,8 @@
           (ssu-set-tab-buffer-list (cdr (assoc 'tab-buff-list fsession-data))
                                    frame)
           (ssu-set-current-tab-idx (cdr (assoc 'current-tab-idx fsession-data))
-                                   frame)))))
+                                   frame))
+      (message "set-frame-data: NIL data not setting frame"))))
 
 ;; (setq test-atest (sessions-unified--get-frame-data :tab-bar (selected-frame)))
 ;; (sessions-unified--set-frame-data :tab-bar
