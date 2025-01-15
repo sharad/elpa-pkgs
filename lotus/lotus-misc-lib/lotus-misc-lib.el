@@ -620,7 +620,7 @@ containing it, until no links are left at any level.
                (rest (substring filename (match-end 0))))
            (setq filename (concat (expand-file-name first-part) rest)))))
 
-  (or counter (setq counter (list 100)))
+  (or counter (setq counter (list 300)))
   (let (done)
     (or prev-dirs (setq prev-dirs (list nil)))
     ;; If this file directly leads to a link, process that iteratively
@@ -706,10 +706,27 @@ containing it, until no links are left at any level.
         (message "New Dir-around returned: %s" nr)
         nr))))
 
+(defun dir-locals-find-file-around (orgfn &rest args)
+  (or (apply orgfn args)
+      (apply #'locate-dominating-file-dir (append args (list #'dir-locals--all-files)))))
+
 (advice-remove 'dir-locals-find-file
                #'dir-locals-find-file-around)
 (advice-add 'dir-locals-find-file
             :around #'dir-locals-find-file-around)
 (advice--p #'dir-locals-find-file)
+
+
+(defun bury-previous-minibuffers ()
+  (let ((blist (cdr (buffer-list))))
+    (while (string-match-p " \\*Minibuf"
+                           (buffer-name (car blist)))
+      (bury-buffer (car blist))
+      (message "Buried %s buffer"
+               (car blist))
+      (setq blist (cdr blist)))))
+
+(remove-hook 'kill-buffer-hook
+             #'bury-previous-minibuffers)
 
 ;;; misc-lib.el ends here
