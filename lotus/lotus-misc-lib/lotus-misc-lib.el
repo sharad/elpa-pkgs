@@ -1078,7 +1078,7 @@ to see whether it should be considered."
 (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)
-  (magit-wip-push ref nil))
+  (magit-wip-push ref))
 
 
 
