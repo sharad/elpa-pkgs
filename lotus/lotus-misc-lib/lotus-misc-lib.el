@@ -1035,8 +1035,8 @@ to see whether it should be considered."
 magit-wip-commit-worktree
 
 (defun magit-wip-commit-worktree-around (orgfn &rest args)
-  (or (apply orgfn args)
-      (apply #'locate-dominating-file-dir (append args (list #'dir-locals--all-files)))))
+  (progn (apply orgfn args)
+         ))
 
 (advice-remove 'magit-wip-commit-worktree
                #'magit-wip-commit-worktree-around)
