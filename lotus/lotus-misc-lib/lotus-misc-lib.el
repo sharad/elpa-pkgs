@@ -1032,11 +1032,11 @@ to see whether it should be considered."
             #'dir-locals-collect-variables-around-advice-fn-with-file-truename)
 
 
-(defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
-  (message "magit-wip-push: ref %s, files %s, msg %s"
-           ref files msg)
-  (message "upstream branch: %s"
-           (magit-get-upstream-branch (concat "ref/wip/wtree/" ref))))
+;; (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
+;;   (message "magit-wip-push: ref %s, files %s, msg %s"
+;;            ref files msg)
+;;   (message "upstream branch: %s"
+;;            (magit-get-upstream-branch (concat "ref/wip/wtree/" ref))))
 
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
   (progn
