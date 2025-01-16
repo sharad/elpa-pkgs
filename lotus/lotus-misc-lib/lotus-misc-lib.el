@@ -1050,12 +1050,10 @@ to see whether it should be considered."
           (message "push failed"))
       (message "magit-wip-push: ref %s not exists"
                wip-ref))))
-
 (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)
   (magit-wip-push ref))
-
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
   (progn
     (if (apply orgfn args)
@@ -1065,27 +1063,17 @@ to see whether it should be considered."
     (apply #'magit-wip-commit-worktree-fn-to-push-wip
            args)))
 
-(advice-remove 'magit-wip-commit-worktree
-               #'magit-wip-commit-worktree-around-advice-fn)
-(advice-add 'magit-wip-commit-worktree
-            :around #'magit-wip-commit-worktree-around-advice-fn)
-(advice--p #'magit-wip-commit-worktree)
-
-
-
-
-
-
-
-;; magit-read-remote-branch
-
-;; (magit-get-upstream-remote "master")
-
-
-;; (magit-local-branch-p "refs/wip/wtree/refs/heads/master")
-
-;; (magit-ref-p "refs/wip/wtree/refs/heads/master")
-;; (substring "refs/heads/master" (length "refs/heads/"))
-
+;; Define the global minor mode for magit wip push
+(define-minor-mode magit-wip-push-mode
+  "A global minor mode magit wip push."
+  :global t                             ; Make it a global minor mode
+  :init-value nil                       ; Default to disabled
+  :lighter " WP"                        ; Display in the mode line
+  (if magit-wip-push-mode
+      (advice-add 'magit-wip-commit-worktree
+                  :around #'magit-wip-commit-worktree-around-advice-fn)
+    (when (or t (advice--p #'magit-wip-commit-worktree))
+      (advice-remove 'magit-wip-commit-worktree
+                     #'magit-wip-commit-worktree-around-advice-fn))))
 
 ;;; misc-lib.el ends here
