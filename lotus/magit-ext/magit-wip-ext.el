@@ -51,13 +51,12 @@
            ref files msg)
   (magit-wip-push ref))
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
-  (progn
-    (if (apply orgfn args)
-        (message "magit-wip-push: success")
-      (message "magit-wip-push: fail"))
-    (message "magit-wip-push: args: %S" args)
-    (apply #'magit-wip-commit-worktree-fn-to-push-wip
-           args)))
+  (if (apply orgfn args)
+      (message "magit-wip-push: success")
+    (message "magit-wip-push: fail"))
+  (message "magit-wip-push: args: %S" args)
+  (apply #'magit-wip-commit-worktree-fn-to-push-wip
+         args))
 ;; Define the global minor mode for magit wip push
 (define-minor-mode magit-wip-push-mode
   "A global minor mode magit wip push."
