@@ -1059,7 +1059,7 @@ to see whether it should be considered."
            ref files msg)
 
   (let ((wip-ref (concat "ref/wip/wtree/" ref)))
-    magit-ref-p)
+    (magit-ref-p wip-ref))
 
   (message "upstream branch: %s"
            (magit-get-upstream-branch (concat "ref/wip/wtree/" ref))))
