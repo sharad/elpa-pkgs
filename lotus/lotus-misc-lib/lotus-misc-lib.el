@@ -1057,8 +1057,22 @@ to see whether it should be considered."
 (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)
+
+  (let ((wip-ref (concat "ref/wip/wtree/" ref)))
+    magit-ref-p)
+
   (message "upstream branch: %s"
            (magit-get-upstream-branch (concat "ref/wip/wtree/" ref))))
+
+
+magit-read-remote-branch
+
+(magit-get-upstream-remote "master")
+
+
+(magit-local-branch-p "refs/wip/wtree/refs/heads/master")
+
+(magit-ref-p "refs/wip/wtree/refs/heads/master")
 
 
 ;;; misc-lib.el ends here
