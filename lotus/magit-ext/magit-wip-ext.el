@@ -28,6 +28,20 @@
 
 
 (defvar magit-wip-push-inhibit-count 10)
+(defvar magit-wip-push-mode-after-success-hook nil)
+(defvar magit-wip-push-mode-after-fail-hook nil)
+
+(defun magit-git-push-nons (branch target args)
+  (run-hooks 'magit-credential-hook)
+  ;; If the remote branch already exists, then we do not have to
+  ;; qualify the target, which we prefer to avoid doing because
+  ;; using the default namespace is wrong in obscure cases.
+  (pcase-let ((namespace (if (magit-get-tracked target) "" "refs/heads/"))
+              (`(,remote . ,target)
+               (magit-split-branch-name target)))
+    (magit-run-git-async "push" "-v" args remote
+                         (format "%s:%s" branch target))))
+
 (defun magit-wip-push (ref &optional remote args)
   (interactive
    (list (magit-ref-fullname "HEAD")
@@ -36,16 +50,25 @@
   (let* ((local-branch    (substring ref (length "refs/heads/")))
          (upstream-remote (or remote
                               (magit-get-upstream-remote local-branch)))
-         (wip-ref (concat "wip/wtree/" ref))
-         (local-wip-ref (string-join (list "refs" wip-ref) "/")))
+         (wip-ref         (string-join (list "wip/wtree" ref) "/"))
+         (local-wip-ref   (string-join (list "refs" wip-ref) "/"))
+         (remote-wip-ref  (string-join (list "refs/heads" wip-ref) "/")))
+    (message "magit-wip-push: wip-ref: %s" wip-ref)
+    (message "magit-wip-push: local-wip-ref: %s" local-wip-ref)
+    (message "magit-wip-push: upstream-remote: %s" upstream-remote)
+    (message "magit-wip-push: remote-wip-ref: %s" remote-wip-ref)
     (if (magit-ref-p local-wip-ref)
-        (if (magit-git-push local-wip-ref
-                            (string-join (list upstream-remote wip-ref) "/")
-                            args)
-            (message "magit-wip-push: push passed")
-          (message "magit-wip-push: push failed"))
+        (if (magit-git-push-nons local-wip-ref
+                                 (string-join (list upstream-remote remote-wip-ref) "/")
+                                 args)
+            (progn
+              (message "magit-wip-push: push passed")
+              (run-hooks magit-wip-push-mode-after-success-hook))
+          (progn
+            (message "magit-wip-push: push failed")
+            (run-hooks magit-wip-push-mode-after-fail-hook)))
       (message "magit-wip-push: ref %s not exists"
-               wip-ref))))
+               local-wip-ref))))
 (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)

@@ -736,38 +736,6 @@ containing it, until no links are left at any level.
           #'bury-previous-minibuffers)
 
 
-
-;; interactive root checking done in lsp--try-project-root-workspaces
-
-;; (defun lsp-f-same? (path-a path-b)
-;;   "Return t if PATH-A and PATH-B are references to the same file.
-;; Symlinks are not followed."
-;;   (when (and (f-exists? path-a)
-;;              (f-exists? path-b))
-;;     (equal
-;;      (lsp-f-canonical (directory-file-name (f-expand path-a)))
-;;      (lsp-f-canonical (directory-file-name (f-expand path-b))))))
-
-;; (defun lsp-f-ancestor-of? (path-a path-b)
-;;   "Return t if PATH-A is an ancestor of PATH-B.
-;; Symlinks are not followed."
-;;   (unless (lsp-f-same? path-a path-b)
-;;     (s-prefix? (concat (lsp-f-canonical path-a) (f-path-separator))
-;;                (lsp-f-canonical path-b))))
-
-;; (defun lsp-find-session-folder (session file-name)
-;;   "Look in the current SESSION for folder containing FILE-NAME."
-;;   (let ((file-name-canonical (lsp-f-canonical file-name)))
-;;     (->> session
-;;          (lsp-session-folders)
-;;          (--filter (and (lsp--files-same-host it file-name-canonical)
-;;                         (or (lsp-f-same? it file-name-canonical)
-;;                             (and (f-dir? it)
-;;                                  (lsp-f-ancestor-of? it file-name-canonical)))))
-;;          (--max-by (> (length it)
-;;                       (length other))))))
-
-
 (defun lsp-find-session-folder-around-advice-fn-with-file-truename (orgfn &rest args)
   (or (apply orgfn args)
       (let ((session   (car args))
@@ -788,7 +756,6 @@ containing it, until no links are left at any level.
                #'lsp-find-session-folder-around-advice-fn-with-file-truename)
 (advice-add 'lsp-find-session-folder :around
             #'lsp-find-session-folder-around-advice-fn-with-file-truename)
-
 
 
 ;; (dir-locals-find-file "~/.zshrc")
