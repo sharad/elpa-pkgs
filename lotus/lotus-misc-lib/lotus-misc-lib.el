@@ -1055,7 +1055,17 @@ to see whether it should be considered."
 
 
 
-(defun magit-wip-push (wipref &optional remote))
+(defun magit-wip-push (wipref &optional remote args)
+  (let* ((local-branch  (substring ref (length "refs/heads/")))
+         (upstream-remote (magit-get-upstream-remote local-branch))
+         (wip-ref (concat "wip/wtree/" ref))
+         (local-wip-ref (string-join (list "refs" wip-ref) "/")))
+    (if (magit-ref-p local-wip-ref)
+        (magit-git-push local-wip-ref
+                        (string-join (list upstream-remote wip-ref) "/")
+                        nil)
+      (message "magit-wip-push: ref %s not exists"
+               wip-ref))))
 
 
 (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
