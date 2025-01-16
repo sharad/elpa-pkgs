@@ -1054,12 +1054,17 @@ to see whether it should be considered."
 (advice--p #'magit-wip-commit-worktree)
 
 
+
+(defun magit-wip-push (wipref &optional remote))
+
+
 (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)
   (let* ((local-branch  (substring ref (length "refs/heads/")))
          (upstream-remote (magit-get-upstream-remote local-branch))
-         (wip-ref (concat "wip/wtree/" ref)))
+         (wip-ref (concat "wip/wtree/" ref))
+         (local-wip-ref (string-join (list "refs" wip-ref) "/")))
     (if (magit-ref-p wip-ref)
         (magit-git-push (string-join (list "refs" wip-ref) "/")
                         (string-join (list upstream-remote wip-ref) "/")
