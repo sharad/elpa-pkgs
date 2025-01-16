@@ -1053,5 +1053,12 @@ to see whether it should be considered."
             :around #'magit-wip-commit-worktree-around-advice-fn)
 (advice--p #'magit-wip-commit-worktree)
 
+
+(defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
+  (message "magit-wip-push: ref %s, files %s, msg %s"
+           ref files msg)
+  (message "upstream branch: %s"
+           (magit-get-upstream-branch (concat "ref/wip/wtree/" ref))))
+
 
 ;;; misc-lib.el ends here
