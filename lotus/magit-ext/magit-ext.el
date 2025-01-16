@@ -28,6 +28,9 @@
 
 
 (require 'transient)
+(require 'magit-mode)
+(require 'magit-apply)
+(require 'magit-git)
 
 
 ;; Configuring --no-edit for Amend by Default
@@ -432,34 +435,35 @@ If the command fails, return nil."
 (defun magit-extended-action-arguments nil
   (transient-args 'magit-extended-action))
 
-(transient-define-prefix magit-extended-action-menu ()
-  "Transient menu for Gita commands."
-  :scope (magit-get-mode-buffer 'magit-status-mode) ;; Define scope
-  [["Arguments"
-    ("-v" "Verbose" "--verbose")
-    ("--no-edit" "No Edit" "--no-edit")
-    (my-gita-branch)
-    (my-gita-verbose)
-    (my-gita-no-edit)]]
+(defun magit-ext-insinuate--action-menu ()
+  (transient-define-prefix magit-extended-action-menu ()
+    "Transient menu for Gita commands."
+    :scope (magit-get-mode-buffer 'magit-status-mode) ;; Define scope
+    [["Arguments"
+      ("-v" "Verbose" "--verbose")
+      ("--no-edit" "No Edit" "--no-edit")
+      (my-gita-branch)
+      (my-gita-verbose)
+      (my-gita-no-edit)]]
 
-  [["Git Fast Commands"
-    ("cc" "Fast Commit" magit-commit-with-single-line-and-push)
-    ("cC" "Fast Commit " magit-commit-with-single-line-and-push-fast)
-    ("cf" "Fast Commit Correction" magit-commit-correction-fast)
-    ("cA" "Fast Amend"  magit-commit-amend-noedit-push-current-force)
-    ("V" "Verify"      magit-ext-verify)]
-   ["Gita Status"
-    ("ss" "Status" gita-ssmfor-st)
-    ("sS" "Status Top" gita-status)
-    ("st" "Stat" gita-stat)]
+    [["Git Fast Commands"
+      ("cc" "Fast Commit" magit-commit-with-single-line-and-push)
+      ("cC" "Fast Commit " magit-commit-with-single-line-and-push-fast)
+      ("cf" "Fast Commit Correction" magit-commit-correction-fast)
+      ("cA" "Fast Amend"  magit-commit-amend-noedit-push-current-force)
+      ("V" "Verify"      magit-ext-verify)]
+     ["Gita Status"
+      ("ss" "Status" gita-ssmfor-st)
+      ("sS" "Status Top" gita-status)
+      ("st" "Stat" gita-stat)]
 
-   ["Gita Advanced Commands"
-    ("F" "ssmfor-pull-rebase"  gita-ssmfor-pull-rebase)
-    ("C" "ssmfor-correct" gita-ssmfor-correct)
-    ("P" "ssmfor-correct-push" gita-ssmfor-correct-push)]
-   ["Gita Miscellaneous"
-    ("d" "Diff" gita-diff)
-    ("x" "Reset" gita-reset)]])
+     ["Gita Advanced Commands"
+      ("F" "ssmfor-pull-rebase"  gita-ssmfor-pull-rebase)
+      ("C" "ssmfor-correct" gita-ssmfor-correct)
+      ("P" "ssmfor-correct-push" gita-ssmfor-correct-push)]
+     ["Gita Miscellaneous"
+      ("d" "Diff" gita-diff)
+      ("x" "Reset" gita-reset)]]))
 
 (defun magit-extended-action ()
   "Launch the Gita transient menu."
@@ -472,6 +476,7 @@ If the command fails, return nil."
   (interactive)
   (with-eval-after-load 'magit-mode
     (when t ;; forge-add-default-bindings
+      (magit-ext-insinuate--action-menu)
       (keymap-set magit-mode-map "C-c C-f" #'magit-extended-action)
       ;; (keymap-set magit-mode-map "N" #'forge-dispatch)
       ;; (keymap-set magit-mode-map "<remap> <magit-browse-thing>"
