@@ -27,10 +27,10 @@
 (provide 'magit-ext)
 
 
-(require 'transient)
-(require 'magit-mode)
-(require 'magit-apply)
-(require 'magit-git)
+;; (require 'transient)
+;; (require 'magit-mode)
+;; (require 'magit-apply)
+;; (require 'magit-git)
 
 
 ;; Configuring --no-edit for Amend by Default
