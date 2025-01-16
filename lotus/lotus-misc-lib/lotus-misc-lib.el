@@ -1032,7 +1032,7 @@ to see whether it should be considered."
             #'dir-locals-collect-variables-around-advice-fn-with-file-truename)
 
 
-(defun magit-wip-commit-worktree-fn-to-push-wip)
+(defun magit-wip-commit-worktree-fn-to-push-wip ())
 
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
   (progn
