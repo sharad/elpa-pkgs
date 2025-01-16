@@ -1078,15 +1078,15 @@ to see whether it should be considered."
 
 
 
-magit-read-remote-branch
+;; magit-read-remote-branch
 
-(magit-get-upstream-remote "master")
+;; (magit-get-upstream-remote "master")
 
 
-(magit-local-branch-p "refs/wip/wtree/refs/heads/master")
+;; (magit-local-branch-p "refs/wip/wtree/refs/heads/master")
 
-(magit-ref-p "refs/wip/wtree/refs/heads/master")
-(substring "refs/heads/master" (length "refs/heads/"))
+;; (magit-ref-p "refs/wip/wtree/refs/heads/master")
+;; (substring "refs/heads/master" (length "refs/heads/"))
 
 
 ;;; misc-lib.el ends here
