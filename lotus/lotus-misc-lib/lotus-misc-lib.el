@@ -1074,7 +1074,6 @@ to see whether it should be considered."
       (message "magit-wip-push: ref %s not exists"
                wip-ref))))
 
-
 (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)
