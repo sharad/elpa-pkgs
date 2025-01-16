@@ -1036,7 +1036,7 @@ to see whether it should be considered."
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)
   (message "upstream branch: %s"
-           (magit-get-upstream-branch ref)))
+           (magit-get-upstream-branch (concat "wip/wtree/"ref))))
 
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
   (progn
