@@ -1059,7 +1059,7 @@ to see whether it should be considered."
            ref files msg)
   (let* ((local-branch  (substring ref (length "refs/heads/")))
          (upstream-remote (magit-get-upstream-remote local-branch))
-         (wip-ref (concat "refs/wip/wtree/" ref)))
+         (wip-ref (concat "wip/wtree/" ref)))
     (if (magit-ref-p wip-ref)
         (magit-git-push wip-ref (string-join (list upstream-remote wip-ref) "/") nil)
       (message "magit-wip-push: ref %s not exists"
