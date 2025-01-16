@@ -1044,7 +1044,6 @@ to see whether it should be considered."
     (message "args: %S" args)
     (apply #'magit-wip-commit-worktree-fn-to-push-wip args)))
 
-
 (advice-remove 'magit-wip-commit-worktree
                #'magit-wip-commit-worktree-around-advice-fn)
 (advice-add 'magit-wip-commit-worktree
