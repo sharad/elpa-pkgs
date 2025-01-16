@@ -1034,9 +1034,9 @@ to see whether it should be considered."
 
 magit-wip-commit-worktree
 
-(defun magit-wip-commit-worktree-around (orgfn &rest args)
-  (progn (apply orgfn args)
-         ))
+(defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
+  (progn (apply orgfn args)))
+
 
 (advice-remove 'magit-wip-commit-worktree
                #'magit-wip-commit-worktree-around)
