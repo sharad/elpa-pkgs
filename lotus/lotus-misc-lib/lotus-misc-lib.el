@@ -1058,8 +1058,8 @@ to see whether it should be considered."
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)
 
-  (let ((branch  ())
-        (wip-ref (concat "ref/wip/wtree/" ref)))
+  (let ((branch  (substring ref))
+        (wip-ref (concat "refs/wip/wtree/" ref)))
     (magit-ref-p wip-ref))
 
   (message "upstream branch: %s"
