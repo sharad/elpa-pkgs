@@ -1068,6 +1068,7 @@ to see whether it should be considered."
                wip-ref))))
 
 
+
 magit-read-remote-branch
 
 (magit-get-upstream-remote "master")
