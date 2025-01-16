@@ -1062,10 +1062,9 @@ to see whether it should be considered."
          (upstream-remote (magit-get-upstream-remote local-branch))
          (wip-ref (concat "refs/wip/wtree/" ref)))
     (if (magit-ref-p wip-ref)
-        (magit-git-push wip-ref (concat ))))
-
-  (message "upstream branch: %s"
-           (magit-get-upstream-branch (concat "refs/wip/wtree/" ref))))
+        (magit-git-push wip-ref (string-join (list upstream-remote wip-ref) "/"))
+      (message (message "magit-wip-push: ref %s not exists"
+                        wip-ref)))))
 
 
 magit-read-remote-branch
