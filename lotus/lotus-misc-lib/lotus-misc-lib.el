@@ -1031,7 +1031,7 @@ to see whether it should be considered."
 (advice-add 'dir-locals-collect-variables :around
             #'dir-locals-collect-variables-around-advice-fn-with-file-truename)
 
-
+(defvar magit-wip-push-inhibit-count 10)
 (defun magit-wip-push (ref &optional remote args)
   (interactive
    (list (magit-ref-fullname "HEAD")
@@ -1046,8 +1046,8 @@ to see whether it should be considered."
         (if (magit-git-push local-wip-ref
                             (string-join (list upstream-remote wip-ref) "/")
                             args)
-            (message "push passed")
-          (message "push failed"))
+            (message "magit-wip-push: push passed")
+          (message "magit-wip-push: push failed"))
       (message "magit-wip-push: ref %s not exists"
                wip-ref))))
 (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
@@ -1057,12 +1057,11 @@ to see whether it should be considered."
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
   (progn
     (if (apply orgfn args)
-        (message "magit-wip-commit-worktree-around success")
-      (message "magit-wip-commit-worktree-around fail"))
-    (message "args: %S" args)
+        (message "magit-wip-push: success")
+      (message "magit-wip-push: fail"))
+    (message "magit-wip-push: args: %S" args)
     (apply #'magit-wip-commit-worktree-fn-to-push-wip
            args)))
-
 ;; Define the global minor mode for magit wip push
 (define-minor-mode magit-wip-push-mode
   "A global minor mode magit wip push."
