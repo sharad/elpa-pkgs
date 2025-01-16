@@ -1049,9 +1049,11 @@ to see whether it should be considered."
          (wip-ref (concat "wip/wtree/" ref))
          (local-wip-ref (string-join (list "refs" wip-ref) "/")))
     (if (magit-ref-p local-wip-ref)
-        (magit-git-push local-wip-ref
-                        (string-join (list upstream-remote wip-ref) "/")
-                        args)
+        (if (magit-git-push local-wip-ref
+                            (string-join (list upstream-remote wip-ref) "/")
+                            args)
+            (message "push passed")
+          (message "push failed"))
       (message "magit-wip-push: ref %s not exists"
                wip-ref))))
 
