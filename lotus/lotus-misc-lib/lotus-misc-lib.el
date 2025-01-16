@@ -1034,14 +1034,14 @@ to see whether it should be considered."
 
 magit-wip-commit-worktree
 
-(defun dir-locals-find-file-around (orgfn &rest args)
+(defun magit-wip-commit-worktree-around (orgfn &rest args)
   (or (apply orgfn args)
       (apply #'locate-dominating-file-dir (append args (list #'dir-locals--all-files)))))
 
-(advice-remove 'dir-locals-find-file
-               #'dir-locals-find-file-around)
-(advice-add 'dir-locals-find-file
-            :around #'dir-locals-find-file-around)
-(advice--p #'dir-locals-find-file)
+(advice-remove 'magit-wip-commit-worktree
+               #'magit-wip-commit-worktree-around)
+(advice-add 'magit-wip-commit-worktree
+            :around #'magit-wip-commit-worktree-around)
+(advice--p #'magit-wip-commit-worktree)
 
 ;;; misc-lib.el ends here
