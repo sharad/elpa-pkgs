@@ -1055,9 +1055,12 @@ to see whether it should be considered."
 
 
 
-(defun magit-wip-push (wipref &optional remote args)
-  (let* ((local-branch  (substring ref (length "refs/heads/")))
-         (upstream-remote (magit-get-upstream-remote local-branch))
+(defun magit-wip-push (ref &optional remote args)
+  (interactive
+   (list ))
+  (let* ((local-branch    (substring ref (length "refs/heads/")))
+         (upstream-remote (or remote
+                              (magit-get-upstream-remote local-branch)))
          (wip-ref (concat "wip/wtree/" ref))
          (local-wip-ref (string-join (list "refs" wip-ref) "/")))
     (if (magit-ref-p local-wip-ref)
