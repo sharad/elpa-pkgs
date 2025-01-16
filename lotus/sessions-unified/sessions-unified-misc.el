@@ -25,10 +25,8 @@
 ;;; Code:
 
 (provide 'sessions-unified-misc)
-
 
 
-;; (require 'sessions-unified)
 (require 'sessions-unified-core-session)
 
 

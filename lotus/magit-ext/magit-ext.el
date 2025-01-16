@@ -465,6 +465,7 @@ If the command fails, return nil."
       ("d" "Diff" gita-diff)
       ("x" "Reset" gita-reset)]]))
 
+;;;###autoload
 (defun magit-extended-action ()
   "Launch the Gita transient menu."
   (interactive)
@@ -475,8 +476,8 @@ If the command fails, return nil."
 (defun magit-ext-insinuate ()
   (interactive)
   (with-eval-after-load 'magit-mode
+    (magit-ext-insinuate--action-menu)
     (when t ;; forge-add-default-bindings
-      (magit-ext-insinuate--action-menu)
       (keymap-set magit-mode-map "C-c C-f" #'magit-extended-action)
       ;; (keymap-set magit-mode-map "N" #'forge-dispatch)
       ;; (keymap-set magit-mode-map "<remap> <magit-browse-thing>"

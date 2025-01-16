@@ -53,6 +53,14 @@
 (require 'sessions-unified-core-fsession)
 
 
+
+;;;###autoload
+(defvar *sessions-unified-core-session-registerd-restore-list* nil
+  "Alist of (app-name appgetfn appsetfn) app fn accept FRAME")
+
+(defvar *sessions-unified-core-session-registerd-store-list* nil
+  "Alist of (app-name appgetfn appsetfn) app fn accept FRAME")
+
 (defvar sessions-unified-desktop t)
 (defvar sessions-unified-elscreen nil)
 (defvar sessions-unified-centaur-tab nil)
@@ -88,56 +96,6 @@ get re-enabled here.")
 (defvar session-unified-save-all-sessions-after-hook nil "Hook run after saving all session")
 
 
-(defvar *sessions-unified-utils-notify* nil)
-
-(defun sessions-unified-utils-notify-default (title fmt &rest args)
-  (message  "%s: %s" title (apply #'format fmt args)))
-
-;; https://emacs.stackexchange.com/questions/2310/can-functions-access-their-name
-(defun get-current-func-name ()
-  "Get the symbol of the function this function is called from."
-  ;; 5 is the magic number that makes us look
-  ;; above this function
-  ;; (message "start get-current-func-name-debug")
-  (let* ((limit 50)
-         (index 4)
-         (frame (backtrace-frame index)))
-    ;; from what I can tell, top level function call frames
-    ;; start with t and the second value is the symbol of the function
-    ;; (message "b4 while")
-    (while (and (not (equal t (car frame)))
-                (< index limit))
-      ;; (message "while loop index %d" index)
-      (setq frame (backtrace-frame (cl-incf index))))
-    ;; (message "completed while frame")
-    (if (equal t (car frame))
-        (let ((fun (second frame)))
-          (if (symbolp fun)
-              (symbol-name fun)
-            (format "%s" fun)))
-      "unknown")))
-
-(defun session-unfiy-notify (fmt &rest args)
-  (let ((funname (get-current-func-name)))
-    ;; (message "test")
-    (let ((notify (or *sessions-unified-utils-notify*
-                      #'sessions-unified-utils-notify-default)))
-      (unless (eq notify
-                  #'sessions-unified-utils-notify-default)
-        (apply #'sessions-unified-utils-notify-default funname fmt args))
-      (apply notify funname fmt args))))
-
-;; (session-unfiy-notify "Enabled session saving")
-;; (apply *sessions-unified-utils-notify* "test" "fmt" '())
-
-
-;;;###autoload
-(defun protable-display-graphic-p ()
-  (if (< emacs-major-version 24)
-      (eq (frame-parameter (selected-frame) 'window-system)
-          'x)
-    (display-graphic-p)))
-
 
 ;;;###autoload
 (defun sessions-unified-add-to-enable-session-restore-interrupting-feature-hook (fn &optional append local)
@@ -216,22 +174,6 @@ get re-enabled here.")
   (run-each-hooks 'sessions-unified-disable-session-restore-interrupting-feature-hook)
   (setq sessions-unified-disable-session-restore-interrupting-feature-hook-old sessions-unified-disable-session-restore-interrupting-feature-hook)
   (setq sessions-unified-disable-session-restore-interrupting-feature-hook nil))
-
-
-;;;###autoload
-(defun sessions-unified-session-enable ()
-  (interactive)
-  (sessions-unified--session-enable nil))
-
-(defalias 'lotus-enable-session-saving #'sessions-unified-session-enable)
-
-;;;###autoload
-(defun sessions-unified-session-disable ()
-  (interactive)
-  (sessions-unified--session-disable nil))
-
-(defalias 'lotus-disable-session-saving #'sessions-unified-session-disable)
-
 
 (defun lotus-show-hook-member (fn hook &optional message)
   (funcall (if message
@@ -244,20 +186,6 @@ get re-enabled here.")
              "No")
            fn
            hook))
-
-;;;###autoload
-(defvar *sessions-unified-core-session-registerd-restore-list* nil
-  "Alist of (app-name appgetfn appsetfn) app fn accept FRAME")
-
-(defvar *sessions-unified-core-session-registerd-store-list* nil
-  "Alist of (app-name appgetfn appsetfn) app fn accept FRAME")
-
-;;;###autoload
-(defun sessions-unified-core-session-check ()
-  (interactive)
-  (sessions-unified--session-check nil))
-
-(defalias 'lotus-check-session-saving #'sessions-unified-core-session-check)
 
 
 (cl-defmethod sessions-unified--session-store ((app null))
@@ -271,7 +199,6 @@ get re-enabled here.")
         ('error (message "Error: %s" e)))))
   (sessions-unified--session-enable app)
   t)
-
 (cl-defmethod sessions-unified--session-enable ((app null))
   (add-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)
   (add-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
@@ -282,33 +209,28 @@ get re-enabled here.")
   (remove-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
   (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
     (sessions-unified--session-disable sym)))
-
 (cl-defmethod sessions-unified--session-enable ((app symbol))
   (message "sessions-unified--session-enable: app=%s" app)
   (unless (member app
                   *sessions-unified-core-session-registerd-restore-list*)
     (push app
           *sessions-unified-core-session-registerd-restore-list*)))
-
 (cl-defmethod sessions-unified--session-disable ((app symbol))
   (message "sessions-unified--session-disable: app=%s" app)
   (when (member app
                 *sessions-unified-core-session-registerd-restore-list*)
     (setq *sessions-unified-core-session-registerd-restore-list* (delete app
                                                                          *sessions-unified-core-session-registerd-restore-list*))))
-
 (cl-defmethod sessions-unified--session-enable :after (app)
   (when (= (length *sessions-unified-core-session-registerd-restore-list*)
            (length *sessions-unified-core-session-registerd-store-list*))
     (session-unfiy-notify "running sessions-unified-run-enable-restore-interrupting-feature-run after %d seconds idleness"
                           *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*)
     (sessions-unified-delay-run-enable-restore-interrupting-feature *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*)))
-
 (cl-defmethod sessions-unified--session-disable :after (app)
   (when (= 0
            (length *sessions-unified-core-session-registerd-store-list*))
     (sessions-unified-run-disable-restore-interrupting-feature-run)))
-
 (cl-defmethod sessions-unified--session-check (app)
   (if (called-interactively-p 'interactive)
       (progn
@@ -321,7 +243,7 @@ get re-enabled here.")
   (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
     (sessions-unified--session-check sym)))
 
-
+;;;###autoload
 (defun sessions-unified-session-store ()
   (interactive "P")
   (prog1
@@ -340,7 +262,7 @@ get re-enabled here.")
                ;; (lotus-disable-session-saving)
                (sessions-unified--session-disable nil))))))
     (run-hooks 'session-unified-save-all-sessions-after-hook)))
-
+;;;###autoload
 (defun sessions-unified-session-restore ()
   (interactive)
   (let ((show-error (called-interactively-p 'interactive)))
@@ -368,6 +290,24 @@ get re-enabled here.")
          (condition-case e
              (execute-extended-command nil)
            ('error (message "M-x sessions-unified-session-restore %s" e))))))))
+;;;###autoload
+(defun sessions-unified-session-enable ()
+  (interactive)
+  (sessions-unified--session-enable nil))
+;;;###autoload
+(defalias 'lotus-enable-session-saving #'sessions-unified-session-enable)
+;;;###autoload
+(defun sessions-unified-session-disable ()
+  (interactive)
+  (sessions-unified--session-disable nil))
+;;;###autoload
+(defalias 'lotus-disable-session-saving #'sessions-unified-session-disable)
+;;;###autoload
+(defun sessions-unified-core-session-check ()
+  (interactive)
+  (sessions-unified--session-check nil))
+;;;###autoload
+(defalias 'lotus-check-session-saving #'sessions-unified-core-session-check)
 
 
 (defcustom sessions-unified-core-session-store-idle-time-interval 7
@@ -379,7 +319,6 @@ get re-enabled here.")
   :group 'session)
 (defvar sessions-unified-core-session-store-time (current-time) "save all sessions auto save time")
 (defvar session-debug-on-error nil "session-debug-on-error")
-
 ;;;###autoload
 (defun sessions-unified-core-session-store-on-idle-interval (&optional force)
   "Save elscreen frame, desktop, and session time to time
@@ -414,7 +353,7 @@ get re-enabled here.")
 
         (setq sessions-unified-core-session-store-time (current-time)
               sessions-unified-core-session-store-idle-time-interval-dynamic sessions-unified-core-session-store-idle-time-interval)))))
-
+;;;###autoload
 (defalias 'save-all-sessions-auto-save #'sessions-unified-core-session-store-on-idle-interval)
 (defun sessions-unified-core-session-store-immediately ()
   (sessions-unified-core-session-store-on-idle-interval t))
