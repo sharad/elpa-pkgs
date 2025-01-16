@@ -1070,7 +1070,7 @@ to see whether it should be considered."
     (if (magit-ref-p local-wip-ref)
         (magit-git-push local-wip-ref
                         (string-join (list upstream-remote wip-ref) "/")
-                        nil)
+                        args)
       (message "magit-wip-push: ref %s not exists"
                wip-ref))))
 
