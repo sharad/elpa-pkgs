@@ -1031,4 +1031,49 @@ to see whether it should be considered."
 (advice-add 'dir-locals-collect-variables :around
             #'dir-locals-collect-variables-around-advice-fn-with-file-truename)
 
+
+(defun magit-wip-push (ref &optional remote args)
+  (interactive
+   (list (magit-ref-fullname "HEAD")
+         (magit-get-upstream-remote (magit-get-current-branch))
+         (when current-prefix-arg '("-f"))))
+  (let* ((local-branch    (substring ref (length "refs/heads/")))
+         (upstream-remote (or remote
+                              (magit-get-upstream-remote local-branch)))
+         (wip-ref (concat "wip/wtree/" ref))
+         (local-wip-ref (string-join (list "refs" wip-ref) "/")))
+    (if (magit-ref-p local-wip-ref)
+        (if (magit-git-push local-wip-ref
+                            (string-join (list upstream-remote wip-ref) "/")
+                            args)
+            (message "push passed")
+          (message "push failed"))
+      (message "magit-wip-push: ref %s not exists"
+               wip-ref))))
+(defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
+  (message "magit-wip-push: ref %s, files %s, msg %s"
+           ref files msg)
+  (magit-wip-push ref))
+(defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
+  (progn
+    (if (apply orgfn args)
+        (message "magit-wip-commit-worktree-around success")
+      (message "magit-wip-commit-worktree-around fail"))
+    (message "args: %S" args)
+    (apply #'magit-wip-commit-worktree-fn-to-push-wip
+           args)))
+
+;; Define the global minor mode for magit wip push
+(define-minor-mode magit-wip-push-mode
+  "A global minor mode magit wip push."
+  :global t                             ; Make it a global minor mode
+  :init-value nil                       ; Default to disabled
+  :lighter " WP"                        ; Display in the mode line
+  (if magit-wip-push-mode
+      (advice-add 'magit-wip-commit-worktree
+                  :around #'magit-wip-commit-worktree-around-advice-fn)
+    (when (or t (advice--p #'magit-wip-commit-worktree))
+      (advice-remove 'magit-wip-commit-worktree
+                     #'magit-wip-commit-worktree-around-advice-fn))))
+
 ;;; misc-lib.el ends here
