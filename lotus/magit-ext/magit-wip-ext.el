@@ -31,7 +31,7 @@
 (defvar magit-wip-push-mode-after-success-hook nil)
 (defvar magit-wip-push-mode-after-fail-hook nil)
 
-(defun magit-git-push-nons (branch target args)
+(defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
   ;; If the remote branch already exists, then we do not have to
   ;; qualify the target, which we prefer to avoid doing because
@@ -53,14 +53,14 @@
          (wip-ref         (string-join (list "wip/wtree" ref) "/"))
          (local-wip-ref   (string-join (list "refs" wip-ref) "/"))
          (remote-wip-ref  (string-join (list "refs/heads" wip-ref) "/")))
-    (message "magit-wip-push: wip-ref: %s" wip-ref)
-    (message "magit-wip-push: local-wip-ref: %s" local-wip-ref)
-    (message "magit-wip-push: upstream-remote: %s" upstream-remote)
-    (message "magit-wip-push: remote-wip-ref: %s" remote-wip-ref)
+    ;; (message "magit-wip-push: wip-ref: %s" wip-ref)
+    ;; (message "magit-wip-push: local-wip-ref: %s" local-wip-ref)
+    ;; (message "magit-wip-push: upstream-remote: %s" upstream-remote)
+    ;; (message "magit-wip-push: remote-wip-ref: %s" remote-wip-ref)
     (if (magit-ref-p local-wip-ref)
-        (if (magit-git-push-nons local-wip-ref
-                                 (string-join (list upstream-remote remote-wip-ref) "/")
-                                 args)
+        (if (magit-ext-git-push-nons local-wip-ref
+                                     (string-join (list upstream-remote remote-wip-ref) "/")
+                                     args)
             (progn
               (message "magit-wip-push: push passed")
               (run-hooks magit-wip-push-mode-after-success-hook))
