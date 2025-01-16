@@ -1038,7 +1038,9 @@ to see whether it should be considered."
 
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
   (progn
-    (apply orgfn args)
+    (if (apply orgfn args)
+        (message "magit-wip-commit-worktree-around success")
+      (message "magit-wip-commit-worktree-around fail"))
     (message "args: %S" args)
     (apply #'magit-wip-commit-worktree-fn-to-push-wip args)))
 
