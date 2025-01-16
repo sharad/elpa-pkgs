@@ -1058,7 +1058,7 @@ to see whether it should be considered."
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)
 
-  (let ((branch  (substring ref (length "refs/heads")))
+  (let ((branch  (substring ref (length "refs/heads/")))
         (wip-ref (concat "refs/wip/wtree/" ref)))
     (magit-ref-p wip-ref))
 
@@ -1074,6 +1074,7 @@ magit-read-remote-branch
 (magit-local-branch-p "refs/wip/wtree/refs/heads/master")
 
 (magit-ref-p "refs/wip/wtree/refs/heads/master")
+(substring "refs/heads/master" (length "refs/heads/"))
 
 
 ;;; misc-lib.el ends here
