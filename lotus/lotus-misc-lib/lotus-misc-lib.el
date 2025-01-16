@@ -1063,7 +1063,7 @@ to see whether it should be considered."
     (magit-ref-p wip-ref))
 
   (message "upstream branch: %s"
-           (magit-get-upstream-branch (concat "ref/wip/wtree/" ref))))
+           (magit-get-upstream-branch (concat "refs/wip/wtree/" ref))))
 
 
 magit-read-remote-branch
