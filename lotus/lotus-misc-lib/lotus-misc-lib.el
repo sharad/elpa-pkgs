@@ -1031,4 +1031,8 @@ to see whether it should be considered."
 (advice-add 'dir-locals-collect-variables :around
             #'dir-locals-collect-variables-around-advice-fn-with-file-truename)
 
+
+magit-wip-commit-worktree
+
+
 ;;; misc-lib.el ends here
