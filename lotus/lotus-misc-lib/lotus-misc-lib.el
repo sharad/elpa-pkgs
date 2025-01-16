@@ -1059,7 +1059,7 @@ to see whether it should be considered."
   (interactive
    (list (magit-ref-fullname "HEAD")
          (magit-get-upstream-remote (magit-get-current-branch))
-         ()))
+         (when current-prefix-arg '("-f"))))
   ;; (interactive
   ;;  (list ))
   (let* ((local-branch    (substring ref (length "refs/heads/")))
