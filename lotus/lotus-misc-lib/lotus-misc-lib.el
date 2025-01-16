@@ -1058,7 +1058,8 @@ to see whether it should be considered."
 (defun magit-wip-push (ref &optional remote args)
   (interactive
    (list (magit-ref-fullname "HEAD")
-         (magit-get-upstream-remote (magit-get-current-branch))))
+         (magit-get-upstream-remote (magit-get-current-branch))
+         ()))
   ;; (interactive
   ;;  (list ))
   (let* ((local-branch    (substring ref (length "refs/heads/")))
