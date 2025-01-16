@@ -1038,23 +1038,6 @@ to see whether it should be considered."
 ;;   (message "upstream branch: %s"
 ;;            (magit-get-upstream-branch (concat "ref/wip/wtree/" ref))))
 
-(defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
-  (progn
-    (if (apply orgfn args)
-        (message "magit-wip-commit-worktree-around success")
-      (message "magit-wip-commit-worktree-around fail"))
-    (message "args: %S" args)
-    (apply #'magit-wip-commit-worktree-fn-to-push-wip
-           args)))
-
-(advice-remove 'magit-wip-commit-worktree
-               #'magit-wip-commit-worktree-around-advice-fn)
-(advice-add 'magit-wip-commit-worktree
-            :around #'magit-wip-commit-worktree-around-advice-fn)
-(advice--p #'magit-wip-commit-worktree)
-
-
-
 (defun magit-wip-push (ref &optional remote args)
   (interactive
    (list (magit-ref-fullname "HEAD")
@@ -1076,6 +1059,25 @@ to see whether it should be considered."
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)
   (magit-wip-push ref))
+
+(defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
+  (progn
+    (if (apply orgfn args)
+        (message "magit-wip-commit-worktree-around success")
+      (message "magit-wip-commit-worktree-around fail"))
+    (message "args: %S" args)
+    (apply #'magit-wip-commit-worktree-fn-to-push-wip
+           args)))
+
+(advice-remove 'magit-wip-commit-worktree
+               #'magit-wip-commit-worktree-around-advice-fn)
+(advice-add 'magit-wip-commit-worktree
+            :around #'magit-wip-commit-worktree-around-advice-fn)
+(advice--p #'magit-wip-commit-worktree)
+
+
+
+
 
 
 
