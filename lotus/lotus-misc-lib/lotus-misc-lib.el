@@ -732,6 +732,8 @@ containing it, until no links are left at any level.
 
 (remove-hook 'kill-buffer-hook
              #'bury-previous-minibuffers)
+(add-hook 'kill-buffer-hook
+          #'bury-previous-minibuffers)
 
 
 
