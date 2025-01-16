@@ -1040,7 +1040,7 @@ to see whether it should be considered."
   (progn
     (apply orgfn args)
     (message "args: %S" args)
-    (funcall #'magit-wip-commit-worktree-fn-to-push-wip args)))
+    (apply #'magit-wip-commit-worktree-fn-to-push-wip args)))
 
 
 (advice-remove 'magit-wip-commit-worktree
