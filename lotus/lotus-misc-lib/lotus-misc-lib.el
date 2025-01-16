@@ -1062,7 +1062,7 @@ to see whether it should be considered."
          (upstream-remote (magit-get-upstream-remote local-branch))
          (wip-ref (concat "refs/wip/wtree/" ref)))
     (if (magit-ref-p wip-ref)
-        (magit-git-push wip-ref )))
+        (magit-git-push wip-ref (concat ))))
 
   (message "upstream branch: %s"
            (magit-get-upstream-branch (concat "refs/wip/wtree/" ref))))
