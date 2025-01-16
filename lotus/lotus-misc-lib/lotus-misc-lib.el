@@ -693,6 +693,10 @@ containing it, until no links are left at any level.
   (dir-locals-find-file "~/.bin/selsecret")
   (dir-locals-find-file "~/.zshrc")
 
+  (dir-locals-find-file (buffer-file-name))
+
+  (locate-dominating-file-dir (buffer-file-name) ".dir-locals.el")
+
   (locate-dominating-file-dir "~/.zshrc" ".dir-locals.el")
   (locate-dominating-file-dir "~/.zshrc" #'dir-locals--all-files)
   (locate-dominating-file-dir "~/.zshrc" #'dir-locals--all-files))
@@ -766,35 +770,59 @@ containing it, until no links are left at any level.
   (or (apply orgfn args)
       (let ((session   (car args))
             (file-name (cadr args)))
-        (let ((file-name-canonical (lsp-f-canonical file-name)))
+        (let ((file-name-canonical (lsp-f-canonical (file-truename file-name))))
           (->> session
                (lsp-session-folders)
                (--filter (and (lsp--files-same-host (file-truename it)
-                                                    (file-truename file-name-canonical))
+                                                    file-name-canonical)
                               (or (lsp-f-same? (file-truename it)
-                                               (file-truename file-name-canonical))
+                                               file-name-canonical)
                                   (and (f-dir? (file-truename it))
                                        (lsp-f-ancestor-of? (file-truename it)
-                                                           (file-truename file-name-canonical))))))
+                                                           file-name-canonical)))))
                (--max-by (> (length (file-truename it))
                             (length (file-truename other)))))))))
-
-
-(advice-add 'lsp-find-session-folder :around
-            #'lsp-find-session-folder-around-advice-fn-with-file-truename)
 (advice-remove 'lsp-find-session-folder
                #'lsp-find-session-folder-around-advice-fn-with-file-truename)
+(advice-add 'lsp-find-session-folder :around
+            #'lsp-find-session-folder-around-advice-fn-with-file-truename)
+
 
 ;; TEST (lsp-find-session-folder (lsp-session) (buffer-file-name) )
 
 ;; (when nil
-;;   (setq lsp--buffer-workspaces
-;;         (or (and
-;;              ;; Don't open as library file if file is part of a project.
-;;              (not (lsp-find-session-folder (lsp-session) (buffer-file-name)))
-;;              (lsp--try-open-in-library-workspace))
-;;             (lsp--try-project-root-workspaces (equal arg '(4))
-;;                                               (and arg (not (equal arg 1))))))
+
+;;   (defun lsp--calculate-root (session file-name)
+;;     "Calculate project root for FILE-NAME in SESSION."
+;;     (and
+;;      (->> session
+;;           (lsp-session-folders-blocklist)
+;;           (--first (and (lsp--files-same-host it file-name)
+;;                         (lsp-f-ancestor-of? it file-name)
+;;                         (prog1 t
+;;                           (lsp--info "File %s is in blocklisted directory %s" file-name it))))
+;;           not)
+;;      (or
+;;       (when lsp-auto-guess-root
+;;         (lsp--suggest-project-root))
+;;       (unless lsp-guess-root-without-session
+;;         (lsp-find-session-folder session file-name))
+;;       (unless lsp-auto-guess-root
+;;         (when-let* ((root-folder (lsp--find-root-interactively session)))
+;;           (if (or (not (f-equal? root-folder (expand-file-name "~/")))
+;;                   (yes-or-no-p
+;;                    (concat
+;;                     (propertize "[WARNING] " 'face 'warning)
+;;                     "You are trying to import your home folder as project root. This may cause performance issue because some language servers (python, lua, etc) will try to scan all files under project root. To avoid that you may:
+
+;; 1. Use `I' option from the interactive project import to select subfolder(e. g. `~/foo/bar' instead of `~/').
+;; 2. If your file is under `~/' then create a subfolder and move that file in this folder.
+
+;; Type `No' to go back to project selection.
+;; Type `Yes' to confirm `HOME' as project root.
+;; Type `C-g' to cancel project import process and stop `lsp'")))
+;;               root-folder
+;;             (lsp--calculate-root session file-name)))))))
 
 
 ;;   (defun lsp--try-project-root-workspaces (ask-for-client ignore-multi-folder)
@@ -823,6 +851,15 @@ containing it, until no links are left at any level.
 ;;             nil)
 ;;         (lsp--warn "No LSP server for %s(check *lsp-log*)." major-mode)
 ;;         nil)))
+
+;;   (setq lsp--buffer-workspaces
+;;         (or (and
+;;              ;; Don't open as library file if file is part of a project.
+;;              (not (lsp-find-session-folder (lsp-session) (buffer-file-name)))
+;;              (lsp--try-open-in-library-workspace))
+;;             (lsp--try-project-root-workspaces (equal arg '(4))
+;;                                               (and arg (not (equal arg 1))))))
+
 
 ;;   (defun lsp (&optional arg)
 ;;     "Entry point for the server startup.
@@ -919,9 +956,77 @@ containing it, until no links are left at any level.
 ;; 6. You have disabled the `lsp-mode' clients for that file. (Check `lsp-enabled-clients' and `lsp-disabled-clients').
 ;; You can customize `lsp-warn-no-matched-clients' to disable this message."
 ;;                       major-mode major-mode major-mode)))))))
+
+
+;; (dir-locals-find-file "~/.zshrc")
+;; (dir-locals-find-file (or (buffer-file-name) default-directory))
+;; (dir-locals-read-from-dir dir-or-cache)
+
+;; (dir-locals-read-from-dir (dir-locals-find-file "~/.zshrc"))
 
 
-
-
+(defun dir-locals-collect-variables-fn-with-file-truename (class-variables root variables
+                                                                           &optional predicate)
+  "Collect entries from CLASS-VARIABLES into VARIABLES.
+ROOT is the root directory of the project.
+Return the new variables list.
+If PREDICATE is given, it is used to test a symbol key in the alist
+to see whether it should be considered."
+  (let* ((file-name (or (buffer-file-name)
+                        ;; Handle non-file buffers, too.
+                        (expand-file-name default-directory)))
+         (sub-file-name (if (and file-name
+                                 (file-name-absolute-p file-name))
+                            ;; FIXME: Why not use file-relative-name?
+                            (substring (file-truename file-name)
+                                       (length (file-truename root))))))
+    (condition-case err
+        (dolist (entry class-variables variables)
+          (let ((key (car entry)))
+            (cond
+             ((stringp key)
+              ;; Don't include this in the previous condition, because we
+              ;; want to filter all strings before the next condition.
+              (when (and sub-file-name
+                         (>= (length sub-file-name) (length key))
+                         (string-prefix-p key sub-file-name))
+                (setq variables (dir-locals-collect-variables
+                                 (cdr entry) root variables predicate))))
+             ((if predicate
+                  (funcall predicate key)
+                (or (not key)
+                    (derived-mode-p key)))
+              (let* ((alist (cdr entry))
+                     (subdirs (assq 'subdirs alist)))
+                (if (or (not subdirs)
+                        (progn
+                          (setq alist (remq subdirs alist))
+                          (cdr-safe subdirs))
+                        ;; TODO someone might want to extend this to allow
+                        ;; integer values for subdir, where N means
+                        ;; variables apply to this directory and N levels
+                        ;; below it (0 == nil).
+                        (equal root (expand-file-name default-directory)))
+                    (setq variables (dir-locals-collect-mode-variables
+                                     alist variables))))))))
+      (error
+       ;; The file's content might be invalid (e.g. have a merge conflict), but
+       ;; that shouldn't prevent the user from opening the file.
+       (message "%s error: %s" dir-locals-file (error-message-string err))
+       nil))))
+(defun dir-locals-collect-variables-around-advice-fn-with-file-truename (orgfn &rest args)
+  (condition-case err
+      (apply orgfn args)
+    (args-out-of-range
+     (let ((file-name (cadr err)))
+       (if (string= file-name (or (buffer-file-name)
+                                  (expand-file-name default-directory)))
+           (apply #'dir-locals-collect-variables-fn-with-file-truename
+                  args)
+         (error err))))))
+(advice-remove 'dir-locals-collect-variables
+               #'dir-locals-collect-variables-around-advice-fn-with-file-truename)
+(advice-add 'dir-locals-collect-variables :around
+            #'dir-locals-collect-variables-around-advice-fn-with-file-truename)
 
 ;;; misc-lib.el ends here
