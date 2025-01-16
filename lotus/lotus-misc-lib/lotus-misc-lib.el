@@ -1065,7 +1065,7 @@ to see whether it should be considered."
          (upstream-remote (magit-get-upstream-remote local-branch))
          (wip-ref (concat "wip/wtree/" ref))
          (local-wip-ref (string-join (list "refs" wip-ref) "/")))
-    (if (magit-ref-p wip-ref)
+    (if (magit-ref-p local-wip-ref)
         (magit-git-push (string-join (list "refs" wip-ref) "/")
                         (string-join (list upstream-remote wip-ref) "/")
                         nil)
