@@ -1043,7 +1043,7 @@ to see whether it should be considered."
 (advice-remove 'magit-wip-commit-worktree
                #'magit-wip-commit-worktree-around-advice-fn)
 (advice-add 'magit-wip-commit-worktree
-            :around #'magit-wip-commit-worktree-around)
+            :around #'magit-wip-commit-worktree-around-advice-fn)
 (advice--p #'magit-wip-commit-worktree)
 
 ;;; misc-lib.el ends here
