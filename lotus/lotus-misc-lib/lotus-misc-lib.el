@@ -1033,7 +1033,8 @@ to see whether it should be considered."
 
 
 (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
-  (message "magit-wip-push"))
+  (message "magit-wip-push: ref %s, files %s, msg %s"
+           ref files msg))
 
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
   (progn
