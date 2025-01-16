@@ -1057,7 +1057,6 @@ to see whether it should be considered."
 (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)
-
   (let* ((local-branch  (substring ref (length "refs/heads/")))
          (upstream-remote (magit-get-upstream-remote local-branch))
          (wip-ref (concat "refs/wip/wtree/" ref)))
