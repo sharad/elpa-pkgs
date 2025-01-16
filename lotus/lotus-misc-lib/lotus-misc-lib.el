@@ -1059,6 +1059,7 @@ to see whether it should be considered."
            ref files msg)
 
   (let* ((local-branch  (substring ref (length "refs/heads/")))
+         (upstream-remote (magit-get-upstream-remote local-branch))
          (wip-ref (concat "refs/wip/wtree/" ref)))
     (magit-ref-p wip-ref))
 
