@@ -36,6 +36,8 @@
 (declare-function around--org--newline "lotus-misc-advices" (oldfn &rest args))
 
 
+;; check https://www.gnu.org/software/emacs/manual/html_node/elisp/Advising-Functions.html
+
 ;;;###autoload
 (defun lotus-wrapper-insinuate ()
   (interactive)
