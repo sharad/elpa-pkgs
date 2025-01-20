@@ -319,3 +319,4 @@ attempts to find a file whose name is produced by (format FMT FILENAME)."
                    (concat " " (lsp-headerline--arrow-icon) " ")))
     ""))
 
+;;; lotus-wrapper.el ends here
