@@ -40,26 +40,32 @@
 (defun lotus-wrapper-insinuate ()
   (interactive)
   (with-eval-after-load "files"
-    (add-function :override
-                  (symbol-function 'file-truename)
-                  #'override--file-truename)
+    ;; (add-function :override
+    ;;               (symbol-function 'file-truename)
+    ;;               #'override--file-truename)
+    (advice-add 'file-truename
+                :override #'override--file-truename)
     (advice-add 'dir-locals-find-file
-                :around #'dir-locals-find-file-around-advice-fn-with-new-locate-dominating-file)
+                :around #'around--dir-locals-find-file-around-advice-fn-with-new-locate-dominating-file)
     (advice-add 'dir-locals-collect-variables :around
-                #'dir-locals-collect-variables-around-advice-fn-with-file-truename))
+                #'around--dir-locals-collect-variables-around-advice-fn-with-file-truename))
 
   (with-eval-after-load "lsp-mode"
     (advice-add 'lsp-find-session-folder :around
-                #'lsp-find-session-folder-around-advice-fn-with-file-truename))
+                #'around--lsp-find-session-folder-around-advice-fn-with-file-truename))
 
   (with-eval-after-load "polymode-core"
-    (add-function :override
-                  (symbol-function 'pm--run-other-hooks)
-                  #'override--pm--run-other-hooks))
+    ;; (add-function :override
+    ;;               (symbol-function 'pm--run-other-hooks)
+    ;;               #'override--pm--run-other-hooks)
+    (advice-add 'pm--run-other-hooks
+                :override #'override--pm--run-other-hooks))
 
   (with-eval-after-load "semantic"
-    (add-function :around (symbol-function 'semantic-mode)
-                  #'around--semantic-mode))
+    ;; (add-function :around (symbol-function 'semantic-mode)
+    ;;               #'around--semantic-mode)
+    (advice-add 'semantic-mode
+                :around #'around--semantic-mode))
 
   (disable-file-truename-ad--set-advices "compile"
                                          '(compilation-find-file
@@ -87,25 +93,33 @@
                                            ggtags-find-project))
   (ignore-error
       (with-eval-after-load "erc-ident"
-        (add-function :override
-                      (symbol-function 'erc-identd-start)
-                      #'override--erc-identd-start))))
+        ;; (add-function :override
+        ;;               (symbol-function 'erc-identd-start)
+        ;;               #'override--erc-identd-start)
+        (advice-add 'erc-identd-start
+                    :override #'override--erc-identd-start))))
 
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
   (interactive)
-  (remove-function (symbol-function 'file-truename)
-                   #'override--file-truename)
+  ;; (remove-function (symbol-function 'file-truename)
+  ;;                  #'override--file-truename)
+  (advice-remove 'file-truename
+                 #'override--file-truename)
   (advice-remove 'dir-locals-find-file
-                 #'dir-locals-find-file-around-advice-fn-with-new-locate-dominating-file)
+                 #'around--dir-locals-find-file-around-advice-fn-with-new-locate-dominating-file)
   (advice-remove 'dir-locals-collect-variables
-                 #'dir-locals-collect-variables-around-advice-fn-with-file-truename)
+                 #'around--dir-locals-collect-variables-around-advice-fn-with-file-truename)
   (advice-remove 'lsp-find-session-folder
-                 #'lsp-find-session-folder-around-advice-fn-with-file-truename)
-  (remove-function (symbol-function 'pm--run-other-hooks)
-                   #'override--pm--run-other-hooks)
-  (remove-function (symbol-function 'semantic-mode)
-                   #'around--semantic-mode)
+                 #'around--lsp-find-session-folder-around-advice-fn-with-file-truename)
+  ;; (remove-function (symbol-function 'pm--run-other-hooks)
+  ;;                  #'override--pm--run-other-hooks)
+  (advice-remove 'pm--run-other-hooks
+                 #'override--pm--run-other-hooks)
+  ;; (remove-function (symbol-function 'semantic-mode)
+  ;;                  #'around--semantic-mode)
+  (advice-remove 'semantic-mode
+                 #'around--semantic-mode)
   (disable-file-truename-ad--unset-advices "compile"
                                            '(compilation-find-file
                                              compilation-get-file-structure))
@@ -133,8 +147,10 @@
                                            '(ggtags-create-tags
                                              ggtags-find-project))
   (ignore-error
-      (remove-function (symbol-function 'erc-identd-start)
-                       #'override--erc-identd-start)))
+      ;; (remove-function (symbol-function 'erc-identd-start)
+      ;;                  #'override--erc-identd-start)
+      (advice-remove 'erc-identd-start
+                     #'override--erc-identd-start)))
 
 ;;; lotus-wrapper.el ends here
 

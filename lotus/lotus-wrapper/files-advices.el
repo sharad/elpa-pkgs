@@ -27,6 +27,7 @@
 (provide 'files-advices)
 
 
+;;;###autoload
 (defun locate-dominating-file-dirs (filename name &optional counter prev-dirs trgdirs)
   "Return the truename of FILENAME.
 If FILENAME is not absolute, first expands it against `default-directory'.
@@ -111,15 +112,9 @@ containing it, until no links are left at any level.
               (setq done t))))))
     (cons filename trgdirs)))
 
-
+;;;###autoload
 (defun locate-dominating-file-dir (filename name)
   (cadr (locate-dominating-file-dirs filename name)))
-
-;; (advice-remove 'dir-locals-find-file
-;;                #'dir-locals-find-file-around)
-;; (advice-add 'dir-locals-find-file
-;;             :around #'dir-locals-find-file-around)
-;; (advice--p #'dir-locals-find-file)
 
 (when nil
   (locate-dominating-file-dir "~/.zshrc" ".git")
@@ -140,6 +135,7 @@ containing it, until no links are left at any level.
 
 
 
+;;;###autoload
 (defun dir-locals-collect-variables-fn-with-file-truename (class-variables root variables
                                                                            &optional predicate)
   "Collect entries from CLASS-VARIABLES into VARIABLES.
@@ -195,18 +191,17 @@ to see whether it should be considered."
 ;; (dir-locals-read-from-dir dir-or-cache)
 
 ;; (dir-locals-read-from-dir (dir-locals-find-file "~/.zshrc"))
-
-
 
 
 ;;;###autoload
-(defun dir-locals-find-file-around-advice-fn-with-new-locate-dominating-file (orgfn &rest args)
+(defun around--dir-locals-find-file-around-advice-fn-with-new-locate-dominating-file (orgfn &rest args)
   (or (apply orgfn args)
-      (apply #'locate-dominating-file-dir (append args
-                                                  (list #'dir-locals--all-files)))))
+      (apply #'locate-dominating-file-dir
+             (append args
+                     (list #'dir-locals--all-files)))))
 
 ;;;###autoload
-(defun dir-locals-collect-variables-around-advice-fn-with-file-truename (orgfn &rest args)
+(defun around--dir-locals-collect-variables-around-advice-fn-with-file-truename (orgfn &rest args)
   (condition-case err
       (apply orgfn args)
     (args-out-of-range

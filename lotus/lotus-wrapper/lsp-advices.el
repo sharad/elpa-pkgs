@@ -27,6 +27,7 @@
 (provide 'lsp-advices)
 
 
+;;;###autoload
 (defun lsp-find-session-folder-fn-with-file-truename (session file-name)
   (let ((file-name-canonical (lsp-f-canonical (file-truename file-name))))
     (->> session
@@ -40,9 +41,10 @@
                                                      file-name-canonical)))))
          (--max-by (> (length (file-truename it))
                       (length (file-truename other)))))))
+
 
 ;;;###autoload
-(defun lsp-find-session-folder-around-advice-fn-with-file-truename (orgfn &rest args)
+(defun around--lsp-find-session-folder-around-advice-fn-with-file-truename (orgfn &rest args)
   (or (apply orgfn args)
       (apply #'lsp-find-session-folder-fn-with-file-truename args)))
 
