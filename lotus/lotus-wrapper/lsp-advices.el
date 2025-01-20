@@ -27,22 +27,23 @@
 (provide 'lsp-advices)
 
 
+(defun lsp-find-session-folder-fn-with-file-truename (session file-name)
+  (let ((file-name-canonical (lsp-f-canonical (file-truename file-name))))
+    (->> session
+         (lsp-session-folders)
+         (--filter (and (lsp--files-same-host (file-truename it)
+                                              file-name-canonical)
+                        (or (lsp-f-same? (file-truename it)
+                                         file-name-canonical)
+                            (and (f-dir? (file-truename it))
+                                 (lsp-f-ancestor-of? (file-truename it)
+                                                     file-name-canonical)))))
+         (--max-by (> (length (file-truename it))
+                      (length (file-truename other)))))))
+
 ;;;###autoload
 (defun lsp-find-session-folder-around-advice-fn-with-file-truename (orgfn &rest args)
   (or (apply orgfn args)
-      (let ((session   (car args))
-            (file-name (cadr args)))
-        (let ((file-name-canonical (lsp-f-canonical (file-truename file-name))))
-          (->> session
-               (lsp-session-folders)
-               (--filter (and (lsp--files-same-host (file-truename it)
-                                                    file-name-canonical)
-                              (or (lsp-f-same? (file-truename it)
-                                               file-name-canonical)
-                                  (and (f-dir? (file-truename it))
-                                       (lsp-f-ancestor-of? (file-truename it)
-                                                           file-name-canonical)))))
-               (--max-by (> (length (file-truename it))
-                            (length (file-truename other)))))))))
+      (apply #'lsp-find-session-folder-fn-with-file-truename args)))
 
 ;;; lsp-advices.el ends here
