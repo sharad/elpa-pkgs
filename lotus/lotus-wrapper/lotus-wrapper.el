@@ -29,6 +29,8 @@
 
 (require 'caching-file-truename-advice)
 (require 'lotus-misc-advices)
+(require 'files-advices)
+(require 'lsp-advices)
 
 
 (declare-function around--org--newline "lotus-misc-advices" (oldfn &rest args))
@@ -40,7 +42,16 @@
   (with-eval-after-load "files"
     (add-function :override
                   (symbol-function 'file-truename)
-                  #'override--file-truename))
+                  #'override--file-truename)
+    (advice-add 'dir-locals-find-file
+                :around #'dir-locals-find-file-around-advice-fn-with-new-locate-dominating-file)
+    (advice-add 'dir-locals-collect-variables :around
+                #'dir-locals-collect-variables-around-advice-fn-with-file-truename))
+
+  (with-eval-after-load "lsp-mode"
+    (advice-add 'lsp-find-session-folder :around
+                #'lsp-find-session-folder-around-advice-fn-with-file-truename))
+
   (with-eval-after-load "polymode-core"
     (add-function :override
                   (symbol-function 'pm--run-other-hooks)
@@ -63,8 +74,7 @@
                                            projectile-compilation-dir))
 
   (disable-file-truename-ad--set-advices "lsp-mode"
-                                         '(
-                                           lsp--all-watchable-directories
+                                         '(lsp--all-watchable-directories
                                            lsp-watch-root-folder
                                            lsp--server-register-capability
                                            lsp--folder-watch-callback))
@@ -86,6 +96,12 @@
   (interactive)
   (remove-function (symbol-function 'file-truename)
                    #'override--file-truename)
+  (advice-remove 'dir-locals-find-file
+                 #'dir-locals-find-file-around-advice-fn-with-new-locate-dominating-file)
+  (advice-remove 'dir-locals-collect-variables
+                 #'dir-locals-collect-variables-around-advice-fn-with-file-truename)
+  (advice-remove 'lsp-find-session-folder
+                 #'lsp-find-session-folder-around-advice-fn-with-file-truename)
   (remove-function (symbol-function 'pm--run-other-hooks)
                    #'override--pm--run-other-hooks)
   (remove-function (symbol-function 'semantic-mode)
@@ -111,7 +127,7 @@
                                              ))
 
   (disable-file-truename-ad--unset-advices "lsp-headerline"
-                                         '(lsp-headerline--build-path-up-to-project-string))
+                                           '(lsp-headerline--build-path-up-to-project-string))
 
   (disable-file-truename-ad--unset-advices "ggtags"
                                            '(ggtags-create-tags
@@ -192,11 +208,11 @@ attempts to find a file whose name is produced by (format FMT FILENAME)."
       ;; The file doesn't exist.  Ask the user where to find it.
       (save-excursion            ;This save-excursion is probably not right.
         (let ((w (let ((pop-up-windows t))
-		   (display-buffer (marker-buffer marker)
-				   '(nil (allow-no-window . t))))))
+                   (display-buffer (marker-buffer marker)
+                                   '(nil (allow-no-window . t))))))
           (with-current-buffer (marker-buffer marker)
-	    (goto-char marker)
-	    (and w (progn (compilation-set-window w marker)
+            (goto-char marker)
+            (and w (progn (compilation-set-window w marker)
                           (compilation-set-overlay-arrow w))))
           (let* ((name (read-file-name
                         (format-prompt "Find this %s in"
