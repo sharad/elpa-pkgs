@@ -73,7 +73,9 @@
         t))))
 
 (defun magit-wip-ext-can-push-p (ref &optional remote args)
-  (let ((count (magit-wip-ext-push-commits-behind-count ref remote args)))
+  (let ((count (magit-wip-ext-push-commits-behind-count ref
+                                                        remote
+                                                        args)))
     (if (eq count t)
         t
       (> count magit-wip-push-inhibit-count))))
@@ -110,11 +112,11 @@
                                      (string-join (list upstream-remote remote-wip-ref) "/")
                                      args)
             (progn
-              (message "magit-wip-push: push passed")
-              (run-hooks magit-wip-push-mode-after-success-hook))
+              (run-hooks magit-wip-push-mode-after-success-hook)
+              (message "magit-wip-push: push passed"))
           (progn
-            (message "magit-wip-push: push failed")
-            (run-hooks magit-wip-push-mode-after-fail-hook)))
+            (run-hooks magit-wip-push-mode-after-fail-hook)
+            (message "magit-wip-push: push failed")))
       (message "magit-wip-push: ref %s not exists"
                local-wip-ref))))
 
@@ -128,8 +130,7 @@
 
 
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
-  (if (apply orgfn args)
-      (message "magit-wip-commit: success")
+  (unless (apply orgfn args)
     (message "magit-wip-commit: fail"))
   (message "magit-wip-push: args: %S" args)
   (apply #'magit-wip-commit-worktree-fn-to-push-wip
