@@ -46,6 +46,7 @@
            magit-wip-push-inhibit-count)
       t)))
 
+(defun magit-wip-ext-can-push-p (ref &optional remote args))
 
 ;; (defun magit-commit-diff-between-local-remote (ref &optional remote)
 ;;   "Return the number of commit differences between REF and its remote branch.
