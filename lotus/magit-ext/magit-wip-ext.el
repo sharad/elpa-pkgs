@@ -54,6 +54,8 @@
         t))))
 
 (defun magit-wip-ext-can-push-p (ref &optional remote args)
+  (let ((count (magit-wip-ext-push-commits-behind-count ref remote args))))
+
   (let* ((local-branch    (substring ref (length "refs/heads/")))
          (upstream-remote (or remote
                               (magit-get-upstream-remote local-branch)))
