@@ -32,6 +32,7 @@
 (defvar magit-wip-push-mode-after-fail-hook nil)
 
 (defun magit-wip-ext-push-commits-behind-count (ref &optional remote args)
+  (interactive)
   (let* ((local-branch    (substring ref (length "refs/heads/")))
          (upstream-remote (or remote
                               (magit-get-upstream-remote local-branch)))
