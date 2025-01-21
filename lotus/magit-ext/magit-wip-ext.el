@@ -57,13 +57,13 @@
 ;;     (if upstream-branch
 ;;         (magit-git-string "rev-list" "--count" (concat local-branch ".." upstream-branch))
 ;;       t)))
-
+;;
 ;; (string-to-number (or (magit-rev-count (concat upstream-branch ".." local-branch)) "0"))
-
+;;
 ;; (magit-commit-diff-between-local-remote "refs/heads/master")
-
+;;
 ;; (magit-rev-count 'aa 'aa 'aa)
-
+;;
 ;; (magit-git-string "rev-list" "--count" "origin/wip/wtree/refs/heads/master..refs/wip/wtree/refs/heads/master")
 
 (defun magit-ext-git-push-nons (branch target args)
