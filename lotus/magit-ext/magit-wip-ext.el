@@ -40,6 +40,21 @@
          (remote-wip-ref  (string-join (list "refs/heads" wip-ref) "/")))
     t))
 
+
+(defun magit-commit-diff-between-local-remote (ref &optional remote)
+  "Return the number of commit differences between REF and its remote branch.
+If no remote branch exists, return T. REF should be a full ref like 'refs/heads/master'.
+Optional argument REMOTE can specify the remote explicitly."
+  (let* ((local-branch (substring ref (length "refs/heads/")))
+         (upstream-remote (or remote (magit-get-upstream-remote local-branch)))
+         (upstream-branch (magit-get-upstream-branch local-branch upstream-remote)))
+    (if upstream-branch
+        (let ((ahead-behind (magit-rev-difference local-branch upstream-branch)))
+          (list :ahead (car ahead-behind)
+                :behind (cdr ahead-behind)))
+      ;; No remote branch found
+      t)))
+
 (defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
   ;; If the remote branch already exists, then we do not have to
