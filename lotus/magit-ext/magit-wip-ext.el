@@ -40,7 +40,9 @@
          (remote-wip-branch  (string-join (list upstream-remote wip-ref) "/")))
     (if (magit-ref-p remote-wip-branch)
         (> (string-to-number (magit-git-string "rev-list" "--count"
-                                               (concat remote-wip-branch ".." local-wip-ref)))
+                                               (concat remote-wip-branch
+                                                       ".."
+                                                       local-wip-ref)))
            magit-wip-push-inhibit-count)
       t)))
 
