@@ -44,10 +44,14 @@
                                                          (concat remote-wip-branch
                                                                  ".."
                                                                  local-wip-ref)))))
-          (message "remote: %s is behind by %d"
-                   remote-wip-branch
-                   count))
-      (message "remote: %s not exists" remote-wip-branch))))
+          (if (call-interactively)
+              (message "remote: %s is behind by %d"
+                       remote-wip-branch
+                       count)
+            count))
+      (if (call-interactively)
+          (message "remote: %s not exists" remote-wip-branch)
+        t))))
 
 (defun magit-wip-ext-can-push-p (ref &optional remote args)
   (let* ((local-branch    (substring ref (length "refs/heads/")))
