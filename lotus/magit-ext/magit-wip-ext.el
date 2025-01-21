@@ -31,7 +31,7 @@
 (defvar magit-wip-push-mode-after-success-hook nil)
 (defvar magit-wip-push-mode-after-fail-hook nil)
 
-(defun magit-wip-)
+(defun magit-wip-push-ext-can-)
 
 (defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
