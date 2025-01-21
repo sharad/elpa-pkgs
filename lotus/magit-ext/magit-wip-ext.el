@@ -55,6 +55,9 @@ Optional argument REMOTE can specify the remote explicitly."
       ;; No remote branch found
       t)))
 
+
+(magit-commit-diff-between-local-remote)
+
 (defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
   ;; If the remote branch already exists, then we do not have to
