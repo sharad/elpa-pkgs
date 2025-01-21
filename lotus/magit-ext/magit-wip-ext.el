@@ -31,6 +31,8 @@
 (defvar magit-wip-push-mode-after-success-hook nil)
 (defvar magit-wip-push-mode-after-fail-hook nil)
 
+(defun magit-wip-)
+
 (defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
   ;; If the remote branch already exists, then we do not have to
@@ -80,7 +82,7 @@
   (message "magit-wip-push: args: %S" args)
   (apply #'magit-wip-commit-worktree-fn-to-push-wip
          args))
-
+
 
 ;; Define the global minor mode for magit wip push
 ;;;###autoload
