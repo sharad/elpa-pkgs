@@ -38,6 +38,7 @@
          (wip-ref         (string-join (list "wip/wtree" ref) "/"))
          (local-wip-ref   (string-join (list "refs" wip-ref) "/"))
          (remote-wip-ref  (string-join (list "refs/heads" wip-ref) "/")))
+    (local-wip-ref)
     t))
 
 
