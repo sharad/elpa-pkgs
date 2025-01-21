@@ -56,7 +56,7 @@ Optional argument REMOTE can specify the remote explicitly."
       t)))
 
 
-(magit-commit-diff-between-local-remote)
+(magit-commit-diff-between-local-remote "refs/heads/master")
 
 (defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
