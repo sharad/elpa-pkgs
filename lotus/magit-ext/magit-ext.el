@@ -43,7 +43,9 @@
 ;;   '("e" "Amend w/ --no-edit" magit-commit-amend "--no-edit"))
 
 
+
 (defvar magit-single-line-fast-commit-msg "correction")
+
 
 ;;;###autoload
 (defun magit-commit-with-single-line (msg &rest args)
@@ -282,7 +284,7 @@ If the command fails, return nil."
 
 (defun gita-cmd-display (cmd &rest args)
   "Call the 'gita stat' command and display its output in a new buffer."
-  (interactive)
+  ;; (interactive)
   (let ((output-buffer (get-buffer-create (format "*%s %s*"
                                                   (capitalize cmd)
                                                   (capitalize (car args))))))
@@ -316,7 +318,7 @@ If the command fails, return nil."
 
 (defun gita-cmd-execute (cmd &rest args)
   "Call the 'gita status' command and display its output in a new buffer."
-  (interactive)
+  ;; (interactive)
   (let ((output-buffer (get-buffer-create (format "*%s %s*"
                                                   (capitalize cmd)
                                                   (capitalize (car args))))))
@@ -346,38 +348,41 @@ If the command fails, return nil."
                                                  (capitalize cmd)
                                                  (car args)
                                                  exit-code))))))))))
+
 
+;;;###autoload
 (defun gita-stat ()
   "Call the 'gita stat' command and display its output in a new buffer."
   (interactive)
   (gita-cmd-display "gita" "stat" (gita-read-group t)))
-
+;;;###autoload
 (defun gita-status ()
   "Call the 'gita status' command and display its output in a new buffer."
   (interactive)
   (gita-cmd-display "gita" "st" (gita-read-group)))
-
+;;;###autoload
 (defun gita-ssmfor-st ()
   "Call the 'gita status' command and display its output in a new buffer."
   (interactive)
   (gita-cmd-display "gita" "ssmfor-st" (gita-read-group)))
-
+;;;###autoload
 (defun gita-ssmfor-pull-rebase ()
   "Call the 'gita status' command and display its output in a new buffer."
   (interactive)
   (gita-cmd-execute "gita" "ssmfor-pull-rebase" (gita-read-group)))
-
+;;;###autoload
 (defun gita-ssmfor-correct ()
   "Call the 'gita status' command and display its output in a new buffer."
   (interactive)
   (gita-cmd-execute "gita" "ssmfor-correct" (gita-read-group)))
-
+;;;###autoload
 (defun gita-ssmfor-correct-push ()
   "Call the 'gita status' command and display its output in a new buffer."
   (interactive)
   (gita-cmd-execute "gita" "ssmfor-correct-push" (gita-read-group)))
+
 
-
+;;;###autoload
 (defun magit-ext-verify ()
   "Run an external PROGRAM, interactively provide input, and handle process timeout."
   (interactive)
@@ -500,195 +505,3 @@ If the command fails, return nil."
       (keymap-set magit-mode-map "C-c f" nil))))
 
 ;;; magit-ext.el ends here
-
-;; (transient-define-argument magit:--gpg-sign ()
-;;   :description "Sign using gpg"
-;;   :class 'transient-option
-;;   :shortarg "-S"
-;;   :argument "--gpg-sign="
-;;   :allow-empty t
-;;   :reader #'magit-read-gpg-signing-key)
-
-;; (defun magit-transient-read-person (prompt initial-input history)
-;;   (magit-completing-read
-;;    prompt
-;;    (mapcar (lambda (line)
-;;              (save-excursion
-;;                (and (string-match "\\`[\s\t]+[0-9]+\t" line)
-;;                     (list (substring line (match-end 0))))))
-;;            (magit-git-lines "shortlog" "-n" "-s" "-e" "HEAD"))
-;;    nil nil initial-input history))
-
-
-;; (defun magit-commit-create (&rest args)
-;;   "Create a new commit on `HEAD'.
-;; With a prefix argument, amend to the commit at `HEAD' instead.
-;; \n(git commit [--amend] ARGS)"
-;;   (interactive (if current-prefix-arg
-;;                    (list (cons "--amend" (magit-commit-arguments)))
-;;                  (list (magit-commit-arguments))))
-;;   (cond ((member "--all" args)
-;;          (setq this-command 'magit-commit--all))
-;;         ((member "--allow-empty" args)
-;;          (setq this-command 'magit-commit--allow-empty)))
-;;   (when (setq args (magit-commit-assert args))
-;;     (let ((default-directory (magit-toplevel)))
-;;       (magit-run-git-with-editor "commit" args))))
-
-;; (defun magit-commit-arguments nil
-;;   (transient-args 'magit-commit))
-
-;; (transient-define-argument magit-commit:--reuse-message ()
-;;   :description "Reuse commit message"
-;;   :class 'transient-option
-;;   :shortarg "-C"
-;;   :argument "--reuse-message="
-;;   :reader #'magit-read-reuse-message
-;;   :history-key 'magit-revision-history)
-
-;; (transient-define-argument magit:--author ()
-;;   :description "Limit to author"
-;;   :class 'transient-option
-;;   :key "-A"
-;;   :argument "--author="
-;;   :reader #'magit-transient-read-person)
-
-
-
-
-
-
-;; (transient-append-suffix 'magit-push
-;;   "e" '("C" "AAA" magit-commit-amend-noedit-push-current-force))
-
-;; (transient-append-suffix 'magit-fetch "m" '("n" forge-pull))
-;; (transient-append-suffix 'magit-fetch "n" '("N" forge-pull-notifications))
-
-
-;; (transient-define-prefix magit-ext-action ()
-;;   "Different git actions."
-;;   :info-manual "(magit)Initiating a Commit"
-;;   :man-page "git-commit"
-;;   ["Arguments"
-;;    ("-a" "Stage all modified and deleted files"   ("-a" "--all"))
-;;    ("-e" "Allow empty commit"                     "--allow-empty")
-;;    ("-v" "Show diff of changes to be committed"   ("-v" "--verbose"))
-;;    ("-n" "Disable hooks"                          ("-n" "--no-verify"))
-;;    ("-R" "Claim authorship and reset author date" "--reset-author")
-;;    (magit:--author :description "Override the author")
-;;    (7 "-D" "Override the author date" "--date=" transient-read-date)
-;;    ("-s" "Add Signed-off-by line"                 ("-s" "--signoff"))
-;;    (5 magit:--gpg-sign)
-;;    (magit-commit:--reuse-message)]
-;;   [["Create"
-;;     ("c" "Commit"         magit-commit-create)]
-;;    ["Edit HEAD"
-;;     ("e" "Extend"         magit-commit-extend)
-;;     ("w" "Reword"         magit-commit-reword)
-;;     ("a" "Amend"          magit-commit-amend)
-;;     (6 "n" "Reshelve"     magit-commit-reshelve)]
-;;    ["Edit"
-;;     ("f" "Fixup"          magit-commit-fixup)
-;;     ("s" "Squash"         magit-commit-squash)
-;;     ("A" "Augment"        magit-commit-augment)
-;;     (6 "x" "Absorb changes" magit-commit-autofixup)
-;;     (6 "X" "Absorb modules" magit-commit-absorb-modules)]
-;;    [""
-;;     ("F" "Instant fixup"  magit-commit-instant-fixup)
-;;     ("S" "Instant squash" magit-commit-instant-squash)]]
-;;   (interactive)
-;;   (if-let ((buffer (magit-commit-message-buffer)))
-;;       (switch-to-buffer buffer)
-;;     (transient-setup 'magit-ext-action)))
-
-;; (transient-define-prefix magit-ext-action1 ()
-;;   "Fetch from another repository."
-;;   :man-page "git-fetch"
-;;   ["Arguments"
-;;    ("-p" "Prune deleted branches" ("-p" "--prune"))
-;;    ("-t" "Fetch all tags" ("-t" "--tags"))
-;;    ("-u" "Fetch full history" "--unshallow" :level 7)
-;;    ("-F" "Force" ("-f" "--force"))]
-;;   ["Fetch from"
-;;    ("p" magit-fetch-from-pushremote)
-;;    ("u" magit-fetch-from-upstream)
-;;    ("e" "elsewhere"        magit-fetch-other)
-;;    ("a" "all remotes"      magit-fetch-all)]
-;;   ["Fetch"
-;;    ("o" "another branch"   magit-fetch-branch)
-;;    ("r" "explicit refspec" magit-fetch-refspec)
-;;    ("m" "submodules"       magit-fetch-modules)]
-;;   ["Configure"
-;;    ("C" "variables..." magit-branch-configure)])
-
-
-;; ;; magit-status-mode-map
-
-;; (defvar forge-add-default-sections t
-;;   "Whether to add Forge's sections to `magit-status-sections-hook'.
-
-;; If you want to disable this, then you must set this to nil before
-;; `forge' is loaded.")
-
-;; (when forge-add-default-sections
-;;   (magit-add-section-hook 'magit-status-sections-hook #'forge-insert-pullreqs nil t)
-;;   (magit-add-section-hook 'magit-status-sections-hook #'forge-insert-issues   nil t))
-
-;; ;;;###autoload
-;; (defvar forge-add-default-bindings t
-;;   "Whether to add Forge's bindings to various Magit keymaps.
-
-;; If you want to disable this, then you must set this to nil before
-;; `magit' is loaded.  If you do it before `forge' but after `magit'
-;; is loaded, then `magit-mode-map' ends up being modified anyway.")
-
-;; ;;;###autoload
-;; (with-eval-after-load 'magit-mode
-;;   (when forge-add-default-bindings
-;;     (keymap-set magit-mode-map "'" #'forge-dispatch)
-;;     (keymap-set magit-mode-map "N" #'forge-dispatch)
-;;     (keymap-set magit-mode-map "<remap> <magit-browse-thing>"
-;;                 #'forge-browse)
-;;     (keymap-set magit-mode-map "<remap> <magit-copy-thing>"
-;;                 #'forge-copy-url-at-point-as-kill)))
-
-;; ;;;###autoload
-;; (with-eval-after-load 'git-commit
-;;   (when forge-add-default-bindings
-;;     (keymap-set git-commit-mode-map "C-c C-v" #'forge-visit-topic)))
-
-;; (when forge-add-default-bindings
-;;   (keymap-set magit-commit-section-map "C-c C-v" #'forge-visit-topic)
-;;   (keymap-set magit-branch-section-map "C-c C-v" #'forge-visit-topic)
-
-;;   (transient-insert-suffix 'magit-dispatch "o"
-;;     '("N" "Forge" forge-dispatch))
-
-;;   (transient-append-suffix 'magit-fetch "m" '("n" forge-pull))
-;;   (transient-append-suffix 'magit-fetch "n" '("N" forge-pull-notifications))
-
-;;   (transient-append-suffix 'magit-pull  "m" '("n" forge-pull))
-;;   (transient-append-suffix 'magit-pull  "n" '("N" forge-pull-notifications))
-
-;;   (transient-append-suffix 'magit-branch "w"
-;;     '("f" "pull-request" forge-checkout-pullreq))
-;;   (transient-append-suffix 'magit-branch "W"
-;;     '("F" "from pull-request" forge-branch-pullreq))
-
-;;   (transient-suffix-put 'magit-remote 'magit-update-default-branch :key "b u")
-;;   (transient-append-suffix 'magit-remote "b u"
-;;     '("b r" "Rename default branch" forge-rename-default-branch))
-
-;;   (transient-append-suffix 'magit-worktree "c"
-;;     '("n" "pull-request worktree" forge-checkout-worktree))
-
-;;   (transient-append-suffix 'magit-status-jump "w"
-;;     '("Np" "Pull requests" forge-jump-to-pullreqs))
-;;   (transient-append-suffix 'magit-status-jump "Np"
-;;     '("Ni" "Issues" forge-jump-to-issues))
-
-;;   (transient-append-suffix 'magit-merge "a"
-;;     '(7 "M" "Merge using API" forge-merge)))
-
-
-;; ;; (transient-append-suffix 'magit-commit "n" '("N" forge-pull-notifications))

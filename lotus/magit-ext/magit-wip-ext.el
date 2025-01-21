@@ -30,7 +30,9 @@
 (defvar magit-wip-push-inhibit-count 10)
 (defvar magit-wip-push-mode-after-success-hook nil)
 (defvar magit-wip-push-mode-after-fail-hook nil)
+
 
+;;;###autoload
 (defun magit-wip-ext-push-commits-behind-count (ref &optional remote args)
   (interactive (list (magit-wip-get-ref)
                      nil
@@ -87,6 +89,7 @@
     (magit-run-git-async "push" "-v" args remote
                          (format "%s:%s" branch target))))
 
+;;;###autoload
 (defun magit-wip-push (ref &optional remote args)
   (interactive
    (list (magit-ref-fullname "HEAD")
