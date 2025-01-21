@@ -47,7 +47,7 @@ If no remote branch exists, return T. REF should be a full ref like 'refs/heads/
 Optional argument REMOTE can specify the remote explicitly."
   (let* ((local-branch (substring ref (length "refs/heads/")))
          (upstream-remote (or remote (magit-get-upstream-remote local-branch)))
-         (upstream-branch (magit-get-upstream-branch local-branch upstream-remote)))
+         (upstream-branch (magit-get-upstream-branch local-branch)))
     (if upstream-branch
         (let ((ahead-behind (magit-rev-difference local-branch upstream-branch)))
           (list :ahead (car ahead-behind)
