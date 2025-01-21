@@ -38,8 +38,8 @@
          (wip-ref         (string-join (list "wip/wtree" ref) "/"))
          (local-wip-ref   (string-join (list "refs" wip-ref) "/"))
          (remote-wip-branch  (string-join (list upstream-remote wip-ref) "/")))
-    (magit-git-string "rev-list" "--count"
-                      (concat remote-wip-branch ".." local-wip-ref))
+    (string-to-number (magit-git-string "rev-list" "--count"
+                                        (concat remote-wip-branch ".." local-wip-ref)))
     t))
 
 
