@@ -434,7 +434,6 @@ If the command fails, return nil."
 (defalias 'gita-reset #'gita-demo)
 (defalias 'gita-fetch #'gita-demo)
 (defalias 'gita-log #'gita-demo)
-
 
 
 (defun magit-extended-action-arguments nil
@@ -443,7 +442,8 @@ If the command fails, return nil."
 (defun magit-ext-insinuate--action-menu ()
   (transient-define-prefix magit-extended-action-menu ()
     "Transient menu for Gita commands."
-    :scope (magit-get-mode-buffer 'magit-status-mode) ;; Define scope
+    :scope (when (magit-inside-worktree-p)
+             (magit-get-mode-buffer 'magit-status-mode)) ;; Define scope
     [["Arguments"
       ("-v" "Verbose" "--verbose")
       ("--no-edit" "No Edit" "--no-edit")
