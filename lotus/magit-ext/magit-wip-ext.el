@@ -75,7 +75,7 @@
 (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)
-  (when (magit-wip-ext-can-push-p)
+  (when (magit-wip-ext-can-push-p ref)
     (magit-wip-push ref)))
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
   (if (apply orgfn args)
