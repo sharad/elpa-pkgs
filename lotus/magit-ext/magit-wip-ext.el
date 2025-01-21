@@ -59,7 +59,7 @@ Optional argument REMOTE can specify the remote explicitly."
 
 (magit-rev-count 'aa 'aa 'aa)
 
-(magit-git-string "rev-list" "--count" "refs/wip/wtree/refs/heads/master..origin/wip/wtree/refs/heads/master")
+(magit-git-string "rev-list" "--count" "origin/wip/wtree/refs/heads/master..refs/wip/wtree/refs/heads/master")
 
 
 
