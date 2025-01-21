@@ -37,7 +37,7 @@
                               (magit-get-upstream-remote local-branch)))
          (wip-ref         (string-join (list "wip/wtree" ref) "/"))
          (local-wip-ref   (string-join (list "refs" wip-ref) "/"))
-         (remote-wip-ref  (string-join (list "refs/heads" wip-ref) "/")))
+         (remote-wip-branch  (string-join (list upstream-remote wip-ref) "/")))
     (local-wip-ref)
     t))
 
@@ -59,7 +59,7 @@ Optional argument REMOTE can specify the remote explicitly."
 
 (magit-rev-count 'aa 'aa 'aa)
 
-(magit-get-upstream-branch "master..origin/wip/wtree/refs/heads/master")
+(magit-git-string "rev-list" "--count" "master..origin/wip/wtree/refs/heads/master")
 
 (defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
