@@ -44,6 +44,7 @@
                                                                  ".."
                                                                  local-wip-ref)))))
           (message "remote: %s is behind by %d"
+                   remote-wip-branch
                    count))
       t)))
 
