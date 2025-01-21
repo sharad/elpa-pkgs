@@ -50,10 +50,6 @@ Optional argument REMOTE can specify the remote explicitly."
          (upstream-branch (magit-get-upstream-branch local-branch)))
     (if upstream-branch
         (magit-git-string "rev-list" "--count" (concat local-branch ".." upstream-branch))
-      (let ((ahead-behind (magit-rev-difference local-branch upstream-branch)))
-        (list :ahead (car ahead-behind)
-              :behind (cdr ahead-behind)))
-      ;; No remote branch found
       t)))
 
 (string-to-number (or (magit-rev-count (concat upstream-branch ".." local-branch)) "0"))
