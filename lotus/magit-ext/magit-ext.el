@@ -442,7 +442,7 @@ If the command fails, return nil."
 (defun magit-ext-insinuate--action-menu ()
   (transient-define-prefix magit-extended-action-menu ()
     "Transient menu for Gita commands."
-    :scope (when (magit-inside-worktree-p)
+    :scope (when (magit-toplevel)
              (magit-get-mode-buffer 'magit-status-mode)) ;; Define scope
     [["Arguments"
       ("-v" "Verbose" "--verbose")
