@@ -172,7 +172,7 @@ to see whether it should be considered."
          (sub-file-name (if (and file-name
                                  (file-name-absolute-p file-name))
                             ;; FIXME: Why not use file-relative-name?
-                            (substring (file-truename file-name)
+                            (substring (file-truename file-name) ; <------------
                                        (length (file-truename root))))))
     (condition-case err
         (dolist (entry class-variables variables)
