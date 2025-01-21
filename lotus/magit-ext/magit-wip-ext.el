@@ -38,7 +38,7 @@
          (wip-ref         (string-join (list "wip/wtree" ref) "/"))
          (local-wip-ref   (string-join (list "refs" wip-ref) "/"))
          (remote-wip-ref  (string-join (list "refs/heads" wip-ref) "/")))
-    ))
+    t))
 
 (defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
