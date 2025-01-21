@@ -78,8 +78,8 @@
   (magit-wip-push ref))
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
   (if (apply orgfn args)
-      (message "magit-wip-push: success")
-    (message "magit-wip-push: fail"))
+      (message "magit-wip-commit: success")
+    (message "magit-wip-commit: fail"))
   (message "magit-wip-push: args: %S" args)
   (apply #'magit-wip-commit-worktree-fn-to-push-wip
          args))
