@@ -49,14 +49,18 @@ Optional argument REMOTE can specify the remote explicitly."
          (upstream-remote (or remote (magit-get-upstream-remote local-branch)))
          (upstream-branch (magit-get-upstream-branch local-branch)))
     (if upstream-branch
-        (let ((ahead-behind (magit-rev-difference local-branch upstream-branch)))
-          (list :ahead (car ahead-behind)
-                :behind (cdr ahead-behind)))
+        (magit-git-string "rev-list" "--count")
+      (let ((ahead-behind (magit-rev-difference local-branch upstream-branch)))
+        (list :ahead (car ahead-behind)
+              :behind (cdr ahead-behind)))
       ;; No remote branch found
       t)))
 
+(string-to-number (or (magit-rev-count (concat upstream-branch ".." local-branch)) "0"))
 
 (magit-commit-diff-between-local-remote "refs/heads/master")
+
+(magit-rev-count 'aa 'aa 'aa)
 
 (defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
