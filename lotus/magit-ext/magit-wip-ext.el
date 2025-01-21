@@ -31,6 +31,51 @@
 (defvar magit-wip-push-mode-after-success-hook nil)
 (defvar magit-wip-push-mode-after-fail-hook nil)
 
+(defun magit-wip-ext-push-commits-behind-count (ref &optional remote args)
+  (interactive (list (magit-wip-get-ref)
+                     nil
+                     nil))
+  (let* ((local-branch    (substring ref (length "refs/heads/")))
+         (upstream-remote (or remote
+                              (magit-get-upstream-remote local-branch)))
+         (wip-ref         (string-join (list "wip/wtree" ref) "/"))
+         (local-wip-ref   (string-join (list "refs" wip-ref) "/"))
+         (remote-wip-branch  (string-join (list upstream-remote wip-ref) "/")))
+    (if (magit-ref-p remote-wip-branch)
+        (let ((behind-count (string-to-number (magit-git-string "rev-list" "--count"
+                                                                (concat remote-wip-branch
+                                                                        ".."
+                                                                        local-wip-ref)))))
+          (if (called-interactively-p 'interactive)
+              (if (> behind-count 0)
+                  (message "remote: %s is behind by %d from local %s"
+                           remote-wip-branch
+                           behind-count
+                           local-wip-ref)
+                (if (= behind-count 0)
+                    (let ((ahead-count (string-to-number (magit-git-string "rev-list" "--count"
+                                                                           (concat local-wip-ref
+                                                                                   ".."
+                                                                                   remote-wip-branch)))))
+                      (if (> ahead-count 0)
+                          (message "remote: %s is ahead by %d from local %s"
+                                   remote-wip-branch
+                                   behind-count
+                                   local-wip-ref)
+                        (message "remote: %s is same as local branch %s"
+                                 remote-wip-branch
+                                 local-wip-ref)))))
+            behind-count))
+      (if (called-interactively-p 'interactive)
+          (message "remote: %s not exists" remote-wip-branch)
+        t))))
+
+(defun magit-wip-ext-can-push-p (ref &optional remote args)
+  (let ((count (magit-wip-ext-push-commits-behind-count ref remote args)))
+    (if (eq count t)
+        t
+      (> count magit-wip-push-inhibit-count))))
+
 (defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
   ;; If the remote branch already exists, then we do not have to
@@ -69,18 +114,24 @@
             (run-hooks magit-wip-push-mode-after-fail-hook)))
       (message "magit-wip-push: ref %s not exists"
                local-wip-ref))))
+
+
 (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)
-  (magit-wip-push ref))
+  (if (magit-wip-ext-can-push-p ref)
+      (magit-wip-push ref)
+    (message "Inhibiting to push.")))
+
+
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
   (if (apply orgfn args)
-      (message "magit-wip-push: success")
-    (message "magit-wip-push: fail"))
+      (message "magit-wip-commit: success")
+    (message "magit-wip-commit: fail"))
   (message "magit-wip-push: args: %S" args)
   (apply #'magit-wip-commit-worktree-fn-to-push-wip
          args))
-
+
 
 ;; Define the global minor mode for magit wip push
 ;;;###autoload
