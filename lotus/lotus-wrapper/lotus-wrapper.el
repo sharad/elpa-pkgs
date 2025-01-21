@@ -69,6 +69,10 @@
     (advice-add 'semantic-mode
                 :around #'around--semantic-mode))
 
+  (with-eval-after-load "magit-git"
+    (advice-add 'magit-toplevel :around
+                #'around--magit-toplevel-around-advice-fn-with))
+
   (disable-file-truename-ad--set-advices "compile"
                                          '(compilation-find-file
                                            compilation-get-file-structure))
@@ -122,6 +126,8 @@
   ;;                  #'around--semantic-mode)
   (advice-remove 'semantic-mode
                  #'around--semantic-mode)
+  (advice-remove 'magit-toplevel
+                 #'around--magit-toplevel-around-advice-fn-with)
   (disable-file-truename-ad--unset-advices "compile"
                                            '(compilation-find-file
                                              compilation-get-file-structure))

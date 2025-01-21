@@ -27,6 +27,11 @@
 (provide 'lsp-advices)
 
 
+(defun print-otherand-it (lst)
+  ;; (message "it: %s, ft it: " it (file-truename it))
+  (message "lst: %s" lst)
+  lst)
+
 ;;;###autoload
 (defun lsp-find-session-folder-fn-with-file-truename (session file-name)
   (let ((file-name-canonical (lsp-f-canonical (file-truename file-name))))
@@ -39,8 +44,15 @@
                             (and (f-dir? (file-truename it))
                                  (lsp-f-ancestor-of? (file-truename it)
                                                      file-name-canonical)))))
-         (--max-by (> (length (file-truename it))
-                      (length (file-truename other)))))))
+         ;; (print-otherand-it)
+         (--max-by (> (length (and it (file-truename it)))
+                      (length (and other (file-truename other))))))))
+
+
+
+;; (->> '("aa" "bbb")
+;;      (->
+;;       (when (message "%s"))))
 
 
 ;;;###autoload

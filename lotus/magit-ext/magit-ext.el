@@ -475,7 +475,7 @@ If the command fails, return nil."
 ;;;###autoload
 (defun magit-ext-insinuate ()
   (interactive)
-  (with-eval-after-load 'magit-mode
+  (with-eval-after-load "magit-mode"
     (magit-ext-insinuate--action-menu)
     (when t ;; forge-add-default-bindings
       (keymap-set magit-mode-map "C-c C-f" #'magit-extended-action)
@@ -489,7 +489,7 @@ If the command fails, return nil."
 ;;;###autoload
 (defun magit-ext-uninsinuate ()
   (interactive)
-  (with-eval-after-load 'magit-mode
+  (with-eval-after-load "magit-mode"
     (when t ;; forge-add-default-bindings
       (keymap-set magit-mode-map "C-c C-f" nil)
       ;; (keymap-set magit-mode-map "N" #'forge-dispatch)

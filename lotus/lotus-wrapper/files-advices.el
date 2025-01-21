@@ -28,7 +28,7 @@
 
 
 ;;;###autoload
-(defun locate-dominating-file-dirs (filename name &optional counter prev-dirs trgdirs)
+(defun locate-dominating--dirs-with-file-truename (filename name &optional counter prev-dirs trgdirs)
   "Return the truename of FILENAME.
 If FILENAME is not absolute, first expands it against `default-directory'.
 The truename of a file name is found by chasing symbolic links
@@ -83,7 +83,7 @@ containing it, until no links are left at any level.
                 (setq dir (cdr (assoc dir (car prev-dirs))))
               ;; (message "m%d: before trgdir = %s" (or (car counter) 0) trgdirs)
               (let* ((old dir)
-                     (file-trgdir (locate-dominating-file-dirs dirfile name counter prev-dirs trgdirs))
+                     (file-trgdir (locate-dominating--dirs-with-file-truename dirfile name counter prev-dirs trgdirs))
                      (new (file-name-as-directory (car file-trgdir))))
                 (setq trgdirs (cdr file-trgdir))
                 (setcar prev-dirs (cons (cons old new) (car prev-dirs)))
@@ -111,27 +111,50 @@ containing it, until no links are left at any level.
               ;; No, we are done!
               (setq done t))))))
     (cons filename trgdirs)))
-
 ;;;###autoload
-(defun locate-dominating-file-dir (filename name)
-  (cadr (locate-dominating-file-dirs filename name)))
+(defun locate-dominating--dirs-by-file (filename name)
+  (cdr (locate-dominating--dirs-with-file-truename filename
+                                                   name)))
+
+
+(defun locate-dominating--nth-dir-by-file (filename n name)
+  (nth n
+       (locate-dominating--dirs-by-file filename name)))
+
+(defun locate-dominating--first-dir-by-file (filename name)
+  (locate-dominating--nth-dir-by-file filename 0 name))
+
+(defalias 'locate-dominating--dir-by-file #'locate-dominating--first-dir-by-file)
+
+
+(defun locate-dominating-nth-dir-by-file (filename n name)
+  (locate-dominating-file (nth n
+                               (locate-dominating--dirs-by-file filename name))
+                          name))
+
+(defun locate-dominating-first-dir-by-file (filename name)
+  (locate-dominating-nth-dir-by-file filename 0 name))
+
+(defalias 'locate-dominating-dir-by-file #'locate-dominating-first-dir-by-file)
+
+
 
 (when nil
-  (locate-dominating-file-dir "~/.zshrc" ".git")
+  (locate-dominating-dir-by-file "~/.zshrc" ".git")
 
-  (locate-dominating-file (file-name-directory file)
-                          #'dir-locals--all-files)
+  (locate-dominating--file (file-name-directory file)
+                           #'dir-locals--all-files)
 
   (dir-locals-find-file "~/.bin/selsecret")
   (dir-locals-find-file "~/.zshrc")
 
   (dir-locals-find-file (buffer-file-name))
 
-  (locate-dominating-file-dir (buffer-file-name) ".dir-locals.el")
+  (locate-dominating-dir-by-file (buffer-file-name) ".dir-locals.el")
 
-  (locate-dominating-file-dir "~/.zshrc" ".dir-locals.el")
-  (locate-dominating-file-dir "~/.zshrc" #'dir-locals--all-files)
-  (locate-dominating-file-dir "~/.zshrc" #'dir-locals--all-files))
+  (locate-dominating-dir-by-file "~/.zshrc" ".dir-locals.el")
+  (locate-dominating-dir-by-file "~/.zshrc" #'dir-locals--all-files)
+  (locate-dominating-dir-by-file "~/.zshrc" #'dir-locals--all-files))
 
 
 
@@ -194,11 +217,11 @@ to see whether it should be considered."
 
 
 ;;;###autoload
-(defun around--dir-locals-find-file-around-advice-fn-with-new-locate-dominating-file (orgfn &rest args)
+(defun around--dir-locals-find-file-around-advice-fn-with-new-locate-dominating--file (orgfn &rest args)
   (or (apply orgfn args)
-      (apply #'locate-dominating-file-dir
-             (append args
-                     (list #'dir-locals--all-files)))))
+      (dir-locals-find-file (apply #'locate-dominating-dir-by-file
+                                   (append args
+                                           (list #'dir-locals--all-files))))))
 
 ;;;###autoload
 (defun around--dir-locals-collect-variables-around-advice-fn-with-file-truename (orgfn &rest args)

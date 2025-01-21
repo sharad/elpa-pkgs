@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -71,10 +71,22 @@ system."
 (defalias 'override--pm--run-other-hooks #'fixed--pm--run-other-hooks)
 
 
+
+
+(defun magit-toplevel-fn-with (&optional directory))
+
+
+
+
+
+
+
+
+
 ;;;###autoload
 (defun fixed--semantic-mode (oldfun &rest r)
   (cl-flet ((buffer-list ()
-                         (remove-if-not #'buffer-live-p (buffer-list))))
+              (remove-if-not #'buffer-live-p (buffer-list))))
     (apply oldfun r)))
 ;;;###autoload
 (defalias 'around--semantic-mode #'fixed--semantic-mode)
@@ -82,5 +94,12 @@ system."
 
 ;; clean-buffer-list from midnight -- postpone till recursive-edit is free
 
+
+(defun around--magit-toplevel-around-advice-fn-with (oldfn &rest r)
+  (or (apply oldfn r)
+      (unless (car r)
+        (let ((filename (buffer-file-name)))
+          (when filename
+            (locate-dominating-dir-by-file filename ".git"))))))
 
 ;;; lotus-misc-advices.el ends here
