@@ -59,7 +59,7 @@ Optional argument REMOTE can specify the remote explicitly."
 
 (magit-rev-count 'aa 'aa 'aa)
 
-(magit-git-string "rev-list" "--count" "refs/heads/wip/wtree/refs/heads/master..origin/wip/wtree/refs/heads/master")
+(magit-git-string "rev-list" "--count" "refs/wip/wtree/refs/heads/master..origin/wip/wtree/refs/heads/master")
 
 (defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
