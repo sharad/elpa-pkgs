@@ -54,21 +54,10 @@
         t))))
 
 (defun magit-wip-ext-can-push-p (ref &optional remote args)
-  (let ((count (magit-wip-ext-push-commits-behind-count ref remote args))))
-
-  (let* ((local-branch    (substring ref (length "refs/heads/")))
-         (upstream-remote (or remote
-                              (magit-get-upstream-remote local-branch)))
-         (wip-ref         (string-join (list "wip/wtree" ref) "/"))
-         (local-wip-ref   (string-join (list "refs" wip-ref) "/"))
-         (remote-wip-branch  (string-join (list upstream-remote wip-ref) "/")))
-    (if (magit-ref-p remote-wip-branch)
-        (> (string-to-number (magit-git-string "rev-list" "--count"
-                                               (concat remote-wip-branch
-                                                       ".."
-                                                       local-wip-ref)))
-           magit-wip-push-inhibit-count)
-      t)))
+  (let ((count (magit-wip-ext-push-commits-behind-count ref remote args)))
+    (if (eq count t)
+        t
+      (> count magit-wip-push-inhibit-count))))
 
 ;; (defun magit-commit-diff-between-local-remote (ref &optional remote)
 ;;   "Return the number of commit differences between REF and its remote branch.
