@@ -61,6 +61,8 @@ Optional argument REMOTE can specify the remote explicitly."
 
 (magit-git-string "rev-list" "--count" "refs/wip/wtree/refs/heads/master..origin/wip/wtree/refs/heads/master")
 
+
+
 (defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
   ;; If the remote branch already exists, then we do not have to
