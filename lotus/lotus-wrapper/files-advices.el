@@ -128,9 +128,9 @@ containing it, until no links are left at any level.
 
 
 (defun locate-dominating-nth-dir-by-file (filename n name)
-  (locate-dominating-file (nth n
-                               (locate-dominating--dirs-by-file filename name))
-                          name))
+  (let ((dir (nth n
+                  (locate-dominating--dirs-by-file filename name))))
+    (when dir (locate-dominating-file dir name))))
 
 (defun locate-dominating-first-dir-by-file (filename name)
   (locate-dominating-nth-dir-by-file filename 0 name))
@@ -217,12 +217,11 @@ to see whether it should be considered."
 
 
 ;;;###autoload
-(defun around--dir-locals-find-file-around-advice-fn-with-new-locate-dominating--file (orgfn &rest args)
+(defun around--dir-locals-find-file-around-advice-fn-with-new-locate-dominating-file (orgfn &rest args)
   (or (apply orgfn args)
-      (dir-locals-find-file (apply #'locate-dominating-dir-by-file
-                                   (append args
-                                           (list #'dir-locals--all-files))))))
-
+      (apply #'locate-dominating-dir-by-file
+             (append args
+                     (list #'dir-locals--all-files)))))
 ;;;###autoload
 (defun around--dir-locals-collect-variables-around-advice-fn-with-file-truename (orgfn &rest args)
   (condition-case err
