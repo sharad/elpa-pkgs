@@ -108,7 +108,8 @@
   (message "magit-wip-push: ref %s, files %s, msg %s"
            ref files msg)
   (if (magit-wip-ext-can-push-p ref)
-      (magit-wip-push ref)))
+      (magit-wip-push ref)
+    (message "Inhibiting to push.")))
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
   (if (apply orgfn args)
       (message "magit-wip-commit: success")
