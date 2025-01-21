@@ -84,12 +84,12 @@ system."
 
 
 ;;;###autoload
-(defun fixed--semantic-mode (oldfun &rest r)
+(defun semantic-mode-around-fn-with-buffer-list-fix (oldfun &rest r)
   (cl-flet ((buffer-list ()
               (remove-if-not #'buffer-live-p (buffer-list))))
     (apply oldfun r)))
 ;;;###autoload
-(defalias 'around--semantic-mode #'fixed--semantic-mode)
+(defalias 'around--semantic-mode-around-fn-with-buffer-list-fix #'semantic-mode-around-fn-with-buffer-list-fix)
 
 
 ;; clean-buffer-list from midnight -- postpone till recursive-edit is free

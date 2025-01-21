@@ -67,7 +67,7 @@
     ;; (add-function :around (symbol-function 'semantic-mode)
     ;;               #'around--semantic-mode)
     (advice-add 'semantic-mode
-                :around #'around--semantic-mode))
+                :around #'around--semantic-mode-around-fn-with-buffer-list-fix))
 
   (with-eval-after-load "magit-git"
     (advice-add 'magit-toplevel :around

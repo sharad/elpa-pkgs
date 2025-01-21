@@ -57,7 +57,7 @@
     ;; (message "magit-wip-push: local-wip-ref: %s" local-wip-ref)
     ;; (message "magit-wip-push: upstream-remote: %s" upstream-remote)
     ;; (message "magit-wip-push: remote-wip-ref: %s" remote-wip-ref)
-    (if (magit-ref-p local-wip-ref)
+    (if (magit-ref-p local-wip-ref) ;(magit-wip-commit nil "wip-push-save tracked files")
         (if (magit-ext-git-push-nons local-wip-ref
                                      (string-join (list upstream-remote remote-wip-ref) "/")
                                      args)
@@ -80,7 +80,10 @@
   (message "magit-wip-push: args: %S" args)
   (apply #'magit-wip-commit-worktree-fn-to-push-wip
          args))
+
+
 ;; Define the global minor mode for magit wip push
+;;;###autoload
 (define-minor-mode magit-wip-push-mode
   "A global minor mode magit wip push."
   :global t                             ; Make it a global minor mode
