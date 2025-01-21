@@ -46,12 +46,12 @@
                                                          (concat remote-wip-branch
                                                                  ".."
                                                                  local-wip-ref)))))
-          (if (call-interactively)
+          (if (called-interactively-p 'interactive)
               (message "remote: %s is behind by %d"
                        remote-wip-branch
                        count)
             count))
-      (if (call-interactively)
+      (if (called-interactively-p 'interactive)
           (message "remote: %s not exists" remote-wip-branch)
         t))))
 
