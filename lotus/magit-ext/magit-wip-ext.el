@@ -48,29 +48,29 @@
                                                                 (concat remote-wip-branch
                                                                         ".."
                                                                         local-wip-ref)))))
-          (if (called-interactively-p 'interactive)
-              (if (> behind-count 0)
-                  (message "remote: %s is behind by %d from local %s"
-                           remote-wip-branch
-                           behind-count
-                           local-wip-ref)
-                (if (= behind-count 0)
-                    (let ((ahead-count (string-to-number (magit-git-string "rev-list" "--count"
-                                                                           (concat local-wip-ref
-                                                                                   ".."
-                                                                                   remote-wip-branch)))))
-                      (if (> ahead-count 0)
-                          (message "remote: %s is ahead by %d from local %s"
-                                   remote-wip-branch
-                                   behind-count
-                                   local-wip-ref)
-                        (message "remote: %s is same as local branch %s"
+          (when (called-interactively-p 'interactive)
+            (if (> behind-count 0)
+                (message "remote: %s is behind by %d from local %s"
+                         remote-wip-branch
+                         behind-count
+                         local-wip-ref)
+              (if (= behind-count 0)
+                  (let ((ahead-count (string-to-number (magit-git-string "rev-list" "--count"
+                                                                         (concat local-wip-ref
+                                                                                 ".."
+                                                                                 remote-wip-branch)))))
+                    (if (> ahead-count 0)
+                        (message "remote: %s is ahead by %d from local %s"
                                  remote-wip-branch
-                                 local-wip-ref)))))
-            behind-count))
-      (if (called-interactively-p 'interactive)
-          (message "remote: %s not exists" remote-wip-branch)
-        t))))
+                                 behind-count
+                                 local-wip-ref)
+                      (message "remote: %s is same as local branch %s"
+                               remote-wip-branch
+                               local-wip-ref))))))
+          behind-count)
+      (when (called-interactively-p 'interactive)
+        (message "remote: %s not exists" remote-wip-branch))
+      t)))
 
 (defun magit-wip-ext-can-push-p (ref &optional remote args)
   (let ((count (magit-wip-ext-push-commits-behind-count ref
@@ -97,28 +97,30 @@
    (list (magit-ref-fullname "HEAD")
          (magit-get-upstream-remote (magit-get-current-branch))
          (when current-prefix-arg '("-f"))))
-  (let* ((local-branch    (substring ref (length "refs/heads/")))
-         (upstream-remote (or remote
-                              (magit-get-upstream-remote local-branch)))
-         (wip-ref         (string-join (list "wip/wtree" ref) "/"))
-         (local-wip-ref   (string-join (list "refs" wip-ref) "/"))
-         (remote-wip-ref  (string-join (list "refs/heads" wip-ref) "/")))
-    ;; (message "magit-wip-push: wip-ref: %s" wip-ref)
-    ;; (message "magit-wip-push: local-wip-ref: %s" local-wip-ref)
-    ;; (message "magit-wip-push: upstream-remote: %s" upstream-remote)
-    ;; (message "magit-wip-push: remote-wip-ref: %s" remote-wip-ref)
-    (if (magit-ref-p local-wip-ref) ;(magit-wip-commit nil "wip-push-save tracked files")
-        (if (magit-ext-git-push-nons local-wip-ref
-                                     (string-join (list upstream-remote remote-wip-ref) "/")
-                                     args)
-            (progn
-              (run-hooks magit-wip-push-mode-after-success-hook)
-              (message "magit-wip-push: push passed"))
-          (progn
-            (run-hooks magit-wip-push-mode-after-fail-hook)
-            (message "magit-wip-push: push failed")))
-      (message "magit-wip-push: ref %s not exists"
-               local-wip-ref))))
+  (if ref
+      (let* ((local-branch (substring ref (length "refs/heads/")))
+             (upstream-remote (or remote
+                                  (magit-get-upstream-remote local-branch)))
+             (wip-ref         (string-join (list "wip/wtree" ref) "/"))
+             (local-wip-ref   (string-join (list "refs" wip-ref) "/"))
+             (remote-wip-ref  (string-join (list "refs/heads" wip-ref) "/")))
+        ;; (message "magit-wip-push: wip-ref: %s" wip-ref)
+        ;; (message "magit-wip-push: local-wip-ref: %s" local-wip-ref)
+        ;; (message "magit-wip-push: upstream-remote: %s" upstream-remote)
+        ;; (message "magit-wip-push: remote-wip-ref: %s" remote-wip-ref)
+        (if (magit-ref-p local-wip-ref) ;(magit-wip-commit nil "wip-push-save tracked files")
+            (if (magit-ext-git-push-nons local-wip-ref
+                                         (string-join (list upstream-remote remote-wip-ref) "/")
+                                         args)
+                (progn
+                  (run-hooks magit-wip-push-mode-after-success-hook)
+                  (message "magit-wip-push: push passed"))
+              (progn
+                (run-hooks magit-wip-push-mode-after-fail-hook)
+                (message "magit-wip-push: push failed")))
+          (message "magit-wip-push: ref %s not exists"
+                   local-wip-ref)))
+    (error "No ref")))
 
 
 (defun magit-wip-commit-worktree-fn-to-push-wip (ref files msg)
