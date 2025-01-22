@@ -383,10 +383,10 @@ If the command fails, return nil."
 
 
 ;;;###autoload
-(defun magit-ext-verify ()
+(defun magit-ext-verify-sync ()
   "Run an external PROGRAM, interactively provide input, and handle process timeout."
   (interactive)
-  (let ((process (make-process
+  (let ((process (make-process          ;magit-run-git-async
                   :name "git verify"
                   :buffer "*Git Verify*"
                   :command (list "git" "verify")
@@ -400,6 +400,34 @@ If the command fails, return nil."
     (with-current-buffer (process-buffer process)
       (erase-buffer)) ;; Clear the buffer for new output
     ;; Tail-recursive loop for process input
+    (cl-labels ((process-input-loop ()
+                  (if (process-live-p process)
+                      (progn
+                        ;; Check for user input
+                        (let ((input (read-key-sequence-vector "Press any key to input OTP (or wait): "
+                                                               nil
+                                                               t)))
+                          (if (and input (not (equal input "")))
+                              (let ((input-str (read-string "OTP: ")))
+                                (process-send-string process
+                                                     (concat input-str "\n"))
+                                (message "Sent input: %s" input-str))
+                            (message "Waiting for program completion...")))
+                        ;; Continue the loop
+                        (process-input-loop))
+                    (message "Program completed or timed out."))))
+      ;; Start the loop
+      (process-input-loop))))
+
+;;;###autoload
+(defun magit-ext-verify ()
+  "Run an external PROGRAM, interactively provide input, and handle process timeout."
+  (interactive)
+  (let ((process (magit-run-git-async "verify")))
+    (set-process-sentinel process
+                          #'(lambda (proc event)
+                              (message "Process %s finished with event: %s"
+                                       (process-name proc) event)))
     (cl-labels ((process-input-loop ()
                   (if (process-live-p process)
                       (progn
