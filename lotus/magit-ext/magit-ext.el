@@ -63,8 +63,8 @@
     (when current-prefix-arg
       (magit-stage-modified t))
     (apply #'magit-call-git "commit" "-m"
-             msg
-             args)))
+           msg
+           args)))
 
 ;;;###autoload
 (defun magit-commit-with-single-line-fast (&rest args)
@@ -266,9 +266,11 @@
                   (if (process-live-p process)
                       (progn
                         ;; Check for user input
-                        (let ((input (read-key-sequence-vector "Press any key to input OTP (or wait): "
-                                                               nil
-                                                               t)))
+                        (let ((input (read-key-sequence "Press any key to input OTP (or wait): "
+                                                        nil
+                                                        t
+                                                        nil
+                                                        t)))
                           (if (and input (not (equal input "")))
                               (let ((input-str (read-string "OTP: ")))
                                 (process-send-string process
