@@ -274,9 +274,7 @@ get re-enabled here.")
             (execute-extended-command nil)
             nil))
       (condition-case e
-          (if (let ((desktop-restore-in-progress t))
-                (ignore desktop-restore-in-progress)
-                (sessions-unified--session-restore nil))
+          (if (sessions-unified--session-restore nil)
               (progn
                 (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
                 t)
