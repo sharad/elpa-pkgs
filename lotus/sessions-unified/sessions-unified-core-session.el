@@ -55,7 +55,7 @@
 
 
 ;;;###autoload
-(defvar *sessions-unified-core-session-registerd-restore-list* nil
+(defvar *sessions-unified-core-session-registerd-store-list* nil
   "Alist of (app-name appgetfn appsetfn) app fn accept FRAME")
 
 (defvar *sessions-unified-core-session-registerd-store-list* nil
@@ -192,7 +192,7 @@ get re-enabled here.")
   (dolist (sym *sessions-unified-core-session-registerd-store-list*)
     (sessions-unified--session-store sym)))
 ;; (cl-defmethod sessions-unified--session-restore ((app null))
-;;   (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
+;;   (dolist (sym *sessions-unified-core-session-registerd-store-list*)
 ;;     (when sym
 ;;       (condition-case e
 ;;           (sessions-unified--session-restore sym)
@@ -207,27 +207,27 @@ get re-enabled here.")
 (cl-defmethod sessions-unified--session-enable ((app null))
   (add-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)
   (add-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
-  (dolist (sym *sessions-unified-core-session-registerd-store-list*)
+  (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
     (sessions-unified--session-enable sym)))
 (cl-defmethod sessions-unified--session-disable ((app null))
   (remove-hook 'auto-save-hook #'sessions-unified-core-session-store-on-idle-interval)
   (remove-hook 'kill-emacs-hook #'sessions-unified-core-session-store-immediately)
-  (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
+  (dolist (sym *sessions-unified-core-session-registerd-store-list*)
     (sessions-unified--session-disable sym)))
 (cl-defmethod sessions-unified--session-enable ((app symbol))
   (message "sessions-unified--session-enable: app=%s" app)
   (unless (member app
-                  *sessions-unified-core-session-registerd-restore-list*)
+                  *sessions-unified-core-session-registerd-store-list*)
     (push app
-          *sessions-unified-core-session-registerd-restore-list*)))
+          *sessions-unified-core-session-registerd-store-list*)))
 (cl-defmethod sessions-unified--session-disable ((app symbol))
   (message "sessions-unified--session-disable: app=%s" app)
   (when (member app
-                *sessions-unified-core-session-registerd-restore-list*)
-    (setq *sessions-unified-core-session-registerd-restore-list* (delete app
-                                                                         *sessions-unified-core-session-registerd-restore-list*))))
+                *sessions-unified-core-session-registerd-store-list*)
+    (setq *sessions-unified-core-session-registerd-store-list* (delete app
+                                                                       *sessions-unified-core-session-registerd-store-list*))))
 (cl-defmethod sessions-unified--session-enable :after (app)
-  (when (= (length *sessions-unified-core-session-registerd-restore-list*)
+  (when (= (length *sessions-unified-core-session-registerd-store-list*)
            (length *sessions-unified-core-session-registerd-store-list*))
     (session-unfiy-notify "running sessions-unified-run-enable-restore-interrupting-feature-run after %d seconds idleness"
                           *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*)
@@ -245,7 +245,7 @@ get re-enabled here.")
                  auto-save-hook)
          (member #'sessions-unified-core-session-store-immediately
                  kill-emacs-hook)))
-  (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
+  (dolist (sym *sessions-unified-core-session-registerd-store-list*)
     (sessions-unified--session-check sym)))
 
 ;;;###autoload
