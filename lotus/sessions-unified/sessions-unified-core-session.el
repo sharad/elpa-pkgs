@@ -191,12 +191,17 @@ get re-enabled here.")
 (cl-defmethod sessions-unified--session-store ((app null))
   (dolist (sym *sessions-unified-core-session-registerd-store-list*)
     (sessions-unified--session-store sym)))
+;; (cl-defmethod sessions-unified--session-restore ((app null))
+;;   (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
+;;     (when sym
+;;       (condition-case e
+;;           (sessions-unified--session-restore sym)
+;;         ('error (message "Error: %s" e)))))
+;;   (sessions-unified--session-enable app)
+;;   t)
 (cl-defmethod sessions-unified--session-restore ((app null))
   (dolist (sym *sessions-unified-core-session-registerd-restore-list*)
-    (when sym
-      (condition-case e
-          (sessions-unified--session-restore sym)
-        ('error (message "Error: %s" e)))))
+    (sessions-unified--session-restore sym))
   (sessions-unified--session-enable app)
   t)
 (cl-defmethod sessions-unified--session-enable ((app null))

@@ -285,7 +285,7 @@ so returns nil if pid is nil."
 
 ;; (when (or (not *emacs-in-init*) (not reloading-libraries))
 (when (or *emacs-in-init* reloading-libraries)
-                                        ;setting to nil so it will be asked from user.
+  ;setting to nil so it will be asked from user.
   (setq *desktop-save-filename* nil))
 
 ;; might be the reason for Terminal 0 is locked.
@@ -620,7 +620,10 @@ en all buffer were creaed idly."
 (cl-defmethod sessions-unified--session-restore ((app (eql :desktop)))
   (let ((desktop-restore-in-progress t))
     (ignore desktop-restore-in-progress)
-    (lotus-desktop-session-restore)))
+    (message "Calling lotus-desktop-session-restore")
+    (progn
+      (lotus-desktop-session-restore)
+      (message "Called lotus-desktop-session-restore"))))
 (cl-defmethod sessions-unified--session-enable ((app (eql :desktop)))
   (let ((session-unified-desktop-buffs-len (length desktop-buffer-args-list)))
     (if (or (eq desktop-restore-eager t)
