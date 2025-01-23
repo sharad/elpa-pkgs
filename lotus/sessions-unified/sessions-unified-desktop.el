@@ -347,11 +347,12 @@ so returns nil if pid is nil."
 
 (defun desktop-vc-owner (&optional desktop-save-filename)
   (interactive "fdesktop file: ")
-  (let* ((desktop-save-filename  (or desktop-save-filename
-                                     *desktop-save-filename*))
-         (retval                 (desktop-owner (dirname-of-file desktop-save-filename))))
-    (when (emacs-process-p retval)
-      retval)))
+  (let ((desktop-save-filename  (or desktop-save-filename
+                                    *desktop-save-filename*)))
+    (when desktop-save-filename
+      (let ((retval (desktop-owner (dirname-of-file desktop-save-filename))))
+        (when (emacs-process-p retval)
+          retval)))))
 
 (defun desktop-vc-save (&optional desktop-save-filename)
   (interactive "Fdesktop file: ")
@@ -444,9 +445,11 @@ so returns nil if pid is nil."
 
 (defalias 'my-desktop-save #'lotus-desktop-session-store)
 
+;;;###autoload
 (defun lotus-desktop-saved-session ()
   "check file exists."
-  (file-exists-p *desktop-save-filename*))
+  (if (stringp *desktop-save-filename*)
+      (file-exists-p *desktop-save-filename*)))
 
 ;; use session-save to save the desktop manually
 ;;;###autoload
@@ -615,7 +618,9 @@ en all buffer were creaed idly."
 (cl-defmethod sessions-unified--session-store ((app (eql :desktop)))
   (lotus-desktop-session-store))
 (cl-defmethod sessions-unified--session-restore ((app (eql :desktop)))
-  (lotus-desktop-session-restore))
+  (let ((desktop-restore-in-progress t))
+    (ignore desktop-restore-in-progress)
+    (lotus-desktop-session-restore)))
 (cl-defmethod sessions-unified--session-enable ((app (eql :desktop)))
   (let ((session-unified-desktop-buffs-len (length desktop-buffer-args-list)))
     (if (or (eq desktop-restore-eager t)

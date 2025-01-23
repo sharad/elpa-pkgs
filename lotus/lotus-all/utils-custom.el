@@ -41,8 +41,8 @@
 (defun tags-from-resume (prompt)
   (if tags-from-resume
       tags-from-resume
-      (let ((resume-make-keys (format "make -sC %s resume=%s keys" resume-workdir "sharad")))
-        (read-string prompt (shell-command-to-string resume-make-keys)))))
+    (let ((resume-make-keys (format "make -sC %s resume=%s keys" resume-workdir "sharad")))
+      (read-string prompt (shell-command-to-string resume-make-keys)))))
 
 
 ;;;###autoload
@@ -68,16 +68,16 @@
          (resume-view-cmd (format "%s %s" "evince" resume-actual-file)))
     (message "preparing %s by: %s" object resume-make-cmd)
     (if (and
-           (shell-command resume-make-cmd)
-           (if attachment
-               (shell-command resume-view-cmd) t)
-           (file-exists-p resume-actual-file))
-      (if attachment
-          (mml-attach-file
-           resume-attachable-file
-           (mm-default-file-type resume-attachable-file)
-           ;; (mml-minibuffer-read-type resume-attachable-file) ; "application/pdf"
-           description "inline")
+         (shell-command resume-make-cmd)
+         (if attachment
+             (shell-command resume-view-cmd) t)
+         (file-exists-p resume-actual-file))
+        (if attachment
+            (mml-attach-file
+             resume-attachable-file
+             (mm-default-file-type resume-attachable-file)
+             ;; (mml-minibuffer-read-type resume-attachable-file) ; "application/pdf"
+             description "inline")
           (insert-file-contents resume-actual-file))
       (message "Not able to %s %s."
                (if attachment "attach" "insert")
@@ -85,9 +85,9 @@
 
 ;; (interactive
 ;;    (let* ((file (mml-minibuffer-read-file "Attach file: "))
-;; 	  (type (mml-minibuffer-read-type file))
-;; 	  (description (mml-minibuffer-read-description))
-;; 	  (disposition (mml-minibuffer-read-disposition type nil file)))
+;;    (type (mml-minibuffer-read-type file))
+;;    (description (mml-minibuffer-read-description))
+;;    (disposition (mml-minibuffer-read-disposition type nil file)))
 ;;      (list file type description disposition)))
 
 ;; (let* ((file (mml-minibuffer-read-file "Attach file: "))
@@ -124,7 +124,7 @@
     (set-buffer-file-coding-system
      (if (coding-system-p 'utf-8-emacs)
          'utf-8-emacs
-         'emacs-mule))
+       'emacs-mule))
     (erase-buffer)
     (insert content)
     (write-file filename)))
@@ -164,16 +164,16 @@
           ;; Use the comint filter for proper handling of carriage motion
           ;; (see `comint-inhibit-carriage-motion'),.
           (set-process-filter proc 'comint-output-filter))
-        (ignore-errors
-          (equal 0
-                 (if handler
-                     ;;(process-file-shell-command
-                     ;; (funcall handler 'shell-command command nil nil)
-                     ;; (start-file-process :shcommand1 nil command)
-                     ;; (call-process shell-file-name nil nil nil "-c" command)
-                     ;; (start-file-process "shcommand1" nil shell-file-name "-c" command)
-                     (process-file shell-file-name nil nil nil shell-command-switch command)
-                     (call-process shell-file-name nil nil nil shell-command-switch command)))))))
+      (ignore-errors
+        (equal 0
+               (if handler
+                   ;;(process-file-shell-command
+                   ;; (funcall handler 'shell-command command nil nil)
+                   ;; (start-file-process :shcommand1 nil command)
+                   ;; (call-process shell-file-name nil nil nil "-c" command)
+                   ;; (start-file-process "shcommand1" nil shell-file-name "-c" command)
+                   (process-file shell-file-name nil nil nil shell-command-switch command)
+                 (call-process shell-file-name nil nil nil shell-command-switch command)))))))
 ;;;###autoload
 (defun shell-command-local-no-output (cmd)
   ;; (interactive "scmd: ")
@@ -188,9 +188,9 @@
 (defun messageto (buf &rest text)
   (with-current-buffer (get-buffer-create buf)
     (funcall 'message (concat
-                      (if (stringp buf) buf (buffer-name buf))
-                      ": "
-                      (apply 'concat text)))
+                       (if (stringp buf) buf (buffer-name buf))
+                       ": "
+                       (apply 'concat text)))
     (apply 'insert text)
     (insert "\n")))
 
@@ -204,7 +204,7 @@ this value.  By default give R/W access only to the user who owns that
 file.  See also the function `set-file-modes'."
   :group 'recentf
   :type '(choice (const :tag "Don't change" nil)
-          integer))
+                 integer))
 
 
 (defcustom recentf-save-file (convert-standard-filename "~/.recentf")
@@ -262,7 +262,7 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
                                       load-path
                                       (append (unless nosuffix (get-load-suffixes))
                                               load-file-rep-suffixes)))))
-
+;;;###autoload
 (defun message-notify (title fmt &rest args)
   (let ((msg (apply 'format fmt args)))
     (message "%s: %s" title msg)
@@ -272,24 +272,24 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
     msg))
 
 (defun have-x-focus ()
-    "Runs on-blur-hook if emacs has lost focus."
-    (if (and (featurep 'x)
-             window-system)
-        (let* ((active-window (x-window-property
-                               "_NET_ACTIVE_WINDOW" nil "WINDOW" 0 nil t))
-               (active-window-id (if (numberp active-window)
-                                     active-window
-                                     (string-to-number
-                                      (format
-                                       "%x%x"
-                                       ; "%x00%x"
-                                       (cl-first active-window)
-                                       (cl-rest active-window)) 16)))
-               (emacs-window-id (string-to-number
-                                 (frame-parameter nil 'outer-window-id))))
-          ;; (message "emacs-window-id %d active-window-id %d" emacs-window-id active-window-id)
-          (= emacs-window-id active-window-id))
-        (message "Not in Graphical Window system.")))
+  "Runs on-blur-hook if emacs has lost focus."
+  (if (and (featurep 'x)
+           window-system)
+      (let* ((active-window (x-window-property
+                             "_NET_ACTIVE_WINDOW" nil "WINDOW" 0 nil t))
+             (active-window-id (if (numberp active-window)
+                                   active-window
+                                 (string-to-number
+                                  (format
+                                   "%x%x"
+                                   ; "%x00%x"
+                                   (cl-first active-window)
+                                   (cl-rest active-window)) 16)))
+             (emacs-window-id (string-to-number
+                               (frame-parameter nil 'outer-window-id))))
+        ;; (message "emacs-window-id %d active-window-id %d" emacs-window-id active-window-id)
+        (= emacs-window-id active-window-id))
+    (message "Not in Graphical Window system.")))
 
 
 
@@ -322,8 +322,8 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
         (ignore var)
         (save-excursion
           (setq var (eval '(progn
-                            (if (boundp 'var) (1+ var))
-                            (list 'testing (backtrace))))))))))
+                             (if (boundp 'var) (1+ var))
+                             (list 'testing (backtrace))))))))))
 
 
 (defun assq-delete-all-test (key alist &optional testf)
@@ -340,7 +340,7 @@ Elements of ALIST that are not conses are ignored."
         (if (and (consp (cl-first tail-cdr))
                  (funcall testf (cl-first (cl-first tail-cdr)) key))
             (setcdr tail (cl-rest tail-cdr))
-            (setq tail tail-cdr))))
+          (setq tail tail-cdr))))
     alist))
 
 (defun rassq-delete-all-test (value alist &optional testf)
@@ -356,7 +356,7 @@ Elements of ALIST that are not conses are ignored."
         (if (and (consp (cl-first tail-cdr))
                  (eq (cl-rest (cl-first tail-cdr)) value))
             (setcdr tail (cl-rest tail-cdr))
-            (setq tail tail-cdr))))
+          (setq tail tail-cdr))))
     alist))
 
 ;;; utils-custom.el ends here

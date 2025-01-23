@@ -263,7 +263,7 @@ get re-enabled here.")
                (sessions-unified--session-disable nil))))))
     (run-hooks 'session-unified-save-all-sessions-after-hook)))
 ;;;###autoload
-(defun sessions-unified-session-restore ()
+(defun sessions-unified-session-restore-all ()
   (interactive)
   (let ((show-error (called-interactively-p 'interactive)))
     (if show-error
@@ -277,6 +277,32 @@ get re-enabled here.")
           (if (let ((desktop-restore-in-progress t))
                 (ignore desktop-restore-in-progress)
                 (sessions-unified--session-restore nil))
+              (progn
+                (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
+                t)
+            (progn
+              (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
+              nil))
+        ('error
+         (session-unfiy-notify "Error in desktop-read: %s\n not adding save-all-sessions-auto-save to auto-save-hook" e)
+         (session-unfiy-notify "Error in desktop-read: %s try it again by running M-x sessions-unified-session-restore" e)
+         (run-at-time "1 sec" nil #'(lambda () (insert "sessions-unified-session-restore")))
+         (condition-case e
+             (execute-extended-command nil)
+           ('error (message "M-x sessions-unified-session-restore %s" e))))))))
+;;;###autoload
+(defun sessions-unified-session-restore ()
+  (interactive)
+  (let ((show-error (called-interactively-p 'interactive)))
+    (if t ;; show-error
+        (unless (sessions-unified--session-restore nil)
+          (progn
+            (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
+            (run-at-time "1 sec" nil #'(lambda () (insert "sessions-unified-session-restore")))
+            (execute-extended-command nil)
+            nil))
+      (condition-case e
+          (if (sessions-unified--session-restore nil)
               (progn
                 (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
                 t)
