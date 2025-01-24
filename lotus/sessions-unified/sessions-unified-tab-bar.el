@@ -182,7 +182,8 @@
           (ssu-set-tab-buffer-list (cdr (assoc 'tab-buff-list fsession-data))
                                    frame)
           (ssu-set-current-tab-idx (cdr (assoc 'current-tab-idx fsession-data))
-                                   frame))
+                                   frame)
+          (run-at-time 2 nil #'tab-bar-mode 1))
       (message "set-frame-data: NIL data not setting frame"))))
 
 ;;; sessions-unified-tab-bar.el ends here
