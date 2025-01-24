@@ -175,8 +175,8 @@
   (let ((fsession-data data))
     (if fsession-data                    ;may causing error
         (progn
-          (unless tab-bar-mode
-            (tab-bar-mode 1))
+          (tab-bar-mode 1)
+          (run-at-time 2 nil #'tab-bar-mode 1)
           (ssu-set-desktop-buffers (cdr (assoc 'desktop-buffers fsession-data))
                                    frame)
           (ssu-set-tab-buffer-list (cdr (assoc 'tab-buff-list fsession-data))
@@ -184,15 +184,5 @@
           (ssu-set-current-tab-idx (cdr (assoc 'current-tab-idx fsession-data))
                                    frame))
       (message "set-frame-data: NIL data not setting frame"))))
-
-;; (setq test-atest (sessions-unified--get-frame-data :tab-bar (selected-frame)))
-;; (sessions-unified--set-frame-data :tab-bar
-;;                                   (selected-frame)
-;;                                   test-atest)
-
-;; (eval-after-load "tab-bar"
-;;   (sessions-unified-fsession-register-fns 'tab-bar
-;;                                           #'tab-bar-frame-data-get
-;;                                           #'tab-bar-frame-data-set))
 
 ;;; sessions-unified-tab-bar.el ends here
