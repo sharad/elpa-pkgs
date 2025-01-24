@@ -55,7 +55,7 @@
 
 
 ;;;###autoload
-(defvar *sessions-unified-core-session-registerd-store-list* nil
+(defvar *sessions-unified-core-session-registerd-restore-list* nil
   "Alist of (app-name appgetfn appsetfn) app fn accept FRAME")
 
 (defvar *sessions-unified-core-session-registerd-store-list* nil
