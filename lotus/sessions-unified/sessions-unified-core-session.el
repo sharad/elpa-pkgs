@@ -102,6 +102,9 @@ get re-enabled here.")
   (interactive)
   (message "sessions-unified-add-to-enable-session-restore-interrupting-feature-hook: Adding function\n%S"
            fn)
+  (message "sessions-unified-add-to-enable-session-restore-interrupting-feature-hook: restore=%S != store=%S"
+           *sessions-unified-core-session-registerd-restore-list*
+           *sessions-unified-core-session-registerd-store-list*)
   (add-to-hook 'sessions-unified-enable-session-restore-interrupting-feature-hook
                fn
                append
@@ -117,8 +120,8 @@ get re-enabled here.")
 (defun sessions-unified-run-enable-restore-interrupting-feature-run ()
   "run hook"
   (interactive)
-  (session-unfiy-notify "Enabled session saving")
-  (session-unfiy-notify "running sessions-unified-enable-session-restore-interrupting-feature-hook hook now.")
+  (session-unfiy-notify "sessions-unified-run-enable-restore-interrupting-feature-run: Enabled session saving")
+  (session-unfiy-notify "sessions-unified-run-enable-restore-interrupting-feature-run: running sessions-unified-enable-session-restore-interrupting-feature-hook hook now.")
   (when *sessions-unified-run-enable-restore-interrupting-feature-run-timer*
     (cancel-timer *sessions-unified-run-enable-restore-interrupting-feature-run-timer*))
   (setq *sessions-unified-run-enable-restore-interrupting-feature-run-timer* nil)
@@ -234,7 +237,8 @@ get re-enabled here.")
                                                                        *sessions-unified-core-session-registerd-store-list*))))
 (cl-defmethod sessions-unified--session-enable :after (app)
   (message "sessions-unified--session-enable: Called AFTER method")
-  (message "sessions-unified--session-enable: may run sessions-unified-enable-session-restore-interrupting-feature-hook - %S" sessions-unified-enable-session-restore-interrupting-feature-hook)
+  (message "sessions-unified--session-enable: may run sessions-unified-enable-session-restore-interrupting-feature-hook - %S"
+           sessions-unified-enable-session-restore-interrupting-feature-hook)
   (if (= (length *sessions-unified-core-session-registerd-restore-list*)
          (length *sessions-unified-core-session-registerd-store-list*))
       (progn
