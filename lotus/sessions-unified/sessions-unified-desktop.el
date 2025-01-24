@@ -456,16 +456,11 @@ so returns nil if pid is nil."
 (defun lotus-desktop-session-save ()
   "Save an emacs session."
   (interactive)
-  (if *session-unified-desktop-enabled*
-      (progn
-        (if (lotus-desktop-saved-session)
-            (if (y-or-n-p "Overwrite existing desktop (might be it was not restore properly at startup)? ")
-                (desktop-vc-save *desktop-save-filename*)
-              (message "Session not saved."))
-          (desktop-vc-save *desktop-save-filename*)))
-    (message
-     "*session-unified-desktop-enabled*: %s"
-     *session-unified-desktop-enabled*)))
+  (if (lotus-desktop-saved-session)
+      (if (y-or-n-p "Overwrite existing desktop (might be it was not restore properly at startup)? ")
+          (desktop-vc-save *desktop-save-filename*)
+        (message "Session not saved."))
+    (desktop-vc-save *desktop-save-filename*)))
 
 
 (defun desktop-idle-create-buffers ()
