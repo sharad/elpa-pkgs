@@ -100,6 +100,8 @@ get re-enabled here.")
 ;;;###autoload
 (defun sessions-unified-add-to-enable-session-restore-interrupting-feature-hook (fn &optional append local)
   (interactive)
+  (message "sessions-unified-add-to-enable-session-restore-interrupting-feature-hook: Adding function\n%S"
+           fn)
   (add-to-hook 'sessions-unified-enable-session-restore-interrupting-feature-hook
                fn
                append
@@ -120,6 +122,10 @@ get re-enabled here.")
   (when *sessions-unified-run-enable-restore-interrupting-feature-run-timer*
     (cancel-timer *sessions-unified-run-enable-restore-interrupting-feature-run-timer*))
   (setq *sessions-unified-run-enable-restore-interrupting-feature-run-timer* nil)
+
+  (message "sessions-unified-run-enable-restore-interrupting-feature-run: running sessions-unified-enable-session-restore-interrupting-feature-hook - %S"
+           sessions-unified-enable-session-restore-interrupting-feature-hook)
+
   (if sessions-unified-enable-session-restore-interrupting-feature-hook
       (progn
         (run-each-hooks 'sessions-unified-enable-session-restore-interrupting-feature-hook)
@@ -130,14 +136,14 @@ get re-enabled here.")
 (defun sessions-unified-delay-run-enable-restore-interrupting-feature (&optional secs)
   (interactive "nsecs: ")
   (session-unfiy-notify "scheduled sessions-unified-run-enable-restore-interrupting-feature-run to run after sometime.")
-  (let* (;; (idle-time (current-idle-time))
-         (secs (or secs 10))
-         ;; (secs-idle (+ (if idle-time (float-time idle-time) 0) secs))
+  (let* ((secs (or secs 10))
          (secs-idle secs))
     (session-unfiy-notify "Setting timer time %d" secs-idle)
+    (message "sessions-unified-delay-run-enable-restore-interrupting-feature: will be running sessions-unified-enable-session-restore-interrupting-feature-hook - %S"
+             sessions-unified-enable-session-restore-interrupting-feature-hook)
     (setq *sessions-unified-run-enable-restore-interrupting-feature-run-timer*
-          ;; (run-with-timer secs-idle nil #'sessions-unified-run-enable-restore-interrupting-feature-run)
-          (run-with-idle-timer secs-idle nil #'sessions-unified-run-enable-restore-interrupting-feature-run))))
+          (run-with-idle-timer secs-idle nil
+                               #'sessions-unified-run-enable-restore-interrupting-feature-run))))
 (defun sessions-unified-run-enable-restore-interrupting-feature-run-info ()
   (interactive)
   (if *sessions-unified-run-enable-restore-interrupting-feature-run-timer*
@@ -215,7 +221,7 @@ get re-enabled here.")
   (dolist (sym *sessions-unified-core-session-registerd-store-list*)
     (sessions-unified--session-disable sym)))
 (cl-defmethod sessions-unified--session-enable ((app symbol))
-  (message "sessions-unified--session-enable: app=%s" app)
+  (message "sessions-unified--session-enable: General Symbol method: app=%s" app)
   (unless (member app
                   *sessions-unified-core-session-registerd-store-list*)
     (push app
@@ -227,12 +233,22 @@ get re-enabled here.")
     (setq *sessions-unified-core-session-registerd-store-list* (delete app
                                                                        *sessions-unified-core-session-registerd-store-list*))))
 (cl-defmethod sessions-unified--session-enable :after (app)
-  (when (= (length *sessions-unified-core-session-registerd-store-list*)
-           (length *sessions-unified-core-session-registerd-store-list*))
-    (session-unfiy-notify "running sessions-unified-run-enable-restore-interrupting-feature-run after %d seconds idleness"
-                          *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*)
-    (sessions-unified-delay-run-enable-restore-interrupting-feature *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*)))
+  (message "sessions-unified--session-enable: Called AFTER method")
+  (message "sessions-unified--session-enable: may run sessions-unified-enable-session-restore-interrupting-feature-hook - %S" sessions-unified-enable-session-restore-interrupting-feature-hook)
+  (if (= (length *sessions-unified-core-session-registerd-restore-list*)
+         (length *sessions-unified-core-session-registerd-store-list*))
+      (progn
+        (session-unfiy-notify "running sessions-unified-run-enable-restore-interrupting-feature-run after %d seconds idleness"
+                              *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*)
+        (message "sessions-unified--session-enable: will be running sessions-unified-enable-session-restore-interrupting-feature-hook - %S"
+                 sessions-unified-enable-session-restore-interrupting-feature-hook)
+        (sessions-unified-delay-run-enable-restore-interrupting-feature *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*))
+    (message "Not running sessions-unified-enable-session-restore-interrupting-feature-hook as restore=%S != store=%S"
+             *sessions-unified-core-session-registerd-restore-list*
+             *sessions-unified-core-session-registerd-store-list*)))
 (cl-defmethod sessions-unified--session-disable :after (app)
+  (message "sessions-unified--session-disable: may run sessions-unified-disable-session-restore-interrupting-feature-hook - %S"
+           sessions-unified-disable-session-restore-interrupting-feature-hook)
   (when (= 0
            (length *sessions-unified-core-session-registerd-store-list*))
     (sessions-unified-run-disable-restore-interrupting-feature-run)))

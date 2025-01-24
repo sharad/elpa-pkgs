@@ -82,7 +82,8 @@
 (cl-defmethod sessions-unified--session-store ((app (eql :session)))
   (session-vc-save-session))
 (cl-defmethod sessions-unified--session-restore ((app (eql :session)))
-  (session-vc-restore-session))
+  (session-vc-restore-session)
+  (sessions-unified--session-enable :session))
 ;; (when (car alist)
 ;;   (sessions-unified-session-restore (car alist)
 ;;                                     (cdr alist)))
@@ -95,7 +96,8 @@
                 (remove-hook 'kill-emacs-hook
                              ;; done in save-all-sessions-auto-save
                              'session-save-session)))
-  (setq session-initialize t))
+  (setq session-initialize t)
+  (cl-call-next-method))
 (cl-defmethod sessions-unified--session-disable ((app (eql :session)))
   (setq session-initialize nil))
 (cl-defmethod sessions-unified--session-check ((app (eql :session)))
