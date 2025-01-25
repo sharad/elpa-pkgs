@@ -175,8 +175,6 @@
   (let ((fsession-data data))
     (if fsession-data                    ;may causing error
         (progn
-          (tab-bar-mode 1)
-          (run-at-time 2 nil #'tab-bar-mode 1)
           (ssu-set-desktop-buffers (cdr (assoc 'desktop-buffers fsession-data))
                                    frame)
           (ssu-set-tab-buffer-list (cdr (assoc 'tab-buff-list fsession-data))
