@@ -60,7 +60,7 @@
                           (list :name (buffer-name b)
                                 :file (buffer-file-name b)
                                 :selected (eq w (selected-window)))))
-                    (window-list)))))
+                    (reverse (window-list))))))
 
 (defun ssu-set-buffer-list (data tab-index frame)
   (message "ssu-set-buffer-list: index: %d" tab-index)
