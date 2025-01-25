@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -205,13 +205,13 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                   (and success-fun
                        (funcall success-fun)))
               (funcall #'org-store-log-note))
-            (unwind-protect
-                (funcall #'org-store-log-note)
-              (if org-note-abort-before
-                  (and fail-fun
-                       (funcall fail-fun))
-                (and success-fun
-                     (funcall success-fun))))))))
+          (unwind-protect
+              (funcall #'org-store-log-note)
+            (if org-note-abort-before
+                (and fail-fun
+                     (funcall fail-fun))
+              (and success-fun
+                   (funcall success-fun))))))))
 
 ;; (defmacro org-build-org-store-log-note-function (&rest args)
 ;;   (let ((success-body (plist-get args :success))
@@ -282,14 +282,20 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                        ((eq org-log-note-purpose 'note)
                         "this entry")
                        (t (error "This should not happen")))))
-        (insert (format (string-join
-                         '("# Insert note for %s."
-                           "# and %d changes in  buffer %s"
-                           "# Finish with C-c C-c, or cancel with C-c C-k.\n\n")
-                         "\n")
-                        note-for
-                        chgcount
-                        (buffer-name buff))))
+        (if chgcount
+            (insert (format (string-join
+                             '("# Insert note for %s."
+                               "# and %d changes in  buffer %s"
+                               "# Finish with C-c C-c, or cancel with C-c C-k.\n\n")
+                             "\n")
+                            note-for
+                            chgcount
+                            (buffer-name buff)))
+          (insert (format (string-join
+                           '("# Insert note for %s."
+                             "# Finish with C-c C-c, or cancel with C-c C-k.\n\n")
+                           "\n")
+                          note-for))))
       (when org-log-note-extra (insert org-log-note-extra))
       ;; (setq-local org-finish-function 'org-store-log-note)
       (setq-local org-store-log-note-local-function store-log-note-function)
@@ -327,19 +333,19 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
       (setq org-log-note-window-configuration (current-window-configuration))
       (lotus-with-timed-new-win
           win-timeout timer cleanupfn-newwin cleanupfn-local win
-          (condition-case nil
-              (let ((target-buffer (get-buffer-create "*Org Note*")))
-                (org-add-log-note-buffer target-buffer
-                                         :buff buff
-                                         :chgcount chgcount
-                                         :success success
-                                         :fail fail
-                                         :run-before run-before))
-            ((quit)
-             (progn
-               (funcall cleanupfn-newwin win cleanupfn-local)
-               (if timer (cancel-timer timer))
-               (signal (cl-first err) (cl-rest err)))))))))
+        (condition-case nil
+            (let ((target-buffer (get-buffer-create "*Org Note*")))
+              (org-add-log-note-buffer target-buffer
+                                       :buff buff
+                                       :chgcount chgcount
+                                       :success success
+                                       :fail fail
+                                       :run-before run-before))
+          ((quit)
+           (progn
+             (funcall cleanupfn-newwin win cleanupfn-local)
+             (if timer (cancel-timer timer))
+             (signal (cl-first err) (cl-rest err)))))))))
 
 (cl-defun org-add-log-setup-with-timed-new-win (win-timeout
                                                 &key
@@ -359,22 +365,22 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
       EXTRA is additional text that will be inserted into the notes buffer."
   (let ((win-timeout (or win-timeout 7)))
     (move-marker org-log-note-marker (point))
-    (setq org-log-note-purpose purpose
-          org-log-note-state state
-          org-log-note-previous-state prev-state
-          org-log-note-how how
-          org-log-note-extra extra
-          org-log-note-effective-time (org-current-effective-time))
+    (setq org-log-note-purpose purpose)
+    org-log-note-state state
+    org-log-note-previous-state prev-state
+    org-log-note-how how
+    org-log-note-extra extra
+    org-log-note-effective-time (org-current-effective-time)
     ;; (add-hook 'post-command-hook 'org-add-log-note-background 'append)
-    (org-add-log-note-with-timed-new-win win-timeout
-                                         :npurpose nil
-                                         :buff buff
-                                         :chgcount chgcount
-                                         :success success
-                                         :fail fail
-                                         :run-before run-before)))
+    (org-add-log-note-with-timed-new-win win-timeout)
+    :npurpose nil
+    :buff buff
+    :chgcount chgcount
+    :success success
+    :fail fail
+    :run-before run-before))
 
-  ;;;##autoload
+;;;##autoload
 (cl-defun org-clock-lotus-log-note-current-clock-with-timed-new-win (win-timeout
                                                                      &key
                                                                      fail-quietly
@@ -383,23 +389,49 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
                                                                      success
                                                                      fail
                                                                      run-before)
-  (interactive)
+  (interactive (list 10))
   (ignore win-timeout)
   (let ((win-timeout  (or win-timeout  7)))
-      (when (org-clocking-p)
-        (move-marker org-log-note-return-to (point))
-        (org-clock-lotus-with-current-clock
-            (org-add-log-setup-with-timed-new-win win-timeout
-                                                  :purpose 'note
-                                                  :state nil
-                                                  :prev-state nil
-                                                  :how nil
-                                                  :extra (concat "# Task: " (org-get-heading t) "\n\n")
-                                                  :buff buff
-                                                  :chgcount chgcount
-                                                  :success success
-                                                  :fail fail
-                                                  :run-before run-before)))))
+    (when (org-clocking-p)
+      (move-marker org-log-note-return-to (point))
+      (org-clock-lotus-with-current-clock
+        (org-add-log-setup-with-timed-new-win win-timeout
+                                              :purpose 'note
+                                              :state nil
+                                              :prev-state nil
+                                              :how nil
+                                              :extra (concat "# Task: " (org-get-heading t) "\n\n")
+                                              :buff buff
+                                              :chgcount chgcount
+                                              :success success
+                                              :fail fail
+                                              :run-before run-before)))))
+
+
+;;TODO Implement without timeout version
+(cl-defun org-clock-log-note-current-clock (&key
+                                            fail-quietly
+                                            buff
+                                            chgcount
+                                            success
+                                            fail
+                                            run-before)
+  (interactive (list 10))
+  (ignore win-timeout)
+  (let ((win-timeout  (or win-timeout  7)))
+    (when (org-clocking-p)
+      (move-marker org-log-note-return-to (point))
+      (org-clock-lotus-with-current-clock
+        (org-add-log-setup :purpose 'note
+                           :state nil
+                           :prev-state nil
+                           :how nil
+                           :extra (concat "# Task: " (org-get-heading t) "\n\n")
+                           :buff buff
+                           :chgcount chgcount
+                           :success success
+                           :fail fail
+                           :run-before run-before)))))
 
 ;; (defun org-clock-lotus-log-note-current-clock-with-timed-new-win (&optional fail-quietly)
 ;;   (interactive)
@@ -413,3 +445,39 @@ It is non-interactive re-implementation of org-store-log-note here note is taken
 ;; Org add log note with-timed-new-win:1 ends here
 
 ;;; org-insert-utils.el ends here
+
+
+(defun org-add-log-note (&optional _purpose)
+  "Pop up a window for taking a note, and add this note later."
+  (when (and (equal org-log-note-this-command this-command)
+             (= org-log-note-recursion-depth (recursion-depth)))
+    (remove-hook 'post-command-hook 'org-add-log-note)
+    (setq org-log-setup nil)
+    (setq org-log-note-window-configuration (current-window-configuration))
+    (move-marker org-log-note-return-to (point))
+    (pop-to-buffer (marker-buffer org-log-note-marker) '(org-display-buffer-full-frame))
+    (goto-char org-log-note-marker)
+    (pop-to-buffer (format "*Org Note  %s* " (buffer-name (current-buffer))) '(org-display-buffer-split))
+    (erase-buffer)
+    (if (memq org-log-note-how '(time state))
+        (org-store-log-note)
+      (let ((org-inhibit-startup t)) (org-mode))
+      (insert (format "# Insert note for %s.
+# Finish with C-c C-c, or cancel with C-c C-k.\n\n"
+                      (cl-case org-log-note-purpose
+                        (clock-out "stopped clock")
+                        (done  "closed todo item")
+                        (reschedule "rescheduling")
+                        (delschedule "no longer scheduled")
+                        (redeadline "changing deadline")
+                        (deldeadline "removing deadline")
+                        (refile "refiling")
+                        (note "this entry")
+                        (state
+                         (format "state change from \"%s\" to \"%s\""
+                                 (or org-log-note-previous-state "")
+                                 (or org-log-note-state "")))
+                        (t (error "This should not happen")))))
+      (when org-log-note-extra (insert org-log-note-extra))
+      (setq-local org-finish-function 'org-store-log-note)
+      (run-hooks 'org-log-buffer-setup-hook))))
