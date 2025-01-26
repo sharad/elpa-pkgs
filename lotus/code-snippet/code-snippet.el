@@ -52,5 +52,48 @@
 ;; }
 
 
+(defvar yank-highlight-context-elision "[...]"
+  "String to indicate elided context when yanking highlighted code.")
+
+(defun yank-highlighted-with-context ()
+  "Yank the highlighted code portion with context information elided."
+  (interactive)
+  (if (use-region-p)
+      (let* ((start (region-beginning))
+             (end (region-end))
+             (code (buffer-substring-no-properties start end))
+             (context (save-excursion
+                        (let ((context-start (progn
+                                               (goto-char start)
+                                               (or (ignore-errors (backward-block) (point))
+                                                   (ignore-errors (backward-paragraph) (point))
+                                                   (point-min))))
+                              (context-end (progn
+                                             (goto-char end)
+                                             (or (ignore-errors (forward-block) (point))
+                                                 (ignore-errors (forward-paragraph) (point))
+                                                 (point-max)))))
+                          (buffer-substring-no-properties context-start context-end)))))
+        ;; Generate the output with context elided
+        (let ((output
+               (concat
+                (with-temp-buffer
+                  (insert context)
+                  (goto-char (point-min))
+                  (if (re-search-forward (regexp-quote code) nil t)
+                      (progn
+                        ;; Elide everything before the code snippet
+                        (goto-char (match-beginning 0))
+                        (insert (concat yank-highlight-context-elision "\n"))
+                        ;; Elide everything after the code snippet
+                        (goto-char (match-end 0))
+                        (insert (concat "\n" yank-highlight-context-elision "\n"))
+                        (buffer-string))
+                    ;; Fallback to just the highlighted text if context isn't found
+                    code)))))
+          (kill-new output)
+          (message "Yanked code with context elided")))
+    (message "No region selected")))
+
 
 ;;; code-snippet.el ends here
