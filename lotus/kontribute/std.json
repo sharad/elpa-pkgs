@@ -1,0 +1,30 @@
+{
+    "name": "Project Name",
+    "description": "A brief description of the project.",
+    "repository": "https://example.com/repo.git",
+    "branch": "main",
+    "mailinglist": "mailinglist@example.com",
+    "messaging-channel": "https://example.com/chat",
+    "contribution-guidelines": "https://example.com/contribute",
+    "dependencies": {
+        "languages": ["Python >= 3.8", "Node.js >= 16"],
+        "tools": ["Docker >= 20", "PostgreSQL >= 12"]
+    },
+    "contribution-types": ["bug-fix", "feature", "documentation", "tests"],
+    "issue-tracker": "https://example.com/issues",
+    "maintainers": [
+        {
+            "name": "John Doe",
+            "email": "john.doe@example.com",
+            "role": "Lead Maintainer"
+        }
+    ],
+    "examples": {
+        "bug-fix": "https://example.com/bug-fix-example",
+        "feature": "https://example.com/feature-example"
+    },
+    "languages": ["en", "es", "fr"]
+}
+
+
+
