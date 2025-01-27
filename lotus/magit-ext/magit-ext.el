@@ -61,7 +61,7 @@
   (let ((msg (or msg magit-single-line-fast-commit-msg))
         (default-directory (magit-toplevel)))
     (when current-prefix-arg
-      (magit-stage-modified t))
+      (magit-stage-modified nil))
     (apply #'magit-call-git "commit" "-m"
            msg
            args)))
@@ -83,7 +83,7 @@
                                magit-single-line-fast-commit-msg)))
   (let ((msg (or msg magit-single-line-fast-commit-msg))
         (default-directory (magit-toplevel)))
-    (magit-stage-modified t)
+    (magit-stage-modified nil)
     (magit-commit-with-single-line msg)))
 ;;;###autoload
 (defun magit-stage-and-commit-with-single-line-fast (&rest args)
@@ -91,7 +91,7 @@
   (interactive)
   (let ((msg magit-single-line-fast-commit-msg)
         (default-directory (magit-toplevel)))
-    (magit-stage-modified t)
+    (magit-stage-modified nil)
     (magit-commit-with-single-line msg)))
 
 
@@ -149,7 +149,7 @@
   (interactive (read-from-minibuffer "Commit msg: " msg))
   (let ((msg msg)
         (target (magit-get-upstream-branch)))
-    (magit-stage-modified t)
+    (magit-stage-modified nil)
     (magit-stage-and-commit-with-single-line-and-push msg
                                                       target)))
 
@@ -157,7 +157,7 @@
 (defun magit-stage-and-commit-correction-fast (&rest args)
   "Magit commit amend without editing followed by force push."
   (interactive)
-  (magit-stage-modified t)
+  (magit-stage-modified nil)
   (magit-stage-and-commit-with-single-line-and-push-fast magit-single-line-fast-commit-msg))
 
 
