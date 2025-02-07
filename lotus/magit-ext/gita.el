@@ -152,6 +152,7 @@ If the command fails, return nil."
                                     (when transient-buffer
                                       (with-current-buffer transient-buffer
                                         (when (eq major-mode 'magit-status-mode)
+                                          ;; (magit-mode-bury-buffer)
                                           (magit-refresh-buffer))))
                                     (let ((exit-code (process-exit-status process)))
                                       (with-current-buffer (process-buffer process)

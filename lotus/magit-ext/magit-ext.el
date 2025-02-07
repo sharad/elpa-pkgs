@@ -51,6 +51,14 @@
 
 
 ;;;###autoload
+(defun magit-ext-refresh-and-bury-buffer ()
+  (interactive)
+  (when (eq major-mode 'magit-status-mode)
+    (magit-refresh-buffer)
+    (magit-mode-bury-buffer)))
+
+
+;;;###autoload
 (defun magit-commit-with-single-line (msg &rest args)
   "Magit commit amend without editing."
   (interactive
