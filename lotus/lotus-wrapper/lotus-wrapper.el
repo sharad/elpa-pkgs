@@ -28,6 +28,7 @@
 
 
 (require 'caching-file-truename-advice)
+(require 'lotus-projectile-advices)
 (require 'lotus-misc-advices)
 (require 'files-advices)
 (require 'lsp-advices)
@@ -103,7 +104,13 @@
         ;;               (symbol-function 'erc-identd-start)
         ;;               #'override--erc-identd-start)
         (advice-add 'erc-identd-start
-                    :override #'override--erc-identd-start))))
+                    :override #'override--erc-identd-start)))
+  (with-eval-after-load "projectile"
+    ;; (add-function :override
+    ;;               (symbol-function 'erc-identd-start)
+    ;;               #'override--erc-identd-start)
+    (advice-add 'projectile-project-root
+                :override #'override--projectile-project-root)))
 
 ;;;###autoload
 (defun lotus-wrapper-uninsinuate ()
@@ -158,7 +165,13 @@
       ;; (remove-function (symbol-function 'erc-identd-start)
       ;;                  #'override--erc-identd-start)
       (advice-remove 'erc-identd-start
-                     #'override--erc-identd-start)))
+                     #'override--erc-identd-start))
+  (with-eval-after-load "projectile"
+    ;; (add-function :override
+    ;;               (symbol-function 'erc-identd-start)
+    ;;               #'override--erc-identd-start)
+    (advice-remove 'projectile-project-root
+                   #'override--projectile-project-root)))
 
 ;;; lotus-wrapper.el ends here
 
