@@ -408,6 +408,9 @@ so returns nil if pid is nil."
 
           (setq *desktop-vc-read-inprogress* nil)
         (message "desktop-vc-read: desktop read failed."))
+
+      (setq sessions-unified-desktop-file-modtime-bkp desktop-file-modtime)
+
       (session-unfiy-notify "finished."))))
 
 (defvar desktop-dirname-tmp nil)
