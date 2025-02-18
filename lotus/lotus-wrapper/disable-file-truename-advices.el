@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -29,22 +29,25 @@
 
 (defvar disable-file-truename-advice-prefix "disable-file-truename--")
 
+(defun disable-file-truename-advice-fun-sym (f)
+  (intern (concat disable-file-truename-advice-prefix (symbol-name f))))
+
 ;;;###autoload
 (defun disable-file-truename-ad--callers-define-around-advice (f)
-  (let ((fun (intern (concat disable-file-truename-advice-prefix (symbol-name f)))))
+  (let ((fun (disable-file-truename-advice-fun-sym f)))
     (unless (fboundp fun)
       (eval `(defun ,fun (oldfun &rest r)
                (cl-flet ((file-truename (&rest args) (apply #'identity args)))
                  (apply oldfun r)))))))
 ;;;###autoload
 (defun disable-file-truename-ad--callers-add-around-advice (f)
-  (let ((fun (intern (concat disable-file-truename-advice-prefix (symbol-name f)))))
+  (let ((fun (disable-file-truename-advice-fun-sym f)))
     (eval `(add-function :around
                          (symbol-function ',f)
                          #',fun))))
 ;;;###autoload
 (defun disable-file-truename-ad--callers-remove-around-advice (f)
-  (let ((fun (intern (concat disable-file-truename-advice-prefix (symbol-name f)))))
+  (let ((fun (disable-file-truename-advice-fun-sym f)))
     (eval `(remove-function (symbol-function ',f)
                             #',fun))))
 
