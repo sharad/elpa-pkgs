@@ -27,6 +27,10 @@
 (provide 'gita)
 
 
+(eval-when-compile
+  (require 'transient))
+
+
 (defun get-words-from-command-output-safe (command)
   "Run an external shell COMMAND and return a list of words from its output.
 If the command fails, return nil."

@@ -27,10 +27,11 @@
 (provide 'magit-ext)
 
 
-;; (require 'transient)
-;; (require 'magit-mode)
-;; (require 'magit-apply)
-;; (require 'magit-git)
+(require 'magit-git)
+(require 'magit-apply)
+(require 'magit-git)
+(eval-when-compile
+  (require 'transient))
 
 
 (require 'gita)
