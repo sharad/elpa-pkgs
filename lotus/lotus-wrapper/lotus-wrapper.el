@@ -98,6 +98,9 @@
   (disable-file-truename-ad--set-advices "ggtags"
                                          '(ggtags-create-tags
                                            ggtags-find-project))
+
+  (disable-file-truename-ad--set-advices "semantic/db"
+                                         '(semanticdb-file-table-object))
   (ignore-error
       (with-eval-after-load "erc-ident"
         ;; (add-function :override
@@ -161,6 +164,9 @@
   (disable-file-truename-ad--unset-advices "ggtags"
                                            '(ggtags-create-tags
                                              ggtags-find-project))
+
+  (disable-file-truename-ad--unset-advices "semantic/db"
+                                         '(semanticdb-file-table-object))
   (ignore-error
       ;; (remove-function (symbol-function 'erc-identd-start)
       ;;                  #'override--erc-identd-start)
