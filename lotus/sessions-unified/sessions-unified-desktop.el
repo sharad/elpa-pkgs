@@ -36,6 +36,7 @@
 
 
 (defvar lotus-read-filename-default-initial-input nil)
+(defvar sessions-unified-desktop-file-modtime-bkp (current-time))
 (defun read-file-name-timeout-if-default-input (seconds
                                                 prompt
                                                 &optional
@@ -285,7 +286,7 @@ so returns nil if pid is nil."
 
 ;; (when (or (not *emacs-in-init*) (not reloading-libraries))
 (when (or *emacs-in-init* reloading-libraries)
-  ;setting to nil so it will be asked from user.
+                                        ;setting to nil so it will be asked from user.
   (setq *desktop-save-filename* nil))
 
 ;; might be the reason for Terminal 0 is locked.
@@ -360,6 +361,16 @@ so returns nil if pid is nil."
   (let* ((desktop-save-filename (or desktop-save-filename
                                     *desktop-save-filename*))
          (desktop-base-file-name (file-name-nondirectory desktop-save-filename)))
+    (when (file-exists-p desktop-save-filename)
+      (let ((df-modtime-current (nth 5
+                                     (file-attributes desktop-save-filename))))
+        (when (time-less-p df-modtime-current desktop-file-modtime)
+          (session-unfiy-notify "desktop file %s actual modification time %d seconds different from recorded, recorded modtime %s, while actual modtime is %s, modtime at desktop-vc-read is %s"
+                                desktop-save-filename
+                                (- (float-time df-modtime-current) (float-time desktop-file-modtime))
+                                (format-time-string "%Y-%m-%d %H:%M:%S %z" desktop-file-modtime)
+                                (format-time-string "%Y-%m-%d %H:%M:%S %z" df-modtime-current)
+                                (format-time-string "%Y-%m-%d %H:%M:%S %z" sessions-unified-desktop-file-modtime-bkp)))))
     (desktop-save (dirname-of-file desktop-save-filename))
     (if (file-exists-p desktop-save-filename)
         (put-file-in-rcs desktop-save-filename))
