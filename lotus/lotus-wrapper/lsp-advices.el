@@ -27,6 +27,10 @@
 (provide 'lsp-advices)
 
 
+(eval-when-compile
+  '(require 'dash))
+
+
 (defun print-otherand-it (lst)
   ;; (message "it: %s, ft it: " it (file-truename it))
   (message "lst: %s" lst)
