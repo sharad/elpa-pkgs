@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -244,59 +244,59 @@ containing it, until no links are left at any level.
 ;;   (if semantic-mode
 ;;       ;; Turn on Semantic mode
 ;;       (progn
-;; 	;; Enable all the global auxiliary minor modes in
-;; 	;; `semantic-submode-list'.
-;; 	(dolist (mode semantic-submode-list)
-;; 	  (and (memq mode semantic-default-submodes)
-;; 	       (fboundp mode)
-;; 	       (funcall mode 1)))
-;; 	(unless semantic-load-system-cache-loaded
-;; 	  (setq semantic-load-system-cache-loaded t)
-;; 	  (when (and (boundp 'semanticdb-default-system-save-directory)
-;; 		     (stringp semanticdb-default-system-save-directory)
-;; 		     (file-exists-p semanticdb-default-system-save-directory))
-;; 	    (require 'semantic/db-ebrowse)
-;; 	    (semanticdb-load-ebrowse-caches)))
-;; 	(add-hook 'mode-local-init-hook 'semantic-new-buffer-fcn)
-;; 	;; Add semantic-ia-complete-symbol to
-;; 	;; completion-at-point-functions, so that it is run from
-;; 	;; M-TAB.
-;; 	;;
-;; 	;; Note: The first entry added is the last entry run, so the
-;; 	;;       most specific entry should be last.
-;; 	(add-hook 'completion-at-point-functions
-;; 		  'semantic-analyze-nolongprefix-completion-at-point-function)
-;; 	(add-hook 'completion-at-point-functions
-;; 		  'semantic-analyze-notc-completion-at-point-function)
-;; 	(add-hook 'completion-at-point-functions
-;; 		  'semantic-analyze-completion-at-point-function)
+;;  ;; Enable all the global auxiliary minor modes in
+;;  ;; `semantic-submode-list'.
+;;  (dolist (mode semantic-submode-list)
+;;    (and (memq mode semantic-default-submodes)
+;;         (fboundp mode)
+;;         (funcall mode 1)))
+;;  (unless semantic-load-system-cache-loaded
+;;    (setq semantic-load-system-cache-loaded t)
+;;    (when (and (boundp 'semanticdb-default-system-save-directory)
+;;         (stringp semanticdb-default-system-save-directory)
+;;         (file-exists-p semanticdb-default-system-save-directory))
+;;      (require 'semantic/db-ebrowse)
+;;      (semanticdb-load-ebrowse-caches)))
+;;  (add-hook 'mode-local-init-hook 'semantic-new-buffer-fcn)
+;;  ;; Add semantic-ia-complete-symbol to
+;;  ;; completion-at-point-functions, so that it is run from
+;;  ;; M-TAB.
+;;  ;;
+;;  ;; Note: The first entry added is the last entry run, so the
+;;  ;;       most specific entry should be last.
+;;  (add-hook 'completion-at-point-functions
+;;      'semantic-analyze-nolongprefix-completion-at-point-function)
+;;  (add-hook 'completion-at-point-functions
+;;      'semantic-analyze-notc-completion-at-point-function)
+;;  (add-hook 'completion-at-point-functions
+;;      'semantic-analyze-completion-at-point-function)
 
-;; 	(if (bound-and-true-p global-ede-mode)
-;; 	    (define-key cedet-menu-map [cedet-menu-separator] '("--")))
-;; 	(dolist (b (buffer-list))
-;; 	  (when (buffer-live-p b)
+;;  (if (bound-and-true-p global-ede-mode)
+;;      (define-key cedet-menu-map [cedet-menu-separator] '("--")))
+;;  (dolist (b (buffer-list))
+;;    (when (buffer-live-p b)
 ;;       (with-current-buffer b
-;; 	      (semantic-new-buffer-fcn)))))
+;;        (semantic-new-buffer-fcn)))))
 ;;     ;; Disable Semantic features.  Removing everything Semantic has
 ;;     ;; introduced in the buffer is pretty much futile, but we have to
 ;;     ;; clean the hooks and delete Semantic-related overlays, so that
 ;;     ;; Semantic can be re-activated cleanly.
 ;;     (remove-hook 'mode-local-init-hook 'semantic-new-buffer-fcn)
 ;;     (remove-hook 'completion-at-point-functions
-;; 		 'semantic-analyze-completion-at-point-function)
+;;     'semantic-analyze-completion-at-point-function)
 ;;     (remove-hook 'completion-at-point-functions
-;; 		 'semantic-analyze-notc-completion-at-point-function)
+;;     'semantic-analyze-notc-completion-at-point-function)
 ;;     (remove-hook 'completion-at-point-functions
-;; 		 'semantic-analyze-nolongprefix-completion-at-point-function)
+;;     'semantic-analyze-nolongprefix-completion-at-point-function)
 
 ;;     (remove-hook 'after-change-functions
-;; 		 'semantic-change-function)
+;;     'semantic-change-function)
 ;;     (define-key cedet-menu-map [cedet-menu-separator] nil)
 ;;     (define-key cedet-menu-map [semantic-options-separator] nil)
 ;;     ;; FIXME: handle semanticdb-load-ebrowse-caches
 ;;     (dolist (mode semantic-submode-list)
 ;;       (if (and (boundp mode) (eval mode))
-;; 	  (funcall mode -1)))
+;;    (funcall mode -1)))
 ;;     ;; Unlink buffer and clear cache
 ;;     (semantic--tag-unlink-cache-from-buffer)
 ;;     (setq semantic--buffer-cache nil)

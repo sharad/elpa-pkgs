@@ -52,7 +52,7 @@ containing it, until no links are left at any level.
                (rest (substring filename (match-end 0))))
            (setq filename (concat (expand-file-name first-part) rest)))))
 
-  (or counter (setq counter (list 300)))
+  (or counter (setq counter (list 350)))
   (let (done)
     (or prev-dirs (setq prev-dirs (list nil)))
     ;; If this file directly leads to a link, process that iteratively
