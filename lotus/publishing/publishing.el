@@ -41,14 +41,14 @@
 
 (defvar *doc-root* (doc-root-find))
 
-(defvar *created-content-dir* (expand-file-name "CreatedContent" *doc-root*))
+(defvar *created-content-dir* (expand-file-name "Compositions" *doc-root*))
 (defvar *website-address*     "http://emacs-publishing.org/")
 
 
 ;; ;; Add function to set all four
-;; (defvar *misc-top-dir*           (expand-file-name "contents/virtual/misc/default" *created-content-dir*))
+;; (defvar *misc-top-dir*           (expand-file-name "Drafts/virtual/misc/default" *created-content-dir*))
 ;; (defvar *misc-top-style-dir*     (expand-file-name "generic/misc/style" *misc-top-dir*))
-;; (defvar *misc-generated-top-dir* (expand-file-name "gen/misc" *created-content-dir*))
+;; (defvar *misc-generated-top-dir* (expand-file-name "Exports/misc" *created-content-dir*))
 ;; (defvar *misc-website-address*   (concat *website-address* "misc/"))
 ;; ;; variables
 
@@ -58,11 +58,11 @@
 
 ;;;###autoload
 (defun default-publishing-document-created-contents-path ()
-  (expand-file-name "CreatedContent/contents" (publishing-document-root-path)))
+  (expand-file-name "Compositions/Drafts" (publishing-document-root-path)))
 
 ;;;###autoload
 (defun default-publishing-document-generated-contents-path ()
-  (expand-file-name "CreatedContent/gen" (publishing-document-root-path)))
+  (expand-file-name "Compositions/Exports" (publishing-document-root-path)))
 
 (defun default-publishing-document-website-address ()
   *website-address*)
