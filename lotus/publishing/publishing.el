@@ -41,14 +41,14 @@
 
 (defvar *doc-root* (doc-root-find))
 
-(defvar *created-content-dir* (expand-file-name "Compositions" *doc-root*))
+(defvar *content-composition-dir* (expand-file-name "Compositions" *doc-root*))
 (defvar *website-address*     "http://emacs-publishing.org/")
 
 
 ;; ;; Add function to set all four
-;; (defvar *misc-top-dir*           (expand-file-name "Drafts/virtual/misc/default" *created-content-dir*))
+;; (defvar *misc-top-dir*           (expand-file-name "Drafts/virtual/misc/default" *content-composition-dir*))
 ;; (defvar *misc-top-style-dir*     (expand-file-name "generic/misc/style" *misc-top-dir*))
-;; (defvar *misc-generated-top-dir* (expand-file-name "Exports/misc" *created-content-dir*))
+;; (defvar *misc-generated-top-dir* (expand-file-name "Exports/misc" *content-composition-dir*))
 ;; (defvar *misc-website-address*   (concat *website-address* "misc/"))
 ;; ;; variables
 
