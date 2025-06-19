@@ -46,7 +46,7 @@
 
 
 ;; ;; Add function to set all four
-;; (defvar *misc-top-dir*           (expand-file-name "Drafts/virtual/misc/default" *content-composition-dir*))
+;; (defvar *misc-top-dir*           (expand-file-name "Drafts/misc" *content-composition-dir*))
 ;; (defvar *misc-top-style-dir*     (expand-file-name "generic/misc/style" *misc-top-dir*))
 ;; (defvar *misc-generated-top-dir* (expand-file-name "Exports/misc" *content-composition-dir*))
 ;; (defvar *misc-website-address*   (concat *website-address* "misc/"))
@@ -70,47 +70,62 @@
 (defalias 'publishing-document-root-path               #'default-publishing-document-root-path)
 (defalias 'publishing-document-created-contents-path   #'default-publishing-document-created-contents-path)
 (defalias 'publishing-document-generated-contents-path #'default-publishing-document-generated-contents-path)
-(defalias 'publishing-document-website-address        #'default-publishing-document-website-address)
+(defalias 'publishing-document-website-address         #'default-publishing-document-website-address)
+
+;; ;;;###autoload
+;; (defun default-publishing-class-created-contents-path (class &optional path)
+;;   (let ((path (or path "")))
+;;     (expand-file-name
+;;      path
+;;      (expand-file-name
+;;       "default"
+;;       (expand-file-name
+;;        (symbol-name class)
+;;        (expand-file-name
+;;         "virtual"
+;;         (publishing-document-created-contents-path)))))))
 
 ;;;###autoload
 (defun default-publishing-class-created-contents-path (class &optional path)
   (let ((path (or path "")))
-    (expand-file-name
-     path
-     (expand-file-name
-      "default"
-      (expand-file-name
-       (symbol-name class)
-       (expand-file-name
-        "virtual"
-        (publishing-document-created-contents-path)))))))
+    (expand-file-name path
+                      (expand-file-name (symbol-name class)
+                                        (publishing-document-created-contents-path)))))
+
+;; ;;;###autoload
+;; (defun default-publishing-class-generated-contents-path (class &optional path)
+;;   (let ((path (or path "")))
+;;     (expand-file-name
+;;      path
+;;      (expand-file-name
+;;       "default"
+;;       (expand-file-name
+;;        (expand-file-name
+;;         (symbol-name class)
+;;         (expand-file-name
+;;          "virtual"
+;;          (publishing-document-generated-contents-path))))))))
 
 ;;;###autoload
 (defun default-publishing-class-generated-contents-path (class &optional path)
   (let ((path (or path "")))
-    (expand-file-name
-     path
-     (expand-file-name
-      "default"
-      (expand-file-name
-       (expand-file-name
-        (symbol-name class)
-        (expand-file-name
-         "virtual"
-         (publishing-document-generated-contents-path))))))))
+    (expand-file-name path
+                      (expand-file-name
+                       (symbol-name class)
+                       (publishing-document-generated-contents-path)))))
 
 ;;;###autoload
 (defun default-publishing-class-website-address (class &optional path)
-  (concat
-   (publishing-document-website-address)
-   "/"
-   (symbol-name class)
-   (if path (concat "/" path))))
+  (concat (publishing-document-website-address)
+          "/"
+          (symbol-name class)
+          (if path (concat "/" path))))
 
 
 (defalias 'publishing-class-created-contents-path   #'default-publishing-class-created-contents-path)
 (defalias 'publishing-class-generated-contents-path #'default-publishing-class-generated-contents-path)
-(defalias 'publishing-class-website-address        #'default-publishing-class-website-address)
+(defalias 'publishing-class-website-address         #'default-publishing-class-website-address)
+
 
 ;;;###autoload
 (defun default-publishing-created-contents-path (&optional class path)
@@ -129,14 +144,10 @@
   (if class
       (publishing-class-website-address class path)
     (publishing-document-website-address)))
-
+
 
 (defalias 'publishing-created-contents-path   #'default-publishing-created-contents-path)
 (defalias 'publishing-generated-contents-path #'default-publishing-generated-contents-path)
-(defalias 'publishing-website-address        #'default-publishing-website-address)
-
-
-
-
-
+(defalias 'publishing-website-address         #'default-publishing-website-address)
+
 ;;; publishing.el ends here
