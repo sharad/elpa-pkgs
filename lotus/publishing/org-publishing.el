@@ -24,14 +24,11 @@
 
 ;;; Code:
 
-(provide 'org-publishing)
-
-
 (require 'cl)
 (require 'publishing)
 (require 'org)
 (when (featurep 'org-compact)
- (require 'org-compact))
+  (require 'org-compact))
 (require 'ox-publish)
 
 
@@ -193,7 +190,98 @@
             (org-publish-get-attribute project
                                        extention
                                        attrib))))))
-
+
 ;; (org-publish-get-attribute "tasks" "org" :base-directory)
+
+
+(defun org-publish-generate-tags-file (&optional dir output-file)
+  "Generate a tags index page."
+  (interactive
+   (list (read-directory-name "Directory to generate Tags: ")))
+  (let* ((dir (or dir
+                  (org-publishing-created-contents-path)))
+         (output-file (or output-file
+                          (expand-file-name "tags.org" dir)))
+         (files (directory-files-recursively dir "\\.org$"))
+         (tags-table (make-hash-table :test 'equal)))
+    ;; Collect tags
+    (dolist (file files)
+      (with-temp-buffer
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (let ((tags (if (re-search-forward "^#\\+TAGS: \\(.*\\)" nil t)
+                        (split-string (match-string 1))
+                      nil)))
+          (when tags
+            (dolist (tag tags)
+              (puthash tag
+                       (cons (list (file-name-base file) (file-name-nondirectory file))
+                             (gethash tag tags-table))
+                       tags-table))))))
+    ;; Write tags.org
+    (with-current-buffer (find-file-noselect output-file)
+      (erase-buffer)
+      (insert "#+TITLE: Tags\n#+OPTIONS: toc:nil\n\n")
+      (maphash
+       (lambda (tag files)
+         (insert (format "* %s\n" tag))
+         (dolist (file files)
+           (let ((title (car file))
+                 (fname (cadr file)))
+             (insert (format "- [[file:%s][%s]]\n" fname title)))))
+       tags-table)
+      (save-buffer))))
+
+
+(defun org-publish-generate-calendar (&optional dir output-file)
+  "Generate a calendar archive org file from org files in your drafts."
+  (interactive
+   (list (read-directory-name "Directory to generate Calendar: ")))
+  (let* ((dir (or dir
+                  (org-publishing-created-contents-path)))
+         (output-file (or output-file
+                          (expand-file-name "calendar.org" dir)))
+         (files (directory-files-recursively dir "\\.org$"))
+         (entries '()))
+    ;; Collect files with dates
+    (dolist (file files)
+      (with-temp-buffer
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (let ((date-str (if (re-search-forward "^#\\+DATE: \\(.*\\)" nil t)
+                            (match-string 1)
+                          (format-time-string "%Y-%m-%d"
+                                              (nth 5 (file-attributes file))))))
+          (when (string-match "\\([0-9]+\\)-\\([0-9]+\\)-\\([0-9]+\\)" date-str)
+            (let ((year (match-string 1 date-str))
+                  (month (match-string 2 date-str))
+                  (title (file-name-base file)))
+              (push (list year month title (file-name-nondirectory file)) entries))))))
+    ;; Sort and group
+    (setq entries (sort entries (lambda (a b)
+                                  (string> (concat (car a) (cadr a) (caddr a))
+                                           (concat (car b) (cadr b) (caddr b))))))
+    ;; Write to calendar.org
+    (with-current-buffer (find-file-noselect output-file)
+      (erase-buffer)
+      (insert "#+TITLE: Archives\n\n")
+      (let ((current-year nil)
+            (current-month nil))
+        (dolist (entry entries)
+          (let ((year (nth 0 entry))
+                (month (nth 1 entry))
+                (title (nth 2 entry))
+                (file (nth 3 entry)))
+            (unless (equal year current-year)
+              (setq current-year year)
+              (insert (format "* %s\n" year)))
+            (unless (equal month current-month)
+              (setq current-month month)
+              (insert (format "** %s\n" (format-time-string "%B" (encode-time 0 0 0 1 (string-to-number month) (string-to-number year))))))
+            (insert (format "- [[file:%s][%s]]\n" file title)))))
+      (save-buffer))))
+
+
+(provide 'org-publishing)
 
 ;;; org-publishing.el ends here
