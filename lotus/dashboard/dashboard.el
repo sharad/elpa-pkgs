@@ -31,37 +31,82 @@
 (require 'recentf)
 (require 'projectile)
 (require 'warnings)
+(require 'all-the-icons)
 
 
-(defun my/dashboard-insert-section (title key items action-fn)
-  "Insert a section with TITLE and KEY shortcut, listing ITEMS with ACTION-FN."
-  (insert (propertize (format "\n%s: (%s)\n\n" title key)
-                      'face '(:weight bold :height 1.2)))
-  (if items
-      (cl-loop for item in items
-               for idx from 1 do
-               (let ((display (format "%3d   %s\n" idx item)))
-                 (insert-button display
-                                'action (lambda (_)
-                                          (funcall action-fn item))
-                                'follow-link t)))
-    (insert "  No entries.\n\n")))
+;; (defun my/dashboard-insert-section (title key items action-fn)
+;;   "Insert a section with TITLE and KEY shortcut, listing ITEMS with ACTION-FN."
+;;   (insert (propertize (format "\n%s: (%s)\n\n" title key)
+;;                       'face '(:weight bold :height 1.2)))
+;;   (if items
+;;       (cl-loop for item in items
+;;                for idx from 1 do
+;;                (let ((display (format "%3d   %s\n" idx item)))
+;;                  (insert-button display
+;;                                 'action (lambda (_)
+;;                                           (funcall action-fn item))
+;;                                 'follow-link t)))
+;;     (insert "  No entries.\n\n")))
+
+;; (defun my/dashboard-insert-centered (str &optional face)
+;;   "Insert STR centered horizontally using Spacemacs centering if available.
+;; If FACE is provided, apply it."
+;;   (if (fboundp 'spacemacs-buffer//insert-centered)
+;;       (spacemacs-buffer//insert-centered str face)
+;;     ;; fallback
+;;     (let* ((buffer-width (window-width))
+;;            (str-width (string-width str))
+;;            (margin (max 0 (/ (- buffer-width str-width) 2))))
+;;       (insert (make-string margin ?\s))
+;;       (insert (if face (propertize str 'face face) str))
+;;       (insert "\n"))))
+
+
+
+(defun my/dashboard-insert-centered (str &optional face icon)
+  "Insert STR centered with optional FACE and ICON using Spacemacs centering if available."
+  (let ((line (if icon
+                  (concat icon " " str)
+                str)))
+    (if (fboundp 'spacemacs-buffer//insert-centered)
+        (spacemacs-buffer//insert-centered line face)
+      ;; fallback
+      (let* ((buffer-width (window-width))
+             (str-width (string-width line))
+             (margin (max 0 (/ (- buffer-width str-width) 2))))
+        (insert (make-string margin ?\s))
+        (insert (if face (propertize line 'face face) line))
+        (insert "\n")))))
 
 
 
+(when nil
 
-(defun my/dashboard-insert-centered (str &optional face)
-  "Insert STR centered horizontally using Spacemacs centering if available.
-If FACE is provided, apply it."
-  (if (fboundp 'spacemacs-buffer//insert-centered)
-      (spacemacs-buffer//insert-centered str face)
-    ;; fallback
-    (let* ((buffer-width (window-width))
-           (str-width (string-width str))
-           (margin (max 0 (/ (- buffer-width str-width) 2))))
-      (insert (make-string margin ?\s))
-      (insert (if face (propertize str 'face face) str))
-      (insert "\n"))))
+
+  ;; Example Icons for Sections:
+
+  ;; Warnings:
+
+  (all-the-icons-octicon "alert" :height 1.0 :v-adjust 0)
+
+  ;; Recent Files:
+
+  (all-the-icons-octicon "file-text" :height 1.0 :v-adjust 0)
+
+  ;; Projects:
+
+  (all-the-icons-octicon "repo" :height 1.0 :v-adjust 0)
+
+  ;; TODO:
+
+  (all-the-icons-faicon "tasks" :height 1.0 :v-adjust 0)
+
+  ;; ✅ Example usage in my/dashboard-insert-section:
+
+  (my/dashboard-insert-section
+   (concat (all-the-icons-octicon "repo" :height 1.0 :v-adjust 0) " Projects") "p"
+   (or (my/dashboard-get-projects) '("No projects found."))
+   (lambda (proj) (projectile-switch-project-by-name proj))))
 
 (defun my/dashboard-center-vertically ()
   "Vertically center the dashboard using Spacemacs centering if available."
@@ -110,7 +155,10 @@ If FACE is provided, apply it."
     (seq-take (nreverse results) 5)))
 
 (defun mydashboard-buttons ()
-  (insert (propertize "🚀 My Spacemacs Dashboard\n\n" 'face '(:height 1.5 :weight bold)))
+  ;; (insert (propertize "🚀 My Spacemacs Dashboard\n\n" 'face '(:height 1.5 :weight bold)))
+  (my/dashboard-insert-centered "My Spacemacs Dashboard"
+                                '(:height 1.5 :weight bold)
+                                (all-the-icons-fileicon "emacs" :height 1.2 :v-adjust 0))
 
   ;; Button: Open Recent Files
   (insert-button "📂 Open Recent Files\n"
@@ -157,17 +205,24 @@ If FACE is provided, apply it."
       (setq-local cursor-type nil)
 
       ;; Title
-      (insert (propertize "🚀 My Spacemacs Dashboard\n\n" 'face '(:height 1.5 :weight bold)))
+      ;; (insert (propertize "🚀 My Spacemacs Dashboard\n\n" 'face '(:height 1.5 :weight bold)))
+      (my/dashboard-insert-centered "My Spacemacs Dashboard"
+                                    '(:height 1.5 :weight bold)
+                                    (all-the-icons-fileicon "emacs" :height 1.2 :v-adjust 0))
 
 
       (mydashboard-buttons)
 
       ;; Dynamic Warnings
+      ;; (my/dashboard-insert-section
+      ;;  "Warnings" "w"
+      ;;  (my/dashboard-get-warnings)
+      ;;  (lambda (_)
+      ;;    (switch-to-buffer "*Warnings*")))
       (my/dashboard-insert-section
-       "Warnings" "w"
+       (concat (all-the-icons-octicon "alert" :height 1.0 :v-adjust 0) " Warnings") "w"
        (my/dashboard-get-warnings)
-       (lambda (_)
-         (switch-to-buffer "*Warnings*")))
+       (lambda (_) (switch-to-buffer "*Warnings*")))
 
       ;; Recent Files
       (my/dashboard-insert-section
@@ -212,8 +267,5 @@ If FACE is provided, apply it."
       (goto-char (point-min))
       (read-only-mode 1))
     (switch-to-buffer buf)))
-
-;; Alias for consistency:
-(defalias 'my/spacemacs-like-buffer 'my/spacemacs-like-dashboard)
 
 ;;; dashboard.el ends here
