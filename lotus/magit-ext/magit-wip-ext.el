@@ -80,6 +80,60 @@
         t
       (> count magit-wip-push-inhibit-count))))
 
+
+;; 
+;; (defun magit-exit-start-git (input &rest args)
+;;   "Start Git, prepare for refresh, and return the process object.
+
+;; If INPUT is non-nil, it has to be a buffer or the name of an
+;; existing buffer.  The buffer content becomes the processes
+;; standard input.
+
+;; Function `magit-git-executable' specifies the Git executable and
+;; option `magit-git-global-arguments' specifies constant arguments.
+;; The remaining arguments ARGS specify arguments to Git, they are
+;; flattened before use.
+
+;; After Git returns some buffers are refreshed: the buffer that was
+;; current when this function was called (if it is a Magit buffer
+;; and still alive), as well as the respective Magit status buffer.
+
+;; See `magit-start-process' for more information."
+;;   ;; (run-hooks 'magit-pre-start-git-hook)
+;;   (let ((default-process-coding-system (magit--process-coding-system)))
+;;     (apply #'magit-start-process (magit-git-executable) input
+;;            (magit-process-git-arguments args))))
+
+;; (defun magit-exit-run-git-async (&rest args)
+;;   "Start Git, prepare for refresh, and return the process object.
+;; ARGS is flattened and then used as arguments to Git.
+
+;; Display the command line arguments in the echo area.
+
+;; After Git returns some buffers are refreshed: the buffer that was
+;; current when this function was called (if it is a Magit buffer
+;; and still alive), as well as the respective Magit status buffer.
+
+;; See `magit-start-process' for more information."
+;;   (magit-msg "Running %s %s" (magit-git-executable)
+;;              (let ((m (string-join (flatten-tree args) " ")))
+;;                (remove-list-of-text-properties 0 (length m) '(face) m)
+;;                m))
+;;   (magit-exit-start-git nil args))
+;; 
+
+;; (defun magit-ext-git-push-nons (branch target args)
+;;   (run-hooks 'magit-credential-hook)
+;;   ;; If the remote branch already exists, then we do not have to
+;;   ;; qualify the target, which we prefer to avoid doing because
+;;   ;; using the default namespace is wrong in obscure cases.
+;;   (pcase-let ((namespace (if (magit-get-tracked target) "" "refs/heads/"))
+;;               (`(,remote . ,target)
+;;                (magit-split-branch-name target)))
+;;     (magit-ext-run-git-async "push" "-v" args remote
+;;                              (format "%s:%s" branch target))))
+;; 
+
 (defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
   ;; If the remote branch already exists, then we do not have to
@@ -88,8 +142,11 @@
   (pcase-let ((namespace (if (magit-get-tracked target) "" "refs/heads/"))
               (`(,remote . ,target)
                (magit-split-branch-name target)))
-    (magit-run-git-async "push" "-v" args remote
-                         (format "%s:%s" branch target))))
+    (let ((magit-pre-start-git-hook
+           (remove #'magit-maybe-save-repository-buffers
+                   magit-pre-start-git-hook)))
+      (magit-run-git-async "push" "-v" args remote
+                           (format "%s:%s" branch target)))))
 
 ;;;###autoload
 (defun magit-wip-push (ref &optional remote args)
