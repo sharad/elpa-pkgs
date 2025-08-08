@@ -189,11 +189,14 @@
 
 
 (defun magit-wip-commit-worktree-around-advice-fn (orgfn &rest args)
-  (unless (apply orgfn args)
-    (message "magit-wip-commit: fail"))
-  (message "magit-wip-push: args: %S" args)
-  (apply #'magit-wip-commit-worktree-fn-to-push-wip
-         args))
+  (let ((magit-pre-call-git-hook
+         (remove #'magit-maybe-save-repository-buffers
+                 magit-pre-call-git-hook)))
+    (unless (apply orgfn args)
+      (message "magit-wip-commit: fail"))
+    (message "magit-wip-push: args: %S" args)
+    (apply #'magit-wip-commit-worktree-fn-to-push-wip
+           args)))
 
 
 ;; Define the global minor mode for magit wip push
