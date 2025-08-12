@@ -144,7 +144,10 @@
                (magit-split-branch-name target)))
     (let ((magit-pre-start-git-hook
            (remove #'magit-maybe-save-repository-buffers
-                   magit-pre-start-git-hook)))
+                   magit-pre-start-git-hook))
+          (magit-pre-refresh-hook
+           (remove #'magit-maybe-save-repository-buffers
+                   magit-pre-refresh-hook)))
       (magit-run-git-async "push" "-v" args remote
                            (format "%s:%s" branch target)))))
 
