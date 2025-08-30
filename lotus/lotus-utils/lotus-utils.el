@@ -78,7 +78,7 @@
                    (when (fboundp 'centaur-tabs-set-prefix-key)
                      (centaur-tabs-set-prefix-key value))
                    (custom-set-default symbol value))
-               'centaur-tabs-prefix-key "\s-z")
+               'centaur-tabs-prefix-key ["s-z"])
       (global-set-key-if-unbind [C-H-right] 'centaur-tabs-forward)
       (global-set-key-if-unbind [C-H-left]  'centaur-tabs-backward)
       (global-set-key-if-unbind [M-H-right] 'centaur-tabs-forward-group)
