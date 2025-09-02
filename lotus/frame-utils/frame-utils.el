@@ -213,7 +213,7 @@ If you unset the urgency, you still have to visit the frame to make the urgency 
                             "WM_HINTS" frame "WM_HINTS"
                             source nil t) nil))
          (flags (cl-first wm-hints)))
-    ; (message flags)
+                                        ; (message flags)
     (setcar wm-hints
             (if arg
                 (logior flags #x00000100)
@@ -244,11 +244,73 @@ With a prefix argument which does not equal a boolean value of nil, remove the u
 
 And make sure that it really shows up!"
   (raise-frame)
-  ; yes, you have to call this twice. Don’t ask me why…
-  ; select-frame-set-input-focus calls x-focus-frame and does a bit of
-  ; additional magic.
+                                        ; yes, you have to call this twice. Don’t ask me why…
+                                        ; select-frame-set-input-focus calls x-focus-frame and does a bit of
+                                        ; additional magic.
   (select-frame-set-input-focus (selected-frame))
   (select-frame-set-input-focus (selected-frame)))
+
+
+
+
+;; (defun my/create-borderless-centered-frame ()
+;;   "Create a new emacsclient frame that is borderless and centered."
+;;   (interactive)
+;;   (let* ((width  100)   ;; frame width in chars
+;;          (height 40)    ;; frame height in chars
+;;          (frame (make-frame
+;;                  `((name . "popup")
+;;                    (undecorated . t)
+;;                    (minibuffer . t)
+;;                    (width . ,width)
+;;                    (height . ,height)
+;;                    (tool-bar-lines . 0)
+;;                    (menu-bar-lines . 0)
+;;                    (vertical-scroll-bars . nil)
+;;                    (undecorated . t)
+;;                    (skip-taskbar . t)
+;;                    (visibility . t)
+;;                    (no-focus-on-map . t)
+;;                    (unsplittable . t)))))
+;;     ;; center it
+;;     (set-frame-position
+;;      frame
+;;      (/ (- (display-pixel-width)
+;;            (* (frame-pixel-width frame))) 2)
+;;      (/ (- (display-pixel-height)
+;;            (* (frame-pixel-height frame))) 2))
+;;     frame))
+
+
+;; (defun my/create-borderless-centered-frame ()
+;;   "Create a borderless, centered Emacs frame (emacsclient)."
+;;   (interactive)
+;;   (let* ((width 100)
+;;          (height 40)
+;;          (frame (make-frame
+;;                  `((name . "popup")
+;;                    (minibuffer . t)
+;;                    (width . ,width)
+;;                    (height . ,height)
+;;                    (undecorated . t)
+;;                    (tool-bar-lines . 0)
+;;                    (menu-bar-lines . 0)
+;;                    (vertical-scroll-bars . nil)
+;;                    (skip-taskbar . t)
+;;                    (visibility . t)
+;;                    (no-focus-on-map . t)
+;;                    (unsplittable . t)
+;;                    (sticky . t)
+;;                    (drag-internal-border . t)
+;;                    (no-other-frame . t)
+;;                    (z-group . above))))) ;; "above" keeps it on top
+;;     ;; center it
+;;     (set-frame-position frame
+;;                         (/ (- (display-pixel-width)
+;;                               (* (frame-pixel-width frame))) 2)
+;;                         (/ (- (display-pixel-height)
+;;                               (* (frame-pixel-height frame))) 2))
+;;     frame))
 
 
 (provide 'frame-utils)
