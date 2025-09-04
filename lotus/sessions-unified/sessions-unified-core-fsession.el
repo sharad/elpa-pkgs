@@ -331,59 +331,64 @@ display-about-screen, spacemacs-buffer/goto-buffer")
       (funcall session-unified-utils-select-frame-fn frame)
     (error "frame is nil"))
   (session-unfiy-notify "in frame-session-set-this-location")
-  (let* ((wm-desktop-name (sessions-unified-core-fsession-get-wm-desktop-name))
-         (location        (if (and try-guessing
-                                   wm-desktop-name
-                                   (member wm-desktop-name
-                                           (mapcar #'car
-                                                   *sessions-unified-frames-session*)))
+
+  (if (frame-parameter frame 'session-unified-no-session)
+      (session-unify-notify "%s" "No session for frame")
+    (let* ((wm-desktop-name (sessions-unified-core-fsession-get-wm-desktop-name))
+           (location        (if (and try-guessing
+                                     wm-desktop-name
+                                     (member wm-desktop-name
+                                             (mapcar #'car
+                                                     *sessions-unified-frames-session*)))
+                                (progn
+                                  (session-unfiy-notify "NO need to call interactive (fmsession-read-location wm-desktop-name[%s])"
+                                                        wm-desktop-name)
+                                  wm-desktop-name)
                               (progn
-                                (session-unfiy-notify "NO need to call interactive (fmsession-read-location wm-desktop-name[%s])"
-                                                      wm-desktop-name)
-                                wm-desktop-name)
-                            (progn
-                              (if (eq try-guessing 'only)
-                                  (session-unfiy-notify "could not guess will return nil as try-guessing = %s set."
-                                                        try-guessing)
-                                (session-unfiy-notify "NEED to call interactive (fmsession-read-location wm-desktop-name[%s])"
-                                                      wm-desktop-name))
-                              ;; BUG: causing first emacsclient frame to be jammed which require pkill -USR2 emacs
-                              (unless (eq try-guessing 'only)
-                                (fmsession-read-location wm-desktop-name))))))
-    (session-unfiy-notify "%s" location)
-    (when location
-      (set-frame-parameter frame 'frame-spec-id location))
-    location))
+                                (if (eq try-guessing 'only)
+                                    (session-unfiy-notify "could not guess will return nil as try-guessing = %s set."
+                                                          try-guessing)
+                                  (session-unfiy-notify "NEED to call interactive (fmsession-read-location wm-desktop-name[%s])"
+                                                        wm-desktop-name))
+                                ;; BUG: causing first emacsclient frame to be jammed which require pkill -USR2 emacs
+                                (unless (eq try-guessing 'only)
+                                  (fmsession-read-location wm-desktop-name))))))
+      (session-unfiy-notify "%s" location)
+      (when location
+        (set-frame-parameter frame 'frame-spec-id location))
+      location)))
 
 
 (defun frame-session-restore (frame &optional try-guessing)
   (session-unfiy-notify "in frame-session-restore")
-  (if (and *sessions-unified-frame-session-restore-lock*
-           (null *desktop-vc-read-inprogress*))
+  (if (frame-parameter frame 'session-unified-no-session)
+      (session-unify-notify "%s" "No session for frame")
+    (if (and *sessions-unified-frame-session-restore-lock*
+             (null *desktop-vc-read-inprogress*))
+        (progn
+          (session-unfiy-notify "pass in frame-session-restore")
+          (if frame
+              (funcall session-unified-utils-select-frame-fn frame)
+            (error "frame is nil"))
+          (message "calling (frame-session-set-this-location frame try-guessing) %s %s" frame try-guessing)
+          (let ((loc (frame-session-set-this-location frame try-guessing)))
+            (message "loc: %s" loc)
+            (message "calling sessions-unified-core-fsession-restore1")
+            (sessions-unified-core-fsession-restore loc
+                                                    frame)
+            (message "called sessions-unified-core-fsession-restore"))
+          (when (and *session-unified-frame-session-restore-display-function*
+                     (functionp '*session-unified-frame-session-restore-display-function*))
+            (funcall *session-unified-frame-session-restore-display-function*))
+          frame)
       (progn
-        (session-unfiy-notify "pass in frame-session-restore")
-        (if frame
-            (funcall session-unified-utils-select-frame-fn frame)
-          (error "frame is nil"))
-        (message "calling (frame-session-set-this-location frame try-guessing) %s %s" frame try-guessing)
-        (let ((loc (frame-session-set-this-location frame try-guessing)))
-          (message "loc: %s" loc)
-          (message "calling sessions-unified-core-fsession-restore1")
-          (sessions-unified-core-fsession-restore loc
-                                                  frame)
-          (message "called sessions-unified-core-fsession-restore"))
-        (when (and *session-unified-frame-session-restore-display-function*
-                   (functionp '*session-unified-frame-session-restore-display-function*))
-          (funcall *session-unified-frame-session-restore-display-function*))
-        frame)
-    (progn
-      (session-unfiy-notify "not restoring screen session.")
-      (if *desktop-vc-read-inprogress*
-          (session-unfiy-notify "as desktop restore is in progress *desktop-vc-read-inprogress* %s"
-                                *desktop-vc-read-inprogress*))
-      (if (null *sessions-unified-frame-session-restore-lock*)
-          (session-unfiy-notify "as another frame session restore in progress *sessions-unified-frame-session-restore-lock* %s"
-                                *sessions-unified-frame-session-restore-lock*)))))
+        (session-unfiy-notify "not restoring screen session.")
+        (if *desktop-vc-read-inprogress*
+            (session-unfiy-notify "as desktop restore is in progress *desktop-vc-read-inprogress* %s"
+                                  *desktop-vc-read-inprogress*))
+        (if (null *sessions-unified-frame-session-restore-lock*)
+            (session-unfiy-notify "as another frame session restore in progress *sessions-unified-frame-session-restore-lock* %s"
+                                  *sessions-unified-frame-session-restore-lock*))))))
 
 (defun frame-session-restore-force (frame)
   (let ((location (frame-parameter (selected-frame) 'frame-spec-id)))
