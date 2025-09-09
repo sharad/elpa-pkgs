@@ -27,20 +27,25 @@
 (provide 'xframe)
 
 
-(defun make-xframe (xid &optional width height)
-  (let ((width (or width (frame-char-width) 6))
-        (height (or height (frame-char-height) 13)))
-    (make-frame `((parent-id . ,xid)
-                  (undecorated . t)
-                  (width . ,width)
-                  (height . ,height)
-                  (session-unified-no-session . t)
-                  (tab-bar-mode . nil)
-                  (tab-bar-lines . 0)
-                  (tab-bar-lines-keep-state . nil)
-                  (centaur-tabs-local-mode . nil)
-                  (centaur-tabs-display-line-format . nil)))
+(defun make-xframe (xid width height &optional cbfun)
+  (let ((char-width  (or (frame-char-width) 6))
+        (char-height (or (frame-char-height) 13)))
+    (let ((frame (make-frame `((parent-id . ,xid)
+                               (undecorated . t)
+                               (width . ,(/ width char-width))
+                               (height . ,(/ height char-height))
+                               (session-unified-no-session . t)
+                               (tab-bar-mode . nil)
+                               (tab-bar-lines . 0)
+                               (tab-bar-lines-keep-state . nil)
+                               (centaur-tabs-local-mode . nil)
+                               (centaur-tabs-display-line-format . nil))))))
     (set centaur-tabs-display-line-format nil)
-    (kill-local-variable 'centaur-tabs--local-hlf)))
+    (kill-local-variable 'centaur-tabs--local-hlf)
+    (when cbfun
+      (funcall cbfun))
+    ;; (when frame
+    ;;   (delete-frame frame))
+    nil))
 
 ;;; xframe.el ends here
