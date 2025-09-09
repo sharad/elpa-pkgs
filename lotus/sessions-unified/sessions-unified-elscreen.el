@@ -100,7 +100,7 @@
                                                        (window-buffer window))
                                                    (window-list))))
                                      screen-list))))
-       ;; (session-unfiy-notify "desktop-buffers: %s" desktop-buffers)
+       ;; (session-unify-notify "desktop-buffers: %s" desktop-buffers)
        (when desktop-buffers
          (remove nil
                  (mapcar #'desktop-make-create-buffer-list
@@ -197,16 +197,16 @@
                                                                     fsession-data))))
                       ;; (when t
                       (when session-unified-debug
-                        (session-unfiy-notify "Bstart: session-current-screen-buffers %s" session-current-screen-buffers)
-                        (session-unfiy-notify "Astart: screen-to-name-alist %s" fsession-data)
-                        (session-unfiy-notify "Cstart: desktop-buffers %s" desktop-buffers))
+                        (session-unify-notify "Bstart: session-current-screen-buffers %s" session-current-screen-buffers)
+                        (session-unify-notify "Astart: screen-to-name-alist %s" fsession-data)
+                        (session-unify-notify "Cstart: desktop-buffers %s" desktop-buffers))
 
                       ;; ready file for buffer in fsession-data, using desktop-restore methods
                       (if desktop-buffers
                           ;; recreate desktop buffer if not present.
                           (let ((bufs (mapcar #'(lambda (bl) (nth 2 bl))
                                               desktop-buffers)))
-                            (session-unfiy-notify "Please wait I am busy to restore %d\nbuffers %s"
+                            (session-unify-notify "Please wait I am busy to restore %d\nbuffers %s"
                                                   (length desktop-buffers) bufs)
                             (let ((desktop-buffer-ok-count 0)
                                   (desktop-buffer-fail-count 0)
@@ -217,29 +217,29 @@
                               (dolist (desktop-buffer-args desktop-buffers)
                                 (let ((bufname (nth 2 desktop-buffer-args))
                                       (file-path (nth 1 desktop-buffer-args)))
-                                  (session-unfiy-notify "restoring %s" bufname)
+                                  (session-unify-notify "restoring %s" bufname)
                                   (if (find-buffer-visiting file-path)
-                                      (session-unfiy-notify "buffer %s already here" bufname)
+                                      (session-unify-notify "buffer %s already here" bufname)
                                     (if (stringp bufname)
                                         (if (get-buffer bufname)
-                                            (session-unfiy-notify "buffer %s already here" bufname)
+                                            (session-unify-notify "buffer %s already here" bufname)
                                           (let ()
-                                            (session-unfiy-notify "Hello 1")
-                                            (session-unfiy-notify "Desktop lazily opening %s" bufname)
+                                            (session-unify-notify "Hello 1")
+                                            (session-unify-notify "Desktop lazily opening %s" bufname)
                                             (unless (ignore-errors
                                                       (save-window-excursion
                                                         (apply 'desktop-create-buffer desktop-buffer-args)))
-                                              (session-unfiy-notify "Desktop lazily opening Failed."))
-                                            (session-unfiy-notify "Hello 2")
-                                            (session-unfiy-notify "restored %s" bufname)))
-                                      (session-unfiy-notify "bufname: %s is not string" bufname))))))
-                            (session-unfiy-notify "Restored %d\nbuffers %s"
+                                              (session-unify-notify "Desktop lazily opening Failed."))
+                                            (session-unify-notify "Hello 2")
+                                            (session-unify-notify "restored %s" bufname)))
+                                      (session-unify-notify "bufname: %s is not string" bufname))))))
+                            (session-unify-notify "Restored %d\nbuffers %s"
                                                   (length desktop-buffers) bufs))
-                        (session-unfiy-notify "No desktop-buffers"))
+                        (session-unify-notify "No desktop-buffers"))
 
                       ;; setup elscreens with buffers
                       (while screens
-                        (session-unfiy-notify "while screen: %s" screens)
+                        (session-unify-notify "while screen: %s" screens)
                         ;; (setq screen (car (car screens)))
                         ;; (setq buff-files (cdr  (car screens)))
                         (let* ((screen         (car (car screens)))
@@ -265,7 +265,7 @@
                                                           (car buff-file)
                                                         buff-file)))))
                                          (minibuff-name " *Minibuf"))
-                                    (session-unfiy-notify "  while buff: %s file-path: %s" buff file-path)
+                                    (session-unify-notify "  while buff: %s file-path: %s" buff file-path)
                                     (when (and buff
                                                (bufferp buff)
                                                (not
@@ -276,17 +276,17 @@
                                           (switch-to-buffer-other-window buff)
                                         (switch-to-buffer buff)
                                         (setq not-first-buff t)))
-                                    (session-unfiy-notify "test4")))
+                                    (session-unify-notify "test4")))
                               (error "3 Screen is not active for frame %s" nframe))
 
                             (setq buff-files (cdr buff-files))
 
-                            (session-unfiy-notify "progn buff-files: %s" buff-files)
-                            (when session-unified-debug (session-unfiy-notify "else"))))
+                            (session-unify-notify "progn buff-files: %s" buff-files)
+                            (when session-unified-debug (session-unify-notify "else"))))
 
                         (setq screens (cdr screens))
-                        (session-unfiy-notify "while screen: %s" screens)
-                        (session-unfiy-notify "test5")) ;; (while screens
+                        (session-unify-notify "while screen: %s" screens)
+                        (session-unify-notify "test5")) ;; (while screens
 
                       ;; (when elscreen-session-restore-create-scratch-buffer
                       ;;   (elscreen-find-and-goto-by-buffer (get-buffer-create "*scratch*") t t))
@@ -315,13 +315,13 @@
 
                   ;; (let* ((desktop-buffers
                   (when session-unified-debug
-                    (session-unfiy-notify "elscreen-notify-screen-modification"))
+                    (session-unify-notify "elscreen-notify-screen-modification"))
                   (elscreen-notify-screen-modification 'force-immediately)
-                  (session-unfiy-notify "elscreen-session-session-list-set: DONE.")))
+                  (session-unify-notify "elscreen-session-session-list-set: DONE.")))
 
-            (session-unfiy-notify "elscreen-session-session-list-set: Error: Session do not exists.")))
+            (session-unify-notify "elscreen-session-session-list-set: Error: Session do not exists.")))
       (prog1
           nil
-        (session-unfiy-notify "Error: not restoring screen session as screen-history config not found.")))))
+        (session-unify-notify "Error: not restoring screen session as screen-history config not found.")))))
 
 ;;; sessions-unified-elscreen.el ends here

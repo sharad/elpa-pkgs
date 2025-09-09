@@ -86,7 +86,7 @@
             (format "%s" fun)))
       "unknown")))
 
-(defun session-unfiy-notify (fmt &rest args)
+(defun session-unify-notify (fmt &rest args)
   (let ((funname (get-current-func-name)))
     ;; (message "test")
     (let ((notify (or *sessions-unified-utils-notify*
@@ -96,7 +96,7 @@
         (apply #'sessions-unified-utils-notify-default funname fmt args))
       (apply notify funname fmt args))))
 
-;; (session-unfiy-notify "Enabled session saving")
+;; (session-unify-notify "Enabled session saving")
 ;; (apply *sessions-unified-utils-notify* "test" "fmt" '())
 
 

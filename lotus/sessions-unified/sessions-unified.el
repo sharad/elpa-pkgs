@@ -94,8 +94,8 @@ get re-enabled here.")
 (defun sessions-unified-run-enable-restore-interrupting-feature-run ()
   "run hook"
   (interactive)
-  (session-unfiy-notify "sessions-unified-run-enable-restore-interrupting-feature-run: Enabled session saving")
-  (session-unfiy-notify "sessions-unified-run-enable-restore-interrupting-feature-run: running sessions-unified-enable-session-restore-interrupting-feature-hook hook now.")
+  (session-unify-notify "sessions-unified-run-enable-restore-interrupting-feature-run: Enabled session saving")
+  (session-unify-notify "sessions-unified-run-enable-restore-interrupting-feature-run: running sessions-unified-enable-session-restore-interrupting-feature-hook hook now.")
   (when *sessions-unified-run-enable-restore-interrupting-feature-run-timer*
     (cancel-timer *sessions-unified-run-enable-restore-interrupting-feature-run-timer*))
   (setq *sessions-unified-run-enable-restore-interrupting-feature-run-timer* nil)
@@ -108,14 +108,14 @@ get re-enabled here.")
         (run-each-hooks 'sessions-unified-enable-session-restore-interrupting-feature-hook)
         (setq sessions-unified-enable-session-restore-interrupting-feature-hook-old sessions-unified-enable-session-restore-interrupting-feature-hook)
         (setq sessions-unified-enable-session-restore-interrupting-feature-hook nil))
-    (session-unfiy-notify "already triggered")))
+    (session-unify-notify "already triggered")))
 ;;;###autoload
 (defun sessions-unified-delay-run-enable-restore-interrupting-feature (&optional secs)
   (interactive "nsecs: ")
-  (session-unfiy-notify "scheduled sessions-unified-run-enable-restore-interrupting-feature-run to run after sometime.")
+  (session-unify-notify "scheduled sessions-unified-run-enable-restore-interrupting-feature-run to run after sometime.")
   (let* ((secs (or secs 10))
          (secs-idle secs))
-    (session-unfiy-notify "Setting timer time %d" secs-idle)
+    (session-unify-notify "Setting timer time %d" secs-idle)
     (message "sessions-unified-delay-run-enable-restore-interrupting-feature: will be running sessions-unified-enable-session-restore-interrupting-feature-hook - %S"
              sessions-unified-enable-session-restore-interrupting-feature-hook)
     (setq *sessions-unified-run-enable-restore-interrupting-feature-run-timer*
@@ -131,8 +131,8 @@ get re-enabled here.")
                             (- (float-time (current-time))
                                (float-time (timer--time *sessions-unified-run-enable-restore-interrupting-feature-run-timer*))))
                         0)))
-        (session-unfiy-notify "hooks will run %sly after %d" (or type "definite") timesec))
-    (session-unfiy-notify "No timer present")))
+        (session-unify-notify "hooks will run %sly after %d" (or type "definite") timesec))
+    (session-unify-notify "No timer present")))
 
 
 ;;;###autoload
@@ -153,7 +153,7 @@ get re-enabled here.")
 (defun sessions-unified-run-disable-restore-interrupting-feature-run ()
   "run hook"
   (interactive)
-  (session-unfiy-notify "running sessions-unified-disable-session-restore-interrupting-feature-hook hook now.")
+  (session-unify-notify "running sessions-unified-disable-session-restore-interrupting-feature-hook hook now.")
   (run-each-hooks 'sessions-unified-disable-session-restore-interrupting-feature-hook)
   (setq sessions-unified-disable-session-restore-interrupting-feature-hook-old sessions-unified-disable-session-restore-interrupting-feature-hook)
   (setq sessions-unified-disable-session-restore-interrupting-feature-hook nil))

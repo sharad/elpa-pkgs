@@ -141,22 +141,22 @@
     (dolist (desktop-buffer-args desktop-buffers)
       (let ((bufname (nth 2 desktop-buffer-args))
             (file-path (nth 1 desktop-buffer-args)))
-        (session-unfiy-notify "restoring %s" bufname)
+        (session-unify-notify "restoring %s" bufname)
         (if (find-buffer-visiting file-path)
-            (session-unfiy-notify "buffer %s already here" bufname)
+            (session-unify-notify "buffer %s already here" bufname)
           (if (stringp bufname)
               (if (get-buffer bufname)
-                  (session-unfiy-notify "buffer %s already here" bufname)
+                  (session-unify-notify "buffer %s already here" bufname)
                 (progn
-                  (session-unfiy-notify "Hello 1")
-                  (session-unfiy-notify "Desktop lazily opening %s" bufname)
+                  (session-unify-notify "Hello 1")
+                  (session-unify-notify "Desktop lazily opening %s" bufname)
                   (unless (ignore-errors
                             (save-window-excursion
                               (apply 'desktop-create-buffer desktop-buffer-args)))
-                    (session-unfiy-notify "Desktop lazily opening Failed."))
-                  (session-unfiy-notify "Hello 2")
-                  (session-unfiy-notify "restored %s" bufname)))
-            (session-unfiy-notify "bufname: %s is not string" bufname)))))))
+                    (session-unify-notify "Desktop lazily opening Failed."))
+                  (session-unify-notify "Hello 2")
+                  (session-unify-notify "restored %s" bufname)))
+            (session-unify-notify "bufname: %s is not string" bufname)))))))
 
 
 (cl-defmethod sessions-unified--get-frame-data ((app (eql :tab-bar)) frame)

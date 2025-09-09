@@ -365,7 +365,7 @@ so returns nil if pid is nil."
       (let ((df-modtime-current (nth 5
                                      (file-attributes desktop-save-filename))))
         (when (time-less-p df-modtime-current desktop-file-modtime)
-          (session-unfiy-notify "desktop file %s actual modification time %d seconds different from recorded, recorded modtime %s, while actual modtime is %s, modtime at desktop-vc-read is %s"
+          (session-unify-notify "desktop file %s actual modification time %d seconds different from recorded, recorded modtime %s, while actual modtime is %s, modtime at desktop-vc-read is %s"
                                 desktop-save-filename
                                 (- (float-time df-modtime-current) (float-time desktop-file-modtime))
                                 (format-time-string "%Y-%m-%d %H:%M:%S %z" desktop-file-modtime)
@@ -393,7 +393,7 @@ so returns nil if pid is nil."
 
 (defun desktop-vc-read (&optional desktop-save-filename)
   (interactive "fdesktop file: ")
-  (session-unfiy-notify "desktop-restore-eager value is %s" desktop-restore-eager)
+  (session-unify-notify "desktop-restore-eager value is %s" desktop-restore-eager)
   (let* ((desktop-save-filename (or desktop-save-filename *desktop-save-filename*))
          (desktop-base-file-name (file-name-nondirectory desktop-save-filename)))
     (prog1
@@ -422,7 +422,7 @@ so returns nil if pid is nil."
 
       (setq sessions-unified-desktop-file-modtime-bkp desktop-file-modtime)
 
-      (session-unfiy-notify "finished."))))
+      (session-unify-notify "finished."))))
 
 (defvar desktop-dirname-tmp nil)
 ;; remove desktop after it's been read
@@ -499,10 +499,10 @@ so returns nil if pid is nil."
 (defadvice desktop-idle-create-buffers (after desktop-idle-complete-actions)
   "This advice will finally run lotus-enable-desktop-restore-interrupting-feature-hook
 en all buffer were creaed idly."
-  (session-unfiy-notify "After desktop-idle-create-buffers (len desktop-buffer-args-list)=%d"
+  (session-unify-notify "After desktop-idle-create-buffers (len desktop-buffer-args-list)=%d"
                         (length desktop-buffer-args-list))
   (unless desktop-buffer-args-list
-    (session-unfiy-notify "Now removing advice and running lotus-enable-session-saving-immediately")
+    (session-unify-notify "Now removing advice and running lotus-enable-session-saving-immediately")
     (progn
       (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
       (ad-update 'desktop-idle-create-buffers)
@@ -537,12 +537,12 @@ en all buffer were creaed idly."
                (lotus-construct-desktop-filename-regex-function-default))))
         (ignore flymake-run-in-place)
         (setq debug-on-error t)
-        (session-unfiy-notify "entering lotus-desktop-session-restore")
+        (session-unify-notify "entering lotus-desktop-session-restore")
 
 
         (if (not (string-match *constructed-name-desktop-save-filename* *desktop-save-filename*))
             (progn
-              (session-unfiy-notify "*desktop-save-filename* is not equal to %s but %s"
+              (session-unify-notify "*desktop-save-filename* is not equal to %s but %s"
                                     *constructed-name-desktop-save-filename*
                                     *desktop-save-filename*)
               (if (y-or-n-p
@@ -554,12 +554,12 @@ en all buffer were creaed idly."
 
           (progn
             (unless (lotus-desktop-saved-session)
-              (session-unfiy-notify "%s not found so trying to checkout it." *desktop-save-filename*)
+              (session-unify-notify "%s not found so trying to checkout it." *desktop-save-filename*)
               (vc-checkout-file *desktop-save-filename*))
 
             (if (lotus-desktop-saved-session)
                 (progn
-                  (session-unfiy-notify "if")
+                  (session-unify-notify "if")
                   (when (memq 'P4 vc-handled-backends)            ;remove P4
                     (setq vc-handled-backends (remove 'P4 vc-handled-backends))
                     (sessions-unified-add-to-disable-session-restore-interrupting-feature-hook
@@ -569,10 +569,10 @@ en all buffer were creaed idly."
                   (if show-error
                       (if (desktop-vc-read *desktop-save-filename*)
                           (progn
-                            (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
+                            (session-unify-notify "desktop loaded successfully :) [show-error=%s]" show-error)
                             (lotus-enable-session-saving)
                             ;; (when sessions-unified-elscreen
-                            ;;   (session-unfiy-notify "Do you want to set session of frame? [show-error=%s]" show-error)
+                            ;;   (session-unify-notify "Do you want to set session of frame? [show-error=%s]" show-error)
                             ;;   (when (y-or-n-p-with-timeout (format "[show-error=%s] Do you want to set session of frame? " show-error)
                             ;;                                10 t)
                             ;;     (let ((*sessions-unified-frame-session-restore-lock* t))
@@ -580,7 +580,7 @@ en all buffer were creaed idly."
                             (when nil
                               (funcall nextfn)))
                         (progn
-                          (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
+                          (session-unify-notify "desktop loading failed :( [show-error=%s]" show-error)
                           (run-at-time "1 sec" nil #'(lambda () (insert "lotus-desktop-session-restore")))
                           (execute-extended-command nil)
                           nil))
@@ -589,28 +589,28 @@ en all buffer were creaed idly."
                               (ignore desktop-restore-in-progress)
                               (desktop-vc-read *desktop-save-filename*))
                             (progn
-                              (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
+                              (session-unify-notify "desktop loaded successfully :) [show-error=%s]" show-error)
                               (lotus-enable-session-saving))
                           (progn
-                            (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
+                            (session-unify-notify "desktop loading failed :( [show-error=%s]" show-error)
                             nil))
                       ('error
-                       (session-unfiy-notify "Error in desktop-read: %s\n not adding save-all-sessions-auto-save to auto-save-hook" e)
-                       (session-unfiy-notify "Error in desktop-read: %s try it again by running M-x lotus-desktop-session-restore" e)
+                       (session-unify-notify "Error in desktop-read: %s\n not adding save-all-sessions-auto-save to auto-save-hook" e)
+                       (session-unify-notify "Error in desktop-read: %s try it again by running M-x lotus-desktop-session-restore" e)
                        (run-at-time "1 sec" nil #'(lambda () (insert "lotus-desktop-session-restore")))
                        (condition-case e
                            (execute-extended-command nil)
                          ('error (message "M-x lotus-desktop-session-restore %s" e))))))
                   t)
               (when (y-or-n-p
-                     (session-unfiy-notify "No desktop found. or you can check out old %s from VCS.\nShould I enable session saving in auto save and run hook, at kill-emacs ?"
+                     (session-unify-notify "No desktop found. or you can check out old %s from VCS.\nShould I enable session saving in auto save and run hook, at kill-emacs ?"
                                            *desktop-save-filename*))
                 ;; as (defadvice desktop-idle-create-buffers) will not get chance to run it.
-                (session-unfiy-notify "As no desktop file or (lotus-desktop-saved-session) is nil so running hook")
+                (session-unify-notify "As no desktop file or (lotus-desktop-saved-session) is nil so running hook")
                 (sessions-unified--session-enable :desktop)))
-            (session-unfiy-notify "leaving lotus-desktop-session-restore"))))
+            (session-unify-notify "leaving lotus-desktop-session-restore"))))
 
-    (session-unfiy-notify "desktop-get-desktop-save-filename failed")))
+    (session-unify-notify "desktop-get-desktop-save-filename failed")))
 
 ;; ;; ask user whether to restore desktop at start-up
 (when nil
@@ -705,7 +705,7 @@ is function is a no-op when Emacs is running in batch mode.
                 (setq desktop-dirname nil)
                 (run-hooks 'desktop-not-loaded-hook)
                 (unless desktop-dirname
-                  (session-unfiy-notify "Desktop file in use; not loaded.")))
+                  (session-unify-notify "Desktop file in use; not loaded.")))
             (desktop-lazy-abort)
             ;; Evaluate desktop buffer and remember when it was modified.
             (load (desktop-full-file-name) t t t)
@@ -715,7 +715,7 @@ is function is a no-op when Emacs is running in batch mode.
             (if t ;; unless owner
                 (condition-case nil
                     (desktop-claim-lock)
-                  (file-error (session-unfiy-notify "Couldn't record use of desktop file")
+                  (file-error (session-unify-notify "Couldn't record use of desktop file")
                               (sit-for 1))))
 
             ;; `desktop-create-buffer' puts buffers at end of the buffer list.
@@ -728,7 +728,7 @@ is function is a no-op when Emacs is running in batch mode.
             (run-hooks 'desktop-delay-hook)
             (setq desktop-delay-hook nil)
             (run-hooks 'desktop-after-read-hook)
-            (session-unfiy-notify "Desktop: %d buffer%s restored%s%s."
+            (session-unify-notify "Desktop: %d buffer%s restored%s%s."
                                   desktop-buffer-ok-count
                                   (if (= 1 desktop-buffer-ok-count) "" "s")
                                   (if (< 0 desktop-buffer-fail-count)
@@ -743,7 +743,7 @@ is function is a no-op when Emacs is running in batch mode.
       (desktop-clear)
       (let ((default-directory desktop-dirname))
         (run-hooks 'desktop-no-desktop-file-hook))
-      (session-unfiy-notify "desktop-read-alternate: No desktop file.")
+      (session-unify-notify "desktop-read-alternate: No desktop file.")
       nil)))
 
 
@@ -752,6 +752,6 @@ is function is a no-op when Emacs is running in batch mode.
        (unless (or desktop-buffer-read-only buffer-read-only)
          (condition-case e
              (,modefn 1)
-           ('error (session-unfiy-notify "%s: %s" ,modefn e))))))
+           ('error (session-unify-notify "%s: %s" ,modefn e))))))
 
 ;;; sessions-unified-desktop.el ends here

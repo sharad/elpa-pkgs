@@ -99,7 +99,7 @@
   (if (= (length *sessions-unified-core-session-registerd-restore-list*)
          (length *sessions-unified-core-session-registerd-store-list*))
       (progn
-        (session-unfiy-notify "running sessions-unified-run-enable-restore-interrupting-feature-run after %d seconds idleness"
+        (session-unify-notify "running sessions-unified-run-enable-restore-interrupting-feature-run after %d seconds idleness"
                               *sessions-unified-core-run-enable-restore-interrupting-feature-delay-time*)
         (message "sessions-unified--session-enable: will be running sessions-unified-enable-session-restore-interrupting-feature-hook - %S"
                  sessions-unified-enable-session-restore-interrupting-feature-hook)
@@ -136,11 +136,11 @@
           ('error
            (progn
              ;; make after 2 errors.
-             (session-unfiy-notify "Error: %s" e)
+             (session-unify-notify "Error: %s" e)
              (cl-incf *lotus-desktop-session-store-error-count*)
              (unless(< *lotus-desktop-session-store-error-count* *lotus-desktop-session-store-max-error-count*)
                (setq *lotus-desktop-session-store-error-count* 0)
-               (session-unfiy-notify "Error %s" e)
+               (session-unify-notify "Error %s" e)
                ;; (lotus-disable-session-saving)
                (sessions-unified--session-disable nil))))))
     (run-hooks 'session-unified-save-all-sessions-after-hook)))
@@ -151,21 +151,21 @@
     (if show-error
         (unless (sessions-unified--session-restore nil)
           (progn
-            (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
+            (session-unify-notify "desktop loading failed :( [show-error=%s]" show-error)
             (run-at-time "1 sec" nil #'(lambda () (insert "sessions-unified-session-restore")))
             (execute-extended-command nil)
             nil))
       (condition-case e
           (if (sessions-unified--session-restore nil)
               (progn
-                (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
+                (session-unify-notify "desktop loaded successfully :) [show-error=%s]" show-error)
                 t)
             (progn
-              (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
+              (session-unify-notify "desktop loading failed :( [show-error=%s]" show-error)
               nil))
         ('error
-         (session-unfiy-notify "Error in desktop-read: %s\n not adding save-all-sessions-auto-save to auto-save-hook" e)
-         (session-unfiy-notify "Error in desktop-read: %s try it again by running M-x sessions-unified-session-restore" e)
+         (session-unify-notify "Error in desktop-read: %s\n not adding save-all-sessions-auto-save to auto-save-hook" e)
+         (session-unify-notify "Error in desktop-read: %s try it again by running M-x sessions-unified-session-restore" e)
          (run-at-time "1 sec" nil #'(lambda () (insert "sessions-unified-session-restore")))
          (condition-case e
              (execute-extended-command nil)
@@ -177,21 +177,21 @@
     (if t ;; show-error
         (unless (sessions-unified--session-restore nil)
           (progn
-            (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
+            (session-unify-notify "desktop loading failed :( [show-error=%s]" show-error)
             (run-at-time "1 sec" nil #'(lambda () (insert "sessions-unified-session-restore")))
             (execute-extended-command nil)
             nil))
       (condition-case e
           (if (sessions-unified--session-restore nil)
               (progn
-                (session-unfiy-notify "desktop loaded successfully :) [show-error=%s]" show-error)
+                (session-unify-notify "desktop loaded successfully :) [show-error=%s]" show-error)
                 t)
             (progn
-              (session-unfiy-notify "desktop loading failed :( [show-error=%s]" show-error)
+              (session-unify-notify "desktop loading failed :( [show-error=%s]" show-error)
               nil))
         ('error
-         (session-unfiy-notify "Error in desktop-read: %s\n not adding save-all-sessions-auto-save to auto-save-hook" e)
-         (session-unfiy-notify "Error in desktop-read: %s try it again by running M-x sessions-unified-session-restore" e)
+         (session-unify-notify "Error in desktop-read: %s\n not adding save-all-sessions-auto-save to auto-save-hook" e)
+         (session-unify-notify "Error in desktop-read: %s try it again by running M-x sessions-unified-session-restore" e)
          (run-at-time "1 sec" nil #'(lambda () (insert "sessions-unified-session-restore")))
          (condition-case e
              (execute-extended-command nil)
@@ -246,7 +246,7 @@
                     (message  "Running session-unified-save-all-sessions-before-hook")
                     (run-hooks 'session-unified-save-all-sessions-before-hook)
                     (message  "Done session-unified-save-all-sessions-before-hook")
-                    (session-unfiy-notify "Started to save frame desktop and session.\ncurrent time %s, idle time %d idle-time-interval left %d"
+                    (session-unify-notify "Started to save frame desktop and session.\ncurrent time %s, idle time %d idle-time-interval left %d"
                                           (format-time-string time-format sessions-unified-core-session-store-time)
                                           (float-time idle-time)
                                           sessions-unified-core-session-store-idle-time-interval-dynamic)
