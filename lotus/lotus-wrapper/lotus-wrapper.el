@@ -51,7 +51,9 @@
     (advice-add 'dir-locals-find-file
                 :around #'around--dir-locals-find-file-around-advice-fn-with-new-locate-dominating-file)
     (advice-add 'dir-locals-collect-variables :around
-                #'around--dir-locals-collect-variables-around-advice-fn-with-file-truename))
+                #'around--dir-locals-collect-variables-around-advice-fn-with-file-truename)
+    (advice-add 'file-newer-than-file-p :around
+                #'around--file-newer-than-file-p-length-fix))
 
   (with-eval-after-load "lsp-mode"
     (advice-add 'lsp-find-session-folder :around
@@ -126,6 +128,8 @@
                  #'around--dir-locals-find-file-around-advice-fn-with-new-locate-dominating-file)
   (advice-remove 'dir-locals-collect-variables
                  #'around--dir-locals-collect-variables-around-advice-fn-with-file-truename)
+  (advice-remove 'file-newer-than-file-p
+                 #'around--file-newer-than-file-p-length-fix)
   (advice-remove 'lsp-find-session-folder
                  #'around--lsp-find-session-folder-around-advice-fn-with-file-truename)
   ;; (remove-function (symbol-function 'pm--run-other-hooks)
@@ -166,7 +170,7 @@
                                              ggtags-find-project))
 
   (disable-file-truename-ad--unset-advices "semantic/db"
-                                         '(semanticdb-file-table-object))
+                                           '(semanticdb-file-table-object))
   (ignore-error
       ;; (remove-function (symbol-function 'erc-identd-start)
       ;;                  #'override--erc-identd-start)

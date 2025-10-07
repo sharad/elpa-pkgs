@@ -234,4 +234,16 @@ to see whether it should be considered."
                   args)
          (error err))))))
 
+
+;;;###autoload
+(defun around--file-newer-than-file-p-length-fix (oldfn &rest r)
+  (let ((file1 (car r))
+        (file2 (cadr r)))
+    (let ((name1 (file-name-nondirectory file1))
+          (name2 (file-name-nondirectory file2)))
+      (if (and (< (length name1) 255)
+               (< (length name2) 255))
+          (apply oldfn r)
+        nil))))
+
 ;;; files-advices.el ends here
