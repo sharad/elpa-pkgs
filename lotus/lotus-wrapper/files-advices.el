@@ -235,6 +235,11 @@ to see whether it should be considered."
          (error err))))))
 
 
+
+;; Debugger entered--Lisp error: (file-error "Getting attributes" "File name too long" "~/.emacs.d/.cache/auto-save/site/#!file1...")
+;;   file-newer-than-file-p("~/.emacs.d/.cache/auto-save/site/#!fiel1..." "/file1...")
+;;   after-find-file(nil nil t nil nil)
+
 ;;;###autoload
 (defun around--file-newer-than-file-p-length-fix (oldfn &rest r)
   (let ((file1 (car r))
