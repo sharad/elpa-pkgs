@@ -124,11 +124,11 @@ especially for frame-launcher function.")
                 (org-clock-in-refile nil))
             ((quit error) (message "Enable/Disable with org-clock-in-if-not-enable/org-clock-in-if-not-disable")))
           (org-ci-if-not-debug :debug "org-clock-in-if-not: finished"))))))
-
+;;;###autoload
 (defun org-clock-in-if-not-disable ()
   (interactive)
   (setq org-donot-try-to-clock-in t))
-
+;;;###autoload
 (defun org-clock-in-if-not-enable ()
   (interactive)
   (setq org-donot-try-to-clock-in nil))
