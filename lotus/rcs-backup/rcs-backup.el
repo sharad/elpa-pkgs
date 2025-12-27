@@ -24,9 +24,8 @@
 
 ;;; Code:
 
-
-
-
+(provide 'rcs-backup)
+
 
 (eval-when-compile
   '(require 'vc))
@@ -34,22 +33,24 @@
 (require 'vc)
 (require 'vc-rcs)
 ;; (require 'tramp-util) ;; for `tramp-handle-executable-find'
+
 
+;;;###autoload
 (defun dirname-of-file (file &optional final-slash)
   ;; (ido-no-final-slash
   (if final-slash
       (expand-file-name
        (file-name-directory file))
-      (directory-file-name
-       (expand-file-name
-        (file-name-directory file)))))
+    (directory-file-name
+     (expand-file-name
+      (file-name-directory file)))))
 
 
 (defun dir-final-slash (dir &optional noerror)
   (if dir
       (expand-file-name (concat dir "/"))
-      (unless noerror
-          (error "dir is nil"))))
+    (unless noerror
+      (error "dir is nil"))))
 
 
 (setq vc-handled-backends
@@ -101,7 +102,7 @@
                (expand-file-name (file-name-nondirectory from-file)
                                  default-directory))
               (put-file-in-rcs from-file default-directory)
-              (put-file-in-rcs from-file))
+            (put-file-in-rcs from-file))
 
       (run-hook-with-args 'vc-mode-line-hook (file-truename from-file)))))
 
@@ -136,7 +137,7 @@
 
                                 (if tempdir
                                     (when (not (file-exists-p tempdir))
-                                        ;no question.
+                                      ;no question.
                                       (make-directory tempdir t)))
 
                                 ;; (add-hook 'vc-mode-line-hook #'vc-mode-line nil t)
@@ -154,34 +155,34 @@
                                           (progn
                                             (vc-rcs-register (list org-nfile))
                                             (vc-switch-backend nfile 'RCS))
-                                          (failed "Not able to create %s for %s" rcsdir org-nfile)))
+                                        (failed "Not able to create %s for %s" rcsdir org-nfile)))
 
-                                    (if file-is-in-rcs
-                                        (progn
-                                          ;; (message "going to checkin")
-                                          ;; (vc-checkin file 'RCS nil "checkin" nil)
-                                          (with-temp-buffer
-                                            (with-vc-properties
-                                                (list org-nfile)
-                                              (progn
-                                                ;; (vc-call-backend 'RCS 'checkin (list org-nfile) nil "autobackup")
-                                                (vc-call-backend 'RCS 'checkin (list org-nfile) "autobackup")
-                                                (mapc 'vc-delete-automatic-version-backups (list org-nfile))
-                                                ;; (message "Checked in %s" org-nfile)
-                                                )
-                                              `((vc-state . up-to-date)
-                                                (vc-checkout-time . ,(nth 5 (file-attributes org-nfile)))
-                                                (vc-working-revision . nil)))))))
+                                  (if file-is-in-rcs
+                                      (progn
+                                        ;; (message "going to checkin")
+                                        ;; (vc-checkin file 'RCS nil "checkin" nil)
+                                        (with-temp-buffer
+                                          (with-vc-properties
+                                           (list org-nfile)
+                                           (progn
+                                             ;; (vc-call-backend 'RCS 'checkin (list org-nfile) nil "autobackup")
+                                             (vc-call-backend 'RCS 'checkin (list org-nfile) "autobackup")
+                                             (mapc 'vc-delete-automatic-version-backups (list org-nfile))
+                                             ;; (message "Checked in %s" org-nfile)
+                                             )
+                                           `((vc-state . up-to-date)
+                                             (vc-checkout-time . ,(nth 5 (file-attributes org-nfile)))
+                                             (vc-working-revision . nil)))))))
                                 ;; (run-hook-with-args 'vc-mode-line-hook org-nfile)
                                 (set-file-modes org-nfile fmode)
                                 (message nil)
                                 t)
-                              (failed "file %s is a backup file." org-nfile))
-                          (failed "file %s is %s file" org-nfile file-nonrcs-backend)))
-                    (failed "RCS is not available."))
-                (failed "rcs ci executable not available."))
-            (failed "file %s do not exists." org-nfile)))
-      (failed "file %s do not exists." nfile)))
+                            (failed "file %s is a backup file." org-nfile))
+                        (failed "file %s is %s file" org-nfile file-nonrcs-backend)))
+                  (failed "RCS is not available."))
+              (failed "rcs ci executable not available."))
+          (failed "file %s do not exists." org-nfile)))
+    (failed "file %s do not exists." nfile)))
 
 
 
@@ -245,7 +246,7 @@
 
 ;;;###autoload
 (define-minor-mode rcs-backup-mode
-    "backup-rcs-mode"
+  "backup-rcs-mode"
   ;; :initial-value nil
   :init-value 1
   :lighter 'rcb
@@ -259,7 +260,5 @@
     (ad-update #'backup-buffer-copy)
     (ad-activate #'vc-rcs-find-file-hook)
     (ad-update #'vc-rcs-find-file-hook)))
-
-
-(provide 'rcs-backup)
+
 ;;; rcs-backup.el ends here
