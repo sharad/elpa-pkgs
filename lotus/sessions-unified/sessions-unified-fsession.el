@@ -478,8 +478,7 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 (cl-defmethod sessions-unified--session-store ((app (eql :fsession)))
   (save-all-frames-session))
 (cl-defmethod sessions-unified--session-restore ((app (eql :fsession)))
-
-  (when (y-or-n-p-with-timeout (format "Do you want to set session of frame? ")
+  (when (y-or-n-p-with-timeout "Do you want to set session of frame? "
                                10 t)
     (let ((*sessions-unified-frame-session-restore-lock* t))
       (frame-session-restore (selected-frame) 'only))))
