@@ -534,8 +534,8 @@
           (update-ssh-agent-1)))
 
       (when nil
-        (run-with-timer 10 nil (lambda ()
-                                 (setq xxtframe (selected-frame))))
+        (run-at-time 10 nil #'(lambda ()
+                                (setq xxtframe (selected-frame))))
         (select-frame xxtframe)
         (getenv "SSH_AUTH_SOCK" xxtframe)))
 

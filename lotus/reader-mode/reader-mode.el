@@ -100,7 +100,7 @@
     (centered-cursor-mode . t)
     (ccm-vpos-init
      '(or ccm-vpos
-       (1- (count-lines (window-start) (point)))))
+          (1- (count-lines (window-start) (point)))))
     (view-mode . t)
     (fullscreen . fullboth))
   "Desired reader mode config")
@@ -109,17 +109,17 @@
 (defun reader-mode-set-config (key value)
   (interactive
    (let* ((key (cl-first (read-from-string
-                     (completing-read "key: "
-                                      (mapcar (lambda (k)
-                                                (symbol-name (cl-first k))) reader-mode-config)
-                                      nil
-                                      t))))
+                          (completing-read "key: "
+                                           (mapcar (lambda (k)
+                                                     (symbol-name (cl-first k))) reader-mode-config)
+                                           nil
+                                           t))))
           (value (cl-first (read-from-string (read-from-minibuffer
-                                         (format "%s value: " key)
-                                         (format "%s" (reader-mode-get-config key)))))))
+                                              (format "%s value: " key)
+                                              (format "%s" (reader-mode-get-config key)))))))
      (list key value)))
   (setq reader-mode-config
-   (append (list (cons key value)) reader-mode-config)))
+        (append (list (cons key value)) reader-mode-config)))
 
 
 (setq
@@ -165,24 +165,24 @@
                   (set-frame-parameter nil 'fullscreen old-fullscreen)
                   ;; (testing (message "pause-hook: old-fullscreen %s" old-fullscreen))
                   )
-                (testing (message "no old cursor")))
+              (testing (message "no old cursor")))
             (if (boundp 'old-elscreen-display-tab)
                 (progn
                   (set (make-local-variable 'elscreen-display-tab) old-elscreen-display-tab)
                   (elscreen-notify-screen-modification 'force-immediately)
                   ;; (elscreen-run-screen-update-hook)
                   (testing (message "pause-hook: old-elscreen-display-tab %s" old-elscreen-display-tab)))
-                (testing (message "no old cursor")))
+              (testing (message "no old cursor")))
             (if (boundp 'old-mode-line-format)
                 (progn
                   (set (make-local-variable 'mode-line-format) old-mode-line-format)
                   (testing (message "pause-hook: old-mode-line-format %s" old-mode-line-format)))
-                (testing (message "no old cursor")))
+              (testing (message "no old cursor")))
             (if (boundp 'old-cursor-type)
                 (progn
                   (set (make-local-variable 'cursor-type) old-cursor-type)
                   (testing (message "pause-hook: old-cursor-type %s" old-cursor-type)))
-                (testing (message "no old cursor")))
+              (testing (message "no old cursor")))
             (if (boundp 'old-centered-cursor-mode)
                 (progn
                   (centered-cursor-mode (if (null old-centered-cursor-mode) -1 t))
@@ -190,19 +190,19 @@
                   (ad-disable-advice 'ccm-first-start 'before 'reset-ccm-vpos)
                   (ad-activate #'ccm-first-start)
                   (ad-update #'ccm-first-start))
-                (testing (message "no old centered")))
+              (testing (message "no old centered")))
             (if (boundp 'old-hl-line-when-idle-p)
                 (progn
                   (hl-line-toggle-when-idle (if (null old-hl-line-when-idle-p) -1 1))
                   (hl-line-toggle-when-idle (if (null gold-hl-line-when-idle-p) -1 1))
                   (testing
                    (message "pause-hook: old-hl-line-when-idle-p %s" old-hl-line-when-idle-p)))
-                (testing (message "no old hl")))
+              (testing (message "no old hl")))
             (if (boundp 'old-view-mode)
                 (progn
                   (view-mode (if (null old-view-mode) -1 t))
                   (testing (message "pause-hook: old-view-mode %s" old-view-mode)))
-                (testing (message "no old view")))
+              (testing (message "no old view")))
 
             (testing
              (message "old values:")
@@ -314,7 +314,7 @@
 
 
 (define-minor-mode reader-mode
-    "reader-mode"
+  "reader-mode"
   :initial-value nil
   :init-value nil
   :lighter (:eval
@@ -329,14 +329,14 @@
                                (not (timer--triggered smooth-step-timer))))
                      "s")
                  "]")
-                (concat
-                 " rd"
-                 (if reader-paused-manually "[P]"
-                     (if (not reader-idle-timer) "[i]"
-                         (if (not (and (boundp 'smooth-step-timer)
-                                       smooth-step-timer
-                                       (not (timer--triggered smooth-step-timer))))
-                             "[s]"))))))
+              (concat
+               " rd"
+               (if reader-paused-manually "[P]"
+                 (if (not reader-idle-timer) "[i]"
+                   (if (not (and (boundp 'smooth-step-timer)
+                                 smooth-step-timer
+                                 (not (timer--triggered smooth-step-timer))))
+                       "[s]"))))))
   :global nil
   (if (and arg
            (if (> (prefix-numeric-value arg) 0)
@@ -373,13 +373,13 @@
                                smooth-step-timer)
                           (cancel-timer smooth-step-timer)))) t t)
         (testing (message "hi reader mode %s" reader-idle-timer)))
-      (progn
-        (remove-hook 'pre-command-hook 'pause-smooth-read)
-        (cancel-timer reader-idle-timer)
-        (cancel-smooth-read)
-        (set (make-local-variable 'reader-idle-timer) nil)
-        (testing (message "by reader mode"))
-        (run-hooks 'reader-mode-end-hook)))
+    (progn
+      (remove-hook 'pre-command-hook 'pause-smooth-read)
+      (cancel-timer reader-idle-timer)
+      (cancel-smooth-read)
+      (set (make-local-variable 'reader-idle-timer) nil)
+      (testing (message "by reader mode"))
+      (run-hooks 'reader-mode-end-hook)))
   (message nil)
   t)
 
@@ -402,14 +402,14 @@
   (when (and reader-mode
              (if reader-paused-manually
                  (called-interactively-p 'interactive)
-                 t)
+               t)
              (eq reader-mode-buffer (current-buffer))
              (null reader-idle-timer))
     (set (make-local-variable 'reader-idle-timer)
-             (run-with-idle-timer
-              reader-idle-time
-              reader-idle-repeat-time
-              #'resume-smooth-read (current-buffer)))
+         (run-with-idle-timer
+          reader-idle-time
+          reader-idle-repeat-time
+          #'resume-smooth-read (current-buffer)))
     (testing (message "called reader-resume"))
     (set (make-local-variable 'reader-paused-manually) nil)))
 
@@ -418,10 +418,10 @@
   (message "%s" (current-buffer))
   (if reader-idle-timer
       (message "reader-idle-timer %s" reader-idle-timer)
-      (message "no reader-idle-timer"))
+    (message "no reader-idle-timer"))
   (if smooth-step-timer
       (message "smooth-step-timer %s" smooth-step-timer)
-      (message "no smooth-step-timer")))
+    (message "no smooth-step-timer")))
 
 (defun smooth-read ()
   (when (and reader-mode
@@ -429,14 +429,14 @@
              ;; (null reader-no-smooth-step-timer)
              )
     (set (make-local-variable 'smooth-step-timer)
-         (run-with-timer 1 reader-repeat
-                         (lambda (cmdx cbuf)
-                           (when (and reader-idle-timer
-                                      smooth-step-timer
-                                      (eq cbuf (current-buffer)))
-                             (call-interactively cmdx)
-                             (run-hooks 'post-command-hook)))
-                         reader-cmd (current-buffer)))
+         (run-at-time 1 reader-repeat
+                      #'(lambda (cmdx cbuf)
+                          (when (and reader-idle-timer
+                                     smooth-step-timer
+                                     (eq cbuf (current-buffer)))
+                            (call-interactively cmdx)
+                            1(run-hooks 'post-command-hook)))
+                      reader-cmd (current-buffer)))
     (run-hooks 'reader-mode-smooth-read-start-hook)))
 
 (defun pause-smooth-read ()
@@ -467,7 +467,7 @@
            (boundp 'smooth-step-timer)
            smooth-step-timer)
           (timer-activate smooth-step-timer)
-          (if reader-mode (smooth-read))))
+        (if reader-mode (smooth-read))))
 
     (when (and
            reader-mode
@@ -478,8 +478,8 @@
       (if (add-hook 'pre-command-hook 'pause-smooth-read t t)
           (testing
            (message "resume-smooth-read: added pause-smooth-read to pre-command-hook(%s)" pre-command-hook))
-          (testing
-           (message "failed"))))))
+        (testing
+         (message "failed"))))))
 
 (defun cancel-smooth-read ()
   (interactive)
@@ -524,79 +524,79 @@
 (require 'macros)
 (deh-section "Focus"
   (message "deh-sec loaded")
- ;; when (and
- ;;       (featurep 'x)
- ;;       window-system)
- (defvar on-blur--timer nil "Timer refreshing known focused window.")
- (defvar on-focus-out-hook nil "on-focus-out-hook")
- (defvar on-focus-in-hook nil "on-focus-in-hook")
+  ;; when (and
+  ;;       (featurep 'x)
+  ;;       window-system)
+  (defvar on-blur--timer nil "Timer refreshing known focused window.")
+  (defvar on-focus-out-hook nil "on-focus-out-hook")
+  (defvar on-focus-in-hook nil "on-focus-in-hook")
 
- (setq old-active-window-id 0)
+  (setq old-active-window-id 0)
 
- (defun on-blur--refresh ()
-   "Runs on-blur-hook if emacs has lost focus."
-   (if (and
-        (featurep 'x)
-        window-system)
-       (let* ((active-window (x-window-property
-                              "_NET_ACTIVE_WINDOW" nil "WINDOW" 0 nil t))
-              (active-window-id (if (numberp active-window)
-                                    active-window
-                                    (string-to-number
-                                     (format ; "%x%x"
-                                      "%x00%x"
-                                      (cl-first active-window)
-                                      (cl-rest active-window)) 16)))
-              (emacs-window-id (string-to-number
-                                (frame-parameter nil 'outer-window-id))))
+  (defun on-blur--refresh ()
+    "Runs on-blur-hook if emacs has lost focus."
+    (if (and
+         (featurep 'x)
+         window-system)
+        (let* ((active-window (x-window-property
+                               "_NET_ACTIVE_WINDOW" nil "WINDOW" 0 nil t))
+               (active-window-id (if (numberp active-window)
+                                     active-window
+                                   (string-to-number
+                                    (format ; "%x%x"
+                                     "%x00%x"
+                                     (cl-first active-window)
+                                     (cl-rest active-window)) 16)))
+               (emacs-window-id (string-to-number
+                                 (frame-parameter nil 'outer-window-id))))
 
-         (when (not (= active-window-id old-active-window-id))
-           (if (= emacs-window-id active-window-id)
-               (run-hooks 'on-focus-in-hook)
-               (run-hooks 'on-focus-out-hook))
-           (setq old-active-window-id active-window-id))
-         ;; (when on-blur--timer
-         ;;     (cancel-timer on-blur--timer))
-         ;; (setq on-blur--timer
-         ;;  (run-with-timer 1 nil 'on-blur--refresh))
-         )
-       (message "on-blur--refresh: Not in Graphical Window system.")))
+          (when (not (= active-window-id old-active-window-id))
+            (if (= emacs-window-id active-window-id)
+                (run-hooks 'on-focus-in-hook)
+              (run-hooks 'on-focus-out-hook))
+            (setq old-active-window-id active-window-id))
+          ;; (when on-blur--timer
+          ;;     (cancel-timer on-blur--timer))
+          ;; (setq on-blur--timer
+          ;;  (run-with-timer 1 nil 'on-blur--refresh))
+          )
+      (message "on-blur--refresh: Not in Graphical Window system.")))
 
- (defun run-on-blur-timer ()
-   (interactive)
-   (setq on-blur--timer
-         (run-with-timer 1 1 'on-blur--refresh)))
+  (defun run-on-blur-timer ()
+    (interactive)
+    (setq on-blur--timer
+          (run-at-time 1 1 #'on-blur--refresh)))
 
- (defun cancel-on-blur-timer ()
-   (interactive)
-   (if on-blur--timer
+  (defun cancel-on-blur-timer ()
+    (interactive)
+    (if on-blur--timer
+        (cancel-timer on-blur--timer)))
+
+
+  (testing
+   (if (and (boundp 'on-blur--timer)
+            on-blur--timer)
        (cancel-timer on-blur--timer)))
 
-
- (testing
-  (if (and (boundp 'on-blur--timer)
-           on-blur--timer)
-      (cancel-timer on-blur--timer)))
-
- (add-hook 'lotus-enable-login-session-interrupting-feature-hook
-           '(lambda ()
-             (if (and (featurep 'x) window-system)
-                 (unless (and (boundp 'on-blur--timer)
-                              on-blur--timer)
-                   (run-on-blur-timer))
+  (add-hook 'lotus-enable-login-session-interrupting-feature-hook
+            '(lambda ()
+               (if (and (featurep 'x) window-system)
+                   (unless (and (boundp 'on-blur--timer)
+                                on-blur--timer)
+                     (run-on-blur-timer))
                  (message "Not in Graphical Window system."))))
 
- (add-hook 'lotus-disable-login-session-interrupting-feature-hook
-           '(lambda ()
-             (when (and
-                    (featurep 'x)
-                    window-system)
-               (when (and (boundp 'on-blur--timer)
-                          on-blur--timer)
-                 (cancel-on-blur-timer))
-               (message "Not in Graphical Window system."))))
+  (add-hook 'lotus-disable-login-session-interrupting-feature-hook
+            '(lambda ()
+               (when (and
+                      (featurep 'x)
+                      window-system)
+                 (when (and (boundp 'on-blur--timer)
+                            on-blur--timer)
+                   (cancel-on-blur-timer))
+                 (message "Not in Graphical Window system."))))
 
-)
+  )
 
 ;;}}
 
@@ -604,7 +604,7 @@
 
 
 (define-minor-mode reader-light-mode
-    "Prepare for working with collarative office project."
+  "Prepare for working with collarative office project."
   :init-value nil
   :lighter " rl"
   :global nil
@@ -612,17 +612,17 @@
       (progn
         (run-hooks 'reader-mode-start-hook)
         (set (make-local-variable 'mode-line-format)
-                   (reader-mode-get-config 'mode-line-format))
+             (reader-mode-get-config 'mode-line-format))
         (set (make-local-variable 'elscreen-display-tab)
-                   (reader-mode-get-config 'elscreen-display-tab))
+             (reader-mode-get-config 'elscreen-display-tab))
         (elscreen-notify-screen-modification 'force-immediately)
         (set (make-local-variable 'cursor-type)
-                   (reader-mode-get-config 'cursor-type))
+             (reader-mode-get-config 'cursor-type))
         (global-hl-line-mode (reader-mode-get-config 'global-hl-line-mode))
         (hl-line-toggle-when-idle (reader-mode-get-config 'hl-line-toggle-when-idle))
         (centered-cursor-mode (reader-mode-get-config 'centered-cursor-mode))
         (view-mode  (reader-mode-get-config 'view-mode)))
-      (run-hooks 'reader-mode-end-hook)))
+    (run-hooks 'reader-mode-end-hook)))
 
 ;;; reader-mode.el ends here
 
