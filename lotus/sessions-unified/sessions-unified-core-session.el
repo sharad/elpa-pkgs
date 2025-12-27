@@ -51,7 +51,7 @@
 (require 'sessions-unified-core-common)
 (require 'sessions-unified-desktop)
 (require 'sessions-unified-session)
-(require 'sessions-unified-core-fsession)
+(require 'sessions-unified-fsession)
 
 
 (cl-defmethod sessions-unified--session-store ((app null))

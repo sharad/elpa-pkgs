@@ -27,7 +27,7 @@
 (provide 'sessions-unified-elscreen)
 
 
-(require 'sessions-unified-core-fsession)
+(require 'sessions-unified-fsession)
 
 
 (defun lotus-elscreen-get-screen-to-name-alist ()

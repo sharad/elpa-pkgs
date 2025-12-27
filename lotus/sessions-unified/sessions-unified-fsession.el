@@ -1,4 +1,4 @@
-;;; sessions-unified-core-fsession.el --- Maintain session per frame for named frame  -*- lexical-binding: t; -*-
+;;; sessions-unified-fsession.el --- Maintain session per frame for named frame  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  Music Player Daemon (MPD) user
 
@@ -26,7 +26,7 @@
 
 
 
-(provide 'sessions-unified-core-fsession)
+(provide 'sessions-unified-fsession)
 
 
 ;; (eval-when-compile
@@ -186,13 +186,13 @@ display-about-screen, spacemacs-buffer/goto-buffer")
               x)
           (copy-tree *sessions-unified-frames-session*)))
 
-(defun sessions-unified-core-fsession-store-to-file (file)
+(defun sessions-unified-fsession-store-to-file (file)
   (interactive "Ffile: ")
   (with-temp-file file
     (insert
      (prin1-to-string *sessions-unified-frames-session*))))
 
-(defun sessions-unified-core-fsession-restore-from-file (file)
+(defun sessions-unified-fsession-restore-from-file (file)
   (interactive "ffile: ")
   (setq *sessions-unified-frames-session*
         (append *sessions-unified-frames-session*
@@ -245,18 +245,18 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 
 
 ;;;###autoload
-(defvar *sessions-unified-core-fsession-registerd-apps* nil
+(defvar *sessions-unified-fsession-registerd-apps* nil
   "list of app accept FRAME")
 
 ;;;###autoload
-(defun sessions-unified-core-fsession-store (session-name &optional frame)
+(defun sessions-unified-fsession-store (session-name &optional frame)
   "Store the elscreen tab configuration."
   (interactive (list (fmsession-read-location)))
   ;; (elscreen-session-store session-name frame)
   (unless (assoc session-name *sessions-unified-frames-session*)
     (push (list session-name)
           *sessions-unified-frames-session*))
-  (dolist (app-name *sessions-unified-core-fsession-registerd-apps*)
+  (dolist (app-name *sessions-unified-fsession-registerd-apps*)
     (let ((frame-data (sessions-unified--get-frame-data app-name (or frame
                                                                      (selected-frame)))))
       ;; (message "got frame data = %s" frame-data)
@@ -271,14 +271,14 @@ display-about-screen, spacemacs-buffer/goto-buffer")
                             (list (list app-name frame-data))))))))))
 
 ;;;###autoload
-(defun sessions-unified-core-fsession-restore (session-name &optional frame)
+(defun sessions-unified-fsession-restore (session-name &optional frame)
   "Restore the elscreen tab configuration."
   (interactive (list (fmsession-read-location)))
   (message "Input session-name %s" session-name)
   (if session-name
       (when (assoc session-name *sessions-unified-frames-session*)
         (message "Found session-name %s" session-name)
-        (dolist (app-name *sessions-unified-core-fsession-registerd-apps*)
+        (dolist (app-name *sessions-unified-fsession-registerd-apps*)
           (session-unify-notify "start -- %s" app-name)
           (let ((app-fsession-alist (cdr (assoc session-name
                                                 *sessions-unified-frames-session*))))
@@ -292,15 +292,15 @@ display-about-screen, spacemacs-buffer/goto-buffer")
                                                         (or frame
                                                             (selected-frame))
                                                         frame-data)
-                    ('error (message "sessions-unified-core-fsession-restore: Error: %s for app-name = %s"
+                    ('error (message "sessions-unified-fsession-restore: Error: %s for app-name = %s"
                                      e
                                      app-name)))
-                (session-unify-notify "sessions-unified-core-fsession-restore: Error: frame-data %s" frame-data))))))
+                (session-unify-notify "sessions-unified-fsession-restore: Error: frame-data %s" frame-data))))))
     (session-unify-notify "Error: session-name is %s" session-name)))
 
 
 
-(defun sessions-unified-core-fsession-get-wm-desktop-name ()
+(defun sessions-unified-fsession-get-wm-desktop-name ()
   (let* ((xwin-enabled    (protable-display-graphic-p))
          (wm-hints        (when xwin-enabled (ignore-errors (emacs-panel-wm-hints))))
          (wm-desktop-name (if wm-hints
@@ -311,7 +311,7 @@ display-about-screen, spacemacs-buffer/goto-buffer")
           (session-unify-notify "Some error in wm-hints")))
     wm-desktop-name))
 
-(defun sessions-unified-core-fsession-get-wm-desktop-name ()
+(defun sessions-unified-fsession-get-wm-desktop-name ()
   (when (protable-display-graphic-p)
     (let ((wm-hints (ignore-errors (emacs-panel-wm-hints))))
       (if wm-hints
@@ -334,7 +334,7 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 
   (if (frame-parameter frame 'session-unified-no-session)
       (session-unify-notify "%s" "No session for frame")
-    (let* ((wm-desktop-name (sessions-unified-core-fsession-get-wm-desktop-name))
+    (let* ((wm-desktop-name (sessions-unified-fsession-get-wm-desktop-name))
            (location        (if (and try-guessing
                                      wm-desktop-name
                                      (member wm-desktop-name
@@ -373,10 +373,10 @@ display-about-screen, spacemacs-buffer/goto-buffer")
           (message "calling (frame-session-set-this-location frame try-guessing) %s %s" frame try-guessing)
           (let ((loc (frame-session-set-this-location frame try-guessing)))
             (message "loc: %s" loc)
-            (message "calling sessions-unified-core-fsession-restore1")
-            (sessions-unified-core-fsession-restore loc
-                                                    frame)
-            (message "called sessions-unified-core-fsession-restore"))
+            (message "calling sessions-unified-fsession-restore1")
+            (sessions-unified-fsession-restore loc
+                                               frame)
+            (message "called sessions-unified-fsession-restore"))
           (when (and *session-unified-frame-session-restore-display-function*
                      (functionp '*session-unified-frame-session-restore-display-function*))
             (funcall *session-unified-frame-session-restore-display-function*))
@@ -408,15 +408,15 @@ display-about-screen, spacemacs-buffer/goto-buffer")
    (list (selected-frame)))
   (progn
     (funcall session-unified-utils-select-frame-fn frame)
-    (sessions-unified-core-fsession-restore (fmsession-read-location) frame)))
+    (sessions-unified-fsession-restore (fmsession-read-location) frame)))
 
 (defun frame-session-save (frame)
   (session-unify-notify "in frame-session-save:")
   (let ((location (frame-parameter frame 'frame-spec-id)))
     (when location
       (session-unify-notify "saved the session for %s" location)
-      (sessions-unified-core-fsession-store location
-                                            frame))))
+      (sessions-unified-fsession-store location
+                                       frame))))
 
 ;;;###autoload
 (defun save-all-frames-session ()
@@ -500,4 +500,4 @@ display-about-screen, spacemacs-buffer/goto-buffer")
   delete-frame-functions
   *lotus-after-init-hook*)
 
-;;; sessions-unified-core-fsession.el ends here
+;;; sessions-unified-fsession.el ends here
