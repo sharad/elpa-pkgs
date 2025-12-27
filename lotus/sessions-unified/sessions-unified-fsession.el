@@ -477,11 +477,116 @@ display-about-screen, spacemacs-buffer/goto-buffer")
 
 (cl-defmethod sessions-unified--session-store ((app (eql :fsession)))
   (save-all-frames-session))
+;; (cl-defmethod sessions-unified--session-restore ((app (eql :fsession)))
+;;
+;;   ;; Debugger entered--Lisp error: (error "Where am i?")
+;;   ;; error("Where am i?")
+;;   ;; #f(compiled-function (app) #<bytecode 0x1ae994b9b0184313>)(:fsession)
+;;   ;; apply(#f(compiled-function (app) #<bytecode 0x1ae994b9b0184313>) :fsession nil)
+;;   ;; sessions-unified--session-restore(:fsession)
+;;   ;; #f(compiled-function (app) #<bytecode -0x2a51768343443ce>)(nil)
+;;   ;; apply(#f(compiled-function (app) #<bytecode -0x2a51768343443ce>) nil nil)
+;;   ;; sessions-unified--session-restore(nil)
+;;   ;; sessions-unified-session-restore()
+;;   ;; apply(sessions-unified-session-restore nil)
+;;   ;; timer-event-handler([t 26960 5037 237927 nil sessions-unified-session-restore nil nil 125000 nil])
+;;
+;;
+;;
+;;   (when (y-or-n-p-with-timeout "Do you want to set session of frame? "
+;;                                10 t)
+;;     (let ((*sessions-unified-frame-session-restore-lock* t))
+;;       (frame-session-restore (selected-frame) 'only))))
+
+
+
+;; * Why the freeze happens after a few seconds
+
+;; The freeze is not random.
+;; What happens internally:
+;; Timer fires → minibuffer opens
+;; Emacs is still “inside” a timer context
+
+;; * Redisplay and input are partially suppressed
+
+;; After some idle time:
+;; Redisplay locks
+;; Frame becomes unresponsive
+;; Mouse clicks stop registering
+;; Eventually:
+;; Timeout fires
+;; y-or-n-p-with-timeout returns default
+;; Control unwinds
+;; Event loop resumes
+;; Frame “unfreezes”
+
+;; * So the freeze ends exactly when the timeout expires.
+;; That’s why:
+;; You cannot click OK/Cancel anymore
+;; But Emacs recovers after some time
+
+
+;; * Why this is specific to hooks + timers
+
+;; Calling y-or-n-p is safe only when Emacs is in a command context, meaning:
+;; Inside an interactive command
+;; Inside normal user-triggered code
+
+;; NOT from:
+
+;; Timers
+;; Process filters
+;; Sentinels
+;; Certain hooks (frame, redisplay, etc.)
+
+;; * Your case hits three danger zones at once:
+
+;; GUI frame creation
+;; Timer callback
+;; Blocking minibuffer input
+
+
+;; * The golden rule (important)
+;; ❗ Never call minibuffer-blocking functions from timers or frame hooks
+;; This includes:
+;; y-or-n-p
+;; read-string
+;; read-from-minibuffer
+;; completing-read
+;; y-or-n-p-with-timeout
+
+
+;; * Solution 1: Defer to command loop (recommended)
+
+;; Use run-at-time with nil repeat AND post-command-hook:
+
+;; (defun func0-safe ()
+;;   (run-at-time
+;;    0 nil
+;;    (lambda ()
+;;      (when (y-or-n-p-with-timeout
+;;             "Do you want to set session of frame? " 10 t)))))
+;;        ;; do stuff
+
+
+;; * Solution 3 (do NOT do this)
+;; (run-with-timer 1 nil
+;;                 (lambda ()
+;;                   (y-or-n-p ...))) ;; ❌ unsafe
+
+
+;; This will freeze intermittently.
+
+
 (cl-defmethod sessions-unified--session-restore ((app (eql :fsession)))
-  (when (y-or-n-p-with-timeout "Do you want to set session of frame? "
-                               10 t)
-    (let ((*sessions-unified-frame-session-restore-lock* t))
-      (frame-session-restore (selected-frame) 'only))))
+  (run-at-time 0 nil
+               #'(lambda ()
+                   (when (y-or-n-p-with-timeout
+                          (format "Do you want to set session of frame (time out in %s sec)? " 10)
+                          10 t)
+                     (let ((*sessions-unified-frame-session-restore-lock* t))
+                       (frame-session-restore (selected-frame) 'only))))))
+
 (cl-defmethod sessions-unified--session-enable ((app (eql :fsession)))
   (frame-session-restore-hook-func)
   (cl-call-next-method))
