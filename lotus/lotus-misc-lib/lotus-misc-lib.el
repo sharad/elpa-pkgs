@@ -41,8 +41,29 @@
   (interactive "ss:")
   (query-replace s1 replacement)
   (recentf-list))
+
 
-;; /srv/volumes/local/z7mp9s/vg01/lv01/users/s/common/data/main/preserved/Fortinet /home/s/paradise/Projects/Fortinet
+
+(defvar my/yank-last-word-index 1)
+
+(defun my/yank-last-word-cycle ()
+  "Cycle through previous words of the last line."
+  (interactive)
+  (let* ((line (save-excursion
+                 (forward-line -1)
+                 (buffer-substring-no-properties
+                  (line-beginning-position)
+                  (line-end-position))))
+         (words (split-string line "[ \t]+" t)))
+    (when (> my/yank-last-word-index (length words))
+      (setq my/yank-last-word-index 1))
+    (insert (nth (- (length words) my/yank-last-word-index) words))
+    (setq my/yank-last-word-index (1+ my/yank-last-word-index))))
+
+(global-set-key (kbd "M-_") #'my/yank-last-word-cycle)
+
+
+
 
 
 (defun xcopy-as-html (beg end)
