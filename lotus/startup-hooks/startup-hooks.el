@@ -173,24 +173,21 @@ problem while emacs startup in daemon mode, non-interactively."
 ;;;###autoload
 (defun lotus-general-enable-startup-setting-begin ()
   (interactive)
-  (setq
-   debug-on-error lotus-enable-startup-begin-debug-on-error
-   debug-on-quit lotus-enable-startup-begin-debug-on-quit)
+  (setq debug-on-error lotus-enable-startup-begin-debug-on-error
+        debug-on-quit  lotus-enable-startup-begin-debug-on-quit)
   (setq pabbrev-read-only-error nil)
-  (setq
-   enable-p4-login t
-   tramp-mode t
-   ido-mode t)
+  (setq enable-p4-login t
+        tramp-mode t
+        ido-mode t)
   (when (featurep 'epa)
     (if (fboundp 'epa-file-enable)
         (epa-file-enable)))
-  (when (and
-         (featurep 'light-symbol)
-         (featurep 'hilit-chg))
-    (add-element-to-lists '(lambda ()
-                             (light-symbol-mode 1)
-                             (highlight-changes-visible-mode t)
-                             (highlight-changes-mode t))
+  (when (and (featurep 'light-symbol)
+             (featurep 'hilit-chg))
+    (add-element-to-lists #'(lambda ()
+                              (light-symbol-mode 1)
+                              (highlight-changes-visible-mode t)
+                              (highlight-changes-mode t))
                           pgm-langs)))
 (add-hook 'lotus-enable-startup-interrupting-feature-hook
           #'lotus-general-enable-startup-setting-begin t)
@@ -223,25 +220,25 @@ startup in daemon mode."
 
 ;;;###autoload
 (defun lotus-enable-startup-interrupting-feature-in-frame-once (frame)
-  ;; (run-with-timer 1 nil ;; not safe
-  (run-ar-time 0 nil
-               #'(lambda (frame)
-                   (if lotus-enable-startup-interrupting-feature-in-frame-once-lock
-                       (progn
-                         (if (fboundp 'message-notify)
-                             (message-notify "lotus-enable-startup-interrupting-feature-in-frame-once"
-                                             "locked due to lotus-enable-startup-interrupting-feature-in-frame-once-lock is t")
-                           (message "%s: locked due to lotus-enable-startup-interrupting-feature-in-frame-once-lock is t"
-                                    "lotus-enable-startup-interrupting-feature-in-frame-once")))
-                     (progn
-                       (setq lotus-enable-startup-interrupting-feature-in-frame-once-lock t)
-                       (funcall startup-select-frame-fn frame)
-                       ;; (with-report-error "check"
-                       ;;                    (lotus-enable-startup-interrupting-feature))
-                       (lotus-enable-startup-interrupting-feature)
-                       (remove-hook 'after-make-frame-functions 'lotus-enable-startup-interrupting-feature-in-frame-once)
-                       (setq lotus-enable-startup-interrupting-feature-in-frame-once-lock nil))))
-               frame)
+  ;; (run-at-time 1 nil ;; -- will not work
+  (run-with-timer 1 nil
+                  #'(lambda (frame)
+                      (if lotus-enable-startup-interrupting-feature-in-frame-once-lock
+                          (progn
+                            (if (fboundp 'message-notify)
+                                (message-notify "lotus-enable-startup-interrupting-feature-in-frame-once"
+                                                "locked due to lotus-enable-startup-interrupting-feature-in-frame-once-lock is t")
+                              (message "%s: locked due to lotus-enable-startup-interrupting-feature-in-frame-once-lock is t"
+                                       "lotus-enable-startup-interrupting-feature-in-frame-once")))
+                        (progn
+                          (setq lotus-enable-startup-interrupting-feature-in-frame-once-lock t)
+                          (funcall startup-select-frame-fn frame)
+                          ;; (with-report-error "check"
+                          ;;                    (lotus-enable-startup-interrupting-feature))
+                          (lotus-enable-startup-interrupting-feature)
+                          (remove-hook 'after-make-frame-functions 'lotus-enable-startup-interrupting-feature-in-frame-once)
+                          (setq lotus-enable-startup-interrupting-feature-in-frame-once-lock nil))))
+                  frame)
   t)
 
 (add-hook 'after-make-frame-functions
@@ -380,18 +377,18 @@ startup in daemon mode."
 
 ;;;###autoload
 (defun lotus-enable-login-session-interrupting-feature-in-frame-once (frame)
-  ;; (run-with-timer 1 nil ;; - not safe
-  (run-at-time 0 nil
-               #'(lambda (frame)
-                   (funcall startup-select-frame-fn frame)
-                   ;; run and disable.
-                   (with-report-error "check"
-                       (when (any-frame-opened-p)
-                         (lotus-enable-login-session-interrupting-feature))
-                       (remove-hook 'after-make-frame-functions 'lotus-enable-login-session-interrupting-feature-in-frame-once)
-                       (when t
-                         (message "removed lotus-enable-login-session-interrupting-feature-in-frame-once"))))
-               frame)
+  ;; (run-at-time 1 nil ;; -- will not work
+  (run-with-timer 1 nil
+                  #'(lambda (frame)
+                      (funcall startup-select-frame-fn frame)
+                      ;; run and disable.
+                      (with-report-error "check"
+                          (when (any-frame-opened-p)
+                            (lotus-enable-login-session-interrupting-feature))
+                          (remove-hook 'after-make-frame-functions 'lotus-enable-login-session-interrupting-feature-in-frame-once)
+                          (when t
+                            (message "removed lotus-enable-login-session-interrupting-feature-in-frame-once"))))
+                  frame)
   t)
 
 (add-hook 'after-make-frame-functions
