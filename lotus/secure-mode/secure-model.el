@@ -20,12 +20,6 @@
 
 ;;; Commentary:
 
-;; ;;; secure-model.el --- secure file mode          -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2024  s
-
-;; Author: s <s>
-;; Keywords:
 
 ;;; Code:
 
@@ -33,7 +27,7 @@
 (provide 'secure-model)
 
 
-(define-minor-mode secure-mode
+(define-minor-mode secure-mode ()
   )
 
 ;;; secure-model.el ends here
