@@ -295,7 +295,8 @@ or nil if the version cannot be parsed."
   (interactive
    (let ((dir (read-directory-name "package directory: ")))
      (list dir current-prefix-arg)))
-  (let* ((pkg-tar (package-build-package-from-dir dir force))
+  (let* ((detect-srv-repo-file-name-enabled nil)
+         (pkg-tar (package-build-package-from-dir dir force))
          (pkg-name
           (replace-regexp-in-string
            "-[0-9\.]\*\.tar\\(\.gz\\)?\$" ""
@@ -387,9 +388,11 @@ or nil if the version cannot be parsed."
         (when (and (file-directory-p pkgdir)
                    (not (equal f ".."))
                    (not (equal f ".")))
-          (ignore-errors
-            (package-install-package-from-dir pkgdir force))
-          (message "Installed %s" pkgdir))))
+          (let ((debug-on-error nil))
+            (if (ignore-errors
+                  (package-install-package-from-dir pkgdir force))
+                (message "Installed %s" pkgdir)
+              (message "Installation failed %s" pkgdir))))))
     (message "Installed all packages from %s" base)))
 
 ;;;###autoload
@@ -446,7 +449,9 @@ or nil if the version cannot be parsed."
           (let (;; (dep-desc (nth 1 (assoc dep package-archive-contents)))
                 (pkg (package-desc-package-from-dir pkg-path)))
             (message "Installing %s" pkg-path)
-            (package-install pkg)
+            (let ((debug-on-error nil))
+              (ignore-errors
+                (package-install pkg)))
             (sleep-for *package-install-packages-wait-secs-in-install*)
             (message "Installed %s" pkg-path)))
         (message "Installed all packages from %s" base)))))
