@@ -81,6 +81,94 @@
       (> count magit-wip-push-inhibit-count))))
 
 
+
+;; (defun magit-exit-start-git (input &rest args)
+;;   "Start Git, prepare for refresh, and return the process object.
+
+;; If INPUT is non-nil, it has to be a buffer or the name of an
+;; existing buffer.  The buffer content becomes the processes
+;; standard input.
+
+;; Function `magit-git-executable' specifies the Git executable and
+;; option `magit-git-global-arguments' specifies constant arguments.
+;; The remaining arguments ARGS specify arguments to Git, they are
+;; flattened before use.
+
+;; After Git returns some buffers are refreshed: the buffer that was
+;; current when this function was called (if it is a Magit buffer
+;; and still alive), as well as the respective Magit status buffer.
+
+;; See `magit-start-process' for more information."
+;;   ;; (run-hooks 'magit-pre-start-git-hook)
+;;   (let ((default-process-coding-system (magit--process-coding-system)))
+;;     (apply #'magit-start-process (magit-git-executable) input
+;;            (magit-process-git-arguments args))))
+
+;; (defun magit-exit-run-git-async (&rest args)
+;;   "Start Git, prepare for refresh, and return the process object.
+;; ARGS is flattened and then used as arguments to Git.
+
+;; Display the command line arguments in the echo area.
+
+;; After Git returns some buffers are refreshed: the buffer that was
+;; current when this function was called (if it is a Magit buffer
+;; and still alive), as well as the respective Magit status buffer.
+
+;; See `magit-start-process' for more information."
+;;   (magit-msg "Running %s %s" (magit-git-executable)
+;;              (let ((m (string-join (flatten-tree args) " ")))
+;;                (remove-list-of-text-properties 0 (length m) '(face) m)
+;;                m))
+;;   (magit-exit-start-git nil args))
+
+
+
+;; (defun magit-ext-git-push-nons (branch target args)
+;;   (run-hooks 'magit-credential-hook)
+;;   ;; If the remote branch already exists, then we do not have to
+;;   ;; qualify the target, which we prefer to avoid doing because
+;;   ;; using the default namespace is wrong in obscure cases.
+;;   (pcase-let ((namespace (if (magit-get-tracked target) "" "refs/heads/"))
+;;               (`(,remote . ,target)
+;;                (magit-split-branch-name target)))
+;;     (magit-ext-run-git-async "push" "-v" args remote
+;;                              (format "%s:%s" branch target))))
+
+
+
+
+
+(defun magit-ext-wip-run-git-and-capture (args on-finish)
+  "Run git ARGS and call ON-FINISH with (process new-output exit-code)."
+  (let* ((magit-process-popup-time 0)
+         (magit-process-raise-error nil)
+         (proc (apply #'magit-run-git-async args))
+         start-pos)
+    ;; Record where output starts
+    (with-current-buffer (process-buffer proc)
+      (setq start-pos (point-max)))
+
+    (add-hook 'magit-process-finish-hook
+              (lambda (process)
+                (when (eq process proc)
+                  (let ((buf (process-buffer process))
+                        (status (process-exit-status process)))
+                    (when (buffer-live-p buf)
+                      (with-current-buffer buf
+                        (funcall on-finish process
+                                 (buffer-substring-no-properties start-pos
+                                                                 (point-max))
+                                 status))))))
+              proc)))
+
+
+;; (magit-wip-run-git-and-capture
+;;  (list "push" "-v" args remote (format "%s:%s" branch target))
+;;  (lambda (_proc output status)
+;;    (if (= status 0)
+;;        (message "WIP push OK:\n%s" output)
+;;      (message "WIP push FAILED:\n%s" output))))
+
 (defun magit-ext-git-push-nons (branch target args)
   (run-hooks 'magit-credential-hook)
   ;; If the remote branch already exists, then we do not have to
@@ -114,7 +202,7 @@
          (magit-get-upstream-remote (magit-get-current-branch))
          (when current-prefix-arg '("-f"))))
   (if ref
-      (let* ((local-branch (substring ref (length "refs/heads/")))
+      (let* ((local-branch    (substring ref (length "refs/heads/")))
              (upstream-remote (or remote
                                   (magit-get-upstream-remote local-branch)))
              (wip-ref         (string-join (list "wip/wtree" ref) "/"))
