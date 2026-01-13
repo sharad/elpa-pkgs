@@ -139,6 +139,9 @@
   ;; If the remote branch already exists, then we do not have to
   ;; qualify the target, which we prefer to avoid doing because
   ;; using the default namespace is wrong in obscure cases.
+
+  ;; https://chatgpt.com/c/69661b3e-6030-8333-96a5-c33b9e535b03
+
   (pcase-let ((namespace (if (magit-get-tracked target) "" "refs/heads/"))
               (`(,remote . ,target)
                (magit-split-branch-name target)))
