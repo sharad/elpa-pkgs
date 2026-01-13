@@ -142,12 +142,17 @@
   (pcase-let ((namespace (if (magit-get-tracked target) "" "refs/heads/"))
               (`(,remote . ,target)
                (magit-split-branch-name target)))
-    (let ((magit-pre-start-git-hook
+    (let ((magit-pre-call-git-hook
+           (remove #'magit-maybe-save-repository-buffers
+                   magit-pre-call-git-hook))
+          (magit-pre-start-git-hook
            (remove #'magit-maybe-save-repository-buffers
                    magit-pre-start-git-hook))
           (magit-pre-refresh-hook
            (remove #'magit-maybe-save-repository-buffers
-                   magit-pre-refresh-hook)))
+                   magit-pre-refresh-hook))
+          (magit-process-raise-error nil)
+          (magit-process-popup-time 0))
       (magit-run-git-async "push" "-v" args remote
                            (format "%s:%s" branch target)))))
 
