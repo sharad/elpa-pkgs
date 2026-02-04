@@ -286,7 +286,7 @@ so returns nil if pid is nil."
 
 ;; (when (or (not *emacs-in-init*) (not reloading-libraries))
 (when (or *emacs-in-init* reloading-libraries)
-                                        ;setting to nil so it will be asked from user.
+  ;setting to nil so it will be asked from user.
   (setq *desktop-save-filename* nil))
 
 ;; might be the reason for Terminal 0 is locked.
@@ -480,21 +480,23 @@ so returns nil if pid is nil."
 (defun desktop-idle-create-buffers ()
   "Create buffers until the user does something, then stop.
  there are no buffers left to create, kill the timer."
-  (let ((tags-add-tables nil))
-    (let ((repeat 1))
-      (while (and repeat desktop-buffer-args-list)
-        (unless (ignore-errors
-                  (save-window-excursion
-                    (desktop-lazy-create-buffer)))
-          (message "Desktop lazily opening Failed."))
-        (setq repeat (sit-for 0.2))
-        (unless desktop-buffer-args-list
-          (when desktop-lazy-timer
-            (cancel-timer desktop-lazy-timer)
-            (setq desktop-lazy-timer nil))
-          (message "Lazy desktop load complete")
-          (sit-for 3)
-          (message nil))))))
+  (let ((tags-add-tables nil)
+        (flymake-mode nil)
+        (repeat 1))
+    (while (and repeat
+                desktop-buffer-args-list)
+      (unless (ignore-errors
+                (save-window-excursion
+                  (desktop-lazy-create-buffer)))
+        (message "Desktop lazily opening Failed."))
+      (setq repeat (sit-for 0.2))
+      (unless desktop-buffer-args-list
+        (when desktop-lazy-timer
+          (cancel-timer desktop-lazy-timer)
+          (setq desktop-lazy-timer nil))
+        (message "Lazy desktop load complete")
+        (sit-for 3)
+        (message nil)))))
 
 (defadvice desktop-idle-create-buffers (after desktop-idle-complete-actions)
   "This advice will finally run lotus-enable-desktop-restore-interrupting-feature-hook
@@ -504,7 +506,9 @@ en all buffer were creaed idly."
   (unless desktop-buffer-args-list
     (session-unify-notify "Now removing advice and running lotus-enable-session-saving-immediately")
     (progn
-      (ad-disable-advice 'desktop-idle-create-buffers 'after 'desktop-idle-complete-actions)
+      (ad-disable-advice 'desktop-idle-create-buffers
+                         'after
+                         'desktop-idle-complete-actions)
       (ad-update 'desktop-idle-create-buffers)
       (ad-activate 'desktop-idle-create-buffers))
     (sessions-unified--session-enable :desktop)))
